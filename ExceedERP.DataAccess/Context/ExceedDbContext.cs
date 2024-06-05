@@ -48,7 +48,6 @@ using ExceedERP.Core.Domain.FleetManagement.EquipmentInspection;
 using ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation;
 
 using ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent;
-using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 
 using ExceedERP.Core.Domain.FleetManagement.FleetResource;
@@ -114,6 +113,11 @@ using ExceedERP.Core.Domain.ArchiveManagement.Employee;
 using ExceedERP.Core.Domain.ArchiveManagement.Setting;
 using ExceedERP.Core.Domain.Archive;
 using ExceedERP.Core.Domain.Printing;
+using ExceedERP.Core.Domain.FleetManagement.RentalPayment;
+using ExceedERP.Core.Domain.FleetManagement.FleetInsurances;
+using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
+using ExceedERP.Core.Domain.Maintenance;
+using ExceedERP.Core.Domain.Maintenance.Settings;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -898,6 +902,28 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region FleetManagement
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetAnnualPlanEntitytypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetAnnualPlanDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetBatteryAndTireEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetBoloRegistrationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentFromExternalEquipmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.LightVehicleEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.DumpTruckTimeSheetDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.AssignedEquipmentAdditionalInfoEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.WagonDrillTimesheetEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.DryLoadingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.DumpTruckTimeSheetEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalInspectionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestDepartmentValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestBudgetValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestLineEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalInspectionValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalInspectionCriteriaEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalInspectionCriteriaDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalMVInspectionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.MachineryWorkingTimeSheetEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetReturnApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetReturnEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetReturnItemEntityTypeConfiguration());
@@ -913,23 +939,11 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetPettyCashEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetIFuelConsumptionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetInsuranceTypeDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.PMScheduleEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.PMScheduleDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.AdvanceMeasureEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.DailyCareCategoryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.LogisticPlanDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.LogisticPlanEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.DailyCareDetailItemEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.DailyCareDetailLogEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.DailyCareEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.DailyCareLogEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FailureReasonEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.ServiceCrewWorkLogEntityTypeConfiguration());
+
+
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.SiteVechicleTransferDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.ExternalComponentEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.ExternalComponentDetailEntityTypeConfiguration());
+
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentArrivalApprovalEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.InventorySparePartMappingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.BatteryIssueEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.BatteryReturnEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.BatteryApprovalEntityTypeConfiguration());
@@ -938,16 +952,9 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentArrivalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentBatteryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentBatteryLogEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FollowUpEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.CannibalizationDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FuelConsumptionAlertLevelEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.MaintenaceInspectionLogEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.MaintenanceTypeEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.MechanicOnHandEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.JobStoreRequisitionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.WorkUnitSectionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.JobCausesEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.JobRequestEntityTypeConfiguration());
+
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentTyreEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TyreTransferEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TyreTransferApprovalEntityTypeConfiguration());
@@ -960,7 +967,6 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.AccessoriesEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RequestedEquipmentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.AccidentEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.AdministrativeJobApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.AnnualEquipmentInventoryInspectionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.AnnualInventoryInspectionApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.AssignedEquipmentEntityTypeConfiguration());
@@ -968,6 +974,8 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.CannibalizationApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.CannibalizationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.CheckListEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetCheckListEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetLineCheckListListEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.CheckListLogEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.DisposalandReplacementRecommendationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.DriverTransferApprovalEntityTypeConfiguration());
@@ -976,11 +984,10 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentAttachmentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentIdentityEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentNameEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentPlanandEvaluationsEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentTypeEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.ExternalCrewEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.ExternalMaterialEntityTypeConfiguration());
+
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetHistoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetInsuranceEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetsEntityTypeConfiguration());
@@ -989,21 +996,15 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.GoodRecivingNoteApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.InspectionApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.InspectionLogEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.JobOrderDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.JobOrderEntityTypeConfiguration());
+
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.LineCheckListEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.MaintenanceCenterEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.MaintenanceToolEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentCheckListEntityTypeConfiguration());
+
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.ManufacturerEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.MechanicCrewEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.OperatorEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.OperatorPositionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.OtherCompanyMaintenaceApprovalEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.OtherCompanyMaintenanceEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.OutsourceMaintenanceApprovalEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.OutsourceMaintenanceEntityTypeConfiguration());
+
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.PlanAndEvaluationApprovalEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.PlannerEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentForInternalApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentFromExternalApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentFromExternalEntityTypeConfiguration());
@@ -1012,18 +1013,12 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentOtherSuppliersEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentRequestApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentRequestEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RepairTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.SalvageStoreApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.SalvageStoreEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.SalvageStoreGoodReceivingEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.ServiceCrewEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.ServiceEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.ServiceSpareEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.ServiceToolEntityTypeConfiguration());
+
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.SitesVehicleTransferEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.SiteVehicleApprovalEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.SparePartEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TechnicalJobApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TimeSheetEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TireIssueApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TireIssueEntityTypeConfiguration());
@@ -1036,8 +1031,64 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.VehicleReturnApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.VehicleReturnEntityTypeConfiguration());
 
-
-
+            #endregion
+            #region Maintenance
+            modelBuilder.Configurations.Add(new AdditionalWorkShopDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExternalServiceCenterPaymentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PMScheduleEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PMScheduleDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AdvanceMeasureEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new DailyCareCategoryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LogisticPlanDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LogisticPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new DailyCareDetailItemEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new DailyCareDetailLogEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new DailyCareEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new DailyCareLogEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FailureReasonEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ServiceCrewWorkLogEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExternalComponentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExternalComponentDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InventorySparePartMappingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AdministrativeJobApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FollowUpEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new MaintenaceInspectionLogEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new MaintenanceTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new MechanicOnHandEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new JobStoreRequisitionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new WorkUnitSectionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new JobCausesEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new JobRequestEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new MechanicCrewEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new MaintenanceCenterEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new MaintenanceToolEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new JobOrderDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new JobOrderEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ServiceCenterJobEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new JobOrderServiceCenterDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExternalCrewEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExternalMaterialEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new OtherCompanyMaintenaceApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new OtherCompanyMaintenanceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new OutsourceMaintenanceApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new OutsourceMaintenanceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PlannerEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new RepairTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ServiceCrewEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ServiceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ServiceSpareEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ServiceToolEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SparePartEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TechnicalJobApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new MaintenanceToolIssueAndReturnEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SpareMaterialCategoryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EquipmentInformationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new MaintenanceIntervalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new VehicleReceptionFormEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new VehiclePartDamageTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new VehiclePartManagementEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new VehiclePartEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ServiceCenterEntityTypeConfiguration());
 
             #endregion
 
@@ -2760,7 +2811,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<DrugPurchaseRequisition> DrugPurchaseRequisitions { get; set; }
         public DbSet<DrugReceivalDetail> DrugReceivalDetails { get; set; }
         public DbSet<APTSValidation> APTSValidations { get; set; }
-        #endregion       
+        #endregion
 
         #region FleetManagement
 
@@ -2788,6 +2839,23 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<FuelConsumptionAlertLevel> FuelConsumptionAlertLevel { get; set; }
         public DbSet<FleetHistory> FleetHistorys { get; set; }
         public DbSet<FleetInsurance> FleetInsurance { get; set; }
+        public DbSet<InsuranceCompany> InsuranceCompany { get; set; }
+        public DbSet<RentalCompany> RentalCompany { get; set; }
+        public DbSet<RentalInspectionCriteria> RentalInspectionCriteria { get; set; }
+        public DbSet<RentalInspectionCriteriaDetail> RentalInspectionCriteriaDetails { get; set; }
+        public DbSet<RentalMVInspection> RentalMVInspections { get; set; }
+        public DbSet<RentalInspection> RentalInspections { get; set; }
+        public DbSet<RentalPaymentRequest> RentalPaymentRequests { get; set; }
+        public DbSet<RentalPaymentRequestLine> RentalPaymentRequestLines { get; set; }
+
+        public DbSet<RentalPaymentRequestValidation> RentalPaymentRequestValidations { get; set; }
+        public DbSet<RentalPaymentRequestDepartmentValidation> RentalPaymentRequestDepartmentValidations { get; set; }
+        public DbSet<RentalPaymentRequestBudgetValidation> RentalPaymentRequestBudgetValidations { get; set; }
+
+
+
+        public DbSet<RentalInspectionValidation> RentalInspectionValidations { get; set; }
+        //public DbSet<FleetInsurances> FleetInsurances { get; set; }
         public DbSet<Operator> Operator { get; set; }
         public DbSet<TimeSheet> TimeSheet { get; set; }
         public DbSet<EquipmentTyre> EquipmentTyres { get; set; }
@@ -2808,6 +2876,10 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<FleetReturn> FleetReturns { get; set; }
         public DbSet<FleetReturnItem> FleetReturnItems { get; set; }
         public DbSet<FleetReturnApproval> FleetReturnApprovals { get; set; }
+        public DbSet<DryLoadingTimeSheet> DryLoadingTimeSheets { get; set; }
+        public DbSet<DumpTruckTimeSheet> DumpTruckTimeSheets { get; set; }
+        public DbSet<MachineryWorkingTimeSheet> MachineryWorkingTimeSheets { get; set; }
+        public DbSet<WagonDrillTimesheet> WagonDrillTimesheets { get; set; }
 
         #endregion
 
@@ -2823,6 +2895,9 @@ namespace ExceedERP.DataAccess.Context
 
         #region 3 - Inspection And Recommendation Module
         public DbSet<CheckList> CheckLists { get; set; }
+        public DbSet<FleetCheckList> FleetCheckLists { get; set; }
+        public DbSet<EquipmentCheckList> EquipmentCheckLists { get; set; }
+        public DbSet<FleetLineCheckList> FleetLineCheckLists { get; set; }
         public DbSet<LineCheckList> LineCheckLists { get; set; }
         public DbSet<CheckListLog> CheckListLogs { get; set; }
         public DbSet<InspectionLog> InspectionLogs { get; set; }
@@ -2835,54 +2910,6 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<AnnualInventoryInspectionApproval> AnnualInventoryInspectionApproval { get; set; }
 
         #endregion
-
-
-        #region 4 - Maintenance Module
-
-        public DbSet<PMSchedule> PMSchedules { get; set; }
-        public DbSet<DailyCareDetailItem> DailyCareDetailItems { get; set; }
-        public DbSet<PMScheduleDetail> PMScheduleDetails { get; set; }
-        public DbSet<ServiceCrewWorkLog> ServiceCrewWorkLogs { get; set; }
-        public DbSet<JobRequest> JobRequest { get; set; }
-        public DbSet<LogisticPlan> LogisticPlans { get; set; }
-        public DbSet<LogisticPlanDetail> LogisticPlanDetails { get; set; }
-        public DbSet<MaintenaceInspectionLog> MaintenaceInspectionLog { get; set; }
-        public DbSet<InventorySparePartMapping> InventorySparePartMapping { get; set; }
-
-        public DbSet<ExternalComponent> ExternalComponent { get; set; }
-        public DbSet<ExternalComponentDetail> ExternalComponentDetail { get; set; }
-        public DbSet<JobOrder> JobOrder { get; set; }
-        public DbSet<MechanicOnHand> MechanicOnHand { get; set; }
-        public DbSet<MaintenanceType> MaintenanceType { get; set; }
-        public DbSet<JobCauses> JobCauses { get; set; }
-        public DbSet<JobStoreRequisition> JobStoreRequisition { get; set; }
-        public DbSet<JobOrderDetail> JobOrderDetail { get; set; }
-        public DbSet<ExternalMaterial> ExternalMaterial { get; set; }
-        public DbSet<WorkUnitSection> WorkUnitSection { get; set; }
-        public DbSet<ExternalCrew> ExternalCrew { get; set; }
-        public DbSet<MaintenanceTool> MaintenanceTool { get; set; }
-        public DbSet<MechanicCrew> MechanicCrew { get; set; }
-        public DbSet<OutsourceMaintenance> OutsourceMaintenance { get; set; }
-        public DbSet<OtherCompanyMaintenance> OtherCompanyMaintenance { get; set; }
-        public DbSet<Planner> Planner { get; set; }
-
-        public DbSet<Service> Service { get; set; }
-
-        public DbSet<SparePart> SparePart { get; set; }
-        public DbSet<ServiceTool> ServiceTool { get; set; }
-        public DbSet<ServiceCrew> ServiceCrew { get; set; }
-        public DbSet<ServiceSpare> ServiceSpare { get; set; }
-        public DbSet<RepairType> RepairType { get; set; }
-        public DbSet<MaintenanceCenter> MaintenanceCenter { get; set; }
-
-        public DbSet<OutsourceMaintenanceApproval> OutsourceMaintenanceApproval { get; set; }
-        public DbSet<OtherCompanyMaintenaceApproval> OtherCompanyMaintenaceApproval { get; set; }
-        public DbSet<AdministrativeJobApproval> AdministrativeJobApproval { get; set; }
-        public DbSet<TechnicalJobApproval> TechnicalJobApproval { get; set; }
-        public DbSet<FollowUp> FollowUp { get; set; }
-
-        #endregion
-
 
         #region 5 - Recycle Module
 
@@ -2906,17 +2933,17 @@ namespace ExceedERP.DataAccess.Context
 
         #region 6 - Rent Management
 
-
+        public DbSet<RentFromExternalEquipment> RentFromExternalEquipments { get; set; }
         public DbSet<ExternalRentedEquipmentCheckList> ExternalRentedEquipmentCheckList { get; set; }
         public DbSet<RentInternalProject> RentInternalProject { get; set; }
         public DbSet<ExternalRentedEquipment> ExternalRentedEquipments { get; set; }
-        public DbSet<RentOtherSuppliers> RentOtherSuppliers { get; set; }
+        public DbSet<RentToExternal> RentToExternals { get; set; }
         public DbSet<RentRequest> RentRequest { get; set; }
         public DbSet<RentFromExternal> RentFromExternal { get; set; }
         public DbSet<RentForInternalApproval> RentForInternalApproval { get; set; }
         public DbSet<RentFromExternalApproval> RentFromExternalApproval { get; set; }
         public DbSet<RentRequestApproval> RentRequestApproval { get; set; }
-        public DbSet<RentOtherSupplierApproval> RentOtherSupplierApproval { get; set; }
+        public DbSet<RentToExternalApproval> RentOtherSupplierApproval { get; set; }
 
         #endregion
 
@@ -2958,7 +2985,73 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<BatteryApproval> BatteryApproval { get; set; }
 
         #endregion
+        public DbSet<FleetAnnualPlan> FleetAnnualPlans { get; set; }
+        public DbSet<FleetAnnualPlanDetail> FleetAnnualPlanDetails { get; set; }
+        public DbSet<FleetBatteryAndTire> FleetBatteryAndTires { get; set; }
+        public DbSet<FleetBoloRegistration> FleetBoloRegistrations { get; set; }
+        public DbSet<LightVehicleTimeSheet> LightVehicleTimeSheets { get; set; }
+        public DbSet<DumpTruckTimeSheetDetail> DumpTruckTimeSheetDetails { get; set; }
+        public DbSet<TimeSheetApprovalNew> TimeSheetApprovalNew { get; set; }
+        public DbSet<CostSheetApproval> CostSheetApprovals { get; set; }
+        public DbSet<AssignedEquipmentAdditionalInfo> AssignedEquipmentAdditionalInfos { get; set; }
+        #endregion
+        #region Maintenance
+        public DbSet<AdditionalWorkShopDetail> AdditionalWorkShopDetails { get; set; }
+        public DbSet<ExternalServiceCenterPayment> ExternalServiceCenterPayments { get; set; }
+        public DbSet<PeriodicEquipmentInspection> PeriodicEquipmentInspection { get; set; }
+        public DbSet<MechanicTypeClass> MechanicTypeClasses { get; set; }
+        public DbSet<PMSchedule> PMSchedules { get; set; }
+        public DbSet<DailyCareDetailItem> DailyCareDetailItems { get; set; }
+        public DbSet<PMScheduleDetail> PMScheduleDetails { get; set; }
+        public DbSet<ServiceCrewWorkLog> ServiceCrewWorkLogs { get; set; }
+        public DbSet<JobRequest> JobRequest { get; set; }
+        public DbSet<LogisticPlan> LogisticPlans { get; set; }
+        public DbSet<LogisticPlanDetail> LogisticPlanDetails { get; set; }
+        public DbSet<MaintenaceInspectionLog> MaintenaceInspectionLog { get; set; }
+        public DbSet<InventorySparePartMapping> InventorySparePartMapping { get; set; }
+        public DbSet<ServiceCenter> ServiceCenters { get; set; }
 
+        public DbSet<ExternalComponent> ExternalComponent { get; set; }
+        public DbSet<ExternalComponentDetail> ExternalComponentDetail { get; set; }
+        public DbSet<VehiclePartDamageType> VehiclePartDamageType { get; set; }
+        public DbSet<VehiclePart> VehiclePart { get; set; }
+        public DbSet<VehiclePartManagement> VehiclePartManagement { get; set; }
+        public DbSet<VehicleReceptionForm> VehicleReceptionForm { get; set; }
+        public DbSet<JobOrder> JobOrder { get; set; }
+        public DbSet<ServiceCenterJob> ServiceCenterJob { get; set; }
+        public DbSet<JobOrderServiceCenterDetail> JobOrderServiceCenterDetails { get; set; }
+        public DbSet<MechanicOnHand> MechanicOnHand { get; set; }
+        public DbSet<MaintenanceType> MaintenanceType { get; set; }
+        public DbSet<JobCauses> JobCauses { get; set; }
+        public DbSet<JobStoreRequisition> JobStoreRequisition { get; set; }
+        public DbSet<JobOrderDetail> JobOrderDetail { get; set; }
+        public DbSet<ExternalMaterial> ExternalMaterial { get; set; }
+        public DbSet<WorkUnitSection> WorkUnitSection { get; set; }
+        public DbSet<ExternalCrew> ExternalCrew { get; set; }
+        public DbSet<MaintenanceTool> MaintenanceTool { get; set; }
+        public DbSet<MechanicCrew> MechanicCrew { get; set; }
+        public DbSet<OutsourceMaintenance> OutsourceMaintenance { get; set; }
+        public DbSet<OtherCompanyMaintenance> OtherCompanyMaintenance { get; set; }
+        public DbSet<Planner> Planner { get; set; }
+
+        public DbSet<Service> Service { get; set; }
+
+        public DbSet<SparePart> SparePart { get; set; }
+        public DbSet<ServiceTool> ServiceTool { get; set; }
+        public DbSet<ServiceCrew> ServiceCrew { get; set; }
+        public DbSet<ServiceSpare> ServiceSpare { get; set; }
+        public DbSet<RepairType> RepairType { get; set; }
+        public DbSet<MaintenanceCenter> MaintenanceCenter { get; set; }
+
+        public DbSet<OutsourceMaintenanceApproval> OutsourceMaintenanceApproval { get; set; }
+        public DbSet<OtherCompanyMaintenaceApproval> OtherCompanyMaintenaceApproval { get; set; }
+        public DbSet<AdministrativeJobApproval> AdministrativeJobApproval { get; set; }
+        public DbSet<TechnicalJobApproval> TechnicalJobApproval { get; set; }
+        public DbSet<FollowUp> FollowUp { get; set; }
+        public DbSet<MaintenanceToolIssueAndReturn> MaintenanceToolIssueAndReturn { get; set; }
+        public DbSet<SpareMaterialCategory> SpareMaterialCategory { get; set; }
+        public DbSet<EquipmentInformation> EquipmentInformation { get; set; }
+        public DbSet<MaintenanceInterval> MaintenanceIntervals { get; set; }
 
         #endregion
         #region  InfoDesk

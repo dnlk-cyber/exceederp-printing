@@ -1,7 +1,13 @@
-﻿using System;
+﻿
+using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using ExceedERP.Core.Domain.Common;
+using System.Linq;
+using System.Web;
+ using ExceedERP.Core.Domain.Common;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
@@ -13,7 +19,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
 
         }
         public Guid DriverVehicleTransferID { get; set; }
-
+        [Display(Name ="Equipment")]
+        public Guid FleetId { get; set; }
         [DisplayName("From Equipment ")]
         public Guid FromEquipment { get; set; }
         [DisplayName("To Equipment ")]

@@ -38,15 +38,14 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         {
             List<AccidentViewModel> AccidentList = new List<AccidentViewModel>();
             AccidentViewModel FleetViewModel;
-            List<Fleets> Fleets;
-        
+            var fleets = db.Fleets.ToList();
 
             if (!string.IsNullOrEmpty(Identity))
             {
                 if (!string.IsNullOrEmpty(category))
                 {
-                    Fleets =
-                        db.Fleets.Where(
+                    fleets =
+                        fleets.Where(
                             so =>
                                 so.EquipmentIdentityID.ToString() == Identity &&
                                 so.EquipmentTypeID.ToString() == category)
@@ -55,8 +54,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 else
                 {
 
-  Fleets =
-                        db.Fleets.Where(
+                fleets = fleets.Where(
                             so =>
                               
                                 so.EquipmentIdentityID.ToString() == Identity)
@@ -68,17 +66,14 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             {
                 if (!string.IsNullOrEmpty(Manufacturer))
                 {
-                    Fleets = db.Fleets.Where(so => so.ManufacturerYear == Manufacturer).ToList();
+                    fleets = fleets.Where(so => so.ManufacturerYear == Manufacturer).ToList();
                 }
               
-                else
-                {
-                    Fleets = db.Fleets.ToList();
-                }
+               
             }
-            if (Fleets.Any())
+            if (fleets.Any())
             {
-                List<Fleets> List = Fleets;
+                List<Fleets> List = fleets;
                 foreach (Fleets sov in List)
                 {
 

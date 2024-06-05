@@ -1,0 +1,93 @@
+﻿
+@model ExceedERP.Core.Domain.Maintenance.SparePart
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.SpareMaterialCategoryId)
+                </div>
+                <div>
+                    @Html.ValidationMessageFor(model => model.SpareMaterialCategoryId)
+                    @(Html.Kendo().DropDownListFor(model => model.SpareMaterialCategoryId)
+                            .Name("SpareMaterialCategoryId")
+                            .DataTextField("Description")
+                            .DataValueField("SpareMaterialCategoryId")
+                            .OptionLabel("Select ")
+                            .HtmlAttributes(new { style = "width:100%" })
+                            .DataSource(d =>
+                                d.Read(r => r.Action("GetSparePartAndMaterialCategory", "MaintenanceDataProvider")))
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.SparePartName)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.SparePartName)
+                    @Html.ValidationMessageFor(model => model.SparePartName)
+                </div>
+            </div>
+        </div>
+        
+
+        @*<div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Quantity)
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.Quantity)
+                    @Html.ValidationMessageFor(model => model.Quantity)
+                </div>
+            </div>
+        </div>*@
+
+        <div class="col-md-3">
+            @*<div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ReceiptNo)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.ReceiptNo)
+                    @Html.ValidationMessageFor(model => model.ReceiptNo)
+                </div>
+            </div>*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PartNo)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.PartNo)
+                    @Html.ValidationMessageFor(model => model.PartNo)
+                    @*@(Html.Kendo().DropDownListFor(model => model.PartNo).Name("PartNo")
+                .DataTextField("Name")
+                                .DataValueField("Name").OptionLabel("Select ").HtmlAttributes(new { style = "width:100%" })
+                                                .DataSource(d => d.Read(r => r.Action("SparePartDDBind", "FleetDataProvider"))).Events(ev => ev.Change("BindPrice")))*@
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.UnitPrice)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.UnitPrice)
+                    @Html.ValidationMessageFor(model => model.UnitPrice)
+
+                </div>
+            </div>
+        </div>
+    </div>

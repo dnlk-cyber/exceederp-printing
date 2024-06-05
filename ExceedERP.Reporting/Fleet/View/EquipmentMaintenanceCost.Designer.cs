@@ -9,6 +9,7 @@ namespace ExceedERP.Reporting.Fleet.View
         /// </summary>
         private void InitializeComponent()
         {
+            Telerik.Reporting.InstanceReportSource instanceReportSource1 = new Telerik.Reporting.InstanceReportSource();
             Telerik.Reporting.Group group1 = new Telerik.Reporting.Group();
             Telerik.Reporting.Group group2 = new Telerik.Reporting.Group();
             Telerik.Reporting.Group group3 = new Telerik.Reporting.Group();
@@ -23,6 +24,8 @@ namespace ExceedERP.Reporting.Fleet.View
             Telerik.Reporting.ReportParameter reportParameter9 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter10 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter11 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter12 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter13 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.Drawing.StyleRule styleRule1 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule2 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule3 = new Telerik.Reporting.Drawing.StyleRule();
@@ -57,34 +60,7 @@ namespace ExceedERP.Reporting.Fleet.View
             this.otherRepairCostCaptionTextBox = new Telerik.Reporting.TextBox();
             this.textBox5 = new Telerik.Reporting.TextBox();
             this.textBox10 = new Telerik.Reporting.TextBox();
-            this.reportFooter = new Telerik.Reporting.ReportFooterSection();
-            this.spareRepairCostSumFunctionTextBox2 = new Telerik.Reporting.TextBox();
-            this.oilRepairCostSumFunctionTextBox2 = new Telerik.Reporting.TextBox();
-            this.tyreRepairCostSumFunctionTextBox2 = new Telerik.Reporting.TextBox();
-            this.otherRepairCostSumFunctionTextBox2 = new Telerik.Reporting.TextBox();
-            this.textBox9 = new Telerik.Reporting.TextBox();
-            this.textBox14 = new Telerik.Reporting.TextBox();
-            this.pageHeader = new Telerik.Reporting.PageHeaderSection();
-            this.pageFooter = new Telerik.Reporting.PageFooterSection();
-            this.pageInfoTextBox = new Telerik.Reporting.TextBox();
-            this.reportHeader = new Telerik.Reporting.ReportHeaderSection();
-            this.textBox48 = new Telerik.Reporting.TextBox();
-            this.textBox43 = new Telerik.Reporting.TextBox();
-            this.textBox42 = new Telerik.Reporting.TextBox();
-            this.txtOrgName = new Telerik.Reporting.TextBox();
-            this.pbOrgLogo = new Telerik.Reporting.PictureBox();
-            this.textBox28 = new Telerik.Reporting.TextBox();
-            this.detail = new Telerik.Reporting.DetailSection();
-            this.assetCodeDataTextBox = new Telerik.Reporting.TextBox();
-            this.spareRepairCostDataTextBox = new Telerik.Reporting.TextBox();
-            this.oilRepairCostDataTextBox = new Telerik.Reporting.TextBox();
-            this.tyreRepairCostDataTextBox = new Telerik.Reporting.TextBox();
-            this.otherRepairCostDataTextBox = new Telerik.Reporting.TextBox();
-            this.textBox6 = new Telerik.Reporting.TextBox();
-            this.textBox11 = new Telerik.Reporting.TextBox();
             this.textBox15 = new Telerik.Reporting.TextBox();
-            this.textBox16 = new Telerik.Reporting.TextBox();
-            this.EquipmentMaintenanceCostDS = new Telerik.Reporting.ObjectDataSource();
             this.BranchDS = new Telerik.Reporting.ObjectDataSource();
             this.TypeDS = new Telerik.Reporting.ObjectDataSource();
             this.subTypeDS = new Telerik.Reporting.ObjectDataSource();
@@ -93,8 +69,31 @@ namespace ExceedERP.Reporting.Fleet.View
             this.ModelDS = new Telerik.Reporting.ObjectDataSource();
             this.ChasisDS = new Telerik.Reporting.ObjectDataSource();
             this.SerialNoDS = new Telerik.Reporting.ObjectDataSource();
+            this.reportFooter = new Telerik.Reporting.ReportFooterSection();
+            this.oilRepairCostSumFunctionTextBox2 = new Telerik.Reporting.TextBox();
+            this.tyreRepairCostSumFunctionTextBox2 = new Telerik.Reporting.TextBox();
+            this.otherRepairCostSumFunctionTextBox2 = new Telerik.Reporting.TextBox();
+            this.textBox9 = new Telerik.Reporting.TextBox();
+            this.textBox14 = new Telerik.Reporting.TextBox();
+            this.spareRepairCostSumFunctionTextBox2 = new Telerik.Reporting.TextBox();
+            this.pageFooter = new Telerik.Reporting.PageFooterSection();
+            this.pageInfoTextBox = new Telerik.Reporting.TextBox();
+            this.reportHeader = new Telerik.Reporting.ReportHeaderSection();
+            this.detail = new Telerik.Reporting.DetailSection();
+            this.assetCodeDataTextBox = new Telerik.Reporting.TextBox();
+            this.spareRepairCostDataTextBox = new Telerik.Reporting.TextBox();
+            this.oilRepairCostDataTextBox = new Telerik.Reporting.TextBox();
+            this.tyreRepairCostDataTextBox = new Telerik.Reporting.TextBox();
+            this.otherRepairCostDataTextBox = new Telerik.Reporting.TextBox();
+            this.textBox6 = new Telerik.Reporting.TextBox();
+            this.textBox11 = new Telerik.Reporting.TextBox();
+            this.textBox16 = new Telerik.Reporting.TextBox();
+            this.EquipmentMaintenanceCostDS = new Telerik.Reporting.ObjectDataSource();
             this.EquipmentSummaryDS = new Telerik.Reporting.ObjectDataSource();
             this.StatusDS = new Telerik.Reporting.ObjectDataSource();
+            this.subReport1 = new Telerik.Reporting.SubReport();
+            this.headerSubReportLandScape1 = new ExceedERP.Reporting.SharedDesigners.HeaderSubReportLandScape();
+            ((System.ComponentModel.ISupportInitialize)(this.headerSubReportLandScape1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // equipmentCategoryGroupFooterSection
@@ -391,6 +390,63 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox10.StyleName = "Caption";
             this.textBox10.Value = "Labour Cost";
             // 
+            // textBox15
+            // 
+            this.textBox15.CanGrow = true;
+            this.textBox15.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(1.5355119705200195D), Telerik.Reporting.Drawing.Unit.Inch(0.010416666977107525D));
+            this.textBox15.Name = "textBox15";
+            this.textBox15.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6678600311279297D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox15.StyleName = "Caption";
+            this.textBox15.Value = "Plate No";
+            // 
+            // BranchDS
+            // 
+            this.BranchDS.DataMember = "GetBrancheshs";
+            this.BranchDS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.BranchDataSource);
+            this.BranchDS.Name = "BranchDS";
+            // 
+            // TypeDS
+            // 
+            this.TypeDS.DataMember = "GetIdentities";
+            this.TypeDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.TypeDS.Name = "TypeDS";
+            // 
+            // subTypeDS
+            // 
+            this.subTypeDS.DataMember = "GetCategory";
+            this.subTypeDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.subTypeDS.Name = "subTypeDS";
+            // 
+            // EquipmentNameDS
+            // 
+            this.EquipmentNameDS.DataMember = "GetEquipmentName";
+            this.EquipmentNameDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.EquipmentNameDS.Name = "EquipmentNameDS";
+            // 
+            // PlateNoDS
+            // 
+            this.PlateNoDS.DataMember = "GetPlateNumber";
+            this.PlateNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.PlateNoDS.Name = "PlateNoDS";
+            // 
+            // ModelDS
+            // 
+            this.ModelDS.DataMember = "GetModelNo";
+            this.ModelDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.ModelDS.Name = "ModelDS";
+            // 
+            // ChasisDS
+            // 
+            this.ChasisDS.DataMember = "GetChasisNumber";
+            this.ChasisDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.ChasisDS.Name = "ChasisDS";
+            // 
+            // SerialNoDS
+            // 
+            this.SerialNoDS.DataMember = "GetSerialNo";
+            this.SerialNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.SerialNoDS.Name = "SerialNoDS";
+            // 
             // reportFooter
             // 
             this.reportFooter.Height = Telerik.Reporting.Drawing.Unit.Inch(0.22083334624767304D);
@@ -403,17 +459,6 @@ namespace ExceedERP.Reporting.Fleet.View
             this.spareRepairCostSumFunctionTextBox2});
             this.reportFooter.Name = "reportFooter";
             this.reportFooter.Style.Visible = true;
-            // 
-            // spareRepairCostSumFunctionTextBox2
-            // 
-            this.spareRepairCostSumFunctionTextBox2.CanGrow = true;
-            this.spareRepairCostSumFunctionTextBox2.Format = "{0:N2}";
-            this.spareRepairCostSumFunctionTextBox2.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.1826961040496826D), Telerik.Reporting.Drawing.Unit.Inch(0D));
-            this.spareRepairCostSumFunctionTextBox2.Name = "spareRepairCostSumFunctionTextBox2";
-            this.spareRepairCostSumFunctionTextBox2.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.4105644226074219D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
-            this.spareRepairCostSumFunctionTextBox2.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
-            this.spareRepairCostSumFunctionTextBox2.StyleName = "Data";
-            this.spareRepairCostSumFunctionTextBox2.Value = "= Sum(Fields.SpareRepairCost)";
             // 
             // oilRepairCostSumFunctionTextBox2
             // 
@@ -470,10 +515,16 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox14.StyleName = "Data";
             this.textBox14.Value = "= Sum(Fields.LabourCost)";
             // 
-            // pageHeader
+            // spareRepairCostSumFunctionTextBox2
             // 
-            this.pageHeader.Height = Telerik.Reporting.Drawing.Unit.Inch(0.0520833320915699D);
-            this.pageHeader.Name = "pageHeader";
+            this.spareRepairCostSumFunctionTextBox2.CanGrow = true;
+            this.spareRepairCostSumFunctionTextBox2.Format = "{0:N2}";
+            this.spareRepairCostSumFunctionTextBox2.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.1826961040496826D), Telerik.Reporting.Drawing.Unit.Inch(0D));
+            this.spareRepairCostSumFunctionTextBox2.Name = "spareRepairCostSumFunctionTextBox2";
+            this.spareRepairCostSumFunctionTextBox2.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.4105644226074219D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.spareRepairCostSumFunctionTextBox2.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.spareRepairCostSumFunctionTextBox2.StyleName = "Data";
+            this.spareRepairCostSumFunctionTextBox2.Value = "= Sum(Fields.SpareRepairCost)";
             // 
             // pageFooter
             // 
@@ -493,72 +544,10 @@ namespace ExceedERP.Reporting.Fleet.View
             // 
             // reportHeader
             // 
-            this.reportHeader.Height = Telerik.Reporting.Drawing.Unit.Inch(1.9479166269302368D);
+            this.reportHeader.Height = Telerik.Reporting.Drawing.Unit.Inch(0.30000004172325134D);
             this.reportHeader.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
-            this.textBox48,
-            this.textBox43,
-            this.textBox42,
-            this.txtOrgName,
-            this.pbOrgLogo,
-            this.textBox28});
+            this.subReport1});
             this.reportHeader.Name = "reportHeader";
-            // 
-            // textBox48
-            // 
-            this.textBox48.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.004166841506958D), Telerik.Reporting.Drawing.Unit.Inch(1.0020833015441895D));
-            this.textBox48.Name = "textBox48";
-            this.textBox48.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(5.9604167938232422D), Telerik.Reporting.Drawing.Unit.Inch(0.345833420753479D));
-            this.textBox48.Style.Font.Bold = true;
-            this.textBox48.Style.Font.Name = "Segoe UI";
-            this.textBox48.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(10D);
-            this.textBox48.Style.Font.Underline = true;
-            this.textBox48.Value = "Equipment Maintenace Cost Report";
-            // 
-            // textBox43
-            // 
-            this.textBox43.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(9.3625001907348633D), Telerik.Reporting.Drawing.Unit.Inch(1.5937894582748413D));
-            this.textBox43.Name = "textBox43";
-            this.textBox43.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.5D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
-            this.textBox43.Style.Font.Bold = true;
-            this.textBox43.Value = "Date:";
-            // 
-            // textBox42
-            // 
-            this.textBox42.Format = "{0:d}";
-            this.textBox42.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(9.8625001907348633D), Telerik.Reporting.Drawing.Unit.Inch(1.5937894582748413D));
-            this.textBox42.Name = "textBox42";
-            this.textBox42.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.99999994039535522D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
-            this.textBox42.Value = "= Today()";
-            // 
-            // txtOrgName
-            // 
-            this.txtOrgName.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.004166841506958D), Telerik.Reporting.Drawing.Unit.Inch(0.14791662991046906D));
-            this.txtOrgName.Name = "txtOrgName";
-            this.txtOrgName.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.4500012397766113D), Telerik.Reporting.Drawing.Unit.Inch(0.29996061325073242D));
-            this.txtOrgName.Style.Font.Bold = true;
-            this.txtOrgName.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
-            this.txtOrgName.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Left;
-            this.txtOrgName.TextWrap = false;
-            this.txtOrgName.Value = "= Fields.AmharicName";
-            // 
-            // pbOrgLogo
-            // 
-            this.pbOrgLogo.Bindings.Add(new Telerik.Reporting.Binding("Value", "= Fields.LogoFileName"));
-            this.pbOrgLogo.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.40000009536743164D), Telerik.Reporting.Drawing.Unit.Inch(0.14791662991046906D));
-            this.pbOrgLogo.Name = "pbOrgLogo";
-            this.pbOrgLogo.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.3000000715255737D), Telerik.Reporting.Drawing.Unit.Inch(0.99996060132980347D));
-            this.pbOrgLogo.Sizing = Telerik.Reporting.Drawing.ImageSizeMode.Stretch;
-            // 
-            // textBox28
-            // 
-            this.textBox28.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.004166841506958D), Telerik.Reporting.Drawing.Unit.Inch(0.52291661500930786D));
-            this.textBox28.Name = "textBox28";
-            this.textBox28.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.4395856857299805D), Telerik.Reporting.Drawing.Unit.Inch(0.29996061325073242D));
-            this.textBox28.Style.Font.Bold = true;
-            this.textBox28.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
-            this.textBox28.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Left;
-            this.textBox28.TextWrap = false;
-            this.textBox28.Value = "= Fields.Name";
             // 
             // detail
             // 
@@ -650,15 +639,6 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox11.StyleName = "Data";
             this.textBox11.Value = "= Fields.LabourCost";
             // 
-            // textBox15
-            // 
-            this.textBox15.CanGrow = true;
-            this.textBox15.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(1.5355119705200195D), Telerik.Reporting.Drawing.Unit.Inch(0.010416666977107525D));
-            this.textBox15.Name = "textBox15";
-            this.textBox15.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6678600311279297D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
-            this.textBox15.StyleName = "Caption";
-            this.textBox15.Value = "Plate No";
-            // 
             // textBox16
             // 
             this.textBox16.CanGrow = true;
@@ -687,54 +667,6 @@ namespace ExceedERP.Reporting.Fleet.View
             new Telerik.Reporting.ObjectDataSourceParameter("ChasisNo", typeof(string), "= Parameters.ChasisNo.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("serialNo", typeof(string), "= Parameters.serialNo.Value")});
             // 
-            // BranchDS
-            // 
-            this.BranchDS.DataMember = "GetBrancheshs";
-            this.BranchDS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.BranchDataSource);
-            this.BranchDS.Name = "BranchDS";
-            // 
-            // TypeDS
-            // 
-            this.TypeDS.DataMember = "GetIdentities";
-            this.TypeDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.TypeDS.Name = "TypeDS";
-            // 
-            // subTypeDS
-            // 
-            this.subTypeDS.DataMember = "GetCategory";
-            this.subTypeDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.subTypeDS.Name = "subTypeDS";
-            // 
-            // EquipmentNameDS
-            // 
-            this.EquipmentNameDS.DataMember = "GetEquipmentName";
-            this.EquipmentNameDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.EquipmentNameDS.Name = "EquipmentNameDS";
-            // 
-            // PlateNoDS
-            // 
-            this.PlateNoDS.DataMember = "GetPlateNumber";
-            this.PlateNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.PlateNoDS.Name = "PlateNoDS";
-            // 
-            // ModelDS
-            // 
-            this.ModelDS.DataMember = "GetModelNo";
-            this.ModelDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.ModelDS.Name = "ModelDS";
-            // 
-            // ChasisDS
-            // 
-            this.ChasisDS.DataMember = "GetChasisNumber";
-            this.ChasisDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.ChasisDS.Name = "ChasisDS";
-            // 
-            // SerialNoDS
-            // 
-            this.SerialNoDS.DataMember = "GetSerialNo";
-            this.SerialNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.SerialNoDS.Name = "SerialNoDS";
-            // 
             // EquipmentSummaryDS
             // 
             this.EquipmentSummaryDS.DataMember = "GetSheetInfo";
@@ -755,6 +687,20 @@ namespace ExceedERP.Reporting.Fleet.View
             this.StatusDS.DataMember = "GetFleetStatus";
             this.StatusDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
             this.StatusDS.Name = "StatusDS";
+            // 
+            // subReport1
+            // 
+            this.subReport1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(3.9365557313431054E-05D));
+            this.subReport1.Name = "subReport1";
+            instanceReportSource1.Parameters.Add(new Telerik.Reporting.Parameter("FormTitle", "= Parameters.FormTitle.Value"));
+            instanceReportSource1.Parameters.Add(new Telerik.Reporting.Parameter("FormNumber", "= Parameters.FormNumber.Value"));
+            instanceReportSource1.ReportDocument = this.headerSubReportLandScape1;
+            this.subReport1.ReportSource = instanceReportSource1;
+            this.subReport1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0000004768371582D), Telerik.Reporting.Drawing.Unit.Inch(0.2999606728553772D));
+            // 
+            // headerSubReportLandScape1
+            // 
+            this.headerSubReportLandScape1.Name = "HeaderSubReportLandScape";
             // 
             // EquipmentMaintenanceCost
             // 
@@ -782,7 +728,6 @@ namespace ExceedERP.Reporting.Fleet.View
             this.labelsGroupHeaderSection,
             this.labelsGroupFooterSection,
             this.reportFooter,
-            this.pageHeader,
             this.pageFooter,
             this.reportHeader,
             this.detail});
@@ -862,6 +807,8 @@ namespace ExceedERP.Reporting.Fleet.View
             reportParameter11.Type = Telerik.Reporting.ReportParameterType.DateTime;
             reportParameter11.Value = "= Today()";
             reportParameter11.Visible = true;
+            reportParameter12.Name = "FormNumber";
+            reportParameter13.Name = "FormTitle";
             this.ReportParameters.Add(reportParameter1);
             this.ReportParameters.Add(reportParameter2);
             this.ReportParameters.Add(reportParameter3);
@@ -873,6 +820,8 @@ namespace ExceedERP.Reporting.Fleet.View
             this.ReportParameters.Add(reportParameter9);
             this.ReportParameters.Add(reportParameter10);
             this.ReportParameters.Add(reportParameter11);
+            this.ReportParameters.Add(reportParameter12);
+            this.ReportParameters.Add(reportParameter13);
             styleRule1.Selectors.AddRange(new Telerik.Reporting.Drawing.ISelector[] {
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.TextItemBase)),
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.HtmlTextBox))});
@@ -910,6 +859,7 @@ namespace ExceedERP.Reporting.Fleet.View
             styleRule4,
             styleRule5});
             this.Width = Telerik.Reporting.Drawing.Unit.Inch(10.905511856079102D);
+            ((System.ComponentModel.ISupportInitialize)(this.headerSubReportLandScape1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
 
         }
@@ -944,7 +894,6 @@ namespace ExceedERP.Reporting.Fleet.View
         private Telerik.Reporting.TextBox tyreRepairCostCaptionTextBox;
         private Telerik.Reporting.TextBox otherRepairCostCaptionTextBox;
         private Telerik.Reporting.GroupFooterSection labelsGroupFooterSection;
-        private Telerik.Reporting.PageHeaderSection pageHeader;
         private Telerik.Reporting.PageFooterSection pageFooter;
         private Telerik.Reporting.TextBox pageInfoTextBox;
         private Telerik.Reporting.ReportHeaderSection reportHeader;
@@ -954,12 +903,6 @@ namespace ExceedERP.Reporting.Fleet.View
         private Telerik.Reporting.TextBox oilRepairCostDataTextBox;
         private Telerik.Reporting.TextBox tyreRepairCostDataTextBox;
         private Telerik.Reporting.TextBox otherRepairCostDataTextBox;
-        private Telerik.Reporting.TextBox textBox48;
-        private Telerik.Reporting.TextBox textBox43;
-        private Telerik.Reporting.TextBox textBox42;
-        private Telerik.Reporting.TextBox txtOrgName;
-        private Telerik.Reporting.PictureBox pbOrgLogo;
-        private Telerik.Reporting.TextBox textBox28;
         private Telerik.Reporting.ObjectDataSource ChasisDS;
         private Telerik.Reporting.ObjectDataSource PlateNoDS;
         private Telerik.Reporting.ObjectDataSource BranchDS;
@@ -982,6 +925,7 @@ namespace ExceedERP.Reporting.Fleet.View
         private Telerik.Reporting.ObjectDataSource EquipmentNameDS;
         private Telerik.Reporting.TextBox textBox15;
         private Telerik.Reporting.TextBox textBox16;
-
+        private Telerik.Reporting.SubReport subReport1;
+        private SharedDesigners.HeaderSubReportLandScape headerSubReportLandScape1;
     }
 }

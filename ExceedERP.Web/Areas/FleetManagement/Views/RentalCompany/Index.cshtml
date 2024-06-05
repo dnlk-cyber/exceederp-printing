@@ -1,0 +1,54 @@
+﻿
+@{
+    ViewBag.Title = "InsuranceCompany";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent;
+<legend>Rental Company</legend>
+
+@(Html.Kendo().Grid<RentalCompany>()
+                .Name("grid")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.RentalCompanyId).Filterable(false).Title("S.No").Width(50);
+                    columns.Bound(c => c.RentalCompanyName).Width(100);
+                    columns.Bound(c => c.Address).Width(100);
+                    columns.Bound(c => c.Phone).Title("Phone").Width(80);
+                    columns.Bound(c => c.Email).Title("Email").Width(100);
+                    //columns.Bound(c => c.CreatedBy).Title("Created By").Width(100);
+                    //columns.Bound(c => c.DateCreated).Title("Date Created").Width(100);
+                    columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(160);
+                })
+                .ToolBar(toolbar =>
+                {
+                    toolbar.Create();
+
+                })
+                .Editable(editable => editable.Mode(GridEditMode.InLine)
+                .TemplateName("RentalCompanyTemplate")
+                .Window(win => win.Title("Rental Company").Width(600)))
+                .Pageable()
+                .Filterable()
+                .Scrollable(s => s.Height(550))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Model(model => { model.Id(p => p.RentalCompanyId);
+                        model.Field(x => x.RentalCompanyId).Editable(false);
+                    })
+                    .Events(ev => ev
+                    .Error("error_handler(\"grid\")")
+                    .RequestStart("onRequestStart(\"grid\")")
+                    .RequestEnd("onRequestEnd(\"grid\")"))
+                    .Read(read => read.Action("RentalCompanies_Read", "RentalCompany"))
+                    .Create(create => create.Action("RentalCompanies_Create", "RentalCompany"))
+                    .Update(update => update.Action("RentalCompanies_Update", "RentalCompany"))
+                    .Destroy(destroy => destroy.Action("RentalCompanies_Destroy", "RentalCompany"))
+                )
+)
+
+   <style type="text/css" >
+    div.k-edit-form-container {
+        width: 600px;
+    }
+
+</style>

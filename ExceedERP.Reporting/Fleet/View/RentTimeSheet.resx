@@ -120,13 +120,4 @@
   <data name="textBox4.Value" xml:space="preserve">
     <value> Report Date From {ExceedERP.Reporting.Fleet.DataSource.FleetDataSource.DateFormat(Parameters.StartingDate.Label)} - {ExceedERP.Reporting.Fleet.DataSource.FleetDataSource.DateFormat(Parameters.EndingDate.Label)} </value>
   </data>
-  <data name="textBox34.Value" xml:space="preserve">
-    <value>መግለጫ 1.መልክአምድር በሚለው ላይ እነዚህ ፊደላት፡- F- Flat ለሆኑ   R-Rolling ለሆኑ   M-Mountaines ለሆኑ   E-Escarpment ለሆኑ    U-Urban ለሆኑ       
-  2. የቁስ (Material) ዓይነት በሚለው ላይ እነዚህ ፊደላት ይፃፉ፡- E-Earth soil,  R-Rock,  W-Weakned Rock ,      D-Decomposed Rock   
-      3. የአየር ፀባዩ ዓይነት በሚለው ላይ እነዚህ ፊደላት፡-  ደ-- ደጋ   ወ-- ወይና ደጋ   ቆ--  ቆላ
-
-
-               ያዘጋጀው ስም ………………………… ያረጋገጠወው ስም …………………….. ያፀደቀው ስም ……………………………. 
-                     ፊርማ………………….  ፊርማ…………………...       ፊርማ ……………………..</value>
-  </data>
 </root>

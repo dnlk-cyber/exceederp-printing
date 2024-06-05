@@ -7,6 +7,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetMaintenance
 
     using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;

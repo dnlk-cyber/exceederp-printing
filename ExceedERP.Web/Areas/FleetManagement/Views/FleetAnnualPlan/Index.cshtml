@@ -1,0 +1,164 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Annual Plan</h2>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation.FleetAnnualPlan>()
+                                    .Name("grid")
+                                    .Columns(columns =>
+                                    {
+                                        columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120);
+                                        columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120);
+                                        columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["Name"], "Value", "Text").Width(120);
+                                        columns.ForeignKey(c => c.FleetId, (IEnumerable)ViewData["Fleet"], "Value", "Text").Width(120);
+                                        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                                    })
+                                    .ToolBar(commands => commands.Create())
+                                    .Editable(editable =>
+                                    {
+                                        editable.Mode(GridEditMode.PopUp).TemplateName("FleetAnnualPlan");
+                                        editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
+                                    })
+                                    .Filterable()
+                                    .Scrollable()
+                                    .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Model(model => model.Id(p => p.FleetAnnualPlanId))
+                                        .Read(read => read.Action("FleetAnnualPlan_Read", "FleetAnnualPlan"))
+                                        .Create(create => create.Action("FleetAnnualPlan_Create", "FleetAnnualPlan"))
+                                        .Update(update => update.Action("FleetAnnualPlan_Update", "FleetAnnualPlan"))
+                                        .Destroy(delete => delete.Action("FleetAnnualPlan_Delete", "FleetAnnualPlan"))
+
+                                    ).ClientDetailTemplateId("tabs")
+)
+
+<script id="tabs" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                                                                        .Name("tabstrip_grid_#=FleetAnnualPlanId#")
+                                                                        .SelectedIndex(0)
+                                                                        .Items(itemn =>
+                                                                        {
+                                                                            itemn.Add().Text("Monthly Plan").Content(@<text>@Detail()</text>);
+
+                                                                                }).ToClientTemplate())
+</script>
+
+
+@helper Detail()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation.FleetAnnualPlanDetail>()
+                                            .Name("grid_#=FleetAnnualPlanId#")
+                                            .Columns(columns =>
+                                            {
+
+                                                columns.Bound(c => c.NumberOfEquipmentInMonth).Width(100);
+                                                columns.Bound(c => c.WorkingHourPerDay).Width(100);
+                                                columns.Bound(c => c.WorkingDaysInMonth).Width(100);
+                                                columns.Bound(c => c.WorkingHourPerMonth).Width(100);
+                                                columns.Bound(c => c.InefficiencyPercentile).Width(100);
+                                                columns.Bound(c => c.EfficiencyPercentile).Width(100);
+                                                columns.Bound(c => c.HourForInefficiencyPerMonth).Width(100);
+                                                columns.Bound(c => c.ExpectedEffectiveWorkingHrPerMonth).Width(100);
+                                                columns.Bound(c => c.ChargingRate).Width(100);
+                                                columns.Bound(c => c.ExpectedMonthlyIncome).Width(100);
+                                                columns.Bound(c => c.TyreCost).Width(100);
+                                                columns.Bound(c => c.LiterPerHour).Width(100);
+                                                columns.Bound(c => c.TotalLiter).Width(100);
+                                                columns.Bound(c => c.FuelCostPerLiter).Width(100);
+                                                columns.Bound(c => c.TotalFuelCost).Width(100);
+                                                columns.Bound(c => c.MaintenanceCost).Width(100);
+                                                columns.Bound(c => c.Perduim).Width(100);
+                                                columns.Bound(c => c.Salary).Width(100);
+                                                columns.Bound(c => c.TotalExpectedExpense).Width(100);
+                                                columns.Bound(c => c.ExpectedTotalProfit).Width(100);
+                                               
+                                                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                                            })
+                                            .ToolBar(commands => commands.Create())
+                                            .Editable(editable =>
+                                            {
+                                                editable.Mode(GridEditMode.PopUp).TemplateName("AnnualPlanDetail");
+                                                editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
+                                            })
+                                            .Filterable()
+                                            .Scrollable()
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Model(model => model.Id(p => p.FleetAnnualPlanId))
+                                                .Read(read => read.Action("FleetAnnualPlanDetail_Read", "FleetAnnualPlanDetail", new { id = "#=FleetAnnualPlanId#" }))
+                                                .Create(create => create.Action("FleetAnnualPlanDetail_Create", "FleetAnnualPlanDetail", new { id = "#=FleetAnnualPlanId#" }))
+                                                .Update(update => update.Action("FleetAnnualPlanDetail_Update", "FleetAnnualPlanDetail"))
+                                                .Destroy(delete => delete.Action("FleetAnnualPlanDetail_Delete", "FleetAnnualPlanDetail"))
+
+                                            ).ToClientTemplate()
+    )
+}
+
+<script type="text/javascript">
+    function filterFleet() {
+        return {
+            text: $("#FleetId").data("kendoDropDownList").filterInput.val(),
+            equipmentNameId: $("#EquipmentNameId").val()
+        };
+    }
+    function filterEquipmentNames() {
+        var dropdownlist = $("#EquipmentNameId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentTypeId: $("#EquipmentTypeId").val(),
+            search: filterInput.val()
+        };
+    }
+    function filterPlateNumber() {
+        var dropdownlist = $("#EquipmentName").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentNameID: $("#EquipmentNameID").val(),
+            search: filterInput.val()
+        };
+    }
+    function filterCategory() {
+        var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentIdentityId: $("#EquipmentCategoryId").val(),
+            search: filterInput.val()
+        };
+
+    }
+
+
+    function filterFixedAssetSubCategory() {
+
+        var dropdownlist = $("#SubType").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            Id: $("#EquipmentTypeId").val(),
+            Search: filterInput.val()
+        };
+    }
+
+</script>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

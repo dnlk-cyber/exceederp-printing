@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.FleetManagement.FleetResource;
+using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 using ExceedERP.Repository;
 using System;
 using System.Collections.Generic;
@@ -49,7 +49,7 @@ namespace ExceedERP.ApplicationServices.FleetManagement.FleetResource
 
         public List<VehicleDemand> GetAll()
         {
-         List<VehicleDemand> VehicleDemand=   _uow.VehicleDemandRepository.GetAll();
+         List<VehicleDemand> VehicleDemand=   _uow.VehicleDemandRepository.GetAll().OrderByDescending(x => x.RequestNumber).ToList();
          return VehicleDemand;
           
         }

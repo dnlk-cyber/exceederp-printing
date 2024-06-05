@@ -1,0 +1,188 @@
+﻿
+@using ExceedERP.Core.Domain.FleetManagement.FleetResource
+@model ExceedERP.Core.Domain.FleetManagement.FleetResource.AssignedEquipmentAdditionalInfo
+
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.KmTravelledPerLitre, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.KmTravelledPerLitre).HtmlAttributes(new { style = "width:100%" }).Enable(true)
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.KmTravelledTotal, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.KmTravelledTotal).HtmlAttributes(new { style = "width:100%", onInput = "handleKmTravedTotal(this.value)" })
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.KmInterSite, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.KmInterSite).HtmlAttributes(new { style = "width:100%", onInput = "handleKmInterSite(this.value)" })
+
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.KmGrandTotal, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.KmGrandTotal).Events(e => e.Change("handleChangeKmGrandTotal")).HtmlAttributes(new { style = "width:100%"@*, onChange = "handleChangeKmGrandTotal(this.value)"*@ })
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+</div>
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.ReqFuelInLiter, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.ReqFuelInLiter).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.TotalInLitre, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.TotalInLitre).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.FromDeppot, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.FromDeppot).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+
+    @*  *@
+
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.InCashLiter, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.InCashLiter).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+   
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.FuelRate, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.FuelRate).HtmlAttributes(new { style = "width:100%", onInput = "handelRateChange(this.value)" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.InCash, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.InCash).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.FromProject, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.FromProject).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.OilReqForEngine, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.OilReqForEngine).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+
+
+    
+
+</div>
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.OilReqForOther, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.OilReqForOther).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.GreaseReq, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.GreaseReq).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.TotalPerdium, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.TotalPerdium).HtmlAttributes(new { style = "width:100%", onInput = "handlePerdiumChange(this.value)" })
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.TotalBirr, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.TotalBirr).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,247 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternal
+
+
+<script>
+    function filterEquipmentIdentity() {
+        return {
+            EquipmentIdentityID: $("#EquipmentIdentity").val()
+        };
+    }
+</script>
+
+<div class="demo-section k-content">
+    <form>
+
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            @*<div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+
+                    @Html.LabelFor(model => model.EquipmentIdentity)
+                </div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentIdentity).Name("EquipmentIdentity")
+                                      .DataTextField("EquipmentCategoryName")
+                                      .DataValueField("EquipmentIdentityID").OptionLabel("Select").HtmlAttributes(new { style = "width:100%" }).Filter(FilterType.Contains)
+                                      .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory"))))
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+
+
+                    @Html.LabelFor(model => model.EquipmentIdentity)
+                </div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentType).Name("EquipmentType")
+                .DataTextField("EquipmentTypeName")
+                .DataValueField("EquipmentTypeID").OptionLabel("Select").Filter(FilterType.Contains)
+                .HtmlAttributes(new { style = "width:100%" })
+                .DataSource(d =>
+                {
+                    d.Read(r =>
+                    {
+                        r.Action("EquipmentTypeDDBind", "EquipmentType").Data("filterEquipmentIdentity");
+                    })
+                  .ServerFiltering(true);
+                })
+          .Enable(false)
+          .AutoBind(false)
+                   .CascadeFrom("EquipmentIdentity")
+                )
+
+
+
+            </div>
+
+        </div>*@
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.ProjectLocation)
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.ProjectLocation)
+                                                          .DataTextField("Name")
+                                                          .DataValueField("Name").OptionLabel("Select").HtmlAttributes(new { style = "width:100%" }).Filter(FilterType.Contains)
+                                                  .DataSource(d => d.Read(r => r.Action("BranchDDBind", "Branch"))))
+
+
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.CompanyName)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.CompanyName)
+                        @Html.ValidationMessageFor(model => model.CompanyName)
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.CompanyAddress)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.CompanyAddress)
+                        @Html.ValidationMessageFor(model => model.CompanyAddress)
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.StartDate)
+                    </div>
+                    <div>
+                        @Html.Kendo().DatePickerFor(model => model.StartDate)
+                        @Html.ValidationMessageFor(model => model.StartDate)
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.EndDate)
+                    </div>
+                    <div>
+                        @Html.Kendo().DatePickerFor(model => model.EndDate)
+                        @Html.ValidationMessageFor(model => model.EndDate)
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.FuelCoveredBy)
+                        @(Html.Kendo().DropDownListFor(model => model.FuelCoveredBy)
+                                  .OptionLabel(" Select ")
+                                  .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternal.FuelCoveredenum))))
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+            @*<div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Quantity)
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.Quantity).Min(0)
+                    @Html.ValidationMessageFor(model => model.Quantity)
+                </div>
+
+            </div>
+        </div>*@
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <br />
+                    @*<div class="k-label">
+                        @Html.LabelFor(model => model.RentalRateIncludingVAT)
+                    </div>*@
+                    <div>
+                        @Html.Kendo().CheckBoxFor(model => model.RentalRateIncludingVAT)
+                        @Html.ValidationMessageFor(model => model.RentalRateIncludingVAT)
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Description)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Description)
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.UnitOfWorkMeasurement)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.UnitOfWorkMeasurement)
+                        @Html.ValidationMessageFor(model => model.UnitOfWorkMeasurement)
+                    </div>
+
+                </div>
+            </div>
+        </div>
+            <div class="row">
+                <div class="col-md-1">
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.WorkingCapacity)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.WorkingCapacity)
+                            @Html.ValidationMessageFor(model => model.WorkingCapacity)
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.AdvancePayment)
+                        </div>
+                        <div>
+                            @Html.Kendo().NumericTextBoxFor(model => model.AdvancePayment).Min(0)
+                            @Html.ValidationMessageFor(model => model.AdvancePayment)
+                        </div>
+
+                    </div>
+                </div>
+
+
+                
+            </div>
+            
+</form>
+</div>

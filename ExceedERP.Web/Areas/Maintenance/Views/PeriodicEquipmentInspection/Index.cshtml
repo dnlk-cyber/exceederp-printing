@@ -1,0 +1,62 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Periodic Inspection (ቦሎ)  </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.PeriodicEquipmentInspection>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.Bound(e => e.Owner);
+            columns.Bound(e => e.PlateNumber);
+            columns.Bound(e => e.VehicleType);
+            columns.Bound(e => e.Capacity).Format("{0:N2}");
+            columns.Bound(e => e.AmountPaid).Format("{0:N2}");
+            columns.Bound(e => e.Date);
+            columns.Bound(e => e.Remark);
+
+            columns.Command(c =>
+            {
+                c.Edit();
+                c.Destroy();
+            }).Width(200);
+        })
+        .ToolBar(commands => commands.Create())
+        .Editable(editable =>
+        {
+            editable.Mode(GridEditMode.InLine);
+            editable.DisplayDeleteConfirmation("Are You Sure You Want to  Delete this Log ?");
+        })
+        
+        .HtmlAttributes(new { style = "height: 700px;" })
+        .Pageable(pageable => pageable
+                        .Input(false)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(false)
+                        .ButtonCount(5))
+
+            .Scrollable()
+            .Sortable()
+            .Filterable()
+            .Scrollable(h => h.Height(500))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .ServerOperation(false)
+                    .Model(model =>
+                    {
+                        model.Id(p => p.PeriodicEquipmentInspectionId);
+                       
+                    }).Events(ev => ev
+                                .Error("error_handler(\"grid\")")
+                                .RequestStart("onRequestStart(\"grid\")")
+                                .RequestEnd("onRequestEnd(\"grid\")"))
+                    .Read(read => read.Action("Inspections_Read", "PeriodicEquipmentInspection"))
+                    .Create(create => create.Action("Inspection_Create", "PeriodicEquipmentInspection"))
+                    .Update(update => update.Action("Inspection_Update", "PeriodicEquipmentInspection"))
+                    .Destroy(update => update.Action("Inspection_Destroy", "PeriodicEquipmentInspection"))
+        )
+)
+
+

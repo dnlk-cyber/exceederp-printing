@@ -1,0 +1,56 @@
+﻿@*@model ExceedERP.Web.Areas.Maintenance.Models.TechnicalApprovalViewModel*@
+
+@* This part is commented bc it *@
+
+@*@(Html.Kendo().ComboBoxFor(model => model.MaintenanceCenter)
+                                            .Name("MaintenanceCenter")
+                                            .HtmlAttributes(new { @class = "form-control" })
+                                            .DataTextField("Text")
+                                            .DataValueField("Value")
+                                            .Placeholder("Select Center")
+                                .HtmlAttributes(new { style = "width:100%" })
+                        //.HtmlAttributes(new { style = "width:100%" })
+                        .DataSource(d =>
+                        {
+                            d.Read(r =>
+                            {
+                    //r.Action("MaintenanceCenterByTypeDDBind", "MaintenanceCenter").Data("filterMaintenanceCenter");
+                    r.Action("GetAllMaintenanceCenters", "MaintenanceCenter");
+                            })
+                                .ServerFiltering(false);
+                        }).ValuePrimitive(true)
+        //.CascadeFrom("Type")
+    )*@
+
+
+
+
+@*@(Html.Kendo().ComboBoxFor(model => model.MaintenanceCenterId)
+                                            .ValuePrimitive(true)
+                                            .HtmlAttributes(new { @class = "form-control" })
+                                            .DataTextField("Name")
+                                            .DataValueField("Id")
+                                            .Placeholder("Select Center")
+                                .HtmlAttributes(new { style = "width:100%" })
+
+                        .DataSource(d =>
+                        {
+                            d.Read(r =>
+                            {
+
+                                r.Action("GetAllMaintenanceCentersById", "MaintenanceCenter");
+                            })
+                            .ServerFiltering(false);
+                        })
+
+)*@
+
+
+@(Html.Kendo().DropDownListFor(model => model)
+                  .ValuePrimitive(true)
+                  .DataTextField("Name")
+                  .DataValueField("Id")
+                  .OptionLabel("Select")
+                  .Filter(FilterType.Contains)
+                          .DataSource(d => d.Read(r => r.Action("GetAllMaintenanceCentersById", "MaintenanceCenter")
+                          ).ServerFiltering(false)))

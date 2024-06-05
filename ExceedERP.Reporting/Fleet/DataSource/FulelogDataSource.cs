@@ -30,7 +30,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             FleetViewModel FleetViewModel;
             List<Fleets> Fleets;
             List<TireIssue> Issues;
-            var product = db.Products.ToList();
+            //var product = db.Products.ToList();
 
 
 

@@ -120,9 +120,4 @@
   <data name="textBox45.Value" xml:space="preserve">
     <value> Report Date From {ExceedERP.Reporting.Fleet.DataSource.FleetDataSource.DateFormat(Parameters.StartingDate.Label)} - {ExceedERP.Reporting.Fleet.DataSource.FleetDataSource.DateFormat(Parameters.EndingDate.Label)} </value>
   </data>
-  <data name="textBox34.Value" xml:space="preserve">
-    <value>መግለጫ .ያለስራ የቆመበት (አይድል) ምክንያት በሚለው ላይ እነዚህ ፊደላት ይፃፉ፡-  ነ- ነዳጅ ባለመኖሩ                                       ኦ- ኦፕሬተር ባለመኖሩ  ዝ- ዝናብ በመሆኑ  ተ- ተጋዳኝ መሳሪያዎች ባለመኖራቸው   ስ- ስራ ባለመሰጠቱ              ፀ- በፀጥታ ጉዳይ      ሠ- ሠራተኞች ባለመኖራቸው    ግ- ሌሎች ግብዓቶች ባለመቅረባቸው   በ- በሌሎች ምክንያቶች         
-               ያዘጋጀው ስም ………………………… ያረጋገጠወው ስም …………………….. ያፀደቀው ስም ……………………………. 
-                     ፊርማ………………….  ፊርማ…………………...       ፊርማ ……………………..</value>
-  </data>
 </root>

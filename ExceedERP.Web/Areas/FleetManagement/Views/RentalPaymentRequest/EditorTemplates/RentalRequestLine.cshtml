@@ -1,0 +1,48 @@
+﻿
+
+@model ExceedERP.Core.Domain.FleetManagement.RentalPayment.RentalPaymentRequestLine
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Name</label>
+            <div>
+
+                @(Html.Kendo().DropDownListFor(m => m.FleetId)
+                                        .ValuePrimitive(true)
+                                        .OptionLabel("Select Equipment Name...")
+                                        .DataTextField("Text")
+                                        .DataValueField("Value")
+                                        .Filter("contains")
+                                        //.Events(e => e.Change("handleFleetNameChange"))
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetFleetRentalRequest", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("getSupplierAndBranchId"))
+                                                .ServerFiltering(true);
+                                        }).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Tax Rate</label>
+            <div>
+
+                @(Html.Kendo().DropDownListFor(m => m.GLTaxRateID)
+                                        .ValuePrimitive(true)
+                                        .OptionLabel("Select Tax rate...")
+                                        .DataTextField("Text")
+                                        .DataValueField("Value")
+                                        .Filter("contains")
+                                        
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetTaxRate", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                                                .ServerFiltering(true);
+                                        }).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+</div>

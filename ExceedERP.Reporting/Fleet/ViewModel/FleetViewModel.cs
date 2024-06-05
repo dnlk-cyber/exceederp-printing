@@ -17,13 +17,14 @@ namespace ExceedERP.Reporting.Fleet.ViewModel
         public const string ONDUTY = "On Duty";
         public const string OnMaintenance = "On Maintenance";
         public int Id { get; set; }
-        public Guid FleetsID { get; set; }
+        public string FleetsID { get; set; }
 
-      public Guid EquipmentIdentityID { get; set; }
-         public Guid EquipmentTypeID { get; set; }
-         public Guid PlannerID { get; set; }
+        public string EquipmentIdentityName { get; set; }
+        public string EquipmentTypeName { get; set; }
+        public string PlannerName { get; set; }
         public string EquipmentName { get; set; }
         public string Heading { get; set; }
+
         public string Category { get; set; }
         public string Type { get; set; }
         public string Operator { get; set; }
@@ -35,6 +36,10 @@ namespace ExceedERP.Reporting.Fleet.ViewModel
          public string UnitNum { get; set; }
         public string Manufacturer { get; set; }
         public string ManufacturerYear { get; set; }
+        public string Condition { get; set; }
+        public string EngineModel { get; set; }
+        public string OperatorName { get; set; }
+        public string EngineManufacturer { get; set; }
         public string Model { get; set; }
         public string Capacity { get; set; }
         public string Color { get; set; }
@@ -70,6 +75,16 @@ namespace ExceedERP.Reporting.Fleet.ViewModel
          [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public Nullable<System.DateTime> LastMaintained { get; set; }
+        public string HistoricalCost { get; set; }
+        public string IFRSCondition { get; set; }
 
+        public decimal MinFuelStandard { get; set; }
+        
+        public decimal MaxFuelStandard { get; set; }
+        public string Battery { get; set; }
+
+        public string Tyre { get; set; }
+        public decimal IdealRentalRate { get; set; }
+        
     }
 }

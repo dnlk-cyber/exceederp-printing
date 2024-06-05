@@ -1,0 +1,52 @@
+@model  ExceedERP.Core.Domain.FleetManagement.FleetInsurances.InsuranceCompany
+@using ExceedERP.Helpers.Common
+
+<div class="row">
+    <div class="col-md-1">
+    </div>
+
+    <div class="col-sm-3">
+        <div class="k-label">
+            @Html.LabelFor(model => model.InsuranceCompanyName)
+        </div>
+
+        <div>
+            @Html.Kendo().TextBoxFor(Model => Model.InsuranceCompanyName)
+
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="k-label">
+            @Html.LabelFor(model => model.Address)
+        </div>
+        <div>
+            @Html.Kendo().TextBoxFor(model => model.Address)
+        </div>
+    </div>
+    
+</div>
+
+
+<div class="row">
+    <div class="col-md-1">
+    </div>
+    <div class="col-sm-3">
+        <div class="k-label">
+            @Html.LabelFor(model => model.Phone)
+        </div>
+        <div>
+            @Html.Kendo().TextBoxFor(model => model.Phone)
+        </div>
+    </div>
+    <div class="col-md-3">
+
+        <div class="k-label">
+            @Html.LabelFor(model => model.Email)
+        </div>
+        <div>
+            @Html.Kendo().TextBoxFor(model => model.Email)
+        </div>
+
+    </div>
+
+</div>

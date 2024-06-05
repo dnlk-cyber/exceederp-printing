@@ -1,0 +1,31 @@
+﻿
+
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.MechanicTypeClass>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+                             
+        columns.Bound(c => c.MechanicTypeTitle);
+        columns.Bound(c => c.Description);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+    })
+    .ToolBar(toolbar =>
+    {
+        toolbar.Create();
+    })
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .Pageable()
+                          
+    .Filterable()
+    .Scrollable()
+                         
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .Model(model => model.Id(p => p.MechanicTypeClassId))
+        .Read(read => read.Action("MechanicType_Read", "MechanicType"))
+        .Create(create => create.Action("MechanicType_Create", "MechanicType"))
+        .Update(update => update.Action("MechanicType_Update", "MechanicType"))
+        .Destroy(destroy => destroy.Action("MechanicType_Delete", "MechanicType"))
+    )
+)

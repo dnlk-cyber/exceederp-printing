@@ -1,9 +1,12 @@
 ﻿
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel;
-using ExceedERP.Core.Domain.Common;
+ using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
 {
@@ -35,7 +38,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
 
-      [ForeignKey("FleetsID")]
+        [ForeignKey("FleetsID")]
         public virtual Fleets Fleet { get; set; }
      
     }

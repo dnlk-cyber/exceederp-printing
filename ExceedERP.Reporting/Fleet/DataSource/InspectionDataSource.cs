@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ExceedERP.Core.Domain.FleetManagement.EquipmentInspection;
-using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Fleet.ViewModel;

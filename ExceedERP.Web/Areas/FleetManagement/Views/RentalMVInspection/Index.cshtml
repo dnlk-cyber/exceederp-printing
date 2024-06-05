@@ -1,0 +1,50 @@
+﻿
+@{
+    ViewBag.Title = "RentalMVInspection";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Rental MV Inspection</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.RentalMVInspection>()
+            .Name("grid")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.Index).Title("Index").Width(50);
+                //columns.ForeignKey(c => c.RentalInspectionCriteriaId, (IEnumerable)ViewData["RentalMvInspection"], "RentalInspectionCriteriaId", "CriteriaName").Title("Technical Parameters").Width(100);
+                columns.Bound(c => c.HeadOfficeGoodCondtion).Width(80).Title("Head Office Good Condtion");
+                columns.Bound(c => c.HeadOfficePoorCondtion).Width(80).Title("Head Office Poor Condtion");
+                columns.Bound(c => c.BranchOfficeGoodCondtion).Title("Branch Office Good Condtion").Width(80);
+                columns.Bound(c => c.BranchOfficePoorCondtion).Title("Branch Office Poor Condtion").Width(80);
+                columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
+            })
+ .ToolBar(toolbar =>
+ {
+     toolbar.Create();
+
+ })
+ .Editable(editable => editable.Mode(GridEditMode.PopUp)
+ .TemplateName("RentalMvVInspectionTemplate")
+ .Window(win => win.Title("Rental MV Inspection").Width(500)))
+ .Pageable()
+ .Filterable()
+ .Scrollable(s => s.Height(550))
+ .DataSource(dataSource => dataSource
+     .Ajax()
+     .Model(model => model.Id(p => p.RentalMVInspectionId))
+     .Events(ev => ev
+     .Error("error_handler(\"grid\")")
+     .RequestStart("onRequestStart(\"grid\")")
+     .RequestEnd("onRequestEnd(\"grid\")"))
+     .Read(read => read.Action("RentalMVInspection_Read", "RentalMVInspection"))
+     .Create(create => create.Action("RentalMVInspection_Create", "RentalMVInspection"))
+     .Update(update => update.Action("RentalMVInspection_Update", "RentalMVInspection"))
+     .Destroy(destroy => destroy.Action("RentalMVInspection_Destroy", "RentalMVInspection"))
+                    )
+)
+<style type="text/css" >
+    div.k-edit-form-container {
+        width: 500px;
+    }
+
+</style>

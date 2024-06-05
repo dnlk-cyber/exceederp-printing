@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+
+                      .OptionLabel("Select Mechanic Type")
+                          .DataTextField("Title")
+                          .DataValueField("Value")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetMechanicTypes", "MaintenanceDataProvider", new { area = "Maintenance" }))
+                                            .ServerFiltering(false);
+                          })
+
+)

@@ -86,8 +86,7 @@ namespace ExceedERP.Reporting.Fleet.Printing.DataSource
 
             if (Fleet != null )
             {
-                  var PhotoUploded = File.Exists("~/Content/Images/Fleet/Equipment/" + Fleet.FleetsID + ".jpg");
-
+                var PhotoUploded = File.Exists("~/Content/Images/Fleet/Equipment/" + Fleet.FleetsID + ".jpg");
                 FleetViewModel = new FleetViewModel
                 {
                     Color = Fleet.Color,
@@ -99,15 +98,12 @@ namespace ExceedERP.Reporting.Fleet.Printing.DataSource
                     UnitNum = Fleet.UnitNum,
                     EquipmentName = Fleet.EquipmentName,
                     Manufacturer = Fleet.Manufacturer,
-
                     SerialNo = Fleet.SerialNo,
                     ChasisNumber = Fleet.ChasisNumber
                 };
                  FleetViewModel.ManufacturerYear = Fleet.ManufacturerYear;
                 FleetViewModel.Heading = Fleet.UnitNum + " - " + Fleet.EquipmentName;
-
                 FleetViewModel.StateOfOdoMeter = Fleet.StateOfOdoMeter;
-
                 FleetViewModel.TypeOfFuel = Fleet.TypeOfFuel;
                 if (PhotoUploded)
                 {
@@ -126,15 +122,10 @@ namespace ExceedERP.Reporting.Fleet.Printing.DataSource
                 if (Fleet.EquipmentIdentity != null)
                 {
                     FleetViewModel.Category = Fleet.EquipmentIdentity.EquipmentCategoryName;
-                }
-
-
-            
-                    FleetViewModel.Location = Fleet.Location;
-                
+                }            
+                FleetViewModel.Location = Fleet.Location;                
                 FleetViewModel.Model = Fleet.Model;
-                FleetViewModel.FuelStandard = ((Fleet.MaxFuelStandard + Fleet.MinFuelStandard) / 2).ToString();
-                    
+                FleetViewModel.FuelStandard = ((Fleet.MaxFuelStandard + Fleet.MinFuelStandard) / 2).ToString();                    
                 FleetViewModel.PurchasedDate = Fleet.PurchasedDate;
                 FleetViewModel.PurchasingCost = Fleet.PurchasingCost;
                 FleetViewModel.TyreSize = Fleet.TyreSize;
@@ -142,8 +133,6 @@ namespace ExceedERP.Reporting.Fleet.Printing.DataSource
                 FleetViewModel.CreatedBy = Fleet.OnlineApprovedBy;
                 FleetViewModel.SendForApprovalBy = Fleet.OnlineApprovedBy;
                 FleetViewModel.ApprovedBy = Fleet.OnlineApprovedBy;
-
-
                 FleetViewModel.AmharicName = AmharicName;
                 FleetViewModel.Name = Name;
                 FleetViewModel.Address = Address;

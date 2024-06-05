@@ -1,0 +1,13 @@
+﻿
+@(Html.Kendo().DropDownListFor(model => model)
+            //.HtmlAttributes(new { @class = "form-control" })
+            .Name("MechanicCrewID")
+            .DataTextField("Name")
+            .DataValueField("Code")
+            .OptionLabel("Select")
+            .Filter("contains")
+            .DataSource(dataSource =>
+            {
+                dataSource.Read(read => read.Action("GetEmployes", "MaintenanceDataProvider"))
+                        .ServerFiltering(false);
+            }))

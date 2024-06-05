@@ -1,0 +1,14 @@
+﻿ 
+    @(Html.Kendo().DropDownListFor(model => model) 
+                                                
+        .DataTextField("FullName")
+                                                                                  
+        .DataValueField("MechanicCrewID")
+        .OptionLabel("Select")
+        .Filter(FilterType.Contains)
+                                                                                            
+        .DataSource(d => d.Read(r => 
+        //r.Action("ServiceCrewActiveByService", "FleetDataProvider").Data("filterServiceCrew")).ServerFiltering(false)))
+        r.Action("GetMechanicCrewAssigned", "MaintenanceDataProvider").Data("filterServiceCrew")).ServerFiltering(false)))
+
+ 

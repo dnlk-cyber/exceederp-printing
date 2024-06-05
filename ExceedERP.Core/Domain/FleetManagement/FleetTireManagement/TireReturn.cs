@@ -1,21 +1,25 @@
-﻿using System;
+﻿
+using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using ExceedERP.Core.Domain.Common;
+using System.Linq;
+using System.Web;
+ using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetTireManagement
 {
     public partial class TireReturn : Operations
     {
-
-       
-
+        
         public Guid TireReturnID { get; set; }
         public Guid TireId { get; set; }
         public Guid FleetId { get; set; }
          [DisplayName(" Equipment")]
         public string PlateNumber { get; set; }
-         public string StoreCode { get; set; }
+        public FleetBatteryOrTyreType ReturnType { get; set; }
+        public string StoreCode { get; set; }
          [DisplayName(" Operator Name")]
          public string OperatorName { get; set; }
         [DisplayName("Tyre Size")]
@@ -50,7 +54,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTireManagement
           [DataType(DataType.MultilineText)]
           [Required] 
         public string DescriptionReason { get; set; }
-          
-  
+        public int ReturnId { get; set; }
+        public int ReturnItemId { get; set; } 
+
     }
 }

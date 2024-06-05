@@ -14,7 +14,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Models
         public string PlateNumber { get; set; }
 
         [ScaffoldColumn(false)]
-        public Guid FleetInsuranceID { get; set; }
+        public int FleetInsuranceId { get; set; }
 
         public Guid FleetsID { get; set; }
         public enum InsuranceTypeenum { TypeOne, TypeTwo, TypeThree, Comprehensive }

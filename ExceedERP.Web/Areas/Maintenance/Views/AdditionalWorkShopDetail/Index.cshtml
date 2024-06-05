@@ -1,0 +1,43 @@
+﻿
+@helper AdditionalInfo()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.AdditionalWorkShopDetail>()
+                .Name("addional_#=ServiceCenterJobId#")
+                .Columns(columns =>
+                {
+                    columns.Bound(o => o.OtherCosts).Width(200);
+                    columns.Bound(o => o.Description).Width(200);
+
+                    columns.Command(command => { command.Edit(); }).Width(250);
+
+                })
+                .ToolBar(commands => commands.Create())
+
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .PageSize(5)
+                        .Model(model =>
+                        {
+                            model.Id(p => p.AdditionalWorkShopDetailId);
+
+                        })
+                        .Events(ev => ev
+                        .Error("error_handler(\"addional_#=ServiceCenterJobId#\")")
+                        .RequestStart("onRequestStart(\"addional_#=ServiceCenterJobId#\")")
+                        .RequestEnd("onRequestEnd(\"addional_#=ServiceCenterJobId#\")"))
+
+                        .Create(update => update.Action("Create", "AdditionalWorkShopDetail", new { Id = "#=ServiceCenterJobId#" }))
+                        .Read(read => read.Action("Read", "AdditionalWorkShopDetail", new { Id = "#=ServiceCenterJobId#" }))
+                        .Update(update => update.Action("Update", "AdditionalWorkShopDetail"))
+                        .Destroy(delete => delete.Action("Delete", "AdditionalWorkShopDetail"))
+
+
+                    )
+                    .ToClientTemplate())
+
+}
+
+
+

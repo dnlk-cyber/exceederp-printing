@@ -1,0 +1,125 @@
+﻿@{
+    ViewBag.Title = "Maintenance Center";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using ExceedERP.Helpers.Common
+
+<legend>Maintenance Center</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.MaintenanceCenter>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            //columns.Bound(e => e.Type).EditorTemplateName("MCtypeBind").Width(100);
+            columns.Bound(e => e.Name).Width(140);
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnit"], "Value", "Text").Width(110).EditorTemplateName("BusinessUnitEditorTemplate").Filterable(ftb => ftb.Multi(true).Search(true));
+            }
+            //columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnit"], "Value", "Text").EditorTemplateName("BusinessUnitEditorTemplate").Width(120);
+            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "Value", "Text").EditorTemplateName("BranchEditorTemplate").Width(120);
+            columns.Bound(e => e.Description).Width(140);
+            columns.Bound(e => e.IsExternal).Width(100).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsExternal #' " + " # if (IsExternal) { #" + "checked='checked'" + "# } #" + " />"); ;
+
+
+            columns.Command(command => { command.Edit(); }).Width(250);
+
+        })
+        .ToolBar(commands => commands.Create())
+        .Editable(editable =>
+        {
+            editable.Mode(GridEditMode.InLine);
+            editable.DisplayDeleteConfirmation("Are You Sure To Remove Maintenance Center");
+        })
+        .HtmlAttributes(new { style = "height: 520px;" })
+            .Pageable(pageable => pageable
+            .Input(true)
+            .Numeric(false)
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+
+            .Scrollable()
+            .Sortable()
+            .Filterable()
+            .Scrollable(h => h.Height(500))
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .ServerOperation(false)
+            .Model(model =>
+            {
+                model.Id(p => p.MaintenanceCenterID);
+
+                model.Field(p => p.MaintenanceCenterID).Editable(false);
+
+            }).Events(ev => ev
+                .Error("error_handler(\"grid\")")
+                .RequestStart("onRequestStart(\"grid\")")
+                .RequestEnd("onRequestEnd(\"grid\")"))
+            .Create(update => update.Action("MaintenanceCenter_Create", "MaintenanceCenter"))
+            .Read(read => read.Action("MaintenanceCenter_Read", "MaintenanceCenter"))
+            .Update(update => update.Action("MaintenanceCenter_Update", "MaintenanceCenter"))
+            .Destroy(update => update.Action("MaintenanceCenter_Destroy", "MaintenanceCenter"))
+      ).ClientDetailTemplateId("ServiceCenter")
+)
+
+
+
+
+
+
+
+
+<script id="ServiceCenter" type="text/kendo-template">
+    @(Html.Kendo().TabStrip().
+                                        Name("tab_#=MaintenanceCenterID#")
+                                        .Items(itema =>
+                                        {
+                                            itema.Add().Text("Service Center")
+                                            .Content(
+                                        @<text>
+
+                                            @ServiceCenter()
+
+                                        </text>);
+
+                                                }).ToClientTemplate()
+    )
+
+</script>
+
+
+
+
+@helper ServiceCenter()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.ServiceCenter>()
+                     .Name("detail_#=MaintenanceCenterID#")
+                     .Columns(columns =>
+                     {
+                         columns.Bound(c => c.Name);
+                         columns.Bound(c => c.Description);
+
+                         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                     })
+                     .ToolBar(toolbar =>
+                     {
+                         toolbar.Create();
+                         
+                     })
+                     .Editable(editable => editable.Mode(GridEditMode.InLine))
+                     
+                     .DataSource(dataSource => dataSource
+                         .Ajax()
+                         .Events(ev => ev
+                         .Error("error_handler(\"grid\")")
+                         .RequestStart("onRequestStart(\"grid\")")
+                         .RequestEnd("onRequestEnd(\"grid\")"))
+
+                         .Model(model => model.Id(p => p.ServiceCenterId))
+                         .Read(read => read.Action("Read", "ServiceCenterSetting", new { Id = "#=MaintenanceCenterID#" }))
+                         .Create(create => create.Action("Create", "ServiceCenterSetting", new { Id = "#=MaintenanceCenterID#" }))
+                         .Update(update => update.Action("Update", "ServiceCenterSetting"))
+                         .Destroy(destroy => destroy.Action("Delete", "ServiceCenterSetting"))
+                     ).ToClientTemplate()
+    )
+}

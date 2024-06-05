@@ -1,0 +1,79 @@
+﻿@model  ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.AnnualEquipmentInventoryInspection
+
+
+
+
+<div class="demo-section k-content">
+ 
+
+
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    Equipment To Inspected
+                    @(Html.Kendo().DropDownListFor(model => model.FleetsID)
+                          .Name("FleetsID")
+                          .DataTextField("PlateNumber")
+                          .DataValueField("FleetsID")
+                          .Text("PlateNumber")
+                          .OptionLabel(" Select Equipment ")
+                          .Filter(FilterType.Contains)
+                          .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration"))
+                          .ServerFiltering(false)))
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.FindingsOutcome)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.FindingsOutcome)
+                    @Html.ValidationMessageFor(model => model.FindingsOutcome)
+                </div>
+
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.InspectedBy)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.InspectedBy).Value(User.Identity.Name)
+                    @Html.ValidationMessageFor(model => model.InspectedBy)
+                </div>
+
+            </div>
+        </div>
+
+        
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+  
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.DateofInspection)
+                </div>
+                <div>
+                    @Html.Kendo().DatePickerFor(model => model.DateofInspection)
+                    @Html.ValidationMessageFor(model => model.DateofInspection)
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    
+                    </div>

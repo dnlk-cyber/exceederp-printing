@@ -1,7 +1,12 @@
 ﻿
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using ExceedERP.Core.Domain.Common;
+using System.Linq;
+using System.Web;
+ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
@@ -10,7 +15,12 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
     {
  
         public Guid ExternalRentedEquipmentId { get; set; }
-          public Guid FleetId { get; set; }
+        [DisplayName("  Equipment Category ")]
+        public Guid? EquipmentIdentityID { get; set; }
+         [DisplayName("  Equipment Type ")]
+        public Guid? EquipmentTypeID { get; set; }
+        public Guid? EquipmentNameID { get; set; }
+        public Guid FleetId { get; set; }
           public Guid RentId { get; set; }
           public string CurrentOdoMeter { get; set; }  
         public string AssetCode { get; set; } 

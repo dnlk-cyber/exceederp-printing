@@ -1,0 +1,7 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+                .DataTextField("FullName")
+                .DataValueField("MechanicCrewID")
+                .OptionLabel("Select ")
+                .Filter(FilterType.Contains)
+                .HtmlAttributes(new { style = "width:100%" })
+                .DataSource(d => d.Read(r => r.Action("MechanicCrewDDBind", "MechanicCrew").Data("filterMechanics"))))

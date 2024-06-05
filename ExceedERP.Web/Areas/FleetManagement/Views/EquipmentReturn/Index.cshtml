@@ -33,7 +33,7 @@
                             .Scrollable()
                             .Sortable()
                             .Filterable()
-                            .Groupable()
+                           // .Groupable()
                             .Scrollable(h => h.Height(500))
       .ClientDetailTemplateId("template")
 
@@ -69,34 +69,49 @@
         
                 items.Add().Text("Assigned List").Content(@<text>
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.AssignedEquipment>()
-                                                                .Name("AssignedConfirmedEquipmentgrid_#=RequestID#")
+                        .Name("AssignedConfirmedEquipmentgrid_#=RequestID#")
                         .Columns(columns =>
                         {
-                            columns.Bound(o => o.EquipmentName).EditorTemplateName("AssignEquipment").Width(100);
-                         
-                            columns.Command(command => { command.Destroy().Text(" Accept Equipment "); }).Width(50);
+                            columns.ForeignKey(e => e.EquipmentNameID, (System.Collections.IEnumerable)ViewData["EquipmentNames"], "Id", "Name")/*.EditorTemplateName("EquipmentNameEditor")*/.Title("Equipment Name").Width(140);
+                            columns.ForeignKey(e => e.FleetId, (System.Collections.IEnumerable)ViewData["Fleets"], "Id", "Name")/*.EditorTemplateName("FleetEditor")*/.Title("Plate No").Width(140);
+                            columns.Bound(e => e.ReturnDate);
+                            columns.Bound(e => e.StartOdometr);
+                            columns.Bound(e => e.EndOdometer);
+                            columns.Bound(e => e.NetOdometer);
+
+                            columns.Command(command => { command.Destroy().Text(" Accept Equipment "); command.Edit(); }).Width(180);
+
 
                         })  .Editable(editable =>
-          {
-                editable.DisplayDeleteConfirmation("Are You Sure Returning Equipment");
-          })
-                        .Events(e=>e.DataBound("acceptdataBound"))
+                        {
+                            editable.DisplayDeleteConfirmation("Are You Sure You Want To Return This Equipment");
+                        })
+                        .Events(e=>
+                        {
+                            e.DataBound("acceptdataBound");
+                            e.Edit("handleOnEdit");
+                        })
                               .DataSource(dataSource => dataSource
                             .Ajax()
                                                     .PageSize(5)
                                  .Model(model =>
-                      {
-                          model.Id(p => p.AssignedEquipmentID);
-                          model.Field(p => p.EquipmentName).Editable(true);
-                      })                   .Events(ev => ev
-                                        .Error("error_handler(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")")
-                                        .RequestStart("onRequestStart(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")")
-                                        .RequestEnd("onRequestEnd(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")"))
+                                 {
+                                     model.Id(p => p.AssignedEquipmentID);
+                                     //model.Field(p => p.EquipmentName).Editable(false);
+                                     model.Field(p => p.EquipmentNameID).Editable(false);
+                                     model.Field(p => p.FleetId).Editable(false);
+                                     model.Field(p => p.StartOdometr).Editable(false);
+                                     model.Field(p => p.ReturnDate).Editable(false);
+                                 })                   .Events(ev => ev
+                                                   .Error("error_handler(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")")
+                                                   .RequestStart("onRequestStart(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")")
+                                                   .RequestEnd("onRequestEnd(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")"))
                                                        .Create(update => update.Action("AssignedEquipment_Create", "AssignedEquipment", new { createRequestNumber = "#=RequestID#", createType = "R" }))
-                            .Update(update => update.Action("AssignEquipment", "AssignedEquipment"))
-                                                               .Read(read => read.Action("ArrivedEquipment", "AssignedEquipment", new { readRequestNumber = "#=RequestID#", type = "R" }))
-                                                                                                                                     .Destroy(update => update.Action("AcceptEquipment", "AssignedEquipment", new { acceptId = "#=RequestID#", type = "R" })))
-  
+                                                       //.Update(update => update.Action("AssignEquipment", "AssignedEquipment"))
+                                                       .Update(update => update.Action("AssignEqupment_Update", "AssignedEquipment"))
+                                                       .Read(read => read.Action("ArrivedEquipment", "AssignedEquipment", new { readRequestNumber = "#=RequestID#", type = "R" }))
+                                                       .Destroy(update => update.Action("AcceptEquipment", "AssignedEquipment", new { acceptId = "#=RequestID#", type = "R" })))
+
                         .Sortable()
                         .ToClientTemplate())
                 </text>
@@ -150,12 +165,20 @@
 </script>
 
 <script type="text/javascript">
-  
+
+    const handleOnEdit = () => {
+
+        //$("#StartOdometer").prop("disabled", true);
+        $("#NetOdometer").prop("disabled", true);
+        //$("#EquipmentNameID").prop("disabled", true);
+        //$("#FleetId").prop("disabled", true);
+    }
+
     var masterId;
     var IsApproved;
     var IsSendForApproved;
     function dataBound() {
-        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
 
         var grid = this;
 
@@ -186,6 +209,7 @@
             if (dataItem.IsAssigned == false) {
                 console.log("Forwarded");
                 $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-edit").remove();
 
             }
         });

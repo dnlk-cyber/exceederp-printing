@@ -1,0 +1,16 @@
+﻿
+
+<div>
+    @(Html.Kendo().DropDownListFor(model => model)
+                  .Name("ServiceGroup")
+          .DataTextField("Name")
+          .DataValueField("Code")
+          .OptionLabel(" Select ")
+          .Filter(FilterType.Contains)
+                    .CascadeFrom("SubCategoryCode")
+
+                  .DataSource(d => d.Read(r => r.Action("GetServiceCategoryEnums", "MaintenanceDataProvider")
+                  .Data("filterSubCategories"))
+                  .ServerFiltering(true)))
+                  @*.DataSource(d => d.Read(r => r.Action("ServiceDDBind", "InspectionRegistration").Data("filterSerivce")).ServerFiltering(false)))*@
+</div>

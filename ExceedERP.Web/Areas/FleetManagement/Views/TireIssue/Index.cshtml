@@ -8,8 +8,9 @@
     .Name("grid")
     .Columns(columns =>
     {
+        columns.Bound(e => e.IssueType).Width(140);
         columns.Bound(e => e.Brand).Width(140);
-        columns.Bound(e => e.Quantity).Width(140);
+        //columns.Bound(e => e.Quantity).Width(140);
         columns.Bound(e => e.TireSize).Width(140);
         columns.Bound(e => e.UnitPrice).Width(140);
         columns.Bound(e => e.InstalledDate).Format(("{0:d}")).Width(200);
@@ -36,7 +37,7 @@
                                     .Scrollable()
                                     .Sortable()
                                     .Filterable()
-                                    .Groupable()
+                                   // .Groupable()
                                     .Scrollable(h => h.Height(500))
      
     .DataSource(dataSource => dataSource

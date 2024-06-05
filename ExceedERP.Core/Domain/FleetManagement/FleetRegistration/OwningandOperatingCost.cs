@@ -1,5 +1,9 @@
 ﻿
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel;
 using ExceedERP.Core.Domain.Common;
@@ -36,13 +40,13 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
          public decimal TotalOperatingWeight { get; set; }
           [DisplayName(" Resdual Scrap Value ")]
          public decimal ResdualScrapValue  { get; set; }
-           [DisplayName("Yerly Premiuem ")]
+           [DisplayName("Yearly Premiuem ")]
          public decimal YerlyPremiuem { get; set; }
 
          public decimal NetValue { get; set; }
           [DisplayName(" Fuel Consumption ")]
          public decimal FuelConsumption { get; set; }
-          [DisplayName(" Operator Driver Monthly Salary ")]
+          [DisplayName(" Operator Monthly Salary ")]
          public decimal OperatorDriverMonthlySalary { get; set; }
          public decimal Depreciation { get; set; }
 

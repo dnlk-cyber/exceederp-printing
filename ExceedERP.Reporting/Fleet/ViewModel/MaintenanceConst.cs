@@ -20,13 +20,10 @@ namespace ExceedERP.Reporting.Fleet.ViewModel
         public const string Request = "Pending";
         public const string Rejected = "Rejected";
         public const string R = "Request";
-
         public const string Completed = "Completed";
-
         public const string ACTIVE = "ACTIVE";
         public const string ONDUTY = "On Duty";
         public const string OnMaintenance = "On Maintenance";
-
         public const string WaitingTechnical = "Waiting Technical Approval";
         public const string WaitingAdminstrative = "Waiting Administrative Approval";
         public const string Approved = "Approved";

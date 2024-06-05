@@ -1,4 +1,10 @@
-﻿using System;
+﻿
+
+using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel;
@@ -8,15 +14,10 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
 {
     public partial class Accident : Operations
     {
-
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Num { get; set; }
-        [ScaffoldColumn(false)]
         public Guid AccidentID { get; set; }
         [DisplayName("  Equipment ")]
         public Guid FleetsID { get; set; }
-        [DisplayName("Date Of Occurrence")]
+        [DisplayName("Date Of Accident")]
         [Required]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
@@ -82,7 +83,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public virtual Fleets Fleet { get; set; }
         [NotMapped]
         public string Equipment { get; set; }
+        [Display(Name ="Insured Name")]
         public string Insured { get; set; }
+        [Display(Name ="Full Name")]
         public string FullName { get; set; }
         public string Address { get; set; }
         public string Occupation { get; set; }
@@ -115,6 +118,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public string AssetDamage { get; set; }
         [DisplayName("ThirdParty Damage")]
         public string ThirdPartyDamage { get; set; }
+        
         [DisplayName("Injured Persons")]
         public string InjuredPersons { get; set; }
         [DisplayName("Current Value")]
@@ -128,5 +132,22 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public string EngineNo { get; set; }
         [NotMapped]
         public string ManufacturedYear { get; set; }
+        [Display(Name ="Driver Name")]
+        public Guid OperatorId { get; set; }
+        [Display(Name ="Time of Accident")]
+        public DateTime TimeOfAccident { get; set; }
+
+        [Display(Name ="Other Pary FullName")]
+        public string OtherPartyFullName { get; set; }
+        [Display(Name ="Other Party Address")]
+        public string OtherPartyAddress { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
+        [Display(Name ="Police Report Date"), DataType(DataType.DateTime)]
+        public DateTime PoliceReportDate { get; set; }
+        [Display(Name ="Police Report Address")]
+        public string PoliceReportAddress { get; set; }
+
+
     }
+
 }

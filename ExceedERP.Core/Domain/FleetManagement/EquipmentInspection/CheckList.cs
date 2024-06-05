@@ -1,5 +1,9 @@
 ﻿using System;
-using ExceedERP.Core.Domain.Common;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+ using ExceedERP.Core.Domain.Common;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
@@ -11,8 +15,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.EquipmentInspection
         public int CheckListId { get; set; }
 
         [Required]
-        public Guid EquipmentTypeId { get; set; }
-        public Guid EquipmentCategory { get; set; }
+        public Guid EquipmentIdentityID { get; set; }
+        public Guid EquipmentTypeID { get; set; }
         [Required]
         public CheckListType Type { get; set; }
         [NotMapped]
@@ -22,12 +26,12 @@ namespace ExceedERP.Core.Domain.FleetManagement.EquipmentInspection
         public string Code { get; set; }
     
         public string Description { get; set; }
+        //public bool IsNormal { get; set; }
 
         public string Remark { get; set; }
 
         [NotMapped]
         public bool Selected { get; set; }
-        [ForeignKey("EquipmentTypeId")]
-        public virtual EquipmentIdentity EquipmentIdentity { get; set; }
+
     }
 }

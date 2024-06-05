@@ -1,0 +1,43 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.Settings.VehiclePart>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Code);
+              columns.Bound(c => c.Name);
+              columns.ForeignKey(c => c.VehicleCategoryId, (IEnumerable)ViewData["category"], "Id", "Name").EditorTemplateName("VehicleCategoryEditor").Title("Category").Width(120);
+              columns.Bound(c => c.Remark);
+              columns.Bound(c => c.Description);
+
+              columns.Command(command => { command.Edit(); /*command.Destroy();*/ }).Width(200);
+
+          })
+        .ToolBar(toolbar =>
+        {
+            toolbar.Create();
+
+        })
+
+        .Scrollable(s => s.Height(600))
+        .Sortable()
+        .Filterable()
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Pageable(pageable => pageable
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .Events(ev => ev.Error("error_handler(\"grid\")")
+        .RequestStart("onRequestStart(\"grid\")")
+        .RequestEnd("onRequestEnd(\"grid\")"))
+        .ServerOperation(false)
+        .Model(model => model.Id(p => p.VehiclePartId))
+        .Read(read => read.Action("VehiclePart_Read", "VehiclePart"))
+        .Create(create => create.Action("VehiclePart_Create", "VehiclePart"))
+        .Update(update => update.Action("VehiclePart_Update", "VehiclePart"))
+        .Destroy(destroy => destroy.Action("VehiclePart_Destroy", "VehiclePart"))
+        .Sort(sort =>
+        {
+            sort.Add(m => m.LastModified).Ascending();
+        }).PageSize(10)))

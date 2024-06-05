@@ -1,8 +1,11 @@
 ﻿
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web;
 using ExceedERP.Core.Domain.Common;
 using System.ComponentModel.DataAnnotations.Schema;
 using static ExceedERP.Core.Domain.Global.GlobalEnum;
@@ -16,8 +19,16 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Num { get; set; }
+       
         public Guid SitesVehicleTransferID { get; set; }
-        [DisplayName(" Equipment")]
+        
+        [Display(Name = "Equipment Category")]
+        public Guid EquipmentIdentityID { get; set; }
+        [Display(Name = "Equipment Type")]       
+        public Guid EquipmentTypeID { get; set; }
+        [Display(Name = "Equipment Name")]
+        public Guid EquipmentNameID { get; set; }
+        [DisplayName(" Plate No")]
         public Guid FleetsID { get; set; }
         [DisplayName("Starting Date")]
         [Required]
@@ -31,19 +42,21 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
 
         public Nullable<DateTime> ToDate { get; set; }
         [DisplayName("Initial Site")]
-        [Required]
+        
         public string InitialSite { get; set; }
         [DisplayName("Destination Site")]
-        [Required]
+        
         public string DestinationSite { get; set; }
-         [DisplayName("OdoMeter")]
+        
+        public int BranchId { get; set; }
+        [DisplayName("OdoMeter")]
         public string OdoMeter { get; set; }
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
         [NotMapped]
         public string PlateNo { get; set; }
-        [NotMapped]
-        public string EquipmentTypeId { get; set; }
+        //[NotMapped]
+        //public string EquipmentTypeId { get; set; }
         [DisplayName("Fuel Amount")]
         public FuelAmount FuelAmount { get; set; }
         [DisplayName("Battery Status")]
@@ -59,6 +72,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         public string BatteryQuantity { get; set; }
         [DisplayName("Transfered Operator")]
         public string TransferedOperator { get; set; }
+        public Guid OperatorId { get; set; }
         [DisplayName("Loaded Plate No")]
         public string LoadedPlateNo { get; set; }
         [DisplayName("Transfer Reason")]

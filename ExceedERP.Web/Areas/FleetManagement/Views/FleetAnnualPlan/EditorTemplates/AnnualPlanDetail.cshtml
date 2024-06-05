@@ -1,0 +1,121 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation.FleetAnnualPlanDetail
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>No of equipment in month</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.NumberOfEquipmentInMonth).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Working hour/day</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.WorkingHourPerDay).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>working days in month</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.WorkingDaysInMonth).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Inefficiency %</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.InefficiencyPercentile).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Efficienct %</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.EfficiencyPercentile).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Charging rate</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.ChargingRate).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Tyre cost</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.TyreCost).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Liter/hr</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.LiterPerHour).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Fuel cost/liter</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.FuelCostPerLiter).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Maintenance Cost</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.MaintenanceCost).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Perduim</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.Perduim).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Salary</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.Salary).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+
+</div>

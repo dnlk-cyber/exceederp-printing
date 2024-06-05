@@ -3,18 +3,17 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.Model);
-          columns.Bound(c => c.OwnerShipPeriod);
-          columns.Bound(c => c.EstimatedUsage);
-          columns.Bound(c => c.OwnerShipUsage);
-          columns.Bound(c => c.DeliveryPrice);
-          columns.Bound(c => c.RentalRateWithFuel).Title("Hourly/Rental cost");
-          columns.Bound(c => c.MaintenanceRepairCost).Title("Maintenance cost ");
-          columns.Bound(c => c.TyreReplacementCost);
-          columns.Bound(c => c.TotalOperatingWeight);
-          columns.Bound(c => c.Remark).Title("Condtion");
-
-          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          columns.Bound(c => c.Model).Width(100);
+          columns.Bound(c => c.OwnerShipPeriod).Width(120);
+          columns.Bound(c => c.EstimatedUsage).Width(120);
+          columns.Bound(c => c.OwnerShipUsage).Width(120);
+          columns.Bound(c => c.DeliveryPrice).Width(100);
+          columns.Bound(c => c.RentalRateWithFuel).Width(140).Title("Hourly/Rental cost");
+          columns.Bound(c => c.MaintenanceRepairCost).Width(120).Title("Maintenance cost ");
+          columns.Bound(c => c.TyreReplacementCost).Width(140);
+          columns.Bound(c => c.TotalOperatingWeight).Width(140);
+          columns.Bound(c => c.Remark).Title("Condtion").Width(100);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(160);
       })
       .ToolBar(toolbar => {
           toolbar.Create();
@@ -22,18 +21,17 @@
           .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("OwningOperatingCostEditor"))
          .HtmlAttributes(new { style = "height: 520px;" })
                           .Pageable(pageable => pageable
-                                            .Input(true)
-                                            .Numeric(false)
-                                            .Refresh(true)
-                                            .PageSizes(true)
-                                            .ButtonCount(5))
-
-                                .Scrollable()
-                                .Sortable()
-                                .Filterable()
-                                    .Scrollable(h => h.Height(500))
-                                    .ClientDetailTemplateId("template")
-                                    .DataSource(dataSource => dataSource
+                          .Input(true)
+                          .Numeric(false)
+                          .Refresh(true)
+                          .PageSizes(true)
+                          .ButtonCount(5))
+                          .Scrollable()
+                          .Sortable()
+                          .Filterable()
+                          .Scrollable(h => h.Height(500))
+                          .ClientDetailTemplateId("template")
+                          .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.OwningandOperatingCostId))
           .Read(read => read.Action("OwningandOperatingCosts_Read", "OwningOperatingCost"))
@@ -46,95 +44,70 @@
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
                                                     .Name("tabStrip_#=OwningandOperatingCostId#")
-            .SelectedIndex(0).HtmlAttributes(new { style = "height: 40px;" })
+            .SelectedIndex(0)
             .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
             .Items(items =>
             {
                 items.Add().Text("Detail").Content(
                     @<text>
-                        <div>
-                            <div class="box">
+                <div class="row">
+        <div class="col-sm-3">
+            <ul>
+                <li><label>Resdual ScrapValue:</label> <span>#=ResdualScrapValue#</span></li>
+                <li><label>Yerly Premiuem:</label> <span>#=YerlyPremiuem#</span></li>
+                <li><label>Net Value:</label> <span>#=NetValue#</span></li>
+                <li><label>Fuel Consumption:</label> <span>#=FuelConsumption#</span></li>
+                <li><label>Operator Monthly Salary:</label> <span>#=OperatorDriverMonthlySalary#</span></li>
+                <li><label>Depreciation:</label> <span>#=Depreciation#</span></li>
+                <li><label>Insurance:</label> <span>#=Insurance#</span></li>
+                <li><label>Property Tax:</label> <span>#=PropertyTax#</span></li>
+            </ul>
+        </div>
+        <div class="col-sm-3">
+            <ul>
+                <li><label>Net Total:</label> <span>#=NetTotal#</span></li>
+                <li><label>Fuel:</label> <span>#=Fuel#</span></li>
+                <li><label>LubOil:</label> <span>#=LubOil#</span></li>
+                <li><label>Service Parts:</label> <span>#=ServiceParts#</span></li>
+                <li><label>Tire:</label> <span>#=Tire#</span></li>
+                <li><label>Depreciation:</label> <span>#=Depreciation#</span></li>
+                <li><label>Insurance:</label> <span>#=Insurance#</span></li>
+                <li><label>Maintenance Repair Cost:</label> <span>#=MaintenanceRepairCost#</span></li>
 
-                                <div class="box-col">
-                                  
+            </ul>
+        </div>
+        @*<div class="col-sm-4">
+            <ul>
+                <li><label>Property Tax:</label> <span>#=PropertyTax#</span></li>
+                <li><label>Net Total:</label> <span>#=NetTotal#</span></li>
+                <li><label>Fuel:</label> <span>#=Fuel#</span></li>
+                <li><label>LubOil:</label> <span>#=LubOil#</span></li>
+                <li><label>Service Parts:</label> <span>#=ServiceParts#</span></li>
+                <li><label>Tire:</label> <span>#=Tire#</span></li>
+            </ul>
+        </div>*@
+        <div class="col-sm-3">
+            <ul>
+                <li><label>Special Wear Items Cost:</label> <span>#=SpecialWearItemsCost#</span></li>
+                <li><label>Operator Cost:</label> <span>#=OperatorCost#</span></li>
+                <li><label>Total Net Cost:</label> <span>#=TotalNetCost#</span></li>
+                <li><label>Profit:</label> <span>#=Profit#</span></li>
+                <li><label>Over Head:</label> <span>#=OverHead#</span></li>
+                <li><label>RentalRate With Fuel:</label> <span>#=RentalRateWithFuel#</span></li>
+                <li><label>Rental Rate With Out Fuel:</label> <span>#=RentalRateWithOutFuel#</span></li>
+            </ul>
+        </div>
 
-                                </div>
-                            </div>
-                            <div class="demo-section k-header export-app">
-                                <div class="demo-section content-wrapper">
 
-                                    <table class="table table-striped   table-bordered">
-                                        <th>Resdual ScrapValue</th>
-                                        <th>Yerly Premiuem</th>
-                                        <th>NetValue</th>
-                                        <th>FuelConsumption</th>
-                                        <th>Operator Monthly Salary</th>
-                                        <th>Depreciation</th>
-                                        <th>Insurance</th>
-                                        <th>Property Tax</th>
-                                        <tr>
-                                            <td class="text-capitalize text-nowrap">#=ResdualScrapValue#</td>
-                                            <td>#=YerlyPremiuem#</td>
-                                            <td>#=NetValue#</td>
-                                            <td>#=FuelConsumption#</td>
-                                            <td>#=OperatorDriverMonthlySalary#</td>
-                                            <td>#=Depreciation#</td>
-                                            <td>#=Insurance#</td>
-                                            <td>#=PropertyTax#</td>
-                                        </tr>
-                                       
-</table>
-                        
-                                    <table>
-                                    
-                                        <th>NetTotal</th>
-                                        <th>Fuel</th>
-                                        <th>LubOil</th>
-                                        <th>Service Parts</th>
-                                        <th>Tire</th>
-                                        <tr>
-                                            <td>#=NetTotal#</td>
-                                            <td>#=Fuel#</td>
-                                            <td>#=LubOil#</td>
-                                            <td>#=ServiceParts#</td>
-                                            <td>#=Tire#</td>
-                                        </tr>
-                                    </table>
+        
 
-                                                <table>
-                                     
-                                                    <th>Maintenance Repair Cost</th>
-                                                    <th>Special Wear Items Cost</th>
-                                                    <th>Under Carrage Cost</th>
-                                                    <th>Operator Cost</th>
-                                                    <th>Total Net Cost</th>
-                                                    <tr>
-                                                        <td>#=MaintenanceRepairCost#</td>
-                                                        <td>#=SpecialWearItemsCost#</td>
-                                                        <td>#=UnderCarrageCost#</td>
-                                                        <td>#=OperatorCost#</td>
-                                                        <td>#=TotalNetCost#</td>
-                                                    </tr>
-                                    </table>
+        
 
-                                    <table>
+        
 
-                                        <th>Profit</th>
-                                        <th>Over Head</th>
-                                        <th>RentalRate With Fuel</th>
-                                        <th>Rental Rate With Out Fuel</th>
-                                        <tr>
-                                            <td>#=Profit#</td>
-                                            <td>#=OverHead#</td>
-                                            <td>#=RentalRateWithFuel#</td>
-                                            <td>#=RentalRateWithOutFuel#</td>
-                                        </tr>
-                                    </table>
 
-                                </div>
-                            </div>
 
-                        </div>
+    </div>
 
                     </text>
 

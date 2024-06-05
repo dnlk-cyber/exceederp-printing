@@ -16,10 +16,16 @@
                 </div>
                 <div>
 
-                    @(Html.Kendo().DropDownListFor(model => model.PartNo).Name("PartNo")
-            .DataTextField("Name")
-                            .DataValueField("Name").OptionLabel("Select ").HtmlAttributes(new { style = "width:100%" })
-                                            .DataSource(d => d.Read(r => r.Action("SparePartDDBind", "FleetDataProvider"))).Events(ev => ev.Change("BindPrice")))
+                    @(Html.Kendo()
+                 .DropDownListFor(model => model.PartNo)
+                 .Name("PartNo")
+                   .DataTextField("Name")
+               .DataValueField("Name")
+               .Filter("contains")
+               .OptionLabel("Select ")
+               .HtmlAttributes(new { style = "width:100%" })
+                  .DataSource(d => d.Read(r => r.Action("SparePartDDBind", "FleetDataProvider")))
+                  .Events(ev => ev.Change("BindPrice")))
                 </div>
             </div>
         </div>

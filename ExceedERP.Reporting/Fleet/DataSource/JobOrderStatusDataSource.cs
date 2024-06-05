@@ -1,5 +1,4 @@
 ﻿using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Fleet.ViewModel;
@@ -99,89 +98,89 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
                 foreach (var f in Fleets)
                 {
-                    List<JobOrder> jobs = db.JobOrder.Where(x => x.FleetsID == f.FleetsID && x.DateIssued >= DateFrom && x.DateIssued <= DateTo).ToList();
+                    //List<JobOrder> jobs = db.JobOrder.Where(x => x.FleetsID == f.FleetsID && x.DateIssued >= DateFrom && x.DateIssued <= DateTo).ToList();
 
-                    if (!string.IsNullOrEmpty(status))
-                    {
-                        jobs = jobs.Where(x => x.Status == status).ToList();
-                    }
+                    //if (!string.IsNullOrEmpty(status))
+                    //{
+                    //    jobs = jobs.Where(x => x.Status == status).ToList();
+                    //}
 
-                    if (!string.IsNullOrEmpty(MaintenaceCenter))
-                    {
-                        jobs = jobs.Where(x => x.MaintenanceCenter == MaintenaceCenter).ToList();
-                    }
-                    foreach (var job in jobs)
-                    {
-
-
-                        int duration = 0;
-                        decimal Rate = 0;
-                        decimal Efficiency = 0;
-
-                        var OrderLine = db.JobOrder.Where(x => x.JobOrderID == job.JobOrderID).FirstOrDefault();
+                    //if (!string.IsNullOrEmpty(MaintenaceCenter))
+                    //{
+                    //    jobs = jobs.Where(x => x.MaintenanceCenter == MaintenaceCenter).ToList();
+                    //}
+                    //foreach (var job in jobs)
+                    //{
 
 
-                        if (!OrderLine.IsOnlineTransferred)
-                        {
-                            TimeSpan Duration = DateTime.Now - DateTime.Parse(OrderLine.OnlineApprovedTime.ToString());
-                            duration = Duration.Minutes;
-                        }
-                        else if (OrderLine.IsOnlineTransferred)
-                        {
-                            TimeSpan Duration = DateTime.Parse(OrderLine.OnlineTransferredTime.ToString()) - DateTime.Parse(OrderLine.OnlineApprovedTime.ToString());
-                            duration = Duration.Minutes;
-                        }
+                    //    int duration = 0;
+                    //    decimal Rate = 0;
+                    //    decimal Efficiency = 0;
+
+                    //    var OrderLine = db.JobOrder.Where(x => x.JobOrderID == job.JobOrderID).FirstOrDefault();
 
 
-
-                        var services = db.JobOrderDetail.Where(x => x.JobOrderID == job.JobOrderID).ToList();
-
-                        foreach (var service in services)
-                        {
-                            var Std = db.Service.Where(x => x.ServiceName == service.ServiceName).FirstOrDefault();
-                            if (Std != null && Std.STDTime != null)
-                            {
-                                Rate = Rate + decimal.Parse(Std.STDTime.ToString());
-                            }
-
-                        }
-
-                        if (duration == 0)
-                        {
-                            duration = 1;
-                        }
-
-                        Efficiency = (Rate / duration) * 100;
+                    //    if (!OrderLine.IsOnlineTransferred)
+                    //    {
+                    //        TimeSpan Duration = DateTime.Now - DateTime.Parse(OrderLine.OnlineApprovedTime.ToString());
+                    //        duration = Duration.Minutes;
+                    //    }
+                    //    else if (OrderLine.IsOnlineTransferred)
+                    //    {
+                    //        TimeSpan Duration = DateTime.Parse(OrderLine.OnlineTransferredTime.ToString()) - DateTime.Parse(OrderLine.OnlineApprovedTime.ToString());
+                    //        duration = Duration.Minutes;
+                    //    }
 
 
 
+                    //    var services = db.JobOrderDetail.Where(x => x.JobOrderID == job.JobOrderID).ToList();
 
-                        JobOrderModel = new JobOrderViewModel
-                        {
-                            EquipmentName = job.EquipmentName
-                        };
-                        if (job.Status == MaintenanceConst.Closed)
-                        {
-                            JobOrderModel.DateCompleted = job.DateCompleted;
-                        }
+                    //    foreach (var service in services)
+                    //    {
+                    //        var Std = db.Service.Where(x => x.ServiceName == service.ServiceName).FirstOrDefault();
+                    //        if (Std != null && Std.STDTime != null)
+                    //        {
+                    //            Rate = Rate + decimal.Parse(Std.STDTime.ToString());
+                    //        }
 
-                        JobOrderModel.DateIssued = job.DateIssued;
-                        JobOrderModel.EquipmentName = job.EquipmentName;
-                        JobOrderModel.InspectedBy = job.InspectedBy;
-                        JobOrderModel.Efficency = Efficiency;
-                        JobOrderModel.JobOrderNum = job.Num;
-                        JobOrderModel.LabourCost = duration;
-                        JobOrderModel.MaintenanceCenter = job.MaintenanceCenter;
-                        JobOrderModel.MaterialCost = Rate;
-                        JobOrderModel.PercentCompleted = job.PercentCompleted;
-                        JobOrderModel.PlateNum = job.AssetNum;
-                        JobOrderModel.ProjectName = job.ProjectName;
-                        JobOrderModel.Status = job.Status;
-                        JobOrderModel.Type = job.Type;
+                    //    }
+
+                    //    if (duration == 0)
+                    //    {
+                    //        duration = 1;
+                    //    }
+
+                    //    Efficiency = (Rate / duration) * 100;
 
 
-                        FleetList.Add(JobOrderModel);
-                    }
+
+
+                    //    JobOrderModel = new JobOrderViewModel
+                    //    {
+                    //        EquipmentName = job.EquipmentName
+                    //    };
+                    //    if (job.Status == MaintenanceConst.Closed)
+                    //    {
+                    //        JobOrderModel.DateCompleted = job.DateCompleted;
+                    //    }
+
+                    //    JobOrderModel.DateIssued = job.DateIssued;
+                    //    JobOrderModel.EquipmentName = job.EquipmentName;
+                    //    JobOrderModel.InspectedBy = job.InspectedBy;
+                    //    JobOrderModel.Efficency = Efficiency;
+                    //    JobOrderModel.JobOrderNum = job.Num;
+                    //    JobOrderModel.LabourCost = duration;
+                    //    JobOrderModel.MaintenanceCenter = job.MaintenanceCenter;
+                    //    JobOrderModel.MaterialCost = Rate;
+                    //    JobOrderModel.PercentCompleted = job.PercentCompleted;
+                    //    JobOrderModel.PlateNum = job.AssetNum;
+                    //    JobOrderModel.ProjectName = job.ProjectName;
+                    //    JobOrderModel.Status = job.Status;
+                    //    JobOrderModel.Type = job.Type;
+
+
+                    //    FleetList.Add(JobOrderModel);
+                    //}
 
 
 

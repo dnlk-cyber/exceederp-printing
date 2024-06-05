@@ -93,7 +93,7 @@ DateTime endingDate)
                 if (demand != null)
                 {
 
-                    EquipmentSpecifcation = demand.EquipmentName;
+                    //EquipmentSpecifcation = demand.EquipmentName;
                     EquipmentStatus = demand.EquipmentStatus;
                     RequestedQuantity = demand.Quantity;
 

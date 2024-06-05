@@ -11,7 +11,8 @@
     .Columns(columns =>
     {
         columns.Bound(e => e.InspectedBy).Width(140);
-        columns.Bound(e => e.Remark).Title(" Equipment ").Width(140);
+        columns.ForeignKey(e => e.FleetsID,(IEnumerable)ViewData["Fleets"],"Id","Name").Title(" Equipment ").EditorTemplateName("EquimentMapperEditor").Width(140);
+        columns.Bound(e => e.Remark).Title(" Remark ").Width(140);
         columns.Bound(e => e.FindingsOutcome).Width(140);
         columns.Bound(e => e.DateofInspection).Title(" Date ").Format("{0:d}").Width(100);
         columns.Bound(e => e.Status).Width(140);
@@ -19,45 +20,46 @@
 
     })
                  .ToolBar(commands =>
-              {
-                  commands.Create(); commands.Excel();
-                  commands.Pdf();
-              }).Events(ev =>
-                                                                                                 {
-                           ev.DataBound("onDataBound");
-                                                                                                 })           
+                 {
+                     commands.Create();
+                     //commands.Excel();
+                     //commands.Pdf();
+                 }).Events(ev =>
+                 {
+                     ev.DataBound("onDataBound");
+                 })
          .Editable(editable =>
          {
-             editable.Mode(GridEditMode.PopUp).TemplateName("InspectionEditor");
-             editable.DisplayDeleteConfirmation("Are You Sure To Remove Plan and Evaluations");
+             editable.Mode(GridEditMode.PopUp)
+             .TemplateName("InspectionEditor");
+             //editable.DisplayDeleteConfirmation("Are You Sure To Remove Plan and Evaluations");
          })
-      .HtmlAttributes(new { style = "height: 520px;" })
+         .HtmlAttributes(new { style = "height: 520px;" })
                       .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(5))
-
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
                             .Scrollable()
                             .Sortable()
                             .Filterable()
-                            .Groupable()
+                            // .Groupable()
                             .Scrollable(h => h.Height(500))
-                                .ClientDetailTemplateId("template")
-                                                                         .Groupable().Events(ev => ev.DetailExpand("RejectPopUp"))
-    .DataSource(dataSource => dataSource
-        .Ajax()
-        .ServerOperation(false)
-                        .Model(model => model.Id(p => p.AnnualEquipmentInventoryInspectionID))
-                                   .Events(ev => ev
-                                .Error("error_handler(\"grid\")")
-                                .RequestStart("onRequestStart(\"grid\")")
-                                .RequestEnd("onRequestEnd(\"grid\")"))
-                             .Create(update => update.Action("AnnualEquipmentInventoryInspection_Create", "AnnualEquipmentInventoryInspection"))
-                                    .Read(read => read.Action("AnnualEquipmentInventoryInspection_Read", "AnnualEquipmentInventoryInspection"))
-                                    .Update(update => update.Action("AnnualEquipmentInventoryInspection_Update", "AnnualEquipmentInventoryInspection"))
-                              .Destroy(update => update.Action("AnnualEquipmentInventoryInspection_Destroy", "AnnualEquipmentInventoryInspection"))
+                            .ClientDetailTemplateId("template")
+                            .Events(ev => ev.DetailExpand("RejectPopUp"))
+                            .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .ServerOperation(false)
+                            .Model(model => model.Id(p => p.AnnualEquipmentInventoryInspectionID))
+                            .Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+                            .Create(update => update.Action("AnnualEquipmentInventoryInspection_Create", "AnnualEquipmentInventoryInspection"))
+                            .Read(read => read.Action("AnnualEquipmentInventoryInspection_Read", "AnnualEquipmentInventoryInspection"))
+                            .Update(update => update.Action("AnnualEquipmentInventoryInspection_Update", "AnnualEquipmentInventoryInspection"))
+                            .Destroy(update => update.Action("AnnualEquipmentInventoryInspection_Destroy", "AnnualEquipmentInventoryInspection"))
   )
       )
 

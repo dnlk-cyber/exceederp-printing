@@ -1,7 +1,6 @@
 ﻿using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent;
-using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;

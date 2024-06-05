@@ -20,7 +20,7 @@ namespace ExceedERP.Reporting.Fleet.View
             InitializeComponent();
 
 
-            this.pageHeaderSection1.Report.DataSource = headerComp;
+            this.Report.DataSource = headerComp;
         }
     }
 }

@@ -1,0 +1,5 @@
+﻿<Description xmlns:mfx="urn:manifest-v1" xmlns:tpc="urn:topic-v1" xmlns:sct="urn:section-v1" xmlns:odext="urn:odext">
+  <Title>Oracle E-Business Suite Special Options</Title>
+  <Type>Section</Type>
+  <Concept>./tpc/6e3fd020-3af5-4cbe-ad0d-4d1a36031b77/index.html</Concept>
+</Description>

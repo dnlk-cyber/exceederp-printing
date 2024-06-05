@@ -1,0 +1,11 @@
+﻿ 
+@(Html.Kendo().DropDownListFor(m=>m)
+    .AutoBind(false)
+    .Enable(false)
+    .DataTextField("Name")
+    .DataValueField("Id")
+    .Filter(FilterType.Contains)
+    //.Events(e => e.Change("handlePlateNoChange"))
+    .OptionLabel("Select")
+      .DataSource(d => d.Read(r => r.Action("GetFleetFromEquipmentName", "FleetManagementDataProvider")
+      .Data("filterFleets")).ServerFiltering(true)).CascadeFrom("EquipmentNameID"))

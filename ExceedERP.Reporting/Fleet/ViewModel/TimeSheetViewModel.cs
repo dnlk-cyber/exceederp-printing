@@ -11,8 +11,6 @@ namespace ExceedERP.Reporting.Fleet.ViewModel
     {
 
         public Guid TimeSheetID { get; set; }
- 
- 
         public decimal TotalIdleTime { get; set; }
         public decimal TotalWorkingTime { get; set; }
         public decimal TotalWorkingCost { get; set; }

@@ -23,7 +23,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         public List<SelectListItem> GetSalaryIncentive()
         {
 
-            var result = EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Operator.SalaryIncentiveenum));
+            var result = EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.SalaryIncentiveenum));
 
             return result;
 
@@ -31,7 +31,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             public List<SelectListItem> GetSalaryLisenseType()
         {
 
-            var result = EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Operator.LicenseTypeenum));
+            var result = EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.LicenseTypeenum));
 
             return result;
 
@@ -39,7 +39,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             public List<SelectListItem> GetSalaryLisenseLevel()
             {
 
-                var result = EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Operator.LicenseLevelenum));
+                var result = EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.LicenseLevelenum));
 
                 return result;
 

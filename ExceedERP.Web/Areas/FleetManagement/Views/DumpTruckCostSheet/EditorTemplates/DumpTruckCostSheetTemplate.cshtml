@@ -1,0 +1,124 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Core.Domain.Finance.AP
+@using ExceedERP.Helpers
+@model  ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.DumpTruckTimeSheet
+@using ExceedERP.Helpers.Common
+@Html.HiddenFor(model => model.DumpTruckTimeSheetId)
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.FleetsID, "Equipment Name", htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.FleetsID)
+                                                      .ValuePrimitive(true)
+                                                      .OptionLabel("Select Equipment...")
+                                                      .DataTextField("PlateNumber")
+                                                      .DataValueField("FleetsID")
+                                                      .Filter("contains")
+                                                      .MinLength(2)
+                                                      .DataSource(dataSource =>
+                                                      {
+                                                          dataSource.Read(read => read.Action("GetFleet", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                                                              .ServerFiltering(false);
+                                                      }).HtmlAttributes(new { style = "width:100%" }).Enable(false)
+                )
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.ProcurementSupplierID, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.ProcurementSupplierID)
+                                                                      .ValuePrimitive(true)
+                                                                      .OptionLabel("Select Supplier...")
+                                                                      .DataTextField("Name")
+                                                                      .DataValueField("Id")
+                                                                      .Filter("contains")
+                                                                      //.Events(e => e.Change("handleSupplierChange"))
+                                                                      .DataSource(dataSource =>
+                                                                      {
+                                                                          dataSource.Read(read => read.Action("GetSuppliers", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                                                                          .ServerFiltering(false);
+                                                                      }).Enable(false)
+                )
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().DatePickerFor(model => model.Date).HtmlAttributes(new { style = "width:100%" }).Enable(false)
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.TireCost, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.TireCost).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<div class="row">
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.MaintenanceCost, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.MaintenanceCost).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.LubricantCost, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.LubricantCost).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Perdium, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.Perdium).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Salary, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.Salary).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+  
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.FuelRate, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.FuelRate).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+</div>
+

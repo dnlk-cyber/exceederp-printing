@@ -116,7 +116,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                             foreach (var e in equipments)
                             {
                                 TimeSpan duration = TimeSpan.Zero;
-                                     AssignedEquipment Assigned = db.AssignedEquipment.Where(x => x.EquipmentID == e.RequestedEquipmentId).FirstOrDefault();
+                                     AssignedEquipment Assigned = db.AssignedEquipment.Where(x => x.EquipmentNameID == e.RequestedEquipmentId).FirstOrDefault();
 
                                 if(Assigned != null )
                                 {
@@ -130,8 +130,8 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                                 RequestModel.RequestQuantity = e.Quantity;
                                 RequestModel.StartingDate = e.StartDate;
                                 RequestModel.ToDate = e.EndDate;
-                                RequestModel.Type = e.Type;
-                                RequestModel.Category = e.EquipmentName;
+                                //RequestModel.Type = e.;
+                                //RequestModel.Category = e.EquipmentStatus;
                                 RequestModel.EquipmnetStatus = e.EquipmentStatus;
                                 RequestModel.RequestedDate = e.DateCreated;
                                 RequestModel.AssignedDuration = duration.TotalDays;
@@ -170,7 +170,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                             foreach (var e in equipments)
                             {
                                 TimeSpan duration = TimeSpan.Zero;
-                                AssignedEquipment Assigned = db.AssignedEquipment.Where(x => x.EquipmentID == e.RequestedEquipmentId).FirstOrDefault();
+                                AssignedEquipment Assigned = db.AssignedEquipment.Where(x => x.EquipmentNameID == e.RequestedEquipmentId).FirstOrDefault();
 
                                 if (Assigned != null)
                                 {
@@ -184,8 +184,8 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                                 RequestModel.RequestQuantity = e.Quantity;
                                 RequestModel.StartingDate = e.StartDate;
                                 RequestModel.ToDate = e.EndDate;
-                                RequestModel.Type = e.Type;
-                                RequestModel.Category = e.EquipmentName;
+                                //RequestModel.Type = e.Type;
+                                //RequestModel.Category = e.EquipmentName;
                                 RequestModel.EquipmnetStatus = e.EquipmentStatus;
                                 RequestModel.RequestedDate = e.DateCreated;
                                 RequestModel.AssignedDuration = duration.TotalDays;

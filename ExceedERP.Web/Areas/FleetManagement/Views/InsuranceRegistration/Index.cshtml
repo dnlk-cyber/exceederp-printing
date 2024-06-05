@@ -1,319 +1,134 @@
-﻿@model ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsurance
+﻿
+@{
+    ViewBag.Title = "InsuranceCompany";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-<legend>Insurance Registration </legend>
+<legend>Fleet Insurance</legend>
+
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsurance>()
-    .Name("grid")
-    .Columns(columns =>
-    {
-        columns.ForeignKey(e => e.FleetsID, (System.Collections.IEnumerable)ViewData["Fleets"], "FleetsID", "UnitNum").EditorTemplateName("EquipmentGenericEditor").Width(140);
-        columns.Bound(e => e.PlateNo).Width(140);
-        columns.Bound(e => e.SerialNo).Width(120);
-        columns.Bound(e => e.ChasisNo).Width(100);
-        columns.Bound(e => e.InsuranceCompany).Width(140);
-          columns.Bound(c => c.DateCreated).Format("{0:d}").Width(100);
-       
-    
-        columns.Bound(e => e.PhoneNo).Width(140);
-        columns.Bound(e => e.PremiumCost).Width(120);
-        columns.Bound(e => e.Status).Width(100);
-
-        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
-
-
-    })
-         .ToolBar(commands =>
-         {
-             commands.Create(); commands.Excel();
-             commands.Pdf();
-         })     .Events(ev =>
-         {
-             ev.DataBound("onDataBound"); ev.DetailExpand("onDetailExpand");
-         })
-                  .Editable(editable =>
-                  {
-                      editable.Mode(GridEditMode.InLine);//.TemplateName("InsuranceEditor").Window(x => x.Title("Insurance Registration"));
-                      editable.DisplayDeleteConfirmation("Are You Sure To Remove Insurance");
-                  })
-      .HtmlAttributes(new { style = "height: 520px;" })
-                          .Pageable(pageable => pageable
-                                            .Input(true)
-                                            .Numeric(false)
-                                            .Refresh(true)
-                                            .PageSizes(true)
-                                            .ButtonCount(5))
-
-                                .Scrollable()
-                                .Sortable()
-                                .Filterable()
-                                 .Scrollable(h => h.Height(500)).ClientDetailTemplateId("template")
-    .DataSource(dataSource => dataSource
-        .Ajax()
-        .ServerOperation(false)
-              .Model(model =>
-              {
-                  model.Id(p => p.FleetInsuranceID);
-                  model.Field(x => x.InsuranceCompany).Editable(false);
-                  model.Field(x => x.PhoneNo).Editable(false);
-                  model.Field(x => x.PremiumCost).Editable(false);
-                  model.Field(x => x.Status).Editable(false);
-                  model.Field(x => x.PlateNo).Editable(false);
-                  model.Field(x => x.ChasisNo).Editable(false);
-                  model.Field(x => x.SerialNo).Editable(false);
-              })
-             .Events(ev => ev
-                                        .Error("error_handler(\"grid\")")
-                                        .RequestStart("onRequestStart(\"grid\")")
-                                        .RequestEnd("onRequestEnd(\"grid\")"))
-                    .Create(update => update.Action("Insurance_Create", "InsuranceRegistration"))
-                    .Read(read => read.Action("Insurance_Read", "InsuranceRegistration"))
-                    .Update(update => update.Action("Insurance_Update", "InsuranceRegistration"))
-                    .Destroy(update => update.Action("Insurance_Destroy", "InsuranceRegistration"))
-  )
-)
-
-
-<script id="template" type="text/kendo-tmpl">
-    @(Html.Kendo().TabStrip()
-                                                    .Name("tabStrip_#=FleetInsuranceID#")
-            .SelectedIndex(0)
-            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-            .Items(items =>
+            .Name("grid")
+            .Columns(columns =>
             {
-                items.Add().Text("Detail").Content(
-                    @<text>
-                        <div>
-                            <div class="box">
-
-                                <div class="box-col">
-                                    # if (IsSendForApproval == false || IsSendForApproval == "false")
-                                    {#
-                                    <a href='@Url.Action("SendForOnlineApproval", "InsuranceRegistration")/?Id=#=FleetInsuranceID#' title="Send for Insurance"><i class="fa fa-share-square fa-2x"></i></a>
-                                    # }#
-
-                                </div>
-                            </div>
-                            <div class="demo-section k-header export-app">
-                                <div class="demo-section content-wrapper">
-
-                                    <form>
-
-
-
-                                        <div class="row">
-                                            <div class="col-md-1">
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.CreatedBy)
-                                                    </div>
-                                                    <div>
-                                                        #=CreatedBy#
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.DateCreated)
-                                                    </div>
-                                                    <div>
-                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
-
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.ModifiedBy)
-                                                    </div>
-                                                    <div>
-
-                                                        #=ModifiedBy#
-
-                                                    </div>
-                                                </div>
-                                            </div><div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.LastModified)
-                                                    </div>
-                                                    <div>
-                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-1">
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.DueDate)
-                                                    </div>
-                                                    <div>
-                                                        #=kendo.toString(kendo.parseDate(DueDate), 'dd/MM/yyyy') #
-
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                    </form>
-
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </text>
-
-
-            );
-
-                items.Add().Text(" Types ").Content(@<text>
-
-                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsuranceTypeDetail>()
-                                                                                                                        .Name("FleetInsuranceTypegrid#=FleetInsuranceID#")
-                        .Columns(columns =>
-                        {
-                            columns.Bound(o => o.Name).EditorTemplateName("InsuranceTypeEditor").Width(126);
-                            columns.Bound(o => o.Description).Width(126);
-                            columns.Bound(c => c.CreatedBy).Width(150);
-                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
-                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
-
-                        })
-                        .ToolBar(t => t.Create()) 
-                @*.ToolBar(toolbar =>
-      {
-
-          toolbar.Template(@<text>
-            <div class="toolbar row">
-                <div class="col-md-1">
-                    # if (IsSendForApproval == false || IsSendForApproval == "false")
-                    {#
-                    <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
-                    # }#
-
-                </div>
-                </div></text>);
-      })*@
-
-        .Events(ev =>
-        {
-            ev.DataBound("onDataBound");
-        })
-        .Editable(editable => editable.Mode(GridEditMode.InLine))
-        .DataSource(dataSource => dataSource
-        .Ajax()
-        .PageSize(5)
-        .Model(model =>
-        {
-            model.Id(p => p.FleetInsuranceTypeDetailId);
-            model.Field(p => p.CreatedBy).Editable(false);
-            model.Field(p => p.DateCreated).Editable(false);
-        })
-        .Events(ev => ev
-        .Error("error_handler(\"FleetInsuranceTypegrid#=FleetInsuranceID#\")")
-        .RequestStart("onRequestStart(\"FleetInsuranceTypegrid#=FleetInsuranceID#\")")
-        .RequestEnd("onRequestEnd(\"FleetInsuranceTypegrid#=FleetInsuranceID#\")"))
-
-        .Create(update => update.Action("FleetInsuranceTypeDetails_Create", "FleetInsuranceTypeDetail", new { Id = "#=FleetInsuranceID#" }))
-        .Read(read => read.Action("FleetInsuranceTypeDetails_Read", "FleetInsuranceTypeDetail", new { Id = "#=FleetInsuranceID#" }))
-        .Update(update => update.Action("FleetInsuranceTypeDetails_Update", "FleetInsuranceTypeDetail"))
-                        .Destroy(destroy => destroy.Action("FleetInsuranceTypeDetails_Destroy", "FleetInsuranceTypeDetail"))
-
-        )
-        .ToClientTemplate())
-        </text>
-                );
-                @*items.Add().Text(" Approval").Content(@<text>
-
-                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SiteVehicleApproval>()
-                                                                                                            .Name("SitesVehicleTransfer#=FleetInsuranceID#")
-                            .Columns(columns =>
-                            {
-                                columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
-
-                                columns.Bound(o => o.Remark).Width(200);
-                                columns.Bound(c => c.CreatedBy).Width(150);
-                                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
-                                columns.Command(command => { command.Edit(); }).Width(250);
-
-                            })
-                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                           .DataSource(dataSource => dataSource
-                                .Ajax()
-                                .PageSize(5)
-                                                          .Model(model =>
-                                  {
-                                      model.Id(p => p.SiteVehicleApprovalID);
-                                      model.Field(p => p.CreatedBy).Editable(false);
-                                      model.Field(p => p.DateCreated).Editable(false);
-                                  })
-                                                                                    .Events(ev => ev
-                                                                .Error("error_handler(\"SitesVehicleTransfer#=FleetInsuranceID#\")")
-                                                                .RequestStart("onRequestStart(\"SitesVehicleTransfer#=FleetInsuranceID#\")")
-                                                                .RequestEnd("onRequestEnd(\"SitesVehicleTransfer#=FleetInsuranceID#\")"))
-                                                                                                                               .Create(update => update.Action("SiteVehicle_Approve", "SiteVehicleApproval", new { EId = "#=FleetInsuranceID#" }))
-                                                                                                                         .Read(read => read.Action("SiteVehicleApproval_Read", "SiteVehicleApproval", new { EId = "#=FleetInsuranceID#" }))
-                                                                                                                       .Update(update => update.Action("SiteVehicle_Approve", "SiteVehicleApproval"))
-
-
-                                                          )
-                                                   .ToClientTemplate())
-                    </text>
-                    );*@
+                columns.Bound(c => c.FleetInsuranceId).Title("S.No").Width(50);
+                columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "Id", "Name").Title("Fleet Plate No").Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+                columns.ForeignKey(c => c.InsuranceCompanyId, (IEnumerable)ViewData["InsuranceCompany"], "InsuranceCompanyId", "InsuranceCompanyName").Title("Company").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+                columns.Bound(c => c.PremiumCost).Width(80);
+                columns.Bound(c => c.DueDate).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+                columns.Bound(c => c.ExpireDate).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+                columns.Bound(c => c.Attachment).Title("Email").Width(80);
+                columns.Bound(c => c.Description).Title("Descrption").Width(140);
+                columns.Bound(c => c.HasExpired).Visible(false);
+                columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
             })
-                                                                                                                                                                                                                                                                                                                                                                                                            .ToClientTemplate())
-        </script>
+             .ToolBar(toolbar =>
+             {
+                 toolbar.Create();
+
+             }).Events(e => e.DataBound("onDataBoundMaster"))
+             .Editable(editable => editable.Mode(GridEditMode.PopUp)
+             .TemplateName("FleetInsuranceTemplate")
+             .Window(win => win.Title("Fleet Insurance")))
+             .Pageable()
+             .Filterable()
+             .Scrollable(s => s.Height(550))
+             .DataSource(dataSource => dataSource
+                 .Ajax()
+                 .Sort(sort => sort.Add(e => e.InsuranceCompanyId).Descending())
+                 .Model(model => model.Id(p => p.InsuranceCompanyId))
+                 .Events(ev => ev
+                 .Error("error_handler(\"grid\")")
+                 .RequestStart("onRequestStart(\"grid\")")
+                 .RequestEnd("onRequestEnd(\"grid\")"))
+                 .Read(read => read.Action("FleetInsurances_Read", "InsuranceRegistration"))
+                 .Create(create => create.Action("FleetInsurances_Create", "InsuranceRegistration"))
+                 .Update(update => update.Action("FleetInsurances_Update", "InsuranceRegistration"))
+                 .Destroy(destroy => destroy.Action("FleetInsurances_Destroy", "InsuranceRegistration"))
+                                )
+            )
 
 
-<style type="text/css">
-    div.k-edit-form-container {
-        width: 700px;
-    }
-</style>
-<script>
 
-    var IsApproved;
-    var IsSendForApproved;
-    var masterId;
-    function onDetailExpand(e) {
-        var masterRow = e.masterRow;
+<script type="text/javascript">
+    function onDataBoundMaster(e) {
+       
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+           
+            if (dataItem.HasExpired) {
+                row.css("background-color", "red");
+            }
 
-        var masterGrid = $("#grid").data("kendoGrid");
+           
 
-        var masterDataItem = masterGrid.dataItem(masterRow);
-        masterId = masterDataItem.FleetInsuranceID;
-        IsApproved = masterDataItem.IsOnlineApproved;
-        IsSendForApproved = masterDataItem.IsSendForApproval;
-
-        var FleetInsuranceTypegrid = "#FleetInsuranceTypegrid" + masterId;
-        if (IsSendForApproved == true) {
-            $(FleetInsuranceTypegrid).find(".k-toolbar").hide(); //hide toolbar
-            $(".k-grid-top", FleetInsuranceTypegrid).hide();
         }
     }
-    function onDataBound(e) {
-        var grid = this;
+    function filterFleet() {
+        return {
+            text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
+        }
+    }
 
-        grid.tbody.find("tr[role='row']").each(function () {
-            var dataItem = grid.dataItem(this);
-             if (dataItem.IsSendForApproval == true || dataItem.IsSendForApproval == "true") {
-                  $(this).find(".k-grid-edit").remove();
-                $(this).find(".k-grid-delete").remove();    $(this).addClass("k-state-FleetApproved");
-            } if (dataItem.IsOnlineApproved == true) {
-                $(this).addClass("k-state-FleetApproved");
+    function handleInsuranceTypeChange() {
+        $("ThirdPartyInsurance").prop('disabled', true);
+        $("ThirdPartyInsurance").prop('disabled', true);
+        var type = $("#InsuranceType").data("kendoDropDownList");
+        if (type) {
+            if (type.value() == 0) {
+                
+                $("ThirdPartyInsurance").prop('disabled', false);
+                $("ThirdPartyInsurance").prop('disabled', false);
+            } else {
+                
+                $("ThirdPartyInsurance").prop('disabled', true);
+                $("ThirdPartyInsurance").prop('disabled', true);
             }
-        });
+        }
+    }
+    function handleChange(value) {
+        let grandTotal = 0;
+        let comprehensiveInsurance = Number(value)
+        let thirdPartyInsurance = $('#ThirdPartyInsurance').data("kendoNumericTextBox").value();
+        if (thirdPartyInsurance) {
+            grandTotal = thirdPartyInsurance + comprehensiveInsurance;
+            $('#PremiumCost').data("kendoNumericTextBox").value(grandTotal);
+            $('#PremiumCost').data("kendoNumericTextBox").trigger("change");
+        } else if (!thirdPartyInsurance) {
+            $('#PremiumCost').data("kendoNumericTextBox").value(comprehensiveInsurance);
+            $('#PremiumCost').data("kendoNumericTextBox").trigger("change");
+        }
+
+
+    }
+    function handleThirdPartyInsuranceChange(value) {
+        let total = 0;
+        let thirdPartyInsurance = Number(value);
+        let comprehensiveInsurance = $('#ComprehensiveInsurance').data("kendoNumericTextBox").value();
+        if (comprehensiveInsurance) {
+            grandTotal = thirdPartyInsurance + comprehensiveInsurance;
+            $('#PremiumCost').data("kendoNumericTextBox").value(grandTotal);
+            $('#PremiumCost').data("kendoNumericTextBox").trigger("change");
+        }
+        else {
+            $('#PremiumCost').data("kendoNumericTextBox").value(thirdPartyInsurance);
+            $('#PremiumCost').data("kendoNumericTextBox").trigger("change");
+        }
     }
 </script>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

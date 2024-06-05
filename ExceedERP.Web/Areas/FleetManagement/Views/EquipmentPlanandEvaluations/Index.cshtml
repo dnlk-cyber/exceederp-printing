@@ -20,21 +20,21 @@
     .Name("grid")
     .Columns(columns =>
     {
-     //   columns.ForeignKey(c => c.Category, (System.Collections.IEnumerable)ViewData["EquipmentCategory"], "EquipmentCategoryName", "EquipmentCategoryName").Width(140);
-      //  columns.ForeignKey(c => c.Type, (System.Collections.IEnumerable)ViewData["EquipmentType"], "EquipmentTypeName", "EquipmentTypeName").Width(140);
+        //   columns.ForeignKey(c => c.Category, (System.Collections.IEnumerable)ViewData["EquipmentCategory"], "EquipmentCategoryName", "EquipmentCategoryName").Width(140);
+        //  columns.ForeignKey(c => c.Type, (System.Collections.IEnumerable)ViewData["EquipmentType"], "EquipmentTypeName", "EquipmentTypeName").Width(140);
         columns.Bound(e => e.EquipmentName).Title("Plate No./ Tag No. ").Width(100);
-    
-         columns.Bound(e => e.PlanFuelConsumption).Title("Plan Consumption ").Width(120);
+
+        columns.Bound(e => e.PlanFuelConsumption).Title("Plan Consumption ").Width(120);
         columns.Bound(e => e.PlanIncome).Width(100);
         columns.Bound(e => e.PlanWorkingtime).Width(100);
         columns.Bound(e => e.Status).Width(100);
         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
 
     })
-               .ToolBar(commands => commands.Create())
+           .ToolBar(commands => commands.Create())
          .Editable(editable =>
          {
-             editable.Mode(GridEditMode.PopUp).TemplateName("PlanEditor").Window(x => x.Title("Equipment Plan and Evaluations "));
+             editable.Mode(GridEditMode.PopUp).TemplateName("PlanEditor1").Window(x => x.Title("Equipment Plan and Evaluations "));
              editable.DisplayDeleteConfirmation("Are You Sure To Remove Plan");
          })
            .HtmlAttributes(new { style = "height: 520px;" })
@@ -48,10 +48,13 @@
                               .Scrollable()
                               .Sortable()
                               .Filterable()
-                              .Groupable()
+                              //.Groupable()
                               .Scrollable(h => h.Height(500))
                                            .ClientDetailTemplateId("template")
-                                        .Groupable().Events(ev => { ev.DetailExpand("onDetailExpandUser"); ev.DataBound("onDataBound"); })
+                                        .Events(ev => {
+                                            ev.DetailExpand("onDetailExpandUser");
+                                            ev.DataBound("onDataBound");
+                                        })
 
                               .DataSource(dataSource => dataSource
         .Ajax()
@@ -97,72 +100,38 @@
                                     # }#
                                 </div>
                             </div>
-                            <div class="demo-section k-header export-app">
-                                <div class="demo-section content-wrapper">
-
-                                    <form>
+                 
 
 
 
                                         <div class="row">
                                             <div class="col-md-1">
                                             </div>
-                                            <div class="col-md-2">
+                                            <div class="col-md-6" style="margin-top:20px;">
+
                                                 <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.CreatedBy)
-                                                    </div>
-                                                    <div>
-                                                        #=CreatedBy#
+                                                    @Html.LabelFor(model => model.CreatedBy):<span>#=CreatedBy#</span>
 
-                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="col-md-2">
                                                 <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.DateCreated)
-                                                    </div>
-                                                    <div>
-                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                    @Html.LabelFor(model => model.DateCreated):<span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
 
-                                                    </div>
                                                 </div>
-                                            </div>
-
-                                            <div class="col-md-2">
                                                 <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.ModifiedBy)
-                                                    </div>
-                                                    <div>
+                                                    @Html.LabelFor(model => model.ModifiedBy):<span>#=ModifiedBy#</span>
 
-                                                        #=ModifiedBy#
-
-                                                    </div>
                                                 </div>
-                                            </div>
-
-                                            <div class="col-md-2">
                                                 <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.LastModified)
-                                                    </div>
-                                                    <div>
-                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                    @Html.LabelFor(model => model.LastModified):<span>#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy')#</span>
 
-                                                    </div>
                                                 </div>
+
+
+
                                             </div>
 
                                         </div>
-
-                                    </form>
-
-                                </div>
-                            </div>
-
-                        </div>
+           </div>
 
                     </text>
 

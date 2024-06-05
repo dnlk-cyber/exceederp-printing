@@ -75,6 +75,18 @@ namespace ExceedERP.Web.Areas.FleetManagement.Models
         public DateTime DateCreated { get; set; }
 
     }
+    public class FleetViewSelectedModel
+    {
+  
+
+        public Guid FleetsID { get; set; }
+        public string PlateNumber { get; set; }
+        public string SerialNo { get; set; }
+        public string EquipmentName { get; set; }
+        public string UnitNum { get; set; }
+        public string ChasisNumber { get; set; }
+
+    }
     public class FleetViewModel
     {
 
@@ -84,6 +96,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Models
         public Guid SheduleID { get; set; }
         public Guid EquipmentIdentityID { get; set; }
         public string EquipmentName { get; set; }
+        public Guid EquipmentNameID { get; set; }
         public string Type { get; set; }
         public string UnitNum { get; set; }
         public string Manufacturer { get; set; }

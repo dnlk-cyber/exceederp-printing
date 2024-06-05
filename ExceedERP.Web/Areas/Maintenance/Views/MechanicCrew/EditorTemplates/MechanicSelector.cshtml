@@ -1,0 +1,14 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+
+                      .OptionLabel("Select Employee")
+                          .DataTextField("FullNameaEnglish")
+                          .DataValueField("EmployeeId")
+                              .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetAllMechaniCrew", "MaintenanceDataProvider", new { area = "Maintenance" }).Data("filterEmployees"))
+                                            .ServerFiltering(true);
+                          })
+
+)
+@Html.ValidationMessageFor(m => m)

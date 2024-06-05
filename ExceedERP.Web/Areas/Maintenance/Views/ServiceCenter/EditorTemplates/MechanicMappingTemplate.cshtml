@@ -1,0 +1,15 @@
+﻿
+@(Html.Kendo().DropDownListFor(model => model)
+    .ValuePrimitive(true)
+            .DataTextField("Name")
+            .DataValueField("Code")
+            .OptionLabel("Select")
+            .Filter("contains")
+            .DataSource(dataSource =>
+            {
+                dataSource.Read(read => read.Action("GetMechanics", "MaintenanceDataProvider")
+                .Data("filterMechanics"))
+                .ServerFiltering(true);
+            })
+            .CascadeFrom("MechanicType")
+)

@@ -10,7 +10,7 @@
     {
         columns.Bound(e => e.CustomerName).Width(140);
         columns.Bound(e => e.EquipmentName).Width(120);
-       
+
         columns.Bound(e => e.KMHrReading).Width(140);
         columns.Bound(e => e.FinalKMHrReading).Width(140);
         columns.Bound(e => e.IdleTime).Width(120);
@@ -19,19 +19,18 @@
         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
 
     }).Events(ev =>
-                        {
-                            ev.DataBound("onDataBound");
-                        })
+    {
+        ev.DataBound("onDataBound");
+    })
             .ToolBar(commands =>
-              {
-                  commands.Create(); commands.Excel();
-                  commands.Pdf();
-              })
-    .Editable(editable =>
+            {
+                commands.Create();
+            })
+    .Editable(editable => 
         {
-            editable.Mode(GridEditMode.PopUp).TemplateName("TimeSheetEditor").Window(x => x.Title("TimeSheet Registration"));
-            editable.DisplayDeleteConfirmation("Are You Sure To Remove Time Sheet");
-        })
+        editable.Mode(GridEditMode.PopUp).TemplateName("TimeSheetEditor").Window(x => x.Title("TimeSheet Registration"));
+        editable.DisplayDeleteConfirmation("Are You Sure To Remove Time Sheet");
+    })
             .HtmlAttributes(new { style = "height: 520px;" })
                           .Pageable(pageable => pageable
                                             .Input(true)
@@ -46,7 +45,7 @@
                                   .Scrollable(h => h.Height(500))
                                            .ClientDetailTemplateId("template")
                                      .Events(ev => { ev.DetailExpand("onDetailExpandUser"); })
- 
+
         .DataSource(dataSource => dataSource
             .Ajax()
                  .PageSize(6)
@@ -59,7 +58,7 @@
                                     .Update(update => update.Action("TimeSheet_Update", "DistributionTimeSheet"))
                                           .Destroy(update => update.Action("TimeSheet_Destroy", "DistributionTimeSheet"))
         )
-       
+
 )
    
 <script id="template" type="text/kendo-tmpl">
@@ -83,67 +82,29 @@
                                     # }#
                                 </div>
                             </div>
-                            <div class="demo-section k-header export-app">
-                                <div class="demo-section content-wrapper">
+                            <div class="row">
+                                <div class="col-md-1">
+                                </div>
+                                <div class="col-md-6" style="margin-top:20px;">
 
-                                    <form>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.CreatedBy):<span>#=CreatedBy#</span>
+
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.DateCreated):<span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
+
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ModifiedBy):<span>#=ModifiedBy#</span>
+
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.LastModified):<span>#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy')#</span>
+
+                                    </div>
 
 
-
-                                        <div class="row">
-                                            <div class="col-md-1">
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.CreatedBy)
-                                                    </div>
-                                                    <div>
-                                                        #=CreatedBy#
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.DateCreated)
-                                                    </div>
-                                                    <div>
-                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
-
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.ModifiedBy)
-                                                    </div>
-                                                    <div>
-
-                                                        #=ModifiedBy#
-
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.LastModified)
-                                                    </div>
-                                                    <div>
-                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                    </form>
 
                                 </div>
                             </div>
@@ -212,7 +173,7 @@
         var Fleetsobj = $("#FleetsID").data("kendoDropDownList");
         var fleetID = Fleetsobj.value();
         $.ajax({
-            url: '@Url.Action("FleetsDetailDDBind", "EquipmentRegistration")',
+            url: '@Url.Action("FleetsDetailDDBind", "FleetManagementDataProvider")',
             data: { FleetsID: fleetID },
             type: 'POST',
             cache: false,

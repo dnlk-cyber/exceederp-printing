@@ -302,7 +302,7 @@
                             })
 
                     .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                       .Groupable().Events(ev => ev.DetailExpand("onDetailServiceExpandUser"))
+                                       .Events(ev => ev.DetailExpand("onDetailServiceExpandUser"))
                                            .DataSource(dataSource => dataSource
                                 .Ajax()
                                 .Group(x => x.Add(p => p.Section))

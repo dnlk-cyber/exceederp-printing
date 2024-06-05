@@ -72,12 +72,12 @@ namespace ExceedERP.Reporting.Fleet.View
             this.TypeDS = new Telerik.Reporting.ObjectDataSource();
             this.subTypeDS = new Telerik.Reporting.ObjectDataSource();
             this.EquipmentNameDS = new Telerik.Reporting.ObjectDataSource();
+            this.AssetCodeDS = new Telerik.Reporting.ObjectDataSource();
+            this.PlateNoDS = new Telerik.Reporting.ObjectDataSource();
+            this.SerialNoDS = new Telerik.Reporting.ObjectDataSource();
             this.YearDS = new Telerik.Reporting.ObjectDataSource();
             this.MaintenaceCenterDS = new Telerik.Reporting.ObjectDataSource();
             this.StatusDS = new Telerik.Reporting.ObjectDataSource();
-            this.PlateNoDS = new Telerik.Reporting.ObjectDataSource();
-            this.SerialNoDS = new Telerik.Reporting.ObjectDataSource();
-            this.AssetCodeDS = new Telerik.Reporting.ObjectDataSource();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.crosstab1 = new Telerik.Reporting.Crosstab();
             this.textBox17 = new Telerik.Reporting.TextBox();
@@ -247,6 +247,24 @@ namespace ExceedERP.Reporting.Fleet.View
             this.EquipmentNameDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
             this.EquipmentNameDS.Name = "EquipmentNameDS";
             // 
+            // AssetCodeDS
+            // 
+            this.AssetCodeDS.DataMember = "GetAssetCode";
+            this.AssetCodeDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.AssetCodeDS.Name = "AssetCodeDS";
+            // 
+            // PlateNoDS
+            // 
+            this.PlateNoDS.DataMember = "GetPlateNumber";
+            this.PlateNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.PlateNoDS.Name = "PlateNoDS";
+            // 
+            // SerialNoDS
+            // 
+            this.SerialNoDS.DataMember = "GetSerialNo";
+            this.SerialNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.SerialNoDS.Name = "SerialNoDS";
+            // 
             // YearDS
             // 
             this.YearDS.DataMember = "GetProductionYear";
@@ -264,24 +282,6 @@ namespace ExceedERP.Reporting.Fleet.View
             this.StatusDS.DataMember = "GetJobStatus";
             this.StatusDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.JobOrderDataSource);
             this.StatusDS.Name = "StatusDS";
-            // 
-            // PlateNoDS
-            // 
-            this.PlateNoDS.DataMember = "GetPlateNumber";
-            this.PlateNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.PlateNoDS.Name = "PlateNoDS";
-            // 
-            // SerialNoDS
-            // 
-            this.SerialNoDS.DataMember = "GetSerialNo";
-            this.SerialNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.SerialNoDS.Name = "SerialNoDS";
-            // 
-            // AssetCodeDS
-            // 
-            this.AssetCodeDS.DataMember = "GetAssetCode";
-            this.AssetCodeDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.AssetCodeDS.Name = "AssetCodeDS";
             // 
             // detailSection1
             // 

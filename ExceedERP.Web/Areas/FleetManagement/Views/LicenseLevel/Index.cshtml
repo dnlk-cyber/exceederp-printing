@@ -11,39 +11,37 @@
         columns.Bound(e => e.Name).Width(140);
         columns.Bound(e => e.Description).Width(140);
         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
-
     })
         .ToolBar(commands => commands.Create())
        .Editable(editable =>
-         {
-             editable.Mode(GridEditMode.InLine);
-             editable.DisplayDeleteConfirmation("Are You Sure To Remove License Level");
-         })
+       {
+           editable.Mode(GridEditMode.InLine);
+           editable.DisplayDeleteConfirmation("Are You Sure To Remove License Level");
+       })
         .HtmlAttributes(new { style = "height: 520px;" })
-                          .Pageable(pageable => pageable
-                                            .Input(true)
-                                            .Numeric(false)
-                                            .Refresh(true)
-                                            .PageSizes(true)
-                                            .ButtonCount(5))
-
-                                .Scrollable()
-                                .Sortable()
-                                .Filterable()
-                                .Scrollable(h => h.Height(500))
+             .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+                    .Scrollable()
+                    .Sortable()
+                    .Filterable()
+                    .Scrollable(h => h.Height(500))
          .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
                        .Model(model =>
-              {
-                  model.Id(p => p.LicenseLevelId);
+                       {
+                           model.Id(p => p.LicenseLevelId);
 
-                  model.Field(p => p.LicenseLevelId).Editable(false);
-
-              }).Events(ev => ev
-                                            .Error("error_handler(\"grid\")")
-                                            .RequestStart("onRequestStart(\"grid\")")
-                                            .RequestEnd("onRequestEnd(\"grid\")"))
+                           model.Field(p => p.LicenseLevelId).Editable(false);
+                       })
+                            .Sort(so => so.Add(s => s.LicenseLevelId).Descending())
+.Events(ev => ev
+                        .Error("error_handler(\"grid\")")
+                        .RequestStart("onRequestStart(\"grid\")")
+                        .RequestEnd("onRequestEnd(\"grid\")"))
                         .Create(update => update.Action("LicenseLevel_Create", "LicenseLevel"))
                         .Read(read => read.Action("LicenseLevel_Read", "LicenseLevel"))
                         .Update(update => update.Action("LicenseLevel_Update", "LicenseLevel"))

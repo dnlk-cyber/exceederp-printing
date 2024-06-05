@@ -1,9 +1,0 @@
-﻿
-<div>
-    @(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
-          .DataTextField("EquipmentCategoryName")
-                  .DataValueField("EquipmentIdentityID").OptionLabel("Select")
-          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory"))))
-
-
-</div>

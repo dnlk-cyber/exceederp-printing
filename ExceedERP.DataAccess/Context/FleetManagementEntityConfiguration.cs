@@ -1,24 +1,248 @@
-﻿using ExceedERP.Core.Domain.FleetManagement.BatteryManagement;
+using ExceedERP.Core.Domain.FleetManagement.BatteryManagement;
 using ExceedERP.Core.Domain.FleetManagement.EquipmentInspection;
 using ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation;
 using ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent;
-using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 using ExceedERP.Core.Domain.FleetManagement.FleetSalvageStore;
 using ExceedERP.Core.Domain.FleetManagement.FleetTireManagement;
 using ExceedERP.Core.Domain.FleetManagement.FuelManagement;
+using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
+using ExceedERP.Core.Domain.Maintenance;
+using ExceedERP.Core.Domain.FleetManagement.FleetInsurances;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.ModelConfiguration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ExceedERP.Core.Domain.FleetManagement.RentalPayment;
 
 namespace ExceedERP.DataAccess.Context
 {
+    
     public class FleetManagementEntityConfiguration
     {
+        public class FleetAnnualPlanEntitytypeConfiguration : EntityTypeConfiguration<FleetAnnualPlan>
+        {
+            public FleetAnnualPlanEntitytypeConfiguration()
+            {
+                this.ToTable("FleetAnnualPlan", "FleetManagement");
+                this.HasKey<int>(p => p.FleetAnnualPlanId);
+            }
+        }
+        public class FleetAnnualPlanDetailEntityTypeConfiguration : EntityTypeConfiguration<FleetAnnualPlanDetail>
+        {
+            public FleetAnnualPlanDetailEntityTypeConfiguration()
+            {
+                this.ToTable("FleetAnnualPlanDetail", "FleetManagement");
+                this.HasKey<int>(p => p.FleetAnnualPlanDetailId);
+            }
+        }
+        public class FleetBatteryAndTireEntityTypeConfiguration : EntityTypeConfiguration<FleetBatteryAndTire>
+        {
+            public FleetBatteryAndTireEntityTypeConfiguration()
+            {
+                this.ToTable("FleetBatteryAndTire", "FleetManagement");
+                this.HasKey<int>(p => p.FleetBatteryAndTireId);
+            }
+        }
+        public class FleetBoloRegistrationEntityTypeConfiguration : EntityTypeConfiguration<FleetBoloRegistration>
+        {
+            public FleetBoloRegistrationEntityTypeConfiguration()
+            {
+                this.ToTable("FleetBoloRegistration", "FleetManagement");
+                this.HasKey<int>(p => p.FleetBoloRegistrationId);
+            }
+        }
+        public class RentFromExternalEquipmentEntityTypeConfiguration : EntityTypeConfiguration<RentFromExternalEquipment>
+        {
+            public RentFromExternalEquipmentEntityTypeConfiguration()
+            {
+                this.ToTable("RentFromExternalEquipment", "FleetManagement");
+                this.HasKey<int>(k => k.RentFromExternalEquipmentId);
+            }
+        }
+        public class AssignedEquipmentAdditionalInfoEntityTypeConfiguration : EntityTypeConfiguration<AssignedEquipmentAdditionalInfo>
+        {
+
+            public AssignedEquipmentAdditionalInfoEntityTypeConfiguration()
+            {
+                this.ToTable("AssignedEquipmentAdditionalInfo", "FleetManagement");
+                this.HasKey<int>(t => t.AssignedEquipmentAdditionalInfoId);
+
+            }
+        }
+        public class DryLoadingEntityTypeConfiguration : EntityTypeConfiguration<DryLoadingTimeSheet>
+        {
+
+            public DryLoadingEntityTypeConfiguration()
+            {
+                this.ToTable("DryLoadingTimeSheet", "FleetManagement");
+                this.HasKey<int>(t => t.DryLoadingTimeSheetId);
+                 
+            }
+        }
+        public class LightVehicleEntityTypeConfiguration : EntityTypeConfiguration<LightVehicleTimeSheet>
+        {
+            public LightVehicleEntityTypeConfiguration()
+            {
+                this.ToTable("LightVehicleTimesheet", "FleetManagement");
+                this.HasKey<int>(t => t.LightVehicleTimeSheetId);
+            }
+        }
+        public class WagonDrillTimesheetEntityTypeConfiguration : EntityTypeConfiguration<WagonDrillTimesheet>
+        {
+
+            public WagonDrillTimesheetEntityTypeConfiguration()
+            {
+                this.ToTable("WagonDrillTimesheet", "FleetManagement");
+                this.HasKey<int>(t => t.WagonDrillTimesheetId);
+
+            }
+        }
+        public class DumpTruckTimeSheetEntityTypeConfiguration : EntityTypeConfiguration<DumpTruckTimeSheet>
+        {
+
+            public DumpTruckTimeSheetEntityTypeConfiguration()
+            {
+                this.ToTable("DumpTruckTimeSheet", "FleetManagement");
+                this.HasKey<int>(t => t.DumpTruckTimeSheetId);
+
+            }
+        }
+
+        public class DumpTruckTimeSheetDetailEntityTypeConfiguration : EntityTypeConfiguration<DumpTruckTimeSheetDetail>
+        {
+
+            public DumpTruckTimeSheetDetailEntityTypeConfiguration()
+            {
+                this.ToTable("DumpTruckTimeSheetDetail", "FleetManagement");
+                this.HasKey<int>(t => t.DumpTruckTimeSheetDetailId);
+
+            }
+        }
+        public class RentalInspectionEntityTypeConfiguration : EntityTypeConfiguration<RentalInspection>
+        {
+
+            public RentalInspectionEntityTypeConfiguration()
+            {
+                this.ToTable("RentalInspection", "FleetManagement");
+                this.HasKey<int>(t => t.RentalInspectionId);
+
+            }
+        }
+        public class RentalPaymentRequestEntityTypeConfiguration : EntityTypeConfiguration<RentalPaymentRequest>
+        {
+
+            public RentalPaymentRequestEntityTypeConfiguration()
+            {
+                this.ToTable("RentalPaymentRequest", "FleetManagement");
+                this.HasKey<int>(t => t.RentalPaymentRequestId);
+
+            }
+        }
+        public class RentalPaymentRequestValidationEntityTypeConfiguration : EntityTypeConfiguration<RentalPaymentRequestValidation>
+        {
+
+            public RentalPaymentRequestValidationEntityTypeConfiguration()
+            {
+                this.ToTable("RentalPaymentRequestValidation", "FleetManagement");
+                this.HasKey<int>(t => t.RentalPaymentRequestValidationId);
+
+            }
+        }
+        public class RentalPaymentRequestDepartmentValidationEntityTypeConfiguration : EntityTypeConfiguration<RentalPaymentRequestDepartmentValidation>
+        {
+
+            public RentalPaymentRequestDepartmentValidationEntityTypeConfiguration()
+            {
+                this.ToTable("RentalPaymentRequestDepartmentValidation", "FleetManagement");
+                this.HasKey<int>(t => t.RentalPaymentRequestDepartmentValidationId);
+
+            }
+        }
+        public class RentalPaymentRequestBudgetValidationEntityTypeConfiguration : EntityTypeConfiguration<RentalPaymentRequestBudgetValidation>
+        {
+
+            public RentalPaymentRequestBudgetValidationEntityTypeConfiguration()
+            {
+                this.ToTable("RentalPaymentRequestBudgetValidation", "FleetManagement");
+                this.HasKey<int>(t => t.RentalPaymentRequestBudgetValidationId);
+
+            }
+        }
+        public class RentalPaymentRequestLineEntityTypeConfiguration : EntityTypeConfiguration<RentalPaymentRequestLine>
+        {
+
+            public RentalPaymentRequestLineEntityTypeConfiguration()
+            {
+                this.ToTable("RentalPaymentRequestLine", "FleetManagement");
+                this.HasKey<int>(t => t.RentalPaymentRequestLineId);
+
+            }
+        }
+        public class RentalInspectionValidationEntityTypeConfiguration : EntityTypeConfiguration<RentalInspectionValidation>
+        {
+
+            public RentalInspectionValidationEntityTypeConfiguration()
+            {
+                this.ToTable("RentalInspectionValidation", "FleetManagement");
+                this.HasKey<int>(t => t.RentalInspectionValidationId);
+
+            }
+        }
+        public class RentalInspectionCriteriaEntityTypeConfiguration : EntityTypeConfiguration<RentalInspectionCriteria>
+        {
+
+            public RentalInspectionCriteriaEntityTypeConfiguration()
+            {
+                this.ToTable("RentalInspectionCriteria", "FleetManagement");
+                this.HasKey<int>(t => t.RentalInspectionCriteriaId);
+
+            }
+        }
+        public class RentalInspectionCriteriaDetailEntityTypeConfiguration : EntityTypeConfiguration<RentalInspectionCriteriaDetail>
+        {
+
+            public RentalInspectionCriteriaDetailEntityTypeConfiguration()
+            {
+                this.ToTable("RentalInspectionCriteriaDetail", "FleetManagement");
+                this.HasKey<int>(t => t.RentalInspectionCriteriaDetailId);
+
+            }
+        }
+        public class EquipmentCheckListEntityTypeConfiguration : EntityTypeConfiguration<EquipmentCheckList>
+        {
+
+            public EquipmentCheckListEntityTypeConfiguration()
+            {
+                this.ToTable("EquipmentCheckList", "FleetManagement");
+                this.HasKey<int>(t => t.EquipmentCheckListId);
+
+            }
+        }
+        public class RentalMVInspectionEntityTypeConfiguration : EntityTypeConfiguration<RentalMVInspection>
+        {
+
+            public RentalMVInspectionEntityTypeConfiguration()
+            {
+                this.ToTable("RentalMVInspection", "FleetManagement");
+                this.HasKey<int>(t => t.RentalMVInspectionId);
+
+            }
+        }
+        public class MachineryWorkingTimeSheetEntityTypeConfiguration : EntityTypeConfiguration<MachineryWorkingTimeSheet>
+        {
+
+            public MachineryWorkingTimeSheetEntityTypeConfiguration()
+            {
+                this.ToTable("MachineryWorkingTimeSheet", "FleetManagement");
+                this.HasKey<int>(t => t.MachineryWorkingTimeSheetId);
+
+            }
+        }
+
         public class FleetReturnApprovalEntityTypeConfiguration : EntityTypeConfiguration<FleetReturnApproval>
         {
 
@@ -162,26 +386,26 @@ namespace ExceedERP.DataAccess.Context
 
             }
         }
-        public class PMScheduleEntityTypeConfiguration : EntityTypeConfiguration<PMSchedule>
-        {
+        //public class PMScheduleEntityTypeConfiguration : EntityTypeConfiguration<PMSchedule>
+        //{
 
-            public PMScheduleEntityTypeConfiguration()
-            {
-                this.ToTable("PMSchedule", "FleetManagement");
-                this.HasKey<int>(t => t.PMScheduleId);
+        //    public PMScheduleEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("PMSchedule", "FleetManagement");
+        //        this.HasKey<int>(t => t.PMScheduleId);
 
-            }
-        }
-         public class DailyCareDetailItemEntityTypeConfiguration : EntityTypeConfiguration<DailyCareDetailItem>
-        {
+        //    }
+        //}
+        // public class DailyCareDetailItemEntityTypeConfiguration : EntityTypeConfiguration<DailyCareDetailItem>
+        //{
 
-            public DailyCareDetailItemEntityTypeConfiguration()
-            {
-                this.ToTable("DailyCareDetailItem", "FleetManagement");
-                this.HasKey<Guid>(t => t.DailyCareDetailItemId);
+        //    public DailyCareDetailItemEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("DailyCareDetailItem", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.DailyCareDetailItemId);
 
-            }
-        }
+        //    }
+        //}
         
 
         public class FleetInsuranceTypeDetailEntityTypeConfiguration : EntityTypeConfiguration<FleetInsuranceTypeDetail>
@@ -194,108 +418,108 @@ namespace ExceedERP.DataAccess.Context
 
             }
         }
-        public class PMScheduleDetailEntityTypeConfiguration : EntityTypeConfiguration<PMScheduleDetail>
-        {
+        //public class PMScheduleDetailEntityTypeConfiguration : EntityTypeConfiguration<PMScheduleDetail>
+        //{
 
-            public PMScheduleDetailEntityTypeConfiguration()
-            {
-                this.ToTable("PMScheduleDetail", "FleetManagement");
-                this.HasKey<int>(t => t.PMScheduleDetailId);
+        //    public PMScheduleDetailEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("PMScheduleDetail", "FleetManagement");
+        //        this.HasKey<int>(t => t.PMScheduleDetailId);
 
-            }
-        }
-        public class LogisticPlanEntityTypeConfiguration : EntityTypeConfiguration<LogisticPlan>
-        {
+        //    }
+        //}
+        //public class LogisticPlanEntityTypeConfiguration : EntityTypeConfiguration<LogisticPlan>
+        //{
 
-            public LogisticPlanEntityTypeConfiguration()
-            {
-                this.ToTable("LogisticPlan", "FleetManagement");
-                this.HasKey<int>(t => t.LogisticPlanId);
+        //    public LogisticPlanEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("LogisticPlan", "FleetManagement");
+        //        this.HasKey<int>(t => t.LogisticPlanId);
 
-            }
-        }
-        public class LogisticPlanDetailEntityTypeConfiguration : EntityTypeConfiguration<LogisticPlanDetail>
-        {
+        //    }
+        //}
+        //public class LogisticPlanDetailEntityTypeConfiguration : EntityTypeConfiguration<LogisticPlanDetail>
+        //{
 
-            public LogisticPlanDetailEntityTypeConfiguration()
-            {
-                this.ToTable("LogisticPlanDetail", "FleetManagement");
-                this.HasKey<int>(t => t.LogisticPlanDetailId);
+        //    public LogisticPlanDetailEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("LogisticPlanDetail", "FleetManagement");
+        //        this.HasKey<int>(t => t.LogisticPlanDetailId);
 
-            }
-        }
-        public class ServiceCrewWorkLogEntityTypeConfiguration : EntityTypeConfiguration<ServiceCrewWorkLog>
-        {
+        //    }
+        //}
+        //public class ServiceCrewWorkLogEntityTypeConfiguration : EntityTypeConfiguration<ServiceCrewWorkLog>
+        //{
 
-            public ServiceCrewWorkLogEntityTypeConfiguration()
-            {
-                this.ToTable("ServiceCrewWorkLog", "FleetManagement");
-                this.HasKey<Guid>(t => t.ServiceCrewWorkLogId);
+        //    public ServiceCrewWorkLogEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("ServiceCrewWorkLog", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.ServiceCrewWorkLogId);
 
-            }
-        }
-        public class FailureReasonEntityTypeConfiguration : EntityTypeConfiguration<FailureReason>
-        {
+        //    }
+        //}
+        //public class FailureReasonEntityTypeConfiguration : EntityTypeConfiguration<FailureReason>
+        //{
 
-            public FailureReasonEntityTypeConfiguration()
-            {
-                this.ToTable("FailureReason", "FleetManagement");
-                this.HasKey<Guid>(t => t.FailureReasonId);
+        //    public FailureReasonEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("FailureReason", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.FailureReasonId);
 
-            }
-        }
-        public class DailyCareLogEntityTypeConfiguration : EntityTypeConfiguration<DailyCareLog>
-        {
+        //    }
+        //}
+        //public class DailyCareLogEntityTypeConfiguration : EntityTypeConfiguration<DailyCareLog>
+        //{
 
-            public DailyCareLogEntityTypeConfiguration()
-            {
-                this.ToTable("DailyCareLog", "FleetManagement");
-                this.HasKey<Guid>(t => t.DailyCareLogId);
+        //    public DailyCareLogEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("DailyCareLog", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.DailyCareLogId);
 
-            }
-        }
+        //    }
+        //}
 
 
-        public class DailyCareDetailLogEntityTypeConfiguration : EntityTypeConfiguration<DailyCareDetailLog>
-        {
+        //public class DailyCareDetailLogEntityTypeConfiguration : EntityTypeConfiguration<DailyCareDetailLog>
+        //{
 
-            public DailyCareDetailLogEntityTypeConfiguration()
-            {
-                this.ToTable("DailyCareDetailLog", "FleetManagement");
-                this.HasKey<Guid>(t => t.DailyCareDetailLogId);
+        //    public DailyCareDetailLogEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("DailyCareDetailLog", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.DailyCareDetailLogId);
 
-            }
-        }
-        public class DailyCareCategoryEntityTypeConfiguration : EntityTypeConfiguration<DailyCareCategory>
-        {
+        //    }
+        //}
+        //public class DailyCareCategoryEntityTypeConfiguration : EntityTypeConfiguration<DailyCareCategory>
+        //{
 
-            public DailyCareCategoryEntityTypeConfiguration()
-            {
-                this.ToTable("DailyCareCategory", "FleetManagement");
-                this.HasKey<Guid>(t => t.DailyCareCategoryId);
+        //    public DailyCareCategoryEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("DailyCareCategory", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.DailyCareCategoryId);
 
-            }
-        }
-        public class DailyCareEntityTypeConfiguration : EntityTypeConfiguration<DailyCare>
-        {
+        //    }
+        //}
+        //public class DailyCareEntityTypeConfiguration : EntityTypeConfiguration<DailyCare>
+        //{
 
-            public DailyCareEntityTypeConfiguration()
-            {
-                this.ToTable("DailyCare", "FleetManagement");
-                this.HasKey<Guid>(t => t.DailyCareId);
+        //    public DailyCareEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("DailyCare", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.DailyCareId);
 
-            }
-        }
-        public class AdvanceMeasureEntityTypeConfiguration : EntityTypeConfiguration<AdvanceMeasure>
-        {
+        //    }
+        //}
+        //public class AdvanceMeasureEntityTypeConfiguration : EntityTypeConfiguration<AdvanceMeasure>
+        //{
 
-            public AdvanceMeasureEntityTypeConfiguration()
-            {
-                this.ToTable("AdvanceMeasure", "FleetManagement");
-                this.HasKey<Guid>(t => t.AdvanceMeasureId);
+        //    public AdvanceMeasureEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("AdvanceMeasure", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.AdvanceMeasureId);
 
-            }
-        }
+        //    }
+        //}
 
 
         public class FleetPettyCashEntityTypeConfiguration : EntityTypeConfiguration<FleetPettyCash>
@@ -368,16 +592,16 @@ namespace ExceedERP.DataAccess.Context
 
             }
         }
-        public class InventorySparePartMappingEntityTypeConfiguration : EntityTypeConfiguration<InventorySparePartMapping>
-        {
+        //public class InventorySparePartMappingEntityTypeConfiguration : EntityTypeConfiguration<InventorySparePartMapping>
+        //{
 
-            public InventorySparePartMappingEntityTypeConfiguration()
-            {
-                this.ToTable("InventorySparePartMapping", "FleetManagement");
-                this.HasKey<Guid>(t => t.InventorySparePartMappingId);
+        //    public InventorySparePartMappingEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("InventorySparePartMapping", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.InventorySparePartMappingId);
 
-            }
-        }
+        //    }
+        //}
         public class EquipmentArrivalApprovalEntityTypeConfiguration : EntityTypeConfiguration<EquipmentArrivalApproval>
         {
 
@@ -388,37 +612,37 @@ namespace ExceedERP.DataAccess.Context
 
             }
         }
-        public class MaintenaceInspectionLogEntityTypeConfiguration : EntityTypeConfiguration<MaintenaceInspectionLog>
-        {
+        //public class MaintenaceInspectionLogEntityTypeConfiguration : EntityTypeConfiguration<MaintenaceInspectionLog>
+        //{
 
-            public MaintenaceInspectionLogEntityTypeConfiguration()
-            {
-                this.ToTable("MaintenaceInspectionLog", "FleetManagement");
-                this.HasKey<Guid>(t => t.MaintenaceInspectionLogId);
+        //    public MaintenaceInspectionLogEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("MaintenaceInspectionLog", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.MaintenaceInspectionLogId);
 
-            }
-        }
+        //    }
+        //}
 
-        public class ExternalComponentEntityTypeConfiguration : EntityTypeConfiguration<ExternalComponent>
-        {
+        //public class ExternalComponentEntityTypeConfiguration : EntityTypeConfiguration<ExternalComponent>
+        //{
 
-            public ExternalComponentEntityTypeConfiguration()
-            {
-                this.ToTable("ExternalComponent", "FleetManagement");
-                this.HasKey<Guid>(t => t.ExternalComponentId);
+        //    public ExternalComponentEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("ExternalComponent", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.ExternalComponentId);
 
-            }
-        }
-        public class ExternalComponentDetailEntityTypeConfiguration : EntityTypeConfiguration<ExternalComponentDetail>
-        {
+        //    }
+        //}
+        //public class ExternalComponentDetailEntityTypeConfiguration : EntityTypeConfiguration<ExternalComponentDetail>
+        //{
 
-            public ExternalComponentDetailEntityTypeConfiguration()
-            {
-                this.ToTable("ExternalComponentDetail", "FleetManagement");
-                this.HasKey<Guid>(t => t.ExternalComponentDetailId);
+        //    public ExternalComponentDetailEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("ExternalComponentDetail", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.ExternalComponentDetailId);
 
-            }
-        }
+        //    }
+        //}
         public class EquipmentArrivalEntityTypeConfiguration : EntityTypeConfiguration<EquipmentArrival>
         {
 
@@ -430,16 +654,16 @@ namespace ExceedERP.DataAccess.Context
             }
         }
 
-        public class FollowUpEntityTypeConfiguration : EntityTypeConfiguration<FollowUp>
-        {
+        //public class FollowUpEntityTypeConfiguration : EntityTypeConfiguration<FollowUp>
+        //{
 
-            public FollowUpEntityTypeConfiguration()
-            {
-                this.ToTable("FollowUp", "FleetManagement");
-                this.HasKey<Guid>(t => t.FollowUpId);
+        //    public FollowUpEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("FollowUp", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.FollowUpId);
 
-            }
-        }
+        //    }
+        //}
         public class EquipmentTyreLogEntityTypeConfiguration : EntityTypeConfiguration<EquipmentTyreLog>
         {
 
@@ -470,58 +694,58 @@ namespace ExceedERP.DataAccess.Context
 
             }
         }
-        public class MechanicOnHandEntityTypeConfiguration : EntityTypeConfiguration<MechanicOnHand>
-        {
+        //public class MechanicOnHandEntityTypeConfiguration : EntityTypeConfiguration<MechanicOnHand>
+        //{
 
-            public MechanicOnHandEntityTypeConfiguration()
-            {
-                this.ToTable("MechanicOnHand", "FleetManagement");
-                this.HasKey<Guid>(t => t.MechanicOnHandId);
+        //    public MechanicOnHandEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("MechanicOnHand", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.MechanicOnHandId);
 
-            }
-        }
+        //    }
+        //}
 
-        public class MaintenanceTypeEntityTypeConfiguration : EntityTypeConfiguration<MaintenanceType>
-        {
+        //public class MaintenanceTypeEntityTypeConfiguration : EntityTypeConfiguration<MaintenanceType>
+        //{
 
-            public MaintenanceTypeEntityTypeConfiguration()
-            {
-                this.ToTable("MaintenanceType", "FleetManagement");
-                this.HasKey<Guid>(t => t.MaintenanceTypeId);
+        //    public MaintenanceTypeEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("MaintenanceType", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.MaintenanceTypeId);
 
-            }
-        }
-        public class JobCausesEntityTypeConfiguration : EntityTypeConfiguration<JobCauses>
-        {
+        //    }
+        //}
+        //public class JobCausesEntityTypeConfiguration : EntityTypeConfiguration<JobCauses>
+        //{
 
-            public JobCausesEntityTypeConfiguration()
-            {
-                this.ToTable("JobCauses", "FleetManagement");
-                this.HasKey<Guid>(t => t.JobCausesId);
+        //    public JobCausesEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("JobCauses", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.JobCausesId);
 
-            }
-        }
+        //    }
+        //}
 
-        public class JobRequestEntityTypeConfiguration : EntityTypeConfiguration<JobRequest>
-        {
+        //public class JobRequestEntityTypeConfiguration : EntityTypeConfiguration<JobRequest>
+        //{
 
-            public JobRequestEntityTypeConfiguration()
-            {
-                this.ToTable("JobRequest", "FleetManagement");
-                this.HasKey<Guid>(t => t.JobRequestId);
+        //    public JobRequestEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("JobRequest", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.JobRequestId);
 
-            }
-        }
-        public class WorkUnitSectionEntityTypeConfiguration : EntityTypeConfiguration<WorkUnitSection>
-        {
+        //    }
+        //}
+        //public class WorkUnitSectionEntityTypeConfiguration : EntityTypeConfiguration<WorkUnitSection>
+        //{
 
-            public WorkUnitSectionEntityTypeConfiguration()
-            {
-                this.ToTable("WorkUnitSection", "FleetManagement");
-                this.HasKey<Guid>(t => t.WorkUnitSectionId);
+        //    public WorkUnitSectionEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("WorkUnitSection", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.WorkUnitSectionId);
 
-            }
-        }
+        //    }
+        //}
         public class FleetsEntityTypeConfiguration : EntityTypeConfiguration<Fleets>
         {
 
@@ -533,16 +757,16 @@ namespace ExceedERP.DataAccess.Context
             }
         }
 
-        public class JobStoreRequisitionEntityTypeConfiguration : EntityTypeConfiguration<JobStoreRequisition>
-        {
+        //public class JobStoreRequisitionEntityTypeConfiguration : EntityTypeConfiguration<JobStoreRequisition>
+        //{
 
-            public JobStoreRequisitionEntityTypeConfiguration()
-            {
-                this.ToTable("JobStoreRequisition", "FleetManagement");
-                this.HasKey<Guid>(t => t.JobStoreRequisitionId);
+        //    public JobStoreRequisitionEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("JobStoreRequisition", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.JobStoreRequisitionId);
 
-            }
-        }
+        //    }
+        //}
 
         public class FuelConsumptionAlertLevelEntityTypeConfiguration : EntityTypeConfiguration<FuelConsumptionAlertLevel>
         {
@@ -683,6 +907,26 @@ namespace ExceedERP.DataAccess.Context
 
             }
         }
+        public class FleetCheckListEntityTypeConfiguration : EntityTypeConfiguration<FleetCheckList>
+        {
+
+            public FleetCheckListEntityTypeConfiguration()
+            {
+                this.ToTable("FleetCheckList", "FleetManagement");
+                this.HasKey<int>(t => t.FleetCheckListId);
+
+            }
+        }
+        public class FleetLineCheckListListEntityTypeConfiguration : EntityTypeConfiguration<FleetLineCheckList>
+        {
+
+            public FleetLineCheckListListEntityTypeConfiguration()
+            {
+                this.ToTable("FleetLineCheckList", "FleetManagement");
+                this.HasKey<int>(t => t.FleetLineCheckListId);
+
+            }
+        }
         public class CheckListLogEntityTypeConfiguration : EntityTypeConfiguration<CheckListLog>
         {
 
@@ -817,23 +1061,23 @@ namespace ExceedERP.DataAccess.Context
         }
 
 
-        public class RentOtherSuppliersEntityTypeConfiguration : EntityTypeConfiguration<RentOtherSuppliers>
+        public class RentOtherSuppliersEntityTypeConfiguration : EntityTypeConfiguration<RentToExternal>
         {
 
             public RentOtherSuppliersEntityTypeConfiguration()
             {
-                this.ToTable("RentOtherSuppliers", "FleetManagement");
-                this.HasKey<Guid>(t => t.RentOtherSuppliersID);
+                this.ToTable("RentToExternals", "FleetManagement");
+                this.HasKey<Guid>(t => t.RentToExternalID);
 
             }
         }
-        public class RentOtherSupplierApprovalEntityTypeConfiguration : EntityTypeConfiguration<RentOtherSupplierApproval>
+        public class RentOtherSupplierApprovalEntityTypeConfiguration : EntityTypeConfiguration<RentToExternalApproval>
         {
 
             public RentOtherSupplierApprovalEntityTypeConfiguration()
             {
-                this.ToTable("RentOtherSupplierApproval", "FleetManagement");
-                this.HasKey<int>(t => t.RentOtherSupplierApprovalID);
+                this.ToTable("RentToExternalApproval", "FleetManagement");
+                this.HasKey<int>(t => t.RentToExternalApprovalID);
 
             }
         }
@@ -859,139 +1103,139 @@ namespace ExceedERP.DataAccess.Context
             }
         }
 
-        public class AdministrativeJobApprovalEntityTypeConfiguration : EntityTypeConfiguration<AdministrativeJobApproval>
-        {
+        //public class AdministrativeJobApprovalEntityTypeConfiguration : EntityTypeConfiguration<AdministrativeJobApproval>
+        //{
 
-            public AdministrativeJobApprovalEntityTypeConfiguration()
-            {
-                this.ToTable("AdministrativeJobApproval", "FleetManagement");
-                this.HasKey<int>(t => t.AdministrativeJobApprovalID);
+        //    public AdministrativeJobApprovalEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("AdministrativeJobApproval", "FleetManagement");
+        //        this.HasKey<int>(t => t.AdministrativeJobApprovalID);
 
-            }
-        }
+        //    }
+        //}
 
-        public class ExternalCrewEntityTypeConfiguration : EntityTypeConfiguration<ExternalCrew>
-        {
+        //public class ExternalCrewEntityTypeConfiguration : EntityTypeConfiguration<ExternalCrew>
+        //{
 
-            public ExternalCrewEntityTypeConfiguration()
-            {
-                this.ToTable("ExternalCrew", "FleetManagement");
-                this.HasKey<Guid>(t => t.ExternalCrewID);
+        //    public ExternalCrewEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("ExternalCrew", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.ExternalCrewID);
 
-            }
-        }
+        //    }
+        //}
 
-        public class ExternalMaterialEntityTypeConfiguration : EntityTypeConfiguration<ExternalMaterial>
-        {
+        //public class ExternalMaterialEntityTypeConfiguration : EntityTypeConfiguration</*ExternalMaterial*/>
+        //{
 
-            public ExternalMaterialEntityTypeConfiguration()
-            {
-                this.ToTable("ExternalMaterial", "FleetManagement");
-                this.HasKey<Guid>(t => t.ExternalMaterialID);
+        //    public ExternalMaterialEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("ExternalMaterial", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.ExternalMaterialID);
 
-            }
-        }
-        public class JobOrderEntityTypeConfiguration : EntityTypeConfiguration<JobOrder>
-        {
+        //    }
+        //}
+        //public class JobOrderEntityTypeConfiguration : EntityTypeConfiguration<JobOrder>
+        //{
 
-            public JobOrderEntityTypeConfiguration()
-            {
-                this.ToTable("JobOrder", "FleetManagement");
-                this.HasKey<Guid>(t => t.JobOrderID);
+        //    public JobOrderEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("JobOrder", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.JobOrderID);
 
-            }
-        }
-        public class JobOrderDetailEntityTypeConfiguration : EntityTypeConfiguration<JobOrderDetail>
-        {
+        //    }
+        //}
+        //public class JobOrderDetailEntityTypeConfiguration : EntityTypeConfiguration<JobOrderDetail>
+        //{
 
-            public JobOrderDetailEntityTypeConfiguration()
-            {
-                this.ToTable("JobOrderDetail", "FleetManagement");
-                this.HasKey<Guid>(t => t.JobOrderDetailID);
+        //    public JobOrderDetailEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("JobOrderDetail", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.JobOrderDetailID);
 
-            }
-        }
-
-
-        public class MaintenanceCenterEntityTypeConfiguration : EntityTypeConfiguration<MaintenanceCenter>
-        {
-
-            public MaintenanceCenterEntityTypeConfiguration()
-            {
-                this.ToTable("MaintenanceCenter", "FleetManagement");
-                this.HasKey<Guid>(t => t.MaintenanceCenterID);
-
-            }
-        }
-        public class MaintenanceToolEntityTypeConfiguration : EntityTypeConfiguration<MaintenanceTool>
-        {
-
-            public MaintenanceToolEntityTypeConfiguration()
-            {
-                this.ToTable("MaintenanceTool", "FleetManagement");
-                this.HasKey<Guid>(t => t.MaintenanceToolID);
-
-            }
-        }
-
-        public class MechanicCrewEntityTypeConfiguration : EntityTypeConfiguration<MechanicCrew>
-        {
-
-            public MechanicCrewEntityTypeConfiguration()
-            {
-                this.ToTable("MechanicCrew", "FleetManagement");
-                this.HasKey<Guid>(t => t.MechanicCrewID);
-
-            }
-        }
-
-        public class OtherCompanyMaintenaceApprovalEntityTypeConfiguration : EntityTypeConfiguration<OtherCompanyMaintenaceApproval>
-        {
-
-            public OtherCompanyMaintenaceApprovalEntityTypeConfiguration()
-            {
-                this.ToTable("OtherCompanyMaintenaceApproval", "FleetManagement");
-                this.HasKey<int>(t => t.OtherCompanyMaintenaceApprovalID);
-
-            }
-        }
+        //    }
+        //}
 
 
+        //public class MaintenanceCenterEntityTypeConfiguration : EntityTypeConfiguration<MaintenanceCenter>
+        //{
 
-        public class OtherCompanyMaintenanceEntityTypeConfiguration : EntityTypeConfiguration<OtherCompanyMaintenance>
-        {
+        //    public MaintenanceCenterEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("MaintenanceCenter", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.MaintenanceCenterID);
 
-            public OtherCompanyMaintenanceEntityTypeConfiguration()
-            {
-                this.ToTable("OtherCompanyMaintenance", "FleetManagement");
-                this.HasKey<Guid>(t => t.OtherCompanyMaintenanceID);
+        //    }
+        //}
+        //public class MaintenanceToolEntityTypeConfiguration : EntityTypeConfiguration<MaintenanceTool>
+        //{
 
-            }
-        }
+        //    public MaintenanceToolEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("MaintenanceTool", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.MaintenanceToolID);
+
+        //    }
+        //}
+
+        //public class MechanicCrewEntityTypeConfiguration : EntityTypeConfiguration<MechanicCrew>
+        //{
+
+        //    public MechanicCrewEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("MechanicCrew", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.MechanicCrewID);
+
+        //    }
+        //}
+
+        //public class OtherCompanyMaintenaceApprovalEntityTypeConfiguration : EntityTypeConfiguration<OtherCompanyMaintenaceApproval>
+        //{
+
+        //    public OtherCompanyMaintenaceApprovalEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("OtherCompanyMaintenaceApproval", "FleetManagement");
+        //        this.HasKey<int>(t => t.OtherCompanyMaintenaceApprovalID);
+
+        //    }
+        //}
 
 
-        public class OutsourceMaintenanceEntityTypeConfiguration : EntityTypeConfiguration<OutsourceMaintenance>
-        {
 
-            public OutsourceMaintenanceEntityTypeConfiguration()
-            {
-                this.ToTable("OutsourceMaintenance", "FleetManagement");
-                this.HasKey<Guid>(t => t.OutsourceMaintenanceID);
+        //public class OtherCompanyMaintenanceEntityTypeConfiguration : EntityTypeConfiguration<OtherCompanyMaintenance>
+        //{
 
-            }
-        }
+        //    public OtherCompanyMaintenanceEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("OtherCompanyMaintenance", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.OtherCompanyMaintenanceID);
+
+        //    }
+        //}
 
 
-        public class OutsourceMaintenanceApprovalEntityTypeConfiguration : EntityTypeConfiguration<OutsourceMaintenanceApproval>
-        {
+        //public class OutsourceMaintenanceEntityTypeConfiguration : EntityTypeConfiguration<OutsourceMaintenance>
+        //{
 
-            public OutsourceMaintenanceApprovalEntityTypeConfiguration()
-            {
-                this.ToTable("OutsourceMaintenanceApproval", "FleetManagement");
-                this.HasKey<int>(t => t.OutsourceMaintenanceApprovalId);
+        //    public OutsourceMaintenanceEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("OutsourceMaintenance", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.OutsourceMaintenanceID);
 
-            }
-        }
+        //    }
+        //}
+
+
+        //public class OutsourceMaintenanceApprovalEntityTypeConfiguration : EntityTypeConfiguration<OutsourceMaintenanceApproval>
+        //{
+
+        //    public OutsourceMaintenanceApprovalEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("OutsourceMaintenanceApproval", "FleetManagement");
+        //        this.HasKey<int>(t => t.OutsourceMaintenanceApprovalId);
+
+        //    }
+        //}
         public class AnnualEquipmentInventoryInspectionEntityTypeConfiguration : EntityTypeConfiguration<AnnualEquipmentInventoryInspection>
         {
 
@@ -1013,88 +1257,88 @@ namespace ExceedERP.DataAccess.Context
             }
         }
 
-        public class PlannerEntityTypeConfiguration : EntityTypeConfiguration<Planner>
-        {
+        //public class PlannerEntityTypeConfiguration : EntityTypeConfiguration<Planner>
+        //{
 
-            public PlannerEntityTypeConfiguration()
-            {
-                this.ToTable("Planner", "FleetManagement");
-                this.HasKey<Guid>(t => t.PlannerID);
+        //    public PlannerEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("Planner", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.PlannerID);
 
-            }
-        }
+        //    }
+        //}
 
-        public class RepairTypeEntityTypeConfiguration : EntityTypeConfiguration<RepairType>
-        {
+        //public class RepairTypeEntityTypeConfiguration : EntityTypeConfiguration<RepairType>
+        //{
 
-            public RepairTypeEntityTypeConfiguration()
-            {
-                this.ToTable("RepairType", "FleetManagement");
-                this.HasKey<Guid>(t => t.RepairTypeID);
+        //    public RepairTypeEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("RepairType", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.RepairTypeID);
 
-            }
-        }
-        public class ServiceEntityTypeConfiguration : EntityTypeConfiguration<Service>
-        {
+        //    }
+        //}
+        //public class ServiceEntityTypeConfiguration : EntityTypeConfiguration<Service>
+        //{
 
-            public ServiceEntityTypeConfiguration()
-            {
-                this.ToTable("Service", "FleetManagement");
-                this.HasKey<Guid>(t => t.ServiceID);
+        //    public ServiceEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("Service", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.ServiceID);
 
-            }
-        }
-        public class ServiceCrewEntityTypeConfiguration : EntityTypeConfiguration<ServiceCrew>
-        {
+        //    }
+        //}
+        //public class ServiceCrewEntityTypeConfiguration : EntityTypeConfiguration<ServiceCrew>
+        //{
 
-            public ServiceCrewEntityTypeConfiguration()
-            {
-                this.ToTable("ServiceCrew", "FleetManagement");
-                this.HasKey<Guid>(t => t.ServiceCrewID);
+        //    public ServiceCrewEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("ServiceCrew", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.ServiceCrewID);
 
-            }
-        }
-        public class ServiceSpareEntityTypeConfiguration : EntityTypeConfiguration<ServiceSpare>
-        {
+        //    }
+        //}
+        //public class ServiceSpareEntityTypeConfiguration : EntityTypeConfiguration<ServiceSpare>
+        //{
 
-            public ServiceSpareEntityTypeConfiguration()
-            {
-                this.ToTable("ServiceSpare", "FleetManagement");
-                this.HasKey<Guid>(t => t.ServiceSpareID);
+        //    public ServiceSpareEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("ServiceSpare", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.ServiceSpareID);
 
-            }
-        }
-        public class ServiceToolEntityTypeConfiguration : EntityTypeConfiguration<ServiceTool>
-        {
+        //    }
+        //}
+        //public class ServiceToolEntityTypeConfiguration : EntityTypeConfiguration<ServiceTool>
+        //{
 
-            public ServiceToolEntityTypeConfiguration()
-            {
-                this.ToTable("ServiceTool", "FleetManagement");
-                this.HasKey<Guid>(t => t.ServiceToolID);
+        //    public ServiceToolEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("ServiceTool", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.ServiceToolID);
 
-            }
-        }
-        public class SparePartEntityTypeConfiguration : EntityTypeConfiguration<SparePart>
-        {
+        //    }
+        //}
+        //public class SparePartEntityTypeConfiguration : EntityTypeConfiguration<SparePart>
+        //{
 
-            public SparePartEntityTypeConfiguration()
-            {
-                this.ToTable("SparePart", "FleetManagement");
-                this.HasKey<Guid>(t => t.SparePartID);
+        //    public SparePartEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("SparePart", "FleetManagement");
+        //        this.HasKey<Guid>(t => t.SparePartID);
 
-            }
-        }
+        //    }
+        //}
 
-        public class TechnicalJobApprovalEntityTypeConfiguration : EntityTypeConfiguration<TechnicalJobApproval>
-        {
+        //public class TechnicalJobApprovalEntityTypeConfiguration : EntityTypeConfiguration<TechnicalJobApproval>
+        //{
 
-            public TechnicalJobApprovalEntityTypeConfiguration()
-            {
-                this.ToTable("TechnicalJobApproval", "FleetManagement");
-                this.HasKey<int>(t => t.TechnicalJobApprovalID);
+        //    public TechnicalJobApprovalEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("TechnicalJobApproval", "FleetManagement");
+        //        this.HasKey<int>(t => t.TechnicalJobApprovalID);
 
-            }
-        }
+        //    }
+        //}
 
         public class AccidentEntityTypeConfiguration : EntityTypeConfiguration<Accident>
         {
@@ -1191,12 +1435,21 @@ namespace ExceedERP.DataAccess.Context
 
             public FleetInsuranceEntityTypeConfiguration()
             {
-                this.ToTable("FleetInsurance", "FleetManagement");
-                this.HasKey<Guid>(t => t.FleetInsuranceID);
+                this.ToTable("FleetInsurances", "FleetManagement");
+                this.HasKey<int>(t => t.FleetInsuranceId);
 
             }
         }
+        public class InsuranceCompanyEntityTypeConfiguration : EntityTypeConfiguration<InsuranceCompany>
+        {
 
+            public InsuranceCompanyEntityTypeConfiguration()
+            {
+                this.ToTable("InsuranceCompany", "FleetManagement");
+                this.HasKey<int>(t => t.InsuranceCompanyId);
+
+            }
+        }
 
         public class ManufacturerEntityTypeConfiguration : EntityTypeConfiguration<Manufacturer>
         {

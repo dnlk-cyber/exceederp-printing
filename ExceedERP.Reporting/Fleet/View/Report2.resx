@@ -117,40 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="barSeries1.LegendItem.Value" xml:space="preserve">
-    <value>= Fields.TotalSpareCost + '/' +  Fields.TotalSalvageCost + '/' +  Fields.TotalOilLubricantCost + '/' +  Fields.TotalOtherCost + '/' +  Fields.TotalTireCost + '/' +  Fields.TotalLabourCost + '/' + 'Sum(TotalTireCost)'</value>
-  </data>
-  <data name="barSeries1.ToolTip.Title" xml:space="preserve">
-    <value>= Fields.TotalSpareCost + '/' +  Fields.TotalSalvageCost + '/' +  Fields.TotalOilLubricantCost + '/' +  Fields.TotalOtherCost + '/' +  Fields.TotalTireCost + '/' +  Fields.TotalLabourCost + '/' + 'Sum(TotalTireCost)'</value>
-  </data>
-  <data name="barSeries2.LegendItem.Value" xml:space="preserve">
-    <value>= Fields.TotalSpareCost + '/' +  Fields.TotalSalvageCost + '/' +  Fields.TotalOilLubricantCost + '/' +  Fields.TotalOtherCost + '/' +  Fields.TotalTireCost + '/' +  Fields.TotalLabourCost + '/' + 'Sum(TotalSalvageCost)'</value>
-  </data>
-  <data name="barSeries2.ToolTip.Title" xml:space="preserve">
-    <value>= Fields.TotalSpareCost + '/' +  Fields.TotalSalvageCost + '/' +  Fields.TotalOilLubricantCost + '/' +  Fields.TotalOtherCost + '/' +  Fields.TotalTireCost + '/' +  Fields.TotalLabourCost + '/' + 'Sum(TotalSalvageCost)'</value>
-  </data>
-  <data name="barSeries3.LegendItem.Value" xml:space="preserve">
-    <value>= Fields.TotalSpareCost + '/' +  Fields.TotalSalvageCost + '/' +  Fields.TotalOilLubricantCost + '/' +  Fields.TotalOtherCost + '/' +  Fields.TotalTireCost + '/' +  Fields.TotalLabourCost + '/' + 'Sum(TotalOtherCost)'</value>
-  </data>
-  <data name="barSeries3.ToolTip.Title" xml:space="preserve">
-    <value>= Fields.TotalSpareCost + '/' +  Fields.TotalSalvageCost + '/' +  Fields.TotalOilLubricantCost + '/' +  Fields.TotalOtherCost + '/' +  Fields.TotalTireCost + '/' +  Fields.TotalLabourCost + '/' + 'Sum(TotalOtherCost)'</value>
-  </data>
-  <data name="barSeries4.LegendItem.Value" xml:space="preserve">
-    <value>= Fields.TotalSpareCost + '/' +  Fields.TotalSalvageCost + '/' +  Fields.TotalOilLubricantCost + '/' +  Fields.TotalOtherCost + '/' +  Fields.TotalTireCost + '/' +  Fields.TotalLabourCost + '/' + 'Sum(TotalOilLubricantCost)'</value>
-  </data>
-  <data name="barSeries4.ToolTip.Title" xml:space="preserve">
-    <value>= Fields.TotalSpareCost + '/' +  Fields.TotalSalvageCost + '/' +  Fields.TotalOilLubricantCost + '/' +  Fields.TotalOtherCost + '/' +  Fields.TotalTireCost + '/' +  Fields.TotalLabourCost + '/' + 'Sum(TotalOilLubricantCost)'</value>
-  </data>
-  <data name="barSeries5.LegendItem.Value" xml:space="preserve">
-    <value>= Fields.TotalSpareCost + '/' +  Fields.TotalSalvageCost + '/' +  Fields.TotalOilLubricantCost + '/' +  Fields.TotalOtherCost + '/' +  Fields.TotalTireCost + '/' +  Fields.TotalLabourCost + '/' + 'Sum(TotalSpareCost)'</value>
-  </data>
-  <data name="barSeries5.ToolTip.Title" xml:space="preserve">
-    <value>= Fields.TotalSpareCost + '/' +  Fields.TotalSalvageCost + '/' +  Fields.TotalOilLubricantCost + '/' +  Fields.TotalOtherCost + '/' +  Fields.TotalTireCost + '/' +  Fields.TotalLabourCost + '/' + 'Sum(TotalSpareCost)'</value>
-  </data>
-  <data name="barSeries6.LegendItem.Value" xml:space="preserve">
-    <value>= Fields.TotalSpareCost + '/' +  Fields.TotalSalvageCost + '/' +  Fields.TotalOilLubricantCost + '/' +  Fields.TotalOtherCost + '/' +  Fields.TotalTireCost + '/' +  Fields.TotalLabourCost + '/' + 'Sum(TotalLabourCost)'</value>
-  </data>
-  <data name="barSeries6.ToolTip.Title" xml:space="preserve">
-    <value>= Fields.TotalSpareCost + '/' +  Fields.TotalSalvageCost + '/' +  Fields.TotalOilLubricantCost + '/' +  Fields.TotalOtherCost + '/' +  Fields.TotalTireCost + '/' +  Fields.TotalLabourCost + '/' + 'Sum(TotalLabourCost)'</value>
-  </data>
 </root>

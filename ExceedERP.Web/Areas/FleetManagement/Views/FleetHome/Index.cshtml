@@ -1,0 +1,311 @@
+﻿
+@using ExceedERP.Core.Domain.FleetManagement.FleetRegistration
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<div class="container">
+    <nav class="navbar navbar-default">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".js-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Fleet</a>
+        </div>
+
+
+        <div class="collapse navbar-collapse js-navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown mega-dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i> Actions </a>
+
+                    <ul class="dropdown-menu mega-dropdown-menu row">
+                        @if (HttpContext.Current.User.IsInRole("Fleet_Admin")
+|| HttpContext.Current.User.IsInRole("Registration_User")
+|| HttpContext.Current.User.IsInRole("Registration_Approver")
+|| HttpContext.Current.User.IsInRole("Rent_Requestor")
+|| HttpContext.Current.User.IsInRole("Rent_User")
+|| HttpContext.Current.User.IsInRole("Rent_Approver")
+|| HttpContext.Current.User.IsInRole("Fuel_Requestor")
+|| HttpContext.Current.User.IsInRole("Fuel_Approver")
+|| HttpContext.Current.User.IsInRole("Fuel_User")
+|| HttpContext.Current.User.IsInRole("Inspection_User")
+|| HttpContext.Current.User.IsInRole("Inspection_Approver")
+|| HttpContext.Current.User.IsInRole("Resource_Requestor")
+|| HttpContext.Current.User.IsInRole("Resource_Distributor")
+|| HttpContext.Current.User.IsInRole("Resource_Return_User")
+|| HttpContext.Current.User.IsInRole("Resource_User")
+|| HttpContext.Current.User.IsInRole("Resource_Request_Approver")
+|| HttpContext.Current.User.IsInRole("Resource_Approver")
+|| HttpContext.Current.User.IsInRole("Tyre_Requestor")
+|| HttpContext.Current.User.IsInRole("Tyre_Approver")
+|| HttpContext.Current.User.IsInRole("Tyre_User")
+|| HttpContext.Current.User.IsInRole("Fleet_Training_user")
+|| HttpContext.Current.User.IsInRole("Fleet_Report")
+|| HttpContext.Current.User.IsInRole("Fleet_Resource_Report")
+|| HttpContext.Current.User.IsInRole("Fleet_Registration_Report")
+|| HttpContext.Current.User.IsInRole("Equipment_Plan_User")
+|| HttpContext.Current.User.IsInRole("Equipment_Plan_Approver")
+|| HttpContext.Current.User.IsInRole("Salvage_Store_Issue_User")
+|| HttpContext.Current.User.IsInRole("Salvage_Store_Issue_Approver")
+|| HttpContext.Current.User.IsInRole("Store_Good_Receiving_User")
+|| HttpContext.Current.User.IsInRole("Store_Good_Receiving_Approver"))
+                        {
+
+                            <li class="col-sm-2">
+                                <ul>
+                                    <li class="dropdown-top-header">Registration & Rent</li>
+                                    <li class="divider"></li>
+                                    @if (HttpContext.Current.User.IsInRole("Registration_User")
+                                        || HttpContext.Current.User.IsInRole("Registration_Approver"))
+                                    {
+                                        <li class="dropdown-header">Registration</li>
+                                        <li> @Html.ActionLink("Internal Equipment Registration", "Index", "EquipmentRegistration", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li> @Html.ActionLink("External Equipment Registration", "Index", "EquipmentRegistrationRental", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li> @Html.ActionLink("Operator Registration", "Index", "OperatorRegistration", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li> @Html.ActionLink("Insurance Registration", "Index", "InsuranceRegistration", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li> @Html.ActionLink("Accident Registration", "Index", "AccidentRegistration", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li class="divider"></li>
+                                    }
+                                    @if (HttpContext.Current.User.IsInRole("Rent_Requestor")
+|| HttpContext.Current.User.IsInRole("Rent_User")
+|| HttpContext.Current.User.IsInRole("Rent_Approver"))
+                                    {
+                                        <li class="dropdown-header">Equipment Rent</li>
+                                        if (HttpContext.Current.User.IsInRole("Rent_Approver")
+                                   || HttpContext.Current.User.IsInRole("Rent_User"))
+                                        {
+                                            <li>@Html.ActionLink("Rent Time Sheet", "Index", "RentTimeSheet", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        }
+                                        <li> @Html.ActionLink("Rent To External", "Index", "RentToExternal", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li> @Html.ActionLink("Rent From External", "Index", "RentFromExternal", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li> @Html.ActionLink("Rental Inspection", "Index", "RentalInspection", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li> @Html.ActionLink("Rental Payment Request", "Index", "RentalPaymentRequest", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li class="divider"></li>
+                                    }
+                                </ul>
+                            </li>
+
+
+                            <li class="col-sm-2">
+                                <ul>
+                                    <li class="dropdown-top-header">Inspection & Fuel</li>
+                                    <li class="divider"></li>
+                                    @if (HttpContext.Current.User.IsInRole("Inspection_User")
+|| HttpContext.Current.User.IsInRole("Inspection_Approver"))
+                                    {
+                                        <li class="dropdown-header">Equipment Inspection</li>
+                                        <li>@Html.ActionLink("Equipment Inspection", "Index", "AnnualEquipmentInventoryInspection", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Maintenance Request", "Index", "FleetJobRequest", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Closed Maintenance Request", "Index", "ClosedJobRequest", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li class="divider"></li>
+
+                                    }
+
+                                    @if (HttpContext.Current.User.IsInRole("Fuel_Requestor")
+|| HttpContext.Current.User.IsInRole("Fuel_Approver")
+|| HttpContext.Current.User.IsInRole("Fuel_User"))
+                                    {
+                                        <li class="dropdown-header">Fuel</li>
+                                        <li> @Html.ActionLink("Fuel ", "Index", "Fuel", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li class="divider"></li>
+
+                                    }
+                                    @if (HttpContext.Current.User.IsInRole("Equipment_Plan_User")
+                            || HttpContext.Current.User.IsInRole("Equipment_Plan_Approver"))
+                                    {
+                                        <li class="dropdown-header">Plan & Evaluation</li>
+                                        <li>@Html.ActionLink("Equipment Owning Cost", "Index", "OwningOperatingCost", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Equipment Plan", "Index", "EquipmentPlanandEvaluations", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li class="divider"></li>
+
+                                    }
+                                    @if (HttpContext.Current.User.IsInRole("Tyre_Requestor")
+                                        || HttpContext.Current.User.IsInRole("Tyre_Approver"))
+                                    {
+                                        <li class="dropdown-header">Tire And Battery</li>
+                                        <li>@Html.ActionLink("Issue", "Index", "TyreManagementIssue", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Return", "Index", "TyreManagementReturn", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Usage History", "Index", "TyreUsageHistory", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li class="divider"></li>
+
+                                    }
+                                </ul>
+                            </li>
+
+                            if (HttpContext.Current.User.IsInRole("Resource_Requestor"))
+                            {
+                                <li class="col-sm-2">
+                                    <ul>
+                                        <li class="dropdown-top-header">Fleet Resource</li>
+                                        <li class="divider"></li>
+                                        @if (HttpContext.Current.User.IsInRole("Resource_Requestor"))
+                                        {
+                                            <li>@Html.ActionLink("Requisition", "Index", "EquipmentDemand", new { area = "FleetManagement" }, new { target = "_blank" }) </li>
+                                        }
+                                        @if (HttpContext.Current.User.IsInRole("Resource_Requestor"))
+                                        {
+                                            <li> @Html.ActionLink("Distribution", "Index", "EquipmentDistribution", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        }
+                                        @if (HttpContext.Current.User.IsInRole("Resource_Requestor"))
+                                        {
+                                            <li> @Html.ActionLink("Arrival", "Index", "EquipmentArrival", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        }
+                                        @if (HttpContext.Current.User.IsInRole("Resource_Return_User"))
+                                        {
+                                            <li> @Html.ActionLink("Return", "Index", "EquipmentReturn", new { area = "FleetManagement" }, new { target = "_blank" }) </li>
+                                        }
+                                        @if (HttpContext.Current.User.IsInRole("Resource_Request_Approver")
+                                           || HttpContext.Current.User.IsInRole("Resource_Approver"))
+                                        {
+                                            @*<li>@Html.ActionLink("Time Sheet", "Index", "DistributionTimeSheet", new { area = "FleetManagement" }, new { target = "_blank" })</li>*@
+                                            <li>@Html.ActionLink("Driver Transfer", "Index", "DriverTransfer", new { area = "FleetManagement" }, new { target = "_blank" }) </li>
+                                            <li>@Html.ActionLink("Drivers Assignment", "Index", "DriverAssignment", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li>@Html.ActionLink("Site Transfer", "Index", "SitesVehicleTransfer", new { area = "FleetManagement" }, new { target = "_blank" }) </li>
+                                        }
+                                        <li> @Html.ActionLink("Assigned Equipments", "Index", "AssignedEquipments", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+
+                                    </ul>
+                                </li>
+
+                            }
+                            if (HttpContext.Current.User.IsInRole("Fleet_TimeSheet"))
+                            {
+                                <li class="col-sm-2">
+                                    <ul>
+                                        <li class="dropdown-top-header">Time/Cost Sheet</li>
+                                        <li class="divider"></li>
+
+                                        <li class="dropdown-header">Time Sheet</li>
+                                        <li>@Html.ActionLink("Dump Truck", "Index", "DumpTruckTimeSheet", new { area = "FleetManagement", dumpTruck = TimeSheetType.DumpTruck }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Dry Load", "Index", "DryLoadingTimeSheets", new { area = "FleetManagement", dryLoading = TimeSheetType.DryLoading }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Machnery Working", "Index", "MachineryWorkingTimeSheet", new { area = "FleetManagement", machinery = TimeSheetType.Machinery }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Wagon Drill", "Index", "WagonDrillTimesheet", new { area = "FleetManagement", wagonDrill = TimeSheetType.WagonDrill }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Light Vehicle", "Index", "LightVehicleTimeSheet", new { area = "FleetManagement", lightVehicle = TimeSheetType.LightVehicle }, new { target = "_blank" })</li>
+                                        <li class="divider"></li>
+                                        <li class="dropdown-header">Cost Sheet</li>
+                                        <li> @Html.ActionLink("Machnery Cost Sheet", "Index", "MachineryCostSheet", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li> @Html.ActionLink("DumpTruck Cost Sheet", "Index", "DumpTruckCostSheet", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li> @Html.ActionLink("DryLoading Cost Sheet", "Index", "DryLoadingCostSheet", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li> @Html.ActionLink("WagonDrill Cost Sheet", "Index", "WagonDrillCostSheet", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Light Vehicle Cost Sheet", "Index", "LightVehicleCostSheet", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li class="divider"></li>
+                                    </ul>
+                                </li>
+                            }
+                            if (HttpContext.Current.User.IsInRole("Fleet_Admin"))
+                            {
+                                <li class="col-sm-2">
+                                    <ul>
+                                        <li class="dropdown-top-header">Setup</li>
+                                        <li class="divider"></li>
+                                        <li>@Html.ActionLink("Employee job type", "index", "Employeefleetmap", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Education Level", "Index", "Educationallevel", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Operator Position", "Index", "OperatorPosition", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink(" Alert Level", "Index", "AlertLevel", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+
+                                        <li>@Html.ActionLink("Fuel Type", "Index", "FuelType", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+
+                                        <li>@Html.ActionLink("Manufacturer", "Index", "EquipmentManufacturer", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink(" Equipment Owning Constant ", "Index", "EquipmentOwningCostConstant", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Fleet Check List", "Index", "FleetCheckList", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+
+                                        <li>@Html.ActionLink(" Petty Cash Type", "Index", "FleetPettyCashType", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Fuel Consumption Standard", "Index", "EquipmentTypeFuelConsumption", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Insurance Company", "Index", "InsuranceCompany", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Rental Inspection Criteria", "Index", "RentalInspectionCriteria", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("License Level", "Index", "LicenseLevel", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("License Type", "Index", "LicenseType", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Condition", "Index", "EquipmentCondition", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Equipment Name", "Index", "EquipmentName", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Equipment Type", "Index", "EquipmentType", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                        <li>@Html.ActionLink("Equipment Category", "Index", "EquipmentCategory", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                    </ul>
+                                </li>
+                            }
+                                if (HttpContext.Current.User.IsInRole("Fleet_Training_user")
+                                || HttpContext.Current.User.IsInRole("Fleet_Report")
+                       || HttpContext.Current.User.IsInRole("Fleet_Resource_Report")
+                       || HttpContext.Current.User.IsInRole("Fleet_Registration_Report"))
+                                {
+                                    <li class="col-sm-2">
+                                        <ul>
+                                            <li class="dropdown-top-header">Report</li>
+                                            <li class="divider"></li>
+
+                                            <li class="dropdown-header">Time Sheet Report</li>
+
+                                            <li >@Html.ActionLink("Machinery Timesheet", "MachineTimeSheetOnlyReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink("Wagon Drill Timesheet", "WagoneDrillTimeSheetOnly", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink("DryLoading Timesheet", "DryLoadingTimeSheetOnly", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink("DumpTruck Timesheet", "DumpTruckTimeSheetOnlyView", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink("Light-Vehicle Timesheet", "LightVehicleTimeSheetOnlyReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+
+                                            <li class="divider"></li>
+                                            <li class="dropdown-header">Cost Sheet Report</li>
+                                            <li >@Html.ActionLink(" Machinary Costsheet", "MachineTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li>@Html.ActionLink(" Dry Loading Costsheet", "DryLoadingTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li>@Html.ActionLink(" Dump Truck Costsheet", "DumpTruckTimesheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li>@Html.ActionLink(" Wagon Drill Costsheet", "WagonDrillTimesheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li>@Html.ActionLink("Light-Vehicle Costsheet", "LightVehicleTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li>@Html.ActionLink(" External Machine Costsheet", "ExternalMachineTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li>@Html.ActionLink(" External Dump Truck Costsheet", "DumpTruckExternalTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li>@Html.ActionLink(" External Dry Loading Costsheet", "DryLoadingExternalTimesheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink(" External Wagon Drill Costsheet", "WagonDrillExternalTimesheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink(" External Light-Vehicle Costsheet", "ExternalLightVehicleTimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+
+                                            <li class="divider"></li>
+
+                                            <li class="dropdown-header">Other</li>
+                                            <li>@Html.ActionLink(" Head Office Summary ", "HeadOfficeSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink(" Project Summary ", "ProjectSummaryReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li>@Html.ActionLink(" Tyre Consumption ", "TyreReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink("Rent From External", "RentFromExternal", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+
+                                            <li >@Html.ActionLink(" Equipment Maintenace Summary ", "EquipmentMaintenaceSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li>@Html.ActionLink(" Equipment Mechanic Summary", "EquipmentMechanicSummary", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            @*<li id="fixLReport7878">@Html.ActionLink(" Job Request Status ", "JObRequestStatus", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>*@
+                                            <li>@Html.ActionLink(" Fuel Consumption ", "FuelConsumptionReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink(" Equipment Utilization ", "EquipmentUtilizationReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink(" Equipment Demand & Supply ", "EquipmentDistrubtionReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink(" Project Work Performance ", "TimeSheetReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li>@Html.ActionLink(" SiteTransfer ", "EquipmentSiteTransferReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink(" Equipment ", "EquipmentReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li>@Html.ActionLink(" Operator", "OperatorReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li>@Html.ActionLink(" Equipment Plan Evaluation ", "PlanPerEquipmentEvaluation", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li>@Html.ActionLink(" Rent TimeSheet ", "RentTimeSheet", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink(" Rent TimeSheet Evaluation", "RentTimeSheetEvaluation", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li>@Html.ActionLink("Plan Vs Accomplishment", "PlanVsAccomplishment", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            @*<li id="Fleet53">@Html.ActionLink(" PM Schedule", "PMSchedule", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>*@
+                                            <li>@Html.ActionLink("Plan Vs Actual Schedule", "PMActualSchedule", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink("Machinery And Vehicle Status Report", "MachineryAndVehicleStatusReport", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink("Fleet Insurance Report", "FleetInsurance", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink("Fleet Accident Report", "FleetAccident", "FleetReport", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li >@Html.ActionLink("Fleet Accident Report Alert", "FleetAccident", "FleetAccidentNested", new { area = "FleetManagement" }, new { target = "_blank" })</li>
+                                            <li class="divider"></li>
+                                        </ul>
+                                    </li>
+                                }
+                            }
+                        </ul>
+
+                </li>
+            </ul>
+
+        </div>
+        <!-- /.nav-collapse -->
+    </nav>
+</div>
+
+
+<script>
+    jQuery(document).on('click', '.mega-dropdown', function (e) {
+        e.stopPropagation()
+    })
+</script>

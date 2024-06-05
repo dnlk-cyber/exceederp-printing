@@ -1,5 +1,9 @@
 ﻿using System;
-using ExceedERP.Core.Domain.Common;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+ using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
 {
@@ -9,6 +13,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         public Guid VehicleDistributionId { get; set; }
         public virtual VehicleDistribution VehicleDistribution { get; set; }
         public string Status { get; set; }
+        public string ApprovedBy { get; set; }
         public string Remark { get; set; }
     }
 

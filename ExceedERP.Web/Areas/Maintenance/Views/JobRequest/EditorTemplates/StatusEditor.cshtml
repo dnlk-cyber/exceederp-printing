@@ -1,0 +1,28 @@
+﻿@model ExceedERP.Core.Domain.Maintenance.JobOrderDetail
+
+
+<div>
+  
+    @(Html.Kendo().DropDownListFor(model => model.Status).Name("Status")
+          .OptionLabel(" Select Status ... ")
+          .BindTo(new List<SelectListItem>
+              ()
+              {
+                  new SelectListItem()
+                      {
+                          Text = "Starting",
+                          Value = "Starting"
+                      },
+                  new SelectListItem()
+                      {
+                          Text = "Pending",
+                          Value = "Pending"
+                      }
+                      ,
+                  new SelectListItem()
+                      {
+                          Text = "Completed",
+                          Value = "Completed"
+                      }
+              }))
+</div>

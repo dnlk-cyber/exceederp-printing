@@ -1,60 +1,59 @@
-﻿@*
+﻿@using ExceedERP.Web.Areas.FleetManagement.Models;
 @{
     ViewBag.Title = "Accessories";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Accessories>()
-    .Name("Grid")
-    .Columns(columns =>
-    {
-        columns.Bound(o => o.AccessoryName).Groupable(false);
-        columns.Bound(o => o.UnitofMeasurement);
-        columns.Bound(o => o.UnitPrice);
-        columns.Bound(o => o.Quantity);
-        columns.Bound(o => o.Description);
-        columns.Bound(p => p.Fleet).ClientTemplate("#=Fleets.EquipmentName#").Width(100);
-        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+        .Name("Grid")
+        .Columns(columns =>
+        {
+            columns.Bound(o => o.AccessoryName).Groupable(false);
+            columns.Bound(o => o.UnitofMeasurement);
+            columns.Bound(o => o.UnitPrice);
+            columns.Bound(o => o.Quantity);
+            columns.Bound(o => o.Description);
+            //columns.Bound(p => p.Fleet).ClientTemplate("#=Fleets.EquipmentName#").Width(100);
+            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
 
-    })
-    .ToolBar(toolbar => toolbar.Create())
-    .Editable(editable => editable.Mode(GridEditMode.InLine))
-    .Pageable()
-    .Sortable()
-    .Filterable()
-    .Scrollable()
-    .Groupable()
-    .DataSource(dataSource => dataSource
-        .Ajax()
-        .ServerOperation(false)
-        .Events(events => events.Error("error_handler"))
-        .Model(model =>
-              {
-                  model.Id(p => p.AccessoriesID);
-                  model.Field(p => p.AccessoryName).Editable(false);
-                  model.Field(p => p.Fleet).DefaultValue(
-                      ViewData["defaultfleets"] as ExceedERP.Web.Models.FleetViewModel);
-              })
-                        .Create(update => update.Action("Accessories_Create", "Accessories"))
-                        .Read(read => read.Action("Accessories_Read", "Accessories"))
-                        .Update(update => update.Action("Accessories_Update", "Accessories"))
-                        .Destroy(update => update.Action("Accessories_Destroy", "Accessories"))
-  )
+        })
+        .ToolBar(toolbar => toolbar.Create())
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Pageable()
+        .Sortable()
+        .Filterable()
+        .Scrollable()
+        .Groupable()
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .ServerOperation(false)
+            .Events(events => events.Error("error_handler"))
+            .Model(model =>
+                  {
+                      model.Id(p => p.AccessoriesID);
+                      model.Field(p => p.AccessoryName).Editable(false);
+                      model.Field(p => p.Fleet).DefaultValue(
+                          ViewData["defaultfleets"] as FleetViewModel);
+                  })
+                            .Create(update => update.Action("Accessories_Create", "Accessories"))
+                            .Read(read => read.Action("Accessories_Read", "Accessories"))
+                            .Update(update => update.Action("Accessories_Update", "Accessories"))
+                            .Destroy(update => update.Action("Accessories_Destroy", "Accessories"))
+      )
 )
 
 <script type="text/javascript">
-    function error_handler(e) {    
+    function error_handler(e) {
         if (e.errors) {
             var message = "Errors:\n";
             $.each(e.errors, function (key, value) {
                 if ('errors' in value) {
-                    $.each(value.errors, function() {
+                    $.each(value.errors, function () {
                         message += this + "\n";
                     });
                 }
-            });        
+            });
             alert(message);
         }
     }
 </script>
-*@

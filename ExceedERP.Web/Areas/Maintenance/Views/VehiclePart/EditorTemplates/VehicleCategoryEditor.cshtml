@@ -1,0 +1,9 @@
+﻿@model  ExceedERP.Core.Domain.FleetManagement.FleetRegistration.EquipmentIdentity
+        @(Html.Kendo().DropDownListFor(model => model)
+        .DataTextField("Name")
+        .DataValueField("Id").
+        OptionLabel("Select ").
+        ValuePrimitive(true).
+        HtmlAttributes(new { style = "width:100%" })
+        .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "MaintenanceDataProvider"))))
+              

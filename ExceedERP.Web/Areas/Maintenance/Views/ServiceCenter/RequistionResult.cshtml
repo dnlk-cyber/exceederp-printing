@@ -1,0 +1,36 @@
+﻿@{
+    Layout = "~/Views/Shared/_Popup.cshtml";
+}
+ 
+<div class="row">
+<legend>Maintenance Petty Cash</legend>
+<form action="@Url.Action("MaintenacePettyCashes_Create")" method= "POST">
+ @(Html.Kendo().DropDownListFor(model => model).Name("Type")
+                                          .DataTextField("Name").Filter(FilterType.Contains)
+                                              .DataValueField("Name").OptionLabel("Select ").HtmlAttributes(new { style = "width:100%" })
+                                                              .DataSource(d => d.Read(r => r.Action("FleetPettyCashTypesDDBind", "FleetDataProvider")).ServerFiltering(false)))
+
+
+
+    <input type="hidden" name="FleetsID" value=" " />
+    <input type="hidden" name="JobOrderId"value="@ViewBag.JobOrderId"   />
+<input type="number" name="Amount" min="1" required />
+<textarea type="text" required  name="Description"></textarea>
+    <br/>
+<input type="submit" class="k-button  k-primary " value="Submit"/>
+</form>
+</div>
+ 
+
+    <style>
+        .k-list-container ul li.k-item {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .k-list-container ul {
+            overflow: hidden !important;
+        }
+    </style>
+

@@ -1,0 +1,53 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Spare Parts & Materials Category  </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.SpareMaterialCategory>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.Bound(e => e.Description);
+            columns.Bound(e => e.Remark);
+
+            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+        })
+        .ToolBar(commands => commands.Create())
+        .Editable(editable =>
+        {
+            editable.Mode(GridEditMode.InLine);
+            editable.DisplayDeleteConfirmation("Are You Sure You Want to  Delete this Category ?");
+        })
+        .HtmlAttributes(new { style = "height: 700px;" })
+        .Pageable(pageable => pageable
+                        .Input(false)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(false)
+                        .ButtonCount(5))
+
+            .Scrollable()
+            .Sortable()
+            .Filterable()
+            .Scrollable(h => h.Height(500))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .ServerOperation(false)
+                    .Model(model =>
+                    {
+                        model.Id(p => p.SpareMaterialCategoryId);
+
+                    }).Events(ev => ev
+                                .Error("error_handler(\"grid\")")
+                                .RequestStart("onRequestStart(\"grid\")")
+                                .RequestEnd("onRequestEnd(\"grid\")"))
+                    .Read(read => read.Action("Category_Read", "SpareMaterialCategory"))
+                    .Create(create => create.Action("Category_Create", "SpareMaterialCategory"))
+                    .Update(update => update.Action("Category_Update", "SpareMaterialCategory"))
+                    .Destroy(update => update.Action("Category_Destroy", "SpareMaterialCategory"))
+        )
+)
+
+
+

@@ -1,0 +1,165 @@
+﻿
+@model ExceedERP.Core.Domain.Maintenance.VehicleReceptionForm
+
+<form id="lineForm" method="post">
+
+    <div class="row">
+        <div class="col-sm-1">
+            <div class="k-label">
+                @Html.HiddenFor(model => model.VehicleReceptionFormId)
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="Exporter">Customer</label>
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.CustomerId)
+                          .Name("CustomerId")
+                          .ValuePrimitive(true)
+                          .OptionLabel("Select...")
+                          .DataTextField("TradeName")
+                          .DataValueField("OrganizationCustomerID")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetOrgnizationalCustomers", "MaintenanceDataProvider"))
+                              .ServerFiltering(false);
+                          }))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="TechnicianAssignedId">Technician Assigned</label>
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.TechnicianAssignedId)
+                                .Name("TechnicianAssignedId")
+                                .ValuePrimitive(true)
+                                .DataTextField("Name")
+                                .DataValueField("Code")
+                                .OptionLabel("---Select---")
+                                .Filter("contains")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetEmployes", "MaintenanceDataProvider"))
+                                            .ServerFiltering(false);
+                                }))
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="PlateNo">Plate No</label>
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.PlateNo)
+                                .Name("PlateNo")
+                                .ValuePrimitive(true)
+                                .OptionLabel("Select...")
+                                .DataTextField("LicensePlate")
+                                .DataValueField("LicensePlate")
+                                .CascadeFrom("CustomerId")
+                                .Events(ev=>ev.Change("getModelType"))
+                                .Filter("contains")
+                                .DataSource(dataSource =>
+                                {
+                                  dataSource.Read(read => read.Action("GetCustomerPlateNos", "MaintenanceDataProvider").Data("filterPlateNos"))
+                                  .ServerFiltering(true);
+                                 })
+                                 .AutoBind(false)
+                                 .Enable(false)
+                                )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="Date">Vehicle Type</label>
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.VehicleType).Enable(false))
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="VehicleModel">Vehicle Model</label>
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.VehicleModel).Enable(false))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="Mileage">Mileage</label>
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Mileage))
+                                                                                                            
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="Fuel">Fuel</label>
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.Fuel)
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .BindTo(ExceedERP.Helpers.Common.EnumExtension.
+                        EnumToSelectList(typeof(ExceedERP.Core.Domain.Maintenance.FuelValue))
+                        )
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="PaymentMethod">Remark</label>
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Remark))
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    
+    
+    
+
+
+
+
+</form>
+

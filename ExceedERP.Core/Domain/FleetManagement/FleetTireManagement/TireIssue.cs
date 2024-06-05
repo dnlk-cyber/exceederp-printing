@@ -1,7 +1,13 @@
-﻿using System;
+﻿
+using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using ExceedERP.Core.Domain.Common;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Web;
+ using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetTireManagement
 {
@@ -10,7 +16,12 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTireManagement
         public Guid TireIssueID { get; set; }
         public Guid TireReturnId { get; set; }
         public Guid EquipmentTireId { get; set; }
-        public Guid FleetId { get; set; }
+        public Guid? EquipmentIdentityID { get; set; }
+        [DisplayName("  Equipment Type ")]
+        public Guid? EquipmentTypeID { get; set; }
+        public Guid? EquipmentNameID { get; set; }
+        [DisplayName("Fleet")]
+        public Guid? FleetId { get; set; }
 
         [DisplayName(" Equipment")]
         public string PlateNumber { get; set; }
@@ -21,8 +32,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTireManagement
         [DisplayName("Tyre Size")]
         [Required]
         public string TireSize { get; set; }
-        [DisplayName("Tyre Type")]
-        [Required]
+        public FleetBatteryOrTyreType IssueType { get; set; }
+        [DisplayName("Type")]
         public string TireType { get; set; }
         public enum TireTypeenum { Wire, Fiber }
         [DisplayName("Installed Date")]
@@ -51,11 +62,14 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTireManagement
         [Required]
         [DisplayName("Description Reason")]
         public string DescriptionReason { get; set; }
-        //[ForeignKey("FleetsID")]
-        //public virtual Fleets Fleet { get; set; }
-        //[ForeignKey("OperatorID")]
-        //public virtual Operator Operator { get; set; }
+        public int IssueId { get; set; } 
+        public int IssueItemId { get; set; } 
+        
 
-
+    }
+    public enum FleetBatteryOrTyreType
+    {
+        Tyre,
+        Battery
     }
 }

@@ -77,5 +77,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Models
             //TimeSheet Const
         public const string RentalTimeSheet = "RentalTimeSheet";
         public const string DistributionTimeSheet = "DistributionTimeSheet";
+
+
+        // ISO Report Consts
+
+
     }
+
+    
 }

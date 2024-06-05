@@ -1,6 +1,6 @@
 ﻿using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Core.Domain.Inventory;
-
+using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
@@ -162,17 +162,17 @@ namespace ExceedERP.Helpers.CRM
 
 				var now = DateTime.Now.Date;
 				var crmPeriod = db.CRMPeriods.FirstOrDefault(p => p.DateFrom <= now && p.DateTo >= now);
-				var defaultBranch = db.Branch.FirstOrDefault();
+				//var defaultBranch = db.Branch.FirstOrDefault();
 				var defaultStore = db.SalesStores.FirstOrDefault();
 				//commented because both internal and externa need to generate quote
-				if (/*!isInternalJoborder &&*/ crmPeriod != null && defaultBranch != null && defaultStore != null/* && customerId.HasValue*/)
+				if (/*!isInternalJoborder &&*/ crmPeriod != null /*&& defaultBranch != null && defaultStore != null && customerId.HasValue*/)
 				{
 					#region create sales quote 
 					var salesQuote = new SalesQuoteVoucher
 					{
 						OrganizationCustomerId = customerId!=null? customerId.Value:0,
-						BranchId = defaultBranch.BranchId,
-						StoreID = defaultStore.SalesStoreId,
+						BranchId = currentJobOrder.BranchId,
+						StoreID = 0,
 						CRMPeriodId = crmPeriod.CRMPeriodId,
 						JobOrderNumber = currentJobOrder.Num.ToString(),
 						LastObjectState = "Editing",
@@ -182,6 +182,11 @@ namespace ExceedERP.Helpers.CRM
 						PlateNo = plateNo, // added to indicate the vehicle being maintained
 						Remark = $"Generated from JO {currentJobOrder.Num}",
 
+                        CreatedAtBranchId = currentJobOrder.CreatedAtBranchId,
+                        CreatedAtBusinessUnitId = currentJobOrder.CreatedAtBusinessUnitId,
+                        BusinessUnitId = currentJobOrder.BusinessUnitId,
+                        OrgStructureId = currentJobOrder.OrgStructureId,
+                        
 						CreatedBy = userName,
 						DateCreated = DateTime.Now,
 						Date = DateTime.Now,
@@ -283,9 +288,9 @@ namespace ExceedERP.Helpers.CRM
 										Quantity = shipmentLineItem.TotalQuantity,
 										ShipmentNumber = currentShipment.SalesShipmentId.ToString(),
 										References = shipmentLineItem.SalesShipmentLineItemId.ToString(),
-										StoreID = salesQuote.StoreID,
+										//StoreID = salesQuote.StoreID,
+										StoreID = shipmentLineItem.SalesStoreId,
 										StoreRequisitionNumber = storeReq.StoreRequisitionID.ToString(),
-
 
 										Class = shipmentLineItem.Class,
 										Variety = shipmentLineItem.Variety,
@@ -357,7 +362,6 @@ namespace ExceedERP.Helpers.CRM
 									WithholdingTypeId = 0,
 									WithholdingAmount = 0,
 									WithholdTax = false,
-
 
 									CreatedBy = userName,
 									DateCreated = DateTime.Now,

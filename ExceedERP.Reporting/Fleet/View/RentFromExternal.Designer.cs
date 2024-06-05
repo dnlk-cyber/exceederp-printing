@@ -9,6 +9,7 @@ namespace ExceedERP.Reporting.Fleet.View
         /// </summary>
         private void InitializeComponent()
         {
+            Telerik.Reporting.InstanceReportSource instanceReportSource1 = new Telerik.Reporting.InstanceReportSource();
             Telerik.Reporting.Group group1 = new Telerik.Reporting.Group();
             Telerik.Reporting.Group group2 = new Telerik.Reporting.Group();
             Telerik.Reporting.Group group3 = new Telerik.Reporting.Group();
@@ -25,6 +26,8 @@ namespace ExceedERP.Reporting.Fleet.View
             Telerik.Reporting.ReportParameter reportParameter9 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter10 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter11 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter12 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter13 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.Drawing.StyleRule styleRule1 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule2 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule3 = new Telerik.Reporting.Drawing.StyleRule();
@@ -76,27 +79,6 @@ namespace ExceedERP.Reporting.Fleet.View
             this.equipmentCaptionTextBox = new Telerik.Reporting.TextBox();
             this.workingCapacityCaptionTextBox = new Telerik.Reporting.TextBox();
             this.equipmentCostCaptionTextBox = new Telerik.Reporting.TextBox();
-            this.reportFooter = new Telerik.Reporting.ReportFooterSection();
-            this.equipmentCountFunctionTextBox4 = new Telerik.Reporting.TextBox();
-            this.equipmentCostSumFunctionTextBox4 = new Telerik.Reporting.TextBox();
-            this.textBox9 = new Telerik.Reporting.TextBox();
-            this.pageHeader = new Telerik.Reporting.PageHeaderSection();
-            this.pageFooter = new Telerik.Reporting.PageFooterSection();
-            this.pageInfoTextBox = new Telerik.Reporting.TextBox();
-            this.reportHeader = new Telerik.Reporting.ReportHeaderSection();
-            this.textBox48 = new Telerik.Reporting.TextBox();
-            this.textBox43 = new Telerik.Reporting.TextBox();
-            this.textBox42 = new Telerik.Reporting.TextBox();
-            this.txtOrgName = new Telerik.Reporting.TextBox();
-            this.pbOrgLogo = new Telerik.Reporting.PictureBox();
-            this.textBox28 = new Telerik.Reporting.TextBox();
-            this.detail = new Telerik.Reporting.DetailSection();
-            this.equipmentCategoryDataTextBox = new Telerik.Reporting.TextBox();
-            this.equipmentTypeDataTextBox = new Telerik.Reporting.TextBox();
-            this.equipmentDataTextBox = new Telerik.Reporting.TextBox();
-            this.workingCapacityDataTextBox = new Telerik.Reporting.TextBox();
-            this.equipmentCostDataTextBox = new Telerik.Reporting.TextBox();
-            this.RentFromExternalDS = new Telerik.Reporting.ObjectDataSource();
             this.BranchDS = new Telerik.Reporting.ObjectDataSource();
             this.TypeDS = new Telerik.Reporting.ObjectDataSource();
             this.subTypeDS = new Telerik.Reporting.ObjectDataSource();
@@ -105,6 +87,23 @@ namespace ExceedERP.Reporting.Fleet.View
             this.ModelDS = new Telerik.Reporting.ObjectDataSource();
             this.ChasisDS = new Telerik.Reporting.ObjectDataSource();
             this.SerialNoDS = new Telerik.Reporting.ObjectDataSource();
+            this.reportFooter = new Telerik.Reporting.ReportFooterSection();
+            this.equipmentCountFunctionTextBox4 = new Telerik.Reporting.TextBox();
+            this.equipmentCostSumFunctionTextBox4 = new Telerik.Reporting.TextBox();
+            this.textBox9 = new Telerik.Reporting.TextBox();
+            this.pageFooter = new Telerik.Reporting.PageFooterSection();
+            this.pageInfoTextBox = new Telerik.Reporting.TextBox();
+            this.reportHeader = new Telerik.Reporting.ReportHeaderSection();
+            this.detail = new Telerik.Reporting.DetailSection();
+            this.equipmentCategoryDataTextBox = new Telerik.Reporting.TextBox();
+            this.equipmentTypeDataTextBox = new Telerik.Reporting.TextBox();
+            this.equipmentDataTextBox = new Telerik.Reporting.TextBox();
+            this.workingCapacityDataTextBox = new Telerik.Reporting.TextBox();
+            this.equipmentCostDataTextBox = new Telerik.Reporting.TextBox();
+            this.RentFromExternalDS = new Telerik.Reporting.ObjectDataSource();
+            this.subReport1 = new Telerik.Reporting.SubReport();
+            this.headerSubReportLandScape1 = new ExceedERP.Reporting.SharedDesigners.HeaderSubReportLandScape();
+            ((System.ComponentModel.ISupportInitialize)(this.headerSubReportLandScape1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // rentNoGroupFooterSection
@@ -441,6 +440,54 @@ namespace ExceedERP.Reporting.Fleet.View
             this.equipmentCostCaptionTextBox.StyleName = "Caption";
             this.equipmentCostCaptionTextBox.Value = "Equipment Cost";
             // 
+            // BranchDS
+            // 
+            this.BranchDS.DataMember = "GetBrancheshs";
+            this.BranchDS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.BranchDataSource);
+            this.BranchDS.Name = "BranchDS";
+            // 
+            // TypeDS
+            // 
+            this.TypeDS.DataMember = "GetIdentities";
+            this.TypeDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.TypeDS.Name = "TypeDS";
+            // 
+            // subTypeDS
+            // 
+            this.subTypeDS.DataMember = "GetCategory";
+            this.subTypeDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.subTypeDS.Name = "subTypeDS";
+            // 
+            // EquipmentNameDS
+            // 
+            this.EquipmentNameDS.DataMember = "GetEquipmentName";
+            this.EquipmentNameDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.EquipmentNameDS.Name = "EquipmentNameDS";
+            // 
+            // PlateNoDS
+            // 
+            this.PlateNoDS.DataMember = "GetPlateNumber";
+            this.PlateNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.PlateNoDS.Name = "PlateNoDS";
+            // 
+            // ModelDS
+            // 
+            this.ModelDS.DataMember = "GetModelNo";
+            this.ModelDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.ModelDS.Name = "ModelDS";
+            // 
+            // ChasisDS
+            // 
+            this.ChasisDS.DataMember = "GetChasisNumber";
+            this.ChasisDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.ChasisDS.Name = "ChasisDS";
+            // 
+            // SerialNoDS
+            // 
+            this.SerialNoDS.DataMember = "GetSerialNo";
+            this.SerialNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.SerialNoDS.Name = "SerialNoDS";
+            // 
             // reportFooter
             // 
             this.reportFooter.Height = Telerik.Reporting.Drawing.Unit.Inch(0.20007884502410889D);
@@ -482,11 +529,6 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox9.StyleName = "Data";
             this.textBox9.Value = "Total";
             // 
-            // pageHeader
-            // 
-            this.pageHeader.Height = Telerik.Reporting.Drawing.Unit.Inch(0.0520833320915699D);
-            this.pageHeader.Name = "pageHeader";
-            // 
             // pageFooter
             // 
             this.pageFooter.Height = Telerik.Reporting.Drawing.Unit.Inch(0.28125D);
@@ -505,72 +547,10 @@ namespace ExceedERP.Reporting.Fleet.View
             // 
             // reportHeader
             // 
-            this.reportHeader.Height = Telerik.Reporting.Drawing.Unit.Inch(1.8479167222976685D);
+            this.reportHeader.Height = Telerik.Reporting.Drawing.Unit.Inch(0.40000003576278687D);
             this.reportHeader.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
-            this.textBox48,
-            this.textBox43,
-            this.textBox42,
-            this.txtOrgName,
-            this.pbOrgLogo,
-            this.textBox28});
+            this.subReport1});
             this.reportHeader.Name = "reportHeader";
-            // 
-            // textBox48
-            // 
-            this.textBox48.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(1.7312499284744263D), Telerik.Reporting.Drawing.Unit.Inch(1.1499999761581421D));
-            this.textBox48.Name = "textBox48";
-            this.textBox48.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.7000002861022949D), Telerik.Reporting.Drawing.Unit.Inch(0.29791668057441711D));
-            this.textBox48.Style.Font.Bold = true;
-            this.textBox48.Style.Font.Name = "Segoe UI";
-            this.textBox48.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(10D);
-            this.textBox48.Style.Font.Underline = true;
-            this.textBox48.Value = "Rent From External Report";
-            // 
-            // textBox43
-            // 
-            this.textBox43.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(6.7000002861022949D), Telerik.Reporting.Drawing.Unit.Inch(1.5479167699813843D));
-            this.textBox43.Name = "textBox43";
-            this.textBox43.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.5D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
-            this.textBox43.Style.Font.Bold = true;
-            this.textBox43.Value = "Date:";
-            // 
-            // textBox42
-            // 
-            this.textBox42.Format = "{0:d}";
-            this.textBox42.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(7.2000002861022949D), Telerik.Reporting.Drawing.Unit.Inch(1.5479167699813843D));
-            this.textBox42.Name = "textBox42";
-            this.textBox42.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.99999994039535522D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
-            this.textBox42.Value = "= Today()";
-            // 
-            // txtOrgName
-            // 
-            this.txtOrgName.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(1.7312499284744263D), Telerik.Reporting.Drawing.Unit.Inch(0.34791660308837891D));
-            this.txtOrgName.Name = "txtOrgName";
-            this.txtOrgName.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.4500012397766113D), Telerik.Reporting.Drawing.Unit.Inch(0.29996061325073242D));
-            this.txtOrgName.Style.Font.Bold = true;
-            this.txtOrgName.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
-            this.txtOrgName.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Left;
-            this.txtOrgName.TextWrap = false;
-            this.txtOrgName.Value = "= Fields.AmharicName";
-            // 
-            // pbOrgLogo
-            // 
-            this.pbOrgLogo.Bindings.Add(new Telerik.Reporting.Binding("Value", "= Fields.LogoFileName"));
-            this.pbOrgLogo.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D), Telerik.Reporting.Drawing.Unit.Inch(0.34791660308837891D));
-            this.pbOrgLogo.Name = "pbOrgLogo";
-            this.pbOrgLogo.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.3000000715255737D), Telerik.Reporting.Drawing.Unit.Inch(0.99996060132980347D));
-            this.pbOrgLogo.Sizing = Telerik.Reporting.Drawing.ImageSizeMode.Stretch;
-            // 
-            // textBox28
-            // 
-            this.textBox28.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(1.7312499284744263D), Telerik.Reporting.Drawing.Unit.Inch(0.72291660308837891D));
-            this.textBox28.Name = "textBox28";
-            this.textBox28.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.4395856857299805D), Telerik.Reporting.Drawing.Unit.Inch(0.29996061325073242D));
-            this.textBox28.Style.Font.Bold = true;
-            this.textBox28.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
-            this.textBox28.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Left;
-            this.textBox28.TextWrap = false;
-            this.textBox28.Value = "= Fields.Name";
             // 
             // detail
             // 
@@ -652,53 +632,19 @@ namespace ExceedERP.Reporting.Fleet.View
             new Telerik.Reporting.ObjectDataSourceParameter("ChasisNo", typeof(string), "= Parameters.ChasisNo.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("serialNo", typeof(string), "= Parameters.serialNo.Value")});
             // 
-            // BranchDS
+            // subReport1
             // 
-            this.BranchDS.DataMember = "GetBrancheshs";
-            this.BranchDS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.BranchDataSource);
-            this.BranchDS.Name = "BranchDS";
+            this.subReport1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(0D));
+            this.subReport1.Name = "subReport1";
+            instanceReportSource1.Parameters.Add(new Telerik.Reporting.Parameter("FormTitle", "= Parameters.FormTitle.Value"));
+            instanceReportSource1.Parameters.Add(new Telerik.Reporting.Parameter("FormNumber", "= Parameters.FormNumber.Value"));
+            instanceReportSource1.ReportDocument = this.headerSubReportLandScape1;
+            this.subReport1.ReportSource = instanceReportSource1;
+            this.subReport1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.9999995231628418D), Telerik.Reporting.Drawing.Unit.Inch(0.40000003576278687D));
             // 
-            // TypeDS
+            // headerSubReportLandScape1
             // 
-            this.TypeDS.DataMember = "GetIdentities";
-            this.TypeDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.TypeDS.Name = "TypeDS";
-            // 
-            // subTypeDS
-            // 
-            this.subTypeDS.DataMember = "GetCategory";
-            this.subTypeDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.subTypeDS.Name = "subTypeDS";
-            // 
-            // EquipmentNameDS
-            // 
-            this.EquipmentNameDS.DataMember = "GetEquipmentName";
-            this.EquipmentNameDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.EquipmentNameDS.Name = "EquipmentNameDS";
-            // 
-            // PlateNoDS
-            // 
-            this.PlateNoDS.DataMember = "GetPlateNumber";
-            this.PlateNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.PlateNoDS.Name = "PlateNoDS";
-            // 
-            // ModelDS
-            // 
-            this.ModelDS.DataMember = "GetModelNo";
-            this.ModelDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.ModelDS.Name = "ModelDS";
-            // 
-            // ChasisDS
-            // 
-            this.ChasisDS.DataMember = "GetChasisNumber";
-            this.ChasisDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.ChasisDS.Name = "ChasisDS";
-            // 
-            // SerialNoDS
-            // 
-            this.SerialNoDS.DataMember = "GetSerialNo";
-            this.SerialNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.SerialNoDS.Name = "SerialNoDS";
+            this.headerSubReportLandScape1.Name = "HeaderSubReportLandScape";
             // 
             // RentFromExternal
             // 
@@ -740,7 +686,6 @@ namespace ExceedERP.Reporting.Fleet.View
             this.labelsGroupHeaderSection,
             this.labelsGroupFooterSection,
             this.reportFooter,
-            this.pageHeader,
             this.pageFooter,
             this.reportHeader,
             this.detail});
@@ -820,6 +765,8 @@ namespace ExceedERP.Reporting.Fleet.View
             reportParameter11.Type = Telerik.Reporting.ReportParameterType.DateTime;
             reportParameter11.Value = "= Today()";
             reportParameter11.Visible = true;
+            reportParameter12.Name = "FormTitle";
+            reportParameter13.Name = "FormNumber";
             this.ReportParameters.Add(reportParameter1);
             this.ReportParameters.Add(reportParameter2);
             this.ReportParameters.Add(reportParameter3);
@@ -831,6 +778,8 @@ namespace ExceedERP.Reporting.Fleet.View
             this.ReportParameters.Add(reportParameter9);
             this.ReportParameters.Add(reportParameter10);
             this.ReportParameters.Add(reportParameter11);
+            this.ReportParameters.Add(reportParameter12);
+            this.ReportParameters.Add(reportParameter13);
             styleRule1.Selectors.AddRange(new Telerik.Reporting.Drawing.ISelector[] {
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.TextItemBase)),
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.HtmlTextBox))});
@@ -939,6 +888,7 @@ namespace ExceedERP.Reporting.Fleet.View
             styleRule10,
             styleRule11});
             this.Width = Telerik.Reporting.Drawing.Unit.Inch(10.100000381469727D);
+            ((System.ComponentModel.ISupportInitialize)(this.headerSubReportLandScape1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
 
         }
@@ -983,7 +933,6 @@ namespace ExceedERP.Reporting.Fleet.View
         private Telerik.Reporting.TextBox workingCapacityCaptionTextBox;
         private Telerik.Reporting.TextBox equipmentCostCaptionTextBox;
         private Telerik.Reporting.GroupFooterSection labelsGroupFooterSection;
-        private Telerik.Reporting.PageHeaderSection pageHeader;
         private Telerik.Reporting.PageFooterSection pageFooter;
         private Telerik.Reporting.TextBox pageInfoTextBox;
         private Telerik.Reporting.ReportHeaderSection reportHeader;
@@ -993,12 +942,6 @@ namespace ExceedERP.Reporting.Fleet.View
         private Telerik.Reporting.TextBox equipmentDataTextBox;
         private Telerik.Reporting.TextBox workingCapacityDataTextBox;
         private Telerik.Reporting.TextBox equipmentCostDataTextBox;
-        private Telerik.Reporting.TextBox textBox48;
-        private Telerik.Reporting.TextBox textBox43;
-        private Telerik.Reporting.TextBox textBox42;
-        private Telerik.Reporting.TextBox txtOrgName;
-        private Telerik.Reporting.PictureBox pbOrgLogo;
-        private Telerik.Reporting.TextBox textBox28;
         private Telerik.Reporting.ObjectDataSource ChasisDS;
         private Telerik.Reporting.ObjectDataSource PlateNoDS;
         private Telerik.Reporting.ObjectDataSource BranchDS;
@@ -1008,6 +951,7 @@ namespace ExceedERP.Reporting.Fleet.View
         private Telerik.Reporting.ObjectDataSource ModelDS;
         private Telerik.Reporting.TextBox textBox9;
         private Telerik.Reporting.ObjectDataSource EquipmentNameDS;
-
+        private Telerik.Reporting.SubReport subReport1;
+        private SharedDesigners.HeaderSubReportLandScape headerSubReportLandScape1;
     }
 }

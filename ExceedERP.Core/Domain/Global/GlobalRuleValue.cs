@@ -37,7 +37,9 @@ namespace ExceedERP.Core.Domain.Global
         PrintingEstimation = 17,
         PintingProductionFollowup = 17,
         JobCosting=18,
-        Health = 19
+        Health = 19,
+        FleetManagement = 20,
+        Maintenance = 21
     }
     public class GlobalRuleValue
     {

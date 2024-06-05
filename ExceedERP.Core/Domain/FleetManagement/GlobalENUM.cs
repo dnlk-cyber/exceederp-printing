@@ -1,4 +1,12 @@
-﻿namespace ExceedERP.Core.Domain.FleetManagement
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ExceedERP.Core.Domain.FleetManagement
 {
     public enum ReadingType
     {
@@ -10,7 +18,22 @@
     }
     public enum OwningandOperatingCostConstantType
     {
-        Under_Carrage_Life, Resdual_Scrap, Numerator, Denomator, Interest_Rate, Insurance_Rate, Property_Rate, Fuel_UnitPrice, SparePart_Rate, Lubricant_Rate, Tyre_Life, Repair_Factor, Maintenace_Repair_Depreciation, SpecialWearItemRate, Operator_Hours, Operator_Days
+        Under_Carrage_Life,
+        Resdual_Scrap,
+        Numerator,
+        Denomator,
+        Interest_Rate,
+        Insurance_Rate,
+        Property_Rate,
+        Fuel_UnitPrice,
+        SparePart_Rate,
+        Lubricant_Rate,
+        Tyre_Life,
+        Repair_Factor,
+        Maintenace_Repair_Depreciation,
+        SpecialWearItemRate,
+        Operator_Hours,
+        Operator_Days
     }
 
 
@@ -69,10 +92,14 @@
     public enum RentType
     {
         Hourly,
+        Daily,
         KM,
+        [Display(Name = "Metercube per Km"), Description("Metercube per Km")]
         MeterCubePerKm,
         Repetition,
-        Hectar
+        Hectar,
+        [Display(Name ="Per Month"), Description("Per Month")]
+        Per_Month
     }
     public enum CheckListType
     {
@@ -91,4 +118,7 @@
         Brakes
 
     }
+    
+
+    
 }

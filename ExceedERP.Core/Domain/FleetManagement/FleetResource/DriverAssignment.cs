@@ -1,7 +1,11 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
 {
@@ -9,7 +13,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
     {
         public Guid DriverAssignmentId { get; set; }
         [Required]
-        [DisplayName("Equipment ")]
+        [DisplayName("Fleet")]
         public Guid FleetId { get; set; }
         [Required]
         [DisplayName("Equipment Name")]
@@ -25,11 +29,13 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public Nullable<DateTime> StartingDate { get; set; }
         [DisplayName("To Date")]
-        [Required]
+       
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public Nullable<DateTime> ToDate { get; set; }
 
         public decimal Odometer { get; set; }
+        [Display(Name ="Branch")]
+        public int BranchId { get; set; }
     }
 }

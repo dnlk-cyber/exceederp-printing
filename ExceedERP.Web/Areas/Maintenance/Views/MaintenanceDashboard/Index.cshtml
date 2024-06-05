@@ -1,0 +1,451 @@
+﻿<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="panel-heading">Maintenance Dashboard</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+      
+            <div class="col-sm-2">
+                <!-- small box -->
+                <div class="small-box bg-blue">
+                    <div class="inner">
+                        <h3 id="Pending"></h3>
+
+                        <p>Pending</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-bag"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <!-- small box -->
+                <div class="small-box bg-green">
+                    <div class="inner">
+                        <h3 id="Opened"></h3>
+
+                        <p>Opened</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-pie-graph"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <!-- small box -->
+                <div class="small-box bg-orange">
+                    <div class="inner">
+                        <h3 id="WaitngApproval"></h3>
+
+                        <p>WaitingApproval</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-stats-bars"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <!-- small box -->
+                <div class="small-box bg-aqua">
+                    <div class="inner">
+                        <h3 id="Closed"></h3>
+
+                        <p>Closed</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-person-add"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="small-box bg-primary">
+                    <div class="inner">
+                        <h3 id="Rejected"></h3>
+
+                        <p>Rejected</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-pie-graph"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-3"></div>
+            <div class="col-sm-3">
+                <label>Start Date</label>
+                @(Html.Kendo().DatePicker().Events(ev => ev.Change("drawBarReport")).Name("StartDate"))
+            </div>
+            <div class="col-sm-3">
+                <label>End Date</label>
+                @(Html.Kendo().DatePicker().Events(ev => ev.Change("drawBarReport")).Name("EndDate"))
+            </div>
+
+
+        </div>
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="panel-body" id="barChartContainerDiv">
+                    <canvas id="barChartContainer"></canvas>
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="panel-body" id="MaintenanceChartContainerDiv">
+                    <canvas id="MaintenanceChartContainer"></canvas>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="panel-body" id="barProductChartContainerDiv">
+                    <canvas id="barProductChartContainer"></canvas>
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="panel-body" id="stackedBarChartContainerDiv">
+                    <canvas id="stackedBarChartContainer"></canvas>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+<script src="~/Scripts/Chart.bundle.js"></script>
+<script src="~/Scripts/Chart.PieceLabel.js"></script>
+
+<script type="text/javascript">
+        var b = null;
+
+        window.onload = function () {
+            
+            drawBarReport();
+            getCount();
+            
+
+    }
+    function getCount(startDate, endDate) {
+        $.ajax({
+                type: 'GET',
+            data: { "startDate": startDate, "endDate": endDate},
+                url: '@Url.Action("GetCount", "MaintenanceDashboard")',
+                 async: false,
+                success: function (result) {
+                    data = result;
+                    console.log(data);
+                    document.getElementById('Pending').innerHTML = data["Pending"];
+                    document.getElementById('Opened').innerHTML = data["Opened"];
+                    document.getElementById('WaitngApproval').innerHTML = data["WaitingApproval"];
+                    document.getElementById('Closed').innerHTML = data["Closed"];
+                    document.getElementById('Rejected').innerHTML = data["Rejected"];
+            }
+            });
+    }
+    function drawBarReport() {
+        var startDateData = $("#StartDate").data("kendoDatePicker");
+        var endDateData = $("#EndDate").data("kendoDatePicker");
+        var startDate;
+        var endDate;
+        if (startDateData.value() != null) {
+            startDate = startDateData.value().toUTCString();
+        }
+        if (endDateData.value() != null) {
+            endDate = endDateData.value().toUTCString();
+
+        }
+         $.ajax({
+                type: 'GET',
+             url: '@Url.Action("getBarChartMaintenanceOrderDatas", "MaintenanceDashboard")',
+             data: { "startDate": startDate, "endDate": endDate},
+                 async: false,
+                success: function (result) {
+                    data = result.OrderVsDate;
+                    serviceData = result.OrderSatuseVsServices;
+                    orderStatuses = result.OrderStatuses;
+                    datas = data.datas;
+                    labels = data.labels;
+                    stackedLabels = orderStatuses.stackedBarLabels;
+                    stackedDatas = orderStatuses.stackedBarDatas;
+                    stackedDataSets = orderStatuses.stackedBarDataSets;
+                    serviceDatas = serviceData.datas;
+                    serviceLabels = serviceData.labels;
+
+                    drawBarMaintenanceOrderReports();
+                    getCount(startDate, endDate);
+                    drawBarMaintenanceJoServicesReports();
+                    drawStackedBarChart();
+                    drawMaintenanceProductReport(startDate, endDate);
+            }
+            });
+    }
+
+
+    function drawBarMaintenanceOrderReports() {
+        $("#barChartContainer").remove();
+        $("#barChartContainerDiv").append('<canvas id="barChartContainer"></canvas>');
+        var ctx = document.getElementById('barChartContainer').getContext('2d');
+
+        //bar chart data
+        var data = {
+            labels: labels,
+            datasets: [
+                {
+                   label: "Statuses",
+                    data: datas,
+                    backgroundColor: barColors,
+                    borderColor: poolColors(labels.length),
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        //options
+        var options = {
+            responsive: true,
+            title: {
+                display: true,
+                position: "top",
+                text: "Job Order Statuses vs Quantity's",
+                fontSize: 18,
+                fontColor: "#111"
+            },
+            legend: {
+                display: true,
+                position: "bottom",
+                labels: {
+                    fontColor: "#333",
+                    fontSize: 16
+                }
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0
+                    }
+                }]
+            }
+        };
+
+        //create Chart class object
+        var chart = new Chart(ctx, {
+            type: "bar",
+            data: data,
+            options: options
+        });
+
+    }
+    function drawBarMaintenanceJoServicesReports() {
+        $("#barProductChartContainer").remove();
+        $("#barProductChartContainerDiv").append('<canvas id="barProductChartContainer"></canvas>');
+        var ctx = document.getElementById('barProductChartContainer').getContext('2d');
+
+        //bar chart data
+        var data = {
+            labels: serviceLabels,
+            datasets: [
+                {
+                    label: "Services",
+                    data: serviceDatas,
+                    backgroundColor: barColors,
+                    borderColor: poolColors(serviceLabels.length),
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        //options
+        var options = {
+            responsive: true,
+            title: {
+                display: true,
+                position: "top",
+                text: "JO Statuses vs Service's",
+                fontSize: 18,
+                fontColor: "#111"
+            },
+            legend: {
+                display: true,
+                position: "bottom",
+                labels: {
+                    fontColor: "#333",
+                    fontSize: 16
+                }
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0
+                    }
+                }]
+            }
+        };
+
+        //create Chart class object
+        var chart = new Chart(ctx, {
+            type: "bar",
+            data: data,
+            options: options
+        });
+
+    }
+
+    function drawMaintenanceProductReport(startDate, endDate) {
+        $.ajax({
+                type: 'GET',
+            data: { "startDate": startDate, "endDate": endDate},
+                url: '@Url.Action("GetInExMainteenanceJobOrders", "MaintenanceDashboard")',
+                 async: false,
+                success: function (result) {
+                    data = result.MaintenanceVehicles;
+                    MaintenanceDatas = data.datas;
+                    MaintenanceLabels = data.labels;
+            }
+            });
+        $("#MaintenanceChartContainer").remove();
+        $("#MaintenanceChartContainerDiv").append('<canvas id="MaintenanceChartContainer"></canvas>');
+        var ctx2 = document.getElementById('MaintenanceChartContainer').getContext('2d');
+        //pie chart data
+        var data2 = {
+            labels: MaintenanceLabels,
+
+            datasets: [
+                {
+                    label: "Internal vs External Vehicle",
+                    data: MaintenanceDatas,
+                    backgroundColor: barColors,
+                    borderColor: poolColors(datas.length),
+                    hoverOffset: 4,
+                    borderWidth: [1, 1, 1, 1, 1]
+                }
+            ]
+        };
+
+        //doughnut chart data
+        var options = {
+            responsive: true,
+            title: {
+                display: true,
+                position: "top",
+                text: "Internal vs External Vehicle",
+                fontSize: 15,
+                fontColor: "#111"
+            },
+            legend: {
+                display: true,
+                position: "right",
+
+                labels: {
+                    fontColor: "#333",
+                    fontSize: 14
+                }
+            }
+        };
+
+        //create Chart class object
+        var chart2 = new Chart(ctx2, {
+            type: "doughnut",
+            data: data2,
+            options: options
+        });
+
+
+    }
+
+
+    function drawStackedBarChart() {
+        $("#stackedBarChartContainer").remove();
+        $("#stackedBarChartContainerDiv").append('<canvas id="stackedBarChartContainer"></canvas>');
+        var ctx = document.getElementById('stackedBarChartContainer').getContext('2d');
+        var dataSetLength = stackedDataSets.length;
+        var dataSets = [];
+        for (let i = 0; i < dataSetLength; i++) {
+            var dataSet = {
+                label: stackedDataSets[i],
+                backgroundColor: dynamicColors(),
+                data: stackedDatas[i],
+            }
+            dataSets.push(dataSet);
+        }
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: stackedLabels, 
+                datasets: dataSets
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        stacked: true,
+                    
+                        ticks: {
+                            beginAtZero: true
+                        }}],
+                yAxes: [{ stacked: true,
+                    ticks: {
+                    beginAtZero: true
+                } }]
+                }
+            }
+        });
+    }
+    var barColors = [
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145",
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145",
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145"
+    ];
+    function poolColors(a) {
+        var pool = [];
+        for (i = 0; i < a; i++) {
+            pool.push(dynamicColors());
+        }
+        return pool;
+    }
+    function dynamicColors() {
+        var r = Math.floor(Math.random() * 255);
+        var g = Math.floor(Math.random() * 255);
+        var b = Math.floor(Math.random() * 255);
+        return "rgba(" + r + "," + g + "," + b + ",  1)";
+    }
+
+</script>
+<style>
+    .col-lg-2{
+        margin-left:25px;
+    }
+    .col-sm-2 {
+        width: 220px;
+    }
+
+
+    .row {
+        border-bottom: 2px solid #D0D0D0;
+    }
+    .col-md-6 {
+        border-right: 2px solid #D0D0D0;
+    }
+</style>

@@ -10,7 +10,7 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Fleet.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
 using System.Drawing;
-using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
+using ExceedERP.Core.Domain.Maintenance;
 
 namespace ExceedERP.Reporting.Fleet.DataSource
 {

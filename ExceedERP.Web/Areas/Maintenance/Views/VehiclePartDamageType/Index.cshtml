@@ -1,0 +1,44 @@
+﻿
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.Settings.VehiclePartDamageType>
+    ()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(c => c.Code);
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.Description);
+
+        columns.Command(command => { command.Edit(); /*command.Destroy(); */}).Width(200);
+
+    })
+    .ToolBar(toolbar =>
+    {
+        toolbar.Create();
+        //toolbar.Excel();
+    })
+
+    .Scrollable(s => s.Height(600))
+    .Sortable()
+    .Filterable()
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .Pageable(pageable => pageable
+    .Refresh(true)
+    .PageSizes(true)
+    .ButtonCount(5))
+    .DataSource(dataSource => dataSource
+    .Ajax()
+    .Events(ev => ev.Error("error_handler(\"grid\")")
+    .RequestStart("onRequestStart(\"grid\")")
+    .RequestEnd("onRequestEnd(\"grid\")"))
+    .ServerOperation(false)
+    .Model(model => model.Id(p => p.VehiclePartDamageTypeId))
+    .Read(read => read.Action("VehiclePartDamageType_Read", "VehiclePartDamageType"))
+    .Create(create => create.Action("VehiclePartDamageType_Create", "VehiclePartDamageType"))
+    .Update(update => update.Action("VehiclePartDamageType_Update", "VehiclePartDamageType"))
+    .Destroy(destroy => destroy.Action("VehiclePartDamageType_Destroy", "VehiclePartDamageType"))
+    .Sort(sort =>
+    {
+        sort.Add(m => m.LastModified).Descending();
+    }).PageSize(10)))

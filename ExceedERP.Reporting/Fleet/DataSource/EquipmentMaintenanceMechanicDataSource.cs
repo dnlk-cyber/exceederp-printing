@@ -1,5 +1,4 @@
 ﻿using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Fleet;
@@ -84,46 +83,46 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             foreach (var Equipment in Equipments)
             {
 
-                var Orders = JobOrders.Where(x => x.FleetsID == Equipment.FleetsID).ToList();
+                //var Orders = JobOrders.Where(x => x.FleetsID == Equipment.FleetsID).ToList();
 
-                foreach (var Order in Orders)
-                {
-                    var ServiceCrewWorkLogs = db.ServiceCrewWorkLogs.Where(x => x.DateCreated >= StartingDate && x.DateCreated <= EndingDate && x.JobId == Order.JobOrderID).ToList();
+                //foreach (var Order in Orders)
+                //{
+                //    var ServiceCrewWorkLogs = db.ServiceCrewWorkLogs.Where(x => x.DateCreated >= StartingDate && x.DateCreated <= EndingDate && x.JobId == Order.JobOrderID).ToList();
 
-                    foreach (var ServiceCrewWorkLog in ServiceCrewWorkLogs)
-                    {
-                        var MaintenaceMechanicViewModel = new MaintenaceMechanicViewModel();
+                //    foreach (var ServiceCrewWorkLog in ServiceCrewWorkLogs)
+                //    {
+                //        var MaintenaceMechanicViewModel = new MaintenaceMechanicViewModel();
 
 
-                        try
-                        {
-                            if (ServiceCrewWorkLog.DateCreated != null)
-                            {
-                                MaintenaceMechanicViewModel.Date = DateTime.Parse(ServiceCrewWorkLog.DateCreated.ToString());
-                            }
+                //        try
+                //        {
+                //            if (ServiceCrewWorkLog.DateCreated != null)
+                //            {
+                //                MaintenaceMechanicViewModel.Date = DateTime.Parse(ServiceCrewWorkLog.DateCreated.ToString());
+                //            }
 
-                            MaintenaceMechanicViewModel.Mechanic = ServiceCrewWorkLog.MechanicCrew.FullName;
-                            MaintenaceMechanicViewModel.ServiceName = ServiceCrewWorkLog.JobOrderDetail.Service.ServiceName;
-                          MaintenaceMechanicViewModel.TotalWorked = fleetMaintenaceHelper.GetMechanicSingleDuration(ServiceCrewWorkLog);
-                            MaintenaceMechanicViewModel.JobOrderNo = Order.Num;
+                //            MaintenaceMechanicViewModel.Mechanic = ServiceCrewWorkLog.MechanicCrew.FullName;
+                //            MaintenaceMechanicViewModel.ServiceName = ServiceCrewWorkLog.JobOrderDetail.Service.ServiceName;
+                //          MaintenaceMechanicViewModel.TotalWorked = fleetMaintenaceHelper.GetMechanicSingleDuration(ServiceCrewWorkLog);
+                //            MaintenaceMechanicViewModel.JobOrderNo = Order.Num;
 
-                            MaintenaceMechanicViewModel.EquipmentCategory = Equipment.EquipmentIdentity.EquipmentCategoryName;
-                            MaintenaceMechanicViewModel.EquipmentType = Equipment.EquipmentType.EquipmentTypeName;
-                            MaintenaceMechanicViewModel.AssetCode = Equipment.UnitNum;
+                //            MaintenaceMechanicViewModel.EquipmentCategory = Equipment.EquipmentIdentity.EquipmentCategoryName;
+                //            MaintenaceMechanicViewModel.EquipmentType = Equipment.EquipmentType.EquipmentTypeName;
+                //            MaintenaceMechanicViewModel.AssetCode = Equipment.UnitNum;
 
-                            MaintenaceMechanicViewModel.AmharicName = AmharicName;
-                            MaintenaceMechanicViewModel.Name = Name;
-                            MaintenaceMechanicViewModel.LogoFileName = LogoFileName;
-                            MaintenaceMechanicViewModel.Address = Address;
+                //            MaintenaceMechanicViewModel.AmharicName = AmharicName;
+                //            MaintenaceMechanicViewModel.Name = Name;
+                //            MaintenaceMechanicViewModel.LogoFileName = LogoFileName;
+                //            MaintenaceMechanicViewModel.Address = Address;
 
-                            MaintenaceMechanicList.Add(MaintenaceMechanicViewModel);
-                        }
-                        catch (Exception)
-                        {
+                //            MaintenaceMechanicList.Add(MaintenaceMechanicViewModel);
+                //        }
+                //        catch (Exception)
+                //        {
 
-                        }
-                    }
-                }
+                //        }
+                //    }
+                //}
             }
 
 

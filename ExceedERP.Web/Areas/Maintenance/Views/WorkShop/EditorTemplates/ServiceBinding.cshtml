@@ -1,0 +1,9 @@
+﻿
+    @(Html.Kendo().DropDownListFor(model => model)
+                .Name("ServiceName")
+                  .DataTextField("Name")
+                  .DataValueField("RepairTypeID")
+                  .OptionLabel(" Select ")
+                  .Filter(FilterType.Contains)
+                          .DataSource(d => d.Read(r => r.Action("GetRepairTypes", "MaintenanceDataProvider")).ServerFiltering(false)))
+    @*.DataSource(d => d.Read(r => r.Action("ServiceDDBind", "InspectionRegistration").Data("filterSerivce")).ServerFiltering(false)))*@

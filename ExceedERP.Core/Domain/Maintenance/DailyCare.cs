@@ -1,0 +1,26 @@
+﻿using ExceedERP.Core.Domain.Common;
+using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ExceedERP.Core.Domain.Maintenance
+{
+    public  class DailyCare : TrackUserSettingOperation
+    {
+        public Guid DailyCareId { get; set; }
+
+        [DisplayName("Category")]
+        public Guid DailyCareCategoryId { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+        public string Description { get; set; }
+
+        [NotMapped]
+        public string Category { get; set; }
+
+        public virtual DailyCareCategory DailyCareCategory { get; set; }
+
+    }
+}

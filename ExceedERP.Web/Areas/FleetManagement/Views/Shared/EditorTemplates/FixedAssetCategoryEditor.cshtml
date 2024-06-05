@@ -1,9 +1,38 @@
-﻿
-<div>
-    @(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
-                                .DataTextField("Text")
-                                            .DataValueField("Value").OptionLabel("Select").Filter(FilterType.Contains)
-                                    .DataSource(d => d.Read(r => r.Action("AssetCategoryDDBind", "EquipmentType")).ServerFiltering(false)))
+﻿<script>
+    function onChangeCategory(e) {
+       
+        $.ajax({
+            url: '@Url.Action("GetFixedAssetCategoryById", "FleetManagementDataProvider")',
+            data: { assetCategoryId: this.value() },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                $("#EquipmentCategoryName").val(result.Name).trigger("change");
+                $("#Description").val(result.Description).trigger("change");
 
 
-</div>
+            }
+        });
+
+    }
+</script>
+
+@(Html.Kendo().DropDownListFor(m=>m)
+    .Name("FixedAssetCategoryId")
+    .ValuePrimitive(true)
+    .OptionLabel("Select")
+
+      .DataTextField("Name")
+      .DataValueField("Id")
+      .Events(ev=>ev.Change("onChangeCategory"))
+      .Filter("contains")
+      .IgnoreCase(true)
+      .DataSource(d => d.Read(r => 
+
+
+
+
+
+
+
+      r.Action("GetFixedAssetCategories", "FleetManagementDataProvider"))))

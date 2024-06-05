@@ -1,8 +1,0 @@
-﻿@using System.Collections
-
-@(Html.Kendo().DropDownListFor(m => m)
-                        .DataTextField("SalaryAmount")
-                         .DataValueField("SalaryStructureId")
-                          .BindTo((IEnumerable)ViewData["Salaries"])
-                   .ValuePrimitive(true)
-)

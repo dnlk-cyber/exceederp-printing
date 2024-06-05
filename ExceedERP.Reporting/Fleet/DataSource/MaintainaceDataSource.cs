@@ -1,5 +1,4 @@
-﻿using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
-using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+﻿using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Fleet.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
@@ -112,24 +111,24 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                foreach (Fleets sov in List)
                {
 
-                   List<JobOrder> Orders = db.JobOrder.Where(x => x.FleetsID == sov.FleetsID).ToList();
-                   if (Orders.Any())
-                   {
-                       foreach(var order in Orders)
-                       {
-                       FleetViewModel = new MaintenanceViewModel();
-                       FleetViewModel.PlateNumber = sov.PlateNumber;
-                       FleetViewModel.MaterialCost = order.SpareCost;
-                       FleetViewModel.LabourCost = order.LabourCost;
+                   //List<JobOrder> Orders = db.JobOrder.Where(x => x.FleetsID == sov.FleetsID).ToList();
+                   //if (Orders.Any())
+                   //{
+                   //    foreach(var order in Orders)
+                   //    {
+                   //    FleetViewModel = new MaintenanceViewModel();
+                   //    FleetViewModel.PlateNumber = sov.PlateNumber;
+                   //    FleetViewModel.MaterialCost = order.SpareCost;
+                   //    FleetViewModel.LabourCost = order.LabourCost;
                    
 
-                       FleetViewModel.Name = Name;
-                       FleetViewModel.LogoFileName = LogoFileName;
-                       FleetViewModel.Address = Address;
+                   //    FleetViewModel.Name = Name;
+                   //    FleetViewModel.LogoFileName = LogoFileName;
+                   //    FleetViewModel.Address = Address;
 
-                       TireList.Add(FleetViewModel);
-                   }
-                   }
+                   //    TireList.Add(FleetViewModel);
+                   //}
+                   //}
 
                }
            }

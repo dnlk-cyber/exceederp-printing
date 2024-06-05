@@ -1,0 +1,187 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetRegistration.OwningandOperatingCost
+
+
+
+<div class = "demo-section k-content">
+    <form>
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @(Html.LabelFor(m => m.FleetsID))
+                        @(Html.Kendo().DropDownListFor(model => model.FleetsID)
+                               .DataTextField("PlateNumber")
+                               .DataValueField("FleetsID").OptionLabel(" Select ").Filter(FilterType.Contains)
+                               .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "FleetManagementDataProvider")).ServerFiltering(false)))
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.EstimatedUsage)
+
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.EstimatedUsage).Min(0)
+                        @Html.ValidationMessageFor(model => model.EstimatedUsage)
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.OwnerShipPeriod)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.OwnerShipPeriod).Min(0)
+                        @Html.ValidationMessageFor(model => model.OwnerShipPeriod)
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.DeliveryPrice)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.DeliveryPrice).Min(0)
+                        @Html.ValidationMessageFor(model => model.DeliveryPrice)
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.TyreReplacementCost)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.TyreReplacementCost).Min(0)
+                        @Html.ValidationMessageFor(model => model.TyreReplacementCost)
+                    </div>
+
+                </div>
+            </div>
+
+
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.TotalOperatingWeight)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.TotalOperatingWeight).Min(0)
+                        @Html.ValidationMessageFor(model => model.TotalOperatingWeight)
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.YerlyPremiuem)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.YerlyPremiuem).Min(0)
+                        @Html.ValidationMessageFor(model => model.YerlyPremiuem)
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.FuelConsumption)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.FuelConsumption).Min(0)
+                        @Html.ValidationMessageFor(model => model.FuelConsumption)
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.OperatorDriverMonthlySalary)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.OperatorDriverMonthlySalary).Min(0)
+                        @Html.ValidationMessageFor(model => model.OperatorDriverMonthlySalary)
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        <label>Condition</label>  
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.Remark)
+                               .DataTextField("Name")
+                               .DataValueField("Name").OptionLabel("Select").Filter(FilterType.Contains)
+                               .DataSource(d => d.Read(r => r.Action("FleetConditionDDBind", "FleetManagementDataProvider")).ServerFiltering(false)))
+
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        Maintenance Cost 
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.MaintenanceRepairCost).Min(0)
+                        @Html.ValidationMessageFor(model => model.MaintenanceRepairCost)
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        Hourly/Rental Cost
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.RentalRateWithFuel).Min(0)
+                        @Html.ValidationMessageFor(model => model.RentalRateWithFuel)
+                    </div>
+
+                </div>
+            </div>
+
+        
+        </div>
+
+    </form>
+</div>

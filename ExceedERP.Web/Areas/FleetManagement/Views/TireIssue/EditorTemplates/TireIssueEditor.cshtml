@@ -44,9 +44,14 @@
             </div>
         </div>
 
-        <div class = "col-md-3">
-            <div class = "form-group">
-                <div class = "k-label">
+        
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
                     @Html.LabelFor(model => model.TireSize)
                 </div>
                 <div>
@@ -55,13 +60,9 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class = "row">
-        <div class = "col-md-1">
-        </div>
-        <div class = "col-md-3">
-            <div class = "form-group">
-                <div class = "k-label">
+        @*<div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
                     @Html.LabelFor(model => model.Quantity)
                 </div>
                 <div>
@@ -69,11 +70,11 @@
                     @Html.ValidationMessageFor(model => model.Quantity)
                 </div>
             </div>
-        </div>
+        </div>*@
 
-        <div class = "col-md-3">
-            <div class = "form-group">
-                <div class = "k-label">
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
                     @Html.LabelFor(model => model.InstalledDate)
                 </div>
                 <div>
@@ -83,85 +84,87 @@
             </div>
         </div>
 
-        <div class = "col-md-3">
-            <div class = "form-group">
-                <div class = "k-label">
-                 Tire Tube
+
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    Tire Tube
                     @( Html.Kendo().DropDownListFor(m => m.TireTube).Name("TireTube")
-                           .DataTextField("Text")
-                           .DataValueField("Text").OptionLabel(" Select Position ")
-                           .BindTo(EnumHelper.GetSelectList(typeof (ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssue.TireTubeenum))))
+                                   .DataTextField("Text")
+                                   .DataValueField("Text").OptionLabel(" Select Position ")
+                                   .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssue.TireTubeenum))))
                 </div>
             </div>
         </div>
-    </div>
-        <div class="row">
-            <div class="col-md-1">
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <div class="k-label">
-                      Tire Type 
-                        @( Html.Kendo().DropDownListFor(m => m.TireType).Name("TireType")
-        .DataTextField("Text")
-                        .DataValueField("Text").OptionLabel(" Select Tire Type ")
-        .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssue.TireTypeenum))))
-                    </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    Tire Type
+                    @( Html.Kendo().DropDownListFor(m => m.TireType).Name("TireType")
+            .DataTextField("Text")
+                            .DataValueField("Text").OptionLabel(" Select Tire Type ")
+            .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssue.TireTypeenum))))
                 </div>
             </div>
+        </div>
 
-            <div class="col-md-3">
-                <div class="form-group">
-                    <div class="k-label">
-                        @Html.LabelFor(model => model.KMReading)
-                    </div>
-                    <div>
-                        @Html.Kendo().NumericTextBoxFor(model => model.KMReading)
-                        @Html.ValidationMessageFor(model => model.KMReading)
-                    </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.KMReading)
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.KMReading)
+                    @Html.ValidationMessageFor(model => model.KMReading)
                 </div>
             </div>
+        </div>
 
-            <div class="col-md-3">
-                <div class="form-group">
-                    <div class="k-label">
-                        @Html.LabelFor(model => model.UnitPrice)
-                    </div>
-                    <div>
-                        @Html.Kendo().NumericTextBoxFor(model => model.UnitPrice)
-                        @Html.ValidationMessageFor(model => model.UnitPrice)
-                    </div>
-                </div>
-            </div>
-                     </div><div class="row">
+
+    </div><div class="row">
     <div class="col-md-1">
     </div>
-                               <div class="col-md-3">
-                                   <div class="form-group">
-                                       <div class="k-label">
-                                           @Html.LabelFor(model => model.DescriptionReason)
-                                       </div>
-                                       <div>
-                                           @Html.Kendo().TextBoxFor(model => model.DescriptionReason)
-                                           @Html.ValidationMessageFor(model => model.DescriptionReason)
-                                       </div>
-                                   </div>
-                               </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.UnitPrice)
+            </div>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.UnitPrice)
+                @Html.ValidationMessageFor(model => model.UnitPrice)
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.DescriptionReason)
+            </div>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.DescriptionReason)
+                @Html.ValidationMessageFor(model => model.DescriptionReason)
+            </div>
+        </div>
+    </div>
 
-                               <div class="col-md-3">
-                                   <div class="form-group">
-                                       <div class="k-label">
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
 
-                                           @Html.LabelFor(model => model.PlateNumber)
-                                           @(Html.Kendo().DropDownListFor(model => model.PlateNumber).Name("PlateNumber")
-                                                 .DataTextField("PlateNumber")
-                                                 .DataValueField("PlateNumber").OptionLabel(" Select Equipment")
-                                                 .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration"))))
-                                       </div>
-                                   </div>
-                               </div>
+                @Html.LabelFor(model => model.PlateNumber)
+                @(Html.Kendo().DropDownListFor(model => model.PlateNumber).Name("PlateNumber")
+                              .DataTextField("PlateNumber")
+                              .DataValueField("PlateNumber").OptionLabel(" Select Equipment")
+                              .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration"))))
+            </div>
+        </div>
+    </div>
 
-                             
+
 
 </div>
 

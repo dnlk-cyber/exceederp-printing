@@ -4,33 +4,34 @@
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.EquipmentArrival>()
       .Name("grid")
       .Columns(columns =>
-          {
-       
-          columns.Bound(o => o.EquipmentType);
-         
-          columns.Bound(o => o.DCENo).Title("Asset No");
-          columns.Bound(o => o.KMHRReading);
-          columns.Bound(o => o.OwnedBy);
-          columns.Bound(o => o.MeansOfTravelling);
-          columns.Bound(o => o.Date).Format("{0:d}");
-          columns.Bound(o => o.OperatorName);
-          columns.Bound(o => o.Status);
+      {
 
-          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+          //columns.Bound(c => c.EquipmentType).ClientTemplate("<img class='img-circle' src='" + Url.Content("~/Content/Images/Fleet/Equipment/") + "#=EquipmentType#.jpg?q=" + DateTime.Now + "' alt='#=EquipmentType #' Title='#=EquipmentType #'  height='62' width='62'  />").Width(150);
+          columns.ForeignKey(o => o.EquipmentIdentityId, (System.Collections.IEnumerable)ViewData["EquipmentCat"], "Value", "Text").Width(100).Title("Equipment Category").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(o => o.EquipmentTypeId, (System.Collections.IEnumerable)ViewData["EquipmentType"], "Value", "Text").Width(100).Title("Equipment Type").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(o => o.EquipmentNameId, (System.Collections.IEnumerable)ViewData["EquipmentName"], "Value", "Text").Width(100).Title("Equipment Name").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(o => o.FleetsId, (System.Collections.IEnumerable)ViewData["FleetsAssignedEquip"], "Value", "Name").Width(80).Title("Plate No").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Bound(o => o.DCENo).Title("Asset No").Width(90).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Bound(o => o.KMHRReading).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Bound(o => o.OwnedBy).Width(80);
+          columns.Bound(o => o.MeansOfTravelling).Width(90);
+          columns.Bound(o => o.Date).Format("{0:d}").Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(o => o.OperatorName, (System.Collections.IEnumerable)ViewData["Operator"], "Value", "Text").Width(90).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Bound(o => o.Status).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
 
-          }).Events(ev =>
-                                               {
-                                                   ev.DataBound("onDataBound"); ev.DetailExpand("onDetailExpandUser");
-                                               })
+      }).Events(ev =>
+      {
+          ev.DataBound("onDataBound"); ev.DetailExpand("onDetailExpandUser");
+      })
            .ToolBar(commands =>
-                  {
-                      commands.Create(); commands.Excel();
-                      commands.Pdf();
-                  }).Editable(editable =>
-          {
-              editable.Mode(GridEditMode.PopUp).TemplateName("EquipmentArrivalEditor").Window(x => x.Title("Equipment Arrival"));
-          editable.DisplayDeleteConfirmation("Are You Sure To Remove Arrival");
-          }).ClientDetailTemplateId("template")
+           {
+               commands.Create(); 
+           }).Editable(editable =>
+           {
+               editable.Mode(GridEditMode.PopUp).TemplateName("EquipmentArrivalEditor").Window(x => x.Title("Equipment Arrival"));
+               editable.DisplayDeleteConfirmation("Are You Sure To Remove Arrival");
+           }).ClientDetailTemplateId("template")
            .HtmlAttributes(new { style = "height: 520px;" })
                       .Pageable(pageable => pageable
                                         .Input(true)
@@ -42,17 +43,17 @@
                             .Scrollable()
                             .Sortable()
                             .Filterable()
-                            .Groupable()
+                            //.Groupable()
                             .Scrollable(h => h.Height(500))
       .DataSource(dataSource => dataSource
           .Ajax()
           .ServerOperation(false)
           .Model(model =>
-              {
+          {
               model.Id(p => p.EquipmentArrivalId);
               model.Field(p => p.EquipmentArrivalId).Editable(false);
-                 
-              })
+
+          })
                                .Events(ev => ev
                             .Error("error_handler(\"grid\")")
                             .RequestStart("onRequestStart(\"grid\")")
@@ -87,67 +88,29 @@
                             </div>
                         </div>
 
-                        <div class="demo-section k-header export-app">
-                            <div class="demo-section content-wrapper">
+                        <div class="row">
+                            <div class="col-md-1">
+                            </div>
+                            <div class="col-md-6" style="margin-top:20px;">
 
-                                <form>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.CreatedBy):<span>#=CreatedBy#</span>
+
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.DateCreated):<span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
+
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ModifiedBy):<span>#=ModifiedBy#</span>
+
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.LastModified):<span>#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy')#</span>
+
+                                </div>
 
 
-
-                                    <div class="row">
-                                        <div class="col-md-1">
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <div class="label">
-                                                    @Html.LabelFor(model => model.CreatedBy)
-                                                </div>
-                                                <div>
-                                                    #=CreatedBy#
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <div class="label">
-                                                    @Html.LabelFor(model => model.DateCreated)
-                                                </div>
-                                                <div>
-                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
-
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <div class="label">
-                                                    @Html.LabelFor(model => model.ModifiedBy)
-                                                </div>
-                                                <div>
-
-                                                    #=ModifiedBy#
-
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-2">
-                                            <div class="form-group">
-                                                <div class="label">
-                                                    @Html.LabelFor(model => model.LastModified)
-                                                </div>
-                                                <div>
-                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-
-                                </form>
 
                             </div>
                         </div>
@@ -202,9 +165,27 @@
                                                                                                                                                                                                                                                                                                                                                     .ToClientTemplate())
 </script>
 
-<style type="text/css">
+<style>
     div.k-edit-form-container {
-        width: 700px;
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+
+    .chkbx {
+        pointer-events: none;
+    }
+
+    .chkbox {
+        width: 100px;
+        height: 25px;
     }
 </style>
 

@@ -1,8 +1,8 @@
 ﻿using ExceedERP.ApplicationServices.FleetManagement.FleetMaintenance;
 using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
-using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.FleetManagement.FleetResource;
+using ExceedERP.Core.Domain.Maintenance;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -20,10 +20,9 @@
 
     })
                                                        .ToolBar(commands =>
-              {
-                  commands.Create(); commands.Excel();
-                  commands.Pdf();
-              })
+                                                       {
+                                                           commands.Create();
+                                                       })
       .Editable(editable =>
       {
           editable.Mode(GridEditMode.PopUp).TemplateName("BatteryReturnEditor").Window(x => x.Title(" Battery Return "));
@@ -40,22 +39,25 @@
                                     .Scrollable()
                                     .Sortable()
                                     .Filterable()
-                                    .Groupable()
+                                    //  .Groupable()
                                     .Scrollable(h => h.Height(500))
                                            .ClientDetailTemplateId("template")
-                                             .Groupable().Events(ev => { ev.DetailExpand("onDetailExpandUser"); ev.DataBound("onDataBound"); })
+                                             .Events(ev => {
+                                                 ev.DetailExpand("onDetailExpandUser");
+                                                 ev.DataBound("onDataBound");
+                                             })
 
     .DataSource(dataSource => dataSource
         .Ajax()
         .ServerOperation(false)
         .Model(model =>
-              {
-                  model.Id(p => p.BatteryReturnId);
+        {
+            model.Id(p => p.BatteryReturnId);
 
-              }).Events(ev => ev
-                                                            .Error("error_handler(\"grid\")")
-                                                            .RequestStart("onRequestStart(\"grid\")")
-                                                            .RequestEnd("onRequestEnd(\"grid\")"))
+        }).Events(ev => ev
+                                                      .Error("error_handler(\"grid\")")
+                                                      .RequestStart("onRequestStart(\"grid\")")
+                                                      .RequestEnd("onRequestEnd(\"grid\")"))
                     .Create(update => update.Action("BatteryReturn_Create", "BatteryReturn"))
                     .Read(read => read.Action("BatteryReturn_Read", "BatteryReturn"))
                     .Update(update => update.Action("BatteryReturn_Update", "BatteryReturn"))

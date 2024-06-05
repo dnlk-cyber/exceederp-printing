@@ -1,0 +1,18 @@
+﻿
+
+
+
+
+
+@(Html.Kendo().DropDownListFor(model => model)
+                    .HtmlAttributes(new { @class = "form-control" })
+                    .AutoBind(false)
+                    .DataTextField("Name")
+                    .ValuePrimitive(true)
+                    .DataValueField("Id")
+                    .OptionLabel("Select Unit of Measurement")
+                    .Filter("contains")
+                    .IgnoreCase(true)
+                    .DataSource(d => d.Read(r => r.Action("getUnitOfMeasurement", "FleetManagementDataProvider")
+                    .Data("filterEquipmentTypes"))
+                    .ServerFiltering(true)))

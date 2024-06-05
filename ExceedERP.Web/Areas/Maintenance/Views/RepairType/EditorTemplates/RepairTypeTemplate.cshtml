@@ -1,0 +1,269 @@
+﻿
+@model ExceedERP.Core.Domain.Maintenance.RepairType
+@using System.Collections
+@using ExceedERP.Core.Localization
+<form id="lineForm" method="post">
+
+
+    <div class="row">
+        <div class="col-sm-1">
+            <div class="k-label">
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.CategoryCode)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.CategoryCode)
+                                  .OptionLabel(Resources.Select)
+                                  .DataTextField("Name")
+                                  .DataValueField("ItemCategoryCode")
+                                  .Filter(FilterType.Contains)
+                                  .DataSource(dataSource =>
+                                  {
+                                      dataSource.Read(read => read.Action("GetAllCategory", "MaintenanceDataProvider", new { Area = "Maintenance" }));
+                                  })
+                                  .MinLength(2)
+                                  .ValuePrimitive(true)
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.SubCategoryCode)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.SubCategoryCode)
+                                  .ValuePrimitive(true)
+                                  .OptionLabel(Resources.Select)
+                                  .DataTextField("Name")
+                                  .DataValueField("ItemCategoryCode")
+                                  .DataSource(dataSource =>
+                                  {
+                                      dataSource.Read(read => read.Action("GetSubcategoriesBasedOnCategory", "MaintenanceDataProvider", new { Area = "Maintenance" }).Data("filterCategories"))
+                                      .ServerFiltering(true);
+                                  })
+                                  .CascadeFrom("CategoryCode")
+                                   .Filter(FilterType.Contains)
+
+                                  .MinLength(2)
+                                  .ValuePrimitive(true)
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ServiceGroup)
+                </div>
+                <div>
+@(Html.Kendo().DropDownListFor(model => model.ServiceGroup)
+                .DataTextField("Text")
+                .DataValueField("Value")
+                .Filter(FilterType.Contains)
+                .BindTo(ExceedERP.Helpers.Common.EnumExtension.
+                EnumToSelectList(typeof(ExceedERP.Core.Domain.Maintenance.ServiceGroup))
+                )
+                    )
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Code)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Code))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Name)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Name))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.StandaredTime)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.StandaredTime).HtmlAttributes(new { @onchange = "onChangeTime(this);" }))
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.AutomotiveStandaredHour)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.AutomotiveStandaredHour))
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PayableTime)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.PayableTime).HtmlAttributes(new { @onchange = "onChangeTime(),onChangeLabourRate();" }))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Difference)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Difference)
+                                                                .HtmlAttributes(new { style = "color:red;" })
+                                                        .Enable(false))
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.LabourRateAtCompany)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.LabourRateAtCompany).HtmlAttributes(new { @onchange = "onChangeLabourRate();" }))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.LabourRateAtCustomer)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.LabourRateAtCustomer).HtmlAttributes(new { @onchange = "onChangeLabourRate();" }))
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TotalAmountCompany)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.TotalAmountCompany)
+                                                                .HtmlAttributes(new { style = "color:red;" })
+                                                                .Enable(false))
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TotalAmountCustomer)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.TotalAmountCustomer)
+                                                                                .HtmlAttributes(new { style = "color:red;" })
+                                                                .Enable(false))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Remark)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Remark))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Reason)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Reason))
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Place)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.Place)
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Time)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Time))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Process)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Process))
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+

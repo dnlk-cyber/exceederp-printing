@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.ApplicationServices.FleetManagement.FleetEquipmentRent
 {
-   public interface IRentOtherSuppliersService
+    public interface IRentOtherSuppliersService
     {
-        bool Insert(RentOtherSuppliers entity);
-        bool InsertBatch(List<RentOtherSuppliers> entityList);
-        bool Update(RentOtherSuppliers entity);
+        bool Insert(RentToExternal entity);
+        bool InsertBatch(List<RentToExternal> entityList);
+        bool Update(RentToExternal entity);
 
-        bool Delete(RentOtherSuppliers entity);
-        RentOtherSuppliers GetById(Guid id);
-        List<RentOtherSuppliers> GetAll();
+        bool Delete(RentToExternal entity);
+        RentToExternal GetById(Guid id);
+        List<RentToExternal> GetAll();
     }
 }

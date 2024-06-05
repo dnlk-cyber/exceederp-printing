@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using ExceedERP.Core.Domain.Common;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Inventory;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetMaintenance
 {

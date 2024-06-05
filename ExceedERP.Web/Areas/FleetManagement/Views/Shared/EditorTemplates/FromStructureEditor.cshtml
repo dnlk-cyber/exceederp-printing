@@ -1,0 +1,12 @@
+﻿
+@(Html.Kendo().DropDownListFor(model => model)
+            .HtmlAttributes(new { @class = "form-control" })
+            .AutoBind(false)
+            .DataTextField("Name")
+            .ValuePrimitive(true)
+            .DataValueField("Id")
+            .OptionLabel("Select")
+            .Filter("contains")
+            .DataSource(d => d.Read(r => r.Action("StructureDDBind", "Structure")
+            .Data("filterEquipmentTypes"))
+            ))

@@ -1,0 +1,10 @@
+﻿ 
+@(Html.Kendo().DropDownListFor(m=>m)
+    .AutoBind(false)
+      .DataTextField("Name")
+      .ValuePrimitive(true)
+      .DataValueField("Id")
+      .Filter(FilterType.Contains)
+      .OptionLabel("Select")
+      .DataSource(d => d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider")
+      .Data("filterEquipmentNames")).ServerFiltering(true)))

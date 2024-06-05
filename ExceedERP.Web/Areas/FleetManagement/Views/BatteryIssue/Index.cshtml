@@ -13,17 +13,16 @@
         columns.Bound(e => e.BatteryType).Width(140);
         columns.Bound(e => e.UnitPrice).Width(80);
         columns.Bound(e => e.Status).Width(100);
-       
-   
+
+
         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
 
 
     })
                                                        .ToolBar(commands =>
-              {
-                  commands.Create(); commands.Excel();
-                  commands.Pdf();
-              })
+                                                       {
+                                                           commands.Create(); 
+                                                       })
       .Editable(editable =>
       {
           editable.Mode(GridEditMode.PopUp).TemplateName("BatteryIssueEditor").Window(x => x.Title(" Battery Issue "));
@@ -40,19 +39,22 @@
                                     .Filterable()
                                      .Scrollable(h => h.Height(500))
                                        .ClientDetailTemplateId("template")
-                                            .Events(ev => { ev.DetailExpand("onDetailExpandUser"); ev.DataBound("onDataBound"); })
-      
+                                            .Events(ev => {
+                                                ev.DetailExpand("onDetailExpandUser");
+                                                ev.DataBound("onDataBound");
+                                            })
+
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false) 
+        .ServerOperation(false)
         .Model(model =>
-              {
-                  model.Id(p => p.BatteryIssueId);
-               
-              }).Events(ev => ev
-                                                            .Error("error_handler(\"grid\")")
-                                                            .RequestStart("onRequestStart(\"grid\")")
-                                                            .RequestEnd("onRequestEnd(\"grid\")")) 
+        {
+            model.Id(p => p.BatteryIssueId);
+
+        }).Events(ev => ev
+                                                      .Error("error_handler(\"grid\")")
+                                                      .RequestStart("onRequestStart(\"grid\")")
+                                                      .RequestEnd("onRequestEnd(\"grid\")"))
                     .Create(update => update.Action("BatteryIssue_Create", "BatteryIssue"))
                     .Read(read => read.Action("BatteryIssue_Read", "BatteryIssue"))
                     .Update(update => update.Action("BatteryIssue_Update", "BatteryIssue"))

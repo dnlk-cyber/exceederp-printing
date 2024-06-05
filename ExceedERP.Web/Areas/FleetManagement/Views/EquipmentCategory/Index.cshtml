@@ -1,4 +1,5 @@
-﻿@{
+﻿@using System.Collections
+@{
     ViewBag.Title = "Equipment Category";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -6,18 +7,19 @@
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.EquipmentIdentity>()
       .Name("grid")
       .Columns(columns =>
-          {
+      {
+          columns.ForeignKey(c => c.FixedAssetCategoryId, (IEnumerable)ViewData["FixedAssetCategories"], "Id", "Name").EditorTemplateName("FixedAssetCategoryEditor").Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
           columns.Bound(e => e.EquipmentCategoryName).Width(140);
           columns.Bound(e => e.Description).Width(140);
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
 
-          })
+      })
       .ToolBar(commands => commands.Create())
       .Editable(editable =>
-          {
+      {
           editable.Mode(GridEditMode.InLine);
           editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Category");
-          })
+      })
             .HtmlAttributes(new { style = "height: 520px;" })
                       .Pageable(pageable => pageable
                                         .Input(true)
@@ -32,14 +34,14 @@
                             .Scrollable(h => h.Height(500))
       .DataSource(dataSource => dataSource
           .Ajax()
-          .ServerOperation(false)
           .Model(model =>
-              {
+          {
               model.Id(p => p.EquipmentIdentityID);
 
               model.Field(p => p.EquipmentIdentityID).Editable(false);
 
-              })
+          })
+          .Sort(so=>so.Add(s=>s.EquipmentIdentityID).Descending())
                        .Events(ev => ev
                                         .Error("error_handler(\"grid\")")
                                         .RequestStart("onRequestStart(\"grid\")")

@@ -1,0 +1,103 @@
+﻿
+@{
+    ViewBag.Title = "RentalInspectionCriteria";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Rental Inspection Criteria</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentalInspectionCriteria>()
+                    .Name("grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.Index).Title("Index").Width(30);
+                        columns.Bound(c => c.CriteriaCategory).Width(80);
+                        columns.Command(command => {
+                            command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit");
+                            command.Destroy().Text("Delete");
+                            }).Title("Action").Width(80);
+                    })
+                    .ToolBar(toolbar =>
+                    {
+                        toolbar.Create();
+                    })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine)
+                    .Window(win => win.Title("Rental Inspection Criteria").Width(600)))
+                    .Pageable()
+                    .Filterable()
+                    .Scrollable(s => s.Height(550))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Model(model =>
+                        {
+                            model.Id(p => p.RentalInspectionCriteriaId);
+                            model.Field(x => x.RentalInspectionCriteriaId).Editable(false);
+                        })
+                        .Events(ev => ev
+                        .Error("error_handler(\"grid\")")
+                        .RequestStart("onRequestStart(\"grid\")")
+                        .RequestEnd("onRequestEnd(\"grid\")"))
+                        .Read(read => read.Action("RentalInspectionCriteria_Read", "RentalInspectionCriteria"))
+                        .Create(create => create.Action("RentalInspectionCriteria_Create", "RentalInspectionCriteria"))
+                        .Update(update => update.Action("RentalInspectionCriteria_Update", "RentalInspectionCriteria"))
+                        .Destroy(destroy => destroy.Action("RentalInspectionCriteria_Destroy", "RentalInspectionCriteria"))
+                    ).ClientDetailTemplateId("detailTemplate")
+)
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 400px;
+    }
+</style>
+<script id="detailTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tab_Strip_#=RentalInspectionCriteriaId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Inspection Parameters").Content(@<text>
+                  @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentalInspectionCriteriaDetail>()
+                        .Name("RentalInspectionCriteriaDetail_grid#=RentalInspectionCriteriaId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Index).Title("Index").Width(100);
+                            columns.Bound(o => o.CriteriaName).Title("Parameter").Width(150);
+                            columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(160);
+                        })
+                        .DataSource(dataSource => dataSource
+
+
+
+                            .Ajax()
+                            .Model(model =>
+                            {
+                                model.Id(p => p.RentalInspectionCriteriaDetailId);
+                                model.Field(x => x.RentalInspectionCriteriaDetailId).Editable(false);
+                                model.Field(x => x.SerialNumber).Editable(false);
+                            })
+                            .PageSize(5)
+                            .Events(ev => ev
+                        .Error("error_handler(\"RentalInspectionCriteriaDetail_grid#=RentalInspectionCriteriaId#\")")
+                        .RequestStart("onRequestStart(\"RentalInspectionCriteriaDetail_grid#=RentalInspectionCriteriaId#\")")
+                        .RequestEnd("onRequestEnd(\"RentalInspectionCriteriaDetail_grid#=RentalInspectionCriteriaId#\")"))
+                        .Read(read => read.Action("RentalInspectionCriteriaDetail_Read", "RentalInspectionCriteria",new { id = "#=RentalInspectionCriteriaId#" }))
+                        .Create(create => create.Action("RentalInspectionCriteriaDetail_Create", "RentalInspectionCriteria", new { id = "#=RentalInspectionCriteriaId#" }))
+                        .Update(update => update.Action("RentalInspectionCriteriaDetail_Update", "RentalInspectionCriteria"))
+                        .Destroy(destroy => destroy.Action("RentalInspectionCriteriaDetail_Destroy", "RentalInspectionCriteria"))
+                        ).ToolBar(toolbar=> { toolbar.Create(); })
+                        .Pageable()
+                        .Sortable()
+                        .ToClientTemplate()
+
+
+                        )
+              </text>
+                  );
+                  })
+                            .ToClientTemplate())
+</script>
+
+<script>
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+    }
+</script>

@@ -1,13 +1,18 @@
-﻿namespace ExceedERP.Core.Domain.FleetManagement
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ExceedERP.Core.Domain.FleetManagement
 {
-    public class FleetManagementRoles
-    {
-
-
+   public class FleetManagementRoles
+    {       
         public const string FleetAdmin = "Fleet_Admin";
         public const string RegistrationUser = "Registration_User";
         public const string RegistrationApprover = "Registration_Approver";
         public const string RentRequestor = "Rent_Requestor";
+        public const string FleetRequestor = "Fleet_Requestor"; // added
         public const string RentUser = "Rent_User";
         public const string RentApprover = "Rent_Approver";
         public const string MaintenanceRequestor = "Maintenance_Requestor";
@@ -34,15 +39,13 @@
         public const string FleetReport = "Fleet_Report";
         public const string FleetResourceReport = "Fleet_Resource_Report";
         public const string FleetRegistrationReport = "Fleet_Registration_Report";
-
+        public const string FleetTimeSheet = "Fleet_TimeSheet";
+        public const string FleetRequisition = "Fleet_Requisition";
        //Not Added
-
         public const string Equipment_Plan_User = "Equipment_Plan_User";
         public const string Equipment_Plan_Approver = "Equipment_Plan_Approver";
-
         public const string SalvageStoreIssueUser = "Salvage_Store_Issue_User";
         public const string SalvageStoreIssueApprover = "Salvage_Store_Issue_Approver";
-
         public const string StoreGoodReceivingUser = "Store_Good_Receiving_User";
         public const string SalvageGoodReceivingApprover = "Store_Good_Receiving_Approver";
     }

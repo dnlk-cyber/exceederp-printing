@@ -1642,21 +1642,33 @@
     <Compile Include="FixedAsset\ViewModel\NewPurchasedViewModel.cs" />
     <Compile Include="FixedAsset\ViewModel\CountSummarySheetVm.cs" />
     <Compile Include="FixedAsset\ViewModel\RegisterViewModel.cs" />
+    <Compile Include="Fleet\DataSource\Acciden1DataSources.cs" />
     <Compile Include="Fleet\DataSource\AccidentDataSource.cs" />
+    <Compile Include="Fleet\DataSource\AccidentManagementReport.cs" />
     <Compile Include="Fleet\DataSource\CannibalizationDataSource.cs" />
     <Compile Include="Fleet\DataSource\DriverTransferDataSource.cs" />
+    <Compile Include="Fleet\DataSource\DryLoadingExternalTimesheetObjectDataSource.cs" />
+    <Compile Include="Fleet\DataSource\DryLoadingTimesheetObjectDataSource.cs" />
+    <Compile Include="Fleet\DataSource\DryLoadingTimeSheetOnlyOds.cs" />
+    <Compile Include="Fleet\DataSource\DumpTruckExternalTimesheetObjectDataSource.cs" />
+    <Compile Include="Fleet\DataSource\DumpTruckTimesheetObjectDataSource.cs" />
+    <Compile Include="Fleet\DataSource\DumpTruckTimeSheetOnlyOds.cs" />
     <Compile Include="Fleet\DataSource\EquipmentDetailDataSource.cs" />
     <Compile Include="Fleet\DataSource\EquipmentDistributionDataSource.cs" />
     <Compile Include="Fleet\DataSource\EquipmentMaintenanceCostDataSource.cs" />
     <Compile Include="Fleet\DataSource\EquipmentMaintenanceMechanicDataSource.cs" />
     <Compile Include="Fleet\DataSource\EquipmentPlanEvaluationDataSource.cs" />
+    <Compile Include="Fleet\DataSource\EquipmentReportTestDataSource.cs" />
     <Compile Include="Fleet\DataSource\EquipmentReturnDataSource.cs" />
     <Compile Include="Fleet\DataSource\EquipmentSummaryDataSource.cs" />
+    <Compile Include="Fleet\DataSource\EquipmentTypeDataSource.cs" />
     <Compile Include="Fleet\DataSource\EquipmentTypeSummaryDataSource.cs" />
     <Compile Include="Fleet\DataSource\EquipmentUtilizationSummaryDataSource.cs" />
     <Compile Include="Fleet\DataSource\ExternalMaintenanceDataSource.cs" />
     <Compile Include="Fleet\DataSource\ExternalRentDataSource.cs" />
+    <Compile Include="Fleet\DataSource\FleetAccidentOds.cs" />
     <Compile Include="Fleet\DataSource\FleetDataSource.cs" />
+    <Compile Include="Fleet\DataSource\FleetInsuranceOds.cs" />
     <Compile Include="Fleet\DataSource\FuelConsumptionDataSource.cs" />
     <Compile Include="Fleet\DataSource\FuelConsumptionSummaryDataSource.cs" />
     <Compile Include="Fleet\DataSource\FuelDataSource.cs" />
@@ -1667,6 +1679,14 @@
     <Compile Include="Fleet\DataSource\JobOrderDataSource.cs" />
     <Compile Include="Fleet\DataSource\JobOrderStatusDataSource.cs" />
     <Compile Include="Fleet\DataSource\JobRequestDataSource.cs" />
+    <Compile Include="Fleet\DataSource\LightVehicleExternalTimeSheetSummeryHeaderODS.cs" />
+    <Compile Include="Fleet\DataSource\LightVehicleTimeSheetOnlyOds.cs" />
+    <Compile Include="Fleet\DataSource\LightVehicleTimeSheetSummeryHeaderODS.cs" />
+    <Compile Include="Fleet\DataSource\MachineryAndVehiclesStatusODS.cs" />
+    <Compile Include="Fleet\DataSource\MachineryAndVehicleStatusParameterOds.cs" />
+    <Compile Include="Fleet\DataSource\MachineryExternalTimeSheetSummeryHeaderODS.cs" />
+    <Compile Include="Fleet\DataSource\MachineryTimeSheetOnlyOds.cs" />
+    <Compile Include="Fleet\DataSource\MachineryTimeSheetSummeryHeaderODS.cs" />
     <Compile Include="Fleet\DataSource\MaintainaceDataSource.cs" />
     <Compile Include="Fleet\DataSource\OperatorDataSource.cs" />
     <Compile Include="Fleet\DataSource\PlanEvaluationDataSource.cs" />
@@ -1676,147 +1696,16 @@
     <Compile Include="Fleet\DataSource\RentRequestDataSource.cs" />
     <Compile Include="Fleet\DataSource\RentTimeSheetDataSource.cs" />
     <Compile Include="Fleet\DataSource\RentTimeSheetPerformaceDataSource.cs" />
-    <Compile Include="Fleet\DataSource\RentToExternalDataSource.cs" />
     <Compile Include="Fleet\DataSource\SalvageStoreDataSource.cs" />
     <Compile Include="Fleet\DataSource\SiteTransferDataSource.cs" />
     <Compile Include="Fleet\DataSource\TimeSheetDataSource.cs" />
+    <Compile Include="Fleet\DataSource\TImeSheetParametersODS.cs" />
     <Compile Include="Fleet\DataSource\TimeSheetSummaryDataSource.cs" />
     <Compile Include="Fleet\DataSource\TireDataSource.cs" />
     <Compile Include="Fleet\DataSource\TireLogDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\DataSource\DailyCareDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\DataSource\DailyWorkOrderDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\DataSource\DownTimeDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\DataSource\EquipmentTypeCostDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\DataSource\EquipmentTypeCostSummaryDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\DataSource\LogisticPlanDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\DataSource\PMActualScheduleDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\DataSource\PMScheduleDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\DataSource\ServiceTypeDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\DataSource\SparePartDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\DataSource\SummaryDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\DataSource\WorkOrderDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\Printing\DataSource\CannibalizationDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\Printing\DataSource\JobDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\Printing\DataSource\JobOrderDetailDataSource .cs" />
-    <Compile Include="Fleet\FleetMaintenance\Printing\DataSource\JobRequestDataSource.cs" />
-    <Compile Include="Fleet\FleetMaintenance\Printing\ViewModel\CannibalizationViewModel.cs" />
-    <Compile Include="Fleet\FleetMaintenance\Printing\ViewModel\JobOrderView.cs" />
-    <Compile Include="Fleet\FleetMaintenance\Printing\ViewModel\JobOrderViewModel.cs" />
-    <Compile Include="Fleet\FleetMaintenance\Printing\ViewModel\JobRequestViewModel.cs" />
-    <Compile Include="Fleet\FleetMaintenance\Printing\View\Cannibalization.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\Printing\View\Cannibalization.Designer.cs">
-      <DependentUpon>Cannibalization.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\Printing\View\DailyCare.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\Printing\View\DailyCare.Designer.cs">
-      <DependentUpon>DailyCare.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\Printing\View\JobOrder.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\Printing\View\JobOrder.Designer.cs">
-      <DependentUpon>JobOrder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\Printing\View\JobOrderReferance.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\Printing\View\JobOrderReferance.Designer.cs">
-      <DependentUpon>JobOrderReferance.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\Printing\View\JobReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\Printing\View\JobReport.Designer.cs">
-      <DependentUpon>JobReport.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\Printing\View\JobRequest.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\Printing\View\JobRequest.Designer.cs">
-      <DependentUpon>JobRequest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\ViewModel\DailyCareViewModel.cs" />
-    <Compile Include="Fleet\FleetMaintenance\ViewModel\DownTimeViewModel.cs" />
-    <Compile Include="Fleet\FleetMaintenance\ViewModel\EquipmentTypeCostViewModel.cs" />
-    <Compile Include="Fleet\FleetMaintenance\ViewModel\ExternalSpareCostViewModel.cs" />
-    <Compile Include="Fleet\FleetMaintenance\ViewModel\InventoryRequestionViewModel.cs" />
-    <Compile Include="Fleet\FleetMaintenance\ViewModel\JobOrderViewModel.cs" />
-    <Compile Include="Fleet\FleetMaintenance\ViewModel\LogisticPlanViewModel.cs" />
-    <Compile Include="Fleet\FleetMaintenance\ViewModel\PMActualScheduleViewModel.cs" />
-    <Compile Include="Fleet\FleetMaintenance\ViewModel\PMScheduleViewModel.cs" />
-    <Compile Include="Fleet\FleetMaintenance\ViewModel\ServiceTypeViewModel.cs" />
-    <Compile Include="Fleet\FleetMaintenance\ViewModel\SummaryViewModel.cs" />
-    <Compile Include="Fleet\FleetMaintenance\ViewModel\WorkOrderViewModel.cs" />
-    <Compile Include="Fleet\FleetMaintenance\View\DailyWorkOrder.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\DailyWorkOrder.Designer.cs">
-      <DependentUpon>DailyWorkOrder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\DownTime.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\DownTime.Designer.cs">
-      <DependentUpon>DownTime.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\EquipmentTypeCost.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\EquipmentTypeCost.Designer.cs">
-      <DependentUpon>EquipmentTypeCost.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\EquipmentTypeCostSummary.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\EquipmentTypeCostSummary.Designer.cs">
-      <DependentUpon>EquipmentTypeCostSummary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\LogisticPlan.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\LogisticPlan.Designer.cs">
-      <DependentUpon>LogisticPlan.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\PMActualSchedule.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\PMActualSchedule.Designer.cs">
-      <DependentUpon>PMActualSchedule.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\PMSchedule.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\PMSchedule.Designer.cs">
-      <DependentUpon>PMSchedule.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\ServiceType.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\ServiceType.Designer.cs">
-      <DependentUpon>ServiceType.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\SparePartConsumption.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\SparePartConsumption.Designer.cs">
-      <DependentUpon>SparePartConsumption.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\Summary.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\Summary.Designer.cs">
-      <DependentUpon>Summary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\WorkOrder.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\FleetMaintenance\View\WorkOrder.Designer.cs">
-      <DependentUpon>WorkOrder.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Fleet\DataSource\WagonDrillExternalTimesheetDataSource.cs" />
+    <Compile Include="Fleet\DataSource\WagonDrillTimesheetObjectDataSource.cs" />
+    <Compile Include="Fleet\DataSource\WagonDrillTimeSheetOnlyOds.cs" />
     <Compile Include="Fleet\Printing\DataSource\AccidentDataSource.cs" />
     <Compile Include="Fleet\Printing\DataSource\EquipmentDataSource.cs" />
     <Compile Include="Fleet\Printing\DataSource\EquipmentDemandDataSource.cs" />
@@ -1824,6 +1713,8 @@
     <Compile Include="Fleet\Printing\DataSource\FleetReturnDataSource.cs" />
     <Compile Include="Fleet\Printing\DataSource\InsuranceDataSource.cs" />
     <Compile Include="Fleet\Printing\DataSource\OperatorDataSource.cs" />
+    <Compile Include="Fleet\Printing\DataSource\RentalInspectionPrintOds.cs" />
+    <Compile Include="Fleet\Printing\DataSource\RentalPaymentRequestDataSource.cs" />
     <Compile Include="Fleet\Printing\DataSource\SiteTransferDataSource.cs" />
     <Compile Include="Fleet\Printing\ViewModel\AccidentViewModel.cs" />
     <Compile Include="Fleet\Printing\ViewModel\EquipmentDistributionVewModel.cs" />
@@ -1833,6 +1724,7 @@
     <Compile Include="Fleet\Printing\ViewModel\InsuranceViewModel.cs" />
     <Compile Include="Fleet\Printing\ViewModel\OperatorViewModel - Copy %283%29.cs" />
     <Compile Include="Fleet\Printing\ViewModel\OperatorViewModel.cs" />
+    <Compile Include="Fleet\Printing\ViewModel\RentalPaymentRequestViewModel.cs" />
     <Compile Include="Fleet\Printing\ViewModel\SiteTransferViewModel.cs" />
     <Compile Include="Fleet\Printing\View\EquipmentPrint.cs">
       <SubType>Component</SubType>
@@ -1858,6 +1750,18 @@
     <Compile Include="Fleet\Printing\View\HistoryJacket.Designer.cs">
       <DependentUpon>HistoryJacket.cs</DependentUpon>
     </Compile>
+    <Compile Include="Fleet\Printing\View\RentalInspectionPrint.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\Printing\View\RentalInspectionPrint.Designer.cs">
+      <DependentUpon>RentalInspectionPrint.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\Printing\View\RentalPaymentRequest.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\Printing\View\RentalPaymentRequest.Designer.cs">
+      <DependentUpon>RentalPaymentRequest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Fleet\Printing\View\SiteVehicleTransfer.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1876,9 +1780,122 @@
     <Compile Include="Fleet\Printing\View\VehicleDistribution.Designer.cs">
       <DependentUpon>VehicleDistribution.cs</DependentUpon>
     </Compile>
+    <Compile Include="Fleet\ViewModel\Accident1ViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\AccidentViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\CannibalizationViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\DriverTransferViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\DryLoadingExternalTimesheetVM.cs" />
+    <Compile Include="Fleet\ViewModel\DryLoadingTimesheetViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\DumpTruckExternalTimesheetViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\DumpTruckTimesheetViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\EquipmentDistrbutionViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\EquipmentInspectionViewModel.cs" />
     <Compile Include="Fleet\ViewModel\EquipmentPlanEvaluationViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\EquipmentRegistrationViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\EquipmentReportTestViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\EquipmentReturnViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\EquipmentSummaryViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\EquipmentUtilizationSummary.cs" />
+    <Compile Include="Fleet\ViewModel\ExternalMaintenanceViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\ExternalRentViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\FleetViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\FuelConsumptionSummary.cs" />
+    <Compile Include="Fleet\ViewModel\FuelViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\HeadOfficeSummaryViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\InternalRentViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\JobOrderView.cs" />
+    <Compile Include="Fleet\ViewModel\JobOrderViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\JobRequestViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\MachineryAndVehicleViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\MachineryExternalTimeSheetSummeryVM.cs" />
+    <Compile Include="Fleet\ViewModel\MachineryTimeSheetSummeryVM.cs" />
+    <Compile Include="Fleet\ViewModel\MaintenanceConst.cs" />
+    <Compile Include="Fleet\ViewModel\MaintenanceViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\OperatorViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\PlanEvaluationViewModel.cs" />
     <Compile Include="Fleet\ViewModel\PlanVsAccomplishmentViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\ProjectSummary.cs" />
+    <Compile Include="Fleet\ViewModel\RentRequestViewModel.cs" />
     <Compile Include="Fleet\ViewModel\RentTimeSheetViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\RentToExternalViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\SalvageStoreViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\SiteTransferViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\TimeSheetViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\TireViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\WagonDrillExternalTimesheetViewModel.cs" />
+    <Compile Include="Fleet\ViewModel\WagonDrillTimesheetViewModel.cs" />
+    <Compile Include="Fleet\View\AccidentReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\AccidentReport.Designer.cs">
+      <DependentUpon>AccidentReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\Cannibalization.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\Cannibalization.Designer.cs">
+      <DependentUpon>Cannibalization.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\DriverTransfer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\DriverTransfer.Designer.cs">
+      <DependentUpon>DriverTransfer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\DryLoadingExternalTimesheetReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\DryLoadingExternalTimesheetReport.Designer.cs">
+      <DependentUpon>DryLoadingExternalTimesheetReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\DryLoadingTimesheet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\DryLoadingTimesheet.Designer.cs">
+      <DependentUpon>DryLoadingTimesheet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\DryLoadingTimeSheetOnlyView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\DryLoadingTimeSheetOnlyView.Designer.cs">
+      <DependentUpon>DryLoadingTimeSheetOnlyView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\DumpTruckExternalTimesheetReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\DumpTruckExternalTimesheetReport.Designer.cs">
+      <DependentUpon>DumpTruckExternalTimesheetReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\DumpTruckTimeSheetOnlyView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\DumpTruckTimeSheetOnlyView.Designer.cs">
+      <DependentUpon>DumpTruckTimeSheetOnlyView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\DumpTruckTimesheetReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\DumpTruckTimesheetReport.Designer.cs">
+      <DependentUpon>DumpTruckTimesheetReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentDetail.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentDetail.Designer.cs">
+      <DependentUpon>EquipmentDetail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentDistrbution.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentDistrbution.Designer.cs">
+      <DependentUpon>EquipmentDistrbution.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentInspection.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentInspection.Designer.cs">
+      <DependentUpon>EquipmentInspection.cs</DependentUpon>
+    </Compile>
     <Compile Include="Fleet\View\EquipmentMaintenanceCost.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1891,17 +1908,173 @@
     <Compile Include="Fleet\View\EquipmentMechanic.Designer.cs">
       <DependentUpon>EquipmentMechanic.cs</DependentUpon>
     </Compile>
+    <Compile Include="Fleet\View\EquipmentReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentReport.Designer.cs">
+      <DependentUpon>EquipmentReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentReturn.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentReturn.Designer.cs">
+      <DependentUpon>EquipmentReturn.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentSiteTransfer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentSiteTransfer.Designer.cs">
+      <DependentUpon>EquipmentSiteTransfer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentSummary.Designer.cs">
+      <DependentUpon>EquipmentSummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentTypeSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentTypeSummary.Designer.cs">
+      <DependentUpon>EquipmentTypeSummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentUtilization.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\EquipmentUtilization.Designer.cs">
+      <DependentUpon>EquipmentUtilization.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\ExternalMaintenance.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\ExternalMaintenance.Designer.cs">
+      <DependentUpon>ExternalMaintenance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\ExternalRent.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\ExternalRent.Designer.cs">
+      <DependentUpon>ExternalRent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\FleetAccident.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\FleetAccident.Designer.cs">
+      <DependentUpon>FleetAccident.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\FleetAccidentNestedReportView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\FleetAccidentNestedReportView.Designer.cs">
+      <DependentUpon>FleetAccidentNestedReportView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\FleetInsurance.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\FleetInsurance.Designer.cs">
+      <DependentUpon>FleetInsurance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\FleetReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\FleetReport.Designer.cs">
+      <DependentUpon>FleetReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="Fleet\View\FuelConsumption.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Fleet\View\FuelConsumption.Designer.cs">
       <DependentUpon>FuelConsumption.cs</DependentUpon>
     </Compile>
-    <Compile Include="Fleet\View\JobOrderStatus.cs">
+    <Compile Include="Fleet\View\FuelConsumptionSummary.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Fleet\View\JobOrderStatus.Designer.cs">
-      <DependentUpon>JobOrderStatus.cs</DependentUpon>
+    <Compile Include="Fleet\View\FuelConsumptionSummary.Designer.cs">
+      <DependentUpon>FuelConsumptionSummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\FuelLog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\FuelLog.Designer.cs">
+      <DependentUpon>FuelLog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\FuelReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\FuelReport.Designer.cs">
+      <DependentUpon>FuelReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\HeadOfficeSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\HeadOfficeSummary.Designer.cs">
+      <DependentUpon>HeadOfficeSummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\LightVehicleExternalTimesheetReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\LightVehicleExternalTimesheetReport.Designer.cs">
+      <DependentUpon>LightVehicleExternalTimesheetReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\LightVehicleTimeSheetOnlyView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\LightVehicleTimeSheetOnlyView.Designer.cs">
+      <DependentUpon>LightVehicleTimeSheetOnlyView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\LightVehicleTimesheetSummaryReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\LightVehicleTimesheetSummaryReport.Designer.cs">
+      <DependentUpon>LightVehicleTimesheetSummaryReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\MachinaryTimesheetSummaryReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\MachinaryTimesheetSummaryReport.Designer.cs">
+      <DependentUpon>MachinaryTimesheetSummaryReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\MachineryAndVehiclesStatusReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\MachineryAndVehiclesStatusReport.Designer.cs">
+      <DependentUpon>MachineryAndVehiclesStatusReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\MachineryAndVehicleStatusReportView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\MachineryAndVehicleStatusReportView.Designer.cs">
+      <DependentUpon>MachineryAndVehicleStatusReportView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\MachineryExternalTimesheetReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\MachineryExternalTimesheetReport.Designer.cs">
+      <DependentUpon>MachineryExternalTimesheetReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\MachineryTimeSheetOnlyView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\MachineryTimeSheetOnlyView.Designer.cs">
+      <DependentUpon>MachineryTimeSheetOnlyView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\MaintenanceOrder.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\MaintenanceOrder.Designer.cs">
+      <DependentUpon>MaintenanceOrder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\Operator.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\Operator.Designer.cs">
+      <DependentUpon>Operator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\PlanEvaluation.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\PlanEvaluation.Designer.cs">
+      <DependentUpon>PlanEvaluation.cs</DependentUpon>
     </Compile>
     <Compile Include="Fleet\View\PlanPerEquipmentEvaluation.cs">
       <SubType>Component</SubType>
@@ -1927,6 +2100,12 @@
     <Compile Include="Fleet\View\RentFromExternal.Designer.cs">
       <DependentUpon>RentFromExternal.cs</DependentUpon>
     </Compile>
+    <Compile Include="Fleet\View\RentRequest.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\RentRequest.Designer.cs">
+      <DependentUpon>RentRequest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Fleet\View\RentTimeSheet.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1938,6 +2117,102 @@
     </Compile>
     <Compile Include="Fleet\View\RentTimeSheetPerformance.Designer.cs">
       <DependentUpon>RentTimeSheetPerformance.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\RentToInternal.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\RentToInternal.Designer.cs">
+      <DependentUpon>RentToInternal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\Report1.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\Report1.Designer.cs">
+      <DependentUpon>Report1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\Report2.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\Report2.Designer.cs">
+      <DependentUpon>Report2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\Report3.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\Report3.Designer.cs">
+      <DependentUpon>Report3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\Report4.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\Report4.Designer.cs">
+      <DependentUpon>Report4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\Report5.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\Report5.Designer.cs">
+      <DependentUpon>Report5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\SalvageStore.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\SalvageStore.Designer.cs">
+      <DependentUpon>SalvageStore.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\TimeSheet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\TimeSheet.Designer.cs">
+      <DependentUpon>TimeSheet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\TimeSheetSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\TimeSheetSummary.Designer.cs">
+      <DependentUpon>TimeSheetSummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\TireIssueLog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\TireIssueLog.Designer.cs">
+      <DependentUpon>TireIssueLog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\TireReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\TireReport.Designer.cs">
+      <DependentUpon>TireReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\ttttt.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\ttttt.Designer.cs">
+      <DependentUpon>ttttt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\VVCC.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\VVCC.Designer.cs">
+      <DependentUpon>VVCC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\WagonDrillExternalTimesheetReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\WagonDrillExternalTimesheetReport.Designer.cs">
+      <DependentUpon>WagonDrillExternalTimesheetReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\WagonDrillTimeSheetOnlyView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\WagonDrillTimeSheetOnlyView.Designer.cs">
+      <DependentUpon>WagonDrillTimeSheetOnlyView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\WagonDrillTimesheetReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\WagonDrillTimesheetReport.Designer.cs">
+      <DependentUpon>WagonDrillTimesheetReport.cs</DependentUpon>
     </Compile>
     <Compile Include="HelpDesk\DataSource\MaintenanceFormODS.cs" />
     <Compile Include="HelpDesk\Designer\MaintenanceForm.cs">
@@ -2949,269 +3224,6 @@
     <Compile Include="HRM\Payroll\EmployeePaySlipByEmployee.Designer.cs">
       <DependentUpon>EmployeePaySlipByEmployee.cs</DependentUpon>
     </Compile>
-    <Compile Include="Fleet\ViewModel\AccidentViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\CannibalizationViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\DriverTransferViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\EquipmentDistrbutionViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\EquipmentInspectionViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\EquipmentReturnViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\EquipmentSummaryViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\EquipmentUtilizationSummary.cs" />
-    <Compile Include="Fleet\ViewModel\ExternalMaintenanceViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\ExternalRentViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\FleetViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\FuelConsumptionSummary.cs" />
-    <Compile Include="Fleet\ViewModel\FuelViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\HeadOfficeSummaryViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\InternalRentViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\JobOrderView.cs" />
-    <Compile Include="Fleet\ViewModel\JobOrderViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\JobRequestViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\MaintenanceConst.cs" />
-    <Compile Include="Fleet\ViewModel\MaintenanceViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\OperatorViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\PlanEvaluationViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\ProjectSummary.cs" />
-    <Compile Include="Fleet\ViewModel\RentRequestViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\RentToExternalViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\SalvageStoreViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\SiteTransferViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\TimeSheetViewModel.cs" />
-    <Compile Include="Fleet\ViewModel\TireViewModel.cs" />
-    <Compile Include="Fleet\View\AccidentReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\AccidentReport.Designer.cs">
-      <DependentUpon>AccidentReport.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\Cannibalization.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\Cannibalization.Designer.cs">
-      <DependentUpon>Cannibalization.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\DriverTransfer.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\DriverTransfer.Designer.cs">
-      <DependentUpon>DriverTransfer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentDetail.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentDetail.Designer.cs">
-      <DependentUpon>EquipmentDetail.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentDistrbution.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentDistrbution.Designer.cs">
-      <DependentUpon>EquipmentDistrbution.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentInspection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentInspection.Designer.cs">
-      <DependentUpon>EquipmentInspection.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentReturn.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentReturn.Designer.cs">
-      <DependentUpon>EquipmentReturn.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentSiteTransfer.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentSiteTransfer.Designer.cs">
-      <DependentUpon>EquipmentSiteTransfer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentSummary.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentSummary.Designer.cs">
-      <DependentUpon>EquipmentSummary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentTypeSummary.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentTypeSummary.Designer.cs">
-      <DependentUpon>EquipmentTypeSummary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentUtilization.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\EquipmentUtilization.Designer.cs">
-      <DependentUpon>EquipmentUtilization.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\ExternalMaintenance.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\ExternalMaintenance.Designer.cs">
-      <DependentUpon>ExternalMaintenance.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\ExternalRent.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\ExternalRent.Designer.cs">
-      <DependentUpon>ExternalRent.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\FleetReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\FleetReport.Designer.cs">
-      <DependentUpon>FleetReport.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\FuelConsumptionSummary.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\FuelConsumptionSummary.Designer.cs">
-      <DependentUpon>FuelConsumptionSummary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\FuelLog.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\FuelLog.Designer.cs">
-      <DependentUpon>FuelLog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\FuelReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\FuelReport.Designer.cs">
-      <DependentUpon>FuelReport.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\HeadOfficeSummary.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\HeadOfficeSummary.Designer.cs">
-      <DependentUpon>HeadOfficeSummary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\JobOrder.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\JobOrder.Designer.cs">
-      <DependentUpon>JobOrder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\JobOrderReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\JobOrderReport.Designer.cs">
-      <DependentUpon>JobOrderReport.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\JobReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\JobReport.Designer.cs">
-      <DependentUpon>JobReport.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\JobRequest.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\JobRequest.Designer.cs">
-      <DependentUpon>JobRequest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\MaintenanceOrder.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\MaintenanceOrder.Designer.cs">
-      <DependentUpon>MaintenanceOrder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\Operator.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\Operator.Designer.cs">
-      <DependentUpon>Operator.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\PlanEvaluation.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\PlanEvaluation.Designer.cs">
-      <DependentUpon>PlanEvaluation.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\RentRequest.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\RentRequest.Designer.cs">
-      <DependentUpon>RentRequest.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\RentToExternal.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\RentToExternal.Designer.cs">
-      <DependentUpon>RentToExternal.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\RentToInternal.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\RentToInternal.Designer.cs">
-      <DependentUpon>RentToInternal.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\Report1.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\Report1.Designer.cs">
-      <DependentUpon>Report1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\Report2.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\Report2.Designer.cs">
-      <DependentUpon>Report2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\Report3.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\Report3.Designer.cs">
-      <DependentUpon>Report3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\SalvageStore.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\SalvageStore.Designer.cs">
-      <DependentUpon>SalvageStore.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\Testt.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\Testt.Designer.cs">
-      <DependentUpon>Testt.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\TimeSheet.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\TimeSheet.Designer.cs">
-      <DependentUpon>TimeSheet.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\TimeSheetSummary.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\TimeSheetSummary.Designer.cs">
-      <DependentUpon>TimeSheetSummary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\TireIssueLog.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\TireIssueLog.Designer.cs">
-      <DependentUpon>TireIssueLog.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\TireReport.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\TireReport.Designer.cs">
-      <DependentUpon>TireReport.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\ttttt.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\ttttt.Designer.cs">
-      <DependentUpon>ttttt.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Fleet\View\VVCC.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Fleet\View\VVCC.Designer.cs">
-      <DependentUpon>VVCC.cs</DependentUpon>
-    </Compile>
     <Compile Include="HRM\CustomExpression\CustomExpression.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -3704,6 +3716,89 @@
     <Compile Include="Inventory\ViewModel\VariationVm.cs" />
     <Compile Include="JobCosting\DataSource\JobCostingParameterOds.cs" />
     <Compile Include="JobCosting\ViewModel\JobOrderCardVM.cs" />
+    <Compile Include="Maintenance\DataSource\DailyMaintenanceReport.cs" />
+    <Compile Include="Maintenance\DataSource\JobOrderOds.cs" />
+    <Compile Include="Maintenance\DataSource\MaintenanceDurationOds.cs" />
+    <Compile Include="Maintenance\DataSource\MaintenanceInternalReportOds.cs" />
+    <Compile Include="Maintenance\DataSource\MaintenanceJobRequestOds.cs" />
+    <Compile Include="Maintenance\DataSource\MaintenanceParametersOds.cs" />
+    <Compile Include="Maintenance\DataSource\MaintenanceReportOds.cs" />
+    <Compile Include="Maintenance\DataSource\MaintenanceSummaryOds.cs" />
+    <Compile Include="Maintenance\DataSource\OrderTypeOds.cs" />
+    <Compile Include="Maintenance\DataSource\WorkOrderWorkSheetOds.cs" />
+    <Compile Include="Maintenance\Design\DailyMaintenanceReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\DailyMaintenanceReport.Designer.cs">
+      <DependentUpon>DailyMaintenanceReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\InternalMaintenanceCostDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\InternalMaintenanceCostDesign.Designer.cs">
+      <DependentUpon>InternalMaintenanceCostDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\JobOrderDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\JobOrderDesign.Designer.cs">
+      <DependentUpon>JobOrderDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\JobRequest.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\JobRequest.Designer.cs">
+      <DependentUpon>JobRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\JobRequestDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\JobRequestDesign.Designer.cs">
+      <DependentUpon>JobRequestDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\MaintenanceDurationDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\MaintenanceDurationDesign.Designer.cs">
+      <DependentUpon>MaintenanceDurationDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\MaintenanceJobOrderDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\MaintenanceJobOrderDesign.Designer.cs">
+      <DependentUpon>MaintenanceJobOrderDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\MaintenanceReportDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\MaintenanceReportDesign.Designer.cs">
+      <DependentUpon>MaintenanceReportDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\MaintenanceSummaryCrossTab.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\MaintenanceSummaryCrossTab.Designer.cs">
+      <DependentUpon>MaintenanceSummaryCrossTab.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\MaintenanceSummaryDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\MaintenanceSummaryDesign.Designer.cs">
+      <DependentUpon>MaintenanceSummaryDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\WorkOrderWorkSheetDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\WorkOrderWorkSheetDesign.Designer.cs">
+      <DependentUpon>WorkOrderWorkSheetDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\ViewModel\JobOrderViewModel.cs" />
+    <Compile Include="Maintenance\ViewModel\MaintenanceJobRequestViewModel.cs" />
+    <Compile Include="Maintenance\ViewModel\MaintenanceReportViewModel.cs" />
+    <Compile Include="Maintenance\ViewModel\MaintenanceSummaryViewModel.cs" />
+    <Compile Include="Maintenance\ViewModel\ReportParameterViewModel.cs" />
+    <Compile Include="Maintenance\ViewModel\VehicleReceptionFormViewModel.cs" />
+    <Compile Include="Maintenance\ViewModel\WorkShopWorkSheetViewModel.cs" />
     <Compile Include="Procurements\AmharicAward.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -4900,57 +4995,6 @@
     <EmbeddedResource Include="FixedAsset\rptScafoldingAndPanelCountSummary.resx">
       <DependentUpon>rptScafoldingAndPanelCountSummary.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\Printing\View\Cannibalization.resx">
-      <DependentUpon>Cannibalization.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\Printing\View\DailyCare.resx">
-      <DependentUpon>DailyCare.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\Printing\View\JobOrder.resx">
-      <DependentUpon>JobOrder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\Printing\View\JobOrderReferance.resx">
-      <DependentUpon>JobOrderReferance.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\Printing\View\JobReport.resx">
-      <DependentUpon>JobReport.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\Printing\View\JobRequest.resx">
-      <DependentUpon>JobRequest.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\View\DailyWorkOrder.resx">
-      <DependentUpon>DailyWorkOrder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\View\DownTime.resx">
-      <DependentUpon>DownTime.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\View\EquipmentTypeCost.resx">
-      <DependentUpon>EquipmentTypeCost.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\View\EquipmentTypeCostSummary.resx">
-      <DependentUpon>EquipmentTypeCostSummary.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\View\LogisticPlan.resx">
-      <DependentUpon>LogisticPlan.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\View\PMActualSchedule.resx">
-      <DependentUpon>PMActualSchedule.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\View\PMSchedule.resx">
-      <DependentUpon>PMSchedule.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\View\ServiceType.resx">
-      <DependentUpon>ServiceType.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\View\SparePartConsumption.resx">
-      <DependentUpon>SparePartConsumption.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\View\Summary.resx">
-      <DependentUpon>Summary.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\FleetMaintenance\View\WorkOrder.resx">
-      <DependentUpon>WorkOrder.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Fleet\Printing\View\EquipmentPrint.resx">
       <DependentUpon>EquipmentPrint.cs</DependentUpon>
     </EmbeddedResource>
@@ -4962,6 +5006,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\Printing\View\HistoryJacket.resx">
       <DependentUpon>HistoryJacket.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\Printing\View\RentalInspectionPrint.resx">
+      <DependentUpon>RentalInspectionPrint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\Printing\View\RentalPaymentRequest.resx">
+      <DependentUpon>RentalPaymentRequest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\Printing\View\SiteVehicleTransfer.resx">
       <DependentUpon>SiteVehicleTransfer.cs</DependentUpon>
@@ -4981,6 +5031,24 @@
     <EmbeddedResource Include="Fleet\View\DriverTransfer.resx">
       <DependentUpon>DriverTransfer.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\DryLoadingExternalTimesheetReport.resx">
+      <DependentUpon>DryLoadingExternalTimesheetReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\DryLoadingTimesheet.resx">
+      <DependentUpon>DryLoadingTimesheet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\DryLoadingTimeSheetOnlyView.resx">
+      <DependentUpon>DryLoadingTimeSheetOnlyView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\DumpTruckExternalTimesheetReport.resx">
+      <DependentUpon>DumpTruckExternalTimesheetReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\DumpTruckTimeSheetOnlyView.resx">
+      <DependentUpon>DumpTruckTimeSheetOnlyView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\DumpTruckTimesheetReport.resx">
+      <DependentUpon>DumpTruckTimesheetReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\EquipmentDetail.resx">
       <DependentUpon>EquipmentDetail.cs</DependentUpon>
     </EmbeddedResource>
@@ -4995,6 +5063,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\EquipmentMechanic.resx">
       <DependentUpon>EquipmentMechanic.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\EquipmentReport.resx">
+      <DependentUpon>EquipmentReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\EquipmentReturn.resx">
       <DependentUpon>EquipmentReturn.cs</DependentUpon>
@@ -5017,6 +5088,15 @@
     <EmbeddedResource Include="Fleet\View\ExternalRent.resx">
       <DependentUpon>ExternalRent.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\FleetAccident.resx">
+      <DependentUpon>FleetAccident.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\FleetAccidentNestedReportView.resx">
+      <DependentUpon>FleetAccidentNestedReportView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\FleetInsurance.resx">
+      <DependentUpon>FleetInsurance.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\FleetReport.resx">
       <DependentUpon>FleetReport.cs</DependentUpon>
     </EmbeddedResource>
@@ -5035,20 +5115,29 @@
     <EmbeddedResource Include="Fleet\View\HeadOfficeSummary.resx">
       <DependentUpon>HeadOfficeSummary.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\View\JobOrder.resx">
-      <DependentUpon>JobOrder.cs</DependentUpon>
+    <EmbeddedResource Include="Fleet\View\LightVehicleExternalTimesheetReport.resx">
+      <DependentUpon>LightVehicleExternalTimesheetReport.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\View\JobOrderReport.resx">
-      <DependentUpon>JobOrderReport.cs</DependentUpon>
+    <EmbeddedResource Include="Fleet\View\LightVehicleTimeSheetOnlyView.resx">
+      <DependentUpon>LightVehicleTimeSheetOnlyView.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\View\JobOrderStatus.resx">
-      <DependentUpon>JobOrderStatus.cs</DependentUpon>
+    <EmbeddedResource Include="Fleet\View\LightVehicleTimesheetSummaryReport.resx">
+      <DependentUpon>LightVehicleTimesheetSummaryReport.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\View\JobReport.resx">
-      <DependentUpon>JobReport.cs</DependentUpon>
+    <EmbeddedResource Include="Fleet\View\MachinaryTimesheetSummaryReport.resx">
+      <DependentUpon>MachinaryTimesheetSummaryReport.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\View\JobRequest.resx">
-      <DependentUpon>JobRequest.cs</DependentUpon>
+    <EmbeddedResource Include="Fleet\View\MachineryAndVehiclesStatusReport.resx">
+      <DependentUpon>MachineryAndVehiclesStatusReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\MachineryAndVehicleStatusReportView.resx">
+      <DependentUpon>MachineryAndVehicleStatusReportView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\MachineryExternalTimesheetReport.resx">
+      <DependentUpon>MachineryExternalTimesheetReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\MachineryTimeSheetOnlyView.resx">
+      <DependentUpon>MachineryTimeSheetOnlyView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\MaintenanceOrder.resx">
       <DependentUpon>MaintenanceOrder.cs</DependentUpon>
@@ -5080,9 +5169,6 @@
     <EmbeddedResource Include="Fleet\View\RentTimeSheetPerformance.resx">
       <DependentUpon>RentTimeSheetPerformance.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\View\RentToExternal.resx">
-      <DependentUpon>RentToExternal.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\RentToInternal.resx">
       <DependentUpon>RentToInternal.cs</DependentUpon>
     </EmbeddedResource>
@@ -5095,11 +5181,11 @@
     <EmbeddedResource Include="Fleet\View\Report3.resx">
       <DependentUpon>Report3.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\Report5.resx">
+      <DependentUpon>Report5.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\SalvageStore.resx">
       <DependentUpon>SalvageStore.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\View\Testt.resx">
-      <DependentUpon>Testt.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\TimeSheet.resx">
       <DependentUpon>TimeSheet.cs</DependentUpon>
@@ -5118,6 +5204,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\VVCC.resx">
       <DependentUpon>VVCC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\WagonDrillExternalTimesheetReport.resx">
+      <DependentUpon>WagonDrillExternalTimesheetReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\WagonDrillTimeSheetOnlyView.resx">
+      <DependentUpon>WagonDrillTimeSheetOnlyView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\WagonDrillTimesheetReport.resx">
+      <DependentUpon>WagonDrillTimesheetReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HelpDesk\Designer\MaintenanceForm.resx">
       <DependentUpon>MaintenanceForm.cs</DependentUpon>
@@ -5658,6 +5753,39 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Inventory\VariationSummary.resx">
       <DependentUpon>VariationSummary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\DailyMaintenanceReport.resx">
+      <DependentUpon>DailyMaintenanceReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\InternalMaintenanceCostDesign.resx">
+      <DependentUpon>InternalMaintenanceCostDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\JobOrderDesign.resx">
+      <DependentUpon>JobOrderDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\JobRequest.resx">
+      <DependentUpon>JobRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\JobRequestDesign.resx">
+      <DependentUpon>JobRequestDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\MaintenanceDurationDesign.resx">
+      <DependentUpon>MaintenanceDurationDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\MaintenanceJobOrderDesign.resx">
+      <DependentUpon>MaintenanceJobOrderDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\MaintenanceReportDesign.resx">
+      <DependentUpon>MaintenanceReportDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\MaintenanceSummaryCrossTab.resx">
+      <DependentUpon>MaintenanceSummaryCrossTab.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\MaintenanceSummaryDesign.resx">
+      <DependentUpon>MaintenanceSummaryDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\WorkOrderWorkSheetDesign.resx">
+      <DependentUpon>WorkOrderWorkSheetDesign.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Procurements\AmharicAward.resx">
       <DependentUpon>AmharicAward.cs</DependentUpon>

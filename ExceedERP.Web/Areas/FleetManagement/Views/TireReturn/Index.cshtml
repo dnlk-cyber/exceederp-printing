@@ -10,7 +10,7 @@
     {
         columns.Bound(e => e.Brand).Width(140);
         columns.Bound(e => e.TireSize).Width(140);
-        columns.Bound(e => e.Quantity).Width(200);
+     //   columns.Bound(e => e.Quantity).Width(200);
         columns.Bound(e => e.UnitPrice).Width(140);
         columns.Bound(e => e.InstalledDate).Width(200);
         
@@ -30,7 +30,7 @@
     .Sortable()
     .Filterable()
     .Scrollable()
-    .Groupable()
+   // .Groupable()
     .DataSource(dataSource => dataSource
         .Ajax()
         .ServerOperation(false)

@@ -1,5 +1,0 @@
-﻿@model ExceedERP.Web.Areas.FleetManagement.Models.TechnicalApprovalViewModel
-@(Html.Kendo().ComboBoxFor(m=>m.Type).Name("Type")
-              .DataTextField("Text")
-                                        .DataValueField("Value").Placeholder("Select Type").ValuePrimitive(true).Filter(FilterType.Contains)
-              .DataSource(d => d.Read(r => r.Action("CenterTypeDDBind", "MaintenanceCenter")).ServerFiltering(false)))

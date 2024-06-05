@@ -1,0 +1,200 @@
+@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Maintenance
+@using ExceedERP.Helpers.Common
+@model ExceedERP.Core.Domain.Maintenance.JobRequest
+
+
+
+
+@* New Form *@
+
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Source, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.Source)
+                                         .Name("Source")
+                                         .DataTextField("Text")
+                                         .DataValueField("Value")
+                                        
+                                         .Filter(FilterType.Contains)
+                                         .BindTo(EnumExtension.EnumToSelectList(typeof(JobRequestSource)))
+                                         .Events(ev =>
+                                         {
+                                             ev.Change("SourceSelectorChanged");
+                                             ev.DataBound("SourceSelectorDataBound");
+                                         }).HtmlAttributes(new { style = "width:100%" })
+                )
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.CustomerId, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.CustomerId)
+                                      .Name("CustomerId")
+                                      .ValuePrimitive(true)
+                                      .OptionLabel("Select...")
+                                      .DataTextField("TradeName")
+                                      .DataValueField("OrganizationCustomerID")
+                                      .Filter("contains")
+                                      .Events(ev => ev.Change("onCustomerSelect"))
+                                      .DataSource(dataSource =>
+                                      {
+                                          dataSource.Read(read => read.Action("GetOrgnizationalCustomers", "MaintenanceDataProvider"))
+                                          .ServerFiltering(false);
+                                      }).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.LicensePlate,"Plate No/Serial No", htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.LicensePlate)
+                                    .Name("LicensePlate")
+                                    .DataTextField("Name")
+                                    .DataValueField("PlateNumber")
+                                    .OptionLabel(" ...Select... ")
+                                    .Filter(FilterType.Contains)
+                                    .Events(e => e.Change("handlePlateNoChange"))
+                                    .CascadeFrom("Source")
+                                    .DataSource(d =>
+                                    {
+                                        d.Read(r => r.Action("GetPlateNos", "MaintenanceDataProvider", new { area = "Maintenance" }).Data("handleJobRequestSource"))
+                                            .ServerFiltering(true);
+                                    }).HtmlAttributes(new { style = "width:100%" })
+                )
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-sm-2">
+       
+        <div class="form-group">
+            @Html.LabelFor(model => model.EquipmentName, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @(Html.Kendo().TextBoxFor(x => x.EquipmentName).HtmlAttributes(new { style = "width:100%" }).Enable(false))
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+<div class="row">
+
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.MaintenanceCenterId, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+
+                @(Html.Kendo().DropDownListFor(model => model.MaintenanceCenterId)
+
+                            .HtmlAttributes(new { @class = "form-control" })
+                            .DataTextField("Name")
+                            .DataValueField("Id")
+                            .OptionLabel("Select...")
+                            .HtmlAttributes(new { style = "width:100%" })
+                            .DataSource(d =>
+                            {
+                                d.Read(r =>
+                                {
+                                    //r.Action("GetAllMaintenanceCenters", "MaintenanceCenter"); // takes the name as a value
+                                    r.Action("GetAllMaintenanceCentersById", "MaintenanceCenter"); // takes the MaintenanceCenterId as a value
+                                })
+                                .ServerFiltering(false);
+                            }).ValuePrimitive(true)
+                )
+            </div>
+        </div>
+
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @(Html.Kendo().TextBoxFor(x => x.Remark).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.IsPM, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @(Html.Kendo().CheckBoxFor(model => model.IsPM).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.RequesterId, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.RequesterId)
+
+                                      .OptionLabel("Select Employee")
+                                          .DataTextField("FullNameaEnglish")
+                                          .DataValueField("EmployeeId")
+                                          .Filter("contains")
+                                          .OptionLabel("Select...")
+                                          .DataSource(dataSource =>
+                                          {
+                                              dataSource.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
+                                                            .ServerFiltering(true);
+                                          }).HtmlAttributes(new { style = "width:100%" })
+
+                )
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Has Insurance</label>
+            <div>
+                @(Html.Kendo().CheckBoxFor(model => model.HasInsurance).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>High Priority</label>
+            <div>
+                @(Html.Kendo().CheckBoxFor(model => model.IsHighPriority).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+
+    </div>
+</div>
+
+    <style>
+        div.k-edit-form-container {
+            width: auto;
+            height: auto;
+        }
+
+        .row .col-sm-2 {
+            width: 150px;
+        }
+
+        .row {
+            margin: auto;
+        }
+    </style>
+
+
+
+

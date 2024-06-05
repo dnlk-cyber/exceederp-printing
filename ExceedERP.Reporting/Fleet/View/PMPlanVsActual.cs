@@ -18,7 +18,7 @@ namespace ExceedERP.Reporting.Fleet.View
             // Required for telerik Reporting designer support
             //
             InitializeComponent();
-            this.pageHeaderSection1.Report.DataSource = headerComp;
+            this.Report.DataSource = headerComp;
             //
             // TODO: Add any constructor code after InitializeComponent call
             //

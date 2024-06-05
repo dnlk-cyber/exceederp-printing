@@ -1,0 +1,89 @@
+﻿@model ExceedERP.Core.Domain.Maintenance.ExternalComponent
+
+
+
+<div class="demo-section k-content">
+    <form>
+        
+                      <div class="row">
+                            <div class="col-md-1">
+                            </div>
+            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="k-label">
+                                        @Html.LabelFor(model => model.EnterpriseName)
+                                    </div>
+                                    <div>
+                                        @Html.Kendo().TextBoxFor(model => model.EnterpriseName).HtmlAttributes(new { @class = "form-control" }).HtmlAttributes(new { style = "width:100%" })
+                                        @Html.ValidationMessageFor(model => model.EnterpriseName)
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <div class="k-label">
+                                        @Html.LabelFor(model => model.MaintaingCompany)
+                                    </div>
+                                    <div>
+                                        @Html.Kendo().TextBoxFor(model => model.MaintaingCompany).HtmlAttributes(new { @class = "form-control" }).HtmlAttributes(new { style = "width:100%" })
+                                        @Html.ValidationMessageFor(model => model.MaintaingCompany)
+                                    </div>
+
+                                </div>
+                            </div>
+                        
+                          <div class="col-md-3">
+                              <div class="form-group">
+                                  <div class="k-label">
+                                      @Html.LabelFor(model => model.ComponentName)
+                                  </div>
+                                  <div>
+                                      @Html.Kendo().TextBoxFor(model => model.ComponentName).HtmlAttributes(new { @class = "form-control" }).HtmlAttributes(new { style = "width:100%" })
+                                      @Html.ValidationMessageFor(model => model.ComponentName)
+                                  </div>
+
+                              </div>
+                          </div>
+
+                      </div>
+
+
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Manufacturer)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Manufacturer).HtmlAttributes(new { @class = "form-control" }).HtmlAttributes(new { style = "width:100%" })
+                        @Html.ValidationMessageFor(model => model.Manufacturer)
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Model)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Model).HtmlAttributes(new { @class = "form-control" }).HtmlAttributes(new { style = "width:100%" })
+                        @Html.ValidationMessageFor(model => model.Model)
+                    </div>
+
+                </div>
+            </div>
+
+    
+
+        </div>
+
+               
+
+    </form>
+
+</div>

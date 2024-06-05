@@ -5,7 +5,6 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 using ExceedERP.DataAccess.Context;
@@ -13,6 +12,7 @@ using ExceedERP.Reporting.Fleet.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
 using ExceedERP.Reporting.Fleet.View;
 using ExceedERP.Core.Domain.Finance.GL;
+using static ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleDistribution;
 
 namespace ExceedERP.Reporting.Fleet.DataSource
 {
@@ -50,8 +50,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
         }
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EquipmentDistrbutionViewModel> GetDistrubtionList(string Type, string Branch, string Structure,
-             string status, DateTime StartingDate, DateTime EndingDate)
+        public List<EquipmentDistrbutionViewModel> GetDistrubtionList(string Type, string Branch, string Structure, string status, DateTime? StartDate, DateTime? EndDate)
         {
             List<EquipmentDistrbutionViewModel> EquipmentDistrbutionList = new List<EquipmentDistrbutionViewModel>();
             EquipmentDistrbutionViewModel EquipmentDistrbutionModel;
@@ -98,15 +97,20 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 }
             }
             #endregion
-
-
-
-            VehicleDistributions = db.VehicleDistribution.Where(x => x.DateCreated > StartingDate && x.DateCreated < EndingDate).ToList();
-
-
+            
+            VehicleDistributions =  db.VehicleDistribution.ToList();
+            
+            if (StartDate.HasValue)
+            {
+                VehicleDistributions = VehicleDistributions.Where(x => x.DateCreated >= StartDate).ToList();
+            }
+            if (EndDate.HasValue)
+            {
+                VehicleDistributions = VehicleDistributions.Where(x => x.DateCreated <= EndDate).ToList();
+            }
             if (!string.IsNullOrWhiteSpace(Branch))
             {
-                VehicleDistributions = VehicleDistributions.Where(x => x.FromBranchName == Branch && x.DateCreated > StartingDate && x.DateCreated < EndingDate).ToList();
+                VehicleDistributions = VehicleDistributions.Where(x => x.FromBranchName == Branch).ToList();
 
             }
 
@@ -126,11 +130,11 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             {
                 if (Type == MaintenanceConst.RentRequest)
                 {
-                    VehicleDistributions = VehicleDistributions.Where(x => x.Type == ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleDistribution.RequestType.Rent).ToList();
+                    VehicleDistributions = VehicleDistributions.Where(x => x.Type == RequestType.Rent).ToList();
                 }
                 if (Type == MaintenanceConst.CompanyRequest)
                 {
-                    VehicleDistributions = VehicleDistributions.Where(x => x.Type == ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleDistribution.RequestType.Company).ToList();
+                    VehicleDistributions = VehicleDistributions.Where(x => x.Type == RequestType.Company).ToList();
                 }
             }
 
@@ -140,58 +144,54 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 string EquipmentSpecifcation = string.Empty;
                 string EquipmentStatus = string.Empty;
                 int? RequestedQuantity = 0;
-
-                List<AssignedEquipment> AssignedEquipments = db.AssignedEquipment.Where(x => x.RequestNumber == VehicleDistribution.RequestID).ToList();
-
-                RequestedEquipment demand = db.RequestedEquipments.Where(x => x.RequestNumber == VehicleDistribution.RequestID).FirstOrDefault();
+                List<AssignedEquipment> AssignedEquipments = new List<AssignedEquipment>();
 
 
-                if (demand != null)
+                var requestedEquipment = db.RequestedEquipments.FirstOrDefault(x => x.RequestNumber == VehicleDistribution.RequestID);
+                if(requestedEquipment != null)
                 {
-
-                    EquipmentSpecifcation = demand.EquipmentName;
-                    EquipmentStatus = demand.EquipmentStatus;
-                    RequestedQuantity = demand.Quantity;
-
+                    AssignedEquipments = db.AssignedEquipment.Where(x => x.VehicleDemandId == requestedEquipment.VehicleDemandId).ToList();
+                    EquipmentStatus = requestedEquipment.EquipmentStatus;
+                    RequestedQuantity = requestedEquipment.Quantity;
                 }
-
-
-
-
+               
+                
                 foreach (var AssignedEquipment in AssignedEquipments)
                 {
 
-                    EquipmentDistrbutionModel = new EquipmentDistrbutionViewModel();
-
-
-
-                    EquipmentDistrbutionModel.AssignedQuantity = AssignedEquipments.Count;
-                    EquipmentDistrbutionModel.DistrubtionNumber = VehicleDistribution.DistrubtionNumber;
-                    EquipmentDistrbutionModel.EquipmentStatus = EquipmentStatus;
-                    EquipmentDistrbutionModel.FromBranchName = VehicleDistribution.FromBranchName;
-                    EquipmentDistrbutionModel.FromStructureName = VehicleDistribution.FromStructureName;
-                    EquipmentDistrbutionModel.StartingDate = AssignedEquipment.StartDate;
-                    EquipmentDistrbutionModel.ToDate = AssignedEquipment.EndDate;
-                    EquipmentDistrbutionModel.Type = Enum.GetName(VehicleDistribution.Type.GetType(), VehicleDistribution.Type);
-                    EquipmentDistrbutionModel.CategoryRef = EquipmentSpecifcation;
-                    EquipmentDistrbutionModel.RequestQuamtity = RequestedQuantity;
-
-                    EquipmentDistrbutionModel.AmharicName = AmharicName;
-                    EquipmentDistrbutionModel.Name = Name;
-                    EquipmentDistrbutionModel.LogoFileName = LogoFileName;
-                    EquipmentDistrbutionModel.Address = Address;
-
+                    EquipmentDistrbutionModel = new EquipmentDistrbutionViewModel
+                    {
+                        AssignedQuantity = AssignedEquipments.Count,
+                        DistrubtionNumber = VehicleDistribution.DistrubtionNumber,
+                        EquipmentStatus = EquipmentStatus,
+                        FromBranchName = VehicleDistribution.FromBranchName,
+                        FromStructureName = VehicleDistribution.FromStructureName,
+                        StartingDate = AssignedEquipment.StartDate,
+                        ToDate = AssignedEquipment.EndDate,
+                        Type = Enum.GetName(VehicleDistribution.Type.GetType(), VehicleDistribution.Type),
+                        //CategoryRef = AssignedEquipment.EquipmentName,
+                        CategoryRef = db.EquipmentName.FirstOrDefault(x => x.EquipmentNameID == AssignedEquipment.EquipmentNameID)?.Name ?? null,
+                        //CategoryRef = db.EquipmentType.FirstOrDefault(x => x.EquipmentTypeID == requestedEquipment.EquipmentTypeID),
+                        RequestQuamtity = RequestedQuantity,
+                        AmharicName = AmharicName,
+                        Name = Name,
+                        LogoFileName = LogoFileName,
+                        Address = Address
+                    };
+                    
                     EquipmentDistrbutionList.Add(EquipmentDistrbutionModel);
                 }
             }
 
             if (!EquipmentDistrbutionList.Any())
             {
-                EquipmentDistrbutionModel = new EquipmentDistrbutionViewModel();
-                EquipmentDistrbutionModel.AmharicName = AmharicName;
-                EquipmentDistrbutionModel.Name = Name;
-                EquipmentDistrbutionModel.LogoFileName = LogoFileName;
-                EquipmentDistrbutionModel.Address = Address;
+                EquipmentDistrbutionModel = new EquipmentDistrbutionViewModel
+                {
+                    AmharicName = AmharicName,
+                    Name = Name,
+                    LogoFileName = LogoFileName,
+                    Address = Address
+                };
 
                 EquipmentDistrbutionList.Add(EquipmentDistrbutionModel);
             }

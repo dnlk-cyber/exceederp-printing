@@ -6,19 +6,19 @@
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FuelConsumptionAlertLevel>()
       .Name("grid")
       .Columns(columns =>
-          {
-              columns.Bound(e => e.Name).Width(140);
-              columns.Bound(e => e.FromValue).Width(100);
-              columns.Bound(e => e.ToValue).Width(100);
-              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+      {
+          columns.Bound(e => e.Name).Width(140);
+          columns.Bound(e => e.FromValue).Width(100);
+          columns.Bound(e => e.ToValue).Width(100);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
 
-          })
+      })
       .ToolBar(commands => commands.Create())
       .Editable(editable =>
-          {
-              editable.Mode(GridEditMode.InLine);
-              editable.DisplayDeleteConfirmation("Are You Sure To Remove Alert Level");
-          })
+      {
+          editable.Mode(GridEditMode.InLine);
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Alert Level");
+      })
             .HtmlAttributes(new { style = "height: 520px;" })
                       .Pageable(pageable => pageable
                                         .Input(true)
@@ -33,14 +33,15 @@
                             .Scrollable(h => h.Height(500))
       .DataSource(dataSource => dataSource
           .Ajax()
-          .ServerOperation(false)
           .Model(model =>
-              {
-                  model.Id(p => p.FuelConsumptionAlertLevelId);
+          {
+              model.Id(p => p.FuelConsumptionAlertLevelId);
 
-                  model.Field(p => p.FuelConsumptionAlertLevelId).Editable(false);
+              model.Field(p => p.FuelConsumptionAlertLevelId).Editable(false);
 
-              })
+          })
+                            .Sort(so => so.Add(s => s.FuelConsumptionAlertLevelId).Descending())
+
                        .Events(ev => ev
                                         .Error("error_handler(\"grid\")")
                                         .RequestStart("onRequestStart(\"grid\")")

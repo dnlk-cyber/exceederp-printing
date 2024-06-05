@@ -6,294 +6,201 @@
 <legend> Operator Registration</legend>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Operator>()
-      .Name("grid")
-      .Columns(columns =>
-      {
+                  .Name("grid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(e => e.FullName).Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                      columns.Bound(e => e.JobTitle).Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+                      columns.Bound(e => e.Gender).Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+                      columns.Bound(e => e.MobilePhone).Width(140).Filterable(ftb => ftb.Multi(true).Search(true));
+                      columns.Bound(e => e.Postion).Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+                      columns.Bound(e => e.LicenseType).Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+                      columns.Bound(e => e.LicenseNo).Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                  })
+                   //.ToolBar(commands => { commands.Create(); })// commands.Excel(); commands.Pdf(); })
+                   .ToolBar(toolbar =>
+          {
 
- 
-          columns.Bound(e => e.FullName).Width(150);
-          columns.Bound(e => e.Gender).Width(120);
-          
-          columns.Bound(e => e.MobilePhone).Width(140);
-           columns.Bound(e => e.Postion).Width(200);
+              toolbar.Template(@<text>
+                <div class="toolbar row">
+                    <div class="col-md-3">
+                        <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
+                                                           
+                        @(Html.Kendo().Button()
+                             .Name("btnRefreash")
+                             .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                             .Events(e => e.Click("refreshOperators"))
+                             .Content("Refresh Operators"))
+                    </div>
 
-          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                </div>
 
-      })
-                  .ToolBar(commands => { commands.Create(); commands.Excel(); commands.Pdf(); })
-      .Editable(editable =>
-      {
-          editable.Window(w => w.Title("Operator Registration"));
-          editable.Mode(GridEditMode.PopUp).TemplateName("OperatorEditor");
-          editable.DisplayDeleteConfirmation("Are You Sure To Remove Operator");
-      })
-       .HtmlAttributes(new { style = "height: 520px;" })
-                          .Pageable(pageable => pageable
-                                            .Input(true)
-                                            .Numeric(false)
-                                            .Refresh(true)
-                                            .PageSizes(true)
-                                            .ButtonCount(5))
-
+            </text>);
+                })
+                         .Editable(editable =>
+                         {
+                             editable.Window(w => w.Title("Operator Registration").Width(650));
+                             editable.Mode(GridEditMode.PopUp).TemplateName("OperatorEditor");
+                             editable.DisplayDeleteConfirmation("Are You Sure To Remove Operator");
+                         })
+                         .HtmlAttributes(new { style = "height: 520px;" })
+                                .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
                                 .Scrollable()
                                 .Sortable()
                                 .Filterable()
-                                 .Scrollable(h => h.Height(500))
-                                      .ClientDetailTemplateId("template")
-      .DataSource(dataSource => dataSource
-          .Ajax()
-          .ServerOperation(false)
-                                .Model(model => model.Id(p => p.OperatorID)).Events(ev => ev
-                                                .Error("error_handler(\"grid\")")
-                                                .RequestStart("onRequestStart(\"grid\")")
-                                                .RequestEnd("onRequestEnd(\"grid\")"))
-          .Create(update => update.Action("Operator_Create", "OperatorRegistration"))
-          .Read(read => read.Action("Operator_Read", "OperatorRegistration"))
-          .Update(update => update.Action("Operator_Update", "OperatorRegistration"))
-          .Destroy(update => update.Action("Operator_Destroy", "OperatorRegistration"))
-      ).Events(events => events.DataBound("dataBound")))
+                                .Scrollable(h => h.Height(500))
+                                .ClientDetailTemplateId("template")
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Sort(sort => sort.Add(e => e.DateCreated).Descending())
+                            .ServerOperation(false)
+                            .Model(model => model.Id(p => p.OperatorID)).Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+                            .Create(update => update.Action("Operator_Create", "OperatorRegistration"))
+                            .Read(read => read.Action("Operator_Read", "OperatorRegistration"))
+                            .Update(update => update.Action("Operator_Update", "OperatorRegistration"))
+                            .Destroy(update => update.Action("Operator_Destroy", "OperatorRegistration"))
+                        ).Events(events => events.DataBound("dataBound")))
+<div id="customToolbar"></div>
+<script>
+    function refreshOperators() {
+        $.ajax(
+            {
+                type: "POST",
+                url: '@Url.Action("RefreshOperator", "OperatorRegistration")',
+                success: function (result) {
+                alert(result);
+            } });
+    }
+    
+</script>
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                            .Name("tabStrip_#=OperatorID#")
-            .SelectedIndex(0)
-            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-            .Items(items =>
-            {
+          .Name("tabStrip_#=OperatorID#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Detail").Content(
+                  @<text>
+                      <div class="row col-sm-12 box">
+                          <div class="col-sm-6" style="margin-top:20px;">
+                              <div class="form-group">
+                                  <label>@Html.LabelFor(model => model.Gender):</label><span> #=Gender#</span>
+                              </div>
+                              <div class="form-group">
+                                  <label>@Html.LabelFor(model => model.MobilePhone):</label><span> #=LicenseLevel#</span>
+                              </div>
+                              <div class="form-group">
+                                  <label>@Html.LabelFor(model => model.LicenseType):</label><span> #=LicenseType#</span>
+                              </div>
+                              <div class="form-group">
+                                  <label>@Html.LabelFor(model => model.NameOfTraningCenter):</label><span> #=NameOfTraningCenter#</span>
+                              </div>
+                          </div>
 
+                          <div class="col-sm-4">
+                              <div class="card" style="border-left:solid 1px rgb(242, 242, 242);border-right:solid 1px rgb(242, 242, 242)">
+                                  <div class="card-header modal-header">
+                                      <h4>Operator Profile Pic</h4>
+                                  </div>
+                                  <div class="card-body modal-body">
+                                      <img src="~/Content/Images/Fleet/Operator/#=OperatorID#.jpg?t=" @DateTime.Now.Millisecond width="250" height="250" class="img-responsive" />
+                                  </div>
+                                  <div class="card-footer text-right modal-footer">
+                                      <input type="submit" onclick="RejectPopUp('#=OperatorID#')" name='btn_#=FleetsID#' value="Update" class="k-button k-button-icontext k-primary" />
+                                  </div>
+                              </div>
+                          </div>
 
-                items.Add().Text("Detail").Content(
-                    @<text>
-
-
-                        <div class="row col-sm-12">
-                            <div class="col-sm-2">
-
-
-                                <img src="~/Content/Images/Fleet/Operator/#=OperatorID#.jpg?t=" @DateTime.Now.Millisecond width="200" height="240" class="img-circle img-responsive img-rounded" />
-
-                            </div><div class="col-sm-9">
-
-
-                                <div class="demo-section k-header export-app">
-                                    <div class="demo-section content-wrapper">
-
-                                        <form>
-
-
-
-                                            <div class="row">
-                                                <div class="col-md-1">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <div class="label">
-                                                            <label> @Html.LabelFor(model => model.Gender)   </label>
-
-
-                                                        </div>
-                                                        <div>
-                                                            #=Gender#
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <div class="label">
-                                                            <label>          @Html.LabelFor(model => model.MobilePhone)    </label>
+                      </div>
 
 
 
-                                                        </div>
-                                                        <div>
-                                                            #=LicenseLevel#
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <div class="label">
-                                                            <label>    @Html.LabelFor(model => model.LicenseType)           </label>
 
 
 
-                                                        </div>
-                                                        <div>
-                                                            #=LicenseType#
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-1">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <div class="label">
-                                                            <label>   @Html.LabelFor(model => model.NameOfTraningCenter)    </label>
 
 
-
-                                                        </div>
-                                                        <div>
-                                                            #=NameOfTraningCenter#
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <div class="label">
-                                                            <label> @Html.LabelFor(model => model.LicenseNo)    </label>
+                  </text>
 
 
-
-                                                        </div>
-                                                        <div>
-                                                            #=LicenseNo#
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-group">
-                                                        <div class="label">
-                                                            <label>  @Html.LabelFor(model => model.Postion)      </label>
-
-
-
-                                                        </div>
-                                                        <div>
-                                                            #=Postion#
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-
-                                            </div>
-
-                                        </form>
-
-                                    </div>
-                                </div>
-
-                            </div>
-                            </div>
-
-                    </text>
-
-
-                          );
-
-                items.Add().Text(" License Level ").Content(@<text>
-
-                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsuranceTypeDetail>()
-                                                                                                                                .Name("FleetInsuranceTypegrid#=OperatorID#")
-                        .Columns(columns =>
-                        {
-                            columns.Bound(o => o.Name).EditorTemplateName("LicenseLevelEditor").Width(126);
-                            columns.Bound(o => o.Description).Width(126);
-                            columns.Bound(c => c.CreatedBy).Width(150);
-                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
-                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
-
-                        })
-                        .ToolBar(t => t.Create())
-                        @*.ToolBar(toolbar =>
-                            {
-
-                                toolbar.Template(@<text>
-                                  <div class="toolbar row">
-                                      <div class="col-md-1">
-                                          # if (IsSendForApproval == false || IsSendForApproval == "false")
-                                          {#
-                                          <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
-                                          # }#
-
-                                      </div>
-                                      </div></text>);
-                            })*@
-
- 
-                            .Editable(editable => editable.Mode(GridEditMode.InLine))
-                            .DataSource(dataSource => dataSource
-                            .Ajax()
-                            .PageSize(5)
-                            .Model(model =>
-                            {
-                                model.Id(p => p.FleetInsuranceTypeDetailId);
-                                model.Field(p => p.CreatedBy).Editable(false);
-                                model.Field(p => p.DateCreated).Editable(false);
-                            })
-                            .Events(ev => ev
-                                    .Error("error_handler(\"FleetInsuranceTypegrid#=OperatorID#\")")
-                                    .RequestStart("onRequestStart(\"FleetInsuranceTypegrid#=OperatorID#\")")
-                                    .RequestEnd("onRequestEnd(\"FleetInsuranceTypegrid#=OperatorID#\")"))
-
-                                    .Create(update => update.Action("FleetInsuranceTypeDetails_Create", "FleetInsuranceTypeDetail", new { Id = "#=OperatorID#" }))
-                                    .Read(read => read.Action("FleetInsuranceTypeDetails_Read", "FleetInsuranceTypeDetail", new { Id = "#=OperatorID#" }))
-                            .Update(update => update.Action("FleetInsuranceTypeDetails_Update", "FleetInsuranceTypeDetail"))
-                                            .Destroy(destroy => destroy.Action("FleetInsuranceTypeDetails_Destroy", "FleetInsuranceTypeDetail"))
-
-                            )
-                            .ToClientTemplate())
-                </text>
-                );
-
-                items.Add().Text("  Photo ").Content(@<text>
-                            <button class="  k-primary" onclick="RejectPopUp('#=OperatorID#')" name='btn_#=OperatorID#'>Upload Picture</button>
-                            <img src="~/Content/Images/Fleet/Operator/#=OperatorID#.jpg?t=" @DateTime.Now.Millisecond width="700" height="340"></text>
-                );
-
-
-            })
-                                                                                                        .ToClientTemplate())
+                                                );
+                      items.Add().Text(" License Level ").Content(@<text>
+                          @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.LicenseLevel>()
+                                                        .Name("licenseLevelId_#=OperatorID#")
+                                                        .Columns(columns =>
+                                                        {
+                                                            columns.Bound(o => o.Name).EditorTemplateName("LicenseLevelEditor").Width(126);
+                                                            columns.Bound(o => o.Description).Width(126);
+                                                            columns.Bound(c => c.CreatedBy).Width(150);
+                                                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                                                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                                                        })
+                                              .ToolBar(t => t.Create())
+                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                  .DataSource(dataSource => dataSource
+                                                  .Ajax()
+                                                  .PageSize(5)
+                                                  .Model(model =>
+                                                  {
+                                                                      model.Id(p => p.LicenseLevelId);
+                                                                      model.Field(p => p.CreatedBy).Editable(false);
+                                                                      model.Field(p => p.DateCreated).Editable(false);
+                                                                  })
+                                                  .Events(ev => ev
+                                                          .Error("error_handler(\"licenseLevelId_#=OperatorID#\")")
+                                                          .RequestStart("onRequestStart(\"licenseLevelId_#=OperatorID#\")")
+                                                          .RequestEnd("onRequestEnd(\"licenseLevelId_#=OperatorID#\")"))
+                                                          .Create(update => update.Action("LicenseLevel_Create", "OperatorRegistration", new { Id = "#=OperatorID#" }))
+                                                          .Read(read => read.Action("LicenseLevel__Read", "OperatorRegistration", new { Id = "#=OperatorID#" }))
+                                                  .Update(update => update.Action("LicenseLevel_Update", "OperatorRegistration", new { Id = "#=OperatorID#" }))
+                                                                  .Destroy(destroy => destroy.Action("LicenseLevel_Destroy", "OperatorRegistration"))
+                                                  )
+                                                  .ToClientTemplate())
+                      </text>
+                      );
+                          }).ToClientTemplate())
 </script>
-
 @(Html.Kendo().Window().Name("Details")
-    .Title(" Upload Picture ")
-    .Visible(false)
-    .Modal(true)
-    .Draggable(true)
-    .Width(500).Content(@<text><div class="form-group">
+                .Title(" Upload Picture ")
+                .Visible(false)
+                .Modal(true)
+                .Draggable(true)
+                .Width(400).Content(@<text><div class="form-group">
 
-                                   <form action="@Url.Action("UploadPic", "OperatorRegistration")" method="post" enctype="multipart/form-data" >
+                        <form action="@Url.Action("UploadPic", "OperatorRegistration")" method="post" enctype="multipart/form-data">
 
-                                       <input type="hidden" name="Id" id="UploadId">
-                                       <input type="file" class="form-control  " name="AttachmentFile" multiple />
-
-                                       <input type="submit" class="btn-success btn-block" value=" Upload " />
-
-                                   </form>
-        </div></text>)
+                            <input type="hidden" name="Id" id="UploadId">
+                            <input type="file" class="form-control full-width" name="AttachmentFile" style="border-radius:10px;width:350px;" multiple />
+                            <input type="submit" style="margin-left:300px;" class="k-button k-button-icontext k-primary alignright" value=" Upload " />
+                        </form>
+                    </div></text>)
 )
-
 <script type="text/x-kendo-template" id="Rejectemplate">
     <div id="details-container">
         <div class="form-group">
-
-
         </div>
     </div>
-
 </script>
-
-
-
 <script>
-
     function RejectPopUp(e) {
-
-
         var wnd = $("#Details").data("kendoWindow");
-
         $("#UploadId").val(e);
         wnd.center().open();
     }
 </script>
-
 <script>
     function dataBound() {
-        this.expandRow(this.tbody.find("tr.k-master-row").first());
     }
     function GetJobTitle() {
         var Operator = $("#EmployeeId").data("kendoDropDownList").value();
@@ -303,15 +210,13 @@
             url: '@Url.Action("GetPlacmentCategory", "FleetDataProvider")',
             success: function (result) {
                 $("#JobTitle").val(result);
+                $("#JobTitle").props("readonly", true);
             }
         });
     }
 </script>
-
-
-    <style type="text/css">
-        div.k-edit-form-container {
-            width: 800px;
-        }
-    </style>
-   
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 650px;
+    }
+</style>

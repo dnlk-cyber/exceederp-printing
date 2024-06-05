@@ -1,0 +1,527 @@
+﻿@using Kendo.Mvc.UI
+@model ExceedERP.Web.Areas.CRM.Models.LineItemViewModel
+ 
+@*<form id="lineForm" method="post" onsubmit=" return ValidateInput();" onformchange="return ClearValMsg();">*@
+<form method="post">
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.HiddenFor(model => model.LineItemID)
+                    <input type="hidden" name="VoucherDefinitionId" id="VoucherDefinitionId" />
+                    <input type="hidden" name="Voucher" id="Voucher" />
+                    @Html.LabelFor(model => model.StoreID)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.StoreID)
+                        .Name("StoreID")
+                              .AutoBind(true)
+                              .Filter(FilterType.Contains)
+                              .OptionLabel("Select ")
+                              .DataTextField("Name")
+                              .DataValueField("StoreCode")
+                              .DataSource(datasource =>
+                              {
+                                  datasource.Read(read => read.Action("GetStoreList", "CRMDataProvider", new { area="CRM"}).Data("getHeaderStoreId"))
+                                      .ServerFiltering(true);
+                              })//.Events(e => e.Select("ClearValMsg"))
+                    )
+                    <div class="   alert-dismissable   alert-warning" id="StoreVal"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ThingID)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.ThingID)
+                        .Name("ThingID")
+                        .Filter(FilterType.Contains)
+                        .AutoBind(true)
+                        .OptionLabel("Select ")
+                        .DataTextField("Name")
+                        .DataValueField("ProductID")
+                        .DataSource(d =>
+                        {
+                            d.Read(r =>
+                            {
+                                r.Action("GetThingListByStore", "CRMDataProvider", new { area="CRM"}).Data("filterThing");
+                            })
+                                .ServerFiltering(true);
+                        })
+                        .Enable(false)
+                        .AutoBind(false)
+                        .CascadeFrom("StoreID")
+                        .Events(e => e.Change("GetStockBalance")/*.Select("ClearValMsg")*/)
+                    )
+                    <div class="   alert-dismissable   alert-warning" id="ProductVal"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Variety)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.Variety)
+                        .Name("Variety")
+                              .AutoBind(true)
+                              .Filter(FilterType.Contains)
+                              .OptionLabel("Select")
+                              .DataTextField("Name")
+                              .DataValueField("Name")
+                              .DataSource(d =>
+                              {
+                                  d.Read(r =>
+                                  {
+                                      r.Action("VarietyByInventoryDDBind", "Variety", new { area="CRM"}).Data("filterVariety");
+                                  })
+                                      .ServerFiltering(true);
+                              })
+                              .Enable(false)
+
+                                      .CascadeFrom("ThingID")
+                              .Events(e => e.Change("GetStockBalance"))
+                    )
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Class)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.Class)
+                        .Name("Class")
+                              .AutoBind(true)
+                              .Filter(FilterType.Contains)
+                              .OptionLabel("Select")
+                              .DataTextField("Name")
+                              .DataValueField("Name")
+                               .DataSource(d =>
+                               {
+                                   d.Read(r =>
+                                   {
+                                       r.Action("ClassDDBind", "Variety", new { area = "CRM"});
+                                   })
+                                       .ServerFiltering(true);
+                               })
+                              .Enable(false)
+                              .CascadeFrom("ThingID")
+                              .Events(e => e.Change("GetStockBalance"))
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-1 hidden-xs">
+        </div>
+
+        <div class="col-sm-2 col-xs-12">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.StockBalanceReserved)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.StockBalanceReserved)
+                              .Enable(false).HtmlAttributes(new { style = "font-weight:bold;font-family: sans-serif;" }))
+                    @Html.ValidationMessageFor(model => model.StockBalanceReserved)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-2">
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.StockBalance)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.StockBalance)
+                              .Enable(false).HtmlAttributes(new { style = "font-weight:bold;font-family: sans-serif;" })
+                    )
+                    @Html.ValidationMessageFor(model => model.StockBalance)
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ActualRemainingBalance)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.ActualRemainingBalance)
+                              .Enable(false).HtmlAttributes(new { style = "font-weight:bold;font-family: sans-serif;" }))
+                    @Html.ValidationMessageFor(model => model.ActualRemainingBalance)
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PriceTag)
+                </div>
+                <div>
+
+                    @(Html.Kendo().DropDownListFor(model => model.PriceTag)
+                                .OptionLabel("Select")
+                                .Filter(FilterType.Contains)
+                                .DataTextField("Text")
+                                .DataValueField("Text")
+                                //.BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CRM.Price_Types)))
+                                .DataSource(datasource =>
+                                {
+                                    datasource.Read(read =>
+                                    {
+                                        read.Action("GetAssiggnedPriceTags", "CRMDataProvider", new { area="CRM"})
+                                            .Data("getSelectedProduct");
+                                    })
+                                        .ServerFiltering(true);
+                                })
+                              .CascadeFrom("ThingID")
+
+                                .ValuePrimitive(true)
+                              .Events(e => e.Change("UpdatePriceChange")/*.Select("ClearValMsg")*/)
+                    )
+                    <div class="   alert-dismissable   alert-warning " id="PriceTagVal"></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="unitConversionFormContainer" hidden>
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-9">
+            <fieldset class="scheduler-border">
+                <legend class="scheduler-border">Unit Converter</legend>
+                
+                <div class="row">
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <div class="k-label">
+                                @Html.LabelFor(model => model.OtherUoM)
+                            </div>
+                            <div>
+                                @(Html.Kendo().DropDownListFor(model => model.OtherUoM)
+                                                    .ValuePrimitive(true)
+                                                    .HtmlAttributes(new { style="width:120px;"})
+                                                    .OptionLabel("Select UoM")
+                                                    .DataTextField("UoMName")
+                                                    .DataValueField("UoMName")
+                                                    .CascadeFrom("ThingID")
+                                                    .Filter("contains")
+                                                    .DataSource(dataSource =>
+                                                    {
+                                                        dataSource.Read(read => read.Action("GetPossibleConvertableUoMOfProduct", "CRMDataProvider", new { area="CRM"}).Data("getSelectedProduct")).ServerFiltering(true);
+                                                    })
+                                                    .Events(ev =>
+                                                    {
+                                                        ev.Change("onOtherUoMChange");
+                                                    })
+                                )
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <div class="k-label">
+                                @Html.LabelFor(model => model.MultiplcationFactor)
+                            </div>
+                            <div>
+                                @(Html.Kendo().TextBoxFor(model => model.MultiplcationFactor)
+                                                    .HtmlAttributes(new { style = "width:120px;" })
+                                                    .Enable(false))
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <div class="k-label">
+                                @Html.LabelFor(model => model.QuantityInOtherUoM)
+                            </div>
+                            <div>
+                                @(Html.Kendo().NumericTextBoxFor(model => model.QuantityInOtherUoM)
+                                            .HtmlAttributes(new { style = "width:120px;" })
+                                            .Decimals(4)
+                                            .Events(e => 
+                                            {
+                                                e.Change("onQuantityInOtherUnitChange");
+                                            })
+                                            )
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="form-group">
+                            <div class="k-label">
+                                @Html.LabelFor(model => model.Result)
+                            </div>
+                            <div>
+                                @(Html.Kendo().TextBoxFor(model => model.Result)
+                                    .HtmlAttributes(new { style = "width:120px;" })
+                                    .Enable(false))
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        @*<div class="col-sm-2">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.PriceTagDetail)
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.PriceTagDetail)
+                          .AutoBind(true)
+                          .Filter(FilterType.Contains)
+                          .OptionLabel("Select")
+                          .DataTextField("Description")
+                          .DataValueField("Description")
+                          .Name("PriceTagDetail")
+                          .DataSource(datasource =>
+                              {
+                                  datasource.Read(read =>
+                                      {
+                                          read.Action("GetPriceTagDetailListVoucher", "CRMDataProvider")
+                                              .Data("GetPriceTagDetailParameter");
+                                      })
+                                      .ServerFiltering(true);
+                              })
+                          .CascadeFrom("PriceTag")
+                          .Events(e => e.Change("UpdatePriceChange").Select("ClearValMsg"))
+                        )
+                        <div class="   alert-dismissable   alert-warning" id="PriceTagDetailVal"></div>
+
+                    </div>
+                </div>
+            </div>*@
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.UnitAmount)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.UnitAmount).Enable(true)
+                                      .Name("UnitAmount").HtmlAttributes(new { @onchange = "GetTaxValue()", style = "font-weight:bold;font-family: sans-serif;" })
+                    )
+
+                    @Html.ValidationMessageFor(model => model.UnitAmount)
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Quantity, htmlAttributes: new { style = "float:left;" })
+                    <div style="float:left;"> [<label id="quantityLabel"></label>]</div>
+                    <div style="float:right;" hidden id="otherUnitContainer">
+                        <a href="\\#" onclick='return showConvertorTool()'><i class="fa fa-angle-double-down fa-1x"></i> Other Unit</a>
+                    </div>
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Quantity)
+                                                        .Decimals(4)
+                                                        //.HtmlAttributes(new { style = "width:60%;" })
+                                                        .Min(0)
+                                                        .Events(x => x.Change("GetTaxValue")))
+                    @*@Html.ValidationMessageFor(model => model.Quantity)*@
+                    @*<div  style="width:30%; float:right">
+                            @Html.Label("UoM")
+                        </div>*@
+                </div>
+
+                <div class="alert-dismissable alert-warning" id="QuantityVal"></div>
+
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.CalculatedCost)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.CalculatedCost)
+                                      .Enable(false).HtmlAttributes(new { style = "font-weight:bold;font-family: sans-serif;" }))
+                    @Html.ValidationMessageFor(model => model.CalculatedCost)
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Discount)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.TaxAmount)
+                                        .Name("Discount")
+                                        .Decimals(4)
+                                        .Events(ev =>
+                                        {
+                                            ev.Change("GetTaxValue");
+                                        })
+                                        .HtmlAttributes(new { @onchange = "GetTaxValue", style = "font-weight:bold;font-family: sans-serif;" }))
+                    @Html.ValidationMessageFor(model => model.Discount)
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        @*  <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.FreightCost)
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.FreightCost).Min(0)
+                    @Html.ValidationMessageFor(model => model.FreightCost)
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.OtherCost)
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.OtherCost).Min(0).Events(x => x.Change("GetTaxValue"))
+                    @Html.ValidationMessageFor(model => model.OtherCost)
+                </div>
+            </div>
+        </div>
+        *@
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Tax)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.Tax)
+                                                      .AutoBind(true)
+                                                      .OptionLabel("Select")
+                                                      .DataTextField("TaxName")
+                                                      .Filter(FilterType.Contains)
+                                                      .DataValueField("GLTaxRateID")
+                                                      .DataSource(datasource =>
+                                                      {
+                                                          datasource.Read(read => read.Action("GetTaxList", "CRMDataProvider", new { area="CRM"}))
+                                                              .ServerFiltering(true);
+                                                      })
+                                                              .Events(e => e.Change("GetTaxValue")/*.Select("ClearValMsg")*/)
+                    )
+
+                    <div class="   alert-dismissable  alert-warning" id="TaxVal"></div>
+
+                </div>
+            </div>
+        </div>
+
+        @*   <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.InsuranceCost)
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.InsuranceCost).Min(0).Events(x => x.Change("GetTaxValue"))
+                    @Html.ValidationMessageFor(model => model.InsuranceCost)
+                </div>
+            </div>
+        </div>
+        *@
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TaxAmount)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.TaxAmount).Name("TaxAmount")
+                                                      .Enable(false).HtmlAttributes(new { style = "font-weight:bold;font-family: sans-serif;" }))
+                    @Html.ValidationMessageFor(model => model.TaxAmount)
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TotalAmount)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.TotalAmount).Name("TotalAmount")
+                                      .Enable(false).HtmlAttributes(new { style = "font-weight:bold;font-family: sans-serif;" }))
+                    @Html.ValidationMessageFor(model => model.TotalAmount)
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.WithholdingType)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.WithholdingType)
+                                      .AutoBind(true)
+                                      .Filter(FilterType.Contains)
+                                      .OptionLabel("Select")
+                                              .DataTextField("TaxName")
+                                                                      .DataValueField("GLTaxRateID")
+                                      .DataSource(datasource =>
+                                      {
+                                          datasource.Read(read => read.Action("GetWithholdingTaxList", "CRMDataProvider", new { area="CRM"}))
+                                              .ServerFiltering(true);
+                                      })
+
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    @*<div class="row">
+        <div class="col-md-3 ">
+        </div>
+        <div class="  form-box text-center">
+            <h4>  Other Cost</h4>
+            <hr />
+
+        </div>
+        <div style="padding-left:30px;">
+            <button id="generate" class="k-button  k-primary  " onclick=' return AddCostItem(this);'>Add </button>
+        </div>
+        </div>*@
+    @*<div class="row">
+            <div class="col-md-3">
+            </div>
+            <div id="CostItem"></div>
+        </div>*@
+    <div class="form-bottom pull-right " style="padding-right:20px;">
+        @*<input type="submit" value="Create" id="linesave" class="k-button k-button-icontext k-primary " />*@
+        @*<button type="submit" value="Create" id="linesave" class="k-button k-button-icontext k-primary "><i class="fa fa-check"></i>&nbsp; Update</button>*@
+    </div>
+</form>

@@ -17,11 +17,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
     [DataObject]
         public  class FuelConsumptionSummaryDataSource
     {
-
-
-
         ExceedDbContext db = new ExceedDbContext();
-
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<FuelConsumptionSummary> GetFuelConsumptionInfo(DateTime StartingDate, DateTime EndingDate)
         {

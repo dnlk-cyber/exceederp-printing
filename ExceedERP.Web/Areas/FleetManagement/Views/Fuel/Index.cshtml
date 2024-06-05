@@ -34,8 +34,8 @@
 
       
         gridfilter.push({ field: "PlateNo", operator: "contains", value: AssetCode } );
-        gridfilter.push(   { field: "To", operator: "contains", value: DateTo });
-        gridfilter.push({ field: "From", operator: "contains", value: DateFrom });
+        gridfilter.push(   { field: "To", operator: "lte", value: DateTo });
+        gridfilter.push({ field: "From", operator: "gte", value: DateFrom });
         grid.dataSource.filter({ logic: "or", filters: gridfilter });
     }
   
@@ -66,34 +66,22 @@
                {
 
                toolbar.Template(@<text>
+<div class="row pull-right">
+    <a href='#' onclick="return PrintFuelIssue();" title="Print"><i class="fa fa-print fa-2x"></i></a>
+</div>
 <div class="toolbar row">
 
-
-    <div class="">
-
-
-        <div class="col-md-1">
-            Date From :
-        </div>
-        <div class="col-md-2">
+       
+        <div class="col-md-3">
+            <label>Date From:</label>
             @(Html.Kendo().DatePicker().Name("From").Value(DateTime.Now.Date))
-
-
-        </div>
-
-        <div class="col-md-1">
-
-
-            Date To :
-        </div>
-        <div class="col-md-2">
+        </div>  
+        <div class="col-md-3" style="margin-left:5px">
+            <label>Date To:</label>
             @(Html.Kendo().DatePicker().Name("To").Value(DateTime.Now.Date))
-        </div>
-        <div class="col-md-1">
-
-            Plate No :
-        </div>
-        <div class="col-md-2">
+        </div>   
+        <div class="col-md-3" style="margin-left:5px">
+            <label>Plate No:</label>
             @(Html.Kendo().TextBox().Name("AssetCode").HtmlAttributes(new { placeholder = " Plate Number", @class = "k-primary" }))
 
         </div>
@@ -102,14 +90,13 @@
 
             @(Html.Kendo().Button()
                                                                                          .Name("btnSearch")
-                                                                                         .HtmlAttributes(new { type = "search", @class = " form-control k-primary" })
+                                                                                         .HtmlAttributes(new { type = "search", @class = "k-button k-button-icontext k-primary" })
                                                                                          .Events(e => e.Click("filterFuelIssue"))
                                                                                          .Content("Search"))
         </div>
+       
     </div>
-    <a href='#' onclick="return PrintFuelIssue();" title="Print"><i class="fa fa-print fa-2x"></i></a>
 
-</div>
 
             </text>);
                })
@@ -124,7 +111,7 @@
                                           .Scrollable()
                                           .Sortable()
                                           .Filterable()
-                                          .Groupable()
+                                          //.Groupable()
                                           .Scrollable(h => h.Height(500))
 
               .DataSource(dataSource => dataSource

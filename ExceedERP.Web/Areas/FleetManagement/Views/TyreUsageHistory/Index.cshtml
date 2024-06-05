@@ -8,22 +8,18 @@
         columns.Bound(e => e.SerialNo).Width(100);
         columns.Bound(e => e.Type).Width(100);
         columns.Bound(e => e.Make).Width(100);
-           columns.Bound(e => e.Type).Width(100);
         columns.Bound(e => e.Size).Width(100); 
         columns.Bound(e => e.UnitPrice).Width(100);
         columns.Bound(e => e.Equipment).Width(100);
-        columns.Bound(e => e.IntialOdoMeter).Width(100);
-        columns.Bound(e => e.FinalOdoMeter).Width(100);
-        columns.Bound(e => e.DiffrenceOdoMeter).Width(120).ClientGroupFooterTemplate("Total: #=sum#");      
+        columns.Bound(e => e.IntialOdoMeter).Width(120);
+        columns.Bound(e => e.FinalOdoMeter).Width(120);
+        columns.Bound(e => e.DiffrenceOdoMeter).Width(130).ClientGroupFooterTemplate("Total: #=sum#");      
         columns.Bound(e => e.Efficency).Width(100).ClientGroupFooterTemplate("Average: #=average#"); ;
-     
-
-
     })    .ToolBar(toolbar =>
       {
           
-          toolbar.Excel();
-          toolbar.Pdf();
+         // toolbar.Excel();
+          //toolbar.Pdf();
       })
         .HtmlAttributes(new { style = "height: 520px;" })
                       .Pageable(pageable => pageable

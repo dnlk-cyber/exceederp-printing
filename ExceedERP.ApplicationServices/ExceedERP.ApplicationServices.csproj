@@ -78,7 +78,9 @@
     <Compile Include="FleetManagement\FleetMaintenance\IOutsourceMaintenanceService.cs" />
     <Compile Include="FleetManagement\FleetMaintenance\IPlannerService.cs" />
     <Compile Include="FleetManagement\FleetMaintenance\IRepairTypeService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IServiceCenterJobService.cs" />
     <Compile Include="FleetManagement\FleetMaintenance\IServiceCrewService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IServiceJobOrderDetailService.cs" />
     <Compile Include="FleetManagement\FleetMaintenance\IServiceService.cs" />
     <Compile Include="FleetManagement\FleetMaintenance\IServiceSpareService.cs" />
     <Compile Include="FleetManagement\FleetMaintenance\IServiceToolService.cs" />
@@ -94,7 +96,9 @@
     <Compile Include="FleetManagement\FleetMaintenance\OutsourceMaintenanceService.cs" />
     <Compile Include="FleetManagement\FleetMaintenance\PlannerService.cs" />
     <Compile Include="FleetManagement\FleetMaintenance\RepairTypeService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\ServiceCenterJobService.cs" />
     <Compile Include="FleetManagement\FleetMaintenance\ServiceCrewService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\ServiceJobOrderDetailService.cs" />
     <Compile Include="FleetManagement\FleetMaintenance\ServiceService.cs" />
     <Compile Include="FleetManagement\FleetMaintenance\ServiceSpareService.cs" />
     <Compile Include="FleetManagement\FleetMaintenance\ServiceToolService.cs" />

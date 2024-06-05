@@ -1,0 +1,13 @@
+﻿
+@(Html.Kendo().DropDownListFor(m=>m)
+.AutoBind(false)
+    .ValuePrimitive(true)
+    .OptionLabel("Select")
+      .DataTextField("Name")
+      .DataValueField("Id")
+      .Events(ev=>ev.Change("onChangeSubCategoryName"))
+      .DataSource(d => d.Read(r =>
+    r.Action("GetEquipmentSubCategoryNames", "FleetManagementDataProvider")
+.Data("filterFixedAssetSubCategroryNames")
+)
+.ServerFiltering(false)))

@@ -17,7 +17,7 @@ using ExceedERP.Core.Domain.FleetManagement;
 
 namespace ExceedERP.Reporting.Fleet.DataSource
 {
-     [DataObject]
+    [DataObject]
     public class RentTimeSheetDataSource
     {
         ExceedDbContext db = new ExceedDbContext();

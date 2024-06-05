@@ -1,7 +1,11 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
 {
@@ -9,15 +13,14 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
     {
         public Guid RequestedEquipmentId { get; set; }
         public Guid RequestNumber { get; set; }
-        public Guid EquipmentID { get; set; }
+        public Guid EquipmentIdentityID { get; set; }
+        [Display(Name ="Equipment Type")]
+        public Guid EquipmentTypeID { get; set; }
+        [Display(Name ="Equipment Name")]
+        public Guid? EquipmentNameId { get; set; } // Added
         [Required]
         public int Quantity { get; set; }
         public string ManufacturedYear { get; set; }
-        [Required]
-        public string EquipmentName { get; set; }
-            [DisplayName(" Equipment Name")]
-        [Required]
-        public string SubEquipmentName { get; set; }
         [Required]
         [DisplayName("Start Date")]
         [DataType(DataType.Date)]
@@ -32,16 +35,26 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? AssignedDate { get; set; }
         public DateTime? RequestedDate { get; set; }
-        [Required]
-        public string Type { get; set; }
-
-        public string CategoryRef { get; set; }
+        [DisplayName("Number (Hour / Km)")]
+        public string NumberHourPerKm { get; set; }
+        [DisplayName("Destination")]
+        public string Destination { get; set; }
+        [DisplayName("Number of Persons/Ton")]
+        public string NumberofPersonOrTon { get; set; }
         [DisplayName("Equipment Status")]
         public string EquipmentStatus { get; set; }
         public string RequestDesc { get; set; }
-
+        [DisplayName("Number Hour/KM")]
+        public string NumberHourKM { get; set; }
+        [DisplayName("Number sof Persons/ton")]
+        public string NumberofPersonston { get; set; }
+        [DisplayName("Remarks")]
+        public string Remarks { get; set; }
         public enum EquipmentStatusenum { New, Good, NeverMind }
         public bool IsAssigned { get; set; }
+
+        public int VehicleDemandId { get; set; } // r/nship with VehicleDemand
+
 
     }
 }

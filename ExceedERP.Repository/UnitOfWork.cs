@@ -4,7 +4,6 @@ using System;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.FleetManagement.FuelManagement;
 using ExceedERP.Core.Domain.FleetManagement.EquipmentInspection;
-using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetSalvageStore;
 using ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent;
 
@@ -18,6 +17,7 @@ using ExceedERP.Core.Domain.HRM;
  using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using System.Threading.Tasks;
+using ExceedERP.Core.Domain.Maintenance;
 
 namespace ExceedERP.Repository
 {
@@ -135,7 +135,7 @@ namespace ExceedERP.Repository
         {
             get { return InsuranceRepo ?? (InsuranceRepo = new GenericRepository<FleetInsurance>(_context)); }
 
-      
+
         }
         private IGenericRepository<Operator> OperatorRepo { get; set; }
 
@@ -180,8 +180,8 @@ namespace ExceedERP.Repository
             get { return EquipmentPlanandEvaluationsRepo ?? (EquipmentPlanandEvaluationsRepo = new GenericRepository<EquipmentPlanandEvaluations>(_context)); }
 
         }
-        #endregion 
-        
+        #endregion
+
         #region Fleet Equipment Rent
         private IGenericRepository<RentCustomerFeedBack> RentCustomerFeedBackRepo { get; set; }
 
@@ -198,15 +198,15 @@ namespace ExceedERP.Repository
 
         }
 
-        private IGenericRepository<RentOtherSuppliers> RentOtherSuppliersRepo { get; set; }
-        public IGenericRepository<RentOtherSuppliers> RentOtherSuppliersRepository
+        private IGenericRepository<RentToExternal> RentOtherSuppliersRepo { get; set; }
+        public IGenericRepository<RentToExternal> RentOtherSuppliersRepository
         {
-            get { return RentOtherSuppliersRepo ?? (RentOtherSuppliersRepo = new GenericRepository<RentOtherSuppliers>(_context)); }
+            get { return RentOtherSuppliersRepo ?? (RentOtherSuppliersRepo = new GenericRepository<RentToExternal>(_context)); }
 
         }
 
         private IGenericRepository<RentRequest> RentRequestRepo { get; set; }
-      
+
         public IGenericRepository<RentRequest> RentRequestRepository
         {
             get { return RentRequestRepo ?? (RentRequestRepo = new GenericRepository<RentRequest>(_context)); }
@@ -224,10 +224,17 @@ namespace ExceedERP.Repository
 
         #region Fleet Maintenance 
         private IGenericRepository<JobOrder> JobOrderRepo { get; set; }
-      
+
         public IGenericRepository<JobOrder> JobOrderRepository
         {
             get { return JobOrderRepo ?? (JobOrderRepo = new GenericRepository<JobOrder>(_context)); }
+
+        }
+        private IGenericRepository<ServiceCenterJob> ServiceCenterJobRepo { get; set; }
+
+        public IGenericRepository<ServiceCenterJob> ServiceCenterJobRepository
+        {
+            get { return ServiceCenterJobRepo ?? (ServiceCenterJobRepo = new GenericRepository<ServiceCenterJob>(_context)); }
 
         }
         private IGenericRepository<JobStoreRequisition> JobStoreRequisitionRepo { get; set; }
@@ -257,15 +264,21 @@ namespace ExceedERP.Repository
             get { return JobOrderDetailRepo ?? (JobOrderDetailRepo = new GenericRepository<JobOrderDetail>(_context)); }
 
         }
+        private IGenericRepository<JobOrderServiceCenterDetail> JobOrderServiceCenterDetailRepo { get; set; }
+        public IGenericRepository<JobOrderServiceCenterDetail> JobOrderServiceCenterDetailRepository
+        {
+            get { return JobOrderServiceCenterDetailRepo ?? (JobOrderServiceCenterDetailRepo = new GenericRepository<JobOrderServiceCenterDetail>(_context)); }
+
+        }
         private IGenericRepository<MaintenanceTool> MaintenanceToolRepo { get; set; }
-       
+
         public IGenericRepository<MaintenanceTool> MaintenanceToolRepository
         {
             get { return MaintenanceToolRepo ?? (MaintenanceToolRepo = new GenericRepository<MaintenanceTool>(_context)); }
 
         }
         private IGenericRepository<MechanicCrew> MechanicCrewRepo { get; set; }
-       
+
         public IGenericRepository<MechanicCrew> MechanicCrewRepository
         {
             get { return MechanicCrewRepo ?? (MechanicCrewRepo = new GenericRepository<MechanicCrew>(_context)); }
@@ -273,7 +286,7 @@ namespace ExceedERP.Repository
         }
 
 
-       
+
         private IGenericRepository<MaintenanceCenter> MaintenanceCenterRepo { get; set; }
 
         public IGenericRepository<MaintenanceCenter> MaintenanceCenterRepository
@@ -291,7 +304,7 @@ namespace ExceedERP.Repository
         }
 
         private IGenericRepository<OtherCompanyMaintenance> OtherCompanyMaintenanceRepo { get; set; }
-       
+
         public IGenericRepository<OtherCompanyMaintenance> OtherCompanyMaintenanceRepository
         {
             get { return OtherCompanyMaintenanceRepo ?? (OtherCompanyMaintenanceRepo = new GenericRepository<OtherCompanyMaintenance>(_context)); }
@@ -299,7 +312,7 @@ namespace ExceedERP.Repository
         }
 
         private IGenericRepository<Planner> PlannerRepo { get; set; }
-   
+
         public IGenericRepository<Planner> PlannerRepository
         {
             get { return PlannerRepo ?? (PlannerRepo = new GenericRepository<Planner>(_context)); }
@@ -307,14 +320,14 @@ namespace ExceedERP.Repository
         }
 
         private IGenericRepository<Service> ServiceRepo { get; set; }
-   
+
         public IGenericRepository<Service> ServiceRepository
         {
             get { return ServiceRepo ?? (ServiceRepo = new GenericRepository<Service>(_context)); }
 
         }
         private IGenericRepository<SparePart> SparePartRepo { get; set; }
-   
+
         public IGenericRepository<SparePart> SparePartRepository
         {
             get { return SparePartRepo ?? (SparePartRepo = new GenericRepository<SparePart>(_context)); }
@@ -352,13 +365,13 @@ namespace ExceedERP.Repository
         #region Salvage Store
 
         private IGenericRepository<Cannibalization> CannibalizationRepo { get; set; }
-   
+
         public IGenericRepository<Cannibalization> CannibalizationRepository
         {
             get { return CannibalizationRepo ?? (CannibalizationRepo = new GenericRepository<Cannibalization>(_context)); }
         }
         private IGenericRepository<SalvageStore> SalvageStoreRepo { get; set; }
-   
+
         public IGenericRepository<SalvageStore> SalvageStoreRepository
         {
             get { return SalvageStoreRepo ?? (SalvageStoreRepo = new GenericRepository<SalvageStore>(_context)); }
@@ -374,29 +387,29 @@ namespace ExceedERP.Repository
         #region Tire 
 
         private IGenericRepository<TireIssue> TireIssueRepo { get; set; }
-   
+
         public IGenericRepository<TireIssue> TireIssueRepository
         {
             get { return TireIssueRepo ?? (TireIssueRepo = new GenericRepository<TireIssue>(_context)); }
-    
+
         }
         private IGenericRepository<TireReturn> TireReturnRepo { get; set; }
-   
+
         public IGenericRepository<TireReturn> TireReturnRepository
         {
             get { return TireReturnRepo ?? (TireReturnRepo = new GenericRepository<TireReturn>(_context)); }
-    
+
         }
         #endregion
 
         #region Fuel
 
         private IGenericRepository<Fuel> FuelRepo { get; set; }
-   
+
         public IGenericRepository<Fuel> FuelRepository
         {
             get { return FuelRepo ?? (FuelRepo = new GenericRepository<Fuel>(_context)); }
-    
+
         }
         #endregion
 
@@ -512,7 +525,6 @@ namespace ExceedERP.Repository
 
 
 
-
         public IGenericRepository<DisposalAndReplacementApproval> DisposalAndReplacementApprovalRepository
         {
             get { throw new NotImplementedException(); }
@@ -538,7 +550,7 @@ namespace ExceedERP.Repository
             get { throw new NotImplementedException(); }
         }
 
-        public IGenericRepository<RentOtherSupplierApproval> RentOtherSupplierApprovalRepository
+        public IGenericRepository<RentToExternalApproval> RentOtherSupplierApprovalRepository
         {
             get { throw new NotImplementedException(); }
         }

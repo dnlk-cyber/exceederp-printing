@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 
 namespace ExceedERP.Reporting.Fleet.DataSource
 {
@@ -28,8 +29,8 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             List<FuelConsumptionSummary> FuelConsumptionList = new List<FuelConsumptionSummary>();
             List<Branch> Branchs = db.Branch.ToList();
             List<FuelItemSetting> FuelItemSettings = db.FuelItemSettings.ToList();
-            List<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Fleets> Fleets = new List<Core.Domain.FleetManagement.FleetRegistration.Fleets>();
-            var Assets = db.AssetRegistrations.ToList();
+            List<Fleets> Fleets = new List<Fleets>();
+            //var Assets = db.AssetRegistrations.ToList();
 
             FleetReportHelper FleetReportHelper = new FleetReportHelper();
             #region for ShardedDataSource
@@ -43,11 +44,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             {
                 Name = organization.TradeName;
                 AmharicName = organization.AmharicName;
-                var address =
-                    db.Addresses.Where(
-                        a =>
-                            a.Reference == organization.MainCompanyId.ToString() &&
-                            a.ReferenceType.ToLower() == "company").ToList();
+                var address = db.Addresses.Where(a =>a.Reference == organization.MainCompanyId.ToString() && a.ReferenceType.ToLower() == "company").ToList();
                 if (address.Any())
                 {
                     foreach (var a in address)
@@ -65,8 +62,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     }
 
                 }
-                var logo =
-                    db.Attachments.FirstOrDefault(a => a.Reference == organization.MainCompanyId.ToString() &&
+                var logo = db.Attachments.FirstOrDefault(a => a.Reference == organization.MainCompanyId.ToString() &&
                             a.ReferenceType == ExceedERP.Core.Domain.Common.AttachmentType.LOGO);
                 if (logo != null)
                 {
@@ -83,22 +79,12 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             {
                 if (!string.IsNullOrEmpty(type))
                 {
-                    Fleets =
-                        Fleets.Where(
-                            so =>
-                                so.EquipmentIdentityID.ToString() == category &&
-                                so.EquipmentTypeID.ToString() == type)
-                            .ToList();
+                    Fleets = Fleets.Where(so =>so.EquipmentIdentityID.ToString() == category && so.EquipmentTypeID.ToString() == type).ToList();
                 }
                 else
                 {
 
-                    Fleets =
-                                          Fleets.Where(
-                                              so =>
-
-                                                  so.EquipmentIdentityID.ToString() == category)
-                                              .ToList();
+                    Fleets = Fleets.Where( so =>so.EquipmentIdentityID.ToString() == category).ToList();
                 }
 
             }
@@ -141,21 +127,13 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             {
                 Branchs = Branchs.Where(x => x.BranchId.ToString() == Location).ToList();
             }
-
-
-
             if (!Fleets.Any())
             {
-                Fleets.Add(new Core.Domain.FleetManagement.FleetRegistration.Fleets { PlateNumber = string.Empty });
+                Fleets.Add(new Fleets { PlateNumber = string.Empty });
             }
-
             List<Fuel> FuelConsumptionTemp = new List<Fuel>();
-
-
             List<IssueItem> OwnedFuelConsumptions = new List<IssueItem>();
             List<IssueItem> RentalFuelConsumptions = new List<IssueItem>();
-
-
             foreach (var Branch in Branchs)
             {
 

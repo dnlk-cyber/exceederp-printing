@@ -15,7 +15,7 @@
     .Name("grid")
     .Columns(columns =>
     {
-    columns.Bound(e => e.FleetReturnId).Width(100);
+        columns.Bound(e => e.FleetReturnId).Width(100);
 
         columns.Bound(e => e.PlateNo).Width(100);
         columns.Bound(e => e.EquipmentName).Width(100);
@@ -42,10 +42,13 @@
                               .Scrollable()
                               .Sortable()
                               .Filterable()
-                              .Groupable()
+                              // .Groupable()
                               .Scrollable(h => h.Height(500))
                                            .ClientDetailTemplateId("template")
-                                        .Groupable().Events(ev => { ev.DetailExpand("onDetailExpandUser"); ev.DataBound("onDataBound"); })
+                                      .Events(ev => {
+                                          ev.DetailExpand("onDetailExpandUser");
+                                          ev.DataBound("onDataBound");
+                                      })
 
                               .DataSource(dataSource => dataSource
         .Ajax()

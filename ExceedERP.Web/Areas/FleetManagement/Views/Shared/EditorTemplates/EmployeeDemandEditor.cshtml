@@ -1,0 +1,11 @@
+﻿
+@(Html.Kendo().DropDownListFor(model => model)
+            .HtmlAttributes(new { @class = "form-control" })
+            .AutoBind(false)
+            .DataTextField("Name")
+            .ValuePrimitive(true)
+            .DataValueField("Id")
+            .OptionLabel("Select")
+            .Filter("contains")
+            .Events(e => e.Change("handleEmployeeChange"))
+            .BindTo((IEnumerable)ViewData["Employee"]))

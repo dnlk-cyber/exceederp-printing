@@ -4,7 +4,6 @@ using System;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.FleetManagement.FuelManagement;
 using ExceedERP.Core.Domain.FleetManagement.EquipmentInspection;
-using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetSalvageStore;
 using ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent;
 using ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation;
@@ -17,6 +16,7 @@ using ExceedERP.Core.Domain.HRM;
  using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using System.Threading.Tasks;
+using ExceedERP.Core.Domain.Maintenance;
 
 namespace ExceedERP.Repository
 {
@@ -57,20 +57,20 @@ namespace ExceedERP.Repository
         #region 2 - Fleet Equipment Rent
         IGenericRepository<RentCustomerFeedBack> RentCustomerFeedBackRepository { get; }
         IGenericRepository<RentInternalProject> RentInternalProjectRepository { get; }
-        IGenericRepository<RentOtherSuppliers> RentOtherSuppliersRepository { get; }
+        IGenericRepository<RentToExternal> RentOtherSuppliersRepository { get; }
         IGenericRepository<RentRequest> RentRequestRepository { get; }
         IGenericRepository<RentFromExternal> RentFromExternalRepository { get; }
         IGenericRepository<RentFromExternalApproval> RentFromExternalApprovalRepository { get; }
 
         IGenericRepository<RentForInternalApproval> RentForInternalApprovalRepository { get; }
-      //  IGenericRepository<RentFromExternalApproval> RentFromExternalApprovalRepository { get; }
-        IGenericRepository<RentOtherSupplierApproval> RentOtherSupplierApprovalRepository { get; }
+        //  IGenericRepository<RentFromExternalApproval> RentFromExternalApprovalRepository { get; }
+        IGenericRepository<RentToExternalApproval> RentOtherSupplierApprovalRepository { get; }
         IGenericRepository<RentRequestApproval> RentRequestApprovalRepository { get; }
-     
+
         #endregion
 
         #region 5 - Fleet Maintenance
-        IGenericRepository<JobStoreRequisition> JobStoreRequisitionRepository { get; } 
+        IGenericRepository<JobStoreRequisition> JobStoreRequisitionRepository { get; }
         IGenericRepository<JobOrder> JobOrderRepository { get; }
         IGenericRepository<JobOrderDetail> JobOrderDetailRepository { get; }
         IGenericRepository<MaintenanceTool> MaintenanceToolRepository { get; }
@@ -89,7 +89,7 @@ namespace ExceedERP.Repository
         IGenericRepository<OtherCompanyMaintenaceApproval> OtherCompanyMaintenaceApprovalRepository { get; }
         IGenericRepository<OutsourceMaintenanceApproval> OutsourceMaintenanceApprovalRepository { get; }
         IGenericRepository<TechnicalJobApproval> TechnicalJobApprovalRepository { get; }
-     
+
         #endregion
 
         #region 6 - Fleet Salvage Store
@@ -127,7 +127,7 @@ namespace ExceedERP.Repository
         IGenericRepository<VehicleDistribution> VehicleDistributionRepository { get; }
         IGenericRepository<VehicleReturn> VehicleReturnRepository { get; }
 
-#endregion
+        #endregion
 
         void Save();
         bool SaveChanges();

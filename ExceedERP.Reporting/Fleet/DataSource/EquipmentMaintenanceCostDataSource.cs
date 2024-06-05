@@ -14,8 +14,6 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Fleet.ViewModel;
 using ExceedERP.Helpers.Fleet;
 using ExceedERP.Reporting.SharedDataSources;
-using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
-using ExceedERP.Helpers.Fleet;
 
 namespace ExceedERP.Reporting.Fleet.DataSource
 {
@@ -27,15 +25,15 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public  List<MaintenaceCostViewModel> GetMaintenanceCost(DateTime StartingDate, DateTime EndingDate, string EquipmentType, string Project, string EquipmentCategory, string EquipmentName, string status, string PlateNo, string Model, string ChasisNo, string serialNo)
+        public List<MaintenaceCostViewModel> GetMaintenanceCost(DateTime StartingDate, DateTime EndingDate, string EquipmentType, string Project, string EquipmentCategory, string EquipmentName, string status, string PlateNo, string Model, string ChasisNo, string serialNo)
         {
             FleetCostHelper FleetCostHelper = new FleetCostHelper();
             FleetReportHelper FleetReportHelper = new FleetReportHelper();
             List<MaintenaceCostViewModel> MaintenaceCostList = new List<MaintenaceCostViewModel>();
-            var Issues = FleetReportHelper.GetInventoryIssue(x=>x.DateCreated >= StartingDate && x.DateCreated <= EndingDate);
+            var Issues = FleetReportHelper.GetInventoryIssue(x => x.DateCreated >= StartingDate && x.DateCreated <= EndingDate);
             var InventorySparePartMappings = db.InventorySparePartMapping.ToList();
             List<EquipmentIdentity> EquipmentTypes = db.EquipmentIdentity.ToList();
- 
+
             GLPeriod Periods = new GLPeriod();
             EquipmentIdentity Type = new EquipmentIdentity();
             List<Fleets> Equipments = db.Fleets.ToList();
@@ -43,7 +41,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
 
 
-             #region for ShardedDataSource
+            #region for ShardedDataSource
             string AmharicName = "";
             string Name = "";
             string Address = "";
@@ -86,56 +84,56 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             }
             #endregion
 
-            Equipments = Equipments.FilterFleet(EquipmentCategory, EquipmentType,EquipmentName, PlateNo, ChasisNo, serialNo, string.Empty, Project, Model);
+            Equipments = Equipments.FilterFleet(EquipmentCategory, EquipmentType, EquipmentName, PlateNo, ChasisNo, serialNo, string.Empty, Project, Model);
 
 
-         var   JobOrders = db.JobOrder.Where(x => x.DateCreated >= StartingDate && x.DateCreated <= EndingDate).ToList();
-
- 
-
-                foreach (var Equipment in Equipments)
-                {
-                  
-                    var Orders = JobOrders.Where(x => x.FleetsID == Equipment.FleetsID || x.EquipmentNo == Equipment.PlateNumber).ToList();
-                    var Jobrequests = db.JobRequest.Where(x => x.FleetsID == Equipment.FleetsID && x.DateCreated >= StartingDate && x.DateCreated <= EndingDate).ToList();
-                   foreach (var Jobrequest in Jobrequests)
-                {
-                    var order = db.JobOrder.Where(x => x.Referance == Jobrequest.Num).FirstOrDefault();
-                       if(order!= null)
-                       {
-                           Orders.Add(order);
-                       }
-                   } 
-                    
-                    var MaintenaceCostViewModel = new MaintenaceCostViewModel();
-                  
+            var JobOrders = db.JobOrder.Where(x => x.DateCreated >= StartingDate && x.DateCreated <= EndingDate).ToList();
 
 
 
-                            MaintenaceCostViewModel.BatteryRepairCost =   FleetCostHelper.GetEquipmentSpareCost(Orders, InventorySparePartMappings,Core.Domain.FleetManagement.SpareType.Battery);
-                            MaintenaceCostViewModel.OilRepairCost =   FleetCostHelper.GetEquipmentSpareCost(Orders, InventorySparePartMappings, Core.Domain.FleetManagement.SpareType.Oil_Lubricant);
-                            MaintenaceCostViewModel.OtherRepairCost =   FleetCostHelper.GetEquipmentSpareCost(Orders, InventorySparePartMappings, Core.Domain.FleetManagement.SpareType.Other);
-                            MaintenaceCostViewModel.SpareRepairCost =   FleetCostHelper.GetEquipmentSpareCost(Orders, InventorySparePartMappings, Core.Domain.FleetManagement.SpareType.Spare);
-                            MaintenaceCostViewModel.TyreRepairCost =   FleetCostHelper.GetEquipmentSpareCost(Orders,  InventorySparePartMappings, Core.Domain.FleetManagement.SpareType.Tyre);
-                             MaintenaceCostViewModel.LabourCost = FleetCostHelper.GetLabourCost(Orders);
+            //foreach (var Equipment in Equipments)
+            //{
 
-                            MaintenaceCostViewModel.EquipmentCategory = Equipment.EquipmentIdentity.EquipmentCategoryName;
-                            MaintenaceCostViewModel.EquipmentType = Equipment.EquipmentType.EquipmentTypeName;
-                            MaintenaceCostViewModel.AssetCode = Equipment.UnitNum;
-                            MaintenaceCostViewModel.PlateNo = Equipment.PlateNumber;
-                             MaintenaceCostViewModel.AmharicName = AmharicName;
-                             MaintenaceCostViewModel.Name = Name;
-                             MaintenaceCostViewModel.LogoFileName = LogoFileName;
-                             MaintenaceCostViewModel.Address = Address;
+            //    var Orders = JobOrders.Where(x => x.FleetsID == Equipment.FleetsID || x.EquipmentNo == Equipment.PlateNumber).ToList();
+            //    var Jobrequests = db.JobRequest.Where(x => x.FleetsID == Equipment.FleetsID && x.DateCreated >= StartingDate && x.DateCreated <= EndingDate).ToList();
+            //    foreach (var Jobrequest in Jobrequests)
+            //    {
+            //        var order = db.JobOrder.Where(x => x.Referance == Jobrequest.Num).FirstOrDefault();
+            //        if (order != null)
+            //        {
+            //            Orders.Add(order);
+            //        }
+            //    }
 
-                                MaintenaceCostList.Add(MaintenaceCostViewModel);
-                        }
-            
+            //    var MaintenaceCostViewModel = new MaintenaceCostViewModel();
 
 
 
 
- 
+            //    MaintenaceCostViewModel.BatteryRepairCost = FleetCostHelper.GetEquipmentSpareCost(Orders, InventorySparePartMappings, Core.Domain.FleetManagement.SpareType.Battery);
+            //    MaintenaceCostViewModel.OilRepairCost = FleetCostHelper.GetEquipmentSpareCost(Orders, InventorySparePartMappings, Core.Domain.FleetManagement.SpareType.Oil_Lubricant);
+            //    MaintenaceCostViewModel.OtherRepairCost = FleetCostHelper.GetEquipmentSpareCost(Orders, InventorySparePartMappings, Core.Domain.FleetManagement.SpareType.Other);
+            //    MaintenaceCostViewModel.SpareRepairCost = FleetCostHelper.GetEquipmentSpareCost(Orders, InventorySparePartMappings, Core.Domain.FleetManagement.SpareType.Spare);
+            //    MaintenaceCostViewModel.TyreRepairCost = FleetCostHelper.GetEquipmentSpareCost(Orders, InventorySparePartMappings, Core.Domain.FleetManagement.SpareType.Tyre);
+            //    MaintenaceCostViewModel.LabourCost = FleetCostHelper.GetLabourCost(Orders);
+
+            //    MaintenaceCostViewModel.EquipmentCategory = Equipment.EquipmentIdentity.EquipmentCategoryName;
+            //    MaintenaceCostViewModel.EquipmentType = Equipment.EquipmentType.EquipmentTypeName;
+            //    MaintenaceCostViewModel.AssetCode = Equipment.UnitNum;
+            //    MaintenaceCostViewModel.PlateNo = Equipment.PlateNumber;
+            //    MaintenaceCostViewModel.AmharicName = AmharicName;
+            //    MaintenaceCostViewModel.Name = Name;
+            //    MaintenaceCostViewModel.LogoFileName = LogoFileName;
+            //    MaintenaceCostViewModel.Address = Address;
+
+            //    MaintenaceCostList.Add(MaintenaceCostViewModel);
+            //}
+
+
+
+
+
+
 
             if (!MaintenaceCostList.Any())
             {

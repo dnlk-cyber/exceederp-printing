@@ -1,0 +1,13 @@
+﻿@using System.Collections
+<div class="k-d-flex k-justify-content-center">
+
+    @(Html.Kendo().DropDownListFor(m => m)
+                                    .OptionLabel("Select")
+                                    .DataTextField("Name")
+                                    .DataValueField("Id")
+                                    .Filter("contains")
+                                    .HtmlAttributes(new { style = "width: 100%;" })
+                                    .BindTo((IEnumerable)ViewData["Employee"])
+                                    .ValuePrimitive(true)
+    )
+</div>

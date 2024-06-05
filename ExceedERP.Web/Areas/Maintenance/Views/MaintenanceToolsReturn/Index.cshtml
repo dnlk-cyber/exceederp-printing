@@ -1,0 +1,88 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Maintenance tool Return Log  </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.MaintenanceToolIssueAndReturn>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(e => e.MechanicCrewID, (System.Collections.IEnumerable)ViewData["MechanicCrews"], "Code", "Name");
+            columns.ForeignKey(e => e.MaintenanceToolID, (System.Collections.IEnumerable)ViewData["MeaintenanceTools"], "MaintenanceToolID", "ToolsName");
+            columns.Bound(e => e.IssuedQuantity);
+            columns.Bound(e => e.IssueDate);
+            columns.Bound(e => e.ReturnDate);
+            columns.Bound(e => e.Remark);
+
+            columns.Command(command => { command.Edit().Text("Return").IconClass("fa fa-share").UpdateText("Save"); }).Width(200);
+        })
+        //.ToolBar(commands => commands.Create())
+        .Editable(editable =>
+        {
+            editable.Mode(GridEditMode.InLine);
+            editable.DisplayDeleteConfirmation("Are You Sure You Want to  Delete this Log ?");
+        })
+        .Excel(excel => excel
+                            .FileName("Maintenance Tools Issue Export.xlsx")
+                            //.Filterable(true)
+                            .AllPages(true)
+                            .ProxyURL(Url.Action("Excel_Export_Save", "MaintenanceToolsIssue", new { area = "FleetManagement" }))
+                            )
+        .Events(ev => {
+            ev.DataBound("GridDataBound");
+        })
+        .HtmlAttributes(new { style = "height: 700px;" })
+        .Pageable(pageable => pageable
+                        .Input(false)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(false)
+                        .ButtonCount(5))
+
+            .Scrollable()
+            .Sortable()
+            .Filterable()
+            .Scrollable(h => h.Height(500))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .ServerOperation(false)
+                    .Model(model =>
+                    {
+                        model.Id(p => p.MaintenanceToolIssueAndReturnId);
+                        model.Field(f => f.MechanicCrewID).Editable(false);
+                        model.Field(f => f.MaintenanceToolID).Editable(false);
+                        model.Field(f => f.IssuedQuantity).Editable(false);
+                        model.Field(f => f.IssueDate).Editable(false);
+                    }).Events(ev => ev
+                                .Error("error_handler(\"grid\")")
+                                .RequestStart("onRequestStart(\"grid\")")
+                                .RequestEnd("onRequestEnd(\"grid\")"))
+                    .Read(read => read.Action("Tools_Read", "MaintenanceToolIssueAndReturn"))
+                    //.Create(create => create.Action("Tool_Create", "MaintenanceToolIssueAndReturn"))
+                    .Update(update => update.Action("Tool_Return", "MaintenanceToolIssueAndReturn"))
+        //.Destroy(update => update.Action("Tool_Destroy", "MaintenanceToolIssueAndReturn"))
+        )
+)
+
+<script type="text/javascript">
+    function GridDataBound(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            if (dataItem.Status == 1) {
+                //row.addClass("highlighted-row");
+                row.find(".k-grid-edit").hide();
+                //row.find(".k-grid-delete").hide();
+
+                //row.find(".btn-equipment-information").show();
+            } else {
+                //row.find(".k-grid-CustomCmdSelect").show();
+            }
+        }
+    }
+</script>
+

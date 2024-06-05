@@ -1,0 +1,6 @@
+﻿
+
+@(Html.Kendo().DropDownList().Name("Status")
+      .DataTextField("Name")
+          .DataValueField("Name").Filter(FilterType.Contains)
+                  .DataSource(d => d.Read(r => r.Action("ServiceStatusDDBind", "MaintenanceDataProvider")).ServerFiltering(false)))

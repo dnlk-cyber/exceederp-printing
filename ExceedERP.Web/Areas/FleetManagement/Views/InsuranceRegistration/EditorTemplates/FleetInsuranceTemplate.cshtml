@@ -1,0 +1,148 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Core.Domain.Finance.AP
+@using ExceedERP.Helpers
+@model  ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsurance
+@using ExceedERP.Helpers.Common
+
+
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.FleetsID, "Fleet Name", htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.FleetsID)
+                    .OptionLabel("Select Fleet")
+                    .DataTextField("Name")
+                    .DataValueField("Id")
+                    
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetFleetForInsurance", "FleetManagementDataProvider", new { Area = "FleetManagement" }).Data("filterFleet"))
+                        .ServerFiltering(true);
+                    })
+                    .Filter("contains")
+                    .MinLength(2)
+                    .ValuePrimitive(true).HtmlAttributes(new { style="width:100%"})
+                )
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.ExpireDate, htmlAttributes: new { @class = "control-label col-sm-2", style="width:100%" })
+            <div>
+                @Html.Kendo().DatePickerFor(model => model.ExpireDate).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+   
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.InsuranceCompanyId, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.InsuranceCompanyId)
+                                        .OptionLabel("Select Insurance")
+                                        .DataTextField("InsuranceCompanyName")
+                                        .DataValueField("InsuranceCompanyId")
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetInsuranceCompany", "FleetManagementDataProvider", new { Area = "FleetManagement" }))
+                                            .ServerFiltering(false);
+                                        })
+                                        .Filter("contains")
+                                        .MinLength(2)
+                                        .ValuePrimitive(true).HtmlAttributes(new { style = "width:100%" })
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.InsuranceType, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.InsuranceType)
+                                                .Name("Source")
+                                                .DataTextField("Text")
+                                                .DataValueField("Value")
+
+                                                .Filter(FilterType.Contains)
+                                                .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsuranceTypeEnum)))
+                                                .Events(ev =>
+                                                {
+                                                    ev.Change("handleInsuranceTypeChange");
+                                                    ev.DataBound("handleInsuranceTypeChange");
+                                                }).HtmlAttributes(new { style = "width:100%" })
+                )
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.DueDate, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().DatePickerFor(model => model.DueDate).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.ThirdPartyInsurance, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.ThirdPartyInsurance).HtmlAttributes(new { style = "width:100%", onInput = "handleThirdPartyInsuranceChange(this.value)" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.ComprehensiveInsurance, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.ComprehensiveInsurance).HtmlAttributes(new { style = "width:100%", onInput = "handleChange(this.value)" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.PremiumCost, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.PremiumCost).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Attachment, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.Attachment).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.PolicyNo, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.PolicyNo).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.Description).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+</div>

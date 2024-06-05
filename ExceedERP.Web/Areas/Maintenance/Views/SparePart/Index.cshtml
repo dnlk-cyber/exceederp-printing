@@ -1,0 +1,93 @@
+﻿
+@{
+    ViewBag.Title = "Spare Part";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Spare Parts & Materials</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.SparePart>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.Category).Width(140);
+        columns.Bound(e => e.SparePartName).Width(140);
+        //columns.Bound(e => e.Quantity).Width(140);
+        columns.Bound(e => e.PartNo).Width(200);
+        //columns.Bound(e => e.ReceiptNo).Width(200);
+        columns.Bound(e => e.UnitPrice).Width(200);
+   
+        columns.Command(command =>
+        {
+            command.Edit(); command.Destroy(); }).Width(250);
+        })
+       .ToolBar(toolbar => toolbar.Create())
+          .Editable(editable =>
+          {
+              editable.Window(w => w.Title("Spare Part"));
+              editable.Mode(GridEditMode.PopUp).TemplateName("SparePartEditor");
+              editable.DisplayDeleteConfirmation("Are You Sure To Remove Spare Part");
+          }).HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Scrollable(h => h.Height(500))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+        .Group(g=>g.Add(p=>p.Category))
+        .Model(model =>
+              {
+                  model.Id(p => p.SparePartID);
+               
+              }).Events(ev => ev
+                                                            .Error("error_handler(\"grid\")")
+                                                            .RequestStart("onRequestStart(\"grid\")")
+                                                            .RequestEnd("onRequestEnd(\"grid\")")) 
+                .Create(update => update.Action("SparePart_Create", "SparePart"))
+                .Read(read => read.Action("SparePart_Read", "SparePart"))
+                .Update(update => update.Action("SparePart_Update", "SparePart"))
+                .Destroy(update => update.Action("SparePart_Destroy", "SparePart"))
+  )
+)
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+
+
+
+
+
+<script type="text/javascript">
+
+    function BindPrice() {
+
+        var Fleetsobj = $("#PartNo").data("kendoDropDownList");
+        var fleetID = Fleetsobj.value();
+        $.ajax({
+            url: '@Url.Action("GetSparePrice", "FleetDataProvider")',
+            data: { Id: fleetID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                
+             
+                    $("#UnitPrice").val(r);
+
+                 
+            }
+
+        });
+    }
+</script>

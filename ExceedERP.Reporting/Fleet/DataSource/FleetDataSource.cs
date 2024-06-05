@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.FixedAsset;
+using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Fleet;
@@ -19,10 +19,10 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> GetIdentities()
+        public List<FleetBindingHelper.HelperObject> GetIdentities()
         {
 
-            var result = db.EquipmentIdentity.Select(e => new ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject
+            var result = db.EquipmentIdentity.Select(e => new FleetBindingHelper.HelperObject
             {
 
                 Name = e.EquipmentCategoryName,
@@ -35,10 +35,10 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
         }
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> GetAssetCode()
+        public List<FleetBindingHelper.HelperObject> GetAssetCode()
         {
 
-            var result = db.Fleets.Select(e => new ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject
+            var result = db.Fleets.Select(e => new FleetBindingHelper.HelperObject
             {
 
                 Name = e.UnitNum,
@@ -52,44 +52,53 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> GetEquipmentNames()
+        public List<FleetBindingHelper.HelperObject> GetEquipmentNames()
         {
-            List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> List = new List<FleetBindingHelper.HelperObject>();
+            List<FleetBindingHelper.HelperObject> List = new List<FleetBindingHelper.HelperObject>();
             var EquipmentTypes = db.Fleets.DistinctByField(x => x.EquipmentName).ToList();
 
 
             return EquipmentTypes.Select(s => new FleetBindingHelper.HelperObject { ParentValue = s.EquipmentName, Name = s.EquipmentName }).ToList();
 
         }
+        
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> GetEquipmentName()
+        public List<FleetBindingHelper.HelperObject> GetEquipmentName()
         {
-            List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> List = new List<FleetBindingHelper.HelperObject>();
-            var EquipmentTypes = db.EquipmentType.ToList();
-            foreach (var EquipmentType in EquipmentTypes)
+            List<FleetBindingHelper.HelperObject> List = new List<FleetBindingHelper.HelperObject>();
+            var equipmentTypes = db.EquipmentType.ToList();
+            foreach (var equipmentType in equipmentTypes)
             {
-                var FixedAssetCategory = db.FixedAssetCategories.Where(x => x.FixedAssetCategoryID == EquipmentType.FixedAssetCategoryID).FirstOrDefault();
-                if (FixedAssetCategory != null)
+              
+                var FixedAssets = db.FixedAssetSubCategories.Where(x => x.FixedAssetSubCategoryID == equipmentType.FixedAssetSubCategoryId).ToList();
+                foreach (var FixedAsset in FixedAssets)
                 {
-                    var FixedAssets = db.FixedAssetSubCategories.Where(x => x.CategoryCode == FixedAssetCategory.CategoryCode).ToList();
-                    foreach (var FixedAsset in FixedAssets)
-                    {
-                        List.Add(new FleetBindingHelper.HelperObject { ParentValue = EquipmentType.EquipmentTypeID.ToString(), Name = FixedAsset.SubCategoryName });
-                    }
+                    List.Add(new FleetBindingHelper.HelperObject { ParentValue = equipmentType.EquipmentTypeID.ToString(), Name = FixedAsset.SubCategoryName });
                 }
             }
 
             return List;
 
         }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<FleetBindingHelper.HelperObject> GetEquipmentNamesFixed()
+        {
+            List<FleetBindingHelper.HelperObject> List = new List<FleetBindingHelper.HelperObject>();
+            var result = db.EquipmentName.Select(s => new FleetBindingHelper.HelperObject
+            {
+                Name = s.Name,
+                Value = s.EquipmentNameID.ToString()
+            }).ToList();
+            return result;
 
+        }
 
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> GetCategory()
+        public List<FleetBindingHelper.HelperObject> GetCategory()
         {
 
-            var result = db.EquipmentType.Select(e => new ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject
+            var result = db.EquipmentType.Select(e => new FleetBindingHelper.HelperObject
             {
                 ParentValue = e.EquipmentIdentityID.ToString(),
                 Name = e.EquipmentTypeName,
@@ -102,14 +111,14 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
         }
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> GetFleetStatus()
+        public List<FleetBindingHelper.HelperObject> GetFleetStatus()
         {
 
-            List<Helpers.Fleet.FleetBindingHelper.HelperObject> result = new List<Helpers.Fleet.FleetBindingHelper.HelperObject>
+            List<FleetBindingHelper.HelperObject> result = new List<FleetBindingHelper.HelperObject>
             {
-                new Helpers.Fleet.FleetBindingHelper.HelperObject { Name = FleetViewModel.ACTIVE },
-                new Helpers.Fleet.FleetBindingHelper.HelperObject { Name = FleetViewModel.ONDUTY },
-                new Helpers.Fleet.FleetBindingHelper.HelperObject { Name = FleetViewModel.OnMaintenance }
+                new FleetBindingHelper.HelperObject { Name = FleetViewModel.ACTIVE },
+                new FleetBindingHelper.HelperObject { Name = FleetViewModel.ONDUTY },
+                new FleetBindingHelper.HelperObject { Name = FleetViewModel.OnMaintenance }
             };
 
             return result;
@@ -117,10 +126,10 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> GetPlateNumber()
+        public List<FleetBindingHelper.HelperObject> GetPlateNumber()
         {
 
-            var result = db.Fleets.DistinctByField(x => x.PlateNumber).Select(e => new ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject
+            var result = db.Fleets.DistinctByField(x => x.PlateNumber).Select(e => new FleetBindingHelper.HelperObject
             {
 
                 Name = e.PlateNumber,
@@ -135,10 +144,10 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> GetSerialNo()
+        public List<FleetBindingHelper.HelperObject> GetSerialNo()
         {
 
-            var result = db.Fleets.DistinctByField(x => x.SerialNo).Select(e => new ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject
+            var result = db.Fleets.DistinctByField(x => x.SerialNo).Select(e => new FleetBindingHelper.HelperObject
             {
 
                 Name = e.SerialNo,
@@ -153,10 +162,10 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> GetChasisNumber()
+        public List<FleetBindingHelper.HelperObject> GetChasisNumber()
         {
 
-            var result = db.Fleets.DistinctByField(x => x.ChasisNumber).Select(e => new ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject
+            var result = db.Fleets.DistinctByField(x => x.ChasisNumber).Select(e => new FleetBindingHelper.HelperObject
             {
 
                 Name = e.ChasisNumber,
@@ -172,10 +181,10 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> GetModelNo()
+        public List<FleetBindingHelper.HelperObject> GetModelNo()
         {
 
-            var result = db.Fleets.DistinctByField(x => x.Model).Select(e => new ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject
+            var result = db.Fleets.DistinctByField(x => x.Model).Select(e => new FleetBindingHelper.HelperObject
             {
 
                 Name = e.Model,
@@ -189,10 +198,10 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
         }
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> GetProductionYear()
+        public List<FleetBindingHelper.HelperObject> GetProductionYear()
         {
 
-            var result = db.Fleets.Select(e => new ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject
+            var result = db.Fleets.Select(e => new FleetBindingHelper.HelperObject
             {
 
                 Name = e.ManufacturerYear,
@@ -206,10 +215,10 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
         }
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject> GetCondition()
+        public List<FleetBindingHelper.HelperObject> GetCondition()
         {
 
-            var result = db.FleetConditions.Select(e => new ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject
+            var result = db.FleetConditions.Select(e => new FleetBindingHelper.HelperObject
             {
 
                 Name = e.Name,
@@ -336,8 +345,9 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
                 foreach (var f in Fleets.Where(x => x.IsExternal == false && x.IsReturned == false))
                 {
-
-
+                    var equipmentName = db.EquipmentName.FirstOrDefault(x => x.EquipmentNameID == f.EquipmentNameID);
+                    var equipmentIdentity = db.EquipmentIdentity.FirstOrDefault(x => x.EquipmentIdentityID == f.EquipmentIdentityID);
+                    var equipmentType = db.EquipmentType.FirstOrDefault(x => x.EquipmentTypeID == f.EquipmentTypeID);
                     FleetViewModel = new FleetViewModel
                     {
                         Id = RowCount,
@@ -345,9 +355,10 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         CurentOdoMeter = f.CurentOdoMeter,
                         PurchasingCost = f.BookValue,
                         AnnualDepreciationCost = f.AnnualDepreciationCost,
-                        ChasisNumber = f.ChasisNumber.IfNullDefaultValue() + " / " + f.SerialNo.IfNullDefaultValue(),
+                        //ChasisNumber = f.ChasisNumber.IfNullDefaultValue() + " / " + f.SerialNo.IfNullDefaultValue(),
+                        ChasisNumber = f?.ChasisNumber ?? "Not Assigned",
                         EngineNumber = f.EngineNumber,
-                        EquipmentName = f.EquipmentName,
+                        EquipmentName = equipmentName?.Name ?? "Not Assigned",
                         Manufacturer = f.Manufacturer,
                         ManufacturerYear = f.ManufacturerYear,
                         PlateNumber = f.PlateNumber,
@@ -356,7 +367,34 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         UnitNum = f.UnitNum,
 
                         Model = f.Model,
-                        Status = f.Status
+                        Status = f.Status,
+
+                        OperatorName = f.OperatorName,
+                        PurchasedDate = f.PurchasedDate,
+                        RentalRate = f.RentalRate,
+                        SupplierCompany = f.SupplierCompany,
+                        SerialNo = f.SerialNo,
+                        Type = f.Type,
+                        Tyre = f.Tyre,
+                        TyreSize = f.TyreSize,
+                        WayOfSupply = f.WayOfSupply,
+                        Battery = f.Battery,
+                        Capacity = f.Capacity,
+                        Category = f.Category,
+                        Condition = f.Condition,
+                        Color = f.Color,
+                        DepreciationCost = f.DepreciationCost,
+                        EngineManufacturer = f.EngineManufacturer,
+                        EngineModel = f.EngineModel,
+                        EquipmentIdentityName = equipmentIdentity?.EquipmentCategoryName ?? "",
+                        EquipmentTypeName = equipmentType?.EquipmentTypeName ?? "",
+                        MaxFuelStandard = f.MaxFuelStandard,
+                        MinFuelStandard = f.MinFuelStandard,
+                        IdealRentalRate = f.IdealRentalRate,
+                        Libre = f.Libre,
+                        
+
+
                     };
 
 

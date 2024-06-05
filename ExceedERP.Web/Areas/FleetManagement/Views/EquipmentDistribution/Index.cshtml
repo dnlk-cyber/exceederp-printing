@@ -1,5 +1,9 @@
 ﻿@model ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleDistribution
- 
+@using System.Collections
+@using ExceedERP.Core.Domain.Finance.AP.Travel
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Inventory
 <legend> Equipment Distribution </legend>
 
 
@@ -31,368 +35,1188 @@
 </script>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleDistribution>()
-      .Name("grid")
-      .Columns(columns =>
-      {
-
-          columns.Bound(e => e.RequestNumber).Title(" Num").Width(50);
-          columns.Bound(e => e.Type).Width(100);
-          columns.Bound(e => e.FromBranchName).Title("Location").Width(100);
-          columns.Bound(e => e.FromStructureName).Width(100);
-          columns.Bound(e => e.Status).Width(100);
-          columns.Bound(o => o.DistrubtionNumber).Title("Referance").Width(80);
-          columns.Command(command => { @* command.Destroy().Text("Finish Assignment");*@ }).Width(10);
-
-
-      })
-           .ToolBar(commands =>
-                  {
-                      commands.Create(); commands.Excel();
-                      commands.Pdf();
-                  }).Editable(editable =>
-          {
-              editable.Mode(GridEditMode.PopUp).TemplateName("VehicleDistributionEditor").Window(x => x.Title("Equipment Distribution"));
-              editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Distribution");
-          })
-              .Events(e => e.DataBound("dataBound"))
-           .HtmlAttributes(new { style = "height: 520px;" })
-                      .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(5))
-
-                            .Scrollable()
-                            .Sortable()
-                            .Filterable()
-                             .Scrollable(h => h.Height(500))
-      .ClientDetailTemplateId("template")
-        .Events(ev => ev.DetailExpand("onDetailExpand"))
-      .DataSource(dataSource => dataSource
-          .Ajax()
-          .ServerOperation(false)
-          .Sort(x => x.Add(s => s.RequestNumber).Descending())
-          .Model(model =>
-              {
-                  model.Id(p => p.VehicleDistributionID);
-
-              })
-                        .Events(ev => ev
-                                            .Error("error_handler(\"grid\")")
-                                            .RequestStart("onRequestStart(\"grid\")")
-                                            .RequestEnd("onRequestEnd(\"grid\")"))
-          .Create(update => update.Action("VehicleDistribution_Create", "EquipmentDistribution"))
-          .Read(read => read.Action("VehicleDistribution_Read", "EquipmentDistribution"))
-          .Update(update => update.Action("VehicleDistribution_Update", "EquipmentDistribution"))
-          .Destroy(update => update.Action("VehicleDistribution_Destroy", "EquipmentDistribution"))
-      )
-
+                    .Name("grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(e => e.RequestNumber).Title(" Request Number").Width(70);
+                        columns.ForeignKey(e => e.EmployeeId, (System.Collections.IEnumerable)ViewData["Employee"], "Id", "Name").Width(130);
+                        columns.Bound(e => e.FromBranchName).Title("Branch").Width(100);
+                        columns.Bound(e => e.FromStructureName).Title("Department").Width(100);
+                        columns.Bound(e => e.ReasonForTravel).Width(120);
+                        columns.Bound(e => e.RequestDate).Title("Assign Date").Width(100);
+                        columns.Bound(e => e.Status).Width(100);
+                        columns.Bound(o => o.DistrubtionNumber).Title("Referance").Width(80);
+                        columns.Bound(o => o.Num).Visible(false);
+                        columns.Command(command =>
+                        { @* command.Destroy().Text("Finish Assignment");*@ }).Width(10);
+                            })
+                                                                .ToolBar(commands =>
+                                                                {
+                                                                    commands.Create();
+                                                                }).Editable(editable =>
+                                                                {
+                                                                    editable.Mode(GridEditMode.PopUp).TemplateName("VehicleDistributionEditor").Window(x => x.Title("Equipment Distribution"));
+                                                                    editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Distribution");
+                                                                })
+                                                                .Events(e => e.DataBound("dataBound"))
+                                                                .HtmlAttributes(new { style = "height: 520px;" })
+                                                                            .Pageable(pageable => pageable
+                                                                                .Input(true)
+                                                                                .Numeric(false)
+                                                                                .Refresh(true)
+                                                                                .PageSizes(true)
+                                                                                .ButtonCount(5))
+                                                                                .Scrollable()
+                                                                                .Sortable()
+                                                                                .Filterable()
+                                                                                .Scrollable(h => h.Height(500))
+                                                            .ClientDetailTemplateId("template")
+                                                            .Events(ev => ev.DetailExpand("onDetailExpand"))
+                                                            .DataSource(dataSource => dataSource
+                                                                .Ajax()
+                                                                .ServerOperation(false)
+                                                                .Sort(x => x.Add(s => s.RequestNumber).Descending())
+                                                                .Model(model =>
+                                                                {
+                                                                    model.Id(p => p.VehicleDistributionID);
+                                                                })
+                                                                .Events(ev => ev
+                                                                .Error("error_handler(\"grid\")")
+                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+                                                                .Create(update => update.Action("VehicleDistribution_Create", "EquipmentDistribution"))
+                                                                .Read(read => read.Action("VehicleDistribution_Read", "EquipmentDistribution"))
+                                                                .Update(update => update.Action("VehicleDistribution_Update", "EquipmentDistribution"))
+                                                                .Destroy(update => update.Action("VehicleDistribution_Destroy", "EquipmentDistribution"))
+                                                            )
 )
-
-
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
                                             .Name("tabStrip_#=VehicleDistributionID#")
-            .SelectedIndex(0)
-            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-            .Items(items =>
-            {
-      items.Add().Text("Detail").Content(
-                        @<text>
-                            <legend>Detail</legend>
+                                            .SelectedIndex(0)
+                                            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                            .Items(items =>
+                                            {
+                                                items.Add().Text("Detail").Content(
+                                                @<text>
+                                                    <legend>Detail</legend>
 
-                            <div class="box">
+                                                    <div class="box">
 
-                                <div class="box-col">
-                                    <a href='@Url.Action("EquipmentDistribution", "FleetPrint")/?Id=#=VehicleDistributionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                                        <div class="box-col">
+                                                            #if(IsOnlineApproved)
+                                                            {#
 
-                                    # if (IsSendForApproval == false || IsSendForApproval == "false")
-                                    {#
-
-                                    <a href='@Url.Action("VehicleDistribution_SendForOnlineApproval", "VehicleDistributionApproval")/?EId=#=VehicleDistributionID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                    # }#
-                                </div>
-                            </div> 
-                            <div class="demo-section k-header export-app">
-                                <div class="demo-section content-wrapper">
-
-                                    <form>
-
-                                  <button type="button" class="btn btn-primary">Duration <span class="badge"> #=Remark#</span></button>
-
-                                        <div class="row">
-                                            <div class="col-md-1">
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.CreatedBy)
+                                                            <a href='@Url.Action("EquipmentDistribution", "FleetPrint")/?Id=#=VehicleDistributionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                                            #}#
+                                                            # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                                            {#
+                                                            <a onclick='return sendForApprovalDistribution("#=VehicleDistributionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                            @*<a href='@Url.Action("VehicleDistribution_SendForOnlineApproval", "VehicleDistributionApproval")/?EId=#=VehicleDistributionID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>*@
+                                                            # }#
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        #=CreatedBy#
+                                                    <button type="button" class="btn btn-primary">Duration <span class="badge"> #=Remark#</span></button>
 
+                                                    <div class="row">
+                                                        <div class="col-md-1">
+                                                        </div>
+                                                        <div class="col-md-6" style="margin-top:20px;">
+                                                            <ul>
+                                                                <li>
+                                                                    @Html.LabelFor(model => model.CreatedBy):<span>#=CreatedBy#</span>
+                                                                </li>
+                                                                <li>
+                                                                    @Html.LabelFor(model => model.DateCreated):<span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
+                                                                </li>
+                                                                <li>
+                                                                    @Html.LabelFor(model => model.ModifiedBy):<span>#=ModifiedBy#</span>
+                                                                </li>
+                                                                <li>
+                                                                    @Html.LabelFor(model => model.LastModified):<span>#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy')#</span>
+                                                                </li>
+                                                            </ul>
+
+
+
+
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.DateCreated)
-                                                    </div>
-                                                    <div>
-                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                </text>
+                                                                            ); items.Add().Text("Requests ").Content(@<text>
+                                                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.RequestedEquipment>()
+                                                                                                                                    .Name("RequestEquipmentgrid_#=RequestID#")
+                                                                                                                                    .Columns(columns =>
+                                                                                                                                    {
+                                                                                                                                                columns.ForeignKey(e => e.EquipmentIdentityID, (System.Collections.IEnumerable)ViewData["EquipmentCategories"], "Id", "Name").EditorTemplateName("EquipmentCategoryEditor").Title("Equipment Category").Width(140);
+                                                                                                                                                columns.ForeignKey(e => e.EquipmentTypeID, (System.Collections.IEnumerable)ViewData["EquipmentTypes"], "Id", "Name").EditorTemplateName("EquipmentTypeEditor").Title("Equipment Type").Width(140);
+                                                                                                                                                columns.ForeignKey(e => e.EquipmentNameId, (System.Collections.IEnumerable)ViewData["EquipmentName"], "Id", "Name").EditorTemplateName("EquipmentNameEditorTemplate").Title("Equipment Name").Width(140);
 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                       
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.ModifiedBy)
-                                                    </div>
-                                                    <div>
-
-                                                        #=ModifiedBy#
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                       
-                                                    <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.LastModified)
-                                                    </div>
-                                                    <div>
-                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                          
-                                        </div>
-
-                                    </form>
-
-                                </div>
-                            </div>
-
-
-
-                        </text>
-
-
-            ); items.Add().Text("Requests ").Content(@<text>
-                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.RequestedEquipment>()
-                                                        .Name("RequestEquipmentgrid_#=RequestID#")
-                        .Columns(columns =>
-                        {
-
-                            columns.Bound(o => o.Type).EditorTemplateName("EquipmentType").Title(" Category ").Width(100);
-                            columns.Bound(o => o.EquipmentName).Title("Type").EditorTemplateName("EquipmentSubTypeEditor").Width(120);
-
-                            columns.Bound(o => o.SubEquipmentName).Title("Name").EditorTemplateName("RequestEquipmentName").Width(120);
-                            columns.Bound(o => o.ManufacturedYear).EditorTemplateName("ManfacturedYearEditor").Width(80);
-                            columns.Bound(o => o.Quantity).EditorTemplateName("Integer").Width(80);
-                            columns.Bound(o => o.StartDate).Width(80);
-                            columns.Bound(o => o.EndDate).Width(80);
-
-                            columns.Command(command => { command.Edit(); }).Width(150);
-
-                        }) 
-                                            .Editable(editable =>
-                {
-                    editable.Mode(GridEditMode.InLine);
-                    editable.DisplayDeleteConfirmation("Are You Sure To Remove Request Equipment");
-                }).Events(e => e.DataBound("requestonDataBound"))//
-                        .DataSource(dataSource => dataSource
-                            .Ajax()
-                                           .PageSize(5)
-                             .Model(model => model.Id(p => p.RequestedEquipmentId))
-                                          .Events(ev => ev
-                                                    .Error("error_handler(\"RequestEquipmentgrid_#=RequestID#\")")
-                                                    .RequestStart("onRequestStart(\"RequestEquipmentgrid_#=RequestID#\")")
-                                                    .RequestEnd("onRequestEnd(\"RequestEquipmentgrid_#=RequestID#\")"))
-                                                                                                                                    .Create(update => update.Action("RequestEquipment_Create", "AssignedEquipment", new { createRequestNumber = "#=RequestID#", createType = "NORMAL" }))
+                                                                                                                                    //columns.Bound(o => o.ManufacturedYear).EditorTemplateName("ManfacturedYearEditor").Width(80);
+                                                                                                                                    columns.Bound(o => o.Quantity).EditorTemplateName("Integer").Width(80);
+                                                                                                                                                columns.Bound(o => o.StartDate).Width(80);
+                                                                                                                                                columns.Bound(o => o.EndDate).Width(80);
+                                                                                                                                                columns.Bound(o => o.Destination).Width(80);
+                                                                                                                                                columns.Bound(o => o.NumberHourPerKm).Width(80);
+                                                                                                                                                columns.Bound(o => o.NumberofPersonOrTon).Width(80);
+                                                                                                                                                columns.Bound(o => o.Remarks).Width(80);
+                                                                                                                                                columns.Bound(o => o.VehicleDemandId).Visible(false);
+                                                                                                                                                columns.Command(command => { command.Edit(); }).Width(150);
+                                                                                                                                            })
+                                                                                                                                        .Editable(editable =>
+                                                                                                                                        {
+                                                                                                                                                    editable.Mode(GridEditMode.InLine);
+                                                                                                                                                    editable.DisplayDeleteConfirmation("Are You Sure To Remove Request Equipment");
+                                                                                                                                                }).Events(e => e.DataBound("requestonDataBound").DetailExpand("onAssignmentDetailExpand"))//
+                                                                                                                                    .DataSource(dataSource => dataSource
+                                                                                                                                        .Ajax()
+                                                                                                                                            .PageSize(5)
+                                                                                                                                            .Model(model => model.Id(p => p.RequestedEquipmentId))
+                                                                                                                                            .Events(ev => ev
+                                                                                                                                            .Error("error_handler(\"RequestEquipmentgrid_#=RequestID#\")")
+                                                                                                                                            .RequestStart("onRequestStart(\"RequestEquipmentgrid_#=RequestID#\")")
+                                                                                                                                            .RequestEnd("onRequestEnd(\"RequestEquipmentgrid_#=RequestID#\")"))
+                                                                                                                                            .Create(update => update.Action("RequestEquipment_Create", "AssignedEquipment", new { createRequestNumber = "#=RequestID#", createType = "NORMAL" }))
                                                                                                                                             .Read(read => read.Action("RequestedViewEquipment", "AssignedEquipment", new { readRequestNumber = "#=RequestID#", readType = "NORMAL" }))
-                                                                                           .Update(update => update.Action("AssignedEquipment_Update", "AssignedEquipment"))
-                                                                            .Destroy(destroy => destroy.Action("AssignedEquipment_Destroy", "AssignedEquipment"))
-                        )
-                        .Sortable()
-                        .ToClientTemplate())
-                </text>
-                );
-
-                
-                items.Add().Text("Assign Equipment").Content(@<text>
-                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.AssignedEquipment>()
-                                                                .Name("AssignedConfirmedEquipmentgrid_#=RequestID#")
-                        .Columns(columns =>
-                        {
-                            columns.Bound(o => o.CategoryRef).Title(" Request ").EditorTemplateName("AssignmentBind").Width(110);
-
-                            columns.Bound(o => o.EquipmentName).EditorTemplateName("AssignEquipment").Width(100);
-
-                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(50);
-
-                        })
-                                              .Events(e => e.DataBound("dataBoundAssign"))
-                        .ToolBar(t => t.Create())
-                      .DataSource(dataSource => dataSource
-                            .Ajax()
-
-                            .PageSize(5)
-                                 .Model(model =>
-                      {
-                          model.Id(p => p.AssignedEquipmentID);
-                          model.Field(p => p.EquipmentName).Editable(true);
-                      })
-                                  .Events(ev => ev
-                                                            .Error("error_handler(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")")
-                                                            .RequestStart("onRequestStart(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")")
-                                                            .RequestEnd("onRequestEnd(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")"))
-                                                               .Create(update => update.Action("AssignedEquipment_Create", "AssignedEquipment", new { createRequestNumber = "#=RequestID#", createType = "R", Id = "#=VehicleDistributionID#" }))
-                            .Update(update => update.Action("AssignEquipment", "AssignedEquipment"))
-                                                    .Read(read => read.Action("AllEquipment", "AssignedEquipment", new { readRequestNumber = "#=RequestID#", type = "R" }))
-                                                                                            .Destroy(destroy => destroy.Action("Assignment_Destroy", "AssignedEquipment"))
-                             )
-                        .Sortable()
-                        .ToClientTemplate())
-                </text>
-                );
-
-                items.Add().Text(" Approval").Content(@<text>
-                  
-                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleDistributionApproval>()
-                                                                                                                .Name("VehicleDistributionApproval#=VehicleDistributionID#")
-                        .Columns(columns =>
-                        {
-                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
-
-                            columns.Bound(o => o.Remark).Width(200);
-                            columns.Bound(c => c.CreatedBy).Width(150);
-                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
-                            columns.Command(command => { command.Edit(); }).Width(250);
-
-                        }).Events(ev =>
-                        {
-                            ev.DataBound("approveonDataBound");
-                        })
-                             .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                       .DataSource(dataSource => dataSource
-                            .Ajax()
-                            .PageSize(5)
-                                                      .Model(model =>
-                              {
-                                  model.Id(p => p.VehicleDistributionApprovalID);
-                                  model.Field(p => p.CreatedBy).Editable(false);
-                                  model.Field(p => p.DateCreated).Editable(false);
-                              })
-                                                                                .Events(ev => ev
-                                                            .Error("error_handler(\"VehicleDistributionApproval#=VehicleDistributionID#\")")
-                                                            .RequestStart("onRequestStart(\"VehicleDistributionApproval#=VehicleDistributionID#\")")
-                                                            .RequestEnd("onRequestEnd(\"VehicleDistributionApproval#=VehicleDistributionID#\")"))
-                                                                                                                                   .Create(update => update.Action("VehicleDistribution_Approve", "VehicleDistributionApproval", new { EId = "#=VehicleDistributionID#" }))
-                                                                                                                                     .Read(read => read.Action("VehicleDistributionApproval_Read", "VehicleDistributionApproval", new { EId = "#=VehicleDistributionID#" }))
-                                                                                                                           .Update(update => update.Action("VehicleDistribution_Approve", "VehicleDistributionApproval"))
+                                                                                                                                            .Update(update => update.Action("AssignedEquipment_Update", "AssignedEquipment"))
+                                                                                                                                            .Destroy(destroy => destroy.Action("AssignedEquipment_Destroy", "AssignedEquipment"))
+                                                                                                                                    )
+                                                                                                                                    .Sortable()
+                                                                                                                                    .ClientDetailTemplateId("assignedItems")
+                                                                                                                                    .ToClientTemplate())
+                                                                            </text>
+                                                                                                                );
 
 
-                                                      )
-                                               .ToClientTemplate())
-                </text>
-                );
 
+                                                               
+                                                                        items.Add().Text("Travel Order").Content(@<text>@ApTravelOrder()</text>);
+                                                                                items.Add().Text("Fuel Requesition").Content(@<text>@FuelReqisition()</text>);
+                                                                                items.Add().Text("Approval").Content(@<text>@Approval()</text>);
 
-            })
-                                                                                                                                                                                                                                                            .ToClientTemplate())
+                                                                                    })
+
+                                                                                                                                                                                        .ToClientTemplate())
 </script>
 
-<script>
+@helper Approval()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleDistributionApproval>()
+    .Name("VehicleDistributionApproval#=RequestID#")
+    .Columns(columns =>
+    {
+        columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+
+        columns.Bound(o => o.Remark).Width(200);
+        columns.Bound(c => c.CreatedBy).Width(150);
+        columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+        columns.Command(command => { command.Edit(); }).Width(250);
+    }).ToolBar(toolbar => toolbar.Create()).Events(ev =>
+    {
+        ev.DataBound("approveonDataBound");
+    })
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(5)
+        .Model(model =>
+        {
+            model.Id(p => p.VehicleDistributionApprovalID);
+            model.Field(p => p.CreatedBy).Editable(false);
+            model.Field(p => p.DateCreated).Editable(false);
+        })
+        .Events(ev => ev
+        .Error("error_handler(\"VehicleDistributionApproval#=RequestID#\")")
+        .RequestStart("onRequestStart(\"VehicleDistributionApproval#=RequestID#\")")
+        .RequestEnd("onRequestEnd(\"VehicleDistributionApproval#=RequestID#\")"))
+        .Create(update => update.Action("VehicleDistribution_Approve", "VehicleDistributionApproval", new { EId = "#=VehicleDistributionID#" }))
+        .Read(read => read.Action("VehicleDistributionApproval_Read", "VehicleDistributionApproval", new { EId = "#=VehicleDistributionID#" }))
+        .Update(update => update.Action("VehicleDistribution_Approve", "VehicleDistributionApproval"))
+        )
+        .ToClientTemplate())
+}
+<script id="assignedItems" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                    .Name("tabStrip_#=RequestedEquipmentId#")
+                                                    .SelectedIndex(0)
+                                                    .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                                    .Items(items =>
+                                                    {
+                                                        items.Add().Text("Assign Equipment").Content(@<text>
+                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.AssignedEquipment>()
+                                                            .Name("AssignedConfirmedEquipmentgrid_#=RequestedEquipmentId#")
+                                                            .Columns(columns =>
+                                                            {
+                                                                columns.ForeignKey(e => e.EquipmentNameID, (System.Collections.IEnumerable)ViewData["EquipmentNames"], "Id", "Name").EditorTemplateName("EquipmentNameEditor").Title("Equipment Name").Width(140);
+                                                                columns.ForeignKey(e => e.FleetId, (System.Collections.IEnumerable)ViewData["FleetsAssignedEquip"], "Id", "Name").EditorTemplateName("FleetEditor").Title("Plate No").Width(140);
+                                                                columns.ForeignKey(e => e.OperatorId, (System.Collections.IEnumerable)ViewData["Operators"], "Id", "Name").EditorTemplateName("OperatorNameEditorDist").Title("Operator Name").Width(140);
+                                                                columns.Bound(o => o.StartOdometr).Width(120);
+                                                                columns.Bound(o => o.EndOdometer).Width(120);
+                                                                columns.Bound(o => o.NetOdometer).Width(120);
+                                                                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                                            })
+                                                            .Events(e => e.DataBound("dataBoundAssign").Edit("onEditGetParentRowId"))
+                                                            .Events(e => e.DetailExpand("assignedEquipDetailExpand"))
+                                                            .ToolBar(t => t.Create())
+                                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                            .DataSource(dataSource => dataSource
+                                                                .Ajax()
+                                                                .PageSize(5)
+                                                                .Model(model =>
+                                                                {
+                                                                            model.Id(p => p.AssignedEquipmentID);
+                                                                            model.Field(p => p.EquipmentNameID).Editable(true);
+                                                                        })
+                                                                .Events(ev => ev
+                                                                                .Error("error_handler(\"AssignedConfirmedEquipmentgrid_#=RequestedEquipmentId#\")")
+                                                                                .RequestStart("onRequestStart(\"AssignedConfirmedEquipmentgrid_#=RequestedEquipmentId#\")")
+                                                                                .RequestEnd("onRequestEnd(\"AssignedConfirmedEquipmentgrid_#=RequestedEquipmentId#\")"))
+                                                                                .Create(update => update.Action("AssignedEquipment_Create", "AssignedEquipment", new { Id = "#=RequestedEquipmentId#", createRequestNumber = "#=RequestedEquipmentId#", createType = "R", vDemandId = "#=VehicleDemandId#" }))
+                                                                                //.Update(update => update.Action("AssignEquipment", "AssignedEquipment"))
+                                                                                .Update(update => update.Action("Update", "AssignedEquipment"))
+                                                                                //.Read(read => read.Action("AllEquipment", "AssignedEquipment", new { readRequestNumber = "#=RequestedEquipmentId#", type = "R" }))
+                                                                                .Read(read => read.Action("Equipment_Read", "AssignedEquipment", new { vehicleDemandId = "#=VehicleDemandId#" }))
+                                                                                .Destroy(destroy => destroy.Action("Assignment_Destroy", "AssignedEquipment"))
+                                                                    )
+                                                            .Sortable().ClientDetailTemplateId("assignedItemsAdditional")
+                                                            .ToClientTemplate())
+                        </text>
+                                                            );
+                            }).ToClientTemplate())
+
+</script>
+
+
+<script id="assignedItemsAdditional" type="text/kendo-tmpl">
+
+    @(Html.Kendo().TabStrip()
+                                                                   .Name("tab#=AssignedEquipmentID#")
+                                                                   .SelectedIndex(0)
+                                                                   .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                                                   .Items(itemsAddition =>
+                                                                   {
+                                                                       itemsAddition.Add().Text("Additional Info").Content(@<text>
+
+
+                                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.AssignedEquipmentAdditionalInfo>()
+                                                                                    .Name("AssignedEquipmentAdditionalInfo_#=AssignedEquipmentID#")
+                                                                                    .Columns(columns =>
+                                                                                    {
+
+                                                                                            columns.Bound(o => o.KmTravelledPerLitre).Width(120);
+                                                                                            columns.Bound(o => o.KmTravelledTotal).Width(120);
+                                                                                            columns.Bound(o => o.KmInterSite).Width(120);
+                                                                                            columns.Bound(o => o.KmGrandTotal).Width(120);
+                                                                                            columns.Bound(o => o.TotalInLitre).Width(120);
+                                                                                            columns.Bound(o => o.FromDeppot).Width(120);
+                                                                                            columns.Bound(o => o.InCash).Width(120);
+                                                                                            columns.Bound(o => o.FromProject).Width(120);
+                                                                                            columns.Bound(o => o.OilReqForEngine).Width(120);
+                                                                                            columns.Bound(o => o.OilReqForOther).Width(120);
+                                                                                            columns.Bound(o => o.GreaseReq).Width(120);
+                                                                                            columns.Bound(o => o.TotalBirr).Width(120);
+                                                                                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                                                                        })
+
+                                                                                    .ToolBar(t => t.Create())
+                                                                                    .Events(e => e.Edit("handleEdit"))
+                                                                                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AssignedEquipmentAdditionalInfoTemplate"))
+                                                                                    .DataSource(dataSource => dataSource
+                                                                                        .Ajax()
+                                                                                        .PageSize(5)
+                                                                                        .Model(model =>
+                                                                                        {
+                                                                                                model.Id(p => p.AssignedEquipmentAdditionalInfoId);
+
+                                                                                            })
+                                                                                        .Events(ev => ev
+                                                                                                        .Error("error_handler(\"AssignedEquipmentAdditionalInfo_#=AssignedEquipmentID#\")")
+                                                                                                        .RequestStart("onRequestStart(\"AssignedEquipmentAdditionalInfo_#=AssignedEquipmentID#\")")
+                                                                                                        .RequestEnd("onRequestEnd(\"AssignedEquipmentAdditionalInfo_#=AssignedEquipmentID#\")"))
+                                                                                                        .Read(read => read.Action("AssignedEquipAdditionalInfo_Read", "AssignedEquipmentAdditionalInfo", new { assignedEquipmentId = "#=AssignedEquipmentID#" }))
+                                                                                                        .Create(update => update.Action("AssignedEquipAdditionalInfo_Create", "AssignedEquipmentAdditionalInfo", new { asEquipId = "#=AssignedEquipmentID#" }))
+                                                                                                        .Update(update => update.Action("AssignedEquipAdditionalInfo_Update", "AssignedEquipmentAdditionalInfo"))
+
+
+                                                                                                        .Destroy(destroy => destroy.Action("AssignedEquipAdditionalInfo_Delete", "AssignedEquipmentAdditionalInfo"))
+                                                                                            )
+                                                                                    .Sortable()
+                                                                                    .ToClientTemplate())
+
+                                                                    </text>);
+                                                                        }).ToClientTemplate()
+
+    )
+</script>
+
+
+
+
+
+@helper ApTravelOrder()
+{
+
+
+    @(Html.Kendo().Grid<ApTravelOrder>()
+                                                  .Name("gridApTravelOrder_#=RequestID#")
+                                              .Columns(columns =>
+                                              {
+                                                  //columns.Bound(c => c.ApTravelOrderId).ClientTemplate("#=appendZeros(ApTravelOrderId)#").Width(100).Title("ID");
+                                                  columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(200).EditorTemplateName("EmployeeSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+                                                  columns.ForeignKey(p => p.FromBusinessUnitId, (IEnumerable)ViewData["Structure"], "OrgStructureId", "Name").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
+                                                  columns.ForeignKey(p => p.FromBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
+
+                                                  columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["Structure"], "OrgStructureId", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
+                                                  columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
+                                                  columns.Bound(c => c.PurposeOfTravel).Width(150);
+                                                  columns.Bound(c => c.RequestDate).Width(130);
+                                                  columns.Bound(c => c.TotalDuration).Width(130);
+                                                  columns.Bound(c => c.AdvanceAmount).Width(120);
+                                                  columns.Bound(c => c.TransportReference).Width(150);
+                                                  columns.Bound(c => c.Reference).Width(150);
+                                                  columns.Bound(c => c.Status).Width(90);
+                                                  columns.Command(command => { command.Edit()/*.UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit)*/; command.Destroy()/*.Text(Resources.ActionButton_Cancel)*/; }).Width(190);
+                                              })
+                                              .ToolBar(toolbar =>
+                                              {
+                                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                              })
+
+                                             .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("ExpenseClaim"))//.Window(window => { window.Title(Resources.NavigatorTermination_TerminationRequest); window.Scrollable(false); }))
+                                              .Selectable(selectable =>
+                                              {
+                                                  selectable.Mode(GridSelectionMode.Single);
+                                                  selectable.Type(GridSelectionType.Row);
+                                              })
+                                               //.Events(ev => ev.DetailExpand("detailExpandMasterDepartment"))
+                                               .Events(ev => ev.DetailExpand("detailExpandTravelOrder"))
+                                              //.Events(e => e.Edit("handleOnEdit"))
+                                              .Events(x => x.DataBound("onDataBoundMasterDepartment"))
+                                              .Scrollable(h => h.Height(500))
+
+                                                .Sortable(sortable =>
+                                                {
+                                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                                })
+                                                  .Filterable()
+
+                                                     .Pageable(pageable => pageable
+                                                                                .Input(true)
+                                                                                .Numeric(false)
+                                                                                .Refresh(true)
+                                                                                .PageSizes(true)
+                                                                                .ButtonCount(5))
+                                              .DataSource(dataSource => dataSource
+
+                                                  .Ajax()
+                                                  .Sort(sort => sort.Add("ApTravelOrderId").Descending())
+                                                  .Events(ev => ev
+                                                      .Error("error_handler(\"gridApTravelOrder_#=RequestID#\")")
+                                                      .RequestStart("onRequestStart(\"gridApTravelOrder_#=RequestID#\")")
+                                                      .RequestEnd("onRequestEnd(\"gridApTravelOrder_#=RequestID#\")"))
+                                                  .Model(model =>
+                                                  {
+                                                      model.Id(p => p.ApTravelOrderId);
+
+                                                      model.Field(p => p.ApTravelOrderId).Editable(false);
+                                                      model.Field(p => p.TotalDuration).Editable(false);
+                                                      model.Field(p => p.AdvanceAmount).Editable(false);
+                                                      model.Field(p => p.Status).Editable(false);
+                                                      model.Field(p => p.BranchId).Editable(false);
+                                                      model.Field(p => p.BusinessUnitId).Editable(false);
+                                                      model.Field(p => p.CreatedAtBranchId).Editable(false);
+                                                      model.Field(p => p.CreatedAtBusinessUnitId).Editable(false);
+                                                      model.Field(p => p.OrgStructureId).Editable(false);
+                                                      model.Field(p => p.BranchId).Editable(false);
+                                                      model.Field(p => p.IsForOther).Editable(false);
+                                                      model.Field(p => p.CreatedBy).Editable(false);
+                                                      model.Field(p => p.DateCreated).Editable(false);
+                                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                                      model.Field(p => p.LastModified).Editable(false);
+                                                  })
+                                                          .Read(read => read.Action("TravelOrderRequest_Read", "TravelOrderRequest", new { vdId = "#=VehicleDistributionID#" }))
+                                                          .Create(create => create.Action("TravelOrderRequest_Create", "TravelOrderRequest", new { vdId = "#=VehicleDistributionID#" }))
+                                                          .Update(update => update.Action("TravelOrderRequest_Update", "TravelOrderRequest"))
+                                                          .Destroy(destroy => destroy.Action("TravelOrderRequest_Destroy", "TravelOrderRequest"))
+
+                                                          ).ClientDetailTemplateId("templateTravelOrder").ToClientTemplate()
+    )
+}
+<script id="templateTravelOrder" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                                                  .Name("tabstrip_#=ApTravelOrderId#")
+                                                                          .SelectedIndex(0)
+                                                                          .Items(items =>
+                                                                                  {
+
+                                                                                      items.Add().Text("Detail").Content(
+                                                                @<text>
+                                                                    <p><b>Record Status :#= Status #</b></p>
+                                                                    <a href='@Url.Action("ApTravelOrder", "FinancePrint")/#=ApTravelOrderId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+                                                                    # if (!IsDepartmentOnlineApproved&&!IsDepartmentSendForApproval)
+                                                                    {#
+                                                                    <a onclick='return sendForApprovalTravelOrder("#=ApTravelOrderId#")' href=' \#' title="Send for Department Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                                    <br />
+                                                                    # } #
+
+                                                                    <hr>
+                                                                    <dl class="dl-horizontal">
+
+                                                                        <dt>
+                                                                            No.
+                                                                        </dt>
+                                                                        <dd>
+                                                                            #= ApTravelOrderId #
+                                                                        </dd>
+
+                                                                        <dt>
+                                                                            Date
+                                                                        </dt>
+                                                                        <dd>
+
+                                                                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+
+                                                                        </dd>
+                                                                        <dt>
+                                                                            Status
+                                                                        </dt>
+                                                                        <dd>
+                                                                            #= Status #
+                                                                        </dd>
+                                                                        <dt>
+                                                                            CreatedOn
+                                                                        </dt>
+                                                                        <dd>
+                                                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                                        </dd>
+                                                                        <dt>
+                                                                            CreatedBy
+                                                                        </dt>
+                                                                        <dd>
+                                                                            #= CreatedBy #
+                                                                        </dd>
+                                                                        <dt>
+                                                                            Modified By
+                                                                        </dt>
+                                                                        <dd>
+                                                                            #= ModifiedBy #
+                                                                        </dd>
+                                                                        <dt>
+                                                                            Modified Date
+                                                                        </dt>
+                                                                        <dd>
+                                                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                        </dd>
+                                                                        <dt>
+                                                                            Department Approved On
+                                                                        </dt>
+                                                                        <dd>
+                                                                            #=kendo.toString(kendo.parseDate(DepartmentOnlineApprovedTime), 'dd/MM/yyyy') #
+
+
+                                                                        </dd>
+                                                                        <dt>
+                                                                            Approved By
+                                                                        </dt>
+                                                                        <dd>
+                                                                            #=DepartmentOnlineApprovedBy #
+
+                                                                        </dd>
+
+                                                                        <dt>
+                                                                            Budget Approved On
+                                                                        </dt>
+                                                                        <dd>
+                                                                            #=kendo.toString(kendo.parseDate(BudgetApprovedTime), 'dd/MM/yyyy') #
+
+
+                                                                        </dd>
+                                                                        <dt>
+                                                                            Approved By
+                                                                        </dt>
+                                                                        <dd>
+                                                                            #=BudgetApprovedBy #
+
+                                                                        </dd>
+
+                                                                        <dt>
+                                                                            Finance Approved On
+                                                                        </dt>
+                                                                        <dd>
+                                                                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+
+
+                                                                        </dd>
+                                                                        <dt>
+                                                                            Approved By
+                                                                        </dt>
+                                                                        <dd>
+                                                                            #=OnlineApprovedBy #
+
+                                                                        </dd>
+                                                                    </dl>
+                                                                    # if (!IsDepartmentOnlineApproved)
+                                                                    {#
+                                                                    <dl class="h6">
+                                                                        <dt>
+                                                                            Next Approver
+                                                                        </dt>
+                                                                        <dd>
+                                                                            #= ForwardedTo # <snap id="user_name_display"></snap>
+                                                                            <a onclick='displayUserName("#=ForwardedTo#")' href=' \#' title="Show Name">Show Name<i class="fa fa-user fa-1x"></i></a> |
+                                                                            <a onclick='SelectNextApprover(this,"#=ApTravelOrderId#","TravelOrderSelfCare")' href=' \#' title="Change next approver">Change next approver<i class="fa fa-undo fa-1x"></i></a>
+                                                                            <snap id="new_user_name_display"></snap>
+                                                                        </dd>
+                                                                    </dl>
+                                                                    # } #
+                                                                    <hr>
+
+
+
+                                                                </text>);
+
+                                                                                              items.Add().Text("Advance Payment").Content(
+        @<text>
+
+            @(Html.Kendo().Grid<ApTravelOrderAdvancePayment>()
+                                                                            .Name("TravelOrderAdvancePayment#=ApTravelOrderId#")
+                                                                            .Columns(columns =>
+                                                                            {
+                                                                                        columns.Bound(c => c.Type).Width(70).EditorTemplateName("TravelOrderPaymentType");
+                                                                                        columns.ForeignKey(c => c.ItemName, (IEnumerable)ViewData["ApSetUpItems"], "ApSetupItemId", "Name").EditorTemplateName("ItemName").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                                                                        columns.Bound(c => c.Description).Width(90);
+                                                                                        columns.Bound(c => c.UoM).Width(50);
+                                                                                        columns.Bound(c => c.UnitPrice).Width(60);
+                                                                                        columns.Bound(c => c.Quantity).Width(60);
+                                                                                        columns.Bound(c => c.Total).Width(60).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                                                                            // columns.Bound(c => c.PaymentMethod).Width(130).EditorTemplateName("PaymentMethodSelectorAP");
+
+                                                                            columns.Command(command =>
+                                                                                        {
+                                                                                                    command.Edit();
+                                                                                                    command.Destroy();
+                                                                                                }).Width(280);
+                                                                                    })
+                                                                            .ToolBar(toolbar =>
+                                                                            {
+                                                                                        toolbar.Create();
+
+                                                                                    })
+
+                                                                            .Events(x => x.DataBound("onDataBoundLineDepartment"))
+                                                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                            .Scrollable()
+                                                                            .Selectable()
+                                                                            .DataSource(dataSource => dataSource
+                                                                            .Ajax()
+                                                                            .Aggregates(aggregates =>
+                                                                            {
+                                                                                        aggregates.Add(p => p.Total).Sum();
+                                                                                    })
+                                                                            .Events(ev => ev
+                                                                            .Error("error_handler(\"TravelOrderAdvancePayment#=ApTravelOrderId#\")")
+                                                                            .RequestStart("onRequestStart(\"TravelOrderAdvancePayment#=ApTravelOrderId#\")")
+                                                                            .RequestEnd("onRequestEnd(\"TravelOrderAdvancePayment#=ApTravelOrderId#\")"))
+                                                                            .Model(model =>
+                                                                            {
+                                                                                        model.Id(p => p.ApTravelOrderAdvancePaymentId);
+                                                                                        model.Field(p => p.ApTravelOrderAdvancePaymentId).Editable(false);
+                                                                                        model.Field(p => p.Total).Editable(false);
+
+                                                                                        model.Field(p => p.CreatedBy).Editable(false);
+                                                                                        model.Field(p => p.DateCreated).Editable(false);
+                                                                                        model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                        model.Field(p => p.LastModified).Editable(false);
+
+                                                                                    })
+                                                                            .Read(read => read.Action("TravelOrderAdvancePayments_Read", "TravelOrderAdvancePaymentRequest", new { id = "#=ApTravelOrderId#" }))
+                                                                            .Create(create => create.Action("TravelOrderAdvancePayments_Create", "TravelOrderAdvancePaymentRequest", new { id = "#=ApTravelOrderId#" }))
+                                                                            .Update(update => update.Action("TravelOrderAdvancePayments_Update", "TravelOrderAdvancePaymentRequest", new { id = "#=ApTravelOrderId#" }))
+                                                                            .Destroy(destroy => destroy.Action("TravelOrderAdvancePayments_Destroy", "TravelOrderAdvancePaymentRequest"))
+                                                                            ).ToClientTemplate()
+            )
+
+        </text>
+);
+                                                                                  items.Add().Text("Departure").Content(
+@<text>
+
+    @(Html.Kendo().Grid<ApTravelOrderDeparture>()
+                                                                .Name("TravelOrderDeparture#=ApTravelOrderId#")
+                                                                .Columns(columns =>
+                                                                {
+                                                                            columns.Bound(c => c.Date).Width(130);
+                                                                            columns.Bound(c => c.ArrivalDate).Width(130);
+                                                                            columns.Bound(c => c.Duration).Width(80);
+                                                                //columns.Bound(c => c.Time).Width(120).Format("{0:HH:mm}").EditorTemplateName("Time");
+                                                                columns.Bound(c => c.Type).Width(120).EditorTemplateName("TravelOrderDepartureTypeSelector");
+                                                                            columns.Bound(c => c.From).Width(110);
+                                                                            columns.Bound(c => c.To).Width(110);
+                                                                            columns.Bound(c => c.TransportMode).Width(130);
+                                                                            columns.ForeignKey(p => p.DestinationBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("AllBranchSelector").Width(200);
+                                                                            columns.Bound(c => c.Remark).Width(150);
+
+                                                                            columns.Bound(c => c.CreatedBy).Hidden();
+                                                                            columns.Bound(c => c.DateCreated).Hidden();
+                                                                            columns.Bound(c => c.ModifiedBy).Hidden();
+                                                                            columns.Bound(c => c.LastModified).Hidden();
+                                                                            columns.Command(command =>
+                            {
+                                                    command.Edit();
+                                                    command.Destroy();
+                                                }).Width(180);
+                                                                        })
+                                                                    .ToolBar(toolbar =>
+                                                                    {
+                                                                                toolbar.Create();
+                                                                            })
+
+                                                                    .Events(x => x.DataBound("onDataBoundLineDepartment"))
+                                                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                    .Scrollable()
+                                                                    .Selectable()
+                                                                    .DataSource(dataSource => dataSource
+                                                                        .Ajax()
+                                                                            .Events(ev => ev
+                                                                                .Error("error_handler(\"TravelOrderDeparture#=ApTravelOrderId#\")")
+                                                                                .RequestStart("onRequestStart(\"TravelOrderDeparture#=ApTravelOrderId#\")")
+                                                                                        .RequestEnd("onRequestEnd(\"TravelOrderDeparture#=ApTravelOrderId#\")"))
+                                                                        .Model(model =>
+                                                                        {
+                                                                                    model.Id(p => p.ApTravelOrderDepartureId);
+                                                                                    model.Field(p => p.ApTravelOrderDepartureId).Editable(false);
+                                                                                    model.Field(p => p.Duration).Editable(false);
+
+                                                                                    model.Field(p => p.CreatedBy).Editable(false);
+                                                                                    model.Field(p => p.DateCreated).Editable(false);
+                                                                                    model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                    model.Field(p => p.LastModified).Editable(false);
+
+                                                                                })
+                                                                                        .Read(read => read.Action("TravelOrderDepartures_Read", "TravelOrderDepartureRequest", new { id = "#=ApTravelOrderId#" }))
+                                                                                        .Create(create => create.Action("TravelOrderDepartures_Create", "TravelOrderDepartureRequest", new { id = "#=ApTravelOrderId#" }))
+                                                                                        .Update(update => update.Action("TravelOrderDepartures_Update", "TravelOrderDepartureRequest", new { id = "#=ApTravelOrderId#" }))
+                                                                                        .Destroy(destroy => destroy.Action("TravelOrderDepartures_Destroy", "TravelOrderDepartureRequest"))
+                                                                                    ).ToClientTemplate()
+    )
+
+</text>
+);
+
+                                                                                      items.Add().Text("Validation").Content(
+@<text>
+    @(Html.Kendo().Grid<ApTravelOrderDepartmentValidation>()
+                                        .Name("TravelOrderDepartmentValidationController#=ApTravelOrderId#")
+                                        .Columns(columns =>
+                                        {
+                                                    columns.Bound(c => c.ApTravelOrderDepartmentValidationId).Hidden(true);
+                                                    columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                                    columns.Bound(c => c.Remark).Width(200);
+                                                    columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                    columns.Bound(c => c.LastModified).Hidden(true);
+                                                    columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                                    columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                    columns.Command(command =>
+{
+                    command.Edit();
+
+                });
+
+                                                })
+                                        .ToolBar(toolbar =>
+                                        {
+                                                    toolbar.Create();
+                                                })
+                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                        .Events(x => x.DataBound("onDataBoundValidationDepartment"))
+                                        .Sortable(sortable =>
+                                        {
+                                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                                })
+                                        .Filterable()
+                                        .Scrollable()
+                                        .DataSource(dataSource => dataSource
+                                            .Ajax()
+                                            .Events(ev => ev
+                                                .Error("error_handler(\"TravelOrderDepartmentValidationController#=ApTravelOrderId#\")")
+                                                .RequestStart("onRequestStart(\"TravelOrderDepartmentValidationController#=ApTravelOrderId#\")")
+                                                .RequestEnd("onRequestEnd(\"TravelOrderDepartmentValidationController#=ApTravelOrderId#\")"))
+                                            .Model(
+                                                model =>
+                                                {
+                                                            model.Id(p => p.ApTravelOrderDepartmentValidationId);
+                                                            model.Field(p => p.OrgBranchName).Editable(false);
+                                                            model.Field(p => p.CreatedBy).Editable(false);
+                                                            model.Field(p => p.ModifiedBy).Editable(false);
+                                                            model.Field(p => p.LastModified).Editable(false);
+                                                            model.Field(p => p.DateCreated).Editable(false);
+                                                        })
+
+                                            .Read(read => read.Action("TravelOrderDepartmentValidations_Read", "TravelOrderDepartmentValidation", new { id = "#=ApTravelOrderId#" }))
+                                            .Create(create => create.Action("TravelOrderDepartmentValidations_Create", "TravelOrderDepartmentValidation", new { id = "#=ApTravelOrderId#" }))
+                                            .Update(update => update.Action("TravelOrderDepartmentValidations_Update", "TravelOrderDepartmentValidation", new { id = "#=ApTravelOrderId#" }))
+                                        )
+                                        .ToClientTemplate())
+
+</text>);
+
+
+                                                                                  }).ToClientTemplate())
+</script>
+
+
+
+@helper FuelReqisition()
+{
+    @(Html.Kendo().Grid<StoreRequisition>()
+                      .Name("storeReq_Grid")
+                      .Columns(columns =>
+                      {
+          //columns.Bound(c => c.StoreRequisitionID).Title("Request No.").Width(120).ClientTemplate("#=appendZeros(StoreRequisitionID)#");
+          columns.Bound(c => c.Reference).Title("Reference").Width(120);
+                          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(110).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+                          columns.Bound(c => c.RequestDate).Width(120);
+                          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("Store").Width(160).EditorTemplateName("StoreSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+          //columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" + " />").Width(90);
+          columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoreSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+                          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("AllBranchSelector").Width(200);
+                          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
+
+                          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(160).EditorTemplateName("EmployeeSelector");
+          //columns.Bound(c => c.IsExternalDriver).ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsExternalDriver #' " + " # if (IsExternalDriver) { #" + "checked='checked'" + "# } #" + " />").Width(90);
+          columns.Bound(c => c.ExternalDriver).Width(100);
+          //columns.Bound(c => c.IsForOther).ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsForOther #' " + " # if (IsForOther) { #" + "checked='checked'" + "# } #" + " />").Width(90);
+          columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("AllBranchSelector").Width(200);
+                          columns.Bound(c => c.PlateNo).Width(100);
+                          columns.Bound(c => c.Remark).Width(100);
+                          columns.Bound(c => c.Status).Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(180);
+                      }).Filterable()
+                      .Pageable(pageable => pageable
+                          .Input(true)
+                          .Numeric(false)
+                          .Refresh(true)
+                          .PageSizes(true)
+                          .ButtonCount(5))
+
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+
+                      })
+                      .Events(ev => ev.Edit("onMasterEdit"))
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("StoreRequisition").Window(w => w.Title("Fuel Requisition")))
+                      .HtmlAttributes(new { style = "height: 550px;" })
+                      .Pageable(pageable => pageable
+                          .Input(true)
+                          .Numeric(false)
+                          .Refresh(true)
+                          .PageSizes(true)
+                          .ButtonCount(20))
+                      .Scrollable()
+                      .Sortable()
+                      .Filterable()
+                      .Selectable(selectable =>
+                      {
+                          selectable.Mode(GridSelectionMode.Single);
+                          selectable.Type(GridSelectionType.Row);
+                      })
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+
+                      .Events(ev => ev.DetailExpand("detailExpand"))
+                      .Scrollable(h => h.Height(500))
+                      .Events(x => x.DataBound("onDataBoundMaster"))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Sort(sort => sort.Add("StoreRequisitionID").Descending())
+                          .Events(ev => ev
+                              .Error("error_handler(\"storeReq_Grid\")")
+                              .RequestStart("onRequestStart(\"storeReq_Grid\")")
+                              .RequestEnd("onRequestEnd(\"storeReq_Grid\")"))
+                          .PageSize(20)
+                          .Model(model =>
+                          {
+                              model.Id(p => p.StoreRequisitionID);
+                              model.Field(p => p.StoreRequisitionID).Editable(false);
+                              model.Field(p => p.BranchId).Editable(false);
+                              model.Field(p => p.BusinessUnitId).Editable(false);
+                              model.Field(p => p.OrgStructureId).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                              model.Field(p => p.ModifiedBy).Editable(false);
+                              model.Field(p => p.LastModified).Editable(false);
+                              model.Field(p => p.Status).Editable(false);
+                          })
+                          .Read(read => read.Action("FuelRequisitions_Read", "FuelRequisition", new { vdId = "#=VehicleDistributionID#" }))
+                          .Create(create => create.Action("FuelRequisitions_Create", "FuelRequisition", new { vdId = "#=VehicleDistributionID#" }))
+                          .Update(update => update.Action("FuelRequisitions_Update", "FuelRequisition"))
+                          .Destroy(destroy => destroy.Action("FuelRequisitions_Destroy", "FuelRequisition"))
+                      ).Resizable(resize => resize.Columns(true))
+                      .ClientDetailTemplateId("FuelRequisitions").ToClientTemplate())
+}
+
+<script id="FuelRequisitions" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=StoreRequisitionID#").SelectedIndex(0).Items(items =>
+                      {
+                          items.Add().Text("Detail").Content(
+
+                            @<text>
+
+                                # if (!IsOnlineApproved&&!IsSendForApproval)
+                                {#
+                                <a onclick='return sendForApproval("#=StoreRequisitionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                <br />
+                                # } #
+
+                                # if (IsOnlineApproved)
+                                {#
+                                <a href='@Url.Action("StoreRequistionPrint", "InventoryPrint")/#=StoreRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                <br />
+                                # } #
+                                <div>
+                                    <hr>
+                                    <dl class="dl-horizontal">
+
+                                        <dt>
+                                            Request Date
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                                        </dd>
+                                        <dt>
+                                            Status
+                                        </dt>
+                                        <dd>
+                                            #= Status #
+                                        </dd>
+                                        <dt>
+                                            Is Transfer
+                                        </dt>
+                                        <dd>
+                                            #= IsTransfer #
+                                        </dd>
+                                        <dt>
+                                            Receiver Store
+                                        </dt>
+                                        <dd>
+                                            #= ToStoreCode #
+                                        </dd>
+                                        <dt>
+                                            CreatedOn
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                        </dd>
+                                        <dt>
+                                            CreatedBy
+                                        </dt>
+                                        <dd>
+                                            #= CreatedBy #
+                                        </dd>
+                                        <dt>
+                                            Modified By
+                                        </dt>
+                                        <dd>
+                                            #= ModifiedBy #s
+                                        </dd>
+                                        <dt>
+                                            Modified Date
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                        </dd>
+                                        <dt>
+                                            Approved By
+                                        </dt>
+                                        <dd>
+                                            #= OnlineApprovedBy #s
+                                        </dd>
+                                        <dt>
+                                            Approval Time
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                                        </dd>
+                                    </dl>
+                                </div>
+
+                                <hr>
+
+                                # if (IsOnlineApproved&&!IsVoid)
+                                {#
+                                <a onclick='return voidRecord("#=StoreRequisitionID#")' href=' \#' title="Void Record"><i class="fa  fa-bolt fa-2x" style="color:red"></i></a>
+
+                                # } #
+
+                            </text>
+                                            );
+
+                                  items.Add().Text("Items").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<StoreRequisitionItem>()
+                                              .Name("FuelRequisitionItem_#=StoreRequisitionID#")
+                                              .Columns(columns =>
+                                              {
+                                                          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemFuelCategorySelector").Width(160);
+                                                          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemFuelSelector").Width(160);
+                                                          columns.Bound(c => c.Unit).Width(120);
+                                                          columns.Bound(c => c.PartNo).EditorTemplateName("PartNo").Width(120);
+                                                          columns.Bound(c => c.RequestedQuantity).Width(120);
+                                                          columns.Bound(c => c.ApprovedQuantity).Width(120);
+                                                          columns.Bound(c => c.IssuedQuantity).Hidden().Width(90);
+                                                          columns.Bound(c => c.PurchaseQuantity).Hidden().Width(90);
+
+                                                          columns.Bound(c => c.CreatedBy).Hidden();
+                                                          columns.Bound(c => c.DateCreated).Hidden();
+                                                          columns.Bound(c => c.ModifiedBy).Hidden();
+                                                          columns.Bound(c => c.LastModified).Hidden();
+                                                          columns.Command(command =>
+                                              {
+                                                                      command.Edit();
+                                                                      command.Destroy();
+                                                                  });
+
+                                                      })
+                                              .ToolBar(toolbar =>
+                                              {
+                                                          toolbar.Create();
+                                                      }).Events(ev => ev.Edit("onItemEdit"))
+                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                              .Scrollable()
+                                              .Events(x => x.DataBound("onDataBoundLines"))
+                                              .DataSource(dataSource => dataSource
+                                                  .Ajax()
+                                                  .Events(ev => ev
+                                                      .Error("error_handler(\"FuelRequisitionItem_#=StoreRequisitionID#\")")
+                                                      .RequestStart("onRequestStart(\"FuelRequisitionItem_#=StoreRequisitionID#\")")
+                                                      .RequestEnd("onRequestEnd(\"FuelRequisitionItem_#=StoreRequisitionID#\")"))
+                                                  .Model(model =>
+                                                  {
+                                                              model.Id(p => p.StoreRequisitionItemID);
+                                                              model.Field(p => p.Unit).Editable(false);
+                                                              model.Field(p => p.PartNo).Editable(false);
+                                                              model.Field(p => p.ModelNo).Editable(false);
+                                                              model.Field(p => p.SerialNo).Editable(false);
+                                                              model.Field(p => p.ChasisNo).Editable(false);
+                                                              model.Field(p => p.CreatedBy).Editable(false);
+                                                              model.Field(p => p.DateCreated).Editable(false);
+                                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                                              model.Field(p => p.LastModified).Editable(false);
+
+                                                          })
+                                                  .Read(read => read.Action("FuelStoreRequisitionItems_Read", "FuelRequsitionItem", new { id = "#=StoreRequisitionID#" }))
+                                                  .Create(create => create.Action("FuelStoreRequisitionItems_Create", "FuelRequsitionItem", new { id = "#=StoreRequisitionID#" }))
+                                                  .Update(update => update.Action("FuelStoreRequisitionItems_Update", "FuelRequsitionItem"))
+                                                  .Destroy(destroy => destroy.Action("FuelStoreRequisitionItems_Destroy", "FuelRequsitionItem"))
+                                              ).ToClientTemplate())
+                    </text>
+                    );
+
+
+
+                      items.Add().Text("Validation").Content(
+            @<text>
+
+                @(Html.Kendo().Grid<StoreRequisitionValidation>()
+                                      .Name("FuelRequisitionValidation_#=StoreRequisitionID#")
+                                      .Columns(columns =>
+                                      {
+                                                  columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                  columns.Bound(c => c.Remark).Width(170);
+                                                  columns.Command(command =>
+                                      {
+                                                              command.Edit();
+                                                  //command.Destroy();
+                                              });
+                                              })
+                                      .ToolBar(toolbar =>
+                                      {
+                                                  toolbar.Create();
+                                              })
+                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                      .Scrollable()
+                                      .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Events(ev => ev
+                                              .Error("error_handler(\"FuelRequisitionValidation_#=StoreRequisitionID#\")")
+                                              .RequestStart("onRequestStart(\"FuelRequisitionValidation_#=StoreRequisitionID#\")")
+                                              .RequestEnd("onRequestEnd(\"FuelRequisitionValidation_#=StoreRequisitionID#\")"))
+                                          //.Sync("sync_handler"))
+                                          .Model(model =>
+                                          {
+                                                      model.Id(p => p.StoreRequisitionValidationID);
+                                                  })
+                                          .Read(read => read.Action("FuelRequisitionValidations_Read", "FuelRequsitionValidation", new { id = "#=StoreRequisitionID#" }))
+                                          .Create(create => create.Action("FuelRequisitionValidations_Create", "FuelRequsitionValidation", new { id = "#=StoreRequisitionID#" }))
+                                          .Update(update => update.Action("FuelRequisitionValidations_Update", "FuelRequsitionValidation"))
+                                          .Destroy(destroy => destroy.Action("FuelRequisitionValidations_Destroy", "FuelRequsitionValidation"))
+
+                                      ).ToClientTemplate())
+
+            </text>
+      );
+
+
+  }).ToClientTemplate())
+
+
+
+
+</script>
+
+
+
+<script type="text/javascript">
+    var reqId;
     var masterId;
     var status;
     var IsApproved;
     var IsSendForApproved;
     function filterRequest() {
-        return {
-            readRequestNumber: masterId
-        };
+    return {
+        readRequestNumber: masterId
+    };
     }
     function filterEquipment() {
-        var dropdownlist = $("#EquipmentName").data("kendoDropDownList");
-        var filterInput = dropdownlist.filterInput;
+    var dropdownlist = $("#EquipmentName").data("kendoDropDownList");
+    var filterInput = dropdownlist.filterInput;
 
+    return {
+        Id : $("#CategoryRef").data("kendoDropDownList").value(),
+        Search: filterInput.val()
+    };
+
+    }
+    var equipmentTypeId;
+        function onEditGetParentRowId(e) {
+            $("#EndOdometer").prop("disabled", true);
+            $("#NetOdometer").prop("disabled", true);
+        var detailGridWrapper = this.wrapper,
+            mainGrid = $("#RequestEquipmentgrid_" + masterId).data("kendoGrid"),
+        $parentGridTr = $(detailGridWrapper).closest("tr").prev(),
+        parentRow = mainGrid.dataItem($parentGridTr);
+
+        equipmentTypeId = parentRow.EquipmentTypeID;
+
+    }
+    function filterEquipmentNames() {
+    
         return {
-            Id : $("#CategoryRef").data("kendoDropDownList").value(),
-            Search: filterInput.val()
+            equipmentTypeId: equipmentTypeId,
+            text: $("#EquipmentNameID").data("kendoDropDownList").filterInput.val(),
         };
+    }
+    function filterFleets() {
+        return {
+            equipmentNameId: $("#EquipmentNameID").val(),
+            text: $("#FleetId").data("kendoDropDownList").filterInput.val(),
+        };
+    }
+
+        var codeId;
+        var requestId;
+    function onAssignmentDetailExpand(e) {
+    var masterRow = e.masterRow;
+
+        var linegridName = $("#RequestEquipmentgrid_" + masterId).data("kendoGrid");
+        var masterDataItem = linegridName.dataItem(masterRow);
+
+        requestId = masterDataItem.RequestedEquipmentId;
+        var SecondValidationgridName = "#AssignedConfirmedEquipmentgrid_" + requestId;
+
+
+    if (  IsSendForApproved == true || IsApproved == true ) {
+        $(this).find(".k-grid-delete").remove();
+        $(this).find(".k-grid-edit").remove();
+
+        $(".k-grid-top", SecondValidationgridName).hide();
+        $(".k-grid-edit", SecondValidationgridName).hide();
+        $(".k-grid-delete", SecondValidationgridName).hide();
+    }
+
+
+    }
+
+        var expandedRow;
+
+        var assignedEquipmentID;
+
+        function assignedEquipDetailExpand(e) {
+
+            masterRow = e.masterRow; // This represents the master row that was expanded to show the details.
+            masterGrid = this;// $("#grid_Professional").data("kendoGrid"); // Here, $("#grid") selects the element with the ID "grid", and .data("kendoGrid") retrieves the Kendo grid widget instance associated with that element. It allows access to various grid-related functionality and data.
+            masterDataItem = masterGrid.dataItem(masterRow); // This retrieves the data item associated with the expanded master row. It represents the data bound to that particular row and provides access to its properties.
+
+            assignedEquipmentID = masterDataItem.AssignedEquipmentID;
+            // Only one open at a time
+            if (expandedRow != null && expandedRow[0] != e.masterRow[0]) {
+                masterGrid.collapseRow(expandedRow);
+            }
+            expandedRow = e.masterRow;
+
+    }
         
-    }
-    function onDetailExpand(e) {
-        var masterRow = e.masterRow;
-        //var masterGrid = $("#grid").data("kendoGrid");
-        var masterGrid = $("#grid").data("kendoGrid");
+        function onDetailExpand(e) {
+            var masterRow = e.masterRow;
+            //var masterGrid = $("#grid").data("kendoGrid");
+            var masterGrid = $("#grid").data("kendoGrid");
 
-        var masterDataItem = masterGrid.dataItem(masterRow);
-        IsApproved = masterDataItem.IsOnlineApproved;
-        IsSendForApproved = masterDataItem.IsSendForApproval;
-        masterId = masterDataItem.RequestID;
-        status = masterDataItem.EquipmentStatus;
-        var linegridName = "#grid_" + masterId;
-        var firstValidationgridName = "#AssignedEquipmentgrid_" + masterId;
-        var SecondValidationgridName = "#AssignedConfirmedEquipmentgrid_" + masterId;
-        var linegridName = "#RequestEquipmentgrid_" + masterId;
-
-
-        if (  IsSendForApproved == true || IsApproved == true ) {
-            console.log("Finished");
-            $(this).find(".k-grid-delete").remove();
-            $(this).find(".k-grid-edit").remove();
-
-            $(".k-grid-top", firstValidationgridName).hide();
-            $(".k-grid-edit", firstValidationgridName).hide();
-             $(".k-grid-delete", firstValidationgridName).hide();
-            $(".k-grid-top", SecondValidationgridName).hide();
-            $(".k-grid-edit", SecondValidationgridName).hide();
-            $(".k-grid-delete", SecondValidationgridName).hide();
-            $(".k-grid-edit", linegridName).hide();
-            $(linegridName).find(".k-grid-edit").remove();
-        }
-       
-      
-    }
-
-
-
-
-    function dataBoundAssign() {
-        var SecondValidationgridName = "#AssignedConfirmedEquipmentgrid_" + masterId;
-
-        if (IsApproved == true || IsSendForApproved == true) {
-
-            $(SecondValidationgridName).find(".k-grid-edit").remove();
-            $(SecondValidationgridName).find(".k-grid-delete").remove();
-         
-        }
-    }
-    function dataBound() {
-        this.expandRow(this.tbody.find("tr.k-master-row").first());
-
-        var grid = this;
-
-        grid.tbody.find("tr[role='row']").each(function () {
-            var dataItem = grid.dataItem(this);
+            var masterDataItem = masterGrid.dataItem(masterRow);
+            
+            reqId = masterDataItem.RequestID;
+            IsApproved = masterDataItem.IsOnlineApproved;
+            IsSendForApproved = masterDataItem.IsSendForApproval;
+            masterId = masterDataItem.RequestID;
+            codeId = masterDataItem.RequestedEquipmentId;
+            status = masterDataItem.EquipmentStatus;
+            
             var linegridName = "#grid_" + masterId;
             var firstValidationgridName = "#AssignedEquipmentgrid_" + masterId;
             var SecondValidationgridName = "#AssignedConfirmedEquipmentgrid_" + masterId;
-            console.log("Is Approved " + IsApproved);
+            var travelOrder = "#gridApTravelOrder_" + masterId;
+            var linegridName = "#RequestEquipmentgrid_" + masterId;
+            var approval = "#VehicleDistributionApproval" + masterId;
+
+            if (IsApproved || !IsSendForApproved) {
+                $(".k-grid-top", approval).hide();
+            }
+            if (IsSendForApproved == true || IsApproved == true) {
+                console.log("Finished");
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-edit").remove();
+
+                $(".k-grid-top", firstValidationgridName).hide();
+                $(".k-grid-top", travelOrder).hide();
+                $(".k-grid-edit", firstValidationgridName).hide();
+                $(".k-grid-delete", firstValidationgridName).hide();
+                $(".k-grid-top", SecondValidationgridName).hide();
+                $(".k-grid-edit", SecondValidationgridName).hide();
+                $(".k-grid-delete", SecondValidationgridName).hide();
+                $(".k-grid-edit", linegridName).hide();
+                $(linegridName).find(".k-grid-edit").remove();
+            }
+        }
+
+        function dataBoundAssign() {
+            var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
             if (IsApproved == true || IsSendForApproved == true) {
 
-                if (IsApproved == true) {
 
                     $(this).find(".k-grid-delete").remove();
-                }
                 $(this).find(".k-grid-edit").remove();
 
             }
@@ -403,23 +1227,65 @@
 
         });
     }
+    function dataBound() {
+    //this.expandRow(this.tbody.find("tr.k-master-row").first());
 
+    var grid = this;
+
+    grid.tbody.find("tr[role='row']").each(function () {
+        var dataItem = grid.dataItem(this);
+        if (IsApproved == true || IsSendForApproved == true) {
+
+            if (IsApproved == true) {
+
+                $(this).find(".k-grid-delete").remove();
+            }
+            $(this).find(".k-grid-edit").remove();
+
+        }
+
+        if (dataItem.IsOnlineApproved == true) {
+            $(this).addClass("k-state-FleetApproved");
+        }
+
+    });
+    }
+
+    function filterEquipmentCategories() {
+    var dropdownlist = $("#EquipmentIdentityID").data("kendoDropDownList");
+    var filterInput = dropdownlist.filterInput;
+
+    return {
+        search: filterInput.val()
+    };
+    }
+    function filterOperator() {
+        return {
+            text: $("#OperatorId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterEquipmentTypes() {
+    return {
+        equipmentIdentityId: $("#EquipmentIdentityID").val(),
+        search: $("#EquipmentTypeID").data("kendoDropDownList").filterInput.val(),
+    };
+    }
 
 
 
     function requestonDataBound(e) {
-        var grid = this;
+    var grid = this;
 
-        grid.tbody.find("tr[role='row']").each(function () {
-            var dataItem = grid.dataItem(this);
-            if (IsApproved == true || IsSendForApproved == true) {
-                 $(this).find(".k-grid-edit").remove();
-               
-            }
-        });
+    grid.tbody.find("tr[role='row']").each(function () {
+        var dataItem = grid.dataItem(this);
+        if (IsApproved == true || IsSendForApproved == true) {
+                $(this).find(".k-grid-edit").remove();
+
+        }
+    });
     }
 
-    function approveonDataBound(e) {
+        function approveonDataBound(e) {
         var grid = this;
 
         grid.tbody.find("tr[role='row']").each(function () {
@@ -430,12 +1296,604 @@
                 $(this).find(".k-grid-delete").remove();
             }
         });
+            }
+         function handlePlateNoChange() {
+
+             var id = $("#FleetId").data("kendoDropDownList").value();
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetDriver", "EquipmentDistribution", new { area = "FleetManagement" })',
+
+                data: { fleetId: id },
+                success: function (result) {
+
+                    console.log(result);
+                    $('#OperatorId').data("kendoDropDownList").value(result.FullName);
+                    $('#OperatorId').data("kendoDropDownList").trigger("change");
+
+
+
+                },
+                error: function (result) {
+                    console.log(result);
+                }
+            });
+        }
+
+        function handleEdit() {
+
+            //var id = $("#AssignedEquipmentID").data("kendoDropDownList").value();
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetAssignedEquipment", "AssignedEquipmentAdditionalInfo", new { area = "FleetManagement" })',
+
+                data: { assignedEquipmentId: assignedEquipmentID },
+                success: function (result) {
+
+                    console.log(result);
+                    $('#KmTravelledPerLitre').data("kendoNumericTextBox").value(result.FuelConsumptionRate);
+                    $('#KmTravelledPerLitre').data("kendoNumericTextBox").trigger("change");
+
+
+
+                },
+                error: function (result) {
+                    console.log(result);
+                }
+            });
+        }
+
+        function handleKmTravedTotal(value) {
+            let grandTotal = 0;
+            let kmTravelledTotal = Number(value)
+            let kmInterSiteValue = $('#KmInterSite').data("kendoNumericTextBox").value();
+            if (kmInterSiteValue) {
+                grandTotal = kmTravelledTotal + kmInterSiteValue;
+                $('#KmGrandTotal').data("kendoNumericTextBox").value(grandTotal);
+                $('#KmGrandTotal').data("kendoNumericTextBox").trigger("change");
+            } else {
+                $('#KmGrandTotal').data("kendoNumericTextBox").value(kmTravelledTotal);
+                $('#KmGrandTotal').data("kendoNumericTextBox").trigger("change");
+            }
+
+        }
+        function handleKmInterSite(value) {
+            let grandTotal = 0;
+            let kmInterSiteValue = Number(value)
+            let kmTravelledTotal = $('#KmTravelledTotal').data("kendoNumericTextBox").value();
+            if (kmTravelledTotal) {
+                grandTotal = kmTravelledTotal + kmInterSiteValue;
+                $('#KmGrandTotal').data("kendoNumericTextBox").value(grandTotal);
+                $('#KmGrandTotal').data("kendoNumericTextBox").trigger("change");
+            } else if (kmInterSiteValue && !kmTravelledTotal) {
+                $('#KmGrandTotal').data("kendoNumericTextBox").value(kmInterSiteValue);
+                $('#KmGrandTotal').data("kendoNumericTextBox").trigger("change");
+            }
+
+
+    }
+    function handelRateChange(value) {
+        let rate = Number(value)
+        let inCashLiter = $('#InCashLiter').data("kendoNumericTextBox").value();
+        let inCash = 0;
+        if (inCashLiter) {
+            inCash = rate * inCashLiter
+            $('#InCash').data("kendoNumericTextBox").value(inCash);
+            $('#InCash').data("kendoNumericTextBox").trigger("change");
+        }
+       
+    }
+    function handlePerdiumChange(value) {
+        let total = 0;
+        let totalPerDium = Number(value)
+       
+        let inCash = $('#InCash').data("kendoNumericTextBox").value();
+        
+        total = totalPerDium + inCash;
+        $('#TotalBirr').data("kendoNumericTextBox").value(total);
+        $('#TotalBirr').data("kendoNumericTextBox").trigger("change");
+
+
+
+    }
+        function handleChangeKmGrandTotal() {
+            //let grandTotalKm = Number(value);
+            let grandTotalKm = $('#KmGrandTotal').data("kendoNumericTextBox").value();
+            let reqFuelInLiterEst = 0;
+            let kmTravelPerLitre = $('#KmTravelledPerLitre').data("kendoNumericTextBox").value();
+            if (kmTravelPerLitre) {
+
+                reqFuelInLiterEst = grandTotalKm / kmTravelPerLitre;
+                if (reqFuelInLiterEst) {
+                    $('#ReqFuelInLiter').data("kendoNumericTextBox").value(reqFuelInLiterEst);
+                    $('#ReqFuelInLiter').data("kendoNumericTextBox").trigger("change");
+                }
+
+            }
+
+        }
+    function handleTotalPerdiumChange() {
+
     }
 
+        function sendForApprovalDistribution(id) {
+            var recordStatus = "";
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("VehicleDistribution_SendForOnlineApproval", "EquipmentDistribution", new { area = "FleetManagement" })',
+                data: { vehicleDistributionID: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result);
+
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+
+
+
+
+
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+
+    var isDeptapproved;
+    var isDeptSendForApproval;
+
+    function detailExpandMasterDepartment(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = this; //$("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        // codeid = masterDataItem.PurchaseOrderID;
+        isDeptapproved = masterDataItem.IsDepartmentOnlineApproved;
+        isDeptSendForApproval = masterDataItem.IsDepartmentSendForApproval;
+        // Only one open at a time
+        if (expandedRow != null && expandedRow[0] != e.masterRow[0]) {
+            masterGrid.collapseRow(expandedRow);
+        }
+        expandedRow = e.masterRow;
+    }
+    var apTravelOrderId;
+    var isDepartmentOnlineApproved;
+    var isDepartmentSendForApproval;
+    function detailExpandTravelOrder(e) {
+
+        var masterRow = e.masterRow;
+
+        var linegridNameTravelOrder = $("#gridApTravelOrder_" + masterId).data("kendoGrid");
+
+        var masterDataItem = linegridNameTravelOrder.dataItem(masterRow);
+
+        apTravelOrderId = masterDataItem.ApTravelOrderId;
+        isDepartmentOnlineApproved = masterDataItem.IsDepartmentOnlineApproved;
+        isDepartmentSendForApproval = masterDataItem.IsDepartmentSendForApproval;
+
+
+        var advancePayment = "#TravelOrderAdvancePayment" + apTravelOrderId;
+        var departure = "#TravelOrderDeparture" + apTravelOrderId;
+        var validation = "#TravelOrderDepartmentValidationController" + apTravelOrderId;
+
+
+        //if (isDepartmentSendForApproval == true || isDepartmentOnlineApproved == true) {
+        //    $(this).find(".k-grid-delete").remove();
+        //    $(this).find(".k-grid-edit").remove();
+
+        //    $(".k-grid-top", advancePayment).hide();
+
+
+        //    $(".k-grid-top", departure).hide();
+
+
+        //    $(".k-grid-top", validation).hide();
+        //    $(".k-grid-edit", validation).hide();
+        //    $(".k-grid-delete", validation).hide();
+
+
+
+        //}
+
+        // Only one open at a time
+        if (expandedRow != null && expandedRow[0] != e.masterRow[0]) {
+            masterGrid.collapseRow(expandedRow);
+        }
+        expandedRow = e.masterRow;
+
+
+    }
+
+    function onDataBoundMasterDepartment(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = this;//$("#gridApTravelOrder").data("kendoGrid");
+
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsDepartmentOnlineApproved || gridData[i].IsDepartmentSendForApproval) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsDepartmentSendForApproval && !dataItem.IsDepartmentOnlineApproved) {
+                row.css("background-color", "lightgreen");
+            }
+            if (!dataItem.IsDepartmentSendForApproval && !dataItem.IsDepartmentOnlineApproved) {
+                row.css("background-color", "lightskyblue");
+            }
+
+            if (dataItem.IsBudgetApproved) {
+                row.css("background-color", "gold");
+            }
+
+            if (dataItem.Paid) {
+                row.css("background-color", "honeydew");
+            }
+
+            if (dataItem.IsVoid) {
+                row.css("background-color", "slategray");
+                row.css("color", "black");
+            }
+        }
+
+
+    }
+    function onDataBoundLineDepartment(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isDepartmentOnlineApproved || isDepartmentSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+    function onDataBoundValidationDepartment(e) {
+
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isDepartmentOnlineApproved || !isDepartmentSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+
+
+        this.table.find(".k-grid-edit").hide();
+    }
+
+
+     function sendForApprovalTravelOrder(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendforDepartmentApproval", "TravelOrderRequest", new { area = "FleetManagement" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    //------------------------------------------------------------- Fuel Requestion ----------------------------------------------------------------------
+
+    function onSelectedPeriod() {
+        var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+        var min = "";
+        var max = "";
+        if (periodId) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPeriodDateRangeById", "DataProvider", new {area = "Inventory"})',
+            data: { id: periodId },
+            success: function (result) {
+                min = result.Min;
+                max = result.Max;
+                //update
+                var datepicker = $("#RequestDate").data("kendoDatePicker");
+                datepicker.setOptions({
+                    format: "yyyy-MM-dd",
+                    min:min,
+                    max:max,
+                    value: new Date(),
+                    change: onDOBChange
+                });
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+           });
+           }
+
+    }
+
+    function isTransfer(obj) {
+        if ($(obj).is(":checked")) {
+            $("#tostoreDiv").show();
+            $('#IsForOther').attr('checked', false);
+            $("#forbranchDiv").hide();
+            $("#IsForOther").prop("disabled", true);
+
+        } else {
+            $("#tostoreDiv").hide();
+            $("#IsForOther").prop("disabled", false);
+
+        }
+
+    }
+
+    function isForOther(obj) {
+
+        if ($(obj).is(":checked")) {
+            $("#forbranchDiv").show();
+
+        } else {
+            $("#forbranchDiv").hide();
+        }
+
+    }
+
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "FuelRequisition", new { area = "Inventory" })',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("FuelRequisitions_Approval", "FuelRequisition", new { area = "Inventory" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    var storeCode;
+    var codeid;
+    //var isapproved;
+
+    function onItemEdit(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        storeCode = masterDataItem.StoreCode;
+        codeid = masterDataItem.StoreRequisitionID;
+
+        if (e.model.isNew() === true) {
+            $("#ApprovedQuantity").attr("readonly", true);
+        }
+        //edit
+        if (e.model.isNew() !== true) {
+
+            //$("#RequestedQuantity").attr("readonly", true);
+            //$("#ItemCategoryCode").attr("readonly", true);
+        }
+
+    }
+    function calcDifference() {
+        var current = $("#CurrentKm").val();
+        var prev = $("#PrevKm").val();
+        var litre = $("#PrevLT").val();
+
+        var diff = current - prev;
+        $("#DifferenceKm").val(diff).trigger("change");
+        if (litre != 0) {
+            var consum = diff / litre;
+            $("#Consumption").val(consum.toFixed(2)).trigger("change");
+        }
+
+
+    }
+
+
+    function getItems() {
+
+        return {
+            StoreCode: storeCode
+        }
+
+    }
+
+
+    function OnIndexCall(elem) {
+
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+    }
+
+    function onClick(e) {
+
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        var code = masterDataItem.StoreRequisitionID;
+        var tabstrip = $("#tabStrip_4").data("kendoTabstrip");
+        $.ajax({
+            url: "FuelRequisition/StoreRequisitions_Approval",
+
+            data: { id: code }
+        });
+    }
+    function onUploadSuccess(e) {
+
+    }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
+
+            } else {
+                alert("Only .xls, .xlsx, .xlsm files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+    function checkboxClicked(e) {
+
+        var isChecked = e.checked;
+        var grid = $("#grid").data("kendoGrid");
+        if (isChecked) {
+
+            grid.showColumn("ToStoreCode");
+        } else {
+            grid.hideColumn("ToStoreCode");
+        }
+
+    };
+
+    function onMasterEdit(e) {
+
+        var grid = $("#grid").data("kendoGrid");
+        grid.hideColumn("ToStoreCode");
+
+
+        if (e.model.isNew() === false) {
+            // e.grid.hideColumn("ToStore");
+        }
+
+
+         
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetPlateNoForFuelRequisition", "FleetManagementDataProvider", new { area = "FleetManagement" })',
+            data: { id: reqId },
+            success: function (result) {
+                
+                $('#PlateNo').data("kendoDropDownList").value(result.PlateNo);
+                $('#PlateNo').data("kendoDropDownList").trigger("change");
+            }, 
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    function filterRequestors() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    function handleOnEdit() {
+       
+        @*$.ajax({
+            type: "POST",
+            url: '@Url.Action("GetEmployeeIdForTravelOrder", "FleetManagementDataProvider", new { area = "FleetManagement" })',
+            data: { id: reqId },
+            success: function (result) {
+                if (result.EmployeeId) {
+                    $('#EmployeeId').data("kendoDropDownList").value(result.EmployeeId);
+                    $('#EmployeeId').data("kendoDropDownList").trigger("change");
+                }
+                else {
+                    alert("No Requestor selected")
+                }
+                
+            }, 
+            error: function (result) {
+                alert(result);
+            }
+        });*@
+
+        
+
+    }
+    function getEquipmentTypeId() {
+        return {
+            equipmentTypeId: $("#EquipmentTypeID").val(),
+            text: $("#EquipmentNameId").data("kendoDropDownList").filterInput.val()
+        };
+    }
 </script>
 
-<style type="text/css">
+
+
+
+
+<style>
     div.k-edit-form-container {
-        width: 700px;
+        width: auto;
+        height: auto;
     }
-</style>    
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

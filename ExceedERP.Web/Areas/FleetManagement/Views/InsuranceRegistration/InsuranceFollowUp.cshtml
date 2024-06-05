@@ -6,10 +6,6 @@
     .Columns(columns =>
     {
         columns.ForeignKey(e => e.FleetsID, (System.Collections.IEnumerable)ViewData["Fleets"], "FleetsID", "UnitNum").EditorTemplateName("EquipmentGenericEditor").Width(140);
-        columns.Bound(e => e.PlateNo).Width(140);
-        columns.Bound(e => e.SerialNo).Width(120);
-        columns.Bound(e => e.ChasisNo).Width(100);
-
         columns.Bound(e => e.InsuranceCompany).Width(140);
         columns.Bound(c => c.DateCreated).Format("{0:d}").Width(100);
 
@@ -50,7 +46,7 @@
         .ServerOperation(false)
               .Model(model =>
               {
-                  model.Id(p => p.FleetInsuranceID);
+                  model.Id(p => p.FleetInsuranceId);
                   model.Field(x => x.InsuranceCompany).Editable(false);
                   model.Field(x => x.PhoneNo).Editable(false);
                   model.Field(x => x.PremiumCost).Editable(false);
@@ -88,81 +84,32 @@
 
                                 </div>
                             </div>
-                            <div class="demo-section k-header export-app">
-                                <div class="demo-section content-wrapper">
+                            <div class="row">
+                                <div class="col-md-1">
+                                </div>
+                                <div class="col-md-6" style="margin-top:20px;">
 
-                                    <form>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.CreatedBy):<span>#=CreatedBy#</span>
 
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.DateCreated):<span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
 
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ModifiedBy):<span>#=ModifiedBy#</span>
 
-                                        <div class="row">
-                                            <div class="col-md-1">
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.CreatedBy)
-                                                    </div>
-                                                    <div>
-                                                        #=CreatedBy#
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.LastModified):<span>#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy')#</span>
 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.DateCreated)
-                                                    </div>
-                                                    <div>
-                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.DueDate):<span>#=kendo.toString(kendo.parseDate(DueDate), 'dd/MM/yyyy')#</span>
 
-                                                    </div>
-                                                </div>
-                                            </div>
+                                    </div>
 
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.ModifiedBy)
-                                                    </div>
-                                                    <div>
-
-                                                        #=ModifiedBy#
-
-                                                    </div>
-                                                </div>
-                                            </div><div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.LastModified)
-                                                    </div>
-                                                    <div>
-                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-1">
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.DueDate)
-                                                    </div>
-                                                    <div>
-                                                        #=kendo.toString(kendo.parseDate(DueDate), 'dd/MM/yyyy') #
-
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-
-                                    </form>
 
                                 </div>
                             </div>

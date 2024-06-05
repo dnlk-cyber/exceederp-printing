@@ -1,10 +1,13 @@
 ﻿
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using ExceedERP.Core.Domain.Common;
+using System.Linq;
+using System.Web;
+ using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation
 {
@@ -20,6 +23,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation
         
         [DisplayName("Equipment Type")]
         public Guid EquipmentTypeId { get; set; }
+        [DisplayName("Equipment Name")]
+        public string EquipmentNameId { get; set; }
+
         [NotMapped]
         public string Equipment { get; set; }
          [DisplayName(" Equipment Name")]
@@ -63,7 +69,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation
 
         public string ChasisNo { get; set; }
         public string AssetCode { get; set; }
+        [DisplayName("Working Volume")]
         public decimal WorkingVolume { get; set; }
+        [DisplayName("Volume Unit")]
         public string VolumeUnit { get; set; }
         public virtual Fleets Fleet { get; set; }
            

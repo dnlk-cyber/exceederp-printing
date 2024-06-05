@@ -58,6 +58,14 @@ namespace ExceedERP.Reporting.Fleet.View
             this.fuelConsumptionCostCaptionTextBox = new Telerik.Reporting.TextBox();
             this.totalCaptionTextBox = new Telerik.Reporting.TextBox();
             this.textBox9 = new Telerik.Reporting.TextBox();
+            this.TypeDS = new Telerik.Reporting.ObjectDataSource();
+            this.subTypeDS = new Telerik.Reporting.ObjectDataSource();
+            this.BranchDS = new Telerik.Reporting.ObjectDataSource();
+            this.StatusDS = new Telerik.Reporting.ObjectDataSource();
+            this.PlateNoDS = new Telerik.Reporting.ObjectDataSource();
+            this.ModelDS = new Telerik.Reporting.ObjectDataSource();
+            this.ChasisDS = new Telerik.Reporting.ObjectDataSource();
+            this.SerialNoDS = new Telerik.Reporting.ObjectDataSource();
             this.pageFooter = new Telerik.Reporting.PageFooterSection();
             this.pageInfoTextBox = new Telerik.Reporting.TextBox();
             this.reportFooter = new Telerik.Reporting.ReportFooterSection();
@@ -83,17 +91,9 @@ namespace ExceedERP.Reporting.Fleet.View
             this.pbOrgLogo = new Telerik.Reporting.PictureBox();
             this.textBox28 = new Telerik.Reporting.TextBox();
             this.EquipmentDetailDS = new Telerik.Reporting.ObjectDataSource();
-            this.TypeDS = new Telerik.Reporting.ObjectDataSource();
-            this.subTypeDS = new Telerik.Reporting.ObjectDataSource();
-            this.BranchDS = new Telerik.Reporting.ObjectDataSource();
-            this.PlateNoDS = new Telerik.Reporting.ObjectDataSource();
-            this.ModelDS = new Telerik.Reporting.ObjectDataSource();
-            this.ChasisDS = new Telerik.Reporting.ObjectDataSource();
-            this.SerialNoDS = new Telerik.Reporting.ObjectDataSource();
             this.FisclaYearDS = new Telerik.Reporting.ObjectDataSource();
             this.PeriodDS = new Telerik.Reporting.ObjectDataSource();
             this.headerComp = new Telerik.Reporting.ObjectDataSource();
-            this.StatusDS = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // equipmentTypeGroupFooterSection
@@ -348,6 +348,63 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox9.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.86990827322006226D), Telerik.Reporting.Drawing.Unit.Inch(0.26037713885307312D));
             this.textBox9.StyleName = "Caption";
             this.textBox9.Value = "Down Hr";
+            // 
+            // TypeDS
+            // 
+            this.TypeDS.DataMember = "GetSheetInfo";
+            this.TypeDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.EquipmentSummaryDataSource);
+            this.TypeDS.Name = "TypeDS";
+            this.TypeDS.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("StartingDate", typeof(System.DateTime), null),
+            new Telerik.Reporting.ObjectDataSourceParameter("EndingDate", typeof(System.DateTime), null),
+            new Telerik.Reporting.ObjectDataSourceParameter("Project", typeof(string), null),
+            new Telerik.Reporting.ObjectDataSourceParameter("status", typeof(string), null),
+            new Telerik.Reporting.ObjectDataSourceParameter("PlateNo", typeof(string), null),
+            new Telerik.Reporting.ObjectDataSourceParameter("Model", typeof(string), null),
+            new Telerik.Reporting.ObjectDataSourceParameter("ChasisNo", typeof(string), null),
+            new Telerik.Reporting.ObjectDataSourceParameter("serialNo", typeof(string), null)});
+            // 
+            // subTypeDS
+            // 
+            this.subTypeDS.DataMember = "GetCategory";
+            this.subTypeDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.subTypeDS.Name = "subTypeDS";
+            // 
+            // BranchDS
+            // 
+            this.BranchDS.DataMember = "GetBrancheshs";
+            this.BranchDS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.BranchDataSource);
+            this.BranchDS.Name = "BranchDS";
+            // 
+            // StatusDS
+            // 
+            this.StatusDS.DataMember = "GetFleetStatus";
+            this.StatusDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.StatusDS.Name = "StatusDS";
+            // 
+            // PlateNoDS
+            // 
+            this.PlateNoDS.DataMember = "GetPlateNumber";
+            this.PlateNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.PlateNoDS.Name = "PlateNoDS";
+            // 
+            // ModelDS
+            // 
+            this.ModelDS.DataMember = "GetModelNo";
+            this.ModelDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.ModelDS.Name = "ModelDS";
+            // 
+            // ChasisDS
+            // 
+            this.ChasisDS.DataMember = "GetChasisNumber";
+            this.ChasisDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.ChasisDS.Name = "ChasisDS";
+            // 
+            // SerialNoDS
+            // 
+            this.SerialNoDS.DataMember = "GetSerialNo";
+            this.SerialNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
+            this.SerialNoDS.Name = "SerialNoDS";
             // 
             // pageFooter
             // 
@@ -609,48 +666,6 @@ namespace ExceedERP.Reporting.Fleet.View
             new Telerik.Reporting.ObjectDataSourceParameter("ChasisNo", typeof(string), "= Parameters.ChasisNo.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("serialNo", typeof(string), "= Parameters.serialNo.Value")});
             // 
-            // TypeDS
-            // 
-            this.TypeDS.DataMember = "GetIdentities";
-            this.TypeDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.TypeDS.Name = "TypeDS";
-            // 
-            // subTypeDS
-            // 
-            this.subTypeDS.DataMember = "GetCategory";
-            this.subTypeDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.subTypeDS.Name = "subTypeDS";
-            // 
-            // BranchDS
-            // 
-            this.BranchDS.DataMember = "GetBrancheshs";
-            this.BranchDS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.BranchDataSource);
-            this.BranchDS.Name = "BranchDS";
-            // 
-            // PlateNoDS
-            // 
-            this.PlateNoDS.DataMember = "GetPlateNumber";
-            this.PlateNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.PlateNoDS.Name = "PlateNoDS";
-            // 
-            // ModelDS
-            // 
-            this.ModelDS.DataMember = "GetModelNo";
-            this.ModelDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.ModelDS.Name = "ModelDS";
-            // 
-            // ChasisDS
-            // 
-            this.ChasisDS.DataMember = "GetChasisNumber";
-            this.ChasisDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.ChasisDS.Name = "ChasisDS";
-            // 
-            // SerialNoDS
-            // 
-            this.SerialNoDS.DataMember = "GetSerialNo";
-            this.SerialNoDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.SerialNoDS.Name = "SerialNoDS";
-            // 
             // FisclaYearDS
             // 
             this.FisclaYearDS.DataMember = "GetFiscalYearss";
@@ -668,12 +683,6 @@ namespace ExceedERP.Reporting.Fleet.View
             this.headerComp.DataMember = "GetOrganization";
             this.headerComp.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.OrganizationObjectDataSource);
             this.headerComp.Name = "headerComp";
-            // 
-            // StatusDS
-            // 
-            this.StatusDS.DataMember = "GetFleetStatus";
-            this.StatusDS.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetDataSource);
-            this.StatusDS.Name = "StatusDS";
             // 
             // EquipmentDetail
             // 

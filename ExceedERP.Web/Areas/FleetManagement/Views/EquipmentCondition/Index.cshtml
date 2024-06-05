@@ -30,11 +30,10 @@
                             .Scrollable()
                             .Sortable()
                             .Filterable()
-                            .Groupable()
+                           // .Groupable()
                             .Scrollable(h => h.Height(500))
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
 
         .Model(model =>
               {
@@ -42,7 +41,9 @@
 
                   model.Field(p => p.FleetConditionId).Editable(false);
 
-              })                   .Events(ev => ev
+              })
+              .Sort(so=>so.Add(s=>s.FleetConditionId).Descending())
+              .Events(ev => ev
                                 .Error("error_handler(\"grid\")")
                                 .RequestStart("onRequestStart(\"grid\")")
                                 .RequestEnd("onRequestEnd(\"grid\")"))

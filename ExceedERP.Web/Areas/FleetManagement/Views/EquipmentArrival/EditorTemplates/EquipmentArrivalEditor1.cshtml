@@ -1,0 +1,158 @@
+﻿@model  ExceedERP.Core.Domain.FleetManagement.FleetRegistration.EquipmentArrival
+
+
+
+
+<div class="demo-section k-content">
+    <form>
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.FleetsId)
+
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.FleetsId).Name("FleetsId")
+                                                               .DataTextField("Text")
+                                                               .DataValueField("Value").OptionLabel(" Select ").Filter(FilterType.Contains)
+                                                               .DataSource(d => d.Read(r => r.Action("DistrubutedEquipmentDDBind", "EquipmentArrival")).ServerFiltering(false)).Events(e => e.Change("BindDetail")))
+
+                    </div>
+
+                </div>
+            </div>
+
+             <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.EquipmentType)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.EquipmentType).Enable(false)
+                        @Html.ValidationMessageFor(model => model.EquipmentType)
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.DCENo)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.DCENo).Enable(false)
+                        @Html.ValidationMessageFor(model => model.DCENo)
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.KMHRReading)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.KMHRReading).Enable(false)
+                        @Html.ValidationMessageFor(model => model.KMHRReading)
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.OwnedBy)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.OwnedBy).Enable(false)
+                        @Html.ValidationMessageFor(model => model.OwnedBy)
+                    </div>
+
+
+
+                </div>
+
+
+
+
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.OperatorName)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.OperatorName).Enable(false)
+                        @Html.ValidationMessageFor(model => model.OperatorName)
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Model)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Model).Enable(false)
+                        @Html.ValidationMessageFor(model => model.Model)
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Date)
+                    </div>
+                    <div>
+                        @Html.Kendo().DatePickerFor(model => model.Date)
+                        @Html.ValidationMessageFor(model => model.Date)
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.MeansOfTravelling)
+                    </div>
+                    <div>
+                    @(Html.Kendo().DropDownListFor(m => m.MeansOfTravelling)
+              .DataTextField("Name")
+              .DataValueField("Name")
+                     .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("ArrivalTypeDDBind", "FleetDataProvider"))
+                                    .ServerFiltering(true);
+                      }).OptionLabel("Select").ValuePrimitive(true))
+                    </div>
+
+                </div>
+            </div>
+    
+
+
+ 
+        </div>
+    
+
+    </form>
+</div>
+

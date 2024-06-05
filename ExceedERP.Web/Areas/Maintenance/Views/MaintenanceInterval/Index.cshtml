@@ -1,0 +1,108 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Maintenance Interval Settings </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.MaintenanceInterval>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.Type).EditorTemplateName("IntervalTypeEditor");
+        columns.Bound(e => e.Value);
+        
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+    })
+    .ToolBar(commands => commands.Create())
+    .Editable(editable =>
+    {
+        editable.Mode(GridEditMode.InLine);
+        editable.DisplayDeleteConfirmation("Are You Sure You Want to  Delete this Setting ?");
+    })
+    .HtmlAttributes(new { style = "height: 220px;" })
+    .Pageable(pageable => pageable
+                    .Input(false)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(false)
+                    .ButtonCount(5))
+
+        .Scrollable()
+        .Sortable()
+        .Filterable()
+        //.Scrollable(h => h.Height(500))
+    .DataSource(dataSource => dataSource
+    .Ajax()
+    .PageSize(20)
+    .ServerOperation(false)
+                .Model(model =>
+                {
+                    model.Id(p => p.MaintenanceIntervalId);
+                   
+                }).Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+                .Create(update => update.Action("Interval_Create", "MaintenanceInterval"))
+                .Read(read => read.Action("Intervals_Read", "MaintenanceInterval"))
+                .Update(update => update.Action("Interval_Update", "MaintenanceInterval"))
+                .Destroy(update => update.Action("Interval_Destroy", "MaintenanceInterval"))
+    )
+)
+<br />
+<legend> Equipment-Specific Interval Settings</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.EquipmentInformation>()
+    .Name("equipment_specific_Setting_grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.GroupName);
+        columns.Bound(e => e.LicensePlate);
+        columns.Bound(e => e.DeviceNumber);
+        columns.Bound(e => e.RegularMaintenanceInterval);
+        columns.Bound(e => e.NotifyUpComingMaintenanceBefore);
+        //columns.Bound(e => e.FutureMaintenanceAlert);
+
+        columns.Command(command => { command.Edit(); }).Width(100);
+
+    })
+    //.ToolBar(commands => commands.Create())
+    .Editable(editable =>
+    {
+        editable.Mode(GridEditMode.InLine);
+        editable.DisplayDeleteConfirmation("Are You Sure You Want to  Delete this Equipment?");
+    })
+    .HtmlAttributes(new { style = "height: 700px;" })
+    .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+
+        .Scrollable()
+        .Sortable()
+        .Filterable()
+        .Scrollable(h => h.Height(500))
+    .DataSource(dataSource => dataSource
+    .Ajax()
+    .PageSize(20)
+    .ServerOperation(false)
+                .Model(model =>
+                {
+                    model.Id(p => p.EquipmentInformationId);
+                    model.Field(f => f.GroupName).Editable(false);
+                    model.Field(f => f.LicensePlate).Editable(false);
+                    model.Field(f => f.DeviceNumber).Editable(false);
+
+                }).Events(ev => ev
+                            .Error("error_handler(\"equipment_specific_Setting_grid\")")
+                            .RequestStart("onRequestStart(\"equipment_specific_Setting_grid\")")
+                            .RequestEnd("onRequestEnd(\"equipment_specific_Setting_grid\")"))
+                .Create(update => update.Action("Equipment_Create", "EquipmentInformation"))
+                .Read(read => read.Action("Equipments_Read", "EquipmentInformation"))
+                .Update(update => update.Action("Equipment_Update", "EquipmentInformation"))
+                .Destroy(update => update.Action("Equipment_Destroy", "EquipmentInformation"))
+    )
+)
+
+

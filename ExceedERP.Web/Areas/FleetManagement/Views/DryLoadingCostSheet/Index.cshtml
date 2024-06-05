@@ -1,0 +1,217 @@
+﻿<legend>Dry Loading Cost Sheet</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.DryLoadingTimeSheet>()
+                        .Name("grid")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.DryLoadingTimeSheetId).Title("#").Width(60);
+                            columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "FleetsID", "PlateNumber").Title("Equipment Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+                            columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(100);
+                            columns.Bound(c => c.WorkItem).Width(100);
+                            columns.Bound(c => c.WorkingHour).Width(100);
+                            columns.Bound(c => c.CostSheetStatus).Width(100);
+                            
+                            columns.Command(command => { command.Edit().UpdateText("save").CancelText("Cancel").Text("Edit"); }).Title("Action").Width(200);
+                        })
+                        
+                        .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                        .TemplateName("DryLoadingCostSheetTemplate")
+                        .Window(win => win.Title("Dry Loading Cost Sheet").Width(800)))
+                        .Pageable()
+                        .Events(e => e.DataBound("dataBound"))
+                        .Events(e => e.DetailExpand("onDetailExpand"))
+                        .Filterable()
+                        .Scrollable(s => s.Height(550))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Sort(sort => sort.Add(e => e.DryLoadingTimeSheetId).Descending())
+                            .Model(model => model.Id(p => p.DryLoadingTimeSheetId))
+                            .Events(ev => ev
+                                         .Error("error_handler(\"grid\")")
+                                         .RequestStart("onRequestStart(\"grid\")")
+                                         .RequestEnd("onRequestEnd(\"grid\")"))
+                            .Read(read => read.Action("DryLoadingCostSheet_Read", "DryLoadingCostSheet"))
+
+                            .Update(update => update.Action("DryLoadingCostSheet_Update", "DryLoadingCostSheet"))
+
+                        ).ClientDetailTemplateId("template")
+)
+
+
+
+<script id="template" type="text/kendo-tmpl">
+
+    @(Html.Kendo().TabStrip()
+                                                   .Name("tabStrip_#=DryLoadingTimeSheetId#")
+                                                   .SelectedIndex(0)
+                                                   .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                                   .Items(items =>
+                                                   {
+
+                                                       items.Add().Text("Detail").Content(
+                                                            @<text>
+                                                                <legend>Detail</legend>
+                                                                <div class="box">
+                                                                    <div class="box-col">
+
+                                                                        # if (CostSheetSendForAproval == false)
+                                                                        {#
+
+                                                                        <a onclick='return sendForApproval("#=DryLoadingTimeSheetId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                                        # }#
+                                                                    </div>
+                                                                </div>
+
+                                                            </text>
+                                                            ); items.Add().Text("Approval").Content(@<text>
+
+                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.TimeSheetApprovalNew>()
+                                                                .Name("TimeSheetApproval#=DryLoadingTimeSheetId#")
+                                                                .Columns(columns =>
+                                                                {
+                                                                    columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+
+                                                                    columns.Bound(o => o.Remark).Width(200);
+                                                                    columns.Bound(c => c.CreatedBy).Width(150);
+                                                                    columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                                                                    columns.Command(command => { command.Edit(); }).Width(250);
+
+                                                                })
+                                                                .ToolBar(commands => commands.Create().Text("Approve Request"))
+                                                                .Events(ev =>
+                                                                {
+                                                                    ev.DataBound("approvalDataBound");
+                                                                })
+                                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                        .DataSource(dataSource => dataSource
+                                                                        .Ajax()
+                                                                        .PageSize(5)
+                                                                        .Model(model =>
+                                                                        {
+                                                                            model.Id(p => p.TimeSheetApprovalNewId);
+                                                                            model.Field(p => p.CreatedBy).Editable(false);
+                                                                            model.Field(p => p.DateCreated).Editable(false);
+                                                                        })
+                                                                        .Events(ev => ev
+                                                                        .Error("error_handler(\"TimeSheetApproval#=DryLoadingTimeSheetId#\")")
+                                                                        .RequestStart("onRequestStart(\"TimeSheetApproval#=DryLoadingTimeSheetId#\")")
+                                                                        .RequestEnd("onRequestEnd(\"TimeSheetApproval#=DryLoadingTimeSheetId#\")"))
+
+                                                                        .Create(update => update.Action("DryLoadingCostSheetApproval_Create", "DryLoadingCostSheet", new { Id = "#=DryLoadingTimeSheetId#" }))
+                                                                        .Read(read => read.Action("DryLoadingCostSheetApproval_Read", "DryLoadingCostSheet", new { Id = "#=DryLoadingTimeSheetId#" }))
+                                                                        .Update(update => update.Action("DryLoadingCostSheetApproval_Create", "DryLoadingCostSheet"))
+
+
+                                                                    )
+                                                                    .ToClientTemplate())
+                                                        </text>
+                                                                        );
+                                    }).ToClientTemplate())
+
+
+</script>
+
+
+
+<script>
+
+    var costSheetApproved;
+    var costSheetSendForAproval;
+    var dryLoadingTimeSheetId;
+
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = this;
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        costSheetApproved = masterDataItem.CostSheetApproved;
+
+        costSheetSendForAproval = masterDataItem.CostSheetSendForAproval;
+
+        dryLoadingTimeSheetId = masterDataItem.DryLoadingTimeSheetId;
+
+
+        var firstValidationgridName = "#TimeSheetApproval" + dryLoadingTimeSheetId;
+
+
+
+        if (costSheetApproved == true || costSheetSendForAproval == false) {
+
+            $(".k-grid-top", firstValidationgridName).hide();
+
+        }
+    }
+
+    function dataBound() {
+
+
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.CostSheetApproved == true) {
+                $(this).addClass("k-state-FleetApproved");
+            }
+            if (dataItem.CostSheetApproved == true || dataItem.CostSheetSendForAproval == true) {
+
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+
+
+            }
+        });
+    }
+
+
+    function approvalDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsApproved == true) {
+
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+
+    }
+
+    function sendForApproval(id) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CostSheetSendForApproval", "DryLoadingCostSheet", new { area = "FleetManagement" })',
+            data: { id: id },
+            success: function (result) {
+
+                alert(result);
+
+                location.reload(true);
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+</script>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>
+
+

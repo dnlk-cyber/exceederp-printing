@@ -1,0 +1,138 @@
+﻿@{
+    ViewBag.Title = "Repair Type";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Repair Type</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.RepairType>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(e => e.CategoryCode, (IEnumerable)ViewData["Categories"], "Code", "Name").Width(120);
+            columns.ForeignKey(e => e.SubCategoryCode, (IEnumerable)ViewData["Categories"], "Code", "Name").Width(130);
+            columns.Bound(e => e.Name).Width(90);
+            columns.Bound(e => e.Code).Width(80);
+            columns.Bound(e => e.ServiceGroup).Width(120);
+            columns.Bound(e => e.StandaredTime).Width(120);
+            columns.Bound(e => e.AutomotiveStandaredHour).Width(150);
+            columns.Bound(e => e.PayableTime).Width(100);
+            columns.Bound(e => e.Difference).Width(120);
+            columns.Bound(e => e.Reason).Width(120);
+            columns.Bound(e => e.Place).Width(120);
+            columns.Bound(e => e.Time).Width(120);
+            columns.Bound(e => e.Process).Width(120);
+            columns.Bound(e => e.LabourRateAtCompany).Width(110);
+            columns.Bound(e => e.LabourRateAtCustomer).Width(110);
+            columns.Bound(e => e.TotalAmountCompany).Width(110);
+            columns.Bound(e => e.TotalAmountCustomer).Width(110);
+            columns.Bound(e => e.Remark).Width(100);
+            columns.Command(command => { command.Edit(); /*command.Destroy();*/ }).Width(250);
+
+        }).ToolBar(commands => commands.Create())
+           .Editable(editable =>
+           {
+               editable.Mode(GridEditMode.PopUp)
+               .TemplateName("RepairTypeTemplate")
+               .Window(w => w.Width(700).Title("Repaire Type Form"));
+               editable.DisplayDeleteConfirmation("Are You Sure To Remove Repair Type");
+           })
+            .HtmlAttributes(new { style = "height: 520px;" })
+                                 .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+
+                                    .Scrollable()
+                                    .Sortable()
+                                    .Filterable()
+                                    .Groupable()
+                                    .Scrollable(h => h.Height(500))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .ServerOperation(false)
+                      .Model(model =>
+                      {
+                          model.Id(p => p.RepairTypeID);
+
+                          model.Field(p => p.RepairTypeID).Editable(false);
+
+                      })
+                      .Events(ev => ev
+                                    .Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+                            .Create(update => update.Action("RepairType_Create", "RepairType"))
+                            .Read(read => read.Action("RepairType_Read", "RepairType"))
+                            .Update(update => update.Action("RepairType_Update", "RepairType"))
+                            .Destroy(update => update.Action("RepairType_Destroy", "RepairType"))
+      )
+)
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: auto;
+    }
+</style>
+
+<script type="text/javascript">
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+    //    }
+    //}
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onClick() {
+        $("#grid").data("kendoGrid").addRow();
+    }
+    function filterCategories() {
+
+        return {
+            categoryCode: $("#CategoryCode").val()
+        };
+    }
+
+    function onChangeTime() {
+        console.log(100);
+        var standaredTime = $("#StandaredTime").val();
+        var payableTime = $("#PayableTime").val();
+        var diff = $("#Difference").val(standaredTime - payableTime);
+        if (diff.val() < 0) {
+            diff=  $("#Difference").val(diff.val() * -1);
+        }
+        diff.trigger("change");
+    }
+    function onChangeLabourRate() {
+
+        var labourRateAtCompany = $("#LabourRateAtCompany").val();
+        console.log(labourRateAtCompany);
+
+        var payableTime = $("#PayableTime").val();
+        var labourRateAtCustomer = $("#LabourRateAtCustomer").val();
+        if (payableTime != null) {
+            if (labourRateAtCompany != null) {
+                var totalAmountAtCompany = $("#TotalAmountCompany").val(labourRateAtCompany * payableTime);
+                totalAmountAtCompany.trigger("change");
+
+            }
+            if (labourRateAtCustomer != null) {
+                var totalAmountAtCustomer = $("#TotalAmountCustomer").val(labourRateAtCustomer * payableTime);
+                totalAmountAtCustomer.trigger("change");
+            }
+
+        }
+
+    }
+</script>

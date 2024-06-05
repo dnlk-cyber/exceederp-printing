@@ -1,0 +1,310 @@
+using ExceedERP.ApplicationServices.FleetManagement.FleetMaintenance;
+using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
+using ExceedERP.Core.Domain.Maintenance;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Areas.FleetManagement.Models;
+using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Hubs;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+
+namespace ExceedERP.Web.Areas.Maintenance.Controllers
+{
+      //[AuthorizeRoles(MaintenanceRoles.MaintenanceWorkShopUser)] 
+    public class WorkShopController : Controller
+    {
+        private IJobOrderDetailService JobOrderDetailService;
+        private IJobOrderService _JobOrderService;
+        private readonly IFleetService _FleetService;
+        private IServiceService _ServiceService;
+        private IAdministrativeApprovalService _AdministrativeApprovalService;
+        private IServiceCenterJobService _ServiceCenterJobService;
+        private IServiceJobOrderDetailService _ServiceJobOrderDetailService;
+        ExceedDbContext db = new ExceedDbContext();
+
+        public ActionResult Index()
+        {
+            ViewData["EquipmentsList"] = db.EquipmentInformation.Select(e => new { e.EquipmentInformationId, e.LicensePlate, e.DeviceNumber }).ToList();
+
+            var mechanic = db.MechanicCrew;
+            ViewData["Mechanic"] = mechanic.Select(s => new {
+                Code = s.MechanicCrewID,
+                Name = s.Person_Employee.FirstName + " " + s.Person_Employee.MiddleName + " " + s.Person_Employee.LastName
+            }).AsQueryable();
+            ViewData["SubCategories"] = db.ItemCategorys.Select(s => new {
+                Code = s.ItemCategoryCode,
+                Name = s.Name
+            }).ToList();
+            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
+                Code = s.OrganizationCustomerID,
+                Name = s.TradeName
+            }).ToList();
+            var jobOrderDetail = db.JobOrderServiceCenterDetails;
+
+            ViewData["JobOrderDetail"] = jobOrderDetail.Select(s => new {
+                Code = s.JobOrderServiceCenterDetailId,
+                Name = s.RepairType.Name + "-" + s.JobCauses.Name
+
+            }).AsQueryable();
+            ViewBag.FailureReason = db.FailureReasons.ToList();
+            var categories = db.ItemCategorys;
+            var items = db.InventoryItems;
+            var costCenter = db.BranchCostCenter;
+            var branches = db.Branch;
+
+            var inventoryPeriods = db.InventoryPeriods;
+            var selectedinventoryPeriods = inventoryPeriods.Select(
+             i => new
+             {
+                 Name = i.Name,
+                 GLPeriodId = i.InventoryPeriodId
+             }).AsQueryable();
+            ViewData["inventoryPeriods"] = selectedinventoryPeriods;
+
+            ViewData["Branches"] = branches;
+
+            var selecteditems = items.Select(
+                i => new
+                {
+                    Name = i.ItemCode + "_" + i.Name,
+                    ItemCode = i.ItemCode
+                }).ToList();
+            ViewData["Items"] = selecteditems;
+            ViewData["Category"] = categories;
+            ViewData["defaultCategory"] = categories.FirstOrDefault();
+
+            var store = db.InventoryStores.AsQueryable();
+            ViewData["storesInCompany"] = store;
+
+            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
+            {
+                Id = s.MaintenanceCenterID,
+                Name = s.Name
+            }).ToList();
+
+
+            ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new
+            {
+                Name = s.Name,
+                Id = s.ServiceCenterId
+            }).ToList();
+
+            var employee = db.Person_Employee;
+            var selectedEmployee = employee.Select(
+                i => new
+                {
+                    Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+                    Code = i.EmployeeId
+                }).AsQueryable();
+            ViewData["personEmployees"] = selectedEmployee;
+
+            var selectedcostCenter = costCenter.Select(
+                i => new
+                {
+                    Name = i.MainCompanyStructure.Name,
+                    Code = i.OrgStructureId
+                }).AsQueryable();
+
+            ViewData["costCenters"] = selectedcostCenter;
+            ViewData["Service"] = db.RepairType.Select(s => new {
+                Code = s.RepairTypeID,
+                Name = s.Code + "-" + s.Name
+            }).ToList();
+            return View();
+        }
+        public WorkShopController()
+        {
+            JobOrderDetailService = new JobOrderDetailService();
+            _JobOrderService = new JobOrderService();
+            _FleetService = new FleetService();
+            _AdministrativeApprovalService = new AdministrativeJobApprovalService();
+            _ServiceService = new ServiceService();
+            _ServiceCenterJobService=new ServiceCenterJobService();
+            _ServiceJobOrderDetailService=new ServiceJobOrderDetailService();
+        }
+
+        public ActionResult WorkShops_Read([DataSourceRequest] DataSourceRequest request)
+        {
+            List<ServiceCenterJob> job = new List<ServiceCenterJob>();
+            IQueryable<ServiceCenterJob> jobOrders = db.ServiceCenterJob.Where(x => x.IsOnlineApproved == true && x.IsSentToWorkShop);
+            //var jobOrdersCreator = jobOrders.Where(x => x.CreatedBy.Equals(User.Identity.Name)).ToList();
+            
+            //var employeeId = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
+
+            //var mechanicCrew = db.MechanicCrew.FirstOrDefault(x => x.EmployeeId == employeeId);
+            //if(mechanicCrew == null)
+            //{
+            //    return Json(job.ToDataSourceResult(request));
+            //}
+            //var crew = db.ServiceCrew.FirstOrDefault(x => x.MechanicCrewID == mechanicCrew.MechanicCrewID);
+            //if(crew != null || jobOrdersCreator.Any())
+            //{
+                DataSourceResult result = jobOrders.ToDataSourceResult(request, j => new {
+                    ProjectName = j.ProjectName,
+                    ServiceCenterJobId = j.ServiceCenterJobId,
+                    Progress = GetProgressPercent(j.JobOrderID),
+                    CustomerId = db.JobRequest.Where(q => q.Num == j.Referance).FirstOrDefault()?.CustomerId,
+                    Status = j.Status,
+                    Num = j.JobOrderNum ?? j.Num,
+                    EquipmentName = j.EquipmentName,
+                    RejectionReason = j.RejectionReason,
+                    MaintenanceCenter = j.MaintenanceCenter,
+                    MaintenanceCenterId = j.MaintenanceCenterId,
+                    ServiceCenterId = j.ServiceCenterId,
+                    JobOrderNum = j.JobOrderNum,
+                    Referance = j.Referance,
+                    JobOrderID = j.JobOrderID,
+                    Type = j.Type,
+                    LicensePlate = j.LicensePlate,
+                    //VoidBy = j.Fleets.EquipmentIdentityID.ToString(),
+                    EquipmentInformationId = j.EquipmentInformationId,
+                    FailureReason = j.FailureReason,
+                    AdvanceMeasure = j.AdvanceMeasure,
+                    InspectorComments = GetMaintenaceDuration(j.JobOrderID),
+
+                    IsOnlineApproved = j.IsOnlineApproved,
+                    IsSendForApproval = j.IsSendForApproval,
+                    IsSecondSendForApproval = j.IsSecondSendForApproval,
+                    IsOnlineTransferred = j.IsOnlineTransferred,
+                    IsSentToWorkShop = j.IsSentToWorkShop,
+                    IsSubmittedToServiceCenter = j.IsSubmittedToServiceCenter,
+                    OnlineAssignedTime = j.OnlineAssignedTime,
+                    OnlineSubmittedTime = j.OnlineSubmittedTime,
+                    WorkShopRejectedReason = j.WorkShopRejectedReason,
+                    IsSecondOnlineApproved = j.IsSecondOnlineApproved
+
+                });
+
+                return Json(result);
+            //}
+
+
+            //return Json(job.ToDataSourceResult(request));
+        }
+        public string GetMaintenaceDuration(Guid Id)
+        {
+            try
+            {
+                var OrderLine = _JobOrderService.GetAll().Where(x => x.JobOrderID == Id && x.IsOnlineApproved == true).FirstOrDefault();
+
+                if (!OrderLine.IsOnlineTransferred)
+                {
+                    TimeSpan Duration = DateTime.Now - DateTime.Parse(OrderLine.OnlineApprovedTime.ToString());
+                    return Duration.Days + " Days and " + Duration.Hours + " Hours";
+                }
+
+                TimeSpan FinishedDuration = DateTime.Parse(OrderLine.OnlineTransferredTime.ToString()) - DateTime.Parse(OrderLine.OnlineApprovedTime.ToString());
+                return FinishedDuration.Days + " Days and " + FinishedDuration.Hours + " Hours";
+            }
+            catch (Exception)
+            {
+
+                return "0";
+            }
+
+        }
+        public double GetMaintenaceDurationNum(Guid Id)
+        {
+            try
+            {
+
+
+                var OrderLine = _JobOrderService.GetAll().Where(x => x.JobOrderID == Id).FirstOrDefault();
+
+                if (!OrderLine.IsOnlineTransferred)
+                {
+                    TimeSpan Duration = DateTime.Now - DateTime.Parse(OrderLine.OnlineApprovedTime.ToString());
+                    return Duration.TotalHours;
+                }
+
+                TimeSpan FinishedDuration = DateTime.Parse(OrderLine.OnlineTransferredTime.ToString()) - DateTime.Parse(OrderLine.OnlineApprovedTime.ToString());
+                return FinishedDuration.TotalHours;
+            }
+            catch (Exception)
+            {
+
+                return 0;
+            }
+        }
+        public string GetProgressPercent(Guid Id)
+        {
+            try
+            {
+
+                decimal RequestOrderLine = 0;
+                decimal RequestOrderLineFinished = 0;
+                var Order = _JobOrderService.GetById(Id);
+                var Requests = db.JobRequest.Where(x => x.Num == Order.Referance).FirstOrDefault();
+                if (Requests != null)
+                {
+                    RequestOrderLine = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Requests.JobRequestId).ToList().Count;
+                    RequestOrderLineFinished = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Requests.JobRequestId && x.Status == MaintenanceConst.Completed).ToList().Count;
+                }
+                decimal OrderLine = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Id).ToList().Count;
+                decimal OrderLineFinished = JobOrderDetailService.GetAll().Where(x => x.JobOrderID == Id && x.Status == MaintenanceConst.Completed).ToList().Count;
+                var progress = (OrderLineFinished + RequestOrderLineFinished) / (OrderLine + RequestOrderLine);
+
+                progress = progress * 100;
+                return ((int)progress).ToString();
+
+            }
+            catch (Exception)
+            {
+
+                return "0";
+            }
+        }
+
+        public JsonResult GetJob()
+        {
+            var jobOrderDetail = db.JobOrderDetail;
+
+            var job = db.JobOrderDetail.Select(s => new {
+                Code = s.JobOrderDetailID,
+                Name = s.RepairType.Name+"-"+s.RepairType.Remark
+
+            }).AsQueryable();
+
+            return Json(job, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult SubmitWorkShop(Guid Id)
+        {
+            var serviceJobOrder = _ServiceCenterJobService.GetById(Id);
+            if (serviceJobOrder != null)
+            {
+                // check if there are any job-services that are not completed or that are completed
+                // but not approved.
+                var unCompletedJobs = db.JobOrderServiceCenterDetails.Where(jd => jd.ServiceCenterJobId == serviceJobOrder.ServiceCenterJobId && jd.Status == MaintenanceConst.Completed).Count();
+                var unApprovedWorkSheet = db.ServiceCrewWorkLogs.Where(s => s.JobId == serviceJobOrder.ServiceCenterJobId).Count();
+                if (unCompletedJobs == 0 || unApprovedWorkSheet == 0)
+                {
+                    var dt = new
+                    {
+                        Message = "There are pending job Services or spare parts or work sheet.",
+                        Stats = "Error"
+                    };
+                    return Json(dt, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                   // jobOrder.Status = MaintenanceConst.SentForClosing;
+                    serviceJobOrder.IsSubmittedToServiceCenter = true;
+                    serviceJobOrder.OnlineSubmittedTime = DateTime.Now;
+
+                    _ServiceCenterJobService.Update(serviceJobOrder);
+
+                    return Json(new { Message = "Workshop  sent to service center Successfully!", Status = "Success" }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                return Json(new { Message = "Job order not found", Status = "Error" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+    }
+}

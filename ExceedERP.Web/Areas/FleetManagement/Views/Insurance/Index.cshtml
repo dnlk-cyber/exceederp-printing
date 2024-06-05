@@ -4,12 +4,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <legend>Insurance Registration </legend>
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Insurance>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsurance>()
     .Name("grid")
     .Columns(columns =>
     {
         columns.Bound(e => e.InsuranceCompany).Width(140);
-        columns.Bound(e => e.InsuranceType).Width(140);
+        columns.Bound(e => e.InsuranceTypeId).Width(140);
         columns.Bound(e => e.Attachment).Title("Plate Number").Width(120);
         columns.Bound(e => e.PremiumCost).Width(120);
        
@@ -35,7 +35,7 @@
                                 .Scrollable()
                                 .Sortable()
                                 .Filterable()
-                                .Groupable()
+                                //.Groupable()
                                 .Scrollable(h => h.Height(500))
     .DataSource(dataSource => dataSource
         .Ajax()
@@ -43,7 +43,7 @@
             .Events(events => events.Error("error_handler").Sync("sync_handler"))
         .Model(model =>
               {
-                  model.Id(p => p.InsuranceID);
+                  model.Id(p => p.FleetInsuranceID);
                
               })
                 .Create(update => update.Action("Insurance_Create", "Insurance"))

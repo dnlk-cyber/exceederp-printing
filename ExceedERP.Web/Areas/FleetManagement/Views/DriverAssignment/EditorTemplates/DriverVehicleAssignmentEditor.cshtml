@@ -1,0 +1,200 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetResource.DriverAssignment
+
+ <script>
+     function filterEquipmentIdentity() {
+      
+         var dropdownlist = $("#EquipmentTypeID").data("kendoDropDownList");
+         var filterInput = dropdownlist.filterInput;
+
+         return {
+             equipmentIdentityId: $("#EquipmentIdentityID").val(),
+             Search: filterInput.val()
+         };
+
+     }
+
+     function filterEquipment() {
+         var dropdownlist = $("#FleetId").data("kendoDropDownList");
+         var filterInput = dropdownlist.filterInput;
+
+         return {
+             equipmentNameId: $("#EquipmentNameID").val(),
+             search: filterInput.val()
+         };
+     }
+     function filterByType() {
+         var dropdownlist = $("#EquipmentNameID").data("kendoDropDownList");
+         var filterInput = dropdownlist.filterInput;
+
+         return {
+             equipmentTypeId: $("#EquipmentTypeID").val(),
+             search: filterInput.val()
+         };
+
+     }
+ </script>
+
+<div class="demo-section k-content">
+    <form>
+
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-sm-3">
+
+                @(Html.Kendo().DropDownList().Name("EquipmentIdentityID")
+                        .DataTextField("Name")
+                        .DataValueField("Id").Filter(FilterType.Contains)
+                        .OptionLabel("Select Equipment Category")
+                        .HtmlAttributes(new { style = "width:100%" })
+                        .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider"))
+                        .ServerFiltering(false)))
+
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+
+                    @(Html.Kendo().DropDownList().Name("EquipmentTypeID")
+                           .DataTextField("Name")
+                           .DataValueField("Id")
+                           .OptionLabel("Select Equipment Type")
+                           .Filter(FilterType.Contains)
+                           .HtmlAttributes(new { style = "width:100%" })
+                           .DataSource(d =>
+                           {
+                               d.Read(r =>
+                           {
+                                r.Action("GetEquipmentTypes", "FleetManagementDataProvider")
+                                 .Data("filterEquipmentIdentity");
+                                                       })
+                                  .ServerFiltering(true);
+                                   })
+                                  .Enable(false)
+                                  .AutoBind(false)
+                                  .CascadeFrom("EquipmentIdentityID")
+                    )
+
+
+
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group">
+
+                    @(Html.Kendo().DropDownList().Name("EquipmentNameID")
+                                                .AutoBind(false)
+                                                .Enable(false)
+                                                .DataTextField("Name")
+                                                  .DataValueField("Id")
+                                                  .Filter(FilterType.Contains)
+                                                  .OptionLabel("Select")
+                                                .DataSource(d => 
+                                                d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider")
+                                                .Data("filterByType")).ServerFiltering(true))
+                                                .CascadeFrom("EquipmentTypeID"))
+
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.FleetId)
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.FleetId).Name("FleetId")
+                                  .DataTextField("PlateNumber")
+                                          .DataValueField("FleetsID")
+                                          .OptionLabel(" Select ")
+                                          .Filter(FilterType.Contains)
+                                         .DataSource(d => d.Read(r => r.Action("UnAssignedEquipmentDDBind", "FleetManagementDataProvider")
+                                         .Data("filterEquipment"))
+                                         .ServerFiltering(true))
+                                         .CascadeFrom("EquipmentNameID"))
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.ToOperatorName)
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.ToOperatorName).Name("ToOperatorName")
+                              .DataTextField("FullName")
+                              .DataValueField("OperatorID").OptionLabel(" Select ").Filter(FilterType.Contains)
+                              .DataSource(d => d.Read(r => r.Action("OperatorUnAssignedDDBind", "OperatorRegistration").Data("filterEquipmentType")).ServerFiltering(false)))
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.StartingDate)
+                    </div>
+                    <div>
+                        @Html.Kendo().DatePickerFor(model => model.StartingDate)
+                        @Html.ValidationMessageFor(model => model.StartingDate)
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.BranchId)
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(m => m.BranchId)
+                                .DataTextField("Name")
+                                .DataValueField("Id")
+                                .Filter(FilterType.Contains)
+                                .OptionLabel("Select Branch")
+                                .HtmlAttributes(new { style = "width:100%" })
+                                .DataSource(d => d.Read(r => r.Action("GetBranches", "FleetManagementDataProvider"))
+                                .ServerFiltering(false)))
+                        @Html.ValidationMessageFor(model => model.BranchId)
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Remark)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Remark)
+                        @Html.ValidationMessageFor(model => model.Remark)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+    </form>
+</div>

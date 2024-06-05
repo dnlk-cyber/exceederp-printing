@@ -1,0 +1,2588 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using ExceedERP.Core.Domain.Maintenance;
+@{
+    /**/
+
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link href="~/Scripts/Exceed/dist/css/style.css" rel="stylesheet" />
+
+
+@(Html.Kendo().Window()
+        .Name("window")
+        .Width(400)
+        .Height(200)
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Content(@<text>
+            <form action="@Url.Action("RejectWorkShop", "ServiceCenter", new { area = "Maintenance" })" method="post" , new { enctype="multipart/form-data" }>
+                <input type="hidden" name="id" id="id">
+                <div class="row">
+                    <div class="col-md-3">
+
+                        @Html.Label("Reason:")
+
+                        @Html.TextArea("RejectionReason", "", new { type = "text" })
+                    </div>
+
+                </div>
+                <button type="submit" class="btn btn-info"><i class="glyphicon glyphicon-ok" aria-hidden="true"></i> Submit</button>
+
+            </form>
+        </text>)
+                        .Modal(true)
+                        .Title("Reason For Reject")
+                        .Actions(actions => actions.Close())
+
+)
+<legend>External Service Center</legend>
+@(Html.Kendo().Grid<ServiceCenterJob>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.Bound(e => e.Num).Width(80);
+            columns.ForeignKey(e => e.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Title("Customer").Width(150);
+            columns.Bound(e => e.IsRework).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsRework? checked='checked': checked='' #/>");
+            columns.Bound(e => e.IsInsured).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsInsured? checked='checked': checked='' #/>");
+
+            //columns.ForeignKey(e => e.EquipmentInformationId, (IEnumerable)ViewData["EquipmentsList"], "EquipmentInformationId", "LicensePlate").Title("License Place").Width(150);
+            //columns.Bound(e => e.ProjectName).Title("Location").Width(100);
+            columns.Bound(e => e.LicensePlate).Width(100);
+            columns.Bound(e => e.Referance).Width(100);
+            //columns.Bound(e => e.MaintenanceCenter).Width(200);
+            columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").Width(140);
+            columns.ForeignKey(e => e.ServiceCenterId, (IEnumerable)ViewData["ServiceCenter"], "Id", "Name").Width(150);
+            columns.Bound(e => e.Status).Width(200);
+            columns.Command(command =>
+        {
+        if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceServiceRejecter))
+
+        {
+            command.Custom("cmd-aprove-request").Text("&nbsp; Approve").Click("approveWorkShop").HtmlAttributes(new { @class = "approve" }).IconClass("fa fa-ok");
+            command.Custom("cmd-reject-request").Text("&nbsp; Reject").Click("rejectWorkShop").HtmlAttributes(new { @class = "reject" }).IconClass("fa fa-close");
+        }
+        }).Width(100);
+        })
+
+        .Editable(editable =>
+        {
+            editable.Mode(GridEditMode.PopUp).TemplateName("JobOrderEditor");
+            editable.DisplayDeleteConfirmation("Are You Sure To Send For Approval");
+        })
+        .HtmlAttributes(new { style = "height: 500px;" })
+        .Pageable(pageable => pageable
+        .Input(true)
+        .Numeric(false)
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+
+        .Scrollable()
+        .Sortable()
+        .Filterable()
+        .Scrollable(h => h.Height(500))
+        .ClientDetailTemplateId("template")
+        .Events(ev => ev.DetailExpand("MasterOnExpand"))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(true).Sort(x => x.Add(s => s.Num).Descending())
+        .PageSize(10)
+        .Model(model =>
+        {
+            model.Id(p => p.ServiceCenterJobId);
+            model.Field(p => p.ServiceCenterJobId).Editable(false);
+            model.Field(p => p.JobOrderID).Editable(false);
+        }
+        ).Events(ev => ev
+        .Error("error_handler(\"grid\")")
+        .RequestStart("onRequestStart(\"grid\")")
+        .RequestEnd("onRequestEnd(\"grid\")"))
+        //.Group(g =>
+        //{
+        //    g.Add(gg => gg.Num);
+        //})
+
+        //.Create(update => update.Action("JobOrder_Create", "JobOrder"))
+        .Read(read => read.Action("ExternalServiceCenter_Read", "ExternalServiceCenter"))
+        .Update(update => update.Action("JobOrder_Update", "ExternalServiceCenter"))
+        .Destroy(update => update.Action("JobOrder_Refer", "ExternalServiceCenter"))
+
+        )
+        .Events(events => events.DataBound("dataBound"))
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                .Name("tabStripMain_#=ServiceCenterJobId#")
+                .SelectedIndex(0)
+                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                .Items(items =>
+                {
+
+        @*items.Add().Text("  Summary").Content(@<text>
+            <a href='@Url.Action("JobOrderReferance", "PrintJob")/?Id=#=Num#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+            <div class="row">
+            # if (FailureReason != "" )
+            {#
+            <div class=" col-sm-4 alert-info">
+            Failure Reason
+            <textarea disabled>#=FailureReason#</textarea>
+            </div>
+            # }#
+            # if (AdvanceMeasure != "" )
+            {#
+            <div class=" col-sm-4 alert-info">
+            Advance Measure
+            <textarea disabled>#=AdvanceMeasure#</textarea>
+            </div>
+            # }#
+            # if (IsSendForApproval == false  )
+            {#
+
+            <a href='@Url.Action("Technical_SendForApproval", "JobOrder")/?Id=#=ServiceCenterJobId#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+            # }#
+            # if (IsOnlineTransferred == false )
+            {#
+
+            <p>  Advance Measure</p>
+            <form action=@Url.Action("UpdateAdvanceMeasure", "JobOrder") method="post">
+            <select name="JobType" multiple style="height : 50px; width : 250px;" required>
+            @foreach (var Type in ViewBag.AdvanceMeasure as List<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.AdvanceMeasure>)
+            {
+            <option value="@Type.Description">@Type.Description</option>
+            }
+
+
+            </select>
+            <input type="hidden" name="Id" value="#=ServiceCenterJobId#">
+            <input type="submit" class="k-primary  form-control pull-right" value=" Update " />
+
+            </form>
+            </div>
+            <a href='@Url.Action("TransferJob", "ServiceCenter")/?Id=#=ServiceCenterJobId#' title="Send For Closing"><i class="fa fa-reply  fa-2x"></i></a>
+
+            # }#
+
+            # if (IsSendForApproval == true )
+            {#
+
+            <div class="row col-md-12">
+            <div class="col-md-3">
+            </div>
+            <label>Progress </label>
+
+            <div data-role='progressbar' id="progress#=Num#" class='k-widget k-progressbar k-progressbar-horizontal  '><span class='k-progress-status-wrap'><span class='k-progress-status'>#=Progress#%</span></span><div class='k-state-selected' style='width: #=Progress#%; '><span class='k-progress-status-wrap' style='width: 150%;'><span class='k-progress-status'>#=Progress#%</span></span></div></div>
+            <button type="button" class="k-primary"> <span class="badge"> #=Progress#%</span></button>
+
+
+            </div>
+            <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-5">
+            <div id="CostChart#=ServiceCenterJobId#" data-role="chart" class="k-chart" style="position: relative; touch-action: pan-y;"> </div>
+            </div>
+
+            <div class="col-md-3">
+            <div id="gauge-container">
+            <label>Efficency</label>
+
+            <div id="EfficencyGauge#=ServiceCenterJobId#" data-role="radialgauge" class="k-gauge"> </div>
+            </div>
+
+            </div>
+
+            </div>
+            # }#
+
+
+
+
+
+
+
+            </text>
+            );*@
+
+
+                    items.Add().Text("Detail").Content(@<text>
+
+                        # if (IsSubmittedToServiceCenter == true && IsOnlineTransferred == false  &&   IsSecondOnlineApproved == false)
+                        {#
+
+
+                        @*<a href='@Url.Action("TransferJob", "ServiceCenter")/?Id=#=ServiceCenterJobId#' title="Send For Closing"><i class="fa fa-share-square fa-2x"></i></a>*@
+                        <a onclick='return transferJobForClosing("#=ServiceCenterJobId#")' href='\\#' title="Send For Closing"><i class="fa fa-share-square fa-2x"></i></a>
+
+                        @*<button class="   k-primary col-md-3" onclick="MaintenacePettyCash()">Petty Cash</button>*@
+
+
+                        # }#
+
+
+                        &nbsp;
+                        <a href='@Url.Action("JobOrder", "MaintenancePrint")/#=Num#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+
+                        <br />
+                        <div class="form-group">
+                            <div class="label">
+                                <label>    Status </label>
+                            </div>
+                            <div>
+                                # if (IsSecondSendForApproval == false && IsSecondOnlineApproved == false)
+                                {#
+
+                                <p>  Editing</p>
+                                # }
+
+                                else if (IsSecondSendForApproval == true && IsSecondOnlineApproved == false)
+                                {#
+
+                                <p>Waiting For Approval</p>
+                                # }
+
+                                else if (IsSecondOnlineApproved == true)
+                                {#
+
+                                <p>  Approved </p>
+                                # }#
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            # if (IsSecondSendForApproval == true || IsSecondSendForApproval == true)
+                            {#
+                            @*<img src="/Content/Images/load.gif" style="display:none;" id="ProgressIssue" />
+                                <hr />Parts<hr />
+                                <div style=" padding:35px" id="approvedlines#=ServiceCenterJobId#"></div>
+                                <hr />Accessories<hr />
+                                <div style=" padding:35px" id="approvedaccessorieslines#=ServiceCenterJobId#"></div>*@
+
+                            # }#
+
+
+                        </div>
+                    </text>
+                                                                                                                    );
+
+
+
+
+                            items.Add().Text("Service").Content(@<text>
+
+                                @(Html.Kendo().Grid<JobOrderServiceCenterDetail>()
+                                                                        .Name("JobOrderDetailgrid_#=ServiceCenterJobId#")
+                                                                        .Columns(columns =>
+                                                                        {
+                                                                                            columns.ForeignKey(e => e.SubCategoryCode, (IEnumerable)ViewData["SubCategories"], "Code", "Name").EditorTemplateName("SubCategoryTemplate").Width(120);
+
+                                                                                            columns.Bound(e => e.JobCausesId).ClientTemplate("<label>  \\#=Cause\\#    <label/>").EditorTemplateName("JobCause").Width(200);
+                                                                                            columns.Bound(e => e.ServiceGroup).EditorTemplateName("ServiceCategoryEnumMapping").Width(120);
+                                                                                            columns.ForeignKey(e => e.RepairTypeID, (IEnumerable)ViewData["Service"], "Code", "Name").EditorTemplateName("RepairTypeTemplate").Width(150);
+                                                                                            columns.ForeignKey(e => e.ServiceCenterId, (IEnumerable)ViewData["ServiceCenter"], "Id", "Name").EditorTemplateName("ServiceCenter").Width(150);
+                                                                                            columns.Bound(o => o.Status).EditorTemplateName("StatusEditor").Width(100);
+                                                                                            columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(100);
+                                                                                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                                                                                        })
+                                                                        .ToolBar(toolBar =>
+                                                                        {
+                                                                                            toolBar.Create();
+                                                                                        })
+
+                                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                        .Pageable(p => p.Refresh(true))
+                                                                        //  .Groupable()//.Events(ev => ev.DetailExpand("onDetailServiceExpandUser"))
+                                                                        .DataSource(dataSource => dataSource
+                                                                        .Ajax()
+                                                                        .PageSize(20)
+                                                                        .Model(model =>
+                                                                        {
+                                                                                            model.Id(p => p.JobOrderServiceCenterDetailId);
+                                                                                //model.Field(p => p.JobCausesId).Editable(false);
+                                                                                // model.Field(p => p.RepairTypeID).Editable(false);
+                                                                                //model.Field(p => p.ServiceGroup).Editable(false);
+                                                                                //model.Field(p => p.SubCategoryCode).Editable(false);
+                                                                                model.Field(p => p.Status).Editable(false);
+                                                                                            model.Field(p => p.MaintenanceCenter).Editable(false);
+                                                                                            model.Field(p => p.JobOrderServiceCenterDetailId).Editable(false);
+
+                                                                                        }).Events(ev => ev
+                                                .Error("error_handler(\"JobOrderDetailgrid_#=ServiceCenterJobId#\")")
+                                                .RequestStart("onRequestStart(\"JobOrderDetailgrid_#=ServiceCenterJobId#\")")
+                                                .RequestEnd("onRequestEnd(\"JobOrderDetailgrid_#=ServiceCenterJobId#\")"))
+                                                                        .Read(read => read.Action("OrderService", "ServiceJobOrderDetail", new { jobOrderID = "#=ServiceCenterJobId#" }))
+                                                                        .Create(create => create.Action("JobOrderDetail_Create", "ServiceJobOrderDetail", new { jobDetailOrderID = "#=ServiceCenterJobId#" }))
+                                                                        .Update(update => update.Action("JobOrderDetail_Approve", "ServiceJobOrderDetail"))
+                                                                        ).Events(events => events.DataBound("ServiceDataBound"))
+                                                                .ToClientTemplate())
+                            </text>
+                    );
+
+
+                                    items.Add().Text("External Service Center Payment").Content(@<text>
+                                        
+                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.ExternalServiceCenterPayment>()
+                                                            .Name("CAGrid_#=ServiceCenterJobId#")
+                                                            .Columns(columns =>
+                                                            {
+                                                                columns.Bound(e => e.CostType).Width(120);
+                                                                columns.Bound(c => c.Date).Width(100);
+                                                                columns.Bound(o => o.Quantity).Width(80);
+                                                                columns.Bound(o => o.UnitPrice).Width(100);
+                                                                columns.Bound(o => o.SubTotal).Width(100);
+                                                                columns.Bound(o => o.Tax).Width(100);
+                                                                columns.Bound(o => o.Total).Width(100);
+                                                                            
+
+                                                                columns.Command(command =>
+                                                                {
+                                                                    command.Edit();
+                                                                    command.Destroy();
+                                                                }).Width(200);
+                                                            })
+                                                            .ToolBar(toolbar =>
+                                                            {
+                                                                toolbar.Create();
+                                                            })
+                                                            .Events(x => x.DataBound("detailGridsDataBound"))
+                                                            .Editable(editable =>
+                                                            {
+                                                                editable.Mode(GridEditMode.InLine);
+                                                                editable.DisplayDeleteConfirmation("Are You Sure To Remove this");
+                                                            })
+                                                            .DataSource(dataSource => dataSource
+                                                                .Ajax()
+                                                                .PageSize(20)
+                                                                .Model(model =>
+                                                                {
+                                                                    model.Id(p => p.ExternalServiceCenterPaymentId);
+                                                     
+                                                                }).Events(ev => ev
+                                                                    .Error("error_handler(\"CAGrid_#=ServiceCenterJobId#\")")
+                                                                    .RequestStart("onRequestStart(\"CAGrid_#=ServiceCenterJobId#\")")
+                                                                    .RequestEnd("onRequestEnd(\"CAGrid_#=ServiceCenterJobId#\")"))
+
+                                                                    .Create(create => create.Action("ExternalServiceCenterPayment_Create", "ExternalServiceCenterPayment", new { scId = "#=ServiceCenterJobId#" }))
+                                                                    .Read(read => read.Action("ExternalServiceCenterPayment_Read", "ExternalServiceCenterPayment", new { scId = "#=ServiceCenterJobId#" }))
+                                                                    .Destroy(destroy => destroy.Action("ExternalServiceCenterPayment_Delete", "ExternalServiceCenterPayment"))
+                                                                    .Update(update => update.Action("ExternalServiceCenterPayment_Update", "ExternalServiceCenterPayment"))
+
+                                                                    )
+                                                                .Pageable(p => p.Refresh(true))
+                                                                .ToClientTemplate())
+
+                                    </text>);
+
+                                            items.Add().Text(" Spare Parts & materials ").Content(@<text>
+                                                @(Html.Kendo().Grid<StoreRequisition>()
+                                                                        .Name("SparePartStoreRequisitionGrid_#=ServiceCenterJobId#")
+                                                            .Columns(columns =>
+                                                            {
+                                                                                    // columns.Bound(c => c.StoreRequisitionID).Title("Request No.").Width(120).ClientTemplate("#=appendZeros(StoreRequisitionID)#");
+                                                                                    columns.Bound(c => c.Reference).Title("Reference").Width(120);
+                                                                                                columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(100).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+                                                                                                columns.Bound(c => c.RequestDate).Width(110);
+                                                                                                columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("Store").Width(160).EditorTemplateName("StoreSelector");
+                                                                                                columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  \\#: IsTransfer? checked='checked': checked='' \\# />").Width(100);//value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" +
+                                                                                    columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoreSelector");
+                                                                                                columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+
+                                                                                                columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
+                                                                                                columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
+                                                                                                columns.Bound(c => c.IsForOther).Width(90).Title("Is for Other?").ClientTemplate(
+                                                                        "<input type='checkbox' disabled = 'true' \\#: IsForOther? checked='checked': checked='' \\#/>");
+                                                                                    //value='#= IsForOther #' " +"# if (IsForOther) { #" +"checked='checked'" +"# } #" +//"
+                                                                                    columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
+                                                                                                columns.Bound(c => c.PlateNo).Width(100);
+                                                                                                columns.Bound(c => c.Remark).Width(120);
+                                                                                                columns.Bound(c => c.Status).Width(100);
+
+                                                                                                columns.Command(command =>
+                                                                        {
+                                                                                            command.Edit();
+                                                                                            command.Destroy();
+                                                                                        }).Width(280);
+
+                                                                                            }).Filterable()
+                                                            .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(5))
+
+
+                                                            .Events(ev => ev.Edit("onMasterEdit"))
+
+                                                            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("SparePartStoreRequisition").Window(w => w.Title("Store Requisition")))
+                                                            .HtmlAttributes(new { style = "height: 550px;" })
+                                                            .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(20))
+                                                            .Scrollable()
+
+                                                            .Filterable()
+                                                            .Selectable(selectable =>
+                                                            {
+                                                                                                selectable.Mode(GridSelectionMode.Single);
+                                                                                                selectable.Type(GridSelectionType.Row);
+                                                                                            })
+                                                            .Sortable(sortable =>
+                                                            {
+                                                                                                sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                            })
+                                                            //.Groupable()
+                                                            .Events(ev => ev.DetailExpand("detailExpand"))
+                                                            .Scrollable(h => h.Height(500))
+                                                            .Events(x => x.DataBound("onDataBoundMaster"))
+                                                            .DataSource(dataSource => dataSource
+                                                            .Ajax()
+                                                            .Sort(sort => sort.Add("StoreRequisitionID").Descending())
+                                                            .Events(ev => ev
+                                                            .Error("error_handler(\"SparePartStoreRequisitionGrid_#=ServiceCenterJobId#\")")
+                                                            .RequestStart("onRequestStart(\"SparePartStoreRequisitionGrid_#=ServiceCenterJobId#\")")
+                                                            .RequestEnd("onRequestEnd(\"SparePartStoreRequisitionGrid_#=ServiceCenterJobId#\")"))
+                                                            .PageSize(20)
+                                                            .Model(model =>
+                                                            {
+                                                                                                model.Id(p => p.StoreRequisitionID);
+                                                                                                model.Field(p => p.StoreRequisitionID).Editable(false);
+                                                                                                model.Field(p => p.BranchId).Editable(false);
+                                                                                    // model.Field(p => p.GLPeriodId).Editable(false);
+                                                                                    model.Field(p => p.OrgStructureId).Editable(false);
+                                                                                    // model.Field(p => p.EmployeeId).Editable(false);
+                                                                                    model.Field(p => p.Status).Editable(false);
+                                                                                    //model.Field(p => p.RequestDate).Editable(false);
+                                                                                    model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                model.Field(p => p.DateCreated).Editable(false);
+                                                                                                model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                model.Field(p => p.LastModified).Editable(false);
+                                                                                            })
+                                                            .Read(read => read.Action("SparePartStoreRequisitions_Read", "SparePartStoreRequisition", new { Id = "#=ServiceCenterJobId#" }))
+                                                            .Create(create => create.Action("SparePartStoreRequisitions_Create", "SparePartStoreRequisition", new { Id = "#=ServiceCenterJobId#" }))
+                                                            .Update(update => update.Action("SparePartStoreRequisitions_Update", "SparePartStoreRequisition"))
+                                                            .Destroy(destroy => destroy.Action("SparePartStoreRequisitions_Destroy", "SparePartStoreRequisition"))
+
+                                                            ).Resizable(resize => resize.Columns(true))
+                                                            .ClientDetailTemplateId("SparePartStoreRequisitions")
+                                                            .ToClientTemplate())
+                                            </text>);
+
+                                                    items.Add().Text("Store Return").Content(@<text>
+                                                        @(Html.Kendo().Grid<StoreReturn>()
+                                                                        .Name("storn_return_#=ServiceCenterJobId#")
+                                                                        .Columns(columns =>
+                                                                        {
+                                                                                                        //columns.Bound(c => c.StoreReturnID).Title("Return No.").Width(130).Width(120).ClientTemplate("#=appendZeros(StoreReturnID)#");
+                                                                                                        columns.Bound(c => c.Reference).Width(120);
+                                                                                                                    columns.Bound(c => c.IssueNumber).Width(120);
+                                                                                                                    columns.Bound(c => c.Reason).Width(120);
+                                                                                                                    columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
+                                                                                                                    columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper");
+                                                                                                                    columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(120).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+                                                                                                                    columns.Bound(c => c.ReturnDate).Width(130);
+                                                                                                                    columns.Bound(c => c.ConfirmationLetter).Width(130);
+                                                                                                                    columns.Bound(c => c.IsForOther).Width(130).ClientTemplate("<input type='checkbox' disabled = 'true' \\#: IsForOther? checked='checked': checked='' \\#/>");
+                                                                                                                    columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
+                                                                                                                    columns.Bound(c => c.Remark).Width(120);
+                                                                                                                    columns.Bound(c => c.Status).Width(80);
+                                                                                                                    columns.Command(command =>
+                                                                                                        {
+                                                                                                                //command.Edit();
+                                                                                                                //command.Destroy();
+                                                                                                            }).Width(180);
+                                                                                                                })
+                                                                        .ToolBar(toolbar =>
+                                                                        {
+                                                                                                        //toolbar.Create();
+                                                                                                    })
+                                                                        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("StoreReturn").Window(w => w.Title("Store Return")))
+                                                                        .HtmlAttributes(new { style = "height: 550px;" })
+                                                                        .Pageable(pageable => pageable
+                                                                            .Input(true)
+                                                                            .Numeric(false)
+                                                                            .Refresh(true)
+                                                                            .PageSizes(true)
+                                                                            .ButtonCount(20))
+                                                                        .Scrollable()
+
+                                                                        .Filterable()
+                                                                        .Selectable(selectable =>
+                                                                        {
+                                                                                                                    selectable.Mode(GridSelectionMode.Single);
+                                                                                                                    selectable.Type(GridSelectionType.Row);
+                                                                                                                })
+                                                                        .Sortable(sortable =>
+                                                                        {
+                                                                                                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                })
+                                                                        //.Groupable()
+                                                                        //.Events(ev => ev.DetailExpand("detailExpand"))
+                                                                        .Scrollable(h => h.Height(500))
+                                                                        .Events(x => x.DataBound("onDataBoundMaster"))
+                                                                        .DataSource(dataSource => dataSource
+                                                                            .Ajax()
+                                                                            .Sort(sort => sort.Add("StoreReturnID").Descending())
+                                                                            .Events(ev => ev
+                                                                                .Error("error_handler(\"storn_return_#=ServiceCenterJobId#\")")
+                                                                                .RequestStart("onRequestStart(\"storn_return_#=ServiceCenterJobId#\")")
+                                                                                .RequestEnd("onRequestEnd(\"storn_return_#=ServiceCenterJobId#\")"))
+
+                                                                            .Model(model =>
+                                                                            {
+                                                                                                                        model.Id(p => p.StoreReturnID);
+                                                                                                                        model.Field(p => p.Status).Editable(false);
+                                                                                                            //model.Field(p => p.GLPeriodId).Editable(false);
+                                                                                                            model.Field(p => p.StoreReturnID).Editable(false);
+                                                                                                                    })
+                                                                            .Read(read => read.Action("StoreReturns_Read", "MaintenanceStoreReturn", new { Id = "#=ServiceCenterJobId#" }))
+                                                                            .Create(create => create.Action("StoreReturns_Create", "MaintenanceStoreReturn", new { Id = "#=ServiceCenterJobId#" }))
+                                                                            .Update(update => update.Action("StoreReturns_Update", "MaintenanceStoreReturn"))
+                                                                            .Destroy(destroy => destroy.Action("StoreReturns_Destroy", "MaintenanceStoreReturn"))
+                                                                        ).ClientDetailTemplateId("storereturntemplate")
+                                                                        .ToClientTemplate())
+                                                    </text>
+
+);
+                                                            items.Add().Text(" Work Sheet").Content(@<text>
+
+                                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.ServiceCrewWorkLog>()
+.Name("WorkLogrid_#=ServiceCenterJobId#")
+.Columns(columns =>
+{
+                                                                    columns.ForeignKey(c => c.MecanicId, (System.Collections.IEnumerable)ViewData["Mechanic"], "Code", "Name").Width(100);
+                                                                    columns.ForeignKey(e => e.SubCategoryCode, (IEnumerable)ViewData["SubCategories"], "Code", "Name").EditorTemplateName("SubCategoryTemplate").Width(120);
+                                                                    columns.Bound(e => e.ServiceGroup).EditorTemplateName("ServiceCategoryEnumMapping").Width(120);
+                                                                    columns.ForeignKey(o => o.JobOrderDetailId, (System.Collections.IEnumerable)ViewData["JobOrderDetail"], "Code", "Name").Width(100);
+                                                                    columns.ForeignKey(o => o.StandaredHours, (System.Collections.IEnumerable)ViewData["JobOrderDetail"], "Code", "Name").Width(100);
+                                                        //columns.Bound(o => o.WorkingHoursMorningFrom).Format("{0:hh-mm}").EditorTemplateName("TimePicker").Width(60);
+                                                        //columns.Bound(o => o.WorkingHoursMorningto).Format("{0:hh-mm}").EditorTemplateName("TimePicker").Width(60);
+                                                        //columns.Bound(o => o.WorkingHoursAfternoonFrom).Format("{0:hh-mm}").EditorTemplateName("TimePicker").Width(60);
+                                                        //columns.Bound(o => o.WorkingHoursAfternoonTo).Format("{0:hh-mm}").EditorTemplateName("TimePicker").Width(60);
+                                                        columns.Bound(o => o.WorkShopType).EditorTemplateName("WorkhopType").Width(100);
+                                                                    columns.Bound(o => o.TotalLabourHours).Width(100);
+                                                        //columns.Bound(o => o.HourlyWage);
+                                                        //columns.Bound(o => o.HourlyWage);
+                                                        columns.Bound(o => o.CreatedBy).Width(80);
+                                                                    columns.Bound(o => o.DateCreated).Format("{0:dd/MM/yyyy}").Width(80);
+                                                                    columns.Bound(c => c.Status).EditorTemplateName("ApprovalEditor").Width(100);
+                                                                    columns.Command(command => { command.Edit().Text("Approve"); }).Width(150);
+
+                                                                })
+.ToolBar(x => { x.Excel(); })
+.ClientDetailTemplateId("followup")
+.DataSource(dataSource => dataSource
+.Ajax()
+
+.PageSize(20)
+.Model(model =>
+{
+                                                                    model.Id(p => p.ServiceCrewWorkLogId);
+                                                                    model.Field(p => p.DateCreated).Editable(false);
+                                                                    model.Field(p => p.CreatedBy).Editable(false);
+                                                                    model.Field(p => p.ServiceGroup).Editable(false);
+                                                                    model.Field(p => p.SubCategoryCode).Editable(false);
+                                                                    model.Field(p => p.MecanicId).Editable(false);
+                                                                    model.Field(p => p.StandaredHours).Editable(false);
+                                                                    model.Field(p => p.JobOrderDetailId).Editable(false);
+                                                                    model.Field(p => p.WorkingHoursAfternoonFrom).Editable(false);
+                                                                    model.Field(p => p.WorkShopType).Editable(false);
+                                                                    model.Field(p => p.WorkingHoursAfternoonTo).Editable(false);
+                                                                    model.Field(p => p.WorkingHoursMorningFrom).Editable(false);
+                                                                    model.Field(p => p.WorkingHoursMorningto).Editable(false);
+                                                                }).Events(ev => ev
+                                                        .Error("error_handler(\"WorkLogrid_#=ServiceCenterJobId#\")")
+.RequestStart("onRequestStart(\"WorkLogrid_#=ServiceCenterJobId#\")")
+.RequestEnd("onRequestEnd(\"WorkLogrid_#=ServiceCenterJobId#\")"))
+                                                                                        .Create(create => create.Action("ServiceCrewWorkLog_Create", "ServiceCrewWorkLog", new { Id = "#=ServiceCenterJobId#" }))
+                                                                                        .Read(read => read.Action("ServiceCrewWorkLog_Read", "ServiceCrewWorkLog", new { Id = "#=ServiceCenterJobId#" }))
+                                                                                        .Update(update => update.Action("ServiceCrewWorkLog_Update", "ServiceCrewWorkLog"))
+                                                                                        .Destroy(destroy => destroy.Action("ServiceCrewWorkLog_Destory", "ServiceCrewWorkLog"))
+
+).Events(events => events.DataBound("WorkSheetDataBound"))
+.Pageable(p => p.Refresh(true))
+.ToClientTemplate())
+                                                            </text>);
+
+
+
+
+
+                                                                })
+                                                                                                                .ToClientTemplate())
+</script>
+
+
+
+<script id="followup" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                .Name("tabStripMain_#=ServiceCrewWorkLogId#")
+                .SelectedIndex(0)
+                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                .Items(items =>
+                {
+                    items.Add().Text(" Follow-Ups").Content(@<text>
+
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.FollowUp>()
+                                            .Name("Followupsgrid_#=ServiceCrewWorkLogId#")
+                                    .Columns(columns =>
+                                    {
+                                                columns.Bound(o => o.DurationHr).EditorTemplateName("NumEditor").Width(100);
+                                                columns.Bound(o => o.Status).EditorTemplateName("FollowupType").Width(200);
+                                                columns.Bound(o => o.DateCreated).Format("{0:yyyy-MM-dd}").Width(100).Width(100);
+
+
+                                            })
+                                    .Events(ev =>
+                                    {
+                                                ev.DataBound("detailGridsDataBound");
+                                            })
+                                    .DataSource(dataSource => dataSource
+                                    .Ajax()
+
+                                    .PageSize(20)
+                                    .Model(model =>
+                                    {
+                                                model.Id(p => p.FollowUpId);
+                                                model.Field(p => p.DateCreated).Editable(false);
+
+                                            }).Events(ev => ev
+                                .Error("error_handler(\"Followupsgrid_#=ServiceCrewWorkLogId#\")")
+                                .RequestStart("onRequestStart(\"Followupsgrid_#=ServiceCrewWorkLogId#\")")
+                                .RequestEnd("onRequestEnd(\"Followupsgrid_#=ServiceCrewWorkLogId#\")"))
+                                    .Create(create => create.Action("FollowUp_Create", "FollowUp", new { Id = "#=ServiceCrewWorkLogId#" }))
+                                    .Read(read => read.Action("FollowUp_Read", "FollowUp", new { Id = "#=ServiceCrewWorkLogId#" }))
+                                    .Update(update => update.Action("FollowUp_Update", "FollowUp"))
+                                    .Destroy(destroy => destroy.Action("FollowUp_Destory", "FollowUp"))
+
+                                            )
+                                    .ToClientTemplate())
+                    </text>
+                        );
+                        }).ToClientTemplate())
+
+
+</script>
+<script id="ComponentDetailItemTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                .Name("tabStripComponentDetail_#=ExternalComponentId#")
+                .SelectedIndex(0)
+                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                .Items(items =>
+                {
+
+                    items.Add().Text(" Spare Part ").Content(@<text>
+
+
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.ExternalMaterial>()
+                                    .Name("ComponentServiceSparegrid_#=ExternalComponentId#")
+                                    .Columns(columns =>
+                                    {
+                                                columns.Bound(o => o.MaterialName).Title("SparePart Name").Width(120);
+                                                columns.Bound(o => o.Quantity).EditorTemplateName("NumEditor").Width(100);
+                                                columns.Bound(o => o.UnitPrice).EditorTemplateName("NumEditor").Width(100);
+                                                columns.Bound(o => o.ApprovalStatuses).EditorTemplateName("ApprovalStatusBind").Width(100);
+                                                columns.Bound(o => o.Remark).Width(100);
+                                                columns.Bound(o => o.CreatedBy).Width(100);
+                                                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                                                columns.Command(command =>
+                        {
+                                            command.Edit().Text("Approve");
+
+                                        }).Width(250);
+                                            })
+                                    .ToolBar(t => t.Create())
+                                    .Editable(editable =>
+                                    {
+                                                editable.Mode(GridEditMode.InLine);
+                                                editable.DisplayDeleteConfirmation("Are You Sure To Remove Spare Part");
+                                            })
+                                    .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .PageSize(20)
+                                    .Model(model =>
+                                    {
+                                                model.Id(p => p.ExternalMaterialID);
+                                                model.Field(p => p.MaterialName).Editable(false);
+                                                model.Field(p => p.Quantity).Editable(false);
+                                                model.Field(p => p.UnitPrice).Editable(false);
+                                                model.Field(p => p.CreatedBy).Editable(false);
+                                                model.Field(p => p.DateCreated).Editable(false);
+                                            }).Events(ev => ev
+                                .Error("error_handler(\"ComponentServiceSparegrid_#=ExternalComponentId#\")")
+                                .RequestStart("onRequestStart(\"ComponentServiceSparegrid_#=ExternalComponentId#\")")
+                                .RequestEnd("onRequestEnd(\"ComponentServiceSparegrid_#=ExternalComponentId#\")"))
+                                    .Create(update => update.Action("ExternalServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentId#" }))
+                                    .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentId#" }))
+                                    .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                                    //.Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentId#" }))
+                                    .Update(destroy => destroy.Action("ExServiceSpare_Approve", "ServiceSpare"))
+
+                                    )
+                                    .Pageable(p => p.Refresh(true))
+                                    .ToClientTemplate())
+
+                    </text>
+                        );
+
+
+                        }).ToClientTemplate()
+
+    )
+</script>
+<script id="ComponentDetailItemApproveTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                .Name("tabStripComponentDetailApproval_#=ExternalComponentDetailId#")
+                .SelectedIndex(0)
+                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                .Items(items =>
+                {
+
+                    items.Add().Text(" Spare Part ").Content(@<text>
+
+
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.ExternalMaterial>()
+                                    .Name("ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#")
+                                    .Columns(columns =>
+                                    {
+                                                columns.Bound(o => o.MaterialName).Title("  Name").EditorTemplateName("SpareEditor").Width(120);
+                                                columns.Bound(o => o.Quantity).EditorTemplateName("NumEditor").Width(100);
+                                                columns.Bound(o => o.UnitPrice).EditorTemplateName("NumEditor").Width(100);
+                                                columns.Bound(o => o.ApprovalStatuses).EditorTemplateName("ApprovalStatusBind").Width(100);
+                                                columns.Bound(o => o.Remark).Width(100);
+                                                columns.Bound(o => o.CreatedBy).Width(100);
+                                                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                                                columns.Command(command =>
+                        {
+                                            command.Edit().Text("Approve");
+
+                                        }).Width(250);
+                                            })
+
+                                    .Editable(editable =>
+                                    {
+                                                editable.Mode(GridEditMode.InLine);
+                                                editable.DisplayDeleteConfirmation("Are You Sure To Remove Spare Part");
+                                            })
+                                    .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .PageSize(20)
+                                    .Model(model =>
+                                    {
+                                                model.Id(p => p.ExternalMaterialID);
+                                                model.Field(p => p.MaterialName).Editable(false);
+                                                model.Field(p => p.Quantity).Editable(false);
+                                                model.Field(p => p.UnitPrice).Editable(false);
+                                                model.Field(p => p.CreatedBy).Editable(false);
+                                                model.Field(p => p.DateCreated).Editable(false);
+                                            }).Events(ev => ev
+                                .Error("error_handler(\"ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#\")")
+                                .RequestStart("onRequestStart(\"ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#\")")
+                                .RequestEnd("onRequestEnd(\"ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#\")"))
+                                    .Create(update => update.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }))
+                                    .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentDetailId#" }))
+                                    .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                                    .Update(destroy => destroy.Action("ExServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }))
+
+                                    )
+                                    .Pageable(p => p.Refresh(true))
+                                    .ToClientTemplate())
+
+                    </text>
+                        );
+
+
+                        }).ToClientTemplate()
+
+    )
+</script>
+<script id="SparePartStoreRequisitions" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=StoreRequisitionID#").SelectedIndex(0).Items(items =>
+                {
+                    items.Add().Text("Detail").Content(
+
+        @<text>
+            # if (!IsSendForApproval&&!IsSendForApproval)
+            {#
+
+            <a onclick='return sendForApprovalStoreRequisition("#=StoreRequisitionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+            <br />
+            # } #
+
+            # if (IsOnlineApproved)
+            {#
+            <a href='@Url.Action("SparePartStoreRequisitionPrint", "InventoryPrint")/#=StoreRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+            <br />
+            # } #
+            <div>
+                <hr>
+                <dl class="dl-horizontal">
+
+                    <dt>
+                        Request Date
+                    </dt>
+                    <dd>
+                        #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                    </dd>
+                    <dt>
+                        Status
+                    </dt>
+                    <dd>
+                        #= Status #
+                    </dd>
+                    <dt>
+                        Is Transfer
+                    </dt>
+                    <dd>
+                        #= IsTransfer #
+                    </dd>
+                    <dt>
+                        Receiver Store
+                    </dt>
+                    <dd>
+                        #= ToStoreCode #
+                    </dd>
+                    <dt>
+                        CreatedOn
+                    </dt>
+                    <dd>
+                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                    </dd>
+                    <dt>
+                        CreatedBy
+                    </dt>
+                    <dd>
+                        #= CreatedBy #
+                    </dd>
+                    <dt>
+                        Modified By
+                    </dt>
+                    <dd>
+                        #= ModifiedBy #s
+                    </dd>
+                    <dt>
+                        Modified Date
+                    </dt>
+                    <dd>
+                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                    </dd>
+                    <dt>
+                        Approved By
+                    </dt>
+                    <dd>
+                        #= OnlineApprovedBy #s
+                    </dd>
+                    <dt>
+                        Approval Time
+                    </dt>
+                    <dd>
+                        #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                    </dd>
+                </dl>
+            </div>
+
+            <hr>
+
+            # if (IsOnlineApproved&&!IsVoid)
+            {#
+
+            <a onclick='return voidRecord("#=StoreRequisitionID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+
+
+            # } #
+
+        </text>
+                );
+
+                            items.Add().Text("Items").Content(
+                @<text>
+                    @(Html.Kendo().Grid<StoreRequisitionItem>()
+                                .Name("SparePartStoreRequisitionItem_#=StoreRequisitionID#")
+                                .Columns(columns =>
+                                {
+                                            columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(200);
+                                            columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(300);
+                                            columns.Bound(c => c.Unit).Width(120);
+                                            columns.Bound(c => c.PartNo).EditorTemplateName("PartNo").Width(120);
+                                            columns.Bound(c => c.ModelNo).Width(120);
+                                            columns.Bound(c => c.SerialNo).Width(120);
+                                            columns.Bound(c => c.ChasisNo).Width(120);
+                                            columns.Bound(c => c.RequestedQuantity).Width(120);
+                                            columns.Bound(c => c.ApprovedQuantity).Width(120);
+                                            columns.Bound(c => c.IssuedQuantity).Hidden().Width(90);
+                                            columns.Bound(c => c.PurchaseQuantity).Hidden().Width(90);
+                                            columns.Bound(c => c.ItemSpecification).Width(120);
+                                            columns.Bound(c => c.CurrentBalance).Hidden();
+                                            columns.Command(command =>
+{
+                                //command.Edit();
+                                //command.Destroy();
+                            });
+
+                                        })
+                                .ToolBar(toolbar =>
+                                {
+                                //toolbar.Create();
+                            })
+                                .Events(ev => ev.Edit("onItemEdit"))
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable()
+                                .Events(x => x.DataBound("onDataBoundLines"))
+                                .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(ev => ev
+                                .Error("error_handler(\"SparePartStoreRequisitionItem_#=StoreRequisitionID#\")")
+                                .RequestStart("onRequestStart(\"SparePartStoreRequisitionItem_#=StoreRequisitionID#\")")
+                                .RequestEnd("onRequestEnd(\"SparePartStoreRequisitionItem_#=StoreRequisitionID#\")"))
+                                .Model(model =>
+                                {
+                                            model.Id(p => p.StoreRequisitionItemID);
+                                            model.Field(p => p.IssuedQuantity).Editable(false);
+                                            model.Field(p => p.PurchaseQuantity).Editable(false);
+                                            model.Field(p => p.PartNo).Editable(false);
+                                            model.Field(p => p.Unit).Editable(false);
+                                            model.Field(p => p.CreatedBy).Editable(false);
+                                            model.Field(p => p.DateCreated).Editable(false);
+                                            model.Field(p => p.ModifiedBy).Editable(false);
+                                            model.Field(p => p.LastModified).Editable(false);
+
+                                        })
+                                .Read(read => read.Action("SparePartStoreRequisitionItems_Read", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }))
+                                .Create(create => create.Action("SparePartStoreRequisitionItems_Create", "SparePartStoreRequisitionItem", new { id = "#=StoreRequisitionID#" }))
+                                .Update(update => update.Action("SparePartStoreRequisitionItems_Update", "SparePartStoreRequisitionItem"))
+                                .Destroy(destroy => destroy.Action("SparePartStoreRequisitionItems_Destroy", "SparePartStoreRequisitionItem"))
+                                ).ToClientTemplate())
+                </text>
+                        );
+
+
+
+                                    items.Add().Text("Validation").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<StoreRequisitionValidation>()
+                                        .Name("SparePartStoreRequisitionValidation_#=StoreRequisitionID#")
+                                        .Columns(columns =>
+                                        {
+                                                    columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                    columns.Bound(c => c.Remark).Width(170);
+                                                    columns.Command(command =>
+{
+                                                    command.Edit();
+                                        //command.Destroy();
+                                    });
+                                                })
+                                        .ToolBar(toolbar =>
+                                        {
+                                                    toolbar.Create();
+                                                })
+                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                        .Scrollable()
+                                        .Events(x => x.DataBound("onDataBoundFisrtValidation").Save("refresh"))
+                                        .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Events(ev => ev
+                                        .Error("error_handler(\"SparePartStoreRequisitionValidation_#=StoreRequisitionID#\")")
+                                        .RequestStart("onRequestStart(\"SparePartStoreRequisitionValidation_#=StoreRequisitionID#\")")
+                                        .RequestEnd("onRequestEnd(\"SparePartStoreRequisitionValidation_#=StoreRequisitionID#\")"))
+                                        .Model(model =>
+                                        {
+                                                    model.Id(p => p.StoreRequisitionValidationID);
+                                                })
+                                        .Read(read => read.Action("SparePartStoreRequisitionValidations_Read", "SparePartStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }))
+                                        .Create(create => create.Action("SparePartStoreRequisitionValidations_Create", "SparePartStoreRequisitionValidation", new { id = "#=StoreRequisitionID#" }))
+                                        .Update(update => update.Action("SparePartStoreRequisitionValidations_Update", "SparePartStoreRequisitionValidation"))
+                                        .Destroy(destroy => destroy.Action("SparePartStoreRequisitionValidations_Destroy", "SparePartStoreRequisitionValidation"))
+
+                                        ).ToClientTemplate())
+
+                        </text>
+                                );
+                                @*items.Add().Text("Property Validation").Content(@<text>
+                                    @(Html.Kendo().Grid<SparePartStoreRequisitionPropertyValidation>()
+                                    .Name("SparePartStoreRequisitionPropertyValidation_#=StoreRequisitionID#")
+                                    .Columns(columns =>
+                                    {
+                                    columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                    columns.Bound(c => c.Remark).Width(170);
+                                    columns.Command(command =>
+                                    {
+                                    // command.Edit();
+                                    //command.Destroy();
+                                    });
+                                    })
+                                    .ToolBar(toolbar =>
+                                    {
+                                    // toolbar.Create();
+                                    })
+                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                    .Scrollable()
+                                    .Events(x => x.DataBound("onDataBoundSecondValidation"))
+                                    .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(ev => ev .Error("error_handler_one").Sync("sync_handler"))
+                                    .Model(model =>
+                                    {
+                                    model.Id(p => p.SparePartStoreRequisitionPropertyValidationID);
+                                    model.Field(p => p.Approver).Editable(false);
+                                    } )
+                                    .Read(read => read.Action("SparePartStoreRequisitionPropertyValidations_Read", "SparePartStoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
+                                    .Create(create => create.Action("SparePartStoreRequisitionPropertyValidations_Create", "SparePartStoreRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
+                                    .Update(update => update.Action("SparePartStoreRequisitionPropertyValidations_Update", "SparePartStoreRequisitionPropertyValidation"))
+                                    .Destroy(destroy => destroy.Action("SparePartStoreRequisitionPropertyValidations_Destroy", "SparePartStoreRequisitionPropertyValidation"))
+                                    ).ToClientTemplate()
+                                    )
+                                    </text>);*@
+
+                                        }).ToClientTemplate())
+    @*============================================================ Store Requisition Property Validation ===============================================================================*@
+
+
+
+</script>
+<script id="ComponentItemTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                .Name("tabStripComponentDetail_#=ExternalComponentId#")
+                .SelectedIndex(0)
+                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                .Items(items =>
+                {
+        @*items.Add().Text(" Service ").Content(@<text>
+
+
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ExternalComponentDetail>()
+            .Name("ComponentDetailgrid_#=ExternalComponentId#")
+            .Columns(columns =>
+            {
+            columns.Bound(o => o.Name).Width(120);
+            columns.Bound(o => o.Remark).Width(100);
+            columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(100);
+            columns.Bound(o => o.CreatedBy).Width(100);
+            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+            columns.Command(command =>
+            {
+            command.Edit();
+
+            }).Width(250);
+            })
+            .ToolBar(t=>t.Create())
+            .Editable(editable =>
+            {
+            editable.Mode(GridEditMode.InLine);
+            editable.DisplayDeleteConfirmation("Are You Sure To Remove ");
+            }).ClientDetailTemplateId("ComponentDetailItemTemplate")
+            .DataSource(dataSource => dataSource
+            .Ajax()
+            .PageSize(20)
+            .Model(model =>
+            {
+            model.Id(p => p.ExternalComponentDetailId);
+            model.Field(p => p.ApprovalStatus).Editable(false);
+            model.Field(p => p.CreatedBy).Editable(false);
+            model.Field(p => p.DateCreated).Editable(false);
+            }).Events(ev => ev
+            .Error("error_handler(\"ComponentDetailgrid_#=ExternalComponentId#\")")
+            .RequestStart("onRequestStart(\"ComponentDetailgrid_#=ExternalComponentId#\")")
+            .RequestEnd("onRequestEnd(\"ComponentDetailgrid_#=ExternalComponentId#\")"))
+            .Create(create => create.Action("ExternalComponentDetail_Create", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }))
+            .Read(read => read.Action("ExternalComponentDetail_Read", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }))
+            .Update(update => update.Action("ExternalComponentDetail_Update", "ExternalComponentDetail"))
+            )
+            .Pageable(p=>p.Refresh(true))
+            .ToClientTemplate())
+
+            </text>
+            );*@
+
+                    items.Add().Text(" Approval ").Content(@<text>
+
+
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.ExternalComponentDetail>()
+                                    .Name("ComponentDetailApprovalgrid_#=ExternalComponentId#")
+                                    .Columns(columns =>
+                                    {
+                                                columns.Bound(o => o.Name).Width(120);
+                                                columns.Bound(o => o.Remark).Width(100);
+                                                columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(100);
+                                                columns.Bound(o => o.CreatedBy).Width(100);
+                                                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                                                columns.Command(command =>
+                        {
+                                            command.Edit().Text("Approve");
+
+                                        }).Width(250);
+                                            })
+
+                                    .Editable(editable =>
+                                    {
+                                                editable.Mode(GridEditMode.InLine);
+                                                editable.DisplayDeleteConfirmation("Are You Sure To Remove ");
+                                            }).ClientDetailTemplateId("ComponentDetailItemApproveTemplate")
+                                    .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .PageSize(20)
+                                    .Model(model =>
+                                    {
+                                                model.Id(p => p.ExternalComponentDetailId);
+                                                model.Field(p => p.Name).Editable(false);
+                                                model.Field(p => p.Remark).Editable(false);
+                                                model.Field(p => p.CreatedBy).Editable(false);
+                                                model.Field(p => p.DateCreated).Editable(false);
+                                            }).Events(ev => ev
+                                .Error("error_handler(\"ComponentDetailApprovalgrid_#=ExternalComponentId#\")")
+                                .RequestStart("onRequestStart(\"ComponentDetailApprovalgrid_#=ExternalComponentId#\")")
+                                .RequestEnd("onRequestEnd(\"ComponentDetailApprovalgrid_#=ExternalComponentId#\")"))
+                                    .Read(read => read.Action("ExternalComponentDetail_Read", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }))
+                                    .Update(update => update.Action("ExternalComponentDetail_Update", "ExternalComponentDetail"))
+
+                                    )
+                                    .Pageable(p => p.Refresh(true))
+                                    .ToClientTemplate())
+
+                    </text>
+                        );
+                        }).ToClientTemplate()
+
+    )
+</script>
+<script id="storereturntemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().SelectedIndex(0).Name("tabStrip_#=StoreReturnID#").Items(items =>
+                {
+                    items.Add().Text("Detail").Content(
+        @<text>
+
+            # if (!IsOnlineApproved&&!IsSendForApproval)
+            {#
+
+            <a onclick='return sendForApprovalMaintenanceStoreReturn("#=StoreReturnID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+            <br />
+            # } #
+
+            # if (IsOnlineApproved)
+            {#
+            <a href='@Url.Action("StoreReturnPrint", "InventoryPrint")/#=StoreReturnID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+            <br />
+            # } #
+
+            <div>
+                <hr>
+                <dl class="dl-horizontal">
+                    <dt>
+                        Store Return Number
+                    </dt>
+                    <dd>
+                        #= StoreReturnID #
+                    </dd>
+
+                    <dt>
+                        Store
+                    </dt>
+                    <dd>
+                        #= StoreCode #
+                    </dd>
+
+                    <dt>
+                        Status
+                    </dt>
+                    <dd>
+                        #= Status #
+                    </dd>
+
+                    <dt>
+                        Reason
+                    </dt>
+                    <dd>
+                        #= Reason #
+                    </dd>
+                    <dt>
+                        Remark
+                    </dt>
+                    <dd>
+                        #= Remark #
+                    </dd>
+                    <dt>
+                        CreatedOn
+                    </dt>
+                    <dd>
+                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                    </dd>
+                    <dt>
+                        CreatedBy
+                    </dt>
+                    <dd>
+                        #= CreatedBy #
+                    </dd>
+                    <dt>
+                        Modified By
+                    </dt>
+                    <dd>
+                        #= ModifiedBy #s
+                    </dd>
+                    <dt>
+                        Modified Date
+                    </dt>
+                    <dd>
+                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                    </dd>
+                </dl>
+
+            </div>
+
+            <hr>
+
+            # if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
+            {#
+            @if (HttpContext.Current.User.IsInRole("Property_Void"))
+                        {
+                <a onclick='return storeReturnVoidRecord("#=StoreReturnID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                        }
+            /**/
+            /**/
+            /**/
+            /**/
+            /**/
+            /**/
+            /**/
+            /**/
+            # } #
+
+        </text>);
+
+
+
+                            items.Add().Text("Item").Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<StoreReturnItems>()
+                                .Name("StoreReturnItem_#=StoreReturnID#")
+                                .Columns(columns =>
+                                {
+                                            columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategory").Width(250);
+                                            columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("Item").Width(350);
+                                            columns.Bound(c => c.Quantity).Width(140);
+                                            columns.Bound(c => c.UnitPrice).Width(140);
+                                            columns.Command(command =>
+{
+                                            command.Edit();
+                                            command.Destroy();
+                                        }).Width(480);
+                                        })
+                                .ToolBar(toolbar =>
+                                {
+                                            toolbar.Create();
+                                        })
+                                .Events(ev => ev.Edit("onEdit"))
+                                .Events(x => x.DataBound("onDataBoundLines"))
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable()
+                                .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(ev => ev
+                                .Error("error_handler(\"StoreReturnItem_#=StoreReturnID#\")")
+                                .RequestStart("onRequestStart(\"StoreReturnItem_#=StoreReturnID#\")")
+                                .RequestEnd("onRequestEnd(\"StoreReturnItem_#=StoreReturnID#\")"))
+
+                                .Model(model => model.Id(p => p.StoreReturnItemsID))
+                                .Read(read => read.Action("StoreReturnItems_Read", "MaintenanceStoreReturnItem", new { id = "#=StoreReturnID#" }))
+                                .Create(create => create.Action("StoreReturnItems_Create", "MaintenanceStoreReturnItem", new { id = "#=StoreReturnID#" }))
+                                .Update(update => update.Action("StoreReturnItems_Update", "MaintenanceStoreReturnItem"))
+                                .Destroy(destroy => destroy.Action("StoreReturnItems_Destroy", "MaintenanceStoreReturnItem"))
+                                ).ToClientTemplate())
+
+                </text>);
+
+                                    items.Add().Text("Attachment").Content(@<text>
+
+                                        @FilUploaderBid()
+
+                                    </text>);
+
+
+                                            items.Add().Text("Validation").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<StoreReturnValidation>()
+                                    .Name("StoreReturnValidation_#=StoreReturnID#")
+                                    .Columns(columns =>
+                                    {
+                                                columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                columns.Bound(c => c.Remark).Width(170);
+                                                columns.Command(command =>
+                        {
+                                                command.Edit();
+                                    //command.Destroy();
+                                });
+                                            })
+                                    .ToolBar(toolbar =>
+                                    {
+                                                toolbar.Create();
+                                            })
+                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                    .Scrollable()
+                                    .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                                    .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(ev => ev
+                                    .Error("error_handler(\"StoreReturnValidation_#=StoreReturnID#\")")
+                                    .RequestStart("onRequestStart(\"StoreReturnValidation_#=StoreReturnID#\")")
+                                    .RequestEnd("onRequestEnd(\"StoreReturnValidation_#=StoreReturnID#\")"))
+
+                                    .Model(model => model.Id(p => p.StoreReturnValidationID))
+                                    .Read(read => read.Action("StoreReturnValidations_Read", "MaintenanceStoreReturnValidation", new { id = "#=StoreReturnID#" }))
+                                    .Create(create => create.Action("StoreReturnValidations_Create", "MaintenanceStoreReturnValidation", new { id = "#=StoreReturnID#" }))
+                                    .Update(update => update.Action("StoreReturnValidations_Update", "MaintenanceStoreReturnValidation"))
+                                    .Destroy(destroy => destroy.Action("StoreReturnValidations_Destroy", "MaintenanceStoreReturnValidation"))
+                                    ).ToClientTemplate())
+
+                    </text>);
+                            }).ToClientTemplate())
+    <br />
+    Distribution
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.StoreReturnDistribution>()
+                .Name("StoreReturnDistribution_#=StoreReturnID#")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.AccountCode);
+                    columns.Bound(c => c.AccountDesc);
+                    columns.Bound(c => c.Debit);
+                    columns.Bound(c => c.Credit);
+                })
+                .Scrollable()
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .Read(read => read.Action("StoreReturnDistributions_Read", "MaintenanceStoreReturnDistribution", new { id = "#=StoreReturnID#" }))
+                .Update(read => read.Action("StoreReturnDistributions_Update", "MaintenanceStoreReturnDistribution"))
+                ).ToClientTemplate())
+
+
+    @helper FilUploaderBid()
+    {
+        /**/
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.StoreReturnAttachment>()
+                    .Name("StoreReturnAttachment_#=StoreReturnID#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.FileName).ClientTemplate("<a href='/StoreReturnAttachment/FileDwonload?id=\\#=StoreReturnAttachmentId \\#'>\\#=FileName \\#</a>").Width(200);
+                        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(580);
+                    })
+                    .ToolBar(t => t.Template(
+                    @<text>
+                        @(Html.Kendo().Upload()
+                                    .Name("storeReturnAttachments")
+                                    .Async(a => a.Save("StoreReturnAttachments_Create", "MaintenanceStoreReturnAttachment", new { id = "#=StoreReturnID #" }))
+                                    .Events(e => e.Complete("bidSuccess"))
+                                    .ShowFileList(false)
+                                    .ToClientTemplate())
+                    </text>
+                                        ))
+
+                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                        .HtmlAttributes(new { style = "height: 350px;" })
+                                        .Scrollable()
+                                        .Events(x => x.DataBound("onDataBoundLines"))
+                                        .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Events(ev => ev
+                                        .Error("error_handler(\"StoreReturnAttachment_#=StoreReturnID#\")")
+                                        .RequestStart("onRequestStart(\"StoreReturnAttachment_#=StoreReturnID#\")")
+                                        .RequestEnd("onRequestEnd(\"StoreReturnAttachment_#=StoreReturnID#\")"))
+                                        .Model(model => model.Id(p => p.StoreReturnAttachmentId))
+                                        .Read(read => read.Action("StoreReturnAttachments_Read", "MaintenanceStoreReturnAttachment", new { id = "#= StoreReturnID #" }))
+                                        .Create(create => create.Action("StoreReturnAttachments_Create", "MaintenanceStoreReturnAttachment", new { id = "#=StoreReturnID #" }))
+                                        .Update(update => update.Action("TenderMinuteUploads_Update", "MaintenanceStoreReturnAttachment"))
+                                        .Destroy(destroy => destroy.Action("StoreReturnAttachments_Destroy", "MaintenanceStoreReturnAttachment"))
+                                        ).ToClientTemplate())
+    }
+</script>
+
+
+<style>
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+        .switch input {
+            display: none;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+
+    .reject {
+        background-color: darkred;
+        color: white;
+    }
+
+    input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 34px;
+    }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+</style>
+
+<script>
+
+    function MaintenacePettyCash() {
+        popup = window.open('/FleetManagement/ServiceCenter/RequistionResult?JobOrderId=' + JobNum, 'PoP_Up', 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=324,height=268');
+        popup.focus();
+        return false;
+    }
+
+</script>
+<script>
+
+function storeReturnVoidRecord(id) {
+var recordStatus = "";
+var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+if (conf === true) {
+$.ajax({
+type: "POST",
+url: '@Url.Action("Void", "MaintenanceStoreReturn")',
+data: { id: id },
+success: function (result) {
+// toastr.warnning(result.Message);
+alert(result.Message);
+recordStatus = result.Status;
+location.reload(true);
+}, //end succ
+error: function (result) {
+alert(result);
+}
+});
+}
+}
+
+function sendForApprovalMaintenanceStoreReturn(id) {
+var recordStatus = "";
+
+$.ajax({
+type: "POST",
+url: '@Url.Action("SendForApproval", "MaintenanceStoreReturn")',
+data: { id: id },
+success: function(result) {
+// toastr.warnning(result.Message);
+alert(result.Message);
+recordStatus = result.Status;
+location.reload(true);
+}, //end succ
+error: function(result) {
+alert(result);
+}
+});
+}
+
+function onSelectedPeriod() {
+var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+var min = "";
+var max = "";
+if (periodId) {
+$.ajax({
+type: "POST",
+url: '@Url.Action("GetPeriodDateRangeById", "MaintenanceDataProvider")',
+data: { id: periodId },
+success: function (result) {
+min = result.Min;
+max = result.Max;
+//update
+var datepicker = $("#ReturnDate").data("kendoDatePicker");
+datepicker.setOptions({
+format: "yyyy-MM-dd",
+min:min,
+max:max,
+value: new Date(),
+change: onDOBChange
+});
+}, //end succ
+error: function (result) {
+alert(result);
+}
+
+});
+}
+
+}
+
+function isForOther(obj) {
+
+if ($(obj).is(":checked")) {
+$("#forbranchDiv").show();
+
+} else {
+$("#forbranchDiv").hide();
+}
+
+}
+
+function bidSuccess() {
+
+}
+
+
+var storeCode;
+var codeid;
+
+function onEdit(e) {
+var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+var masterGrid = $("#grid").data("kendoGrid");
+
+var masterDataItem = masterGrid.dataItem(masterRow);
+storeCode = masterDataItem.StoreCode;
+//    codeid = masterDataItem.GoodSellingAndLendingID;
+}
+
+
+//}
+
+
+
+function OnIndexCall(elem) {
+
+var a = codeid;
+$(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+}
+var popup;
+var aCode;
+
+
+function SelectItemCode() {
+
+// codeid = masterDataItem.GoodSellingAndLendingID;
+popup = window.open('/Inventory/DataProvider/ItemFiltering', 'WindowPopup', 'top=100, left=400, width=400, height=320,resizable=no,');
+popup.focus();
+return false;
+}
+
+function setLang(ItemCode) {
+aCode = ItemCode;
+$("#ItemCode").val(aCode).trigger("change");
+}
+
+function getItems() {
+return {
+storeCode: storeCode
+}
+}
+</script>
+
+
+
+
+<script>
+
+    var masterId;
+    var fleetPlate;
+    var IsApproved;
+    var IsSecondSendForApproval;
+    var IsOnlineTransfered;
+    function OnExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var dataItem = masterGrid.dataItem(masterRow);
+        masterId = dataItem.ServiceCenterJobId;
+        fleetPlate = dataItem.VoidBy;
+
+        IsApproved = dataItem.IsSecondOnlineApproved;
+        IsSecondSendForApproval = dataItem.IsSecondSendForApproval;
+        IsOnlineTransfered = dataItem.IsOnlineTransferred;
+
+        var category = "";
+        var lineitem = "";
+        var index = 0;
+
+
+
+
+    }
+
+    function filterCause() {
+        return {
+            Id: Referance
+        };
+    }
+    function filterSubCategories() {
+        var dropdownlist = $("#ServiceGroup").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        var Code = $("#SubCategoryCode").val();
+        return {
+            subCategoryCode: Code,
+            filterText: filterInput.val()
+
+
+        };
+
+    }
+
+    function filterSubCategory() {
+        var dropdownlist = $("#SubCategoryCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            jobOrderId: null,
+            filterText: filterInput.val()
+        };
+    }
+    function filterServices() {
+        var dropdownlist = $("#RepairTypeID").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        var categoryCode = $("#SubCategoryCode").val();
+        var serviceGroup = $("#ServiceGroup").val();
+        return {
+            subCategoryCode: categoryCode,
+            serviceGroup: serviceGroup,
+            filterText: filterInput.val()
+
+        };
+
+    }
+
+    function getMaintenanceId() {
+
+        return {
+            maintenanceCenterId: maintenanceCenterId,
+        }
+    }
+    function getServiceCenterId() {
+        return {
+            serviceCenterId: serviceCenterId
+        }
+    }
+
+    function ServiceDataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+            if (IsOnlineTransfered == true) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+</script>
+
+<script type="text/javascript">
+var masterId;
+var AssignCrewsGridName;
+var Id;
+function filterCategories() {
+//
+// summary:
+//      send the filtering text along with the parent widget's value
+//var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+return {
+categoryId: $("#ItemCategoryCode").val()
+};
+}
+function filterMechanics() {
+return {
+mechanicType: $("#MechanicType").val(),
+text: $("#MechanicCrewID").data("kendoDropDownList").filterInput.val(),
+};
+}
+function dataBound() {
+// this.expandRow(this.tbody.find("tr.k-master-row").first());
+var grid = this;
+
+grid.tbody.find("tr[role='row']").each(function () {
+var dataItem = grid.dataItem(this);
+// $(this).find(".k-grid-cmd-reject-request").hide();
+if (dataItem.Status == "Closed") {
+$(this).addClass("k-state-FleetApproved");
+}
+$(this).find(".progress").kendoProgressBar({
+value: dataItem.Progress
+});
+
+if (dataItem.IsSubmittedToServiceCenter && !dataItem.IsSecondOnlineApproved) {
+$(this).find(".k-grid-cmd-reject-request").show();
+$(this).find(".k-grid-cmd-aprove-request").show();
+
+}
+else {
+$(this).find(".k-grid-cmd-reject-request").hide();
+$(this).find(".k-grid-cmd-aprove-request").hide();
+
+}
+//if (dataItem.IsSecondSendForApproval == true || dataItem.IsOnlineTransferred == true) {
+//    $(this).find(".k-grid-edit").remove();
+//    $(this).find(".k-grid-delete").remove();
+//    $(this).find(".k-grid-cmd-reject-request").hide();
+//    $(this).find(".k-grid-cmd-aprove-request").hide();
+//}
+//if (dataItem.IsSecondOnlineApproved == true) {
+//    $(this).find(".k-grid-edit").remove();
+//    $(this).find(".k-grid-delete").remove();
+//    $(this).find(".k-grid-cmd-reject-request").hide();
+//    $(this).find(".k-grid-cmd-aprove-request").hide();
+//}
+//if (dataItem.IsSecondSendForApproval != true || dataItem.IsOnlineTransferred == true) {
+
+//}
+
+});
+}
+function WorkSheetDataBound() {
+var grid = this;
+
+grid.tbody.find("tr[role='row']").each(function () {
+var dataItem = grid.dataItem(this);
+
+if (IsOnlineTransfered ) {
+$(this).find(".k-grid-edit").remove();
+$(this).find(".k-grid-delete").remove();
+}
+
+});
+}
+function AssignCrews(e) {
+var items = {};
+
+var count = 0;
+var gridCrew = $(AssignCrewsGridName).data("kendoGrid");
+//
+$(AssignCrewsGridName).find("input:checked").each(function () {
+
+var item = gridCrew.dataItem($(this).closest('tr'));
+items['model.ServiceCrews[' + count + '].ServiceCrewId'] = item.ServiceCrewID;
+items['model.ServiceCrews[' + count + '].IsActive'] = "true";
+count++;
+});
+$(AssignCrewsGridName).find("input:unchecked").each(function () {
+
+var item = gridCrew.dataItem($(this).closest('tr'));
+items['model.ServiceCrews[' + count + '].ServiceCrewId'] = item.ServiceCrewID;
+items['model.ServiceCrews[' + count + '].IsActive'] = "false";
+count++;
+});
+
+
+
+buttonName = "#AssignCrewbtn_" + masterId;
+var button = $(buttonName).data("kendoButton");
+button.enable(false);
+$.ajax({
+type: "POST",
+data: items,
+url: '@Url.Action("AssignServiceCrew", "ServiceCrew")',
+success: function (result) {
+button.enable(true);
+alert("Mechanic Assigned Successfully ! ");
+}
+});
+
+
+}
+
+function AssignCrewsDatabound(e) {
+
+var rows = e.sender.tbody.children();
+
+for (var j = 0; j < rows.length; j++) {
+var row = $(rows[j]);
+var dataItem = e.sender.dataItem(row);
+
+if (dataItem.IsActive) {
+row.addClass("k-state-selected");
+
+}
+
+
+}
+}
+var JobOrderDetailId;
+function onDetailServiceApproveExpandUser(e) {
+
+var masterRow = e.masterRow;
+
+var masterGrid = $("#JobOrderApprovalgrid_" + masterId).data("kendoGrid");
+
+var masterDataItem = masterGrid.dataItem(masterRow);
+
+//Id = masterDataItem.JobOrderDetailID;
+//AssignCrewsGridName = "#ServiceCrewAssigngrid_" + Id;
+//var CrewAssigngrid = $(AssignCrewsGridName).data("kendoGrid");
+
+//CrewAssigngrid.table.on("click", ".checkbox", selectRow);
+
+//if (IsOnlineTransfered == true) {
+//    $(CrewAssigngrid).find(".k-toolbar").hide(); //hide toolbar
+//    $(".k-grid-top", CrewAssigngrid).hide();
+
+//}
+
+}
+
+var checkedIds = [];
+var items = {};
+var buttonName;
+function selectRow() {
+buttonName = "#AssignCrewbtn_" + Id;
+var button = $(buttonName).data("kendoButton");
+button.enable(true);
+var checked = this.checked,
+row = $(this).closest("tr"),
+grid = $(AssignCrewsGridName).data("kendoGrid"),
+dataItem = grid.dataItem(row);
+//  dataItem.IsActive = true;
+checkedIds.push(dataItem.ServiceCrewID);
+if (checked) {
+
+row.addClass("k-state-selected");
+} else {
+
+row.removeClass("k-state-selected");
+}
+}
+function onDetailServiceExpandUser(e) {
+var masterRow = e.masterRow;
+
+var masterGrid = $("#JobOrderDetailgrid_" + masterId).data("kendoGrid");
+
+var masterDataItem = masterGrid.dataItem(masterRow);
+
+
+Id = masterDataItem.JobOrderDetailID;
+var ServiceToolgrid = "#ServiceToolgrid_" + Id;
+var ServiceSparegrid = "#ServiceSparegrid_" + Id;
+var Oilgrid = "#Oilgrid_" + Id;
+var Tyregrid = "#Tyregrid_" + Id;
+var OtherMaterialgrid_ = "#OtherMaterialgrid_" + Id;
+var ServiceCrewgrid = "#ServiceCrewgrid_" + Id;
+var crewAssignmentGrid = "#CAGrid_" + Id;
+var SalvageStoregrid = "#SalvageStoregrid_" + Id;
+var Batterygrid = "#Batterygrid_" + Id;
+var AssignCrewsGridName = "#ServiceCrewAssigngrid_" + Id;
+
+
+$.ajax({
+url: '@Url.Action("GetJobStatus", "ServiceCenter")',
+
+data: { Id: masterId },
+type: 'POST',
+cache: false,
+success: function (r) {
+
+
+if (r != "Pending") {
+$(ServiceToolgrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", ServiceToolgrid).hide();
+$(".k-grid-edit", ServiceToolgrid).hide();
+$(".k-grid-delete", ServiceToolgrid).hide();
+
+$(ServiceSparegrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", ServiceSparegrid).hide();
+$(".k-grid-edit", ServiceSparegrid).hide();
+$(".k-grid-delete", ServiceSparegrid).hide();
+
+$(Batterygrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", Batterygrid).hide();
+$(".k-grid-edit", Batterygrid).hide();
+$(".k-grid-delete", Batterygrid).hide();
+
+$(Oilgrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", Oilgrid).hide();
+$(".k-grid-edit", Oilgrid).hide();
+$(".k-grid-delete", Oilgrid).hide();
+
+
+$(Tyregrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", Tyregrid).hide();
+$(".k-grid-edit", Tyregrid).hide();
+$(".k-grid-delete", Tyregrid).hide();
+
+
+$(SalvageStoregrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", SalvageStoregrid).hide();
+$(".k-grid-edit", SalvageStoregrid).hide();
+$(".k-grid-delete", SalvageStoregrid).hide();
+
+$(OtherMaterialgrid_).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", OtherMaterialgrid_).hide();
+$(".k-grid-edit", OtherMaterialgrid_).hide();
+$(".k-grid-delete", OtherMaterialgrid_).hide();
+
+$(ServiceCrewgrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", ServiceCrewgrid).hide();
+
+
+$(crewAssignmentGrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", crewAssignmentGrid).hide();
+$(".k-grid-edit", crewAssignmentGrid).hide();
+$(".k-grid-delete", crewAssignmentGrid).hide();
+}
+
+
+
+}
+
+});
+
+}
+
+var JobNum;
+var FleetsID;
+var Referance;
+var IsSubmitted;
+var IsSentForWorkshop;
+var maintenanceCenterId;
+var serviceCenterId;
+function MasterOnExpand(e) {
+var masterRow = e.masterRow;
+
+var masterGrid = $("#grid").data("kendoGrid");
+
+var masterDataItem = masterGrid.dataItem(masterRow);
+
+masterId = masterDataItem.JobOrderID;
+maintenanceCenterId = masterDataItem.MaintenanceCenterId;
+serviceCenterId = masterDataItem.ServiceCenterId;
+
+FleetsID= masterDataItem.FleetsID;
+JobNum = masterDataItem.Num;
+Referance = masterDataItem.Referance;
+
+fleetPlate = masterDataItem.VoidBy;
+IsApproved = masterDataItem.IsSecondOnlineApproved;
+IsSecondSendForApproval = masterDataItem.IsSecondSendForApproval;
+IsOnlineTransfered = masterDataItem.IsOnlineTransferred;
+IsSubmitted = masterDataItem.IsSubmittedToServiceCenter;
+IsSentForWorkshop = masterDataItem.IsSentToWorkShop;
+var linegridName = "#JobOrderDetailgrid_" + masterId;
+var firstValidationgridName = "#gridd_" + masterId;
+var SecondValidationgridName = "#JobOrderAdmingrid_" + masterId;
+var crewAssignmentGrid = "#CAGrid_" + masterId;
+//if (IsSentForWorkshop) {
+//    $(".k-grid-top", crewAssignmentGrid).hide();
+//    $(".k-grid-edit", crewAssignmentGrid).hide();
+//    $(".k-grid-delete", crewAssignmentGrid).hide();
+
+//}
+
+$.ajax({
+url: '@Url.Action("GetJobStatus", "ServiceCenter")',
+
+data: { Id: masterId },
+type: 'POST',
+cache: false,
+success: function (result) {
+r = result;
+
+if (r != "Pending") {
+$(linegridName).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", linegridName).hide();
+$(".k-grid-edit", linegridName).hide();
+$(".k-grid-delete", linegridName).hide();
+$(".k-grid-top", crewAssignmentGrid).hide();
+$(".k-grid-edit", crewAssignmentGrid).hide();
+$(".k-grid-delete", crewAssignmentGrid).hide();
+$(".k-grid-top", firstValidationgridName).hide();
+$(".k-grid-edit", firstValidationgridName).hide();
+$(".k-grid-delete", firstValidationgridName).hide();
+$(".k-grid-top", SecondValidationgridName).hide();
+$(".k-grid-edit", SecondValidationgridName).hide();
+$(".k-grid-delete", SecondValidationgridName).hide();
+
+
+}
+
+}
+
+});
+
+
+
+$("#CostChart" + masterId).kendoChart({
+title: {
+text: " Job Cost Summary "
+},
+legend: {
+position: "right"
+}, theme: "material",
+seriesDefaults: {
+labels: {
+template: " ",
+position: "outsideEnd",
+visible: true,
+background: "transparent"
+}
+},
+series: [{
+type: "pie",
+data: [{
+category: "Spare Part",
+value: masterDataItem.SpareCost
+}, {
+category: "Tyre",
+value: masterDataItem.TyreCost
+}, {
+category: "Battery",
+value: masterDataItem.BattreyCost
+}, {
+category: "Salvage",
+value: masterDataItem.SalvageCost
+}, {
+category: "Oil & Lubricant",
+value: masterDataItem.OilLubricantCost
+}, {
+category: "Other",
+value: masterDataItem.OtherCost
+}, {
+category: "Component",
+value: masterDataItem.ComponentCost
+}, {
+category: "Labour",
+value: masterDataItem.LabourCost
+}]
+}],
+tooltip: {
+visible: true,
+template: "#= category # - #= kendo.format('{0:P}', percentage) #"
+}
+});
+
+
+$("#EfficencyGauge" + masterId).kendoRadialGauge({
+title: {
+text: " Efficency"
+},
+pointer: {
+value: kendo.toString(masterDataItem.Efficiency, 'N2')
+},
+theme: "bootstrap",
+scale: {
+minorUnit: 5,
+startAngle: -30,
+endAngle: 210,
+max: 100,
+labels: {
+position:  "inside"
+},
+ranges: [
+{
+from: 0,
+to: 30,
+color: "#ffc700"
+}, {
+from: 30,
+to: 60,
+color: "#ff7a00"
+}, {
+from: 60,
+to: 100,
+color: "#c20000"
+}
+]
+}
+});
+
+
+
+}
+
+function detailGridsDataBound() {
+var grid = this;
+
+grid.tbody.find("tr[role='row']").each(function () {
+var dataItem = grid.dataItem(this);
+
+if (IsOnlineTransfered == true) {
+$(this).find(".k-grid-edit").remove();
+$(this).find(".k-grid-delete").remove();
+}
+
+});
+}
+
+function transferJobForClosing(jobId) {
+$.ajax({
+type: "POST",
+url: '@Url.Action("TransferJob", "ServiceCenter", new { area = "Maintenance" })',
+data: { Id: jobId },
+success: function(result) {
+alert(result.Message);
+if (result.Status == "Success") {
+location.reload(true);
+}
+},
+error: function(result) {
+alert(result);
+}
+});
+}
+function transferJobForWorkShop(jobId) {
+$.ajax({
+type: "POST",
+url: '@Url.Action("TransferJobForWorkShop", "ServiceCenter", new { area = "Maintenance" })',
+data: { Id: jobId },
+success: function(result) {
+alert(result.Message);
+if (result.Status == "Success") {
+location.reload(true);
+}
+},
+error: function(result) {
+alert(result);
+}
+});
+}
+
+</script>
+
+
+
+<script>
+function refresh()
+{
+var masterGrid = $("#SparePartStoreRequisitionValidation_" + codeid).data("kendoGrid");
+masterGrid.dataSource.read();
+}
+
+function rejectWorkShop(e) {
+var grid = this,
+dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+jobidForReject = dataItem.ServiceCenterJobId;
+var jobId = $("#id").val(jobidForReject);
+jobId.trigger("change");
+$("#window").data("kendoWindow").center().open();
+
+}
+
+function approveWorkShop(e) {
+if (confirm("Are you sure to approve this Workshop ? ")) {
+var grid = this,
+dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+$.ajax({
+type: "POST",
+url: '@Url.Action("closeWorkShop", "ServiceCenter", new { area = "Maintenance" })',
+data: { id: dataItem.ServiceCenterJobId },
+success: function (result) {
+//alert(result.Message);
+location.reload(true);
+},
+error: function (result) {
+//alert(result);
+}
+});
+}
+
+}
+function isTransfer(obj) {
+if ($(obj).is(":checked")) {
+$("#tostoreDiv").show();
+$('#IsForOther').attr('checked', false);
+$("#forbranchDiv").hide();
+$("#IsForOther").prop("disabled", true);
+
+} else {
+$("#tostoreDiv").hide();
+$("#IsForOther").prop("disabled", false);
+
+}
+
+}
+
+function isForOther(obj) {
+
+if ($(obj).is(":checked")) {
+$("#forbranchDiv").show();
+
+} else {
+$("#forbranchDiv").hide();
+}
+
+}
+
+function voidRecord(id) {
+var recordStatus = "";
+var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+if (conf === true) {
+$.ajax({
+type: "POST",
+url: '@Url.Action("Void", "SparePartStoreRequisition")',
+data: { id: id },
+success: function (result) {
+// toastr.warnning(result.Message);
+alert(result.Message);
+recordStatus = result.Status;
+location.reload(true);
+}, //end succ
+error: function (result) {
+alert(result);
+}
+});
+}
+}
+
+function sendForApprovalStoreRequisition(id) {
+var recordStatus = "";
+
+$.ajax({
+type: "POST",
+url: '@Url.Action("SendForApproval", "SparePartStoreRequisition")',
+data: { id: id },
+success: function(result) {
+// toastr.warnning(result.Message);
+alert(result.Message);
+recordStatus = result.Status;
+location.reload(true);
+}, //end succ
+error: function(result) {
+alert(result);
+}
+});
+}
+
+
+function onSelectedPeriod(flag) {
+var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+var min = "";
+var max = "";
+if (periodId) {
+$.ajax({
+type: "POST",
+url: '@Url.Action("GetPeriodDateRangeById", "MaintenanceDataProvider")',
+data: { id: periodId },
+success: function (result) {
+min = result.Min;
+max = result.Max;
+//update
+//if (flag == 0) {
+//    var datepicker = $("#RequestDate").data("kendoDatePicker");
+
+//}
+//else {
+var datepicker = $("#ReturnDate").data("kendoDatePicker");
+
+//}
+datepicker.setOptions({
+format: "yyyy-MM-dd",
+min:min,
+max:max,
+value: new Date(),
+change: onDOBChange
+});
+}, //end succ
+error: function (result) {
+alert(result);
+}
+
+});
+}
+
+}
+
+function test() {
+var recordStatus = "";
+$.ajax({
+type: "POST",
+url: '@Url.Action("GetStatus", "SparePartStoreRequisition")',
+data: { id: codeid },
+success: function (result) {
+toastr.error(result.Message);
+recordStatus = result.Status;
+
+}, //end succ
+error: function (result) {
+alert(result);
+}
+});
+
+
+
+}
+
+
+
+
+var storeCode;
+var codeid;
+var isapproved;
+
+function onItemEdit(e) {
+var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+var masterGrid = $("#grid").data("kendoGrid");
+var masterGrid = $("#SparePartStoreRequisitionGrid_" + masterId).data("kendoGrid");
+var masterDataItem = masterGrid.dataItem(masterRow);
+storeCode = masterDataItem.StoreCode;
+codeid = masterDataItem.StoreRequisitionID;
+
+if (e.model.isNew() === true) {
+$("#ApprovedQuantity").attr("readonly", true);
+}
+//edit
+if (e.model.isNew() !== true) {
+
+//$("#RequestedQuantity").attr("readonly", true);
+//$("#ItemCategoryCode").attr("readonly", true);
+}
+
+
+
+}
+
+
+
+function getItems() {
+
+return {
+StoreCode: storeCode
+}
+
+}
+var masterDataItem;
+var masterRow;
+var masterGrid;
+function detailExpand(e) {
+
+masterRow = e.masterRow;
+var masterGrid = $("#SparePartStoreRequisitionGrid_" + masterId).data("kendoGrid");
+masterDataItem = masterGrid.dataItem(masterRow);
+codeid = masterDataItem.StoreRequisitionID;
+isapproved = masterDataItem.IsOnlineApproved;
+
+}
+function onDataBoundMaster() {
+this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+//approved
+var grid = $("#SparePartStoreRequisitionGrid_" + masterId).data("kendoGrid");
+var gridData = grid.dataSource.view();
+
+for (var i = 0; i < gridData.length; i++) {
+var currentUid = gridData[i].uid;
+if (gridData[i].IsOnlineApproved) {
+var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+var editButton = $(currenRow).find(".k-grid-edit");
+var deleteButton = $(currenRow).find(".k-grid-delete");
+editButton.hide();
+deleteButton.hide();
+}
+}
+}
+function onDataBoundLines(e) {
+
+var detailGrid = "#"+e.sender.element[0].id;// "#SparePartStoreRequisitionItem_" + codeid;
+if (isapproved) {
+
+$(".k-grid-add", detailGrid).hide();
+$(".k-grid-delete", detailGrid).hide();
+$(".k-grid-edit", detailGrid).hide();
+}
+}
+function filterStoresByBranch() {
+return {
+BranchId: $("#BranchId").val()
+};
+}
+function filterPeriodsByStore() {
+return {
+store: $("#StoreCode").val()
+};
+}
+var i = 0;
+function onDataBoundFisrtValidation(e) {
+i++;
+var detailGrid = "#" + e.sender.element[0].id;// "#SparePartStoreRequisitionValidation_" + codeid;
+
+if (isapproved) {
+
+// $(".k-grid-add", detailGrid).hide();
+$(".k-grid-delete", detailGrid).hide();
+$(".k-grid-edit", detailGrid).hide();
+}
+var masterGrid = $("#SparePartStoreRequisitionValidation_" + codeid).data("kendoGrid");
+
+}
+function onDataBoundSecondValidation(e) {
+var detailGrid = "#" + e.sender.element[0].id;// "#SparePartStoreRequisitionPropertyValidation_" + codeid;
+
+if (isapproved) {
+
+$(".k-grid-add", detailGrid).hide();
+$(".k-grid-delete", detailGrid).hide();
+$(".k-grid-edit", detailGrid).hide();
+}
+}
+function onChangeService() {}
+
+function OnIndexCall(elem) {
+
+var a = codeid;
+$(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+}
+</script>
+<script>
+    function onClick(e) {
+
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        var code = masterDataItem.StoreRequisitionID;
+        var tabstrip = $("#tabStrip_4").data("kendoTabstrip");
+        $.ajax({
+            url: "SparePartStoreRequisition/SparePartStoreRequisitions_Approval",
+
+            data: { id: code }
+        });
+    }
+    function onUploadSuccess(e) {
+
+    }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
+
+            } else {
+                alert("Only .xls, .xlsx, .xlsm files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+
+
+    function checkboxClicked(e) {
+
+        var isChecked = e.checked;
+        var grid = $("#grid").data("kendoGrid");
+        if (isChecked) {
+
+            grid.showColumn("ToStoreCode");
+        } else {
+            grid.hideColumn("ToStoreCode");
+        }
+
+    };
+
+    function onMasterEdit(e) {
+
+        var grid = $("#grid").data("kendoGrid");
+        grid.hideColumn("ToStoreCode");
+
+
+        //if (e.model.isNew() === false) {
+        //    $("#dropdownlist").kendoDropDownList({
+        //        enable: false
+        //    });
+
+        //}
+    }
+
+
+
+
+</script>
+
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<style>
+    .k-detail-cell .k-tabstrip .k-content {
+        padding: 0.2em;
+    }
+
+    .employee-details ul {
+        list-style: none;
+        font-style: italic;
+        margin: 15px;
+        padding: 0;
+    }
+
+        .employee-details ul li {
+            margin: 0;
+            line-height: 1.7em;
+        }
+
+    .employee-details label {
+        display: inline-block;
+        width: 90px;
+        padding-right: 5px;
+        text-align: right;
+        font-style: normal;
+        font-weight: bold;
+    }
+</style>
+<style>
+    #gauge-container {
+        width: 404px;
+        height: 404px;
+        text-align: center;
+        margin: 0 auto 30px auto;
+    }
+
+    #gauge {
+        width: 330px;
+        height: 330px;
+        margin: 0 auto 0;
+    }
+</style>

@@ -1,6 +1,6 @@
 ﻿
 <legend>Due</legend>
-@(Html.Kendo().Grid<ExceedERP.Web.Areas.FleetManagement.Models.MaintainceDueViewModel>()
+@(Html.Kendo().Grid<ExceedERP.Web.Areas.Maintenance.Models.MaintainceDueViewModel>()
     .Name("grid")
     .Columns(columns =>
     {
@@ -29,7 +29,7 @@
                             .Scrollable()
                             .Sortable()
                             .Filterable()
-                            .Groupable()
+                           // .Groupable()
                             .Scrollable(h => h.Height(500))
     .Events(ev => ev.DetailExpand("onDetailExpand"))
     .DataSource(dataSource => dataSource

@@ -1,0 +1,11 @@
+﻿
+@(Html.Kendo().DropDownListFor(model => model)
+        .ValuePrimitive(true)
+        .DataTextField("Name")
+        .DataValueField("Id")
+        .OptionLabel("Select").Filter(FilterType.Contains)
+        .DataSource(d => d.Read(r => r.Action("StructureDDBind", "Structure")
+        .Data("filterEquipmentCategories"))
+        .ServerFiltering(true)))
+
+

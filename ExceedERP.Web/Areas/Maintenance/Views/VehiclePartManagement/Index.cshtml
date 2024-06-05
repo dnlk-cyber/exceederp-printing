@@ -1,0 +1,19 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.VehiclePartManagement>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+      //  columns.Bound(c => c.Part);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("VehiclePartManagement_Read", "VehiclePartManagement"))
+      )
+)

@@ -4,16 +4,18 @@ using ExceedERP.Core.Domain.FleetManagement.FleetTireManagement;
 using ExceedERP.Core.Domain.FleetManagement.FuelManagement;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
 {
     public partial class Fleets : Operations
-    {
-      
+    {      
         public Fleets()
         {
             this.Accessories = new HashSet<Accessories>();
@@ -28,41 +30,36 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
     }
         [ScaffoldColumn(false)]
         public Guid FleetsID { get; set; }
-   
         [DisplayName("  Equipment Category ")]
         [Required]
+        
         public Guid EquipmentIdentityID { get; set; }
         [DisplayName("  Equipment Type ")]
         [Required]
-        public Guid EquipmentTypeID { get; set; }
+        public Guid EquipmentTypeID { get; set; }    
+        public int? AssetId { get; set; }
         [DisplayName("  Maintenance Plan ")]
         public Guid PlannerID { get; set; }
-
         [DisplayName(" Equipment Name ")]
+        public Guid EquipmentNameID { get; set; }
         public string EquipmentName { get; set; }
         [NotMapped]
         [DisplayName(" Sub Type ")]
         public string SubType { get; set; }
         public string Type { get; set; }
-        [Required]
         [DisplayName("Asset Code No")]
         public string UnitNum { get; set; }
-
         public string Manufacturer { get; set; }
-
         [DisplayName(" Manufacturer Year")]
         public string ManufacturerYear { get; set; }
-
         [DisplayName(" Condition ")]
         public string Condition { get; set; }
-
         [DisplayName(" Reading Type ")]
         public ReadingType ReadingType { get; set; }
         [DisplayName(" Engine Model ")]
         public string EngineModel { get; set; }
         [DisplayName(" Operator Name ")]
         public string OperatorName { get; set; }
-
         [DisplayName(" Engine Manufacturer ")]
         public string EngineManufacturer { get; set; }
         [DisplayName(" Location ")]
@@ -77,12 +74,13 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         [DisplayName("Rent Type")]
         public RentType RentType { get; set; }
         public Guid RentId { get; set; }
-
+        // Fk
+        [Display(Name ="Rent Num")]
+        public int? RentFromExternalNum { get; set; } 
         public string Color { get; set; }
 
         [DisplayName("  Tire Size")]
         public string TyreSize { get; set; }
-        public string Status { get; set; }
 
         [DisplayName("Plate Number")]
         public string PlateNumber { get; set; }
@@ -104,22 +102,18 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public string Tyre { get; set; }
         [DisplayName(" Rental Rate  ")]
         public decimal RentalRate { get; set; }
-
-        [DisplayName("Ideal Rental Rate  ")]
+        [DisplayName("Idle Rental Rate  ")]
         public decimal IdealRentalRate { get; set; }
-        public enum WayOfSupplyenum { Purchased, Donated, Transferred }
-        public enum manufaturerenum { TOYOTA, NISSAN, SINO }
-        public enum Colorenum { BLACK, WHITE, RED, BLUE, GREEN }
-        public enum yearenum { }
+        public WayOfSupplyenum WayOfSupplyenum { get; set; }
+        public manufaturerenum manufaturerenum { get; set; }
+        public Colorenum Colorenum { get; set; }
+        public yearenum yearenum { get; set; }
         [DisplayName(" Way Of Supply  ")]
-
-        public string WayOfSupply { get; set; }
-        
-[DisplayName(" Supplier Company  ")]
+        public string WayOfSupply { get; set; }        
+        [DisplayName(" Supplier Company  ")]
         public string SupplierCompany { get; set; }
         [DisplayName(" Previous OdoMeter   ")]
         public decimal PreviousOdoMeter { get; set; }
-
         [DisplayName(" Current Hour/OdoMeter   ")]
         public decimal CurentOdoMeter { get; set; }
         public decimal LastMaintenanceOdometer { get; set; }
@@ -136,13 +130,13 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public string SerialNo { get; set; }
           [DisplayName(" Libre No  ")]
         public string Libre { get; set; }
-        public enum TypeOfFuelenum { Benzene, Diesel }
+        public TypeOfFuelenum TypeOfFuelenum { get; set; }
         [DisplayName(" Type Of Fuel    ")]
 
         public string TypeOfFuel { get; set; }
         [DisplayName(" State Of OdoMeter    ")]
         public string StateOfOdoMeter { get; set; }
-        public enum StateOfOdoMeterenum { Functional, Malfucntioned }
+        public StateOfOdoMeterenum StateOfOdoMeterenum { get; set; }
         public string Attachment { get; set; }
         [DisplayName(" ")]
         public string FleetPhoto { get; set; }
@@ -214,6 +208,39 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public virtual ICollection<TireIssue> TireIssues { get; set; }
         public virtual ICollection<TireReturn> TireReturns { get; set; }
         public virtual ICollection<Fuel> Fuels { get; set; }
-
+        [Display(Name ="Horse Power")]
+        public decimal HorsePower { get; set; }
     }
+    public enum WayOfSupplyenum
+    {
+        Purchased,
+        Donated,
+        Transferred,
+        Rental
+    }
+    public enum manufaturerenum
+    {
+        TOYOTA,
+        NISSAN,
+        SINO
+    }
+    public enum Colorenum {
+        BLACK,
+        WHITE,
+        RED,
+        BLUE,
+        GREEN }
+    public enum yearenum {
+    EthiopianCalendar,
+    GorgorianCalendar,
+    }
+    public enum TypeOfFuelenum {
+        Benzene, Diesel
+    }
+    public enum StateOfOdoMeterenum
+    {
+        Functional,
+        Malfucntioned
+    }
+
 }

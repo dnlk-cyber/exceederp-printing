@@ -1,5 +1,4 @@
-﻿using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
-using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+﻿using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Fleet.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
@@ -124,23 +123,23 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             {
                 foreach (var Fleet in Fleets)
                 {
-                    List<JobRequest> jobOrder = db.JobRequest.Where(x => x.DateCreated > startingDate && x.DateCreated < endingDate && x.FleetsID == Fleet.FleetsID).ToList();
+                    //List<JobRequest> jobOrder = db.JobRequest.Where(x => x.DateCreated > startingDate && x.DateCreated < endingDate && x.FleetsID == Fleet.FleetsID).ToList();
 
-                    foreach (var jb in jobOrder)
-                    {
+                    //foreach (var jb in jobOrder)
+                    //{
 
-                        var RequestViewModel = new JobRequestViewModel();
+                    //    var RequestViewModel = new JobRequestViewModel();
 
-                        RequestViewModel.EquipmentName = jb.EquipmentName;
-                        RequestViewModel.JobOrderNum = jb.Num;
+                    //    RequestViewModel.EquipmentName = jb.EquipmentName;
+                    //    RequestViewModel.JobOrderNum = jb.Num;
 
-                        RequestViewModel.ProjectName = jb.ProjectName;
+                    //    RequestViewModel.ProjectName = jb.ProjectName;
 
-                        RequestViewModel.Status = jb.Status;
-                        RequestViewModel.Date = jb.DateCreated;
-                        FleetList.Add(RequestViewModel);
+                    //    RequestViewModel.Status = jb.Status;
+                    //    RequestViewModel.Date = jb.DateCreated;
+                    //    FleetList.Add(RequestViewModel);
 
-                    }
+                    //}
                 }
             }
 

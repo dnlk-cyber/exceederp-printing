@@ -26,8 +26,8 @@ namespace ExceedERP.Reporting.Fleet.ViewModel
         public string Description { get; set; }
         public decimal CostcoveredbyInsurance { get; set; }
        public decimal CostcoveredbyCompany { get; set; }
-          public decimal CostcoveredbyOperator { get; set; }
+       public decimal CostcoveredbyOperator { get; set; }
 
-        public decimal CostcoveredbyOtherBodies { get; set; }
+      public decimal CostcoveredbyOtherBodies { get; set; }
     }
 }

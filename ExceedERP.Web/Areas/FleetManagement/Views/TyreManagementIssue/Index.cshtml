@@ -3,25 +3,25 @@
   
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend> Tyre Issue</legend>
+<legend> Tire/Battery Issue</legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssue>()
     .Name("grid")
     .Columns(columns =>
     {
-     //   columns.Bound(e => e.StoreCode).Width(140);
+        columns.Bound(e => e.IssueType).Width(140);
         columns.Bound(e => e.PlateNumber).Width(140);
         columns.Bound(e => e.Brand).Width(140);
         columns.Bound(e => e.SerialNo).Width(140);
         columns.Bound(e => e.TireSize).Width(140);
         columns.Bound(e => e.UnitPrice).Width(120);
-        columns.Bound(e => e.Status).Width(100); 
-       
-   
-        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+        columns.Bound(e => e.Status).Width(100);
+
+
+        columns.Command(command => { command.Edit();/* command.Destroy(); */}).Width(250);
 
 
     })
-                                                  .ToolBar(commands => commands.Create())
+      .ToolBar(commands => commands.Create())
       .Editable(editable =>
       {
           editable.Window(w => w.Title("Tyre Issue"));
@@ -39,22 +39,24 @@
                                     .Scrollable()
                                     .Sortable()
                                     .Filterable()
-                                    .Groupable()
+                                    // .Groupable()
                                     .Scrollable(h => h.Height(500))
                                            .ClientDetailTemplateId("template")
-                                             .Groupable().Events(ev => { ev.DetailExpand("onDetailExpandUser"); ev.DataBound("onDataBound"); })
-      
+                                             .Events(ev => {
+                                                 ev.DetailExpand("onDetailExpandUser");
+                                                 ev.DataBound("onDataBound"); })
+
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false) 
+        .ServerOperation(false)
         .Model(model =>
-              {
-                  model.Id(p => p.TireIssueID);
-               
-              }).Events(ev => ev
-                                                            .Error("error_handler(\"grid\")")
-                                                            .RequestStart("onRequestStart(\"grid\")")
-                                                            .RequestEnd("onRequestEnd(\"grid\")")) 
+        {
+            model.Id(p => p.TireIssueID);
+
+        }).Events(ev => ev
+                                                      .Error("error_handler(\"grid\")")
+                                                      .RequestStart("onRequestStart(\"grid\")")
+                                                      .RequestEnd("onRequestEnd(\"grid\")"))
                     .Create(update => update.Action("TireIssue_Create", "TyreManagementIssue"))
                     .Read(read => read.Action("TireIssue_Read", "TyreManagementIssue"))
                     .Update(update => update.Action("TireIssue_Update", "TyreManagementIssue"))
@@ -85,67 +87,29 @@
                                 
                                 </div>
                             </div> 
-                            <div class="demo-section k-header export-app">
-                                <div class="demo-section content-wrapper">
+                            <div class="row">
+                                <div class="col-md-1">
+                                </div>
+                                <div class="col-md-6" style="margin-top:20px;">
 
-                                    <form>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.CreatedBy):<span>#=CreatedBy#</span>
 
-                                       
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.DateCreated):<span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
 
-                                        <div class="row">
-                                            <div class="col-md-1">
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.CreatedBy)
-                                                    </div>
-                                                    <div>
-                                                        #=CreatedBy#
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.ModifiedBy):<span>#=ModifiedBy#</span>
 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.DateCreated)
-                                                    </div>
-                                                    <div>
-                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.LastModified):<span>#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy')#</span>
 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                       
-                                            <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.ModifiedBy)
-                                                    </div>
-                                                    <div>
+                                    </div>
 
-                                                        #=ModifiedBy#
 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                       
-                                                    <div class="col-md-2">
-                                                <div class="form-group">
-                                                    <div class="label">
-                                                        @Html.LabelFor(model => model.LastModified)
-                                                    </div>
-                                                    <div>
-                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-
-                                                    </div>
-                                                </div>
-                                            </div>
-                                          
-                                        </div>
-
-                                    </form>
 
                                 </div>
                             </div>
@@ -253,7 +217,53 @@
 </script>
 
 
+<script>
 
+    function filterEquipmentNames() {
+        var dropdownlist = $("#EquipmentNameID").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentTypeId: $("#EquipmentTypeID").val(),
+            search: filterInput.val()
+        };
+    }
+    function filterCategory() {
+        var dropdownlist = $("#EquipmentTypeID").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentIdentityId: $("#EquipmentIdentityID").val(),
+            search: filterInput.val()
+        };
+
+    }
+    function filterFleets() {
+        var dropdownlist = $("#FleetId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentTypeId: $("#EquipmentTypeID").val(),
+            search: filterInput.val()
+        };
+
+    }
+
+
+    function filterFixedAssetSubCategory() {
+
+        var dropdownlist = $("#SubType").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            Id: $("#EquipmentTypeID").val(),
+            Search: filterInput.val()
+        };
+    }
+
+
+
+</script>
 <script type="text/javascript">
 
     function BindDetail() {

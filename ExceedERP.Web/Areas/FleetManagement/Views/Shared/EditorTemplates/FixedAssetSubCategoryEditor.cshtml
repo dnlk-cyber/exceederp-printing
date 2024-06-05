@@ -1,0 +1,41 @@
+﻿
+<script>
+    function filterFixedAssetSubCategrories() {
+        return {
+            equipmentIdentityId: $("#EquipmentIdentityID").val()
+        };
+    }
+
+     function onChangeSubCategory(e) {
+
+        $.ajax({
+            url: '@Url.Action("GetFixedAssetSubCategoryById", "FleetManagementDataProvider")',
+            data: { assetSubCategoryId: this.value() },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                $("#EquipmentTypeName").val(result.Name).trigger("change");
+                $("#Description").val(result.Description).trigger("change");
+
+
+            }
+        });
+
+    }
+</script>
+
+
+@(Html.Kendo().DropDownListFor(m=>m)
+    .Name("FixedAssetSubCategoryId")
+    .Enable(false)
+    .AutoBind(false)
+    .OptionLabel("Select")
+    .ValuePrimitive(true)
+      .DataTextField("Name")
+      .DataValueField("Id")
+      .Events(ev => ev.Change("onChangeSubCategory")) //
+      .DataSource(d => d.Read(r => r.Action("GetEquipmentSubCategories", "FleetManagementDataProvider").Data("filterFixedAssetSubCategrories"))
+        .ServerFiltering(true))
+        .CascadeFrom("EquipmentIdentityID"))
+
+

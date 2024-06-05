@@ -1,4 +1,9 @@
-﻿using ExceedERP.Core.Domain.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+ using ExceedERP.Core.Domain.Common;
 using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.FleetManagement.EquipmentInspection
@@ -12,6 +17,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.EquipmentInspection
         public string Description { get; set; }
         public string Code { get; set; }
         public bool IsActive { get; set; }
+        //public bool IsNormal { get; set; }
+
         public virtual CheckList CheckList { get; set; }
     }
 }

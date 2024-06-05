@@ -1,5 +1,5 @@
 ﻿
-<legend>    Employee Job Type Map </legend>
+<legend>  Employee Job Type Map </legend>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.HRFleetMapping>()
     .Name("grid")
@@ -7,9 +7,10 @@
     {
 
         columns.Bound(e => e.PlacmentType).EditorTemplateName("PlacmentTypeEditor").Width(140);
-        columns.ForeignKey(c => c.JobTitleCode, (System.Collections.IEnumerable)ViewData["JobTitleCodes"], "LookupId", "Description").EditorTemplateName("EmoployeeTypeEditor").Width(140);
+        //columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+        columns.ForeignKey(c => c.JobTitleCode, (IEnumerable)ViewData["JobTitleCodes"], "LookupId", "Description").EditorTemplateName("EmoployeeTypeEditor").Filterable(ftb => ftb.Multi(true).Search(true)).Width(300);
         columns.Bound(e => e.Remark).Width(140);
-        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
 
     })
               .ToolBar(commands => commands.Create())

@@ -1,0 +1,45 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Bolo Registration</h2>
+
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetBoloRegistration>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.FleetId, (IEnumerable)ViewData["Fleet"], "Value", "Text").EditorTemplateName("FleetTemplate");
+              columns.Bound(c => c.BoloRegistrationDate);
+              columns.Bound(c => c.BoloExpireDate);
+              columns.Bound(c => c.Remark);
+              
+
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Filterable()
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(model => model.Id(p => p.FleetBoloRegistrationId))
+              .Read(read => read.Action("Read", "FleetBoloRegistration"))
+              .Create(create => create.Action("Create", "FleetBoloRegistration"))
+              .Update(update => update.Action("Update", "FleetBoloRegistration"))
+              .Destroy(destroy => destroy.Action("Destroy", "FleetBoloRegistration"))
+          )
+)
+
+<script type="text/javascript">
+    function filterFleet() {
+        return {
+            text: $("#FleetId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+</script>

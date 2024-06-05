@@ -1,0 +1,81 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Maintenance tool Issue Log  </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.MaintenanceToolIssueAndReturn>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(e => e.MechanicCrewID, (System.Collections.IEnumerable)ViewData["MechanicCrews"], "Code", "Name");
+            columns.ForeignKey(e => e.MaintenanceToolID, (System.Collections.IEnumerable)ViewData["MeaintenanceTools"], "MaintenanceToolID", "ToolsName");
+            columns.Bound(e => e.IssuedQuantity);
+            columns.Bound(e => e.IssueDate);
+            columns.Bound(e => e.Status);
+            columns.Bound(e => e.Remark);
+
+            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+        })
+        .ToolBar(toolbar => {
+            toolbar.Create();
+        })
+        .Editable(editable =>
+        {
+            editable.Mode(GridEditMode.InLine);
+            editable.DisplayDeleteConfirmation("Are You Sure You Want to  Delete this Log ?");
+        })
+        .Events(ev => {
+            ev.DataBound("GridDataBound");
+        })
+        .HtmlAttributes(new { style = "height: 700px;" })
+        .Pageable(pageable => pageable
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+
+            .Scrollable()
+            .Sortable()
+            .Filterable()
+            .Scrollable(h => h.Height(500))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .ServerOperation(false)
+        .Model(model =>
+        {
+            model.Id(p => p.MaintenanceToolIssueAndReturnId);
+            model.Field(f => f.ReturnDate).Editable(false);
+            model.Field(f => f.Status).Editable(false);
+        }).Events(ev => ev
+                    .Error("error_handler(\"grid\")")
+                    .RequestStart("onRequestStart(\"grid\")")
+                    .RequestEnd("onRequestEnd(\"grid\")"))
+        .Read(read => read.Action("Tools_Read", "MaintenanceToolIssueAndReturn"))
+        .Create(create => create.Action("Tool_Create", "MaintenanceToolIssueAndReturn"))
+        .Update(update => update.Action("Tool_Update", "MaintenanceToolIssueAndReturn"))
+        .Destroy(update => update.Action("Tool_Destroy", "MaintenanceToolIssueAndReturn"))
+        )
+)
+
+
+<script type="text/javascript">
+    function GridDataBound(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            if (dataItem.Status == 1) {
+                //row.addClass("highlighted-row");
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+
+                //row.find(".btn-equipment-information").show();
+            } else {
+                //row.find(".k-grid-CustomCmdSelect").show();
+            }
+        }
+    }
+</script>

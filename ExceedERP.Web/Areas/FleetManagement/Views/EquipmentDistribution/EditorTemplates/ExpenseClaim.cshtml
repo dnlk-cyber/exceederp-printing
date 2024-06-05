@@ -1,0 +1,127 @@
+﻿@using System.Collections
+@using ExceedERP.Helpers.Common
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.Finance.AP.Travel.ApTravelOrder
+@using ExceedERP.Core.Localization
+
+<div class="form">
+<div class="row fullrow">
+    <div class="col-md-4 ro1">
+        <div class="form-group">
+        
+            <div class="col-md-8">
+            @Html.LabelFor(model => model.IsForOther, htmlAttributes: new { @class = "control-label col-md-8" })
+        
+                @(Html.CheckBoxFor(m => m.IsForOther, htmlAttributes: new { @onchange="SetEmployee(this)" })
+                        
+                      )
+                @Html.ValidationMessageFor(model => model.IsForOther, "", new { @class = "text-danger" })
+            </div>
+        </div>
+      
+        <div class="form-group">
+            @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            <div class="col-md-6">
+                @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                      //  .Name("EmployeeId")
+                      .DataValueField("PersonId")
+                      .DataTextField("FullName")
+                      .OptionLabel(Resources.Select)
+                      .Filter("contains")
+                      .MinLength(2)
+                      .CascadeFrom("IsForOther")
+                      .HtmlAttributes(new { style = "width:200px" })
+                      .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
+                      .DataSource(source =>
+                      {
+                          source.Read(read =>
+                          {
+                              read.Action("GetEmployeesAskForOther", "HRMDataProvider");
+                              //.Data("IsforOthers");
+                          })
+                              .ServerFiltering(false);
+                      })
+                      .Enable(false)
+                      .ValuePrimitive(true)
+
+                      .Height(400)
+                      //.HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                      //                "<span>Photo</span>" +
+                      //                "<span>Full Name</span>" +
+                      //                "</div>")
+                      //.Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#."+"#:data.ImageType#" + ");'></div>" +
+                      //          "<div class='Employee-name'>#:FullName#</div>")
+                      )
+
+            </div></div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.PurposeOfTravel, htmlAttributes: new {@class = "control-label col-md-8"})
+            <div class="col-md-6">
+
+                @(Html.Kendo().TextBoxFor(model => model.PurposeOfTravel)
+                      .HtmlAttributes(new { style = "width:200px" })
+                      )
+                @Html.ValidationMessageFor(model => model.PurposeOfTravel, "", new {@class = "text-danger"})
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 ro1">
+        <div class="row"></div><br/><br/>
+        @*<div class="form-group">
+            @Html.LabelFor(model => model.PaymentMethod, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-6">
+
+                @(Html.Kendo().TextBoxFor(model => model.PaymentMethod)
+                      .HtmlAttributes(new { style = "width:200px" })
+                )
+                @Html.ValidationMessageFor(model => model.PaymentMethod, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+        <div class="form-group">
+            @Html.LabelFor(model => model.Reference, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-6">
+
+                @(Html.Kendo().TextBoxFor(model => model.Reference)
+                      .HtmlAttributes(new { style = "width:200px" })
+                )
+                @Html.ValidationMessageFor(model => model.Reference, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Status, htmlAttributes: new {@class = "control-label col-md-8"})
+            
+            <div class="col-md-6">
+
+                @(Html.Kendo().TextBoxFor(model => model.Status)
+                      .HtmlAttributes(new { style = "width:200px" })
+                      )
+                @Html.ValidationMessageFor(model => model.Status, "", new {@class = "text-danger"})
+            </div>
+        </div>
+    </div>
+   
+    </div>
+
+</div>
+<style >
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>

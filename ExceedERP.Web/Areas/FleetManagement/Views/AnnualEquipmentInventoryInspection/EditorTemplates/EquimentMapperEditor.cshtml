@@ -1,0 +1,13 @@
+﻿@model  Guid
+
+
+ 
+                  @(Html.Kendo().DropDownListFor(model => model)
+                          .DataTextField("PlateNumber")
+                          .DataValueField("FleetsID")
+                                  .Text("PlateNumber")
+                                  .OptionLabel(" Select Equipment ")
+                                  .Filter(FilterType.Contains)
+                          .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "FleetManagementDataProvider"))
+                          .ServerFiltering(false)))
+             

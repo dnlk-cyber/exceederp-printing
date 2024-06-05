@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using ExceedERP.Core.Domain.Finance.GL;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel;
 using ExceedERP.Core.Domain.Inventory;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetMaintenance
 {
-
+   
     public class LogisticPlanDetail : Operations
     {
         public int LogisticPlanDetailId { get; set; }

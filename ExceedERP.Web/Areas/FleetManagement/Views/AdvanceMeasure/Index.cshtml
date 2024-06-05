@@ -4,11 +4,11 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.Description).Width(200);
-        columns.Bound(c => c.DateCreated).Format("{0:d}").Width(150);
-        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          columns.Bound(c => c.DateCreated).Format("{0:d}").EditorTemplateName("DateCreatedTemplate").Width(150);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar => {
-            toolbar.Create();
+          toolbar.Create();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
          .HtmlAttributes(new { style = "height: 520px;" })

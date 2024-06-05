@@ -42,10 +42,10 @@
                                 .Scrollable()
                                 .Sortable()
                                 .Filterable()
-                                .Groupable()
+                               // .Groupable()
                                 .Scrollable(h => h.Height(500))
         .ClientDetailTemplateId("template")
-      .Groupable().Events(ev => ev.DetailExpand("onDetailExpandUser"))
+    .Events(ev => ev.DetailExpand("onDetailExpandUser"))
                       .DataSource(dataSource => dataSource
             .Ajax()
             .ServerOperation(false)
@@ -97,7 +97,7 @@
 
                 .Editable(editable => editable.Mode(GridEditMode.InLine))
                            .ClientDetailTemplateId("lineItemTemplate")
-                          .Groupable().Events(ev => ev.DetailExpand("SpareonDetailExpandUser"))
+                         .Events(ev => ev.DetailExpand("SpareonDetailExpandUser"))
                                        .DataSource(dataSource => dataSource
                             .Ajax()
                             .PageSize(5)
@@ -138,7 +138,7 @@
 
                            .Editable(editable => editable.Mode(GridEditMode.InLine))
                              .ClientDetailTemplateId("ApprovalItemTemplate")
-                                  .Groupable().Events(ev => ev.DetailExpand("SpareApprovalonDetailExpandUser"))
+                                  .Events(ev => ev.DetailExpand("SpareApprovalonDetailExpandUser"))
                            .DataSource(dataSource => dataSource
                             .Ajax()
                             .PageSize(5)

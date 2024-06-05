@@ -87,7 +87,7 @@
                     })
               .Enable(false)
               .AutoBind(false)
-                               .CascadeFrom("EquipmentTypeId")
+                               .CascadeFrom("EquipmentCategoryId")
                                 )
 
 
@@ -95,7 +95,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-3">
+                        @*<div class="col-md-3">
                             <div class="form-group">
                                 <div class="k-label">
                                     @Html.LabelFor(model => model.EquipmentName)
@@ -120,15 +120,7 @@
 
 
                             </div>
-                        </div>
-                   
-
-                    </div>
-                    <div class="row">
-                        <div class="col-md-1">
-                        </div>
-
-
+                        </div>*@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <div class="k-label">
@@ -136,9 +128,14 @@
                                 </div>
                                 <div>
                                     @(Html.Kendo().DropDownListFor(model => model.FleetsId).Name("FleetsId")
-                                              .DataTextField("PlateNumber")
-                                                      .DataValueField("FleetsID").OptionLabel(" Select ").Filter(FilterType.Contains)
-                                                                                                      .DataSource(d => d.Read(r => r.Action("EquipmentDDBind", "EquipmentRegistration").Data("filterEquipment")).ServerFiltering(true)).CascadeFrom("EquipmentName"))
+                                                      .DataTextField("PlateNumber")
+                                                              .DataValueField("FleetsID").OptionLabel(" Select ")
+                                                              .Filter(FilterType.Contains)
+                                                                                                              .DataSource(d => 
+                                                                                                              d.Read(r => r.Action("EquipmentDDBind", "EquipmentRegistration")
+                                                                                                              .Data("filterEquipment"))
+                                                                                                              .ServerFiltering(true))
+                                                                                                              .CascadeFrom("EquipmentTypeId"))
 
 
 
@@ -148,37 +145,10 @@
                             </div>
                         </div>
 
-
-                        @*<div class="col-md-3">
-            <div class="form-group">
-                <div class="k-label">
-
-                    @Html.LabelFor(model => model.FleetsId)
-                </div>
-                @(Html.Kendo().DropDownListFor(model => model.FleetsId).Name("FleetsId")
-                                                          .DataTextField("PlateNumber")
-                                                  .DataValueField("FleetsID").OptionLabel("Select ")
-                                                                  .Filter(FilterType.Contains)
-                                                  .HtmlAttributes(new { style = "width:100%" })
-
-                                                     .DataSource(d =>
-                    {
-
-                   //     d.Custom().Sort(s => s.Add("EquipmentName")).Transport(tr => tr
-                   .Read(r =>
-                   {
-                       r.Action("AssignedEquipmentDDBind", "EquipmentRegistration")//.Data("PopulateFleets");
-                   }).ServerFiltering(true);
-
-                    })
-              .Enable(false)
-                      .AutoBind(false).Events(ev => ev.Change("PopulateFleets"))
-                                       .CascadeFrom("EquipmentName")
-                )
-
-
-            </div>
-        </div>*@
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1">
+                        </div>
 
                         <div class="col-md-3">
                             <div class="form-group">
@@ -205,7 +175,18 @@
 
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.DebitAccountNo)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TextBoxFor(model => model.DebitAccountNo)
+                                    @Html.ValidationMessageFor(model => model.DebitAccountNo)
+                                </div>
 
+                            </div>
+                        </div>
                     </div>
 
 
@@ -213,21 +194,6 @@
                     <div class="row">
                         <div class="col-md-1">
                         </div>
-                
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="k-label">
-                                    @Html.LabelFor(model => model.DebitAccountNo)
-                                </div>
-                                <div>
-                                    @Html.Kendo().TextBoxFor(model => model.DebitAccountNo) 
-                                    @Html.ValidationMessageFor(model => model.DebitAccountNo)
-                                </div>
-
-                            </div>
-                        </div>
-
                         <div class="col-md-3">
                             <div class="form-group">
                                 <div class="k-label">
@@ -252,26 +218,26 @@
 
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.Causeofreturn)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TextBoxFor(model => model.Causeofreturn)
+                                    @Html.ValidationMessageFor(model => model.Causeofreturn)
+                                </div>
+                            </div>
+                        </div>
 
 
-        
                     </div>
     <div class = "row">
         <div class = "col-md-1">
         </div>
      
 
-        <div class = "col-md-3">
-            <div class = "form-group">
-                <div class = "k-label">
-                    @Html.LabelFor(model => model.Causeofreturn)
-                </div>
-                <div>
-                    @Html.Kendo().TextBoxFor(model => model.Causeofreturn)
-                    @Html.ValidationMessageFor(model => model.Causeofreturn)
-                </div>
-            </div>
-        </div>
+        
          
     </div>
  

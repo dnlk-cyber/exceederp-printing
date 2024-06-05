@@ -11,26 +11,26 @@
         columns.ForeignKey(c => c.PartNeededFleetsID, (System.Collections.IEnumerable)ViewData["Fleets"], "FleetsId", "UnitNum").Width(120);
         columns.ForeignKey(c => c.PartTakenFleetsID, (System.Collections.IEnumerable)ViewData["Fleets"], "FleetsId", "UnitNum").Width(120);
         columns.Bound(e => e.IsPermanent).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsPermanent #' " + " # if (IsPermanent) { #" + "checked='checked'" + "# } #" + " />").Width(100);
-         columns.Bound(e => e.Status).Width(100);
-            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(150);
+        columns.Bound(e => e.Status).Width(100);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(150);
 
 
     })      .Events(ev =>
-                                                 {
-                                                     ev.DetailExpand("onDetailExpandUser");
-                                                     ev.DataBound("onDataBound");
+    {
+        ev.DetailExpand("onDetailExpandUser");
+        ev.DataBound("onDataBound");
 
-                                                 })
+    })
                   .ToolBar(commands =>
-              {
-                  commands.Create(); commands.Excel();
-                  commands.Pdf();
-              })
+                  {
+                      commands.Create(); commands.Excel();
+                      commands.Pdf();
+                  })
     .Editable(editable =>
-      {
-          editable.Mode(GridEditMode.PopUp).TemplateName("CannibalizationEditor").Window(x => x.Title("Canibalization"));
-          editable.DisplayDeleteConfirmation("Are You Sure To Remove Cannibalization");
-      })
+    {
+        editable.Mode(GridEditMode.PopUp).TemplateName("CannibalizationEditor").Window(x => x.Title("Canibalization"));
+        editable.DisplayDeleteConfirmation("Are You Sure To Remove Cannibalization");
+    })
         .HtmlAttributes(new { style = "height: 520px;" })
                       .Pageable(pageable => pageable
                                         .Input(true)
@@ -44,15 +44,18 @@
                             .Filterable()
                                .Scrollable(h => h.Height(500))
                                   .ClientDetailTemplateId("template")
-                                 .Events(ev => { ev.DetailExpand("onDetailExpandUser"); ev.DataBound("onDataBound"); })
+                                 .Events(ev => {
+                                     ev.DetailExpand("onDetailExpandUser");
+                                     ev.DataBound("onDataBound");
+                                 })
        .DataSource(dataSource => dataSource
         .Ajax()
         .ServerOperation(false)
-       
+
         .Model(model =>
-              {
-                  model.Id(p => p.CannibalizationID);
-              })
+        {
+            model.Id(p => p.CannibalizationID);
+        })
                          .Events(ev => ev
                                 .Error("error_handler(\"grid\")")
                                 .RequestStart("onRequestStart(\"grid\")")

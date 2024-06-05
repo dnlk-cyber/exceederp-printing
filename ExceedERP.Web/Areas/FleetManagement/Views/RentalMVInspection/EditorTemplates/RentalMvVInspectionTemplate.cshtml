@@ -1,0 +1,92 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Core.Domain.Finance.AP
+@using ExceedERP.Helpers
+@model  ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.RentalMVInspection
+@using ExceedERP.Helpers.Common
+@using ExceedERP.Core.Domain.FleetManagement.FleetRegistration
+@using ExceedERP.Core.Domain.FleetManagement.EquipmentInspection
+<div class="form">
+    <div class="row fullrow">
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.RentalInspectionCriteriaId, "Parameter", htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(m => m.RentalInspectionCriteriaId)
+                           .OptionLabel("Select Parameter")
+                           .DataTextField("CriteriaName")
+                           .DataValueField("RentalInspectionCriteriaId")
+                           .DataSource(dataSource =>
+                           {
+                               dataSource.Read(read => read.Action("GetParameterCategory", "FleetMaintenanceDataProvider", new { Area = "FleetManagement" }))
+                               .ServerFiltering(false);
+                           })
+                           .Filter("contains")
+                           .MinLength(2)
+                           .ValuePrimitive(true)
+                    )
+                    @Html.ValidationMessageFor(model => model.RentalInspectionCriteriaId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.HeadOfficePoorCondtion, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @( Html.Kendo().DropDownListFor(m => m.BranchOfficeGoodCondtion)
+
+                                 .OptionLabel(" Select  ")
+                                 .BindTo(EnumHelper.GetSelectList(typeof(PoorCondition))))
+                    @* @Html.ValidationMessageFor(model => model.HeadOfficePoorCondtion, "", new { @class = "text-danger" })
+        @(Html.EnumDropDownListFor(model => model.HeadOfficePoorCondtion, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 128px" }) )*@
+
+
+
+
+
+
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.BranchOfficePoorCondtion, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @( Html.Kendo().DropDownListFor(m => m.BranchOfficePoorCondtion)
+                               .OptionLabel(" Select  ")
+                               .BindTo(EnumHelper.GetSelectList(typeof(PoorCondition))))
+                    @* @Html.ValidationMessageFor(model => model.BranchOfficePoorCondtion, "", new { @class = "text-danger" })
+        @(Html.EnumDropDownListFor(model => model.BranchOfficePoorCondtion, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 128px" }) )*@
+
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.BranchOfficeGoodCondtion, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @*@( Html.Kendo().DropDownListFor(m => m.BranchOfficeGoodCondtion)
+                              .OptionLabel(" Select  ")
+                              .BindTo(EnumHelper.GetSelectList(typeof(GoodCondition))))*@
+                    @(Html.EnumDropDownListFor(model => model.BranchOfficeGoodCondtion, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 110px;height:20px" }) )
+
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.HeadOfficeGoodCondtion, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @( Html.Kendo().DropDownListFor(m => m.HeadOfficeGoodCondtion)
+                              .OptionLabel(" Select  ")
+                              .BindTo(EnumHelper.GetSelectList(typeof(GoodCondition))))
+                    @*@(Html.EnumDropDownListFor(model => model.HeadOfficeGoodCondtion, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 128px" }) )*@
+
+                </div>
+            </div>
+
+            <div class="row"></div>
+        </div>
+
+
+    </div>
+</div>

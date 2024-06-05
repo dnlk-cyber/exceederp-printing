@@ -1,7 +1,9 @@
-﻿@model  ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Operator
-
-
-
+@using System.Collections
+@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Core.Domain.Finance.AP
+@using ExceedERP.Helpers
+@model  ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Operator
+@using ExceedERP.Helpers.Common
 <script>
     function filterEquipmentIdentity() {
         return {
@@ -43,271 +45,182 @@
 
 
 </script>
-<div class=" k-content">
-    <form>
-
-
-                    <div class="row">
-                        <div class="col-md-1">
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="k-label">
-                                    
-                                     
-                                    @Html.LabelFor(model => model.EmployeeId)
-                                </div>
-                                <div>
-
-                                    @(Html.Kendo().DropDownListFor(model => model.EmployeeId).Name("EmployeeId")
-            .DataTextField("Name")
-                                    .DataValueField("Value").OptionLabel("Select ").Events(x => x.Change("GetJobTitle")).Filter(FilterType.Contains).HtmlAttributes(new { style = "width:100%" })
-                                            .DataSource(d => d.Read(r => r.Action("OperatorDDBind", "FleetDataProvider")).ServerFiltering(false)))
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="k-label">
-                                    @Html.LabelFor(model => model.JobTitle)
-                                </div>
-                                <div>
-                                    @Html.Kendo().TextBoxFor(model => model.JobTitle).Enable(false)
-                                   
-                                </div>
-                            </div>
-                        </div>
-                    
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="k-label">
-                                    @Html.LabelFor(model => model.MobilePhone)
-                                </div>
-                                <div>
-                                    @Html.Kendo().TextBoxFor(model => model.MobilePhone)
-                                    @Html.ValidationMessageFor(model => model.MobilePhone)
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-1">
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="k-label">
-                                    @Html.LabelFor(model => model.LicenseCity)
-                                </div>
-                                <div>
-                                    @Html.Kendo().TextBoxFor(model => model.LicenseCity)
-                                    @Html.ValidationMessageFor(model => model.LicenseCity)
-                                </div>
-                            </div>
-                        </div>
-                 
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="k-label">
-                                    @Html.LabelFor(model => model.Email)
-                                </div>
-                                <div>
-                                    @Html.Kendo().TextBoxFor(model => model.Email)
-                                    @Html.ValidationMessageFor(model => model.Email)
-                                </div>
-                            </div>
-                        </div>
-                   
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="k-label">
-                                    <div class="k-label">
-                                        @Html.LabelFor(model => model.SalaryIncentive)
-                                    </div>
-                                    @( Html.Kendo().DropDownListFor(m => m.SalaryIncentive).Name("SalaryIncentive")
-        .DataTextField("Text")
-                .DataValueField("Text").OptionLabel(" Select ")
-.BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Operator.SalaryIncentiveenum))))
-                                </div>
-                            </div>
-                        </div>
-                   
-</div>
-                    <div class="row">
-                        <div class="col-md-1">
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="k-label">
-                                    @Html.LabelFor(model => model.Gender)
-                                </div>
-                                <div>
-                                    @( Html.Kendo().DropDownListFor(m => m.Gender).Name("Gender")
-        .DataTextField("Text")
-                        .DataValueField("Text").OptionLabel(" Select  ")
-.BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Operator.Genderenum))))
-
-
-                                </div>
-                            </div>
-                        </div>
-               
-                 
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="k-label">
-                                    @Html.LabelFor(model => model.Postion)
-                                    @(Html.Kendo().DropDownListFor(model => model.Postion).Name("Postion")
-            .DataTextField("Name")
-                            .DataValueField("Name").OptionLabel("Select Postion").HtmlAttributes(new { style = "width:100%" })
-                                    .DataSource(d => d.Read(r => r.Action("OperatorPositionDDBind", "OperatorPosition"))))
-                                </div>
-                            </div>
-                        </div>
-                  
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="k-label">
-                                    @Html.LabelFor(model => model.NameOfTraningCenter)
-                                </div>
-                                <div>
-                                    @Html.Kendo().TextBoxFor(model => model.NameOfTraningCenter)
-                                    @Html.ValidationMessageFor(model => model.NameOfTraningCenter)
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-1">
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="k-label">
-                                    @Html.LabelFor(model => model.LicenseNo)
-                                </div>
-                                <div>
-                                    @Html.Kendo().TextBoxFor(model => model.LicenseNo)
-                                    @Html.ValidationMessageFor(model => model.LicenseNo)
-                                </div>
-                            </div>
-                        </div>
-                  
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="k-label">
-                                    @Html.LabelFor(model => model.LicenseIssuedDate)
-                                </div>
-                                <div>
-                                    @Html.Kendo().DatePickerFor(model => model.LicenseIssuedDate)
-                                    @Html.ValidationMessageFor(model => model.LicenseIssuedDate)
-                                </div>
-                            </div>
-                        </div>
-                   
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="k-label">
-                                    @Html.LabelFor(model => model.LicenseExpireDate)
-                                </div>
-                                <div>
-                                    @Html.Kendo().DatePickerFor(model => model.LicenseExpireDate)
-                                    @Html.ValidationMessageFor(model => model.LicenseExpireDate)
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                  
-
-
-
-        <div class="row">
-            <div class="col-md-1">
-            </div>
-            <div class="col-md-3">
-                <div class="form-group">
-                    <div class="k-label">
-                        @Html.LabelFor(model => model.GuaranteeName)
-                    </div>
-                    <div>
-                        @Html.Kendo().TextBoxFor(model => model.GuaranteeName)
-                        @Html.ValidationMessageFor(model => model.GuaranteeName)
-                    </div>
+<div class="form">
+    <div class="row fullrow">
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                          .ValuePrimitive(true)
+                          .OptionLabel("Select Employee")
+                          .DataTextField("Name")
+                          .DataValueField("Id")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("OperatorDDBindFoREmployee", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                              .ServerFiltering(false);
+                          })
+                    )
+                    @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
                 </div>
             </div>
-  
-            <div class="col-md-3">
-                <div class="form-group">
-                    <div class="k-label">
-                        @Html.LabelFor(model => model.GuaranteePhoneNumber)
-                    </div>
-                    <div>
-                        @Html.Kendo().TextBoxFor(model => model.GuaranteePhoneNumber)
-                        @Html.ValidationMessageFor(model => model.GuaranteePhoneNumber)
-                    </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.LicenseCity, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.LicenseCity)
+                    @Html.ValidationMessageFor(model => model.LicenseCity, "", new { @class = "text-danger" })
                 </div>
             </div>
-       
-
-            <div class="col-md-3">
-                <div class="form-group">
-                    <div class="k-label">
-                        @Html.LabelFor(model => model.GuaranteeAddress)
-                    </div>
-                    <div>
-                        @Html.Kendo().TextBoxFor(model => model.GuaranteeAddress)
-                        @Html.ValidationMessageFor(model => model.GuaranteeAddress)
-                    </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @( Html.Kendo().DropDownListFor(m => m.Genderenum)
+                                           .Name("Gender")
+                                           .Enable(false)
+                                           .DataTextField("Text")
+                                           .DataValueField("Text").OptionLabel(" Select  ")
+                                           .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Genderenum))))
+                    @Html.ValidationMessageFor(model => model.Genderenum, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.LicenseNo, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.LicenseNo)
+                    @Html.ValidationMessageFor(model => model.LicenseNo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.GuaranteeName, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+                    @Html.Kendo().TextBoxFor(model => model.GuaranteeName)
+                    @Html.ValidationMessageFor(model => model.GuaranteeName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.LicenseType, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(m => m.LicenseType).Name("LicenseType")
+                          .DataTextField("Name")
+                          .DataValueField("Name").OptionLabel("Select ").Filter(FilterType.Contains)//.HtmlAttributes(new { style = "width:100%" })
+                          .DataSource(d => d.Read(r => r.Action("LicenseTypeDDBind", "FleetManagementDataProvider")).ServerFiltering(false)))
+                    @Html.ValidationMessageFor(model => model.LicenseType, "", new { @class = "text-danger" })
+                    <div class="row"></div>
                 </div>
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-md-1">
-            </div>
-
-            <div class="col-md-3">
-                <div class="form-group">
-                    <div class="k-label">
-                        License Type
-                        @(Html.Kendo().DropDownListFor(m => m.LicenseType).Name("LicenseType")
-      
-            .DataTextField("Name")
-                                    .DataValueField("Name").OptionLabel("Select ").Filter(FilterType.Contains).HtmlAttributes(new { style = "width:100%" })
-                                                    .DataSource(d => d.Read(r => r.Action("LicenseTypeDDBind", "LicenseType")).ServerFiltering(false)))
-
-
-                    </div>
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.JobTitle, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.JobTitle)
+                    @Html.ValidationMessageFor(model => model.JobTitle, "", new { @class = "text-danger" })
                 </div>
             </div>
-            @*<div class="col-md-3">
-                <div class="form-group">
-                    <div class="k-label">
-                        License Level
-                        @(Html.Kendo().DropDownListFor(model => model.LicenseLevel)
-                                              .DataTextField("Name").Filter(FilterType.Contains)
-                                                  .DataValueField("Name").OptionLabel("Select ").HtmlAttributes(new { style = "width:100%" })
-                                                              .DataSource(d => d.Read(r => r.Action("LicenseLevelDDBind", "LicenseLevel")).ServerFiltering(true)))
-
-                    </div>
-                </div>
-            </div>*@
-            <div class="col-md-3">
-                <div class="form-group">
-                    <div class="k-label">
-                        @Html.LabelFor(model => model.EducationLevel)
-                        @(Html.Kendo().DropDownListFor(model => model.EducationLevel).Name("EducationLevel")
-            .DataTextField("Name")
-                                    .DataValueField("Name").OptionLabel("Select Education Level").Filter(FilterType.Contains).HtmlAttributes(new { style = "width:100%" })
-                                                            .DataSource(d => d.Read(r => r.Action("EducationallevelDDBind", "Educationallevel")).ServerFiltering(false)))
-                    </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+                    @Html.Kendo().TextBoxFor(model => model.Email)
+                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
                 </div>
             </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Postion, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+
+                    @(Html.Kendo().DropDownListFor(model => model.Postion).Name("Postion")
+                                                                    .DataTextField("Name")
+                                                                    .DataValueField("Name").OptionLabel("Select Postion")//.HtmlAttributes(new { style = "
+                                                                    .DataSource(d => d.Read(r => r.Action("OperatorPositionDDBind", "OperatorPosition"))))
+                    @Html.ValidationMessageFor(model => model.Postion, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.LicenseIssuedDate, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+                    @Html.Kendo().DatePickerFor(model => model.LicenseIssuedDate)
+                    @Html.ValidationMessageFor(model => model.LicenseIssuedDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.GuaranteePhoneNumber, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.GuaranteePhoneNumber)
+                    @Html.ValidationMessageFor(model => model.GuaranteePhoneNumber, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.EducationLevel, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+
+                    @(Html.Kendo().DropDownListFor(model => model.EducationLevel).Name("EducationLevel")
+                                  .DataTextField("Name")
+                                  .DataValueField("Name").OptionLabel("Select Education Level").Filter(FilterType.Contains)//.HtmlAttributes(new { style = "width:100%" })
+                                  .DataSource(d => d.Read(r => r.Action("EducationallevelDDBind", "Educationallevel")).ServerFiltering(false)))
+
+                    @Html.ValidationMessageFor(model => model.EducationLevel, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+
         </div>
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.MobilePhone, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.MobilePhone)
+                    @Html.ValidationMessageFor(model => model.MobilePhone, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.SalaryIncentive, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @( Html.Kendo().DropDownListFor(m => m.SalaryIncentive).Name("SalaryIncentive")
+                          .DataTextField("Text")
+                          .DataValueField("Text").OptionLabel(" Select ")
+                          .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.SalaryIncentiveenum))))
+                    @Html.ValidationMessageFor(model=>model.SalaryIncentive, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.NameOfTraningCenter, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.NameOfTraningCenter)
+                    @Html.ValidationMessageFor(model => model.NameOfTraningCenter, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.LicenseExpireDate, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().DatePickerFor(model => model.LicenseExpireDate)
+                    @Html.ValidationMessageFor(model => model.LicenseExpireDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.GuaranteeAddress, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.GuaranteeAddress)
+                    @Html.ValidationMessageFor(model => model.GuaranteeAddress, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
 
-
-    
-                        </form>
+        </div>
     </div>
+</div>

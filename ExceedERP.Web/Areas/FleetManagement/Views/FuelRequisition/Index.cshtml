@@ -1,0 +1,565 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Fuel Requisition</legend>
+
+@(Html.Kendo().Grid<StoreRequisition>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.StoreRequisitionID).Title("Request No.").Width(120).ClientTemplate("#=appendZeros(StoreRequisitionID)#");
+          columns.Bound(c => c.Reference).Title("Reference").Width(120);
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(110).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+          columns.Bound(c => c.RequestDate).Width(120);
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("Store").Width(160).EditorTemplateName("StoreSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" + " />").Width(90);
+          columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoreSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("AllBranchSelector").Width(200);
+          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(160).EditorTemplateName("EmployeeSelector");
+          columns.Bound(c => c.IsExternalDriver).ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsExternalDriver #' " + " # if (IsExternalDriver) { #" + "checked='checked'" + "# } #" + " />").Width(90);
+          columns.Bound(c => c.ExternalDriver).Width(100);
+          columns.Bound(c => c.IsForOther).ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsForOther #' " + " # if (IsForOther) { #" + "checked='checked'" + "# } #" + " />").Width(90);
+          columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("AllBranchSelector").Width(200);
+          columns.Bound(c => c.PlateNo).Width(100);
+          columns.Bound(c => c.Remark).Width(100);
+          columns.Bound(c => c.Status).Width(100);
+
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+
+      }).Filterable()
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+
+      })
+      .Events(ev => ev.Edit("onMasterEdit"))
+
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("StoreRequisition").Window(w => w.Title("Fuel Requisition")))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+
+      .Events(ev => ev.DetailExpand("detailExpand"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("StoreRequisitionID").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .PageSize(20)
+          .Model(model =>
+          {
+              model.Id(p => p.StoreRequisitionID);
+              model.Field(p => p.StoreRequisitionID).Editable(false);
+              model.Field(p => p.BranchId).Editable(false);
+              model.Field(p => p.BusinessUnitId).Editable(false);
+              // model.Field(p => p.GLPeriodId).Editable(false);
+              model.Field(p => p.OrgStructureId).Editable(false);
+              // model.Field(p => p.EmployeeId).Editable(false);
+
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+
+              //model.Field(p => p.RequestDate).Editable(false);
+          })
+          .Read(read => read.Action("FuelRequisitions_Read", "FuelRequisition"))
+          .Create(create => create.Action("FuelRequisitions_Create", "FuelRequisition"))
+          .Update(update => update.Action("FuelRequisitions_Update", "FuelRequisition"))
+          .Destroy(destroy => destroy.Action("FuelRequisitions_Destroy", "FuelRequisition"))
+
+      ).Resizable(resize => resize.Columns(true))
+      .ClientDetailTemplateId("FuelRequisitions"))
+
+<script id="FuelRequisitions" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=StoreRequisitionID#").SelectedIndex(0).Items(items =>
+      {
+          items.Add().Text("Detail").Content(
+
+              @<text>               
+    
+                # if (!IsOnlineApproved&&!IsSendForApproval)
+                {#
+                 <a onclick='return sendForApproval("#=StoreRequisitionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                <br />
+                # } #
+
+                # if (IsOnlineApproved)
+                {#
+                <a href='@Url.Action("StoreRequistionPrint", "InventoryPrint")/#=StoreRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                <br />
+                # } #
+                <div>
+                    <hr>
+                    <dl class="dl-horizontal">
+
+                        <dt>
+                            Request Date
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                        </dd>
+                        <dt>
+                            Status
+                        </dt>
+                        <dd>
+                            #= Status #
+                        </dd>
+                        <dt>
+                            Is Transfer
+                        </dt>
+                        <dd>
+                            #= IsTransfer #
+                        </dd>
+                        <dt>
+                            Receiver Store
+                        </dt>
+                        <dd>
+                            #= ToStoreCode #
+                        </dd>
+                        <dt>
+                            CreatedOn
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                        </dd>
+                        <dt>
+                            CreatedBy
+                        </dt>
+                        <dd>
+                            #= CreatedBy #
+                        </dd>
+                        <dt>
+                            Modified By
+                        </dt>
+                        <dd>
+                            #= ModifiedBy #s
+                        </dd>
+                        <dt>
+                            Modified Date
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                        </dd>
+                        <dt>
+                           Approved By
+                        </dt>
+                        <dd>
+                            #= OnlineApprovedBy #s
+                        </dd>
+                        <dt>
+                            Approval Time
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                        </dd>
+                    </dl>
+                </div>
+    
+                <hr>
+
+                # if (IsOnlineApproved&&!IsVoid)
+                {#
+                <a onclick='return voidRecord("#=StoreRequisitionID#")' href=' \#' title="Void Record"><i class="fa  fa-bolt fa-2x" style="color:red"></i></a>
+
+                # } #
+
+            </text>
+              );
+
+          items.Add().Text("Items").Content(
+            @<text>
+                @(Html.Kendo().Grid<StoreRequisitionItem>()
+                      .Name("FuelRequisitionItem_#=StoreRequisitionID#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemFuelCategorySelector").Width(160);
+                          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemFuelSelector").Width(160);
+                          columns.Bound(c => c.Unit).Width(120);
+                          columns.Bound(c => c.PartNo).EditorTemplateName("PartNo").Width(120);
+                          columns.Bound(c => c.RequestedQuantity).Width(120);
+                          columns.Bound(c => c.ApprovedQuantity).Width(120);
+                          columns.Bound(c => c.IssuedQuantity).Hidden().Width(90);
+                          columns.Bound(c => c.PurchaseQuantity).Hidden().Width(90);
+
+                          columns.Bound(c => c.CreatedBy).Hidden();
+                          columns.Bound(c => c.DateCreated).Hidden();
+                          columns.Bound(c => c.ModifiedBy).Hidden();
+                          columns.Bound(c => c.LastModified).Hidden();
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      }).Events(ev => ev.Edit("onItemEdit"))
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .Events(x => x.DataBound("onDataBoundLines"))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev
+                              .Error("error_handler(\"FuelRequisitionItem_#=StoreRequisitionID#\")")
+                              .RequestStart("onRequestStart(\"FuelRequisitionItem_#=StoreRequisitionID#\")")
+                              .RequestEnd("onRequestEnd(\"FuelRequisitionItem_#=StoreRequisitionID#\")"))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.StoreRequisitionItemID);
+                              model.Field(p => p.Unit).Editable(false);
+                              model.Field(p => p.PartNo).Editable(false);
+                              model.Field(p => p.ModelNo).Editable(false);
+                              model.Field(p => p.SerialNo).Editable(false);
+                              model.Field(p => p.ChasisNo).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                              model.Field(p => p.ModifiedBy).Editable(false);
+                              model.Field(p => p.LastModified).Editable(false);
+
+                          })
+                          .Read(read => read.Action("FuelStoreRequisitionItems_Read", "FuelRequsitionItem", new { id = "#=StoreRequisitionID#" }))
+                          .Create(create => create.Action("FuelStoreRequisitionItems_Create", "FuelRequsitionItem", new { id = "#=StoreRequisitionID#" }))
+                          .Update(update => update.Action("FuelStoreRequisitionItems_Update", "FuelRequsitionItem"))
+                          .Destroy(destroy => destroy.Action("FuelStoreRequisitionItems_Destroy", "FuelRequsitionItem"))
+                      ).ToClientTemplate())
+            </text>
+              );
+
+
+
+          items.Add().Text("Validation").Content(
+            @<text>
+
+                @(Html.Kendo().Grid<StoreRequisitionValidation>()
+                      .Name("FuelRequisitionValidation_#=StoreRequisitionID#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                          columns.Bound(c => c.Remark).Width(170);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              //command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev
+                              .Error("error_handler(\"FuelRequisitionValidation_#=StoreRequisitionID#\")")
+                              .RequestStart("onRequestStart(\"FuelRequisitionValidation_#=StoreRequisitionID#\")")
+                              .RequestEnd("onRequestEnd(\"FuelRequisitionValidation_#=StoreRequisitionID#\")"))
+                          //.Sync("sync_handler"))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.StoreRequisitionValidationID);
+                          })
+                          .Read(read => read.Action("FuelRequisitionValidations_Read", "FuelRequsitionValidation", new { id = "#=StoreRequisitionID#" }))
+                          .Create(create => create.Action("FuelRequisitionValidations_Create", "FuelRequsitionValidation", new { id = "#=StoreRequisitionID#" }))
+                          .Update(update => update.Action("FuelRequisitionValidations_Update", "FuelRequsitionValidation"))
+                          .Destroy(destroy => destroy.Action("FuelRequisitionValidations_Destroy", "FuelRequsitionValidation"))
+
+                      ).ToClientTemplate())
+
+            </text>
+              );
+          @*items.Add().Text("Second Validation").Content(@<text>
+    @(Html.Kendo().Grid<StoreRequisitionPropertyValidation>()
+      .Name("FuelRequisitionPropertyValidation_#=StoreRequisitionID#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+          columns.Bound(c => c.Remark).Width(170);
+          columns.Command(command =>
+          {
+              command.Edit();
+              //command.Destroy();
+          });
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+                       .Events(x => x.DataBound("onDataBoundSecondValidation"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev .Error("error_handler_one").Sync("sync_handler"))
+          .Model(model =>
+          {
+              model.Id(p => p.StoreRequisitionPropertyValidationID);
+              model.Field(p => p.Approver).Editable(false);
+          } )
+          .Read(read => read.Action("FuelRequisitionPropertyValidations_Read", "FuelRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
+          .Create(create => create.Action("FuelRequisitionPropertyValidations_Create", "FuelRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
+          .Update(update => update.Action("FuelRequisitionPropertyValidations_Update", "FuelRequisitionPropertyValidation"))
+          .Destroy(destroy => destroy.Action("FuelRequisitionPropertyValidations_Destroy", "FuelRequisitionPropertyValidation"))
+      ).ToClientTemplate()
+    )
+                                                                      </text>);*@
+
+      }).ToClientTemplate())
+    @*============================================================ Store Requisition Property Validation ===============================================================================*@
+   
+
+
+</script>
+
+
+
+
+
+
+<script>
+
+    function onSelectedPeriod() {
+        var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+        var min = "";
+        var max = "";
+        if (periodId) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPeriodDateRangeById", "DataProvider", new {area = "Inventory"})',
+            data: { id: periodId },
+            success: function (result) {
+                min = result.Min;
+                max = result.Max;
+                //update
+                var datepicker = $("#RequestDate").data("kendoDatePicker");
+                datepicker.setOptions({
+                    format: "yyyy-MM-dd",
+                    min:min,
+                    max:max,
+                    value: new Date(),
+                    change: onDOBChange
+                });
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+           });
+           }
+
+    }
+
+    function isTransfer(obj) {
+        if ($(obj).is(":checked")) {
+            $("#tostoreDiv").show();
+            $('#IsForOther').attr('checked', false);
+            $("#forbranchDiv").hide();
+            $("#IsForOther").prop("disabled", true);
+
+        } else {
+            $("#tostoreDiv").hide();
+            $("#IsForOther").prop("disabled", false);
+
+        }
+
+    }
+
+    function isForOther(obj) {
+
+        if ($(obj).is(":checked")) {
+            $("#forbranchDiv").show();
+
+        } else {
+            $("#forbranchDiv").hide();
+        }
+
+    }
+
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "FuelRequisition", new { area = "Inventory" })',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("FuelRequisitions_Approval", "FuelRequisition", new { area = "Inventory" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    var storeCode;
+    var codeid;
+    //var isapproved;
+
+    function onItemEdit(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        storeCode = masterDataItem.StoreCode;
+        codeid = masterDataItem.StoreRequisitionID;
+
+        if (e.model.isNew() === true) {
+            $("#ApprovedQuantity").attr("readonly", true);
+        }
+        //edit
+        if (e.model.isNew() !== true) {
+
+            //$("#RequestedQuantity").attr("readonly", true);
+            //$("#ItemCategoryCode").attr("readonly", true);
+        }
+
+    }
+
+
+
+    function getItems() {
+
+        return {
+            StoreCode: storeCode
+        }
+
+    }
+    
+
+    function OnIndexCall(elem) {
+
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+    }
+</script>
+<script>
+    function onClick(e) {
+
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        var code = masterDataItem.StoreRequisitionID;
+        var tabstrip = $("#tabStrip_4").data("kendoTabstrip");
+        $.ajax({
+            url: "FuelRequisition/StoreRequisitions_Approval",
+
+            data: { id: code }
+        });
+    }
+    function onUploadSuccess(e) {
+
+    }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
+
+            } else {
+                alert("Only .xls, .xlsx, .xlsm files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+    function checkboxClicked(e) {
+
+        var isChecked = e.checked;
+        var grid = $("#grid").data("kendoGrid");
+        if (isChecked) {
+
+            grid.showColumn("ToStoreCode");
+        } else {
+            grid.hideColumn("ToStoreCode");
+        }
+
+    };
+
+    function onMasterEdit(e) {
+
+        var grid = $("#grid").data("kendoGrid");
+        grid.hideColumn("ToStoreCode");
+
+
+        if (e.model.isNew() === false) {
+            // e.grid.hideColumn("ToStore");
+        }
+    }
+
+
+   
+   
+</script>
+
+

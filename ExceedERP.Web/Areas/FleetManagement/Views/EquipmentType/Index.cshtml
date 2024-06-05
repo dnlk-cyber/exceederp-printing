@@ -8,10 +8,11 @@
     .Name("grid")
     .Columns(columns =>
     {
-        columns.ForeignKey(e => e.EquipmentIdentityID, (System.Collections.IEnumerable)ViewData["EquipmentIdentity"], "EquipmentIdentityId", "EquipmentCategoryName").EditorTemplateName("EquipmentTypeEditor").Width(140);
-
+        columns.ForeignKey(e => e.EquipmentIdentityID, (System.Collections.IEnumerable)ViewData["EquipmentIdentity"], "EquipmentIdentityId", "EquipmentCategoryName").EditorTemplateName("EquipmentCategoryEditor").Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
+        columns.ForeignKey(c => c.FixedAssetSubCategoryId, (IEnumerable)ViewData["FixedAssetSubCategories"], "Id", "Name").EditorTemplateName("FixedAssetSubCategoryEditor").Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
         columns.Bound(e => e.EquipmentTypeName).Width(140);
-        columns.ForeignKey(c => c.FixedAssetCategoryID, (System.Collections.IEnumerable)ViewData["AssetCategory"], "FixedAssetCategoryID", "CategoryName").EditorTemplateName("FixedAssetCategoryEditor").Width(140);
+        columns.Bound(e => e.TimeSheetType).Width(120);
+        //columns.ForeignKey(c => c.FixedAssetCategoryID, (System.Collections.IEnumerable)ViewData["AssetCategory"], "FixedAssetCategoryID", "CategoryName").EditorTemplateName("FixedAssetCategoryEditor").Width(140);
         columns.Bound(e => e.Description).Width(140);
         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
 
@@ -35,21 +36,164 @@
                             .Scrollable(h => h.Height(500))
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
         .Model(model =>
-              {
-                  model.Id(p => p.EquipmentTypeID);
+        {
+            model.Id(p => p.EquipmentTypeID);
 
-                  model.Field(p => p.EquipmentTypeID).Editable(false);
+            model.Field(p => p.EquipmentTypeID).Editable(false);
 
-              }).Events(ev => ev
-                                    .Error("error_handler(\"grid\")")
-                                    .RequestStart("onRequestStart(\"grid\")")
-                                    .RequestEnd("onRequestEnd(\"grid\")"))
-                        .Create(update => update.Action("EquipmentType_Create", "EquipmentType"))
-                        .Read(read => read.Action("EquipmentType_Read", "EquipmentType"))
-                        .Update(update => update.Action("EquipmentType_Update", "EquipmentType"))
-                        .Destroy(update => update.Action("EquipmentType_Destroy", "EquipmentType"))
-  )
+        })
+        .Sort(so=>so.Add(s=>s.EquipmentTypeID).Descending())
+        .Events(ev => ev
+            .Error("error_handler(\"grid\")")
+            .RequestStart("onRequestStart(\"grid\")")
+            .RequestEnd("onRequestEnd(\"grid\")"))
+            .Create(update => update.Action("EquipmentType_Create", "EquipmentType"))
+            .Read(read => read.Action("EquipmentType_Read", "EquipmentType"))
+            .Update(update => update.Action("EquipmentType_Update", "EquipmentType"))
+            .Destroy(update => update.Action("EquipmentType_Destroy", "EquipmentType"))
+                        
+  )//.ClientDetailTemplateId("equipmentNameTemplate")
 )
+<script id="equipmentNameTemplate" type="text/kendo-tmpl">
+  @(Html.Kendo().TabStrip()
+                            .Name("tabStrip_#=EquipmentTypeID#")
+                            .SelectedIndex(0)
+                            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                            .Items(items =>
+                            {
+                                items.Add().Text("Equipment Names").Content(
+                                    @<text>
+                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.EquipmentName>()
+                                                .Name("Equipment_names_#=EquipmentTypeID#")
+                                                .Columns(columns =>
+                                                {
+                                                    // columns.Bound(e => e.EquipmentTypeId).Hidden(true).Width(140);
+                                                    columns.ForeignKey(e => e.FixedAssetSubCategoryNameId,(IEnumerable)ViewData["FixedAssetSubCategoryNames"],"Id", "Name").EditorTemplateName("FixedAssetSubCategoryNameEditor").Width(140);
+                                                    // columns.Bound(c => c.FixedAssetSubCategoryNameId/*, (IEnumerable)ViewData["FixedAssetSubCategoryNames"], "Id", "Name"*/).EditorTemplateName("FixedAssetSubCategoryNameEditor").Width(140);
+                                                    columns.Bound(e => e.Name).Width(140);
+                                                    columns.Bound(e => e.Description).Width(140);
+                                                    columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
 
+                                                })
+                                                          .ToolBar(commands => commands.Create())
+                                                     .Editable(editable =>
+                                                     {
+                                                         editable.Mode(GridEditMode.InLine);
+                                                         editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
+                                                     })
+                                                    .Events(ev => ev.Edit("onEditGetParentRowId"))
+
+                                                     .HtmlAttributes(new { style = "height: 520px;" })
+                                                                  .Pageable(pageable => pageable
+                                                                                    .Input(true)
+                                                                                    .Numeric(false)
+                                                                                    .Refresh(true)
+                                                                                    .PageSizes(true)
+                                                                                    .ButtonCount(5))
+
+                                                                        .Scrollable()
+                                                                        .Sortable()
+                                                                        .Filterable()
+                                                                        //  .Groupable()
+                                                                        .Scrollable(h => h.Height(500))
+                                                .DataSource(dataSource => dataSource
+                                                    .Ajax()
+
+                                                    .Model(model =>
+                                                    {
+                                                        model.Id(p => p.EquipmentNameID);
+
+                                                        model.Field(p => p.EquipmentNameID).Editable(false);
+
+                                                    })
+                                                    .Sort(so => so.Add(s => s.EquipmentNameID).Descending())
+                                                               .Events(ev => ev
+                                                       .Error("error_handler(\"Equipment_names_#=EquipmentTypeID#\")")
+                                                       .RequestStart("onRequestStart(\"Equipment_names_#=EquipmentTypeID#\")")
+                                                       .RequestEnd("onRequestEnd(\"Equipment_names_#=EquipmentTypeID#\")"))
+                                                                    .Create(update => update.Action("EquipmentName_Create", "EquipmentName", new { id= "#=EquipmentTypeID#"}))
+                                                                    .Read(read => read.Action("EquipmentName_Read", "EquipmentName", new { id = "#=EquipmentTypeID#" }))
+                                                                    .Update(update => update.Action("EquipmentName_Update", "EquipmentName"))
+                                                                    .Destroy(update => update.Action("EquipmentName_Destroy", "EquipmentName"))
+                                              ).ToClientTemplate())
+
+                                    </text>
+                                                        );
+
+                                    }).ToClientTemplate())
+</script>
+
+<script>
+    var masterId;
+    function onEditGetParentRowId() {
+        var detailGridWrapper = this.wrapper,
+            mainGrid = $("#grid").data("kendoGrid"),
+            $parentGridTr = $(detailGridWrapper).closest("tr").prev(),
+            parentRow = mainGrid.dataItem($parentGridTr);
+        masterId = parentRow.EquipmentTypeID;
+        $("#EquipmentTypeID").val(masterId).trigger("change");
+        console.log(masterId);
+    }
+    
+    function filterFixedAssetSubCategroryNames() {
+
+        return {
+            equipmentTypeId: masterId
+        };
+    }
+</script>
+<script>
+    
+
+     function onChangeSubCategoryName(e) {
+
+        $.ajax({
+            url: '@Url.Action("GetFixedAssetSubCategoryNameById", "FleetManagementDataProvider")',
+            data: { assetSubCategoryNameId: this.value() },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                $("#Name").val(result.Name).trigger("change");
+                $("#Description").val(result.Description).trigger("change");
+
+
+            }
+        });
+
+    }
+
+</script>
+<script>
+    function filterEquipmentCategories() {
+        var dropdownlist = $("#EquipmentIdentityID").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            search: filterInput.val()
+        };
+    }
+
+    function filterFixedAssetSubCategrories() {
+        return {
+            equipmentCategoryId: $("#EquipmentIdentityID").val()
+        };
+    }
+
+     function onChangeSubCategory(e) {
+
+        $.ajax({
+            url: '@Url.Action("GetFixedAssetSubCategoryById", "FleetManagementDataProvider")',
+            data: { assetSubCategoryId: this.value() },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                $("#EquipmentTypeName").val(result.Name).trigger("change");
+                $("#Description").val(result.Description).trigger("change");
+
+
+            }
+        });
+
+    }
+</script>

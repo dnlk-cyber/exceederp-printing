@@ -1,0 +1,42 @@
+﻿
+
+
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.DumpTruckTimeSheetDetail>()
+            .Name("grid_Detail")
+            .Columns(columns =>
+            {
+
+                columns.Bound(c => c.LoadingLocationFrom).Width(100);
+                columns.Bound(c => c.LoadingLocationTo).Width(100);
+                columns.Bound(c => c.NumberOfTrip).Width(100);
+                columns.Bound(c => c.TypeOfWork).Width(100);
+
+                columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
+            })
+            .ToolBar(toolbar =>
+            {
+                toolbar.Create();
+
+            })
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+            .Pageable()
+            //.Events(e => e.DataBound("dataBound"))
+            //.Events(e => e.DetailExpand("onDetailExpand"))
+            .Filterable()
+            .Scrollable(s => s.Height(550))
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .Sort(s => s.Add(e => e.DumpTruckTimeSheetDetailId).Descending())
+                .Model(model => model.Id(p => p.DumpTruckTimeSheetDetailId))
+                .Events(ev => ev
+                             .Error("error_handler(\"grid_Detail\")")
+                             .RequestStart("onRequestStart(\"grid_Detail\")")
+                             .RequestEnd("onRequestEnd(\"grid_Detail\")"))
+                .Read(read => read.Action("DumpTruckTimeSheetsDetail_Read", "DumpTruckTimeSheetDetail"))
+                .Create(create => create.Action("DumpTruckTimeSheetsDetail_Create", "DumpTruckTimeSheetDetail"))
+                .Update(update => update.Action("DumpTruckTimeSheetsDetail_Update", "DumpTruckTimeSheetDetail"))
+                .Destroy(destroy => destroy.Action("DumpTruckTimeSheetsDetail_Destroy", "DumpTruckTimeSheetDetail"))
+            ).ToClientTemplate()
+)

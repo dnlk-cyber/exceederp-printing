@@ -15,15 +15,12 @@ namespace ExceedERP.Reporting.Fleet.ViewModel
        public string ProjectName { get; set; }
        public string FuelType { get; set; }
        public string FuelItem { get; set; }
-       public decimal Amount { get; set; }
-    
+       public decimal Amount { get; set; }   
 
        public decimal TotalCost { get; set; }
 
-
        public decimal RentalAmount { get; set; }
        public decimal RentalFuelType { get; set; }
-
        public decimal RentalTotalCost { get; set; }
 
        public decimal Total { get; set; }

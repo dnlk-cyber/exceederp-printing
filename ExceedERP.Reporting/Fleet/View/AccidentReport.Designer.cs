@@ -50,13 +50,10 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox21 = new Telerik.Reporting.TextBox();
             this.textBox23 = new Telerik.Reporting.TextBox();
             this.textBox24 = new Telerik.Reporting.TextBox();
-            this.textBox25 = new Telerik.Reporting.TextBox();
-            this.textBox26 = new Telerik.Reporting.TextBox();
             this.textBox27 = new Telerik.Reporting.TextBox();
             this.textBox28 = new Telerik.Reporting.TextBox();
             this.textBox29 = new Telerik.Reporting.TextBox();
             this.textBox33 = new Telerik.Reporting.TextBox();
-            this.textBox34 = new Telerik.Reporting.TextBox();
             this.AccidentDS = new Telerik.Reporting.ObjectDataSource();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.textBox43 = new Telerik.Reporting.TextBox();
@@ -179,14 +176,11 @@ namespace ExceedERP.Reporting.Fleet.View
             this.table1.Body.SetCellContent(0, 6, this.textBox8);
             this.table1.Body.SetCellContent(0, 1, this.textBox21);
             this.table1.Body.SetCellContent(0, 3, this.textBox23);
-            this.table1.Body.SetCellContent(1, 0, this.textBox24);
-            this.table1.Body.SetCellContent(1, 1, this.textBox25);
-            this.table1.Body.SetCellContent(1, 3, this.textBox26);
             this.table1.Body.SetCellContent(1, 4, this.textBox27);
             this.table1.Body.SetCellContent(1, 5, this.textBox28);
             this.table1.Body.SetCellContent(1, 6, this.textBox29);
             this.table1.Body.SetCellContent(0, 2, this.textBox33);
-            this.table1.Body.SetCellContent(1, 2, this.textBox34);
+            this.table1.Body.SetCellContent(1, 0, this.textBox24, 1, 4);
             tableGroup1.Name = "description";
             tableGroup1.ReportItem = this.textBox1;
             tableGroup2.Name = "group";
@@ -218,9 +212,6 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox7,
             this.textBox8,
             this.textBox24,
-            this.textBox25,
-            this.textBox34,
-            this.textBox26,
             this.textBox27,
             this.textBox28,
             this.textBox29,
@@ -289,22 +280,10 @@ namespace ExceedERP.Reporting.Fleet.View
             // textBox24
             // 
             this.textBox24.Name = "textBox24";
-            this.textBox24.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Cm(4.40979528427124D), Telerik.Reporting.Drawing.Unit.Cm(0.5D));
+            this.textBox24.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Cm(12.8704195022583D), Telerik.Reporting.Drawing.Unit.Cm(0.49999997019767761D));
+            this.textBox24.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Right;
             this.textBox24.StyleName = "Civic.TableBody";
-            // 
-            // textBox25
-            // 
-            this.textBox25.Name = "textBox25";
-            this.textBox25.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Cm(3.4022917747497559D), Telerik.Reporting.Drawing.Unit.Cm(0.5D));
-            this.textBox25.StyleName = "Civic.TableBody";
-            // 
-            // textBox26
-            // 
-            this.textBox26.Name = "textBox26";
-            this.textBox26.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Cm(2.8202085494995117D), Telerik.Reporting.Drawing.Unit.Cm(0.5D));
-            this.textBox26.Style.BackgroundColor = System.Drawing.Color.LightGray;
-            this.textBox26.StyleName = "Civic.TableBody";
-            this.textBox26.Value = "            Total";
+            this.textBox24.Value = "Total";
             // 
             // textBox27
             // 
@@ -340,12 +319,6 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox33.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Cm(2.2381250858306885D), Telerik.Reporting.Drawing.Unit.Cm(0.5D));
             this.textBox33.StyleName = "Civic.TableBody";
             this.textBox33.Value = "= Fields.DateOfOccurrence.Date";
-            // 
-            // textBox34
-            // 
-            this.textBox34.Name = "textBox34";
-            this.textBox34.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Cm(2.2381250858306885D), Telerik.Reporting.Drawing.Unit.Cm(0.5D));
-            this.textBox34.StyleName = "Civic.TableBody";
             // 
             // AccidentDS
             // 
@@ -478,7 +451,7 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox13.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.4990978240966797D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
             this.textBox13.Style.Font.Bold = true;
             this.textBox13.Style.Font.Underline = false;
-            this.textBox13.Value = "= Parameters.Identity.Label";
+            this.textBox13.Value = "= Parameters.Identity.Value";
             // 
             // textBox15
             // 
@@ -579,6 +552,7 @@ namespace ExceedERP.Reporting.Fleet.View
             this.PageSettings.Margins = new Telerik.Reporting.Drawing.MarginsU(Telerik.Reporting.Drawing.Unit.Cm(1D), Telerik.Reporting.Drawing.Unit.Cm(1D), Telerik.Reporting.Drawing.Unit.Cm(1D), Telerik.Reporting.Drawing.Unit.Cm(1D));
             this.PageSettings.PaperKind = System.Drawing.Printing.PaperKind.A4;
             reportParameter1.AllowBlank = false;
+            reportParameter1.AllowNull = true;
             reportParameter1.AvailableValues.DataSource = this.TypeDS;
             reportParameter1.AvailableValues.DisplayMember = "= Fields.Name";
             reportParameter1.AvailableValues.ValueMember = "= Fields.Value";
@@ -598,7 +572,7 @@ namespace ExceedERP.Reporting.Fleet.View
             reportParameter3.AllowNull = true;
             reportParameter3.AvailableValues.DataSource = this.YearDS;
             reportParameter3.AvailableValues.DisplayMember = "= Fields.Name";
-            reportParameter3.AvailableValues.ValueMember = "= Fields.Name";
+            reportParameter3.AvailableValues.ValueMember = "= Fields.Value";
             reportParameter3.Name = "Manufacturer";
             reportParameter3.Text = "Year";
             reportParameter3.Visible = true;
@@ -714,15 +688,12 @@ namespace ExceedERP.Reporting.Fleet.View
         private Telerik.Reporting.TextBox textBox22;
         private Telerik.Reporting.ObjectDataSource DamageDS;
         private Telerik.Reporting.TextBox textBox24;
-        private Telerik.Reporting.TextBox textBox25;
-        private Telerik.Reporting.TextBox textBox26;
         private Telerik.Reporting.TextBox textBox27;
         private Telerik.Reporting.TextBox textBox28;
         private Telerik.Reporting.TextBox textBox29;
         private Telerik.Reporting.TextBox textBox31;
         private Telerik.Reporting.TextBox textBox30;
         private Telerik.Reporting.TextBox textBox33;
-        private Telerik.Reporting.TextBox textBox34;
         private Telerik.Reporting.TextBox textBox32;
         private Telerik.Reporting.ObjectDataSource headerComp;
 

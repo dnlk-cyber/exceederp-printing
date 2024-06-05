@@ -1,9 +1,13 @@
 ﻿using System;
-using ExceedERP.Core.Domain.Common;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+ using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetSalvageStore
 {
-    public class CannibalizationApproval   : TrackUserOperation
+            public class CannibalizationApproval   : TrackUserOperation
             {
                 public int CannibalizationApprovalID { get; set; }
                 public Guid CannibalizationId { get; set; }

@@ -1,0 +1,247 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Core.Domain.Finance.AP
+@using ExceedERP.Helpers
+@model ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentToExternal
+<script>
+        function onUploadSuccess(e) {
+
+        }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".pdf" || this.extension.toLowerCase() === ".doc" || this.extension.toLowerCase() === ".docx") {
+
+            } else {
+                alert("Only .pdf or .docx or .doc files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+
+    function filterEquipmentIdentity() {
+        var dropdownlist = $("#EquipmentTypeID").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            EquipmentIdentityID: $("#EquipmentIdentityID").val(),
+            Search: filterInput.val()
+        };
+
+    }
+    function filterByType() {
+        var dropdownlist = $("#EquipmentName").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            EquipmentTypeId: $("#EquipmentTypeID").val(),
+            Search: filterInput.val()
+        };
+
+    }
+
+</script>
+
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ProjectLocation, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-10">
+                    @(Html.Kendo().DropDownListFor(model => model.ProjectLocation)
+                                          .DataTextField("Name")
+                                          .DataValueField("Id").OptionLabel("Select").HtmlAttributes(new { style = "width:100%" })
+                                          .DataSource(d => d.Read(r => r.Action("BranchDDBind", "Branch"))))
+                    @Html.ValidationMessageFor(model => model.ProjectLocation, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Description)
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.UnitOfWorkMeasurement, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.UnitOfWorkMeasurement)
+                    @Html.ValidationMessageFor(model => model.UnitOfWorkMeasurement, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Quantity)
+                    @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+           
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.From, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().DatePickerFor(model => model.From)
+                    @Html.ValidationMessageFor(model => model.From, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <br />
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.CollectedByPurchaser, htmlAttributes: new { @class = "control-label col-md-8" })*@
+                <div class="col-md-12">
+                    @Html.Kendo().CheckBoxFor(model => model.RentalRateIncludingVAT)
+                    @Html.ValidationMessageFor(model => model.RentalRateIncludingVAT, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+        </div>
+
+        <div class="col-md-3 ro1">
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Address, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Address)
+                    @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.WorkingCapacity, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.WorkingCapacity)
+                    @Html.ValidationMessageFor(model => model.WorkingCapacity, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.FuelCoveredBy, "Fuel Covered By", htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.FuelCoveredBy)
+                                          .OptionLabel(" Select ")
+                                          .BindTo(new List<SelectListItem>
+                                              ()
+                                              {
+                                                          new SelectListItem()
+                                                              {
+                                                                  Text = "By Customer",
+                                                                  Value = "Customer"
+                                                              },
+                                                          new SelectListItem()
+                                                              {
+                                                                  Text = "By Supplier",
+                                                                  Value = "Supplier"
+                                                              }
+                                              }))
+                    @Html.ValidationMessageFor(model => model.FuelCoveredBy, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <br />
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.WithholdTax, htmlAttributes: new { @class = "control-label col-md-8" })*@
+                <div class="col-md-12">
+                    @Html.Kendo().CheckBoxFor(model => model.WithDriver)
+                    @Html.ValidationMessageFor(model => model.WithDriver, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+           
+            <div class="form-group">
+                @Html.LabelFor(model => model.To, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().DatePickerFor(model => model.To)
+                    @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.NameBankBranch, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.NameBankBranch)
+                    @Html.ValidationMessageFor(model => model.NameBankBranch, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.AdvancePayment, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().NumericTextBoxFor(model => model.AdvancePayment)
+                    @Html.ValidationMessageFor(model => model.AdvancePayment, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Condition, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.Condition)
+                                          .OptionLabel(" Select ")
+                                          .BindTo(new List<SelectListItem>
+                                              ()
+                                              {
+                                                          new SelectListItem()
+                                                              {
+                                                                  Text = "Good",
+                                                                  Value = "Good"
+                                                              },
+                                                          new SelectListItem()
+                                                              {
+                                                                  Text = "Normal",
+                                                                  Value = "Normal"
+                                                              },
+                                                          new SelectListItem()
+                                                              {
+                                                                  Text = "Bad",
+                                                                  Value = "Bad"
+                                                              }
+                                              }))
+
+                    @Html.ValidationMessageFor(model => model.Condition, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.Label("Document Atachement")
+                <div class="col-md-10">
+
+                    @(Html.Kendo().Upload()
+                                  .Name("file")
+                                  .Async(a => a.Save("UploadReport", "Accident"))
+                                  .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
+                                  .ShowFileList(false).Events(events => events.Error("error_handler")))
+                </div>
+            </div>
+           
+           
+
+        </div>
+    </div>
+</div>
