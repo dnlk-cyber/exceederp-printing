@@ -1,0 +1,162 @@
+﻿<legend> Risk Mitgation Plan</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.RiskMitigationPlan>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.RiskMitigationPlanId).Title("S.N").Width(60);
+              columns.Bound(c => c.IdentifiedRisk).Width(150);
+              columns.Bound(c => c.RiskLevel).Width(100);
+              columns.Bound(c => c.TreatmentMethod).Width(150);
+              columns.Bound(c => c.ActionToBeTaken).Width(150);
+              columns.Bound(c => c.MainResponsibly).Width(150);
+              columns.Bound(c => c.SupportResponsibly).Width(150);
+              columns.Bound(c => c.Opportunity).Width(150);
+              columns.Bound(c => c.Time).Width(150);
+              columns.Bound(c => c.MonitoringMethod).Width(150);
+              columns.Bound(c => c.Evaluation).Width(150);
+              columns.Bound(c => c.PlanDate).Width(100);
+              columns.Command(command =>
+              { command.Edit();
+                  command.Destroy();
+              }).Width(200);
+          })
+          .ToolBar(toolbar => {
+              toolbar.Create();
+          })
+          .Editable(editable =>
+          {
+              editable.Mode(GridEditMode.PopUp);
+              editable.TemplateName("MitgationPlan");
+              editable.Window(window =>
+              {
+                  window.Title("Risk Mitgation Plan");
+                  window.Draggable(false);
+                  window.Scrollable(false);
+                  window.Width(720);
+              });
+          })
+          .Pageable()
+          .Filterable()
+          .Scrollable(h => h.Height(550))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Sort(s => s.Add(x => x.RiskMitigationPlanId).Descending())
+              .Model(model => {
+                  model.Id(p => p.RiskMitigationPlanId);
+                  model.Field(p => p.RiskMitigationPlanId).Editable(false);
+              })
+          .Read(read => read.Action("RiskMitigationPlans_Read", "RiskMitigationPlans"))
+          .Create(create => create.Action("RiskMitigationPlans_Create", "RiskMitigationPlans"))
+          .Update(update => update.Action("RiskMitigationPlans_Update", "RiskMitigationPlans"))
+          .Destroy(destroy => destroy.Action("RiskMitigationPlans_Destroy", "RiskMitigationPlans"))
+      ).ClientDetailTemplateId("template")
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+    .Name("FellowUptabstrip_#=RiskMitigationPlanId#")
+    .SelectedIndex(0)
+    .Items(items =>
+    {
+
+
+    items.Add().Text("Mitigation Fellow Up").Content(
+        @<text>
+            @mitigationFellowUp()
+        </text>
+        );
+    }).ToClientTemplate()
+    )
+</script>
+@helper mitigationFellowUp()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.RiskFollowUp>()
+      .Name("RiskFellowUp_grid_#=RiskMitigationPlanId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.PlanDate).Width(100);
+          columns.Bound(c => c.Description).Width(200);
+          columns.Bound(c => c.TreatmentMethod).Width(200);
+          columns.Bound(c => c.PlannedActionToBeTaken).Width(200);
+          columns.Bound(c => c.ActualActionTaken).Width(200);
+          columns.Bound(c => c.CurrentStatus).Width(100);
+
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      // .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Editable(editable =>
+      {
+          editable.Mode(GridEditMode.PopUp);
+          editable.TemplateName("RiskFollowUp");
+          editable.Window(window =>
+          {
+              window.Title("Risk FellowUp");
+              window.Draggable(false);
+              window.Scrollable(false);
+              window.Width(500);
+          });
+      })
+      .Pageable()
+      .Filterable()
+      .Scrollable(h=>h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.RiskFollowUpId))
+          .Read(read => read.Action("RiskFollowUps_Read", "RiskFollowUps", new { rId= "#=RiskMitigationPlanId#" }))
+          .Create(create => create.Action("RiskFollowUps_Create", "RiskFollowUps", new { rId = "#=RiskMitigationPlanId#" }))
+          .Update(update => update.Action("RiskFollowUps_Update", "RiskFollowUps"))
+          .Destroy(destroy => destroy.Action("RiskFollowUps_Destroy", "RiskFollowUps"))
+      ).ToClientTemplate()
+    )
+}
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+
+    .row .col-sm-3 {
+        width: 200px;
+    }
+
+    .row .col-sm-2 {
+        width: 200px;
+    }
+
+    .my-class {
+        margin-left: 20px;
+    }
+
+    .chkbx {
+        pointer-events: none;
+    }
+
+    .customer-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-right: 5px;
+    }
+    .kendo-textbox {
+        width: 200px;
+        height: 50px;
+    }
+    .textarea-class {
+        width: 200px;
+        height: 50px;
+    }
+</style>

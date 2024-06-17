@@ -1,0 +1,54 @@
+﻿@using ExceedERP.Core.Domain.Planning.BusinessPlanDevelopment
+<legend>Land Management</legend>
+@(Html.Kendo().Grid<LandManagement>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.LandManagementId).Title("S.N").Width(60);
+          columns.Bound(c => c.ParticularNameLandPilot).Width(150);
+          columns.Group(group => group
+
+                           .Title("Location ")
+
+                         .Columns(info =>
+                         {
+                             info.Bound(x => x.Zone).Width(130);
+                             info.Bound(x => x.CityOrTown).Width(130);
+                         }));
+          columns.Bound(c => c.TypesOfService).Width(150);
+          columns.Group(group => group
+
+                           .Title("Land Holding Certifcate ")
+
+                         .Columns(info =>
+                         {
+                             info.Bound(x => x.HoldingCertifcate).Width(130);
+                             info.Bound(x => x.LandHoldingCertifcateNo).Width(130);
+                         }));
+          columns.Bound(c => c.AcquiredBy).Width(120);
+          columns.Command(command =>
+          {   command.Edit();
+              command.Destroy();
+          }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable(h => h.Height(550))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(s => s.Add(x => x.LandManagementId).Descending())
+          .Model(model => { model.Id(p => p.LandManagementId);
+              model.Field(p => p.LandManagementId).Editable(false);
+          })
+          .Read(read => read.Action("LandManagements_Read", "LandManagements"))
+          .Create(create => create.Action("LandManagements_Create", "LandManagements"))
+          .Update(update => update.Action("LandManagements_Update", "LandManagements"))
+          .Destroy(destroy => destroy.Action("LandManagements_Destroy", "LandManagements"))
+      )
+)
+
+

@@ -3799,6 +3799,162 @@
     <Compile Include="Maintenance\ViewModel\ReportParameterViewModel.cs" />
     <Compile Include="Maintenance\ViewModel\VehicleReceptionFormViewModel.cs" />
     <Compile Include="Maintenance\ViewModel\WorkShopWorkSheetViewModel.cs" />
+    <Compile Include="Planning\DataSource\ActualandPlanODS.cs" />
+    <Compile Include="Planning\DataSource\ActualandPlanSelfCareODS.cs" />
+    <Compile Include="Planning\DataSource\ActualODS.cs" />
+    <Compile Include="Planning\DataSource\ActualSelfCareODS.cs" />
+    <Compile Include="Planning\DataSource\BussinessUnitODS.cs" />
+    <Compile Include="Planning\DataSource\ExecutiveSummaryODS.cs" />
+    <Compile Include="Planning\DataSource\FiscalYearODS.cs" />
+    <Compile Include="Planning\DataSource\PlanODS.cs" />
+    <Compile Include="Planning\DataSource\PlanSelfCareODS.cs" />
+    <Compile Include="Planning\DataSource\PlanVsActualWeeklyODS.cs" />
+    <Compile Include="Planning\DataSource\ProjecKPITypeODS.cs" />
+    <Compile Include="Planning\DataSource\ProjectActualODS.cs" />
+    <Compile Include="Planning\DataSource\ProjectExecutiveSummaryByProjectODS.cs" />
+    <Compile Include="Planning\DataSource\ProjectExecutiveSummaryODS.cs" />
+    <Compile Include="Planning\DataSource\ProjectInformationPlanQurterlySummaryODS.cs" />
+    <Compile Include="Planning\DataSource\ProjectInformationPlanSummaryODS.cs" />
+    <Compile Include="Planning\DataSource\ProjectKPIODS.cs" />
+    <Compile Include="Planning\DataSource\ProjectObjectivesODS.cs" />
+    <Compile Include="Planning\DataSource\ProjectODS.cs" />
+    <Compile Include="Planning\DataSource\ProjectPlanAndActualODS.cs" />
+    <Compile Include="Planning\DataSource\ProjectPlanODS.cs" />
+    <Compile Include="Planning\DataSource\ProjectPlanVsActualWeeklyODS.cs" />
+    <Compile Include="Planning\DataSource\ProjectSummaryBySectorsODS.cs" />
+    <Compile Include="Planning\DataSource\ProjectTypeODS.cs" />
+    <Compile Include="Planning\DataSource\QuarterODS.cs" />
+    <Compile Include="Planning\DataSource\RiskFollowUpODS.cs" />
+    <Compile Include="Planning\DataSource\RiskMitigationPlanODS.cs" />
+    <Compile Include="Planning\DataSource\WorkUnitODS.cs" />
+    <Compile Include="Planning\Design\ActualReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\ActualReport.Designer.cs">
+      <DependentUpon>ActualReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\ActualSelfCareReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\ActualSelfCareReport.Designer.cs">
+      <DependentUpon>ActualSelfCareReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\ExcutiveSummaryReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\ExcutiveSummaryReport.Designer.cs">
+      <DependentUpon>ExcutiveSummaryReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\PlanningAndActualReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\PlanningAndActualReport.Designer.cs">
+      <DependentUpon>PlanningAndActualReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\PlanningAndActualSelfCareReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\PlanningAndActualSelfCareReport.Designer.cs">
+      <DependentUpon>PlanningAndActualSelfCareReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\PlanningAndActualWeeklyReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\PlanningAndActualWeeklyReport.Designer.cs">
+      <DependentUpon>PlanningAndActualWeeklyReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\PlanReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\PlanReport.Designer.cs">
+      <DependentUpon>PlanReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\PlanSelfCareReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\PlanSelfCareReport.Designer.cs">
+      <DependentUpon>PlanSelfCareReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectActualReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectActualReport.Designer.cs">
+      <DependentUpon>ProjectActualReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectExecutiveSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectExecutiveSummary.Designer.cs">
+      <DependentUpon>ProjectExecutiveSummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectExecutiveSummaryBYProject.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectExecutiveSummaryBYProject.Designer.cs">
+      <DependentUpon>ProjectExecutiveSummaryBYProject.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectInformationPlanSummaryReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectInformationPlanSummaryReport.Designer.cs">
+      <DependentUpon>ProjectInformationPlanSummaryReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectInformationQurterlySummaryReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectInformationQurterlySummaryReport.Designer.cs">
+      <DependentUpon>ProjectInformationQurterlySummaryReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectPlanReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectPlanReport.Designer.cs">
+      <DependentUpon>ProjectPlanReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectPlanVSActualDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectPlanVSActualDesign.Designer.cs">
+      <DependentUpon>ProjectPlanVSActualDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectPlanVsActualWeeklyReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectPlanVsActualWeeklyReport.Designer.cs">
+      <DependentUpon>ProjectPlanVsActualWeeklyReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectSummaryBySectorReports.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\ProjectSummaryBySectorReports.Designer.cs">
+      <DependentUpon>ProjectSummaryBySectorReports.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\RiskFollowUpDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\RiskFollowUpDesign.Designer.cs">
+      <DependentUpon>RiskFollowUpDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\Design\RiskMitigationPlanDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Planning\Design\RiskMitigationPlanDesign.Designer.cs">
+      <DependentUpon>RiskMitigationPlanDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Planning\ViewModel\ActualAndPlanningVM.cs" />
+    <Compile Include="Planning\ViewModel\ActualVM.cs" />
+    <Compile Include="Planning\ViewModel\ExecutiveSummaryVM.cs" />
+    <Compile Include="Planning\ViewModel\PlanningVM.cs" />
+    <Compile Include="Planning\ViewModel\ProjectActualVM.cs" />
+    <Compile Include="Planning\ViewModel\ProjectExecutiveSummaryByProjectVM.cs" />
+    <Compile Include="Planning\ViewModel\ProjectExecutiveSummaryVM.cs" />
+    <Compile Include="Planning\ViewModel\ProjectInformationPlanSummaryVM.cs" />
+    <Compile Include="Planning\ViewModel\ProjectPlanAndActualVM.cs" />
+    <Compile Include="Planning\ViewModel\ProjectPlanVM.cs" />
+    <Compile Include="Planning\ViewModel\ProjectPlanVsActualWeeklyVM.cs" />
+    <Compile Include="Planning\ViewModel\ProjectSummaryBySectorsVM.cs" />
+    <Compile Include="Planning\ViewModel\RiskFollowUpVM.cs" />
+    <Compile Include="Planning\ViewModel\RiskMitgationPlanVM.cs" />
     <Compile Include="Procurements\AmharicAward.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -5786,6 +5942,63 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\WorkOrderWorkSheetDesign.resx">
       <DependentUpon>WorkOrderWorkSheetDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\ActualReport.resx">
+      <DependentUpon>ActualReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\ActualSelfCareReport.resx">
+      <DependentUpon>ActualSelfCareReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\ExcutiveSummaryReport.resx">
+      <DependentUpon>ExcutiveSummaryReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\PlanningAndActualReport.resx">
+      <DependentUpon>PlanningAndActualReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\PlanningAndActualSelfCareReport.resx">
+      <DependentUpon>PlanningAndActualSelfCareReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\PlanningAndActualWeeklyReport.resx">
+      <DependentUpon>PlanningAndActualWeeklyReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\PlanReport.resx">
+      <DependentUpon>PlanReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\PlanSelfCareReport.resx">
+      <DependentUpon>PlanSelfCareReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\ProjectActualReport.resx">
+      <DependentUpon>ProjectActualReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\ProjectExecutiveSummary.resx">
+      <DependentUpon>ProjectExecutiveSummary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\ProjectExecutiveSummaryByProject.resx">
+      <DependentUpon>ProjectExecutiveSummaryBYProject.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\ProjectInformationPlanSummaryReport.resx">
+      <DependentUpon>ProjectInformationPlanSummaryReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\ProjectInformationQurterlySummaryReport.resx">
+      <DependentUpon>ProjectInformationQurterlySummaryReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\ProjectPlanReport.resx">
+      <DependentUpon>ProjectPlanReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\ProjectPlanVSActualDesign.resx">
+      <DependentUpon>ProjectPlanVSActualDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\ProjectPlanVsActualWeeklyReport.resx">
+      <DependentUpon>ProjectPlanVsActualWeeklyReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\ProjectSummaryBySectorReports.resx">
+      <DependentUpon>ProjectSummaryBySectorReports.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\RiskFollowUpDesign.resx">
+      <DependentUpon>RiskFollowUpDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Planning\Design\RiskMitigationPlanDesign.resx">
+      <DependentUpon>RiskMitigationPlanDesign.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Procurements\AmharicAward.resx">
       <DependentUpon>AmharicAward.cs</DependentUpon>

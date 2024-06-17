@@ -1,0 +1,19 @@
+
+@(Html.Kendo().DropDownListFor(m => m)
+            .OptionLabel("Select")
+            .DataTextField("PlanValue")
+            .DataValueField("monthlyPlanId")
+            .DataSource(dataSource =>
+            {
+                dataSource.Read(read => read.Action("GetPlannedForActual", "PlanningDataProvider", new { Area = "Planning" }).Data("filterObjective"))
+                    .ServerFiltering(true);
+            })
+            .Filter("contains")
+            .MinLength(2)
+            .ValuePrimitive(true)
+            .CascadeFrom("OrgStructureId")
+            )
+                  
+ 
+
+    

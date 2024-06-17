@@ -1,0 +1,102 @@
+﻿@using ExceedERP.Core.Domain.Planning.BusinessPlanDevelopment
+<legend>Shares &  Dividends</legend>
+@(Html.Kendo().Grid<ShareAndDividend>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ShareAndDividendId).Title("S.N").Width(60);
+          columns.Bound(c => c.ShareCompanyName).Width(150);
+          columns.Group(group => group
+
+                           .Title("Subscribed Share Amt ")
+
+                         .Columns(info =>
+                         {
+                             info.Bound(x => x.SubscribedShareAmtNoofShare).Width(130);
+                             info.Bound(x => x.SubscribedShareAmtBirr).Width(130);
+                         }));
+          columns.Group(group => group
+
+                           .Title("Paid up Share Amt")
+
+                         .Columns(info =>
+                         {
+                             info.Bound(x => x.PaidUpShareAmtNoOfShare).Width(130);
+                             info.Bound(x => x.PaidUpShareAmtBirr).Width(130);
+                         }));
+          columns.Bound(c => c.RemainingShare).Width(150);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["GlFiscalYears"], "GlFiscalYearId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(250);
+          columns.Command(command =>
+          {   command.Edit();
+              command.Destroy();
+          }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable(h => h.Height(550))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(s => s.Add(x => x.ShareAndDividendId).Descending())
+          .Model(model => { model.Id(p => p.ShareAndDividendId);
+              model.Field(p => p.ShareAndDividendId).Editable(false);
+          })
+          .Read(read => read.Action("ShareAndDividends_Read", "ShareAndDividends"))
+          .Create(create => create.Action("ShareAndDividends_Create", "ShareAndDividends"))
+          .Update(update => update.Action("ShareAndDividends_Update", "ShareAndDividends"))
+          .Destroy(destroy => destroy.Action("ShareAndDividends_Destroy", "ShareAndDividends"))
+      ).ClientDetailTemplateId("business_plan_detail")
+)
+
+<script type="text/kendo-template" id="business_plan_detail">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_we_str_#=ShareAndDividendId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Share & Dividend Detail").Content(
+            @<text>
+               @(Html.Kendo().Grid<ShareAndDividendFiscalYearDetail>()
+                      .Name("ShareAndDividendFiscalYearDetail#=ShareAndDividendId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.PlanToPayShare).Width(180);
+                          columns.Bound(c => c.PaidShare).Width(100);
+                          columns.Bound(c => c.DividendObtaind).Width(150);
+
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(200);
+                      })
+                      .ToolBar(toolbar => {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Pageable()
+                      .Filterable()
+                      .Scrollable(h=>h.Height(550))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(model => {
+                              model.Id(p => p.ShareAndDividendFiscalYearDetailId);
+                              model.Field(p => p.ShareAndDividendFiscalYearDetailId).Editable(false);
+                             // model.Field(p => p.da).DefaultValue(DateTime.Now).Editable(false);
+                          })
+                          .Read(read => read.Action("ShareAndDividendFiscalYearDetails_Read", "ShareAndDividendFiscalYearDetails", new { sDId= "#=ShareAndDividendId#" }))
+                          .Create(create => create.Action("ShareAndDividendFiscalYearDetails_Create", "ShareAndDividendFiscalYearDetails", new { sDId = "#=ShareAndDividendId#" }))
+                          .Update(update => update.Action("ShareAndDividendFiscalYearDetails_Update", "ShareAndDividendFiscalYearDetails"))
+                          .Destroy(destroy => destroy.Action("ShareAndDividendFiscalYearDetail_Destroy", "ShareAndDividendFiscalYearDetails"))
+                      ).ToClientTemplate()
+              )
+
+            </text>);
+
+        }).ToClientTemplate()
+    )
+</script>
+

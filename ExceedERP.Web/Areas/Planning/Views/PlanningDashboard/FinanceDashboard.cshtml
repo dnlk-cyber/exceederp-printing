@@ -1,0 +1,1285 @@
+﻿@using ExceedERP.Web.Controllers
+
+@{
+    ViewBag.Title = "FinanceDashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/dashboard.css" rel="stylesheet" />
+@*(HttpContext.Current.User.IsInRole("Finance_Report"))*@
+
+@if (true)
+{
+    <div class="dashboard">
+        <div class="row">
+
+
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="issueStatus" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="itransferSendStatus" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="itransferReceiveStatus" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="storeReturnStatus" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="row">
+
+            @*<div class="col-sm-7 col-lg-3 chartcontainer">
+
+                    <div class="demo-section k-content wide">
+                        <canvas id="grnStatus" width="400" height="400"></canvas>
+                    </div>
+
+
+                </div>*@
+
+
+        </div>
+        <div class="row">
+
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="apInvoiceStatus" width="400" height="400" class="chartarea"></canvas>
+                </div>
+
+
+            </div>
+
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="apPaymentStatus" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="arInvoiceStatus" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="arCollectionStatus" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="gLStatus" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="suppliers" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="invoicecollection" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="invoicepayment" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-sm-8 col-lg-12 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="incomeexpense" width="300" height="300"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-sm-8 col-lg-12 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="cashAndBank" width="300" height="300"></canvas>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+}
+<script src="~/Scripts/Chart.bundle.js"></script>
+<script src="~/Scripts/Chart.PieceLabel.js"></script>
+<script>
+
+    window.chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)'
+    };
+
+    //inventory
+    issue();
+    transferSend();
+    transferReceive();
+    grn();
+    storeReturnStatus();
+    //finance
+    suppliers();
+    apInvoice();
+    apPayment();
+    arInvoice();
+    arCollection();
+    gLStatus();
+    arInvoiceAndCollection();
+    apInvoiceAnPayment();
+    incomeAndExpense();
+    cashAndBank();
+
+
+    //inventory
+
+    function issue() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetFinanceIssueStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("issueStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Issue Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Stock-Issue Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function transferSend() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetFinanceTransferSendStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("itransferSendStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Transfer Send Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Stock-Transfer Send Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function transferReceive() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetFinanceTransferReceiveStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("itransferReceiveStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Transfer Receive Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Stock-Transfer Receive Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function grn() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetFinanceGrnStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("grnStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Good Receive Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Stock-Good Receive Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function storeReturnStatus() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetFinancestoreReturnStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("storeReturnStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Store Return Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Stock-Store Return Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    //finance
+
+    function cashAndBank() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetCashAndBank", "Dashboard", new {area = ""})',
+            success: function (result) {
+
+
+                console.log(result.DataSet);
+
+                //render
+                var ctx = document.getElementById("cashAndBank").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: result.Labels,
+                        datasets: result.DataSet
+
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Cash and Bank'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'black'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                type: 'time',
+                                distribution: 'series',
+                                ticks: {
+                                    source: 'labels'
+                                }
+                            }],
+                            yAxes: [{
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Cash and Bank (M ETB)'
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function incomeAndExpense() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetIncomeExpense", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("incomeexpense").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            type: 'line',
+                            label: 'Profit',
+                            borderColor: window.chartColors.yellow,
+                            borderWidth: 3,
+                            fill: false,
+                            data: result.DataProfit
+                        },
+                          {
+                              type: 'line',
+                              label: 'Expense',
+                              backgroundColor: window.chartColors.blue,
+                              data: result.DataExpense,
+                              borderColor: 'white',
+                              borderWidth: 2
+                          }, {
+                              type: 'line',
+                              label: 'Income',
+                              backgroundColor: window.chartColors.green,
+                              data: result.DataIncome
+                          }]
+
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Income and Expense'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'black'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Months'
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+
+                                    labelString: 'Amount (M ETB)'
+                                },
+                                ticks: {
+
+                                    // forces step size to be 5 units
+                                    stepSize: 1000
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function apInvoiceAnPayment() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetApInvoiceAndPayment", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("invoicepayment").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Invoice and Payment (Birr)',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.green,
+                                window.chartColors.blue,
+                                window.chartColors.red,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Invoice and Payment (Birr)'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'black'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        }
+
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function apInvoiceAnPayment() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetApInvoiceAndPayment", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("invoicepayment").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'horizontalBar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Invoice and Payment (Birr)',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.green,
+                                window.chartColors.blue,
+                                window.chartColors.red,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Invoice and Payment (Birr)'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'black'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        }
+
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function arInvoiceAndCollection() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetArInvoiceAndCollection", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("invoicecollection").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'horizontalBar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Invoice and Collection (Birr)',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.green,
+                                window.chartColors.blue,
+                                window.chartColors.red,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Invoice and Collection (Birr)'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'black'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        }
+
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function suppliers() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetSupplierStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("suppliers").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Suppliers',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.green,
+                                window.chartColors.blue,
+                                window.chartColors.red,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Suppliers'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'black'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        }
+
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function apInvoice() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetapInvoiceStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("apInvoiceStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'AP Invoice Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'AP Invoice Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        }
+
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function apPayment() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetApPaymentStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("apPaymentStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'AP Invoice Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'AP Payment Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function arInvoice() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetArInvoiceStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("arInvoiceStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'AR Invoice Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'AR Invoice Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function arCollection() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetArCollectionStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("arCollectionStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'AR Collection Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'AR Collection Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function gLStatus() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetGlStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("gLStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'GL Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'GL Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+
+
+    $(document).on('click', '.panel-heading span.clickable', function (e) {
+        var $this = $(this);
+        if (!$this.hasClass('panel-collapsed')) {
+            $this.parents('.panel').find('.panel-body').slideUp();
+            $this.addClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+        } else {
+            $this.parents('.panel').find('.panel-body').slideDown();
+            $this.removeClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+        }
+    })
+</script>

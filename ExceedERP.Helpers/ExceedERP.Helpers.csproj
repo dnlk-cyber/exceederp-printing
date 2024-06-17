@@ -193,6 +193,7 @@
     <Compile Include="EnumExtension.cs" />
     <Compile Include="Inventory\InventoryTransferHelper.cs" />
     <Compile Include="Inventory\TransactionHelper.cs" />
+    <Compile Include="Planning\PlanningIsoDocumentHelper.cs" />
     <Compile Include="Procurement\GuaranteeHelper.cs" />
     <Compile Include="Procurement\ItemHelper.cs" />
     <Compile Include="Procurement\PaymentHelper.cs" />

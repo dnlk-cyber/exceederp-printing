@@ -1,0 +1,236 @@
+﻿<legend> Self-Care Project Actual</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Project.ProjectActual>()
+              .Name("ProjectActualgrid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.ProjectActualId).Title("S.N").Filterable(false).Width(60);
+                  columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").Width(130);
+                  columns.ForeignKey(c => c.ProjectInformationId, (IEnumerable)ViewData["projects"], "ProjectInformationId", "ProjectName").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+                  columns.ForeignKey(c => c.ProjectObjectiveId, (IEnumerable)ViewData["projectObjective"], "ProjectObjectiveId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+                  columns.ForeignKey(c => c.ProjectKPIId, (IEnumerable)ViewData["projectKpIs"], "ProjectKPIId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+                  columns.ForeignKey(c => c.ProjectSubKPIId, (IEnumerable)ViewData["projectSubKpIs"], "ProjectSubKPIId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+                  columns.Bound(c => c.Description).Width(120);
+
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable =>
+              {
+                  editable.Mode(GridEditMode.PopUp);
+                  editable.TemplateName("projectActualTemplate");
+                  editable.Window(window =>
+                  {
+                      window.Title("Project Actual Form");
+                      window.Draggable(false);
+                      window.Scrollable(false);
+                      //window.Width(520);
+                  });
+              })
+              .Pageable()
+              .Filterable()
+              .Scrollable(h => h.Height(550))
+              .Events(events =>
+              {
+                  events.Cancel("onCancelActual");
+                  events.Edit("onEditActual");
+              })
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Sort(s=>s.Add(x=>x.ProjectActualId).Descending())
+                  .Group(x => x.Add(p => p.GlFiscalYearId))
+                  .Events(ev => ev
+                            .Error("error_handler(\"ProjectActualgrid\")")
+                            .RequestStart("onRequestStart(\"ProjectActualgrid\")")
+                            .RequestEnd("onRequestEnd(\"ProjectActualgrid\")"))
+                  .Model(model => { model.Id(p => p.ProjectActualId);
+                      model.Field(p => p.ProjectActualId).Editable(false);
+                  })
+                  .Read(read => read.Action("ProjectActualSelfcares_Read", "ProjectActualSelfcares"))
+                  .Create(create => create.Action("ProjectActualSelfcares_Create", "ProjectActualSelfcares"))
+                  .Update(update => update.Action("ProjectActualSelfcares_Update", "ProjectActualSelfcares"))
+                  .Destroy(destroy => destroy.Action("ProjectActualSelfcares_Destroy", "ProjectActualSelfcares"))
+              ).ClientDetailTemplateId("project_actualSelfcare_details")
+)
+
+<script type="text/kendo-template" id="project_actualSelfcare_details">
+    @(Html.Kendo().TabStrip()
+                    .Name("tab_str_self#=ProjectActualId#")
+                    .SelectedIndex(0)
+                    .Items(items =>
+                    {
+                        items.Add().Text("Project Actual Detail").Content(
+                        @<text>
+                            <a onclick='return refreshForNewItems("#=ProjectActualId#")' href=' \#' title="Refresh"><i class="fa fa-refresh fa-2x"></i></a>
+                            @projectActualDetail()
+                        </text>);
+
+
+                    }).ToClientTemplate()
+    )
+</script>
+
+@helper projectActualDetail()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Project.ProjectMonthlyActual>()
+              .Name("project_monthly_actual_self_grid#=ProjectActualId#")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(c => c.GLPeriodId,(IEnumerable)ViewData["periods"], "GLPeriodId", "period").Width(150);
+                  columns.Bound(c => c.PlanValue).Width(150);
+                  columns.Bound(c => c.ActualValue).Width(150);
+                  columns.Command(command => { command.Edit(); });
+              })
+
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Pageable()
+              .Filterable()
+              .Scrollable(h=>h.Height(500))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(
+                      model => { model.Id(p => p.ProjectMonthlyActualId);
+                      model.Field(p => p.GLPeriodId).Editable(false);
+                      model.Field(p => p.PlanValue).Editable(false);
+                      })
+                  .Events(ev => ev
+                            .Error("error_handler(\"project_monthly_actual_self_grid#=ProjectActualId#\")")
+                            .RequestStart("onRequestStart(\"project_monthly_actual_self_grid#=ProjectActualId#\")")
+                            .RequestEnd("onRequestEnd(\"project_monthly_actual_self_grid#=ProjectActualId#\")"))
+                  .Read(read => read.Action("ProjectMonthlyActuals_Read", "ProjectMonthlyActuals",new { aId = "#=ProjectActualId#" }))
+                  .Create(create => create.Action("ProjectMonthlyActuals_Create", "ProjectMonthlyActuals", new { aId = "#=ProjectActualId#" }))
+                  .Update(update => update.Action("ProjectMonthlyActuals_Update", "ProjectMonthlyActuals"))
+                  .Destroy(destroy => destroy.Action("ProjectMonthlyActuals_Destroy", "ProjectMonthlyActuals"))
+              ).ClientDetailTemplateId("project_weekly_actual_self_details")
+              .ToClientTemplate()
+    )
+
+}
+<script type="text/kendo-template" id="project_weekly_actual_self_details">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_str_project_weekly_Self_Actual_#=ProjectMonthlyActualId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Project Weekly Actual").Content(
+            @<text>
+               
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Project.ProjectWeeklyActual>()
+                  .Name("Project_Weekly_Actual_Self_grid#=ProjectMonthlyActualId#")
+                  .Columns(columns =>
+                  {
+                    columns.Bound(c => c.WeekOne).Width(110);
+                    columns.Bound(c => c.WeekTwo).Width(110);
+                    columns.Bound(c => c.WeekThree).Width(130);
+                    columns.Bound(c => c.WeekFour).Width(130);
+                    columns.Command(command => { command.Edit(); command.Destroy(); });
+                  })
+                  .ToolBar(toolbar => {
+                        toolbar.Create();
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Pageable()
+                  .Filterable()
+                  .Scrollable(h=>h.Height(500))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+
+                      .Model(model => model.Id(p => p.ProjectWeeklyActualId))
+                      .Read(read => read.Action("ProjectWeeklyActuals_Read", "ProjectWeeklyActuals", new { wId = "#=ProjectMonthlyActualId#" }))
+                      .Create(create => create.Action("ProjectWeeklyActuals_Create", "ProjectWeeklyActuals", new { wId = "#=ProjectMonthlyActualId#" }))
+                      .Update(update => update.Action("ProjectWeeklyActuals_Update", "ProjectWeeklyActuals"))
+                      .Destroy(destroy => destroy.Action("ProjectWeeklyActuals_Destroy", "ProjectWeeklyActuals"))
+                  ).ToClientTemplate()
+            )
+
+
+            </text>);
+
+        }).ToClientTemplate()
+    )
+</script>
+<script>
+
+    function onCancelActual(e) {
+        //Implement the event handler for Cancel
+        e.sender.dataSource.cancelChanges();
+        e.preventDefault();
+        e.sender.refresh();
+    }
+
+    function onEditActual(e) {
+       
+
+    }
+
+
+</script>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 200px;
+    }
+
+    .my-class {
+        margin-left: 10px;
+    }
+
+    .chkbx {
+        pointer-events: none;
+    }
+
+    .customer-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-right: 5px;
+    }
+</style>
+<script>
+    
+    }
+</script>
+<script>
+    function filterKPI() {
+        return {
+            kId: $("#ProjectKPIId").val()
+        };
+    }
+</script>
+<script>
+    function filterKPI() {
+        return {
+            kId: $("#ProjectKPIId").val()
+        };
+    }
+     function refreshForNewItems(id) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("RefreshToAddNewAddedItems", "ProjectActuals", new { area = "Planning" })',
+            data: { id: id },
+            success: function (result) {
+                //toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+</script>

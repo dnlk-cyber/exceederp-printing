@@ -1,0 +1,317 @@
+﻿@using ExceedERP.Core.Localization
+<legend> Project Plan</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Project.ProjectPlan>()
+        .Name("ProjectPlangrid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.ProjectPlanId).Title("S.N").Filterable(false).Width(60);
+            columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+            columns.ForeignKey(c => c.ProjectInformationId, (IEnumerable)ViewData["projects"], "ProjectInformationId", "ProjectName").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+            columns.ForeignKey(c => c.ProjectObjectiveId, (IEnumerable)ViewData["projectObjective"], "ProjectObjectiveId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+            columns.ForeignKey(c => c.ProjectKPIId, (IEnumerable)ViewData["projectKpIs"], "ProjectKPIId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+            columns.ForeignKey(c => c.ProjectSubKPIId, (IEnumerable)ViewData["projectSubKpIs"], "ProjectSubKPIId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+            columns.Bound(c => c.Baseline).Width(90);
+            columns.Bound(c => c.Plan).Width(90);
+            columns.Bound(c => c.Target).Width(90);
+            columns.Bound(c => c.ToDate).Width(100);
+            columns.Bound(c => c.Description).Width(120);
+            columns.Command(command => {
+                command.Edit();
+                command.Destroy();
+            }).Width(200);
+
+        })
+        .ToolBar(toolbar =>
+        {
+            toolbar.Create();
+        })
+        //.Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Editable(editable =>
+        {
+            editable.Mode(GridEditMode.PopUp);
+            editable.TemplateName("projectPlanTemplate");
+            editable.Window(window =>
+            {
+                window.Title("Project Plan Form");
+                window.Draggable(false);
+                window.Scrollable(false);
+                // window.Width(520);
+            });
+        })
+        .Pageable()
+        .Filterable()
+        .Scrollable(h => h.Height(550))
+        .Events(events =>
+        {
+            events.Cancel("onCancelPlan");
+            events.Edit("onEditPlan");
+        })
+        .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Sort(s=>s.Add(x=>x.ProjectPlanId).Descending())
+                  .Group(x => { x.Add(p => p.GlFiscalYearId);
+                      x.Add(p => p.ProjectKPIId);
+                  })
+                  .Model(model => { model.Id(p => p.ProjectPlanId);
+                      model.Field(p => p.ProjectPlanId).Editable(false);
+                  })
+                  .Events(ev => ev
+                            .Error("error_handler(\"ProjectPlangrid\")")
+                            .RequestStart("onRequestStart(\"ProjectPlangrid\")")
+                            .RequestEnd("onRequestEnd(\"ProjectPlangrid\")"))
+                  .Read(read => read.Action("ProjectPlans_Read", "ProjectPlans"))
+                  .Create(create => create.Action("ProjectPlans_Create", "ProjectPlans"))
+                  .Update(update => update.Action("ProjectPlans_Update", "ProjectPlans"))
+                  .Destroy(destroy => destroy.Action("ProjectPlans_Destroy", "ProjectPlans"))
+              ).ClientDetailTemplateId("project_Plan_details")
+)
+
+<script type="text/kendo-template" id="project_Plan_details">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_str_#=ProjectPlanId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Project Plan Detail").Content(
+            @<text>
+                @projectPlanDetails()
+            </text>);
+                items.Add().Text("Attachments").Content(       
+            @<text>
+               <button onclick='uploadFile(#=ProjectPlanId#)' class='fa fa-upload btn btn-primary'>&nbsp;Upload </button>
+               @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Attachment>()
+                     .Name("AttachementGrid#=ProjectPlanId#")
+                     .Columns(columns =>
+                     {
+                         columns.Bound(c => c.FileName).ClientTemplate("<a href='/Planning/ProjectPlans/DownloadDoument?AttachmentId=\\#=AttachmentId\\#'> <f class = 'fa fa-download'></i> </a>").Width(150);
+                         // columns.Bound(c => c.FileName).ClientTemplate(Html.ActionLink("\\#=FileName\\#", "DownloadFile", new { filename = "\\#=LetterSenderId\\#" }).ToHtmlString());
+                         columns.Bound(c => c.Description).Width(100);
+                         columns.Template(e => { }).ClientTemplate("<a href='/Planning/ProjectPlans/DownloadDoument?AttachmentId=\\#=AttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; download </a>").Width(80);
+                         columns.Template(e => { }).ClientTemplate("<a href='\\#=URL\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(80);
+                         columns.Command(command =>
+                         {
+                             command.Destroy().Text("Delete");
+                         }).Width(300);
+                     })
+                     //.Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("UploadDocument")
+                     //.Window(window =>
+                     //{
+                     //    window.Title("");
+                     //    window.Scrollable(false);
+                     //}))
+                     .Scrollable(h => h.Height("auto"))
+                     //.Events(ev=>
+                     //{
+                     //    ev.DataBound("onAttachmentDataBound");
+                     //})
+                     .DataSource(dataSource => dataSource
+                     .Ajax()
+                     .Sort(sort => sort.Add(c => c.AttachmentId).Descending())
+                     .Events(events =>
+                     {
+                         events.Error("error_handler(\"AttachementGrid#=ProjectPlanId#\")");
+                         events.RequestStart("onRequestStart(\"AttachementGrid#=ProjectPlanId#\")");
+                         events.RequestEnd("onRequestEnd(\"AttachementGrid#=ProjectPlanId#\")");
+                     })
+                        .Model(model => model.Id(p => p.AttachmentId))
+                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectPlanId#", fileOwner = "#=ProjectPlanId#" }))
+                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectPlanId#", fileOwner = "#=ProjectPlanId#" }))
+                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment"))
+                     ).ToClientTemplate())
+        </text>);
+
+        }).ToClientTemplate()
+    )
+</script>
+
+@helper projectPlanDetails()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Project.ProjectMonthlyPlan>()
+              .Name("project_monthly_plan_grid_#=ProjectPlanId#")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["periods"], "GLPeriodId", "period").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                  columns.Bound(c => c.Value).Width(100);
+                  columns.Command(command => { command.Edit();/* command.Destroy();*/ });
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Pageable()
+              .Filterable()
+              .Scrollable(h => h.Height(500))
+
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => { model.Id(p => p.ProjectMonthlyPlanId);
+                      model.Field(p => p.GLPeriodId).Editable(false);
+                  })
+                  .Read(read => read.Action("ProjectMonthlyPlans_Read", "ProjectMonthlyPlans",new { pMId = "#=ProjectPlanId#" }))
+                  .Update(update => update.Action("ProjectMonthlyPlans_Update", "ProjectMonthlyPlans"))
+                  .Destroy(destroy => destroy.Action("ProjectMonthlyPlans_Destroy", "ProjectMonthlyPlans"))
+              ).ClientDetailTemplateId("project_weekly_plan_detail")
+              .ToClientTemplate()
+    )
+
+
+}
+
+<script type="text/kendo-template" id="project_weekly_plan_detail">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_str_projectweekly_plan_#=ProjectMonthlyPlanId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Project Weekly Plan").Content(
+            @<text>
+              @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Project.ProjectWeeklyPlan>()
+              .Name("project_Weekly_Plan_grid_#=ProjectMonthlyPlanId#")
+              .Columns(columns =>
+              {
+                columns.Bound(c => c.WeekOne).Width(100);
+                columns.Bound(c => c.WeekTwo).Width(100);
+                columns.Bound(c => c.WeekThree).Width(100);
+                columns.Bound(c => c.WeekFour).Width(120);
+                columns.Command(command => { command.Edit(); command.Destroy(); });
+              })
+              .ToolBar(toolbar => {
+                    toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Pageable()
+              .Filterable()
+              .Scrollable(h => h.Height(550))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.ProjectWeeklyPlanId))
+                  .Read(read => read.Action("ProjectWeeklyPlans_Read", "ProjectWeeklyPlans", new { mpId = "#=ProjectMonthlyPlanId#" }))
+                  .Create(create => create.Action("ProjectWeeklyPlans_Create", "ProjectWeeklyPlans", new { mpId = "#=ProjectMonthlyPlanId#" }))
+                  .Update(update => update.Action("ProjectWeeklyPlans_Update", "ProjectWeeklyPlans"))
+                  .Destroy(destroy => destroy.Action("ProjectWeeklyPlans_Destroy", "ProjectWeeklyPlans"))
+              ).ToClientTemplate()
+        )
+            </text>);
+           
+        }).ToClientTemplate()
+    )
+</script>
+@(Html.Kendo().Window()
+    .Name("UploadDoc")
+    .Title("Add File")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Width(400).Content(@<text><div class="form-group">
+            <form action="@Url.Action("UploadProjectPlanDocument", "ProjectPlans", new { })" method="post" , new { enctype="multipart/form-data" }>
+                <input type="hidden" name="projectPlanId" id="projectPlanId">
+                <div class="row">
+                    <div class="col-md-10">
+                        @Html.TextBox("file", "", new { type = "file", required = "true" })
+                        <br />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-10">
+                        @Html.TextBox("txtValue", null, new { placeholder = Resources.Common_Attachment_FileName })
+                        <br />
+                    </div>
+                </div>
+                <div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-7"></div>
+                    <input type="submit" class="btn-primary k-button" value="submit" />
+                </div>
+            </form>
+            <div class="pull-right"></div>
+        </div>
+    </text>)
+)
+<script>
+    function filterKPI() {
+        return {
+            kId: $("#ProjectKPIId").val()
+        };
+    }
+    function uploadFile(id) {
+        $("#projectPlanId").val(id);
+        var wnd = $("#UploadDoc").data("kendoWindow");
+        wnd.center().open();
+    }
+</script>
+<script>
+
+    function onCancelPlan(e) {
+        e.sender.dataSource.cancelChanges();
+        e.preventDefault();
+        e.sender.refresh();
+    }
+
+    function onEditPlan(e) {
+        //var month1 = $("#Month1").data("kendoNumericTextBox").value();
+        //var month2 = $("#Month2").data("kendoNumericTextBox").value();
+        //var month3 = $("#Month3").data("kendoNumericTextBox").value();
+        //var month4 = $("#Month4").data("kendoNumericTextBox").value();
+        //var month5 = $("#Month5").data("kendoNumericTextBox").value();
+        //var month6 = $("#Month6").data("kendoNumericTextBox").value();
+        //var month7 = $("#Month7").data("kendoNumericTextBox").value();
+        //var month8 = $("#Month8").data("kendoNumericTextBox").value();
+        //var month9 = $("#Month9").data("kendoNumericTextBox").value();
+        //var month10 = $("#Month10").data("kendoNumericTextBox").value();
+        //var month11 = $("#Month11").data("kendoNumericTextBox").value();
+        //var month12 = $("#Month12").data("kendoNumericTextBox").value();
+        //var totalActual = month1 + month2 + month3 + month4 + month5 + month6 + month7 + month8 + month9 + month10 + month11 + month12;
+        //$("#TotalActual").val(totalActual).trigger("change");
+
+
+
+    }
+
+
+</script>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 200px;
+    }
+
+    .my-class {
+        margin-left: 10px;
+    }
+
+    .chkbx {
+        pointer-events: none;
+    }
+
+    .customer-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-right: 5px;
+    }
+</style>
+@*<script>
+    function calTotActual(e) {
+        //var month1 = $("#Month1").data("kendoNumericTextBox").value();
+        //var month2 = $("#Month2").data("kendoNumericTextBox").value();
+        //var month3 = $("#Month3").data("kendoNumericTextBox").value();
+        //var month4 = $("#Month4").data("kendoNumericTextBox").value();
+        //var month5 = $("#Month5").data("kendoNumericTextBox").value();
+        //var month6 = $("#Month6").data("kendoNumericTextBox").value();
+        //var month7 = $("#Month7").data("kendoNumericTextBox").value();
+        //var month8 = $("#Month8").data("kendoNumericTextBox").value();
+        //var month9 = $("#Month9").data("kendoNumericTextBox").value();
+        //var month10 = $("#Month10").data("kendoNumericTextBox").value();
+        //var month11 = $("#Month11").data("kendoNumericTextBox").value();
+        //var month12 = $("#Month12").data("kendoNumericTextBox").value();
+        //var totalActual = month1 + month2 + month3 + month4 + month5 + month6 + month7 + month8 + month9 + month10 + month11 + month12;
+        //$("#TotalActual").val(totalActual).trigger("change");
+    }
+</script>*@

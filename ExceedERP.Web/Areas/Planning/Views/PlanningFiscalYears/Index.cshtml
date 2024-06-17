@@ -1,0 +1,211 @@
+﻿<legend>Planning Fiscal Year </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.PlanningFiscalYear>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["GlFiscalYears"], "GlFiscalYearId", "Name");
+              columns.Bound(c => c.Description);
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  command.Destroy();
+              }).Width(180);
+          })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Pageable()
+          .Filterable()
+          .Scrollable(h => h.Height(550))
+          .Events(events =>
+          {
+              events.Cancel("onCancel");
+              events.Edit("onEdit");
+              events.DataBound("onDataBound");
+          })
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(model => model.Id(p => p.PlanningFiscalYearId))
+              .Read(read => read.Action("PlanningFiscalYears_Read", "PlanningFiscalYears"))
+              .Create(create => create.Action("PlanningFiscalYears_Create", "PlanningFiscalYears"))
+              .Update(update => update.Action("PlanningFiscalYears_Update", "PlanningFiscalYears"))
+              .Destroy(destroy => destroy.Action("PlanningFiscalYears_Destroy", "PlanningFiscalYears"))
+          ).ClientDetailTemplateId("detail_template")
+)
+<script type="text/kendo-template" id="detail_template">
+    @(Html.Kendo().TabStrip()
+                .Name("tab_str_#=PlanningFiscalYearId#")
+                .SelectedIndex(0)
+                .Items(items =>
+                {
+                items.Add().Text("Indicators").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.BSCPlan>()
+                                .Name("Indicators_grid_#=PlanningFiscalYearId#")
+                                .Columns(columns =>
+                                {
+                                        columns.ForeignKey(c => c.ObjectiveId, (IEnumerable)ViewData["Objectives"], "ObjectiveId", "Name").Width(400);
+
+                                        columns.Command(command =>
+                                        {
+                                            command.Edit();
+                                            command.Destroy();
+                                        });
+                                    })
+                                .ToolBar(toolbar =>
+                                    {
+                                        toolbar.Create();
+                                    })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Pageable()
+                                .Filterable()
+                                .Scrollable(h => h.Height(550))
+                                .Events(events =>
+                                    {
+                                        events.Cancel("onCancel");
+                                        events.Edit("onEdit");
+                                        events.DataBound("onDataBound");
+                                    })
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Model(model => model.Id(p => p.BSCPlanId))
+                                    .Read(read => read.Action("BSCPlans_Read", "BSCPlans", new { id = "#=PlanningFiscalYearId#" }))
+                                    .Create(create => create.Action("BSCPlans_Create", "BSCPlans", new { id = "#=PlanningFiscalYearId#" }))
+                                    .Update(update => update.Action("BSCPlans_Update", "BSCPlans"))
+                                    .Destroy(destroy => destroy.Action("BSCPlans_Destroy", "BSCPlans"))
+                                ).ClientDetailTemplateId("Planning_detail")
+                                .ToClientTemplate()
+
+                    )
+
+
+                </text>);
+
+                }).ToClientTemplate()
+    )
+</script>
+<script type="text/kendo-template" id="Planning_detail">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_str_Planning_#=BSCPlanId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Planning Detail").Content(
+            @<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.PlanningDetail>()
+                        .Name("Planning_grid#=BSCPlanId#")
+                        .Columns(columns =>
+                        {
+
+                            columns.ForeignKey(c => c.IndicatorId, (IEnumerable)ViewData["Indicators"], "IndicatorId", "Name").Width(150);
+                            columns.Bound(c => c.Baseline).Width(90);
+                            //columns.Bound(c => c.pl).Width(80);
+                            columns.Bound(c => c.Month1).Width(80);
+                            columns.Bound(c => c.Month2).Width(80);
+                            columns.Bound(c => c.Month3).Width(100);
+                            columns.Bound(c => c.Month4).Width(100);
+                            columns.Bound(c => c.Month5).Width(100);
+                            columns.Bound(c => c.Month6).Width(100);
+                            columns.Bound(c => c.Month7).Width(80);
+                            columns.Bound(c => c.Month8).Width(90);
+                            columns.Bound(c => c.Month9).Width(80);
+                            columns.Bound(c => c.Month10).Width(80);
+                            columns.Bound(c => c.Month11).Width(80);
+                            columns.Bound(c => c.Month12).Width(80);
+                            columns.Command(command =>
+                            {
+                                command.Edit();
+                                command.Destroy();
+                            }).Width(200);
+                        })
+                        .ToolBar(toolbar =>
+                        {
+                            toolbar.Create();
+                        })
+                            .Editable(editable =>
+                            {
+                                editable.Mode(GridEditMode.PopUp);
+                                editable.TemplateName("IndicatorTemplate");
+                                editable.Window(window =>
+                                {
+                                    window.Title("Planning  Form");
+                                    window.Draggable(false);
+                                    window.Scrollable(false);
+                                    //window.Height(400);
+                                    window.Width(700);
+                                });
+                            })
+                        .Pageable()
+                        .Filterable()
+                        .Scrollable(h=>h.Height(550))
+                        .Events(events =>
+                        {
+                            events.Cancel("onCancel");
+                            events.Edit("onEdit");
+                            events.DataBound("onDataBound");
+                        })
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Model(model => model.Id(p => p.PlanningDetailId))
+                            .Read(read => read.Action("PlanningDetails_Read", "PlanningDetails", new { pid = "#=BSCPlanId#" }))
+                            .Create(create => create.Action("PlanningDetails_Create", "PlanningDetails", new { pid = "#=BSCPlanId#" }))
+                            .Update(update => update.Action("PlanningDetails_Update", "PlanningDetails"))
+                            .Destroy(destroy => destroy.Action("PlanningDetails_Destroy", "PlanningDetails"))
+                        ).ToClientTemplate()
+
+                )
+
+
+            </text>);
+
+        }).ToClientTemplate()
+    )
+</script>
+<script>
+
+    function onCancel(e) {
+        //Implement the event handler for Cancel
+    }
+
+    function onEdit(e) {
+        //Implement the event handler for Edit
+    }
+
+    function onDataBound(e) {
+        //Implement the event handler for DataBound
+    }
+
+</script>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 200px;
+    }
+
+    .row {
+        margin-bottom: 10px;
+        margin-left: 20px;
+    }
+
+    .chkbx {
+        pointer-events: none;
+    }
+
+    .customer-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-right: 5px;
+    }
+</style>

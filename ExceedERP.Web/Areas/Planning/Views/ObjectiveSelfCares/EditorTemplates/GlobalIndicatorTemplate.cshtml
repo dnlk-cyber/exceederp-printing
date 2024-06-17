@@ -1,0 +1,14 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                .OptionLabel("---Select----")
+                .Filter("contains")
+                .DataTextField("Indicator")
+                .DataValueField("GlobalIndicatorId")
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetGlobalIndicator", "PlanningDataProvider", new { area = "Planning" }))
+                    .ServerFiltering(false);
+                })
+            .AutoBind(true)
+            .HtmlAttributes(new { style = "width: 170px;" })
+
+)

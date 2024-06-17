@@ -79,6 +79,7 @@
     <Compile Include="Context\InventoryEntityConfiguration.cs" />
     <Compile Include="Context\MaintenanceEntityTypeConfiguration.cs" />
     <Compile Include="Context\ManufacturingEntityConfiguration.cs" />
+    <Compile Include="Context\PlanningEntityConfiguration.cs" />
     <Compile Include="Context\PrintingEntityConfiguration.cs" />
     <Compile Include="Context\ProductionEntityConfiguration.cs" />
     <Compile Include="Context\ReligionEntityTypeConfiguration.cs" />
@@ -475,6 +476,10 @@
     <Compile Include="Migrations\202406051335461_fleetmaintenancee.Designer.cs">
       <DependentUpon>202406051335461_fleetmaintenancee.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202406171603447_planningmerge.cs" />
+    <Compile Include="Migrations\202406171603447_planningmerge.Designer.cs">
+      <DependentUpon>202406171603447_planningmerge.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -787,6 +792,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202406051335461_fleetmaintenancee.resx">
       <DependentUpon>202406051335461_fleetmaintenancee.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202406171603447_planningmerge.resx">
+      <DependentUpon>202406171603447_planningmerge.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

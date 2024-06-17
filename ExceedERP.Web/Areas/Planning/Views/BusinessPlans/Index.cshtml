@@ -1,0 +1,85 @@
+﻿@using ExceedERP.Core.Domain.Planning.BusinessPlanDevelopment
+<legend>Business Plans</legend>
+@(Html.Kendo().Grid<BusinessPlan>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.BusinessPlanId).Title("S.N").Width(60);
+          columns.Bound(c => c.NameOfBusinessPlan).Width(150);
+          columns.Bound(c => c.ProductType).Width(120);
+          columns.Bound(c => c.Status).Width(100);
+          columns.Command(command =>
+          {   command.Edit();
+              command.Destroy();
+          }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable(h => h.Height(550))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(s => s.Add(x => x.BusinessPlanId).Descending())
+          .Model(model => { model.Id(p => p.BusinessPlanId);
+              model.Field(p => p.BusinessPlanId).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+          })
+          .Read(read => read.Action("BusinessPlans_Read", "BusinessPlans"))
+          .Create(create => create.Action("BusinessPlans_Create", "BusinessPlans"))
+          .Update(update => update.Action("BusinessPlans_Update", "BusinessPlans"))
+          .Destroy(destroy => destroy.Action("BusinessPlans_Destroy", "BusinessPlans"))
+      ).ClientDetailTemplateId("business_plan_detail")
+)
+
+<script type="text/kendo-template" id="business_plan_detail">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_we_str_#=BusinessPlanId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Validation").Content(
+            @<text>
+               @(Html.Kendo().Grid<BusinessPlanValidation>()
+                      .Name("BusinessPlan_validation_grid_#=BusinessPlanId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Status).Width(180);
+                          columns.Bound(c => c.Date).Width(100);
+                          columns.Bound(c => c.Description).Width(150);
+
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(200);
+                      })
+                      .ToolBar(toolbar => {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Pageable()
+                      .Filterable()
+                      .Scrollable(h=>h.Height(550))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(model => {
+                              model.Id(p => p.BusinessPlanValidationId);
+                              model.Field(p => p.BusinessPlanValidationId).Editable(false);
+                              model.Field(p => p.Date).DefaultValue(DateTime.Now).Editable(false);
+                          })
+                          .Read(read => read.Action("BusinessPlanValidations_Read", "BusinessPlanValidations", new { bPId= "#=BusinessPlanId#" }))
+                          .Create(create => create.Action("BusinessPlanValidations_Create", "BusinessPlanValidations", new { bPId = "#=BusinessPlanId#" }))
+                          .Update(update => update.Action("BusinessPlanValidations_Update", "BusinessPlanValidations"))
+                          .Destroy(destroy => destroy.Action("BusinessPlanValidations_Destroy", "BusinessPlanValidations"))
+                      ).ToClientTemplate()
+              )
+
+            </text>);
+
+        }).ToClientTemplate()
+    )
+</script>
+

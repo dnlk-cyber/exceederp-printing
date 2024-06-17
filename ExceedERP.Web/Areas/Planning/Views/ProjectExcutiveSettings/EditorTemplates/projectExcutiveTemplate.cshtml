@@ -1,0 +1,68 @@
+@model ExceedERP.Core.Domain.Planning.Project.ProjectExcutiveSummarySetting
+
+<form id="lineForm" method="post">
+
+    <div class="row my-class">
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.ProjectKPIId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.ProjectKPIId)
+                                    .OptionLabel("Select")
+                                    .DataTextField("Name")
+                                    .DataValueField("ProjectKPIId")
+                                    .HtmlAttributes(new { style = "width: 300px;" })
+                                    .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetProjectKPIs", "PlanningDataProvider", new { Area = "Planning" }))
+                                            .ServerFiltering(false);
+                                    })
+                                    .Filter("contains")
+                                    .MinLength(2)
+                                    .ValuePrimitive(true)
+                    )
+
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+    <div class="row my-class">
+        
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.ProjectSubKPIId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.ProjectSubKPIId)
+                                            .OptionLabel("Select")
+                                            .DataTextField("Name")
+                                            .DataValueField("ProjectSubKPIId")
+                                            .HtmlAttributes(new { style = "width: 300px;" })
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetProjectSubKPIs", "PlanningDataProvider", new { Area = "Planning" }).Data("filterKPI"))
+                                                    .ServerFiltering(true);
+                                            })
+                                            .Filter("contains")
+                                            .MinLength(2)
+                                            .ValuePrimitive(true)
+                                            .CascadeFrom("ProjectKPIId")
+                    )
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+   
+       
+</form>
+
+    

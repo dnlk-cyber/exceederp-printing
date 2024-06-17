@@ -39,7 +39,8 @@ namespace ExceedERP.Core.Domain.Global
         JobCosting=18,
         Health = 19,
         FleetManagement = 20,
-        Maintenance = 21
+        Maintenance = 21,
+        Planning = 22
     }
     public class GlobalRuleValue
     {

@@ -118,6 +118,9 @@ using ExceedERP.Core.Domain.FleetManagement.FleetInsurances;
 using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Core.Domain.Maintenance.Settings;
+using ExceedERP.Core.Domain.Planning.Project;
+using ExceedERP.Core.Domain.Planning;
+using ExceedERP.Core.Domain.Planning.BusinessPlanDevelopment;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -1797,8 +1800,92 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobOrderSummaryCostCenterDetailEntityTypeConfiguration());
             #endregion
             #endregion
+            #region Planning
+            modelBuilder.Configurations.Add(new Context.GlobalIndicatorEntityTypeConfiguration());
+            #region Bussiness Plan
+            modelBuilder.Configurations.Add(new Context.BusinessPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.BusinessPlanValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.ShareAndDividendEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.ShareAndDividendFiscalYearDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.LandManagementEntityTypeConfiguration());
+            #endregion
+            modelBuilder.Configurations.Add(new Context.ObjectiveEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.IndicatorEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.ExcutivePlanKPIEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.PlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.ActualEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.BSCPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.BSCActualEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.PlanningDetailEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new Context.PlanningWithSubIndicatorEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.MonthlyPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.ActualDetailEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new Context.ActualDetailWithSubIndicatorEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.MonthlyActualEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.RiskMitigationPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.RiskFollowUpEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.WeeklyPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.WeeklyActualEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.ProjectWeeklyPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.ProjectWeeklyActualEntityTypeConfiguration());
+            #region project Plan
+            modelBuilder.Configurations.Add(new Context.ProjectObjectiveEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.ProjectKPIEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.ProjectSubKPIEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.ProjectPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.ProjectActualEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.ProjectMonthlyPlanEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.ProjectMonthlyActualEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.ProjectExcutiveSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new Context.ProjectExcutiveSummarySettingEntityTypeConfiguration());
+
+
+            #endregion
+            #endregion
 
         }
+        public DbSet<ConsProjectType> ConsProjectTypes { get; set; }
+        #region Planning
+        public DbSet<GlobalIndicator> GlobalIndicators { get; set; }
+        #region Bussiness Plan 
+        public DbSet<BusinessPlan> BusinessPlans { get; set; }
+        public DbSet<BusinessPlanValidation> BusinessPlanValidations { get; set; }
+        public DbSet<ShareAndDividend> ShareAndDividends { get; set; }
+        public DbSet<ShareAndDividendFiscalYearDetail> ShareAndDividendFiscalYearDetails { get; set; }
+        public DbSet<LandManagement> LandManagements { get; set; }
+
+        #endregion
+        public DbSet<Objective> Objectives { get; set; }
+        public DbSet<Indicator> Indicators { get; set; }
+        public DbSet<ExcutivePlanKPI> ExcutivePlanKPIs { get; set; }
+        public DbSet<Plan> Plans { get; set; }
+        public DbSet<BSCPlan> BSCPlans { get; set; }
+        public DbSet<PlanningDetail> PlanningDetails { get; set; }
+        ////public DbSet<PlanningWithSubIndicator> PlanningWithSubIndicators { get; set; }
+        public DbSet<MonthlyPlan> MonthlyPlans { get; set; }
+        public DbSet<WeeklyPlan> WeeklyPlans { get; set; }
+        public DbSet<Actual> Actuals { get; set; }
+        public DbSet<BSCActual> BSCActuals { get; set; }
+        public DbSet<ActualDetail> ActualDetails { get; set; }
+        //public DbSet<ActualDetailWithSubIndicator> ActualDetailWithSubIndicators { get; set; }
+        public DbSet<MonthlyActual> MonthlyActuals { get; set; }
+        public DbSet<WeeklyActual> WeeklyActuals { get; set; }
+        public DbSet<RiskMitigationPlan> RiskMitigationPlans { get; set; }
+        public DbSet<RiskFollowUp> RiskFollowUps { get; set; }
+        public DbSet<ProjectObjective> ProjectObjectives { get; set; }
+        public DbSet<ProjectKPI> ProjectKPIs { get; set; }
+        public DbSet<ProjectSubKPI> ProjectSubKPIs { get; set; }
+        public DbSet<ProjectPlan> ProjectPlans { get; set; }
+        public DbSet<ProjectActual> ProjectActuals { get; set; }
+        public DbSet<ProjectMonthlyPlan> ProjectMonthlyPlans { get; set; }
+        public DbSet<ProjectMonthlyActual> ProjectMonthlyActuals { get; set; }
+        public DbSet<ProjectWeeklyPlan> ProjectWeeklyPlans { get; set; }
+        public DbSet<ProjectWeeklyActual> ProjectWeeklyActuals { get; set; }
+        public DbSet<ProjectExcutiveSetting> ProjectExcutiveSettings { get; set; }
+        public DbSet<ProjectExcutiveSummarySetting> ProjectExcutiveSummarySettings { get; set; }
+
+
+        #endregion
         #region Common
         public DbSet<IsoDocument> IsoDocuments { get; set; }
 

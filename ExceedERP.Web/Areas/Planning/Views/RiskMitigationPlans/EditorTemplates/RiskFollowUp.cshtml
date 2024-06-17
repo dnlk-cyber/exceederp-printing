@@ -1,0 +1,85 @@
+@model ExceedERP.Core.Domain.Planning.RiskFollowUp
+    <div class="row my-class">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.PlanDate)
+                </div>
+                <div>
+                    @(Html.Kendo().DatePickerFor(model => model.PlanDate)
+                .HtmlAttributes(new { style = "width: 200px; height: 50px;" }))
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Description)
+                </div>
+                <div>
+                    @(Html.TextAreaFor(m => m.Description, new { @class = "textarea-class" })
+
+                    )
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="row my-class">
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.TreatmentMethod)
+                </div>
+                <div>
+                    @(Html.TextAreaFor(m => m.TreatmentMethod, new { @class = "textarea-class" })
+
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.PlannedActionToBeTaken)
+                </div>
+                <div>
+                    @(Html.TextAreaFor(m => m.PlannedActionToBeTaken, new { @class = "textarea-class" })
+                    )
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row my-class">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.ActualActionTaken)
+                </div>
+                <div>
+                    @(Html.TextAreaFor(m => m.ActualActionTaken, new { @class = "textarea-class" })
+
+                    )
+                </div>
+
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.CurrentStatus)
+                </div>
+                <div>
+                    @(Html.TextAreaFor(m => m.CurrentStatus, new { @class = "textarea-class" }))
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    
+

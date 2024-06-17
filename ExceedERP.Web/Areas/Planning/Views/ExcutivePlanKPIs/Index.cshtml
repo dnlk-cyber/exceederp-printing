@@ -1,0 +1,40 @@
+﻿<legend>ExcutivePlanKPI</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.ExcutivePlanKPI>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ExcutivePlanKPIId).Title("S.N").Width(100);
+          columns.ForeignKey(c => c.IndicatorId, (IEnumerable)ViewData["Indicators"], "IndicatorId", "Name").EditorTemplateName("Indicators").Width(350);
+
+          columns.Command(command =>
+          {   command.Edit();
+              command.Destroy();
+
+          })/*.Width(200)*/;
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable(h => h.Height(550))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(s => s.Add(x => x.ExcutivePlanKPIId).Descending())
+           .Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => { model.Id(p => p.ExcutivePlanKPIId);
+              model.Field(p => p.ExcutivePlanKPIId).Editable(false);
+          })
+
+          .Read(read => read.Action("ExcutivePlanKPIs_Read", "ExcutivePlanKPIs"))
+          .Create(create => create.Action("ExcutivePlanKPIs_Create", "ExcutivePlanKPIs"))
+          .Update(update => update.Action("ExcutivePlanKPIs_Update", "ExcutivePlanKPIs"))
+          .Destroy(destroy => destroy.Action("ExcutivePlanKPIs_Destroy", "ExcutivePlanKPIs"))
+      )
+)
+
+

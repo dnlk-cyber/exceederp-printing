@@ -1,0 +1,107 @@
+@using ExceedERP.Core.Domain.Planning
+@if (User.IsInRole(PlanningRoles.Planning_Admin) ||
+     User.IsInRole(PlanningRoles.Planning_Risk_User) ||
+    User.IsInRole(PlanningRoles.Planning_User) 
+   
+    )
+{
+    <li class="">
+        <a href="#" class="dropdown-toggle">
+            <i class="menu-icon fa fa-tasks"></i>
+            <span class="menu-text">
+                Planning
+            </span>
+            <b class="arrow fa fa-angle-down"></b>
+        </a>
+        <b class="arrow"></b>
+        <ul class="submenu">
+
+            @if (User.IsInRole(PlanningRoles.Planning_Admin)
+                ||User.IsInRole(PlanningRoles.Planning_User))
+            {
+                <li class="">
+
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Plan Management
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        <li id="plan-mgt-setup-01" class="actionlinlk">
+                            @Html.ActionLink("Plan ", "Index", "Plans", new { area = "Planning" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="plan-mgt-setup-02" class="actionlinlk">
+                            @Html.ActionLink("Actual ", "Index", "Actuals", new { area = "Planning" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+
+                </li>
+                
+            }
+           
+
+            @if (User.IsInRole(PlanningRoles.Planning_User))
+            {
+                <li class="">
+
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Reporting
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+
+                        <li id="plan-report-setup-01" class="actionlinlk">
+                            @Html.ActionLink("Planning Reports", "Plan", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="plan-report-setup-03" class="actionlinlk">
+                            @Html.ActionLink("Actual Reports", "Actual", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="plan-report-setup-04" class="actionlinlk">
+                            @Html.ActionLink("Actual Vs planning ", "PlanningAndActual", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="plan-report-setup-04" class="actionlinlk">
+                            @Html.ActionLink("Plan Vs Actual Weekly", "PlanVsActualForWeeklyReport", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                        </li>
+                      
+
+                      
+                    </ul>
+                </li>
+             }
+
+            @if (User.IsInRole(PlanningRoles.Planning_Admin))
+            {
+                <li class="">
+
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-cog"></i>
+                        Settings
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        <li id="planning-setup-01" class="actionlinlk">
+                            @Html.ActionLink("Global Indicators", "Index", "GlobalIndicators", new { area = "Planning" }, null)<b class="arrow"></b>
+
+                        </li> 
+                        <li id="planning-setup-01" class="actionlinlk">
+                            @Html.ActionLink("Objective", "Index", "Objectives", new { area = "Planning" }, null)<b class="arrow"></b>
+
+                        </li>
+                        <li id="planning-setup-02" class="actionlinlk">
+                            @Html.ActionLink("Plan Excutive KPI", "Index", "ExcutivePlanKPIs", new { area = "Planning" }, null)<b class="arrow"></b>
+                        </li>
+                     
+                    </ul>
+                </li>
+            }
+
+        </ul>
+
+    </li>
+
+}

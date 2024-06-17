@@ -1,0 +1,355 @@
+﻿@using ExceedERP.Core.Localization
+<legend>Project Actual</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Project.ProjectActual>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.ProjectActualId).Filterable(false).Title("S.N").Width(60);
+                  columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+                  columns.ForeignKey(c => c.ProjectInformationId, (IEnumerable)ViewData["projects"], "ProjectInformationId", "ProjectName").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+                  columns.ForeignKey(c => c.ProjectObjectiveId, (IEnumerable)ViewData["projectObjective"], "ProjectObjectiveId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+                  columns.ForeignKey(c => c.ProjectKPIId, (IEnumerable)ViewData["projectKpIs"], "ProjectKPIId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+                  columns.ForeignKey(c => c.ProjectSubKPIId, (IEnumerable)ViewData["projectSubKpIs"], "ProjectSubKPIId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+                  columns.Bound(c => c.Description).Width(120);
+                  columns.Command(command => {
+                      command.Edit();
+                      command.Destroy();
+                  }).Width(200);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable =>
+              {
+                  editable.Mode(GridEditMode.PopUp);
+                  editable.TemplateName("projectActualTemplate");
+                  editable.Window(window =>
+                  {
+                      window.Title("Project Actual Form");
+                      window.Draggable(false);
+                      window.Scrollable(false);
+                      //window.Width(520);
+                  });
+              })
+              .Pageable()
+              .Filterable()
+              .Scrollable(h => h.Height(550))
+              .Events(events =>
+              {
+                  events.Cancel("onCancelActual");
+                  events.Edit("onEditActual");
+              })
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Sort(s=>s.Add(x=>x.ProjectActualId).Descending())
+                  .Group(x =>
+                  {
+                     x.Add(p => p.GlFiscalYearId);
+                     x.Add(p => p.ProjectKPIId);
+                  })
+                  .Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+                  .Model(model => { model.Id(p => p.ProjectActualId);
+                      model.Field(p => p.ProjectActualId).Editable(false);
+                  })
+                  .Read(read => read.Action("ProjectActuals_Read", "ProjectActuals"))
+                  .Create(create => create.Action("ProjectActuals_Create", "ProjectActuals"))
+                  .Update(update => update.Action("ProjectActuals_Update", "ProjectActuals"))
+                  .Destroy(destroy => destroy.Action("ProjectActuals_Destroy", "ProjectActuals"))
+              ).ClientDetailTemplateId("project_actual_details")
+)
+
+<script type="text/kendo-template" id="project_actual_details">
+    @(Html.Kendo().TabStrip()
+            .Name("tab_str_#=ProjectActualId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("Project Actual Detail").Content(
+                @<text>
+                    <a onclick='return refreshForNewItems("#=ProjectActualId#")' href=' \#' title="Refresh"><i class="fa fa-refresh fa-2x"></i></a>
+                    @projectActualDetail()
+                </text>);
+                 items.Add().Text(" project  Actual Attachments").Content(
+                @<text>
+                <button onclick='uploadFile(#=ProjectActualId#)' class='fa fa-upload btn btn-primary'>&nbsp;Upload </button>
+
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Attachment>()
+                            .Name("AttachementGrid#=ProjectActualId#")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(c => c.FileName).ClientTemplate("<a href='/Planning/ProjectActuals/DownloadDoument?AttachmentId=\\#=AttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+                                columns.Bound(c => c.Description).Width(100);
+                                columns.Template(e => { }).ClientTemplate("<a href='/Planning/ProjectActuals/DownloadDoument?AttachmentId=\\#=AttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; download </a>").Width(80);
+                                columns.Template(e => { }).ClientTemplate("<a href='\\#=URL\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(80);
+                                columns.Command(command =>
+                                {
+                                    command.Destroy().Text("Delete");
+                                }).Width(300);
+
+                            })
+                            //.Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("UploadDocument")
+                            //.Window(window =>
+                            //{
+                            //    window.Title("");
+                            //    window.Scrollable(false);
+                            //}))
+                            .Scrollable(h => h.Height("auto"))
+                            //.Events(ev=>
+                            //{
+                            //    ev.DataBound("onAttachmentDataBound");
+                            //})
+                            .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Sort(sort => sort.Add(c => c.AttachmentId).Descending())
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"AttachementGrid#=ProjectActualId#\")");
+                                events.RequestStart("onRequestStart(\"AttachementGrid#=ProjectActualId#\")");
+                                events.RequestEnd("onRequestEnd(\"AttachementGrid#=ProjectActualId#\")");
+                            })
+                            .Model(model => model.Id(p => p.AttachmentId))
+                            .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectActualId#", fileOwner = "#=ProjectActualId#" }))
+                            .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectActualId#", fileOwner = "#=ProjectActualId#" }))
+                            .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment"))
+                            ).ToClientTemplate())
+                 </text>);
+                items.Add().Text("Project Plan Attachments").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Attachment>()
+                        .Name("PlanAttachementGrid#=ProjectPlanId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.FileName).ClientTemplate("<a href='/Planning/ProjectPlans/DownloadDoument?AttachmentId=\\#=AttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+                            columns.Bound(c => c.Description).Width(100);
+                            columns.Template(e => { }).ClientTemplate("<a href='/Planning/ProjectPlans/DownloadDoument?AttachmentId=\\#=AttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; download </a>").Width(80);
+                            columns.Template(e => { }).ClientTemplate("<a href='\\#=URL\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(80);
+                            columns.Command(command =>
+                            {
+                                command.Destroy().Text("Delete");
+                            }).Width(300);
+
+                        })
+                        //.Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("UploadDocument")
+                        //.Window(window =>
+                        //{
+                        //    window.Title("");
+                        //    window.Scrollable(false);
+                        //}))
+                        .Scrollable(h => h.Height("auto"))
+                        //.Events(ev=>
+                        //{
+                        //    ev.DataBound("onAttachmentDataBound");
+                        //})
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Sort(sort => sort.Add(c => c.AttachmentId).Descending())
+                        .Events(events =>
+                        {
+                            events.Error("error_handler(\"PlanAttachementGrid#=ProjectPlanId#\")");
+                            events.RequestStart("onRequestStart(\"PlanAttachementGrid#=ProjectPlanId#\")");
+                            events.RequestEnd("onRequestEnd(\"PlanAttachementGrid#=ProjectPlanId#\")");
+                        })
+                        .Model(model => model.Id(p => p.AttachmentId))
+                        .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectPlanId#", fileOwner = "#=ProjectPlanId#" }))
+                        .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ProjectPlanId#", fileOwner = "#=ProjectPlanId#" }))
+                        .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment"))
+                        ).ToClientTemplate())
+            </text>);
+            }).ToClientTemplate()
+    )
+</script>
+
+@helper projectActualDetail()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Project.ProjectMonthlyActual>()
+              .Name("project_monthly_actual_grid#=ProjectActualId#")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(c => c.GLPeriodId,(IEnumerable)ViewData["periods"], "GLPeriodId", "period").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                  columns.Bound(c => c.PlanValue).Width(150);
+                  columns.Bound(c => c.ActualValue).Width(150);
+                  columns.Command(command => { command.Edit(); });
+              })
+
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Pageable()
+              .Filterable()
+              .Scrollable(h=>h.Height(500))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(
+                      model => { model.Id(p => p.ProjectMonthlyActualId);
+                      model.Field(p => p.GLPeriodId).Editable(false);
+                      model.Field(p => p.PlanValue).Editable(false);
+                      })
+                  .Events(ev => ev
+                            .Error("error_handler(\"project_monthly_actual_grid#=ProjectActualId#\")")
+                            .RequestStart("onRequestStart(\"project_monthly_actual_grid#=ProjectActualId#\")")
+                            .RequestEnd("onRequestEnd(\"project_monthly_actual_grid#=ProjectActualId#\")"))
+                  .Read(read => read.Action("ProjectMonthlyActuals_Read", "ProjectMonthlyActuals",new { aId = "#=ProjectActualId#" }))
+                  .Create(create => create.Action("ProjectMonthlyActuals_Create", "ProjectMonthlyActuals", new { aId = "#=ProjectActualId#" }))
+                  .Update(update => update.Action("ProjectMonthlyActuals_Update", "ProjectMonthlyActuals"))
+                  .Destroy(destroy => destroy.Action("ProjectMonthlyActuals_Destroy", "ProjectMonthlyActuals"))
+              ).ClientDetailTemplateId("project_weekly_actual_details")
+              .ToClientTemplate()
+    )
+
+}
+<script type="text/kendo-template" id="project_weekly_actual_details">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_str_project_weekly_Actual_#=ProjectMonthlyActualId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Project Weekly Actual").Content(
+            @<text>
+               
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Project.ProjectWeeklyActual>()
+                  .Name("Project_Weekly_Actual_grid#=ProjectMonthlyActualId#")
+                  .Columns(columns =>
+                  {
+                    columns.Bound(c => c.WeekOne).Width(110);
+                    columns.Bound(c => c.WeekTwo).Width(110);
+                    columns.Bound(c => c.WeekThree).Width(130);
+                    columns.Bound(c => c.WeekFour).Width(130);
+                    columns.Command(command => { command.Edit(); command.Destroy(); });
+                  })
+                  .ToolBar(toolbar => {
+                        toolbar.Create();
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Pageable()
+                  .Filterable()
+                  .Scrollable(h=>h.Height(500))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model => model.Id(p => p.ProjectWeeklyActualId))
+                      .Read(read => read.Action("ProjectWeeklyActuals_Read", "ProjectWeeklyActuals", new { wId = "#=ProjectMonthlyActualId#" }))
+                      .Create(create => create.Action("ProjectWeeklyActuals_Create", "ProjectWeeklyActuals", new { wId = "#=ProjectMonthlyActualId#" }))
+                      .Update(update => update.Action("ProjectWeeklyActuals_Update", "ProjectWeeklyActuals"))
+                      .Destroy(destroy => destroy.Action("ProjectWeeklyActuals_Destroy", "ProjectWeeklyActuals"))
+                  ).ToClientTemplate()
+            )
+
+
+            </text>);
+
+        }).ToClientTemplate()
+    )
+</script>
+@(Html.Kendo().Window()
+    .Name("UploadDoc")
+    .Title("Add File")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Width(400).Content(@<text><div class="form-group">
+            <form action="@Url.Action("UploadProjectActualDocument", "ProjectActuals", new { })" method="post" , new { enctype="multipart/form-data" }>
+                <input type="hidden" name="projectActualId" id="projectActualId">
+                <div class="row">
+                    <div class="col-md-10">
+                        @Html.TextBox("file", "", new { type = "file", required = "true" })
+                        <br />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-10">
+                        @Html.TextBox("txtValue", null, new { placeholder = Resources.Common_Attachment_FileName })
+                        <br />
+                    </div>
+                </div>
+                <div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-7"></div>
+                    <input type="submit" class="btn-primary k-button" value="submit" />
+                </div>
+            </form>
+            <div class="pull-right"></div>
+        </div>
+    </text>)
+)
+<script>
+
+    function onCancelActual(e) {
+        //Implement the event handler for Cancel
+        e.sender.dataSource.cancelChanges();
+        e.preventDefault();
+        e.sender.refresh();
+    }
+
+    function onEditActual(e) {
+       
+
+    }
+    function uploadFile(id) {
+        $("#projectActualId").val(id);
+        var wnd = $("#UploadDoc").data("kendoWindow");
+        wnd.center().open();
+    }
+
+ 
+</script>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 200px;
+    }
+
+    .my-class {
+        margin-left: 10px;
+    }
+
+    .chkbx {
+        pointer-events: none;
+    }
+
+    .customer-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-right: 5px;
+    }
+</style>
+<script>
+    
+    }
+</script>
+<script>
+    function filterKPI() {
+        return {
+            kId: $("#ProjectKPIId").val()
+        };
+    }
+     function refreshForNewItems(id) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("RefreshToAddNewAddedItems", "ProjectActuals", new { area = "Planning" })',
+            data: { id: id },
+            success: function (result) {
+                //toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+</script>

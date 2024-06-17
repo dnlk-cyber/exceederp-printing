@@ -1,0 +1,162 @@
+﻿<legend>Objectives</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Objective>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ObjectiveId).Title("S.N").Width(60);
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["departmentLists"], "OrgStructureId", "Name").EditorTemplateName("workUnit").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.Bound(c => c.Name).Width(150);
+          columns.Bound(c => c.Description).Width(120);
+          columns.Bound(c => c.Remark).Width(100);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+
+          }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable(h => h.Height(550))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(s => s.Add(x => x.ObjectiveId).Descending())
+          .Model(model => { model.Id(p => p.ObjectiveId);
+              model.Field(p => p.ObjectiveId).Editable(false);
+          })
+          .Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("Objectives_Read", "Objectives"))
+          .Create(create => create.Action("Objectives_Create", "Objectives"))
+          .Update(update => update.Action("Objectives_Update", "Objectives"))
+          .Destroy(destroy => destroy.Action("Objectives_Destroy", "Objectives"))
+      ).ClientDetailTemplateId("objective_detail")
+)
+
+<script type="text/kendo-template" id="objective_detail">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_we_str_#=ObjectiveId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Indicators").Content(
+            @<text>
+               @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Indicator>()
+                      .Name("Indicator_grid_#=ObjectiveId#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.GlobalIndicatorId, (IEnumerable)ViewData["GlobalIndicators"], "GlobalIndicatorId", "Indicator").EditorTemplateName("GlobalIndicatorTemplate").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+                          columns.Bound(c => c.Name).Width(180);
+                          columns.Bound(c => c.Unit).Width(100);
+                          columns.Bound(c => c.KPIType).Width(80);
+                          columns.Bound(c => c.HasSubIndicator).ClientTemplate(
+                                                            "<input type='checkbox' disabled = 'true' value='\\#= HasSubIndicator\\#' " +
+                                                            "\\# if (HasSubIndicator) { \\#" +
+                                                            "checked='checked'" +
+                                                            "\\# } \\#" +
+                                                            "/>"
+                                                            ).Width(120);
+                          columns.Bound(c => c.Description).Width(150);
+
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(200);
+                      })
+                      .ToolBar(toolbar => {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Pageable()
+                      .Filterable()
+                      .Scrollable(h=>h.Height(550))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(model => {
+                              model.Id(p => p.IndicatorId);
+                              model.Field(p => p.IndicatorId).Editable(false);
+                          })
+                          .Events(ev => ev
+                            .Error("error_handler(\"Indicator_grid_#=ObjectiveId#\")")
+                            .RequestStart("onRequestStart(\"Indicator_grid_#=ObjectiveId#\")")
+                            .RequestEnd("onRequestEnd(\"Indicator_grid_#=ObjectiveId#\")"))
+                          .Read(read => read.Action("Indicators_Read", "Indicators",new { oId= "#=ObjectiveId#" }))
+                          .Create(create => create.Action("Indicators_Create", "Indicators", new { oId = "#=ObjectiveId#" }))
+                          .Update(update => update.Action("Indicators_Update", "Indicators"))
+                          .Destroy(destroy => destroy.Action("Indicators_Destroy", "Indicators"))
+                      ).ClientDetailTemplateId("indicator_details")
+                      .ToClientTemplate()
+              )
+
+            </text>);
+
+        }).ToClientTemplate()
+    )
+</script>
+<script type="text/kendo-template" id="indicator_details">
+  #if(HasSubIndicator){#
+    @(Html.Kendo().TabStrip()
+        .Name("tab_SubIndicator_str_#=IndicatorId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Sub-Indicators").Content(
+            @<text>
+               @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Indicator>()
+                      .Name("Sub_Indicator_grid_#=IndicatorId#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.GlobalIndicatorId, (IEnumerable)ViewData["GlobalIndicators"], "GlobalIndicatorId", "Indicator").EditorTemplateName("GlobalIndicatorTemplate").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+                          columns.Bound(c => c.Name).Width(180);
+                          columns.Bound(c => c.Unit).Width(100);
+                          columns.Bound(c => c.KPIType).Width(80);
+                          //columns.Bound(c => c.HasSubIndicator).ClientTemplate(
+                          //                                  "<input type='checkbox' disabled = 'true' value='\\#= HasSubIndicator\\#' " +
+                          //                                  "\\# if (HasSubIndicator) { \\#" +
+                          //                                  "checked='checked'" +
+                          //                                  "\\# } \\#" +
+                          //                                  "/>"
+                          //                                  ).Width(120);
+                          columns.Bound(c => c.Description).Width(150);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(200);
+                      })
+                      .ToolBar(toolbar => {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Pageable()
+                      .Filterable()
+                      .Scrollable(h=>h.Height(550))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(model => model.Id(p => p.IndicatorId))
+                          .Events(ev => ev
+                            .Error("error_handler(\"Sub_Indicator_grid_#=IndicatorId#\")")
+                            .RequestStart("onRequestStart(\"Sub_Indicator_grid_#=IndicatorId#\")")
+                            .RequestEnd("onRequestEnd(\"Sub_Indicator_grid_#=IndicatorId#\")"))
+                          .Read(read => read.Action("SubIndicators_Read", "SubIndicators", new { objecId = "#=ObjectiveId#", parentId = "#=IndicatorId#" }))
+                          .Create(create => create.Action("SubIndicators_Create", "SubIndicators", new { objecId = "#=ObjectiveId#", partId = "#=IndicatorId#" }))
+                          .Update(update => update.Action("SubIndicators_Update", "SubIndicators"))
+                          .Destroy(destroy => destroy.Action("SubIndicators_Destroy", "SubIndicators"))
+                      )
+                      .ToClientTemplate()
+              )
+
+            </text>);
+
+        }).ToClientTemplate()
+    )
+    #}#
+</script>
+

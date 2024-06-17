@@ -1,0 +1,275 @@
+@model ExceedERP.Core.Domain.Planning.ActualDetail
+
+<form id="lineForm" method="post">
+
+    <div class="row">
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.IndicatorId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.IndicatorId)
+                                             .OptionLabel("Select")
+                                             .DataTextField("Name")
+                                             .DataValueField("IndicatorId")
+                                             .DataSource(dataSource =>
+                                             {
+                                                 dataSource.Read(read => read.Action("GetIndicators", "PlanningDataProvider", new { Area = "Planning" }))
+                                                     .ServerFiltering(false);
+                                             })
+                                             .Filter("contains")
+                                             .MinLength(2)
+                                             .ValuePrimitive(true)
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Baseline)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(m => m.Baseline)
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Month1)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Month1)
+                        .Min(0)
+                        .Events(e =>
+                        {
+                            e.Change("calTotActual");
+                        })
+                        )
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Month2)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(m => m.Month2)                                       
+                        .Min(0)
+                        .Events(e =>
+                        {
+                            e.Change("calTotActual");
+                        })
+                                        )
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Month3)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(m => m.Month3)
+                        .Events(e =>
+                        {
+                            e.Change("calTotActual");
+                        })
+                        .Min(0))
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Month4)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(m => m.Month4)
+                        .Min(0)
+                        .Events(e =>
+                        {
+                            e.Change("calTotActual");
+                        })
+                    )
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Month5)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(m => m.Month5)
+                        .Min(0)
+                        .Events(e =>
+                        {
+                            e.Change("calTotActual");
+                        })
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Month6)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Month6)
+                            .Min(0)
+                            .Events(e =>
+                            {
+                                e.Change("calTotActual");
+                            })
+
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Month7)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Month7)
+                        .Min(0)
+                        .Events(e =>
+                        {
+                            e.Change("calTotActual");
+                        })
+
+                    )
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Month8)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Month8)
+                        .Min(0)
+                        .Events(e =>
+                        {
+                            e.Change("calTotActual");
+                        })
+
+                    )
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Month9)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Month9)
+                        .Min(0)
+                        .Events(e =>
+                        {
+                            e.Change("calTotActual");
+                        })
+
+                    )
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Month10)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(m => m.Month10)
+                        .Min(0)
+                        .Events(e =>
+                        {
+                            e.Change("calTotActual");
+                        })
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+
+       
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Month11)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(m => m.Month11)
+                        .Min(0)
+                        .Events(e =>
+                        {
+                            e.Change("calTotActual");
+                        })
+                        )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Month12)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(m => m.Month12)
+                        .Min(0)
+                        .Events(e =>
+                        {
+                            e.Change("calTotActual");
+                        })
+                        )
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.TotalActual)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.TotalActual).Enable(false)
+                          
+                    )
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</form>
+
+    

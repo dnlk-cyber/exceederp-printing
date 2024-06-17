@@ -1,0 +1,147 @@
+@model ExceedERP.Core.Domain.Planning.RiskMitigationPlan
+<div class="row my-class">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.IdentifiedRisk)
+            </div>
+            <div>
+                @(Html.TextAreaFor(m => m.IdentifiedRisk, new { @class = "textarea-class" })
+
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.Evaluation)
+            </div>
+            <div>
+                @(Html.TextAreaFor(m => m.Evaluation, new { @class = "textarea-class" })
+
+                )
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.TreatmentMethod)
+            </div>
+            <div>
+               @(Html.TextAreaFor(m => m.TreatmentMethod, new { @class = "textarea-class" })
+
+            )
+            </div>
+        </div>
+    </div> 
+</div>
+<div class="row my-class">
+   
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.ActionToBeTaken)
+            </div>
+            <div>
+                @(Html.TextAreaFor(m => m.ActionToBeTaken, new { @class = "textarea-class" })
+
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.MainResponsibly)
+            </div>
+            <div>
+            @(Html.TextAreaFor(m => m.MainResponsibly, new { @class = "textarea-class" })
+             )
+            </div>
+        </div>
+    </div> 
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.SupportResponsibly)
+            </div>
+            <div>
+               @(Html.TextAreaFor(m => m.SupportResponsibly, new { @class = "textarea-class" }))
+            </div>
+        </div>
+    </div>  
+</div>
+<div class="row my-class">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.Opportunity)
+            </div>
+            <div>
+               @(Html.TextAreaFor(m => m.Opportunity, new { @class = "textarea-class" })
+
+            )
+            </div>
+
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.Time)
+            </div>
+            <div>
+               @(Html.TextAreaFor(m => m.Time, new { @class = "textarea-class" }))
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.MonitoringMethod)
+            </div>
+            <div>
+               @(Html.TextAreaFor(m => m.MonitoringMethod, new { @class = "textarea-class" }))
+            </div>
+        </div>
+    </div>
+    
+</div>
+<div class="row my-class">
+   
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.RiskLevel)
+            </div>
+            <div>
+                @(Html.EnumDropDownListFor(model => model.RiskLevel, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 128px" })
+                //.HtmlAttributes(new { @class = "kendo-textbox" })
+
+
+                )
+
+            </div>
+        </div>
+    </div>
+   
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.PlanDate)
+            </div>
+            <div>
+                @Html.Kendo().DatePickerFor(model => model.PlanDate)
+            </div>
+        </div>
+    </div>
+    
+</div>
+
+
+    
+

@@ -1,0 +1,75 @@
+﻿<legend>Project-KPI</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Project.ProjectKPI>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.ProjectKPIId).Title("S.N").Width(60);
+              columns.Bound(c => c.KPIName).Width(250);
+              columns.Bound(c => c.ProjectKPIType).Filterable(ftb => ftb.Multi(true).Search(true)).Width(250);
+              columns.Bound(c => c.Description).Width(200);
+              columns.Command(command => { command.Edit(); command.Destroy(); });
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Pageable()
+          .Filterable()
+          .Scrollable(h => h.Height(550))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Sort(s=>s.Add(x=>x.ProjectKPIId).Descending())
+              .Model(model => model.Id(p => p.ProjectKPIId))
+              .Read(read => read.Action("ProjectKPIs_Read", "ProjectKPIs"))
+              .Create(create => create.Action("ProjectKPIs_Create", "ProjectKPIs"))
+              .Update(update => update.Action("ProjectKPIs_Update", "ProjectKPIs"))
+              .Destroy(destroy => destroy.Action("ProjectKPIs_Destroy", "ProjectKPIs"))
+          ).ClientDetailTemplateId("ProjectKPI_template")
+)
+<script type="text/kendo-template" id="ProjectKPI_template">
+    @(Html.Kendo().TabStrip()
+                    .Name("tab_str_#=ProjectKPIId#")
+                    .SelectedIndex(0)
+                    .Items(items =>
+                    {
+                        items.Add().Text("Sub-KPI").Content(
+                        @<text>
+                            @projectSubKPI()
+                        </text>);
+
+                    }).ToClientTemplate()
+    )
+</script>
+@helper projectSubKPI()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Project.ProjectSubKPI>()
+              .Name("sub_KPI_grid_#=ProjectKPIId#")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.SubKPIName).Width(200);
+                  columns.Bound(c => c.Unit).Width(150);
+                  columns.Bound(c => c.KPIType).Width(150);
+                  columns.Bound(c => c.Description).Width(150);
+                  columns.Command(command => { command.Edit(); command.Destroy(); });
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Pageable()
+              .Filterable()
+              .Scrollable(h => h.Height(500))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.ProjectSubKPIId))
+                  .Read(read => read.Action("ProjectSubKPIs_Read", "ProjectSubKPI",new { kId= "#=ProjectKPIId#" }))
+                  .Create(create => create.Action("ProjectSubKPIs_Create", "ProjectSubKPI", new { kId = "#=ProjectKPIId#" }))
+                  .Update(update => update.Action("ProjectSubKPIs_Update", "ProjectSubKPI"))
+                  .Destroy(destroy => destroy.Action("ProjectSubKPIs_Destroy", "ProjectSubKPI"))
+              ).ToClientTemplate()
+    )
+
+}

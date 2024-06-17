@@ -1,0 +1,129 @@
+﻿<legend>Project Excutive Setting </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Project.ProjectExcutiveSetting>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.ProjectExcutiveSettingId).Title("S.N").Width(60);
+                  columns.Bound(c => c.Category).Width(250);
+                  columns.Bound(c => c.Description).Width(200);
+                  columns.Command(command => { command.Edit(); command.Destroy(); });
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Pageable()
+              .Filterable()
+              .Scrollable(h => h.Height(550))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Sort(s => s.Add(x => x.ProjectExcutiveSettingId).Descending())
+                  .Model(model =>
+                  {
+                      model.Id(p => p.ProjectExcutiveSettingId);
+                      model.Field(p => p.ProjectExcutiveSettingId).Editable(false);
+
+
+                  })
+                  .Read(read => read.Action("ProjectExcutiveSettings_Read", "ProjectExcutiveSettings"))
+                  .Create(create => create.Action("ProjectExcutiveSettings_Create", "ProjectExcutiveSettings"))
+                  .Update(update => update.Action("ProjectExcutiveSettings_Update", "ProjectExcutiveSettings"))
+                  .Destroy(destroy => destroy.Action("ProjectExcutiveSettings_Destroy", "ProjectExcutiveSettings"))
+              ).ClientDetailTemplateId("Project_template")
+)
+<script type="text/kendo-template" id="Project_template">
+    @(Html.Kendo().TabStrip()
+                    .Name("tab_str_#=ProjectExcutiveSettingId#")
+                    .SelectedIndex(0)
+                    .Items(items =>
+                    {
+                        items.Add().Text("Project Excutive Summary Setting").Content(
+                        @<text>
+                            @projectExcutiveSummarySetting()
+                        </text>);
+
+                            }).ToClientTemplate()
+    )
+</script>
+@helper projectExcutiveSummarySetting()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Project.ProjectExcutiveSummarySetting>()
+                      .Name("sub_KPI_grid_#=ProjectExcutiveSettingId#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.ProjectKPIId, (IEnumerable)ViewData["projectKpIs"], "ProjectKPIId", "Name").EditorTemplateName("projectKPITemplate").Width(180);
+                          columns.ForeignKey(c => c.ProjectSubKPIId, (IEnumerable)ViewData["projectSubKpIs"], "ProjectSubKPIId", "Name").EditorTemplateName("projectSubKPITemplate").Width(180);
+                          columns.Command(command => { command.Edit(); command.Destroy(); });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                       //.Editable(editable => editable.Mode(GridEditMode.InLine))
+                       .Editable(editable =>
+                       {
+                           editable.Mode(GridEditMode.PopUp);
+                           editable.TemplateName("projectExcutiveTemplate");
+                           editable.Window(window =>
+                           {
+                               window.Title("Project Excutive Summary Setting Form");
+                               window.Draggable(false);
+                               window.Scrollable(false);
+                           });
+                       })
+                      .Pageable()
+                      .Filterable()
+                      .Scrollable(h => h.Height(500))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(model => model.Id(p => p.ProjectSubKPIId))
+                          .Read(read => read.Action("ProjectExcutiveSummarySettings_Read", "ProjectExcutiveSummarySettings", new { kId = "#=ProjectExcutiveSettingId#" }))
+                          .Create(create => create.Action("ProjectExcutiveSummarySettings_Create", "ProjectExcutiveSummarySettings", new { kId = "#=ProjectExcutiveSettingId#" }))
+                          .Update(update => update.Action("ProjectExcutiveSummarySettings_Update", "ProjectExcutiveSummarySettings"))
+                          .Destroy(destroy => destroy.Action("ProjectExcutiveSummarySettings_Destroy", "ProjectExcutiveSummarySettings"))
+                      ).ToClientTemplate()
+    )
+
+}
+
+<script>
+    function filterKPI() {
+        return {
+            kId: $("#ProjectKPIId").val()
+        };
+    }
+
+</script>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+
+    .row .col-sm-2 {
+        width: auto;
+    }
+
+    .my-class {
+        margin-left: 10px;
+        margin-right:10px;
+    }
+
+    .chkbx {
+        pointer-events: none;
+    }
+
+    .customer-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-right: 5px;
+    }
+</style>

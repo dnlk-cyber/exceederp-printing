@@ -1,0 +1,28 @@
+﻿<legend>Project Objectives</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.Project.ProjectObjective>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ProjectObjectiveId).Title("S.N").Width(60);
+          columns.Bound(c => c.ProjectObjectiveName).Width(250);
+          columns.Bound(c => c.Description).Width(250);
+          columns.Command(command => { command.Edit(); command.Destroy(); });
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable(h=>h.Height(550))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => { model.Id(p => p.ProjectObjectiveId);
+              model.Field(p => p.ProjectObjectiveId).Editable(false);
+          })
+          .Read(read => read.Action("ProjectObjectives_Read", "ProjectObjectives"))
+          .Create(create => create.Action("ProjectObjectives_Create", "ProjectObjectives"))
+          .Update(update => update.Action("ProjectObjectives_Update", "ProjectObjectives"))
+          .Destroy(destroy => destroy.Action("ProjectObjectives_Destroy", "ProjectObjectives"))
+      )
+)

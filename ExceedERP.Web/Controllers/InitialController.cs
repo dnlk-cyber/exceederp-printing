@@ -28,6 +28,7 @@ using ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp;
 using ExceedERP.Core.Domain.Manufacturing.JobCosting;
 using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.Core.Domain.Maintenance;
+using ExceedERP.Core.Domain.Planning;
 
 namespace ExceedERP.Web.Controllers
 {
@@ -536,6 +537,11 @@ namespace ExceedERP.Web.Controllers
 					 new ApplicationRole(ManufacturingJobCostingRoles.ManufacturingJobCostingDailyLaborRateUser, "JobCosting_DailyLaborRate_User", "Manufucturing"),
 				#endregion
 			 #endregion
+                      #region planning
+ new ApplicationRole(PlanningRoles.Planning_Admin,"Create data, modify planning data","Planning"),
+ new ApplicationRole(PlanningRoles.Planning_User,"See, update plan and actual","Planning"),
+ new ApplicationRole(PlanningRoles.Planning_Risk_User,"See, update risk","Planning"),
+ #endregion
 			};
 
 			foreach (ApplicationRole role in applicationRoles)

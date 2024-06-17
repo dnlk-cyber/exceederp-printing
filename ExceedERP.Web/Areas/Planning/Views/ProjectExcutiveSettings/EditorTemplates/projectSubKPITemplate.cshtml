@@ -1,0 +1,31 @@
+
+<form id="lineForm" method="post">
+
+    <div class="row my-class">
+        <div class="col-sm-2">
+            <div class="form-group">
+               
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m)
+                                .OptionLabel("Select")
+                                .DataTextField("Name")
+                                .DataValueField("ProjectSubKPIId")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetProjectSubKPIs", "PlanningDataProvider", new { Area = "Planning" }).Data("filterKPI"))
+                                        .ServerFiltering(true);
+                                })
+                                .Filter("contains")
+                                .MinLength(2)
+                                .ValuePrimitive(true)
+                                .CascadeFrom("ProjectKPIId")
+                    )
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</form>
+
+    

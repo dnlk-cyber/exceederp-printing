@@ -1,0 +1,209 @@
+@model ExceedERP.Core.Domain.Planning.Project.ProjectPlan
+
+<form id="lineForm" method="post">
+
+    <div class="row my-class">
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.GlFiscalYearId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.GlFiscalYearId)
+                                    .OptionLabel("Select")
+                                    .DataTextField("Name")
+                                    .DataValueField("GlFiscalYearId")
+                                    .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetFiscalYear", "PlanningDataProvider", new { Area = "Planning" }))
+                                            .ServerFiltering(false);
+                                    })
+                                    .Filter("contains")
+                                    .MinLength(2)
+                                    .ValuePrimitive(true)
+                    )
+
+                </div>
+
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.ProjectObjectiveId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.ProjectObjectiveId)
+                                        .OptionLabel("Select")
+                                        .DataTextField("Name")
+                                        .DataValueField("ProjectObjectiveId")
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetProjectObjectives", "PlanningDataProvider", new { Area = "Planning" }))
+                                                .ServerFiltering(false);
+                                        })
+                                        .Filter("contains")
+                                        .MinLength(2)
+                                        .ValuePrimitive(true)
+                    )
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="row my-class">
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.ProjectKPIId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.ProjectKPIId)
+                                    .OptionLabel("Select")
+                                    .DataTextField("Name")
+                                    .DataValueField("ProjectKPIId")
+                                    .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetProjectKPIs", "PlanningDataProvider", new { Area = "Planning" }))
+                                            .ServerFiltering(false);
+                                    })
+                                    .Filter("contains")
+                                    .MinLength(2)
+                                    .ValuePrimitive(true)
+                    )
+
+                </div>
+
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.ProjectSubKPIId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.ProjectSubKPIId)
+                                            .OptionLabel("Select")
+                                            .DataTextField("Name")
+                                            .DataValueField("ProjectSubKPIId")
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetProjectSubKPIs", "PlanningDataProvider", new { Area = "Planning" }).Data("filterKPI"))
+                                                    .ServerFiltering(true);
+                                            })
+                                            .Filter("contains")
+                                            .MinLength(2)
+                                            .ValuePrimitive(true)
+                                            .CascadeFrom("ProjectKPIId")
+                    )
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="row my-class">
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.ProjectInformationId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.ProjectInformationId)
+                                            .OptionLabel("Select")
+                                            .DataTextField("ProjectName")
+                                            .DataValueField("ProjectInformationId")
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetProjects", "PlanningDataProvider", new { Area = "Planning" }))
+                                                    .ServerFiltering(false);
+                                            })
+                                            .Filter("contains")
+                                            .MinLength(2)
+                                            .ValuePrimitive(true)
+                    )
+                </div>
+            </div>
+        </div>
+       
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Baseline)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(m => m.Baseline)
+                    )
+                </div>
+            </div>
+        </div>
+       
+    </div>
+    <div class="row my-class">
+
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.Target)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(m => m.Target)
+                            //.Min(0)
+                            //.Events(e =>
+                            //{
+                            //    e.Change("calTotActual");
+                            //})
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(m => m.ToDate)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.ToDate)
+
+
+                    )
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="row my-class">
+
+           
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(m => m.Plan)
+                    </div>
+                    <div>
+                        @(Html.Kendo().TextBoxFor(model => model.Plan)
+                        )
+                    </div>
+                </div>
+            </div> 
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(m => m.Description)
+                    </div>
+                    <div>
+                        @(Html.Kendo().TextBoxFor(model => model.Description)
+                        )
+                    </div>
+                </div>
+            </div>
+                
+    </div>
+       
+</form>
+
+    

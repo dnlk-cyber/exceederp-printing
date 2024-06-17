@@ -1,0 +1,28 @@
+﻿<legend>Indicators</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Planning.GlobalIndicator>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.GlobalIndicatorId).Title("S.N").Width(60);
+          columns.Bound(c => c.Indicator).Width(250);
+          columns.Bound(c => c.Description).Width(250);
+          columns.Command(command => { command.Edit(); command.Destroy(); });
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable(h=>h.Height(550))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => { model.Id(p => p.GlobalIndicatorId);
+              model.Field(p => p.GlobalIndicatorId).Editable(false);
+          })
+          .Read(read => read.Action("GlobalIndicators_Read", "GlobalIndicators"))
+          .Create(create => create.Action("GlobalIndicators_Create", "GlobalIndicators"))
+          .Update(update => update.Action("GlobalIndicators_Update", "GlobalIndicators"))
+          .Destroy(destroy => destroy.Action("GlobalIndicators_Destroy", "GlobalIndicators"))
+      )
+)

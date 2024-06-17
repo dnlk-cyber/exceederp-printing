@@ -1,0 +1,14 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                .OptionLabel("---Select----")
+                .Filter("contains")
+                .DataTextField("Name")
+                .DataValueField("OrgStructureId")
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetWorkUnit", "PlanningDataProvider", new { area = "Planning" }))
+                    .ServerFiltering(false);
+                })
+            .AutoBind(true)
+            .HtmlAttributes(new { style = "width: 150px;" })
+
+)

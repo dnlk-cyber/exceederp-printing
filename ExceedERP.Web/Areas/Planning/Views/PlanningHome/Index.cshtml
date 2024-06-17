@@ -1,0 +1,214 @@
+
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Planning
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav class="navbar navbar-default">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".js-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Planning</a>
+        </div>
+
+
+        <div class="collapse navbar-collapse js-navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown mega-dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i> Actions </a>
+
+                    <ul class="dropdown-menu mega-dropdown-menu row">
+                        @if (User.IsInRole(PlanningRoles.Planning_Admin)
+                                || User.IsInRole(PlanningRoles.Planning_Risk_User)
+                                || User.IsInRole(PlanningRoles.Planning_User))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">Plan Management</li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header"> Plan Management</li>
+                                    @if (User.IsInRole(PlanningRoles.Planning_Admin)
+                                          || User.IsInRole(PlanningRoles.Planning_User))
+                                    {
+                                        <li id="plan-mgt-setup-01" class="actionlinlk">
+                                            @Html.ActionLink("Plan ", "Index", "Plans", new { area = "Planning" }, null)<b class="arrow"></b>
+                                        </li>
+                                        <li id="plan-mgt-setup-02" class="actionlinlk">
+                                            @Html.ActionLink("Actual ", "Index", "Actuals", new { area = "Planning" }, null)<b class="arrow"></b>
+                                        </li>
+                                    }
+
+
+                                </ul>
+                            </li>
+                        }
+                        @if (User.IsInRole(PlanningRoles.Planning_Admin)
+                              || User.IsInRole(PlanningRoles.Planning_User))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header"> Project Planning</li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">  Project Planning</li>
+                                    <li id="lega-advisory-setup-01" class="actionlinlk">
+                                        @Html.ActionLink("Project Plan ", "Index", "ProjectPlans", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="project-plan-setup-02" class="actionlinlk">
+                                        @Html.ActionLink("Project Actual ", "Index", "ProjectActuals", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                    @if (User.IsInRole(PlanningRoles.Planning_Admin)
+                                        || User.IsInRole(PlanningRoles.Planning_Risk_User))
+                                    {
+                                        <li class="divider"></li>
+                                        <li class="dropdown-header">   Business Development</li>
+                                        <li id="Business-plan-setup-01" class="actionlinlk">
+                                            @Html.ActionLink("Risk Mitigation Plan ", "Index", "RiskMitigationPlans", new { area = "Planning" }, null)<b class="arrow"></b>
+                                        </li>
+                                        <li id="Business-plan-setup-01" class="actionlinlk">
+                                            @Html.ActionLink("Business Plans ", "Index", "BusinessPlans", new { area = "Planning" }, null)<b class="arrow"></b>
+                                        </li>
+                                        <li id="Business-plan-setup-01" class="actionlinlk">
+                                            @Html.ActionLink("Share & Dividends ", "Index", "ShareAndDividends", new { area = "Planning" }, null)<b class="arrow"></b>
+                                        </li>
+                                        <li id="Business-plan-setup-01" class="actionlinlk">
+                                            @Html.ActionLink("Land Managements ", "Index", "LandManagements", new { area = "Planning" }, null)<b class="arrow"></b>
+                                        </li>
+
+
+
+                                    }
+
+
+                                </ul>
+                            </li>
+                        }
+                        @if (User.IsInRole(PlanningRoles.Planning_User))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">Report</li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">   Plan Management</li>
+                                    <li id="plan-report-setup-01" class="actionlinlk">
+                                        @Html.ActionLink("Planning Reports", "Plan", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="plan-report-setup-03" class="actionlinlk">
+                                        @Html.ActionLink("Actual Reports", "Actual", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="plan-report-setup-04" class="actionlinlk">
+                                        @Html.ActionLink("Actual Vs planning ", "PlanningAndActual", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="plan-report-setup-04" class="actionlinlk">
+                                        @Html.ActionLink("Plan Vs Actual Weekly", "PlanVsActualForWeeklyReport", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">  Project Planning </li>
+                                    <li id="plan-report-setup-05" class="actionlinlk">
+                                        @Html.ActionLink("Project Plan", "ProjectPlan", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="plan-report-setup-06" class="actionlinlk">
+                                        @Html.ActionLink("Project Actual ", "ProjectActual", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="plan-report-setup-07" class="actionlinlk">
+                                        @Html.ActionLink("Project Plan Vs Actual ", "ProjectPlanVSActual", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="plan-report-setup-07" class="actionlinlk">
+                                        @Html.ActionLink("Project Plan Vs Actual Weekly", "ProjectPlanVsActualForWeeklyReport", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="plan-report-setup-08" class="actionlinlk">
+                                        @Html.ActionLink("Plan Excutive Summary ", "ExcutiveSummary", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="plan-report-setup-09" class="actionlinlk">
+                                        @Html.ActionLink("Project Excutive Summary per Project", "ProjectExcutiveSummaryPerProject", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="plan-report-setup-10" class="actionlinlk">
+                                        @Html.ActionLink("Project Excutive Summary ", "ProjectExcutiveSummary", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="plan-report-setup-11" class="actionlinlk">
+                                        @Html.ActionLink("Project Quartery Report ", "ProjectInformationPlanQuarteryReport", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="plan-report-setup-12" class="actionlinlk">
+                                        @Html.ActionLink("Project Quartery Summary Report ", "ProjectInformationQurterlySummaryReport", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="plan-report-setup-13" class="actionlinlk">
+                                        @Html.ActionLink("Project Summary By Sectors", "ProjectSummaryBySectors", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header"> Risk</li>
+                                    <li id="planning-RISK-01" class="actionlinlk">
+                                        @Html.ActionLink("Risk Mitigation  ", "RiskMitigationPlanReport", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="planning-RISK-02" class="actionlinlk">
+                                        @Html.ActionLink("Risk FolloW Up  ", "RiskFollowUpReport", "PlanningReports", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+
+
+
+                                </ul>
+                            </li>
+                        }
+                        @if (User.IsInRole(PlanningRoles.Planning_Admin))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">Setup</li>
+                                  
+
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header"> Planning Mg't</li>
+                                    <li id="planning-setup-01" class="actionlinlk">
+                                        @Html.ActionLink("Global Indicators", "Index", "GlobalIndicators", new { area = "Planning" }, null)<b class="arrow"></b>
+
+                                    </li>
+                                    <li id="planning-setup-01" class="actionlinlk">
+
+                                        @Html.ActionLink("Objective", "Index", "Objectives", new { area = "Planning" }, null)<b class="arrow"></b>
+
+                                    </li>
+                                    <li id="planning-setup-02" class="actionlinlk">
+                                        @Html.ActionLink("Plan Excutive KPI", "Index", "ExcutivePlanKPIs", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header"> Project Planning </li>
+                                    <li id="planning-setup-03" class="actionlinlk">
+                                        @Html.ActionLink("Project Objectives", "Index", "ProjectObjectives", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="planning-setup-04" class="actionlinlk">
+                                        @Html.ActionLink("Project KPI", "Index", "ProjectKPIs", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                    <li id="planning-setup-05" class="actionlinlk">
+                                        @Html.ActionLink("Project Excutive Settings", "Index", "ProjectExcutiveSettings", new { area = "Planning" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                </ul>
+                            </li>
+                        }
+
+                    </ul>
+
+                </li>
+            </ul>
+
+        </div>
+        <!-- /.nav-collapse -->
+    </nav>
+</div>
+
+
+<script>
+    jQuery(document).on('click', '.mega-dropdown', function (e) {
+        e.stopPropagation()
+    })
+</script>
+
