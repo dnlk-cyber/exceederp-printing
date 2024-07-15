@@ -6816,6 +6816,12 @@
     <Content Include="Areas\Planning\Views\ShareAndDividends\Index.cshtml" />
     <Content Include="Areas\Planning\Views\web.config" />
     <Content Include="Areas\Planning\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePerformanceSummaries\EditorTemplates\GetNextApprover.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceReport\EmployeePerformanceSummary.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceReport\EmployeePerformanceTotalSummary.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceReport\EmployeePerfromanceLeaveDispilineBonusSummary.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceReport\EmployeePerfromanceWithPlanningSummary.cshtml" />
+    <Content Include="Areas\HRM\Views\PerformanceReport\PerformanceSummaryDepartment.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

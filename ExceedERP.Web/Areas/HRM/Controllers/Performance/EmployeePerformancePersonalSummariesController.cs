@@ -25,7 +25,7 @@ using Microsoft.Ajax.Utilities;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
 
-    //[AuthorizeRoles(HrmConstants.HRDepartmentHead)]
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService)]
     public class EmployeePerformancePersonalSummariesController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -77,6 +77,40 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 return weight.Sum(x => x.Weight);
             }
             return 0;
+        }
+        private decimal GetEvaluationResult(int id)
+        {
+            decimal result = 0;
+
+
+            var empMeasurments = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == id).ToList();
+            foreach (var em in empMeasurments)
+            {
+                var weighAndResult = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == em.EmpMeasurementId).ToList();
+                if (weighAndResult.Count() > 0)
+                {
+
+                    result += weighAndResult.Sum(x => x.Score);
+
+                }
+                else
+                {
+                    result += 0;
+                }
+
+
+
+            }
+
+            var updatePerformance = db.EmployeePerformances.Find(id);
+            if (updatePerformance != null)
+            {
+                updatePerformance.Result = result;
+                db.Entry(updatePerformance).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
+            return result;
         }
 
         public ActionResult EmployeePerformancePersonalSummaries_Read([DataSourceRequest] DataSourceRequest request)
@@ -134,7 +168,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 GlPeriodId = employeePerformance.GlPeriodId,
                 EvaluationCriteriaTypeId = employeePerformance.EvaluationCriteriaTypeId,
                 IsAcceptedByEmployee = employeePerformance.IsAcceptedByEmployee,
-                Result = GetEvaluationWeightandResult(employeePerformance.EmployeePerformanceId),
+                Result = GetEvaluationResult(employeePerformance.EmployeePerformanceId),
                 Weight = GetWeight(employeePerformance.EmployeePerformanceId),
                 Remark = employeePerformance.Remark
             });
@@ -244,32 +278,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             return Json(new[] { employeePerformanceScore }.ToDataSourceResult(request, ModelState));
         }
         ///////////////
-
-        public ActionResult PerformanceSummary()
-        {
-            return View();
-        }
-        public ActionResult EmployeePerformanceTotalSummary()
-        {
-            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Employee_Performance_Total_Summary_Report, out string title, out string number);
-            ViewBag.FormTitle = title;
-            ViewBag.FormNumber = number;
-            return View();
-        }
-        public ActionResult PerformanceSummaryDepartment()
-        {
-            ApplicationDbContext adb = new ApplicationDbContext();
-            string username = User.Identity.Name;
-            var user = adb.Users.FirstOrDefault(x => x.UserName == username);
-
-            if (user != null)
-            {
-                ViewBag.id = user.EmployeeId;
-            }
-
-            return View();
-        }
-
+        
         public JsonResult GetFiscalYear()
         {
 
@@ -333,34 +342,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             }
 
             return status;
-        }
-        public decimal GetEvaluationWeightandResult(int id)
-        {
-            decimal result = 0;
-
-               
-            var empMeasurments = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == id).ToList();
-            foreach (var em in empMeasurments)
-            {
-                var weighAndResult =db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == em.EmpMeasurementId).ToList();
-                if (weighAndResult.Count() > 0)
-                {
-
-                    result += weighAndResult.Sum(x => x.Score);
-                   
-                }
-                else
-                {
-                    result += 0;
-                }
-
-               
-
-            }
-         
-
-            
-            return result;
         }
         public int GenerateEmployeeForPerofmanceEvaluation(int empId, int fiscalYearId, int periodId, int evaluationCriteriaId)
         {

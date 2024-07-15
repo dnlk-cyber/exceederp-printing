@@ -20,7 +20,8 @@ using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
-     [AuthorizeRoles(HrmConstants.HRPerformanceAdmin, HrmConstants.HRAdmin)]
+     [AuthorizeRoles(HrmConstants.HRPerformanceAdmin,
+        HrmConstants.HRAdmin)]
     public class PerformanceRankController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

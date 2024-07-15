@@ -12,8 +12,8 @@
             .Columns(columns =>
             {
                 columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").Width(200).EditorTemplateName("EmployeeLists").Filterable(ftb => ftb.Multi(true).Search(true));
-                columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["fiscalYearList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(80);
-                columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["Period"], "QuarterId", "Name").Width(200);
+                columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["fiscalYearList"], "GlFiscalYearId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("GLYearSelector").Width(80);
+                columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["Period"], "QuarterId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
                 columns.Bound(c => c.Date).Width(200);
                 columns.Bound(c => c.DeadLine).Width(200);
 
@@ -347,17 +347,20 @@
                     cache: false,
                     success: function (result) {
                         r = result;
+                        $('#loading-image').hide();
                         if (r == "true") {
                             alert("Successfully Approved");
-                            $('#loading-image').hide();
                             grid.dataSource.read();
                         }
                         else {
                             alert("not Approved");
-                            $('#loading-image').hide();
                             grid.dataSource.read();
                         }
 
+                    },
+                    error: function (xhr, status, error) {
+                        $('#loading-image').hide();
+                        alert("An error occurred: " + error);
                     }
 
                 });

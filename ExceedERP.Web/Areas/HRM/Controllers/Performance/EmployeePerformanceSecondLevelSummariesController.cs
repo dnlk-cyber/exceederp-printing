@@ -26,7 +26,9 @@ using ExceedERP.Web.Hubs;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
 
-    //[AuthorizeRoles(HrmConstants.HRDepartmentHead)]
+    [AuthorizeRoles(HrmConstants.HRPerformanceAdmin,
+                      HrmConstants.HRPerformanceUser,
+                      HrmConstants.HRDepartmentHead)]
     public class EmployeePerformanceSecondLevelSummariesController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -74,6 +76,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             var weight = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == id).ToList();
             if (weight.Count() > 0)
             {
+                var updatePerformance = db.EmployeePerformances.Find(id);
+                if (updatePerformance != null)
+                {
+                    updatePerformance.Weight = weight.Sum(x => x.Weight);
+                    db.Entry(updatePerformance).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
                 return weight.Sum(x => x.Weight);
             }
             return 0;
@@ -83,8 +92,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         {
             var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             //var subordinates = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(id);
-            var subordinates = EmployeeHelper.GetSubordinates(id);
-            var employeePerformances = db.EmployeePerformances.Where(x=> subordinates.Contains(x.DirectBossId))
+            var subordinates = EmployeeHelper.GetSubordinatesOfSubortinates_FilteredByHead(id);
+            var employeePerformances = db.EmployeePerformances.Where(x=> subordinates.Contains(x.DirectBossId)||subordinates.Contains(x.EmployeeId)||subordinates.Contains((int)x.SecondLevelApproverId))
                                 .Where(x => x.IsApproved &&x.IsImmediateSuppurvisorApproved&&x.IsAcceptedByEmployee||x.IsRejectedByEmployee).DistinctBy(x => new
                                 {
                                     x.EmployeeId,
@@ -101,8 +110,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 OrgStructureId = employeePerformance.OrgStructureId,
                 BranchId = employeePerformance.BranchId,
                 BusinessUnitId = employeePerformance.BusinessUnitId,
+                IsCurrent = employeePerformance.IsCurrent,
                 IsHRApproved = employeePerformance.IsHRApproved,
                 IsSecondLevelApproved = employeePerformance.IsSecondLevelApproved,
+                IsSecondLevelRejected = employeePerformance.IsSecondLevelRejected,
+                ReasonFor2ndRejection = employeePerformance.ReasonFor2ndRejection,
+                Result = GetEvaluationResult(employeePerformance.EmployeePerformanceId),
+                Weight = GetWeight(employeePerformance.EmployeePerformanceId),
                 //Result = employeePerformance.Result,
                 ////Result = GetResult(employeePerformance.EmpMeasurementId),
                 //Remark = employeePerformance.Remark
@@ -115,7 +129,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             //List<int> employees = GetActiveEmployeeFromCurrentUserBranch(User.Identity.Name);
             //var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             //var subordinates = EmployeeHelper.GetSubordinates(id);
-            var employeePerformances = db.EmployeePerformances.Where(x => x.EmployeeId==employeeId&&x.GlFiscalYearId==fiscalyearId&&x.GlPeriodId==quarterId&x.IsApproved&&x.IsAcceptedByEmployee&&x.IsImmediateSuppurvisorApproved).ToList();     
+            var employeePerformances = db.EmployeePerformances.Where(x => x.EmployeeId==employeeId&&x.GlFiscalYearId==fiscalyearId&&x.GlPeriodId==quarterId&x.IsApproved&&(x.IsAcceptedByEmployee||x.IsRejectedByEmployee)&&x.IsImmediateSuppurvisorApproved).ToList();     
             //IQueryable<EmployeePerformance> employeePerformances = db.EmployeePerformances;
             DataSourceResult result = employeePerformances.ToDataSourceResult(request, employeePerformance => new
             {
@@ -127,8 +141,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 OrgStructureId = employeePerformance.OrgStructureId,
                 BranchId = employeePerformance.BranchId,
                 BusinessUnitId = employeePerformance.BusinessUnitId,
+                IsCurrent = employeePerformance.IsCurrent,
                 EvaluationCriteriaTypeId = employeePerformance.EvaluationCriteriaTypeId,
-                Result = GetEvaluationWeightandResult(employeePerformance.EmployeePerformanceId),
+                ReasonFor2ndRejection = employeePerformance.ReasonFor2ndRejection,
+                IsSecondLevelRejected = employeePerformance.IsSecondLevelRejected,
+                //Weight = employeePerformance.Weight,
+                //Result = employeePerformance.Result,
+                Result = GetEvaluationResult(employeePerformance.EmployeePerformanceId),
                 Weight = GetWeight(employeePerformance.EmployeePerformanceId),
                 Remark = employeePerformance.Remark
             });
@@ -165,6 +184,41 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             return 0;
         }
+        public decimal GetEvaluationResult(int id)
+        {
+            decimal result = 0;
+
+
+            var empMeasurments = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == id).ToList();
+            foreach (var em in empMeasurments)
+            {
+                var weighAndResult = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == em.EmpMeasurementId).ToList();
+                if (weighAndResult.Count() > 0)
+                {
+
+                    result += weighAndResult.Sum(x => x.Score);
+
+                }
+                else
+                {
+                    result += 0;
+                }
+
+
+
+            }
+
+            var updatePerformance = db.EmployeePerformances.Find(id);
+            if (updatePerformance != null)
+            {
+                updatePerformance.Result = result;
+                db.Entry(updatePerformance).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
+            return result;
+        }
+
         ////////////////
 
         public ActionResult PerformanceActions_Read([DataSourceRequest] DataSourceRequest request, string empMeasurId)
@@ -195,25 +249,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 ModelState.AddModelError("", "Score can't exceed the weight");
             }
 
-            //var criteriaType = db.EvaluationCriteriaActionTypes.FirstOrDefault(x => x.IsActive);
-            //if (criteriaType != null && criteriaType.PerformanceCriteriaActionType == PerformanceCriteriaActionType.Open)
-            //{
-            //    //var revertOther = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == employeePerformanceScore.EmployeeMeasurementId && x.EmployeePerformanceScoreId != employeePerformanceScore.EmployeePerformanceScoreId).ToList();
-            //    //foreach (var rev in revertOther)
-            //    //{
-            //        //rev.IsChecked = false;
-            //        //rev.Score = 0;
-
-            //        db.Entry(rev).State = EntityState.Modified;
-            //        db.SaveChanges();
-            ////    }
-            //}
+            
             var before = db.EmployeePerformanceScores.Find(employeePerformanceScore.EmployeePerformanceScoreId);
             if(before != null)
             {
-                before.Comment += "The previeus result was " + before.Score.ToString();
-                employeePerformanceScore.Comment = before.Comment + " " + employeePerformanceScore.Comment;
+                before.Comment += "The previeus result was " + before.Score.ToString() + " " + employeePerformanceScore.Comment;
+                before.Score = employeePerformanceScore.Score;
+                before.Remark = employeePerformanceScore.Remark;
+                db.Entry(before).State = EntityState.Modified;
+                db.SaveChanges();
+                return Json(new[] { employeePerformanceScore }.ToDataSourceResult(request, ModelState));
+
             }
+
             if (ModelState.IsValid)
             {
 
@@ -234,7 +282,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
                 #region operation log
 
-                // UserHelper.OperationLog(Request.UserHostAddress, "Employee Performance  ", "Success", User.Identity.Name, User.Identity.Name + " update Employee performance of employee id " + entity.EmployeeId, Modules.HRM);
+                 UserHelper.OperationLog(Request.UserHostAddress, "Employee Performance Score ", "Success", User.Identity.Name, User.Identity.Name + "Update Employee Performance Score" + entity.EmployeePerformanceScoreId, Modules.HRM);
 
                 #endregion
 
@@ -243,29 +291,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             return Json(new[] { employeePerformanceScore }.ToDataSourceResult(request, ModelState));
         }
         ///////////////
-
-        public ActionResult PerformanceSummary()
-        {
-            return View();
-        }
-        public ActionResult EmployeePerformanceTotalSummary()
-        {
-            return View();
-        }
-        public ActionResult PerformanceSummaryDepartment()
-        {
-            ApplicationDbContext adb = new ApplicationDbContext();
-            string username = User.Identity.Name;
-            var user = adb.Users.FirstOrDefault(x => x.UserName == username);
-
-            if (user != null)
-            {
-                ViewBag.id = user.EmployeeId;
-            }
-
-            return View();
-        }
-
+        
         public JsonResult GetFiscalYear()
         {
 
@@ -325,33 +351,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             }
             return status;
         }
-        public decimal GetEvaluationWeightandResult(int id)
+        public string RejectionReason_Create(int yearId, int periodId, int employeeId, string reason)
         {
-            decimal result = 0;
-
-               
-            var empMeasurments = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == id).ToList();
-            foreach (var em in empMeasurments)
+            var employeePerformances = db.EmployeePerformances.Where(x => x.GlFiscalYearId == yearId
+                                                                          && x.GlPeriodId == periodId 
+                                                                          && x.EmployeeId == employeeId 
+                                                                          && x.IsApproved
+                                                                          &&x.IsImmediateSuppurvisorApproved 
+                                                                          && !x.IsSecondLevelApproved).ToList();
+            var status = "false";
+            foreach (var employeePerformance in employeePerformances)
             {
-                var weighAndResult =db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == em.EmpMeasurementId).ToList();
-                if (weighAndResult.Count() > 0)
-                {
+                employeePerformance.IsSecondLevelRejected = true;
+                employeePerformance.IsSecondLevelApproved = false;
+                employeePerformance.ReasonFor2ndRejection = reason;
 
-                    result += weighAndResult.Sum(x => x.Score);
-                   
-                }
-                else
-                {
-                    result += 0;
-                }
-
-               
+                db.Entry(employeePerformance).State = EntityState.Modified;
+                db.SaveChanges();
+                status = "true";
 
             }
-         
 
-            
-            return result;
+            return status;
         }
         public int GenerateEmployeeForPerofmanceEvaluation(int empId, int fiscalYearId, int periodId, int evaluationCriteriaId)
         {

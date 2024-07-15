@@ -480,6 +480,10 @@
     <Compile Include="Migrations\202406171603447_planningmerge.Designer.cs">
       <DependentUpon>202406171603447_planningmerge.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202407151836194_hrmperformanceeval.cs" />
+    <Compile Include="Migrations\202407151836194_hrmperformanceeval.Designer.cs">
+      <DependentUpon>202407151836194_hrmperformanceeval.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -795,6 +799,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202406171603447_planningmerge.resx">
       <DependentUpon>202406171603447_planningmerge.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202407151836194_hrmperformanceeval.resx">
+      <DependentUpon>202407151836194_hrmperformanceeval.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

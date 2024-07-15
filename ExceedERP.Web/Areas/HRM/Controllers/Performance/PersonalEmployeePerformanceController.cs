@@ -24,7 +24,8 @@ using ExceedERP.Web.Models;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
 
-    [AuthorizeRoles(HrmConstants.HRDepartmentHead, HrmConstants.HRPerformanceUser, HrmConstants.HRPerformanceAdmin, HrmConstants.HREmployeeSelfService)]
+    [AuthorizeRoles(
+        HrmConstants.HREmployeeSelfService)]
     public class PersonalEmployeePerformanceController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -150,25 +151,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             return Json(new[] { employeePerformanceScore }.ToDataSourceResult(request, ModelState));
         }
         ///////////////
-
-        public ActionResult PerformanceSummary()
-        {
-            return View();
-        }
-        public ActionResult PerformanceSummaryDepartment()
-        {
-            ApplicationDbContext adb = new ApplicationDbContext();
-            string username = User.Identity.Name;
-            var user = adb.Users.FirstOrDefault(x => x.UserName == username);
-
-            if (user != null)
-            {
-                ViewBag.id = user.EmployeeId;
-            }
-
-            return View();
-        }
-
+        
         public JsonResult GetFiscalYear()
         {
 

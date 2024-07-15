@@ -20,7 +20,7 @@ using ExceedERP.Web.Helpers;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
 
-    [AuthorizeRoles(HrmConstants.HRAdmin, HrmConstants.HRPerformanceAdmin)]
+    [AuthorizeRoles(HrmConstants.HRPerformanceAdmin)]
     public class EvaluationCritetiasController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

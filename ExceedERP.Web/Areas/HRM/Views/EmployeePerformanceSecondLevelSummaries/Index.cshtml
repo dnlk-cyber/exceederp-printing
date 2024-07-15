@@ -7,20 +7,35 @@
 
 <legend>@Resources.NavigatorPerformance_EmployeePerformance || Second Level</legend>
 @(Html.Kendo().Grid<EmployeePerformance>()
-            .Name("EmployeePerformancegrid")
-            .Columns(columns =>
+        .Name("EmployeePerformancegrid")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").Width(170).EditorTemplateName("EmployeeLists").Filterable(ftb => ftb.Multi(true).Search(true));
+            columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["fiscalYearList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
+            columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["Period"], "QuarterId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
+            columns.Bound(c => c.IsCurrent).Filterable(ftb => ftb.Multi(true).Search(true)).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsCurrent ? checked='checked' :'' # >").Width(150);
+            columns.Bound(c => c.ReasonFor2ndRejection).Width(140);
+            columns.Bound(c => c.IsSecondLevelApproved).ClientTemplate(
+                       "<input type='checkbox' disabled = 'true' value='#=IsSecondLevelApproved#' " +
+                       "#if(IsSecondLevelApproved) { #" +
+                       "checked='checked'" +
+                       "# } #" +
+                       "/>").Width(120);
+            columns.Bound(c => c.IsSecondLevelRejected).ClientTemplate(
+                       "<input type='checkbox' disabled = 'true' value='#=IsSecondLevelRejected#' " +
+                       "#if(IsSecondLevelRejected) { #" +
+                       "checked='checked'" +
+                       "# } #" +
+                       "/>").Width(120);
+            columns.Command(command =>
             {
-                columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").Width(200).EditorTemplateName("EmployeeLists").Filterable(ftb => ftb.Multi(true).Search(true));
-                columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["fiscalYearList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(80);
-                columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["Period"], "QuarterId", "Name").Width(200);
-                     
-                columns.Command(command =>
-                {
-                    command.Custom("cmd-approve-request").IconClass("fa fa-check ").Text("Approva").Click("thirdLevelApproval").HtmlAttributes(new { @class = "btn btn-success" });
+                command.Custom("cmd-approve-request").IconClass("fa fa-check ").Text("Approva").Click("thirdLevelApproval").HtmlAttributes(new { @class = "btn btn-success" });
+                command.Custom("cmd-reject").IconClass("fa fa-check ").Text("Reject").Click("secondLevelRejection").HtmlAttributes(new { @class = "btn btn-warning" });
 
-                }).Width(100);
+            }).Width(100);
 
-            })
+
+        })
 
             .Editable(editable => editable.Mode(GridEditMode.InLine))
             .Filterable()
@@ -67,12 +82,12 @@
               {
 
                   columns.ForeignKey(c => c.EvaluationCriteriaTypeId, (IEnumerable)ViewData["EvalutionCrateria"], "MeasurementDefinitionId", "Name").Width(200);
-                  columns.Bound(c => c.Weight).Width(80);
-                  columns.Bound(c => c.Result).Width(80);
+                  columns.Bound(c => c.Weight).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                  columns.Bound(c => c.Result).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                  columns.Bound(c => c.ReasonFor2ndRejection).Width(100);
                   columns.Bound(c => c.Remark).Width(50);
 
               })
-
               .ClientDetailTemplateId("Action")
               .Editable(editable => editable.Mode(GridEditMode.InLine))
               .Scrollable(h => h.Height("auto"))
@@ -91,6 +106,12 @@
                          events.Error("error_handler(\"EmployeePerformancedetailgrid_#=EmployeePerformanceId#\")");
                          events.RequestStart("onRequestStart(\"EmployeePerformancedetailgrid_#=EmployeePerformanceId#\")");
                          events.RequestEnd("onRequestEnd(\"EmployeePerformancedetailgrid_#=EmployeePerformanceId#\")");
+                     })
+                     .Aggregates(aggregates =>
+                     {
+                         aggregates.Add(p => p.Weight).Sum();
+                         aggregates.Add(p => p.Result).Sum();
+
                      })
                      .Model(model =>
                      {
@@ -285,8 +306,12 @@
                     var model = grid.dataItem(this);
                     if (model.IsSecondLevelApproved) {
                         $(this).find(".k-grid-cmd-approve-request").hide();
+                        $(this).find(".k-grid-cmd-reject").hide();
                     }
+                    if (model.IsSecondLevelRejected) {
+                        $(this).find(".k-grid-cmd-reject").hide();
 
+                    }
                 });
                
 
@@ -307,7 +332,6 @@
             var conf = confirm("Are you sure you want to approve this quarter performance evaluation");
             if (conf === true) {
                 $('#loading-image').show();
-
                 $.ajax({
                     url: '@Url.Action("ApproveEvaluation", "EmployeePerformanceSecondLevelSummaries")',
                     //contentType: "application/json; charset=utf-8",
@@ -316,13 +340,57 @@
                     cache: false,
                     success: function (result) {
                         r = result;
+                        $('#loading-image').hide();
                         if (r == "true") {
                             alert("Successfully Approved");
+                            grid.dataSource.read();
+                        }
+                        else {
+                            alert("Approval cannot be granted until the 1st level evaluation is approved");
+                            grid.dataSource.read();
+                        }
+                        
+                    },
+                    error: function (xhr, status, error) {
+                        $('#loading-image').hide();
+                        alert("An error occurred: " + error);
+                    }
+
+
+                });
+            }
+
+        }
+
+    }
+    function secondLevelRejection(e) {
+        var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        var year = dataItem.GlFiscalYearId;
+        var period = dataItem.GlPeriodId;
+        var employee = dataItem.EmployeeId;
+
+        $('#loading-image').show(); {
+            var conf = confirm("Are you sure you want to Reject this  performance evaluation");
+            if (conf === true) {
+                $('#loading-image').show();
+                var rejectionReason = prompt("Please provide a reason for rejection:");
+
+                $.ajax({
+                    url: '@Url.Action("RejectionReason_Create", "EmployeePerformanceSecondLevelSummaries")',
+                    //contentType: "application/json; charset=utf-8",
+                    data: { yearId: year, periodId: period, employeeId: employee, reason: rejectionReason },
+                    type: 'POST',
+                    cache: false,
+                    success: function (result) {
+                        r = result;
+                        if (r == "true") {
+                            alert("Successfully Rejected");
                             $('#loading-image').hide();
                             grid.dataSource.read();
                         }
                         else {
-                            alert("not Approved");
+                            alert("not rejected");
                             $('#loading-image').hide();
                             grid.dataSource.read();
                         }
@@ -331,6 +399,8 @@
 
                 });
             }
+            $('#loading-image').hide();
+
 
         }
 

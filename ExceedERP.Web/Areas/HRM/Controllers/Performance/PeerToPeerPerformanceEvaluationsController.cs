@@ -10,10 +10,14 @@ using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
-    [Authorize]
+    [AuthorizeRoles(HrmConstants.HRDepartmentHead,
+        HrmConstants.HRPerformanceUser,
+        HrmConstants.HRPerformanceAdmin,
+        HrmConstants.HREmployeeSelfService)]
     public class PeerToPeerPerformanceEvaluationsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

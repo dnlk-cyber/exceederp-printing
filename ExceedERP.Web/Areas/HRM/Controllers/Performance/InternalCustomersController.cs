@@ -8,10 +8,16 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
-
+using ExceedERP.Core.Domain;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
+    [AuthorizeRoles(HrmConstants.HRDepartmentHead, 
+        HrmConstants.HRPerformanceUser, 
+        HrmConstants.HRPerformanceAdmin, 
+        HrmConstants.HREmployeeSelfService)]
+
     public class InternalCustomersController : Controller
     {
 

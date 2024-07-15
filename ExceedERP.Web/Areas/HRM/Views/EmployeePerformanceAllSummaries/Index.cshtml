@@ -16,6 +16,20 @@
             columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
             columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
             columns.Bound(x => x.ResponsibilityLevel).Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
+            columns.Bound(c => c.IsCurrent).ClientTemplate(
+                                       "<input type='checkbox' disabled = 'true' value='#= IsCurrent#' " +
+                                       "# if (IsCurrent) { #" +
+                                       "checked='checked'" +
+                                       "# } #" +
+                                       "/>"
+                                       ).Width(150);
+            columns.Bound(c => c.IsHRApproved).ClientTemplate(
+            "<input type='checkbox' disabled = 'true' value='#= IsHRApproved#' " +
+            "# if (IsHRApproved) { #" +
+            "checked='checked'" +
+            "# } #" +
+            "/>"
+            ).Width(150);
             columns.Command(command =>
             {
                 command.Custom("cmd-approve-request").IconClass("fa fa-check ").Text("Approva").Click("thirdLevelApproval").HtmlAttributes(new { @class = "btn btn-success" });
@@ -68,8 +82,17 @@
               {
 
                   columns.ForeignKey(c => c.EvaluationCriteriaTypeId, (IEnumerable)ViewData["EvalutionCrateria"], "MeasurementDefinitionId", "Name").Width(200);
-                  columns.Bound(c => c.Weight).Width(80);
-                  columns.Bound(c => c.Result).Width(80);
+                  // columns.Bound(c => c.Weight).Width(80);
+                  // columns.Bound(c => c.Result).Width(80);
+                  columns.Bound(c => c.Weight).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                  columns.Bound(c => c.Result).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+
+                  columns.Bound(c => c.IsSecondLevelApproved).ClientTemplate(
+                             "<input type='checkbox' disabled = 'true' value='#=IsSecondLevelApproved#' " +
+                             "# if (IsSecondLevelApproved) { #" +
+                             "checked='checked'" +
+                             "# } #" +
+                             "/>").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
                   columns.Bound(c => c.Remark).Width(50);
 
               })
@@ -87,6 +110,11 @@
 
               .DataSource(dataSource => dataSource
                      .Ajax()
+                     .Aggregates(aggregates =>
+                     {
+                         aggregates.Add(p => p.Weight).Sum();
+                         aggregates.Add(p => p.Result).Sum();
+                     })
                      .Events(events =>
                      {
                          events.Error("error_handler(\"EmployeePerformancedetailgrid_#=EmployeePerformanceId#\")");
@@ -315,6 +343,7 @@
                     cache: false,
                     success: function (result) {
                         r = result;
+                        $('#loading-image').hide();
                         if (r == "true") {
                             alert("Successfully Approved");
                             $('#loading-image').hide();
@@ -326,6 +355,10 @@
                             grid.dataSource.read();
                         }
                         
+                    },
+                    error: function (xhr, status, error) {
+                        $('#loading-image').hide();
+                        alert("An error occurred: " + error);
                     }
 
                 });

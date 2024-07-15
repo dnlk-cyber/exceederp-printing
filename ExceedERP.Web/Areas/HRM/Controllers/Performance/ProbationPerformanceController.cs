@@ -11,9 +11,14 @@ using System.Linq;
 using ExceedERP.Core.Domain.Global;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
+    [AuthorizeRoles(HrmConstants.HRDepartmentHead,
+        HrmConstants.HRPerformanceUser,
+        HrmConstants.HRPerformanceAdmin,
+        HrmConstants.HREmployeeSelfService)]
     public class ProbationPerformanceController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

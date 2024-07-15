@@ -13,6 +13,7 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         [Display(Name ="Employee")]
         public int EmployeeId { get; set; }
         public int DirectBossId { get; set; }
+        public int? SecondLevelApproverId { get; set; }
         [Display(Name = "Fiscal Year")]
         public int GlFiscalYearId { get; set; }
         [Display(Name = "Period")]
@@ -40,7 +41,9 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public decimal Weight { get; set; }
         [Display(Name = "Result")]
         public decimal Result { get; set; }
-       
+        //[Display(Name = "Is IsSubmitted")]
+        ////for summit  / it serves as submit status handler
+        //public bool IsSubmitted { get; set; }
         [Display(Name = "Is Approved")]
         //for summit  / it serves as submit status handler
         public bool IsApproved { get; set; }
@@ -56,17 +59,20 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public bool IsRejectedByEmployee { get; set; }
         [Display(Name = "Employee Remark")]
         public string EmployeeRemark { get; set; }
+        [Display(Name = "Reason for Rejection")]
+        public string ReasonFor2ndRejection { get; set; }
         [Display(Name = "Is Second Level Approved")]
         public bool IsSecondLevelApproved { get; set; }
+        [Display(Name = "Is Second Level Rejected")]
+        public bool IsSecondLevelRejected { get; set; }
         [Display(Name = "Is HR Approved")]
         public bool IsHRApproved { get; set; }
         public bool IsHRLevelEvalution { get; set; }
+        public bool IsCurrent { get; set; }
         public string Remark { get; set; }
         public string Comment { get; set; }
         [NotMapped]
         public string Grade { get; set; }
-
-
 
     }
 
@@ -77,8 +83,8 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         [Display(Name = "Enum_Evaluation_Type_Sector_Result", ResourceType = typeof(Resources))]
         Sector_Result=7,
         [Display(Name = "Enum_Evaluation_Type_Main_Department_Level", ResourceType = typeof(Resources))]
-        MainDepartmentLevel,
+        MainDepartmentLevel=8,
         [Display(Name = "Enum_LookUpTypes_PROJECT_MANAGER", ResourceType = typeof(Resources))]
-        Project_Manager,
+        Project_Manager=9,
     }
 }

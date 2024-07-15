@@ -26,7 +26,7 @@ using ExceedERP.Web.Hubs;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
 
-    //[AuthorizeRoles(HrmConstants.HRDepartmentHead)]
+    [AuthorizeRoles(HrmConstants.HRPerformanceAdmin,HrmConstants.HRAdmin, HrmConstants.HRPerformanceUser)]
     public class EmployeePerformanceAllSummariesController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -34,12 +34,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         public ActionResult Index()
         {
             PopulateViewData();
-            
 
             return View();
         }
         private void PopulateViewData()
         {
+
             var fiscalYearList = db.GLFiscalYears.ToList();
             ViewData["fiscalYearList"] = fiscalYearList;// != null ? periodList.ToList() : new List<GlFiscalYear>();
             ViewData["Measurments"] = db.Measurements.ToList();
@@ -73,11 +73,40 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         private decimal GetWeight(int id)
         {
             var weight = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == id).ToList();
-            if (weight.Count() > 0)
+            if (weight.Any())
             {
+                var updatePerformance = db.EmployeePerformances.Find(id);
+                if (updatePerformance != null)
+                {
+                    updatePerformance.Weight = weight.Sum(x => x.Weight);
+                    db.Entry(updatePerformance).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
                 return weight.Sum(x => x.Weight);
             }
             return 0;
+        }
+        public ActionResult UpdateDirectBoss()
+        {
+            var placements = db.Placements
+                .Where(x => x.isCurrent && x.IsHead)
+                .ToList();
+            foreach (var place in placements)
+            {
+                //var subordinates = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(place.EmployeeId).Where(x => x != place.EmployeeId);
+                var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(place.EmployeeId).Where(x => x != place.EmployeeId);
+                foreach (var empId in subordinates)
+                {
+                    var employeePerformances = db.EmployeePerformances.Where(x => x.EmployeeId == empId).ToList();
+                    foreach (var employeePerformance in employeePerformances)
+                    {
+                        employeePerformance.DirectBossId = place.EmployeeId;
+                        db.Entry(employeePerformance).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                }
+            }
+            return View("Success");
         }
         public ActionResult UpdatePerformance()
         {
@@ -90,11 +119,30 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                     
                     empPerformance.OrgStructureId = placement.OrgStructureId;
                     empPerformance.BranchId = placement.BranchId;
+                    empPerformance.DirectBossId = placement.HeadId??0;
                     empPerformance.BusinessUnitId = placement.BusinessUnitId;
                     empPerformance.ResponsibilityLevel = placement.ResponsibilityLevel;
                     empPerformance.JobTitleId = placement.LookupId;
+                    empPerformance.IsCurrent = placement.isCurrent;
                     db.Entry(empPerformance).State = EntityState.Modified;
                     db.SaveChanges();
+                }
+                else
+                {
+                    var placementss = db.Placements.Where(x => x.EmployeeId == empPerformance.EmployeeId).FirstOrDefault();
+                    if (placementss != null)
+                    {
+
+                        empPerformance.OrgStructureId = placementss.OrgStructureId;
+                        empPerformance.BranchId = placementss.BranchId;
+                        empPerformance.DirectBossId = placement.HeadId ?? 0;
+                        empPerformance.BusinessUnitId = placementss.BusinessUnitId;
+                        empPerformance.ResponsibilityLevel = placementss.ResponsibilityLevel;
+                        empPerformance.JobTitleId = placementss.LookupId;
+                        empPerformance.IsCurrent = placementss.isCurrent;
+                        db.Entry(empPerformance).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
                 }
             }
             return RedirectToAction("Index", "EmployeePerformanceCorporateAndSectorLevels");
@@ -111,6 +159,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             //    x.GlFiscalYearId,
             //    x.GlPeriodId,
             //}).Select(g => new { g.Key.EmployeeId, g.Key.GlFiscalYearId, g.Key.GlPeriodId}).OrderByDescending(x=>x.GlFiscalYearId).ToList();    
+
             var employeePerformances = db.EmployeePerformances
                                 .Where(x => x.IsSecondLevelApproved).DistinctBy(x => new
                                 {
@@ -119,6 +168,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                                     x.GlPeriodId
                                 }).OrderByDescending(x => x.GlFiscalYearId).ToList();
             //IQueryable<EmployeePerformance> employeePerformances = db.EmployeePerformances;
+
             DataSourceResult result = employeePerformances.ToDataSourceResult(request, employeePerformance => new
             {
                 EmployeePerformanceId = employeePerformance.EmployeePerformanceId,
@@ -130,6 +180,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 ResponsibilityLevel = employeePerformance.ResponsibilityLevel,
                 BranchId = employeePerformance.BranchId,
                 IsHRApproved = employeePerformance.IsHRApproved,
+                IsCurrent = employeePerformance.IsCurrent,
+                Result = GetEvaluationWeightandResult(employeePerformance.EmployeePerformanceId),
+                Weight = GetWeight(employeePerformance.EmployeePerformanceId),
                 //Result = employeePerformance.Result,
                 ////Result = GetResult(employeePerformance.EmpMeasurementId),
                 //Remark = employeePerformance.Remark
@@ -155,6 +208,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 BranchId = employeePerformance.BranchId,
                 BusinessUnitId = employeePerformance.BusinessUnitId,
                 ResponsibilityLevel = employeePerformance.ResponsibilityLevel,
+                //Result = employeePerformance.Result,
+                //Weight = employeePerformance.Weight,
+                IsCurrent = employeePerformance.IsCurrent,
+                IsSecondLevelApproved = employeePerformance.IsSecondLevelApproved,
                 Result = GetEvaluationWeightandResult(employeePerformance.EmployeePerformanceId),
                 Weight = GetWeight(employeePerformance.EmployeePerformanceId),
                 Remark = employeePerformance.Remark
@@ -162,7 +219,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             return Json(result);
         }
-
         public ActionResult EmployeeMeasurements_Read([DataSourceRequest] DataSourceRequest request, int performanceId)
         {
             
@@ -193,7 +249,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             return 0;
         }
         ////////////////
-
         public ActionResult PerformanceActions_Read([DataSourceRequest] DataSourceRequest request, string empMeasurId)
         {
             int.TryParse(empMeasurId, out int employeeMeasurementId);
@@ -265,29 +320,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             return Json(new[] { employeePerformanceScore }.ToDataSourceResult(request, ModelState));
         }
         ///////////////
-
-        public ActionResult PerformanceSummary()
-        {
-            return View();
-        }
-        public ActionResult EmployeePerformanceTotalSummary()
-        {
-            return View();
-        }
-        public ActionResult PerformanceSummaryDepartment()
-        {
-            ApplicationDbContext adb = new ApplicationDbContext();
-            string username = User.Identity.Name;
-            var user = adb.Users.FirstOrDefault(x => x.UserName == username);
-
-            if (user != null)
-            {
-                ViewBag.id = user.EmployeeId;
-            }
-
-            return View();
-        }
-
+        
         public JsonResult GetFiscalYear()
         {
 
@@ -356,7 +389,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             foreach (var em in empMeasurments)
             {
                 var weighAndResult =db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == em.EmpMeasurementId).ToList();
-                if (weighAndResult.Count() > 0)
+                if (weighAndResult.Any())
                 {
 
                     result += weighAndResult.Sum(x => x.Score);
@@ -370,9 +403,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                
 
             }
-         
 
-            
+            var updatePerformance = db.EmployeePerformances.Find(id);
+            if (updatePerformance != null)
+            {
+                updatePerformance.Result = result;
+                db.Entry(updatePerformance).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+
             return result;
         }
         public int GenerateEmployeeForPerofmanceEvaluation(int empId, int fiscalYearId, int periodId, int evaluationCriteriaId)

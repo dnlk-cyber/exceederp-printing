@@ -8,6 +8,7 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         [Key]
         public int EmpMeasurementId { get; set; }
         public int EmployeePerformanceId { get; set; }
+        [Display(Name = "Measurment")]
         public int MeasurmentId { get; set; }
         public decimal Weight { get; set; }
         public decimal Result { get; set; }
