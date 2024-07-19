@@ -1652,39 +1652,40 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         }
         public JsonResult GetAllBranchByBusinessUnit(int businessUnitId, string searchText)
         {
-            var branches = db.Branch.ToList();
-            branches = branches.Where(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper().Contains(searchText.ToUpper())).Where(x => x.IsActive).ToList();
+            // Load all branches and filter by active status and search text
+            var branches = db.Branch.ToList()
+                .ToList();
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                branches = branches.Where(x => x.IsActive).ToList().Where(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToUpper().Contains(searchText.ToUpper())).ToList();
+            }
+            // If a specific business unit is selected
             if (businessUnitId != 0)
             {
-                var branchId = db.JobTitleMapping.Where(x => x.IsActive).ToList().Where(x => x.BusinessUnitId == businessUnitId).Select(x => x.BranchId).Distinct().ToList();
-                if (branchId.Any())
-                {
-                    branches = branches.Where(x => x.Name.ToUpper().Contains(searchText.ToUpper())).ToList().Where(x => branchId.Contains(x.BranchId)).ToList();
+                var branchIds = db.JobTitleMapping
+                    .Where(x => x.IsActive && x.BusinessUnitId == businessUnitId)
+                    .Select(x => x.BranchId)
+                    .Distinct()
+                    .ToList();
 
-                    return Json(branches.Select(p => new
-                    {
-                        BranchId = p.BranchId,
-                        Name = p.AmharicName,
-                    }), JsonRequestBehavior.AllowGet);
+                if (branchIds.Any())
+                {
+                    branches = branches.Where(x => branchIds.Contains(x.BranchId)).ToList();
                 }
                 else
                 {
-                    branches = new List<Branch>();
+                    branches = new List<Branch>(); // No branches match the business unit
                 }
-
-                return Json(branches.Select(p => new
-                {
-                    BranchId = p.BranchId,
-                    Name = p.AmharicName,
-                }), JsonRequestBehavior.AllowGet);
-
             }
 
-            return Json(branches.Select(p => new
+            // Prepare the result
+            var result = branches.Select(p => new
             {
                 BranchId = p.BranchId,
-                Name = p.AmharicName,
-            }), JsonRequestBehavior.AllowGet);
+                Name = p.AmharicName
+            });
+
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetSelectedBranchs()
         {
