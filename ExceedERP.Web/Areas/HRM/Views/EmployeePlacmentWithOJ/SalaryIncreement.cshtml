@@ -1,0 +1,189 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Localization
+@model DateTime?
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="col-md-2 flex-item custom-dropdown">
+    <label for="FromGrade" class="custom-label">From Grade:</label>
+    <br />
+    @(Html.Kendo().DropDownListFor(m => m)
+                        .Name("FromGrade")
+                        .ValuePrimitive(true)
+                        .OptionLabel(Resources.Select)
+                        .HtmlAttributes(new { style = "width:120px", @class = "custom-dropdown-field" })
+                        .DataTextField("RankName")
+                        .DataValueField("RankId")
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetRank", "HRMDataProvider"));
+                        }))
+</div>
+
+<div class="col-md-2 flex-item custom-dropdown">
+    <label for="ToGrade" class="custom-label">To Grade:</label>
+    <br />
+    @(Html.Kendo().DropDownListFor(m => m)
+                        .Name("ToGrade")
+                        .ValuePrimitive(true)
+                        .OptionLabel(Resources.Select)
+                        .HtmlAttributes(new { style = "width:120px", @class = "custom-dropdown-field" })
+                        .DataTextField("RankName")
+                        .DataValueField("RankId")
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetRank", "HRMDataProvider"));
+                        }))
+</div>
+
+<div class="col-md-2 flex-item custom-dropdown" >
+    <label for="FromStep" class="custom-label">From Rank(step):</label>
+    <br />
+    @(Html.Kendo().DropDownListFor(m => m)
+                        .Name("FromStep")
+                        .ValuePrimitive(true)
+                        .OptionLabel(Resources.Select)
+                        .DataTextField("StepName")
+                        .HtmlAttributes(new { style = "width:120px", @class = "custom-dropdown-field" })
+                        .OptionLabel("Select Step")
+                        .DataValueField("StepId")
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetStep", "HRMDataProvider"));
+                        }))
+</div>
+
+<div class="col-md-2 flex-item custom-dropdown">
+    <label for="ToStep" class="custom-label">To Rank(Step):</label>
+    <br />
+    @(Html.Kendo().DropDownListFor(m => m)
+                        .Name("ToStep")
+                        .ValuePrimitive(true)
+                        .OptionLabel(Resources.Select)
+                        .DataTextField("StepName")
+                        .HtmlAttributes(new { style = "width:120px", @class = "custom-dropdown-field" })
+                        .OptionLabel("Select Step")
+                        .DataValueField("StepId")
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetStep", "HRMDataProvider"));
+
+                        }))
+</div>
+
+<div class="col-md-2 flex-item">
+    <br/>
+    @(Html.Kendo().Button()
+                .Name("btnRefresh")
+                .HtmlAttributes(new { type = "button", @class = "k-primary", style = "width: 100px;height: 40px;font-size:16px;" })
+                .Events(e => e.Click("handleButtonClick"))
+                .Content("Update"))
+</div>
+
+   
+<style>
+        /*  custom styles  */
+        .table-container {
+            width: 50%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+            .table-container th, .table-container td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+
+        .category-label {
+            font-weight: bold;
+        }
+
+        .k-button {
+            display: inline-block;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .k-primary {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+        .custom-dropdown {
+            /* Add any custom styles you want for the dropdown container here */
+        }
+
+        .custom-label {
+            /* Add custom styles for the label here */
+            font-weight: bold;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .custom-dropdown-field {
+            /* Add custom styles for the dropdown field here */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 4px;
+        }
+    
+</style>
+
+<script>
+     function handleButtonClick(e) {
+            e.preventDefault(); // Prevent default form submission behavior
+
+            var fromGrade = $("#FromGrade").data("kendoDropDownList").value();
+            var toGrade = $("#ToGrade").data("kendoDropDownList").value();
+            var fromStep = $("#FromStep").data("kendoDropDownList").value();
+            var toStep = $("#ToStep").data("kendoDropDownList").value(); // Corrected typo in variable name
+
+            // Check conditions sequentially and return if any condition fails
+            if (fromGrade === "") {
+                alert("Please select From grade first");
+                return;
+            }
+            if (toGrade === "") {
+                alert("Please select the to Grade first");
+                return;
+            }
+            if (fromStep === "") {
+                alert("Please select from step");
+                return;
+            }
+            if (toStep === "") {
+                alert("Please select the to step");
+                return;
+                }
+            if (toStep === fromStep) {
+                alert(" From and  to step  can't be equal Please select another");
+                return;
+            }
+            if (fromGrade === toGrade) {
+                alert(" from and  to grade can't be equal Please select another");
+                return;
+            }
+
+
+        // If all conditions pass, make the AJAX request
+        $('#loading-image').show();
+        $.ajax({
+            url: '@Url.Action("UpdateSalary", "EmployeePlacmentWithOJ")',
+            data: { fromRank: fromGrade, toRank: toGrade, fromStep: fromStep, toStep: toStep },
+            type: 'POST',
+            cache: false,
+            success: function(result) {
+                alert(result);
+                location.reload();
+            }
+        });
+    }
+</script>

@@ -7,9 +7,10 @@
 }
 <legend>@Resources.NavigatorPlacment_EmployeePlacment</legend>
 <div class="row">
-    <p >
+    <p>
         <span class="fa fa-circle" style="color:yellow;"></span>&nbsp;&nbsp;@Resources.Enum_RequestStatus_PEND,&nbsp;&nbsp;
         <span class="fa fa-circle" style="color:olive;"></span>&nbsp;&nbsp;@Resources.Rpt_RetirementNotification &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:#FF842D;"></span>&nbsp;&nbsp;Employee Not Yet Approved &nbsp;&nbsp;
     </p>
 </div>
 
@@ -23,6 +24,7 @@
                   // columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
                   columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
                   columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.Placement_FullName).Width(150);
+                  columns.ForeignKey(c => c.HeadId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
                   //columns.Bound(c => c.FullName).Width(150);
                   columns.Bound(c => c.Boss).Width(150);
                   // columns.ForeignKey(c => c.JobTitleCode, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(130);
@@ -426,6 +428,8 @@
     function filterBranch() {
         return {
             businessUnitId: $("#BusinessUnitId").val(),
+            searchText: $("#BranchId").data("kendoDropDownList").filterInput.val(),
+
         };
     }
     function filterDepartment() {
@@ -855,6 +859,11 @@
 
             if (dataItem.IsApprove === true) {
                 row.find("#approveplacement").hide();
+
+            }
+            if (dataItem.IsApprove === false) {
+                row.css("background-color", "#FF842D");
+
             }
             if (dataItem.Age > 60) {
 

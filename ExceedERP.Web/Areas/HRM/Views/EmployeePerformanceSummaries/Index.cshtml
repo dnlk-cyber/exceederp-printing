@@ -571,41 +571,82 @@
 
 <script language="javascript">
 
-    var supplier = "";
+    //var supplier = "";
 
+    //function changeparent() {
+
+    //    if ((document.getElementById('NextApprovareEmployeeId').value.length === 0)) {
+    //        alert("Please select Employe.");
+    //    }
+    //    else {
+    //        id = document.getElementById('currentEmployeeId').value;
+    //        nextApprovareEmployeeId = document.getElementById('NextApprovareEmployeeId').value;
+    //        $.ajax({
+    //            type: "POST",
+    //            url: '/HRM/HRMDataProvider/UpdateNextApprover',
+    //            data: {
+    //                currentEmployeeId: id,
+    //                nextApprovareEmployeeId: nextApprovareEmployeeId
+    //            },
+    //            success: function (result) {
+    //                alert(result.Message);
+    //                var approverElement = window.opener.document.getElementById("new_user_name_display");
+    //                approverElement.innerText = " Sent to :" + user;
+
+    //                //window.opener.setChoice(user);
+    //                window.close();
+
+    //            }, //end succ
+    //            error: function (result) {
+    //                alert(result.Message);
+    //            }
+    //        });
+
+    //    }
+    //}
     function changeparent() {
-
-        if ((document.getElementById('NextApprovareEmployeeId').value.length === 0)) {
-            alert("Please select Employe.");
-        }
-        else {
-            id = document.getElementById('currentEmployeeId').value;
-            nextApprovareEmployeeId = document.getElementById('NextApprovareEmployeeId').value;
+        var nextApproverEmployeeId = document.getElementById('NextApprovareEmployeeId').value;
+        if (nextApproverEmployeeId.length === 0) {
+            alert("Please select Employee.");
+        } else {
+            var id = document.getElementById('currentEmployeeId').value;
             $.ajax({
                 type: "POST",
                 url: '/HRM/HRMDataProvider/UpdateNextApprover',
                 data: {
                     currentEmployeeId: id,
-                    nextApprovareEmployeeId: nextApprovareEmployeeId
+                    nextApproverEmployeeId: nextApproverEmployeeId
                 },
                 success: function (result) {
-                    alert(result.Message);
-                    var approverElement = window.opener.document.getElementById("new_user_name_display");
-                    approverElement.innerText = " Sent to :" + user;
+                    console.log("AJAX request succeeded:", result);
+                    if (result && result.Message) {
+                        alert(result.Message);
 
-                    //window.opener.setChoice(user);
-                    window.close();
+                        // Update the parent window's element
+                        var approverElement = window.opener.document.getElementById("new_user_name_display");
+                        if (approverElement) {
+                            approverElement.innerText = "Sent to: " + result.NextApproverName;
+                        }
 
-                }, //end succ
-                error: function (result) {
-                    alert(result.Message);
+                        // Close the Kendo Window
+                        var wnd = $("#SelectEmployee").data("kendoWindow");
+                        if (wnd) {
+                            wnd.close();
+                        } else {
+                            console.error("Kendo Window instance not found.");
+                        }
+                    } else {
+                        alert(result.Message);
+                        console.error(result.Message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    var errorMessage = xhr.status + ': ' + xhr.statusText;
+                    alert("An error occurred: " + errorMessage);
+                    console.error("AJAX request failed:", status, error, xhr);
                 }
             });
-
         }
-    }
-    function closeWin() {
-        document.close();
     }
 
 

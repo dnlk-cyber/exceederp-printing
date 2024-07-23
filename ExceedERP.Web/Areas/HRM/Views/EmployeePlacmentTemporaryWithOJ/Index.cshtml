@@ -11,6 +11,8 @@
     <p>
         <span class="fa fa-circle" style="color:yellow;"></span>&nbsp;&nbsp;@Resources.Enum_RequestStatus_PEND,&nbsp;&nbsp;
         <span class="fa fa-circle" style="color:olive;"></span>&nbsp;&nbsp;@Resources.Rpt_RetirementNotification &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:#FF842D;"></span>&nbsp;&nbsp;Employee Not Yet Approved &nbsp;&nbsp;
+
     </p>
 </div>
 @(Html.Kendo().Grid<Placement>()
@@ -24,7 +26,8 @@
             //columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
             columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.Placement_FullName).Width(150);
             // columns.Bound(c => c.FullName).Width(150);
-            columns.Bound(c => c.Boss).Width(150);
+            columns.ForeignKey(c => c.HeadId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+            // columns.Bound(c => c.Boss).Width(150);
             // columns.ForeignKey(c => c.JobTitleCode, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(130);
             columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
             columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
@@ -79,7 +82,7 @@
                 }
                 if (HttpContext.Current.User.IsInRole("PlacementApprover"))
                 {
-                    command.Custom("").Click("ApprovePlacement").Text(" Approve").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-success", @title = "Approve Placement ", @id = "approveplacement" });
+                    command.Custom("").Click("ApprovePlacement").Text("Approve").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-success", @title = "Approve Placement ", @id = "approveplacement" });
                 }
                 if (HttpContext.Current.User.IsInRole("HR_Placement_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
                 {
@@ -574,6 +577,8 @@ items.Add().Text(Resources.Details).Content(
     function filterBranch() {
         return {
             businessUnitId: $("#BusinessUnitId").val(),
+            searchText: $("#BranchId").data("kendoDropDownList").filterInput.val(),
+
         };
     }
     function filterDepartment() {
@@ -849,6 +854,10 @@ items.Add().Text(Resources.Details).Content(
             if (dataItem.IsApprove === true) {
                 row.find("#approveplacement").hide();
             }
+            if (dataItem.IsApprove === false) {
+                row.css("background-color", "#FF842D");
+
+            }
             if (dataItem.Age > 60) {
 
                 row.css("background-color", "olive");
@@ -869,7 +878,7 @@ items.Add().Text(Resources.Details).Content(
             $('#loading-image').show();
 
             $.ajax({
-                url: '@Url.Action("ApprovePlacement", "EmployeePlacmentWithJ")',
+                url: '@Url.Action("ApprovePlacement", "EmployeePlacmentTemporaryWithOJ")',
 
                 data: { id: id},
                 type: 'POST',
@@ -877,7 +886,6 @@ items.Add().Text(Resources.Details).Content(
                 success: function (result) {
                     r = result;
                     alert(r.Message);
-                    $('#loading-image').hide();
                     grid.dataSource.read();
                 }
             });

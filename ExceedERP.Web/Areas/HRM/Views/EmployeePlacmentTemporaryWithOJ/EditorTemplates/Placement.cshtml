@@ -148,7 +148,34 @@
                 </div>
 
             </div>
-                     
+                   <div class="form-group">
+
+                @Html.LabelFor(model => model.HeadId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-6">
+
+                    @(Html.Kendo().DropDownListFor(model => model.HeadId)
+                                          //  .Name("EmployeeId")
+                                          .DataValueField("HeadId")
+                                          .DataTextField("FullNameaEnglish")
+                                          .OptionLabel(Resources.Select)
+                                          .Filter("contains")
+                                          // .MinLength(2)
+                                          .HtmlAttributes(new { style = "width:240px" })
+
+                                           .DataSource(source =>
+                                           {
+                                               source.Read(read => read.Action("GetAllHeadEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }))
+                                               .ServerFiltering(false);
+                                                       // //source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider"));
+                                                       // source.Read(read => read.Action("GetAllHeadEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }))
+                                                       //.ServerFiltering(false);
+                                                   })
+                                          .ValuePrimitive(true)
+                    )
+
+                </div>
+            </div>  
             <div class="row"></div>
         </div>
 

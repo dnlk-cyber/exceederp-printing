@@ -139,19 +139,19 @@
                     <label class="branch-label" for="branch">@Resources.Rpt_Branch</label>
                     <br />
                     @(Html.Kendo().DropDownListFor(m => m)
-                                                        .Name("branch")
-                                                        .OptionLabel(Resources.Select)
-                                                        .Filter("contains")
-                                                        .DataTextField("Name")
-                                                        .CascadeFrom("businessUnit")
-                                                        .DataValueField("BranchId")
-                                                            .DataSource(dataSource =>
-                                                            {
-                                                                dataSource.Read(read => read.Action("GetAllBranchByBusinessUnit", "HRMDataProvider", new { area = "HRM" }).Data("filterBranch"))
-                                                                .ServerFiltering(true);
-                                                            })
+                                    .Name("branch")
+                                    .OptionLabel(Resources.Select)
+                                    .Filter("contains")
+                                    .DataTextField("Name")
+                                    .CascadeFrom("businessUnit")
+                                    .DataValueField("BranchId")
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetAllBranchByBusinessUnit", "HRMDataProvider", new { area = "HRM" }).Data("filterBranch"))
+                                            .ServerFiltering(true);
+                                        })
 
-                                                        .HtmlAttributes(new { style = "width: 150px;" })
+                                    .HtmlAttributes(new { style = "width: 150px;" })
                     )
 
                 </div>
@@ -747,6 +747,7 @@
     function filterBranch() {
         return {
             businessUnitId: $("#businessUnit").val(),
+            searchText: $("#BranchId").data("kendoDropDownList").filterInput.val(),
         };
     }
     function onMeasurementDefinitionChange() {

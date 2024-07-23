@@ -3,12 +3,13 @@
 @using ExceedERP.Core.Domain.Common
 @(Html.Kendo().DropDownListFor(m => m)
  .OptionLabel( Resources.Select)
-                            .DataTextField("AmharicName")
-                                    .DataValueField("BranchId")
-      .DataSource(dataSource =>
-      {
-          dataSource.Read(read => read.Action("GetBranches", "HRMDataProvider", new { area = "HRM" }))
-              .ServerFiltering(false);
-      })
-                    .ValuePrimitive( true)
+        .DataTextField("AmharicName")
+        .DataValueField("BranchId")
+        .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read.Action("GetBranches", "HRMDataProvider", new { area = "HRM" }))
+                .ServerFiltering(false);
+
+        })
+        .ValuePrimitive( true)
 )
