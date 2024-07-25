@@ -39,7 +39,7 @@ namespace ExceedERP.Web.Controllers
                                    {
                                        e.BranchId,
                                        PersonId = e.EmployeeId,
-                                       FullName = (e.FirstNameEnglish + " " + e.MiddleNameEnglish + " " + e.LastNameEnglish).Replace("/", "-"),//.Replace("\\", " - "),
+                                       FullName = (e.EmployeeCode + " " + e.FirstNameEnglish + " " + e.MiddleNameEnglish + " " + e.LastNameEnglish).Replace("/", "-"),//.Replace("\\", " - "),
                                    });
 
             if (IsRegionalAdmin())
@@ -273,6 +273,11 @@ namespace ExceedERP.Web.Controllers
 
                         db.UserBranches.Add(userBranches);
                         db.SaveChanges();
+                        //log
+                        var user = db.Users.FirstOrDefault(p => p.Id == id);
+                        int did = int.Parse(branch.BranchId);
+                        var HRbranch = dbs.Branch.FirstOrDefault(p => p.BranchId ==did);
+                        UserHelper.AccessLog(Request.UserHostAddress, "User branch", "Success", User.Identity.Name, $"Updated user branch for user  {user?.UserName} given branch {HRbranch.Name} ");
 
                     }
                 }
@@ -437,7 +442,7 @@ namespace ExceedERP.Web.Controllers
 
         //provider
 
-        public JsonResult GetEmployeeMap(string text)
+        public JsonResult GetEmployeeMap1(string text)
         {
             List<EmployeeCacheVm> list = new List<EmployeeCacheVm>();
             if (!String.IsNullOrWhiteSpace(text))
@@ -453,5 +458,90 @@ namespace ExceedERP.Web.Controllers
 
         }
 
+        //only placed employees
+        public JsonResult GetEmployeeMap_8(string text)
+        {
+            ExceedDbContext _db = new ExceedDbContext();
+            List<EmployeeVm> list = new List<EmployeeVm>();
+
+            if (!String.IsNullOrWhiteSpace(text))
+            {
+                var employees = from e in _db.Person_Employee
+                                join p in _db.Placements
+                                    on e.EmployeeId equals p.EmployeeId
+                                where e.IsActive && p.isCurrent
+
+                        select( new EmployeeVm
+                        {
+                            EmployeeId = e.EmployeeId,
+                            EmployeeCode = e.EmployeeCode,
+                            FirstName = e.FirstName,
+                            MiddleName = e.MiddleName,
+                            LastName = e.LastName,
+                            FirstNameEnglish = e.FirstNameEnglish,
+                            MiddleNameEnglish = e.MiddleNameEnglish,
+                            LastNameEnglish = e.LastNameEnglish
+                        });
+
+                if(!string.IsNullOrEmpty(text))
+                {
+                    employees = employees.Where(x => x.EmployeeCode.ToUpper().Contains(text.ToUpper()) ||
+                        x.FirstNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                          x.MiddleNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                            x.LastNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                             (x.FirstName + " " + x.MiddleName + " " + x.LastName).ToUpper().Contains(text.ToUpper()) ||
+                              (x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish).ToUpper().Contains(text.ToUpper()));
+                }
+                    
+                list = employees.ToList();
+            }
+
+            return Json(list.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameaEnglish = p.EmployeeCode + " - " + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish,
+                FullNameAmharic = p.EmployeeCode + " - " + p.FirstName + " " + p.MiddleName + " " + p.LastName,
+            }), JsonRequestBehavior.AllowGet);
+        }
+
+        //active
+        public JsonResult GetEmployeeMap(string text)
+        {
+            ExceedDbContext _db = new ExceedDbContext();
+            List<EmployeeVm> list = new List<EmployeeVm>();
+
+            if (!String.IsNullOrWhiteSpace(text))
+            {
+                var employees = _db.Person_Employee
+                    .Where(x=>x.IsActive)
+                    .Where(x => x.EmployeeCode.ToUpper().Contains(text.ToUpper()) ||
+                        x.FirstNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                          x.MiddleNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                            x.LastNameEnglish.ToUpper().Contains(text.ToUpper()) ||
+                             (x.FirstName + " " + x.MiddleName + " " + x.LastName).ToUpper().Contains(text.ToUpper()) ||
+                              (x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish).ToUpper().Contains(text.ToUpper())
+                    )
+                    .Select(x => new EmployeeVm
+                    {
+                        EmployeeId = x.EmployeeId,
+                        EmployeeCode = x.EmployeeCode,
+                        FirstName = x.FirstName,
+                        MiddleName = x.MiddleName,
+                        LastName = x.LastName,
+                        FirstNameEnglish = x.FirstNameEnglish,
+                        MiddleNameEnglish = x.MiddleNameEnglish,
+                        LastNameEnglish = x.LastNameEnglish
+                    }).ToList();
+
+                list = employees;
+            }
+
+            return Json(list.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameaEnglish = p.EmployeeCode + " - " + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish,
+                FullNameAmharic = p.EmployeeCode + " - " + p.FirstName + " " + p.MiddleName + " " + p.LastName,
+            }), JsonRequestBehavior.AllowGet);
+        }
     }
 }

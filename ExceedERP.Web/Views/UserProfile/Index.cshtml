@@ -1,79 +1,299 @@
 ﻿@using System.Collections
 @using ExceedERP.Web.Areas.Finance.Controllers
 @using ExceedERP.Web.Models
-<legend>My Branches</legend>
-<p>Please click the button to update your default branch!</p>
-@(Html.Kendo().Grid<UserBranchGroup>()
-          .Name("grid")
-          .Columns(columns =>
-          {
-              columns.ForeignKey(p => p.UserBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(150);
-              columns.Bound(c => c.IsDefault).Width(80).ClientTemplate(
-                  "<input type='checkbox' disabled = 'true' value='#= IsDefault #' " +
-                  "# if (IsDefault) { #" +
-                  "checked='checked'" +
-                  "# } #" +
-                  "/>"
-                  );
-              columns.Command(
-        command => {
-            command.Custom("✅").Click("MakeDefautl");
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Domain.Global
+<legend>My Profile</legend>
 
-        }).Width(280);
-          })
-      .ToolBar(toolbar =>
-      {
+@(Html.Kendo().TabStrip()
+                                              .Name("profile")
+                                              .Animation(animation =>
+                                                  animation.Open(effect =>
+                                                      effect.Fade(FadeDirection.In)))
+                                              .Items(tabstrip =>
+                                              {
+                                                  tabstrip.Add().Text("My Branches")
+                                                      .Selected(true)
+                                                      .Content(@<text>
+                                                        <p>Please click the button to update your default branch!</p>
+                                                        @(Html.Kendo().Grid<UserBranchGroup>()
+                                                                                                                                  .Name("grid")
+                                                                                                                                  .Columns(columns =>
+                                                                                                                                  {
+                                                                                                                                            columns.ForeignKey(p => p.UserBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Title("My Branch").Width(150);
+                                                                                                                                            columns.Bound(c => c.IsDefault).Width(80).ClientTemplate(
+                                                            "<input type='checkbox' disabled = 'true' value='#= IsDefault #' " +
+                                                            "# if (IsDefault) { #" +
+                                                            "checked='checked'" +
+                                                            "# } #" +
+                                                            "/>"
+                                                            );
+                                                                                                                                            columns.Command(
+                                                                                                   command =>
+                                                                                             {
+                                                                  command.Custom("✅ Make Default").Click("MakeDefault");
 
-          //toolbar.Create();
+                                                              }).Width(280);
+                                                                                                                                        })
+                                                                                                                    .ToolBar(toolbar =>
+                                                                                                                    {
 
-      })
-                        .HtmlAttributes(new { style = "height: 550px;" })
-                        .Pageable(pageable => pageable
-                            .Input(true)
-                            .Numeric(false)
-                            .Refresh(true)
-                            .PageSizes(true)
-                            .ButtonCount(20))
-                        .Scrollable()
-                        .Selectable(selectable =>
-                        {
-                            selectable.Mode(GridSelectionMode.Single);
-                            selectable.Type(GridSelectionType.Row);
-                        })
-                        .Sortable(sortable =>
-                        {
-                            sortable.SortMode(GridSortMode.SingleColumn);
-                        })
-                        .Filterable()
+                                                                                                                  //toolbar.Create();
 
-
-                        .Scrollable(h => h.Height(500))
-
-                        .DataSource(dataSource => dataSource
-                            .Ajax()
-
-                            .PageSize(20)
-                            .Model(
-                                model =>
-                                {
-                                    model.Id(p => p.Id);
-
-                                })
-                            .Events(events => events
-                                .Error("error_handler_one")
-                                .Sync("sync_handler"))
-                            .Read(read => read.Action("MyBranches_Read", "UserProfile"))
-                        ))
+                                                                                                              })
+                                                                                                                                    .HtmlAttributes(new { style = "height: 550px;" })
+                                                                                                                                    .Pageable(pageable => pageable
+                                                                                                                                        .Input(true)
+                                                                                                                                        .Numeric(false)
+                                                                                                                                        .Refresh(true)
+                                                                                                                                        .PageSizes(true)
+                                                                                                                                        .ButtonCount(20))
+                                                                                                                                    .Scrollable()
+                                                                                                                                    .Selectable(selectable =>
+                                                                                                                                    {
+                                                                                                                                              selectable.Mode(GridSelectionMode.Single);
+                                                                                                                                              selectable.Type(GridSelectionType.Row);
+                                                                                                                                          })
+                                                                                                                                    .Sortable(sortable =>
+                                                                                                                                    {
+                                                                                                                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                                          })
+                                                                                                                                    .Filterable()
 
 
+                                                                                                                                    .Scrollable(h => h.Height(500))
+
+                                                                                                                                    .DataSource(dataSource => dataSource
+                                                                                                                                        .Ajax()
+
+                                                                                                                                        .PageSize(20)
+                                                                                                                                        .Model(
+                                                                                                                                            model =>
+                                                                                                                                            {
+                                                                                                                                                      model.Id(p => p.Id);
+
+                                                                                                                                                  })
+                                                                                                                                        .Events(events => events
+                                                                                                                                            .Error("error_handler_one")
+                                                                                                                                            .Sync("sync_handler"))
+                                                                                                                                        .Read(read => read.Action("MyBranches_Read", "UserProfile"))
+                                                                                                                                    ))
+                                                    </text>);
+                                                        tabstrip.Add().Text("My Business Units")
+                                   
+                                   .Content(@<text>
+                                    <p>Please click the button to update your default business unit!</p>
+                                    @(Html.Kendo().Grid<UserBusinessUnitMap>()
+                                                                 .Name("biz-grid")
+                                                                 .Columns(columns =>
+                                                                 {
+                                                                         columns.ForeignKey(p => p.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Title("My Business Unit").Width(150);
+                                                                         columns.Bound(c => c.IsDefault).Width(80).ClientTemplate(
+                                         "<input type='checkbox' disabled = 'true' value='#= IsDefault #' " +
+                                         "# if (IsDefault) { #" +
+                                         "checked='checked'" +
+                                         "# } #" +
+                                         "/>"
+                                         );
+                                                                         columns.Command(
+                                               command =>
+                                               {
+                                                   command.Custom("✅ Make Default").Click("MakeBizDefault");
+
+                                               }).Width(280);
+                                                                     })
+                                                         .ToolBar(toolbar =>
+                                                         {
+
+                                                     //toolbar.Create();
+
+                                                 })
+                                                                         .HtmlAttributes(new { style = "height: 550px;" })
+                                                                         .Pageable(pageable => pageable
+                                                                             .Input(true)
+                                                                             .Numeric(false)
+                                                                             .Refresh(true)
+                                                                             .PageSizes(true)
+                                                                             .ButtonCount(20))
+                                                                         .Scrollable()
+                                                                         .Selectable(selectable =>
+                                                                         {
+                                                                                 selectable.Mode(GridSelectionMode.Single);
+                                                                                 selectable.Type(GridSelectionType.Row);
+                                                                             })
+                                                                         .Sortable(sortable =>
+                                                                         {
+                                                                                 sortable.SortMode(GridSortMode.SingleColumn);
+                                                                             })
+                                                                         .Filterable()
 
 
+                                                                         .Scrollable(h => h.Height(500))
+
+                                                                         .DataSource(dataSource => dataSource
+                                                                             .Ajax()
+
+                                                                             .PageSize(20)
+                                                                             .Model(
+                                                                                 model =>
+                                                                                 {
+                                                                                         model.Id(p => p.UserBusinessUnitMapId);
+
+                                                                                     })
+                                                                             .Events(events => events
+                                                                                 .Error("error_handler_one")
+                                                                                 .Sync("sync_handler"))
+                                                                             .Read(read => read.Action("MyBusinessUnits_Read", "UserProfile"))
+                                                                         ))
+                                </text>);
+
+                                           tabstrip.Add().Text("Delegations")
+.Content(@<text>
+    @(Html.Kendo().Grid<Delegation>()
+                                                .Name("Delegation")
+                                            .Columns(columns =>
+                                            {
+                                                        
+                                                        columns.ForeignKey(c => c.FromEmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").Width(200);
+                                                        columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").Width(200);
+                                                        columns.Bound(c => c.FromDateTimeAm).EditorTemplateName("Calander").Width(200);
+                                                        columns.Bound(c => c.ToDateTimeAm).EditorTemplateName("Calander").Width(200);
+                                            //columns.Bound(c => c.Reason).Width(250);
+
+                                            columns.Command(command =>
+                                                        {
+
+                                                                }).Width(300);
+                                                    })
+
+                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                                               .Scrollable(h => h.Height(500))
+
+                                                            .Sortable(sortable =>
+                                                            {
+                                                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                                                    })
+                                                .Filterable()
+                                                   .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                     .Events(events =>
+                                                     {
+                                                                 events.Error("error_handler(\"Delegation\")");
+                                                                 events.RequestStart("onRequestStart(\"Delegation\")");
+                                                                 events.RequestEnd("onRequestEnd(\"Delegation\")");
+                                                             })
+
+                                                .Model(model =>
+                                                {
+                                                            model.Id(p => p.DelegationId);
+                                                            model.Field(p => p.FromDateTime).Editable(false);
+                                                            model.Field(p => p.ToDateTimeAm).Editable(false);
+                                                            model.Field(p => p.FromDateTimeAm).Editable(false);
+                                                            model.Field(p => p.ToDateTimeAm).Editable(false);
+                                                        })
+                                                    .Read(read => read.Action("Delegations_Read", "UserDelegation"))
+
+                                            )
+    )
+</text>);
+
+                                                      tabstrip.Add().Text("Signatures")
+                   .Content(@<text>
+                    @(Html.Kendo().Grid<ApplicationUserSignature>()
+                                                                .Name("Signature")
+
+                                                                .Name("Signature") // template expression, to be evaluated in the master context
+                                                                .Columns(columns =>
+                                                                {
+                                                                         columns.Bound(c => c.Sign)
+                                                 .ClientTemplate("<img src='data:image/png;base64,#=Image64#' class='imgLink' width='100',height='100' />");
+
+                                                                     })
+
+
+                                                            .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                                            .TemplateName("UserSignatureEditor")
+                                                            .Window(w => w.Width(500).Title("Signature")))
+                                                            .Events(ev => ev.Save("OnDrawSignature"))
+                                                            .DataSource(dataSource => dataSource
+                                                            .Ajax()
+
+                                                            .ServerOperation(false)
+                                                            .Events(ev => ev.Error("error_handler(\"Signature\")")
+                                                            .RequestStart("onRequestStart(\"Signature\")")
+                                                            .RequestEnd("onRequestEnd(\"Signature\")"))
+
+                                                            .Model(model => model.Id(p => p.ApplicationUserSignatureId))
+                                                            .Model(model =>
+                                                            {
+                                                         //model.Field(p => p.UserId).DefaultValue("#=TraderId#");
+                                                     })
+                                                            .Read(read => read.Action("Signatures_Read", "UserProfile"))
+                                                            .Create(create => create.Action("Signatures_Create", "UserProfile"))
+                                                            .Update(update => update.Action("Signatures_Update", "UserProfile"))
+                                                            .Destroy(des => des.Action("Signatures_Destroy", "UserProfile"))
+
+
+                                                       )) </text>);
+
+
+
+                                       })
+)
+
+
+
+
+@helper Signature()
+{
+
+    @(Html.Kendo().Grid<ApplicationUserSignature>()
+                                                        .Name("Signature#=Id#") // template expression, to be evaluated in the master context
+                                                        .Columns(columns =>
+                                                        {
+                                                            columns.Bound(c => c.Sign)
+                                                            .ClientTemplate("<img src='data:image/png;base64,\\#=Image64\\#' class='imgLink' />");
+                                                        })
+                                                         .ToolBar(toolbar =>
+                                                                        {
+                                                                            toolbar.Create();
+
+                                                                        })
+                                                    .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                                                    .TemplateName("UserSignatureEditor")
+                                                                    .Window(w => w.Width(500).Title("Signature")))
+                                                                    .Events(ev => ev.Save("OnDrawSignature"))
+                                                                    .DataSource(dataSource => dataSource
+                                                                    .Ajax()
+
+                                                                    .ServerOperation(false)
+                                                    .Events(ev => ev.Error("error_handler(\"Signature#=Id#\")")
+                                                    .RequestStart("onRequestStart(\"Signature#=Id#\")")
+                                                    .RequestEnd("onRequestEnd(\"Signature#=Id#\")"))
+
+                                                    .Model(model => model.Id(p => p.ApplicationUserSignatureId))
+                                                    .Read(read => read.Action("Signatures_Read", "UserProfile", new { id = "#=Id#" }))
+                                                    .Create(create => create.Action("Signatures_CreateAdmin", "UserProfile"))
+                                                    .Update(update => update.Action("Signatures_UpdateAdmin", "UserProfile"))
+                                                    .Destroy(des => des.Action("Signatures_Destroy", "UserProfile"))
+                                               ).ToClientTemplate())
+
+
+}
 
 <script>
-    function MakeDefautl(e) {
+    function MakeDefault(e) {
         var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
         var id = dataItem.Id;
-       
+
         $.ajax({
             type: "POST",
             url: '@Url.Action("MakeDefault", "UserProfile")',
@@ -88,7 +308,54 @@
             }
         });
     };
+
+    function MakeBizDefault(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.UserBusinessUnitMapId;
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("MakeBizDefault", "UserProfile")',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    };
+    function OnDrawSignature() {
+        var uid = $(".k-edit-form-container").closest("[data-role=window]").data("uid");
+        model = $("#Signature").data("kendoGrid").dataSource.getByUid(uid);
+        model.set("Sign", $("#hidden").val());
+        console.log(model.Sign);
+
+    }
+    function onSuccess() {
+
+        //var uid = $(".k-edit-form-container").closest("[data-role=window]").data("uid");
+        //model = $("#Signature" + codeid).data("kendoGrid").dataSource.getByUid(uid);
+        //model.set("TrId", codeid);
+        masterGrid = $("#Signature").data("kendoGrid").dataSource.read();
+
+        var windowCont = $('.k-popup-edit-form.k-window-content');
+        return;
+
+        //if it was first click on kendo grid edit button exit function
+        //otherwise popup window will be closed immidiatelly
+
+    }
 </script>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+</style>
+
 
 
 

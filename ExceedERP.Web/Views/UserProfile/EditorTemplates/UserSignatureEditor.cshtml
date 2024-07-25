@@ -1,0 +1,76 @@
+﻿
+@model ExceedERP.Web.Models.ApplicationUserSignature
+@(Html.Kendo().TabStrip().Name("ts").Items(it =>
+                    {
+                        it.Add().Text("Sign").Selected(true).Content(@<text>
+                           
+                                <div class="row">
+                                    <div class="col-sm-2">
+
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-2">
+
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <div class="k-label">
+                                                <label for="Signature">Signature</label>
+                                            </div>
+                                            <div>
+
+                                                @* @(Html.D(model => model.Signature))*@
+                                                @Html.EditorFor(model => model.Sign, new { htmlAttributes = new { onchange = "OnDrawSignature(this)" }, @id = "hiddennn", Name = "hiddenn" })
+                                                
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                              
+
+                        </text>);
+                                it.Add().Text("Upload Signature").Content(@<text>
+                                    <div class="row">
+                                        <div class="col-sm-2">
+
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-2">
+
+                                        </div>
+                                        <div class="col-sm-6">
+                                            @Html.HiddenFor(m => m.Sign)
+
+                                            <div class="form-group">
+                                                <div class="k-label">
+                                                    <label for="Signature">Signature</label>
+                                                </div>
+                                                <div>
+
+                                                    @(Html.Kendo().Upload()
+                                                                  .Name("signatureDocument")
+                                                                  .Events(events => events.Complete("onSuccess"))
+                                                                  .Multiple(false)
+                                                                   .Async(a => a.Save("Upload_Signature", "UserProfile")
+                                                                 ))
+                                                </div>
+
+                                            </div>
+                                            </div>
+                                        </div>
+                                        </text>);
+                                            }))
+
+
+
+                                        <script src="~/Scripts/signature_pad.min.js"></script>
+                                                <script src="~/Scripts/SignaturePadInit.js"></script>
+                                                @*<script type="text/javascript">
+                                                    $('#Sign').change(function () {
+                                                        OnChangeEvent();
+                                                    });
+                                                </script>*@

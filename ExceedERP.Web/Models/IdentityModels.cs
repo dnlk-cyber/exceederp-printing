@@ -78,7 +78,7 @@ namespace ExceedERP.Web.Models
 
         // Add any custom Role properties/code here
     }
-
+    //User signature setting
     public class ApplicationUserSignature
     {
 
@@ -95,6 +95,7 @@ namespace ExceedERP.Web.Models
             }
         }
     }
+
     // Must be expressed in terms of our custom types:
     public class ApplicationDbContext
         : IdentityDbContext<ApplicationUser, ApplicationRole,
@@ -167,7 +168,7 @@ namespace ExceedERP.Web.Models
         public System.Data.Entity.DbSet<ExceedERP.Web.Models.RoleViewModel> RoleViewModels { get; set; }
         public System.Data.Entity.DbSet<ApplicationUserSignature> ApplicationUserSignatures { get; set; }
 
-
+         
     }
 
 

@@ -6960,6 +6960,9 @@
     <Content Include="Scripts\kendo\2018.3.911\kendo.webcomponents.js" />
     <Content Include="Scripts\kendo\2018.3.911\kendo.window.min.js" />
     <Content Include="Scripts\kendo\2018.3.911\pako_deflate.min.js" />
+    <Content Include="Scripts\SignaturePadInit.js" />
+    <Content Include="Scripts\signature_pad.js" />
+    <Content Include="Scripts\signature_pad.min.js" />
     <Content Include="Scripts\sounds.js" />
     <Content Include="Views\Shared\EditorTemplates\AccountCode.cshtml" />
     <Content Include="Content\login\bootstrap\css\bootstrap-theme.css.map" />
@@ -8649,6 +8652,11 @@
     <Content Include="Views\Shared\_Printing.cshtml" />
     <Content Include="Views\Shared\_Manufacturing.cshtml" />
     <Content Include="Views\Shared\_Plan.cshtml" />
+    <Content Include="Views\ApplicationUser\EditorTemplates\SignaturePad.cshtml" />
+    <Content Include="Views\ApplicationUser\EditorTemplates\UserEdit1.cshtml" />
+    <Content Include="Views\ApplicationUser\EditorTemplates\UserSignatureEditor.cshtml" />
+    <Content Include="Views\UserProfile\EditorTemplates\SignaturePad.cshtml" />
+    <Content Include="Views\UserProfile\EditorTemplates\UserSignatureEditor.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Bid Cancellation\" />

@@ -2,149 +2,151 @@
 @using ExceedERP.Web.Models
 <legend>Users</legend>
 @(Html.Kendo().Grid<RegisterViewModel>()
-              .Name("grid")
-              .Columns(columns =>
-              {
-                  columns.Bound(c => c.UserName);
-                  columns.Bound(c => c.Email);
-                  columns.Bound(c => c.FirstName);
-                  columns.Bound(c => c.MiddleName);
-                  columns.Bound(c => c.LastName);
-                  columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullName").Title("ID No.");
-                  columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["WorkUnitList"], "Code", "Name").Title("Work Unit");
-                  columns.Bound(c => c.PhoneNo);
-                  columns.Bound(c => c.IsEnabled).Width(100).Title("Enable").ClientTemplate(
-                     "<input type='checkbox' disabled = 'true' value='#= IsEnabled #' " +
-                         "# if (IsEnabled) { #" +
-                             "checked='checked'" +
-                         "# } #" +
-                     "/>"
-                 );
-                  columns.Command(command =>
-                  {
+                              .Name("grid")
+                              .Columns(columns =>
+                              {
+                                  columns.Bound(c => c.UserName).Width(130);
+                                  columns.Bound(c => c.Email).Filterable(ftb => ftb.Multi(true).Search(true));
+                                  columns.Bound(c => c.FirstName).Filterable(ftb => ftb.Multi(true).Search(true));
+                                  columns.Bound(c => c.MiddleName).Filterable(ftb => ftb.Multi(true).Search(true));
+                                  columns.Bound(c => c.LastName);
+ //                                 columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullName").Title("ID No.").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                                 // columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["WorkUnitList"], "Code", "Name").Title("Work Unit").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                                  columns.Bound(c => c.PhoneNo);
+                                  columns.Bound(c => c.IsEnabled).Width(100).Title("Enable").ClientTemplate(
+                                     "<input type='checkbox' disabled = 'true' value='#= IsEnabled #' " +
+                                         "# if (IsEnabled) { #" +
+                                             "checked='checked'" +
+                                         "# } #" +
+                                     "/>"
+                                 );
+                                  columns.Command(command =>
+                                  {
 
-                      if (HttpContext.Current.User.IsInRole("Admin"))
-                      {
-                          command.Edit();
-              //command.Destroy();
-              command.Custom("En").Click("Enable");
-                      }
+                                      if (HttpContext.Current.User.IsInRole("Admin") || HttpContext.Current.User.IsInRole("Admin_Regional"))
+                                      {
+                                          command.Edit();
+                              //command.Destroy();
+                              command.Custom("En").Click("Enable");
+                                      }
 
-                  }).Width(180);
-              })
+                                  }).Width(180);
+                              })
 
-              .ToolBar(toolbar =>
-              {
+                              .ToolBar(toolbar =>
+                              {
 
-                  toolbar.Template(@<text>
-                    <div class="toolbar row">
-                        @if (HttpContext.Current.User.IsInRole("Admin"))
-                                    {
-                            <div class="col-md-2">
-                                <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
-                            </div>
-                                    }
-                       
-                        <div class="col-md-6">
+                                  toolbar.Template(@<text>
+                                    @if (HttpContext.Current.User.IsInRole("Admin") || HttpContext.Current.User.IsInRole("Admin_Regional"))
+                                                {
+                                        <div class="toolbar row">
 
-                            <i>Filter by Branch or Project:</i>
-                            @(Html.Kendo().DropDownListFor(m => m)
-                                                  .OptionLabel("Select Branch")
-                                                  .Filter("contains")
-                                                  .Name("Branches")
-                                                  .BindTo((IEnumerable)ViewData["Branches"])
-                                                  .DataTextField("Name")
-                                                  .DataValueField("BranchId")
-                                                  .HtmlAttributes(new { style = "width: 300px;" })
-                                                  .ValuePrimitive(true))
+                                            <div class="col-md-2">
+                                                <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
+                                            </div>
 
 
-                            @(Html.Kendo().Button()
-                                                  .Name("btnSearch")
-                                                  .HtmlAttributes(new { type = "search", @class = "k-primary" })
-                                                  .Events(e => e.Click("filterByBranch"))
-                                                  .Content("Filter"))
+                                            <div class="col-md-6">
 
-                        </div>
-                        <div class="pull-right col-md-3">
-                            @Html.Kendo().Button().Name("refreshWorkUnit").Content("Update Work Unit").Events(events => events.Click("refreshWorkUnit")).HtmlAttributes(new { @class = "k-primary" })
-                        </div>
-                    </div>
+                                                <i>Filter by Branch or Project:</i>
+                                                @(Html.Kendo().DropDownListFor(m => m)
+                                                                                                  .OptionLabel("Select Branch")
+                                                                                                  .Filter("contains")
+                                                                                                  .Name("Branches")
+                                                                                                  .BindTo((IEnumerable)ViewData["Branches"])
+                                                                                                  .DataTextField("Name")
+                                                                                                  .DataValueField("BranchId")
+                                                                                                  .HtmlAttributes(new { style = "width: 300px;" })
+                                                                                                  .ValuePrimitive(true))
 
-                </text>);
-                    })
-                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UserEdit").Window(x => x.Title("User")))
-                  .Pageable()
-                  .Sortable(sortable =>
-                  {
-                      sortable.SortMode(GridSortMode.SingleColumn);
 
-                  })
-                  .Events(events => events.Edit("onEditUser").DetailExpand("onDetailExpandUser"))
-                  .Filterable()
-                  .Scrollable(height => height.Height(500))
-                  .DataSource(dataSource => dataSource
-                      .Ajax()
-                      .Events(ev => ev
-                          .Error("error_handler(\"grid\")")
-                          .RequestStart("onRequestStart(\"grid\")")
-                          .RequestEnd("onRequestEnd(\"grid\")"))
-                          .Model(model => model.Id(p => p.Id))
-                      .Events(events => events.Sync("sync_handler"))
-                      .Read(read => read.Action("ApplicationUsers_Read", "ApplicationUser").Data("passSearchData"))
-                      .Create(create => create.Action("ApplicationUsers_Create", "ApplicationUser"))
-                      .Update(update => update.Action("ApplicationUsers_Update", "ApplicationUser"))
-                      .Destroy(destroy => destroy.Action("ApplicationUsers_Destroy", "ApplicationUser"))
-                    ).ClientDetailTemplateId("templategroup")
+                                                @(Html.Kendo().Button()
+                                                                                                  .Name("btnSearch")
+                                                                                                  .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                                                                                  .Events(e => e.Click("filterByBranch"))
+                                                                                                  .Content("Filter"))
+
+                                            </div>
+                                            <div class="pull-right col-md-3">
+                                                @Html.Kendo().Button().Name("refreshWorkUnit").Content("Update Work Unit").Events(events => events.Click("refreshWorkUnit")).HtmlAttributes(new { @class = "k-primary" })
+                                            </div>
+                                        </div>
+                                                }
+
+                                </text>);
+                                    })
+                                                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UserEdit").Window(x => x.Title("User")))
+                                                      .Pageable()
+                                                      .Sortable(sortable =>
+                                                      {
+                                                          sortable.SortMode(GridSortMode.SingleColumn);
+
+                                                      })
+                                                      .Events(events => events.Edit("onEditUser").DetailExpand("onDetailExpandUser"))
+                                                      .Filterable()
+                                                      .Scrollable(height => height.Height(500))
+                                                      .DataSource(dataSource => dataSource
+                                                      .Ajax()
+                                                      .Events(ev => ev
+                                                      .Error("error_handler(\"grid\")")
+                                                      .RequestStart("onRequestStart(\"grid\")")
+                                                      .RequestEnd("onRequestEnd(\"grid\")"))
+                                                      .Model(model => model.Id(p => p.Id))
+                                                      .Events(events => events.Sync("sync_handler"))
+                                                      .Read(read => read.Action("ApplicationUsers_Read", "ApplicationUser").Data("passSearchData"))
+                                                      .Create(create => create.Action("ApplicationUsers_Create", "ApplicationUser"))
+                                                      .Update(update => update.Action("ApplicationUsers_Update", "ApplicationUser"))
+                                                      .Destroy(destroy => destroy.Action("ApplicationUsers_Destroy", "ApplicationUser"))
+                                                      ).ClientDetailTemplateId("templategroup")
 )
 <script id="templategroup" type="text/kendo-tmpl">
     @Html.Kendo().TabStrip().Name("groupTab_#=Id#").SelectedIndex(0).Items(items =>
         {
 
-            items.Add().Text("User Groups").Content(@<text>
+            items.Add().Text("Groups").Content(@<text>
                     <a href='@Url.Action("ChangePasswordAdmin", "Account")/#=Id#'>Reset</a>
 
                     @UserGroups()
 
             </text>);
-                    items.Add().Text("UserRoles").Content(@<text>
+                    items.Add().Text("Roles").Content(@<text>
                         @(Html.Kendo().Grid<ExceedERP.Web.Models.RoleViewModel>()
-                                        .Name("userRole#=Id#")
-                                        .Columns(columns =>
-                                        {
-                                                            columns.Bound(c => c.Name);
-                                                            columns.Bound(c => c.Description);
+                                                                        .Name("userRole#=Id#")
+                                                                        .Columns(columns =>
+                                                                        {
+                                                                                            columns.Bound(c => c.Name);
+                                                                                            columns.Bound(c => c.Description);
 
-                                                        })
-                                        .ToolBar(toolbar =>
-                                        {
+                                                                                        })
+                                                                        .ToolBar(toolbar =>
+                                                                        {
 
-                                                        })
-                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                        .Selectable(selectable =>
-                                        {
-                                                            selectable.Mode(GridSelectionMode.Single);
-                                                            selectable.Type(GridSelectionType.Row);
-                                                        })
-                                        .Sortable(sortable =>
-                                        {
-                                                            sortable.SortMode(GridSortMode.SingleColumn);
-                                                        })
-                                        .Filterable()
-                                         .Scrollable(height => height.Height(500))
-                                        .DataSource(dataSource => dataSource
-                                            .Ajax()
-                                                     .Events(events => events.Error("error_handler")
-.Sync("sync_handler"))
-                                            .Model(model => model.Id(p => p.RoleViewModelId))
-                                            .Read(read => read.Action("UserRole_Read", "ApplicationRole", new { id = "#=Id#" }))
+                                                                                        })
+                                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                        .Selectable(selectable =>
+                                                                        {
+                                                                                            selectable.Mode(GridSelectionMode.Single);
+                                                                                            selectable.Type(GridSelectionType.Row);
+                                                                                        })
+                                                                        .Sortable(sortable =>
+                                                                        {
+                                                                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                        })
+                                                                        .Filterable()
+                                                                         .Scrollable(height => height.Height(500))
+                                                                        .DataSource(dataSource => dataSource
+                                                                            .Ajax()
+                                                                                     .Events(events => events.Error("error_handler")
+                                    .Sync("sync_handler"))
+                                                                            .Model(model => model.Id(p => p.RoleViewModelId))
+                                                                            .Read(read => read.Action("UserRole_Read", "ApplicationRole", new { id = "#=Id#" }))
 
-                                        ).ToClientTemplate()
+                                                                        ).ToClientTemplate()
                         )
 
                     </text>);
 
-                            items.Add().Text("Branch").Content(@<text>
+                            items.Add().Text("Branches").Content(@<text>
                                 @UserBranch()
                             </text>);
                                     items.Add().Text("Signature").Content(@<text>
@@ -159,39 +161,39 @@
 {
 
     @(Html.Kendo().Grid<GroupViewModel>()
-                         .Name("userGroup_#=Id#")
-                         .Columns(columns =>
-                         {
-                             columns.Bound(c => c.Name);
-                             columns.Bound(c => c.Description);
-                             columns.Bound(c => c.IsAllowed).ClientTemplate("<input type='checkbox' \\#= IsAllowed? checked='checked': checked='' \\# class='checkbox'  />");
+                                                         .Name("userGroup_#=Id#")
+                                                         .Columns(columns =>
+                                                         {
+                                                             columns.Bound(c => c.Name);
+                                                             columns.Bound(c => c.Description);
+                                                             columns.Bound(c => c.IsAllowed).ClientTemplate("<input type='checkbox' \\#= IsAllowed? checked='checked': checked='' \\# class='checkbox'  />");
 
 
-                         })
-                            .ToolBar(toolbar => toolbar.Template(@<text>
-                                @Html.Kendo().Button().Name("assigGroupbtn_#=Id#").Content("Save Change").Events(events => events.Click("sendGroups")).Enable(false).ToClientTemplate()
-                            </text>))
+                                                         })
+                                                            .ToolBar(toolbar => toolbar.Template(@<text>
+                                                                @Html.Kendo().Button().Name("assigGroupbtn_#=Id#").Content("Save Changes").Events(events => events.Click("sendGroups")).Enable(false).ToClientTemplate()
+                                                            </text>))
 
-                                            .Events(events => events.DataBound("detaildatabound"))
-                                            .Sortable(sortable =>
-                                            {
-                                                sortable.SortMode(GridSortMode.SingleColumn);
-                                            })
-                                            .Filterable()
-                                            .Scrollable(height => height.Height(500))
+                                                                                                    .Events(events => events.DataBound("detaildatabound"))
+                                                                                                    .Sortable(sortable =>
+                                                                                                    {
+                                                                                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                    })
+                                                                                                    .Filterable()
+                                                                                                    .Scrollable(height => height.Height(500))
 
-                                            //  .Selectable(s => s.Mode(GridSelectionMode.Multiple))
-                                            .DataSource(dataSource => dataSource
+                                                                                                    //  .Selectable(s => s.Mode(GridSelectionMode.Multiple))
+                                                                                                    .DataSource(dataSource => dataSource
 
-                                                .Ajax()
-                                                  .Events(events => events.Error("error_handler")
-                                                  .Sync("sync_handler"))
-                                                .Events(events => events.Sync("sync_handler"))
-                                                .Model(model => model.Id(p => p.Id))
-                                                .Read(read => read.Action("ApplicationUserGroups", "Groups", new { id = "#=Id#" }))
+                                                                                                        .Ajax()
+                                                                                                          .Events(events => events.Error("error_handler")
+                                                                                                          .Sync("sync_handler"))
+                                                                                                        .Events(events => events.Sync("sync_handler"))
+                                                                                                        .Model(model => model.Id(p => p.Id))
+                                                                                                        .Read(read => read.Action("ApplicationUserGroups", "Groups", new { id = "#=Id#" }))
 
 
-                                            ).ToClientTemplate()
+                                                                                                    ).ToClientTemplate()
     )
 
 }
@@ -200,70 +202,87 @@
 {
 
     @(Html.Kendo().Grid<BranchVm>()
-                      .Name("userBranch_#=Id#")
-                      .Columns(columns =>
-                      {
-                          columns.Bound(c => c.BranchName);
-                          columns.Bound(c => c.Remark);
-                          columns.Bound(c => c.IsAllowed).ClientTemplate("<input  type='checkbox'  \\#= IsAllowed ? checked='checked': checked='' \\# class='checkbox'  />");
-                          columns.Bound(c => c.IsDefault).ClientTemplate("<input  type='checkbox' \\#= IsDefault ? checked='checked': checked='' \\# class='checkbox'  />");
-              //columns.Command(command => { command.Edit(); }).Width(180);
-          })
-                      .ToolBar(toolbar =>
-                                  toolbar.Save()
-                @*toolbar.Template(@<text>
-                        @Html.Kendo().Button().Name("assignBranchbtn#=Id#").Content("Save Change").Events(events => events.Click("sendBranch")).Enable(false).ToClientTemplate()
-                    </text>
-                    )*@
-                )
-                                  .Events(events =>
-                                  {
-                                      events.DataBound("branchdetaildatabound");
-                                  })
-                                          .Editable(editable => editable.Mode(GridEditMode.InCell))
-                                         .Scrollable(height => height.Height(500))
-                                  .DataSource(dataSource => dataSource
-                                      .Ajax()
-                                               .Events(events => events.Error("error_handler")
-                                                  .Sync("sync_handler"))
-                                       .Batch(true)
-                                                  .Model(model =>
-                                                  {
-                                                      model.Id(p => p.BranchId);
-                                                  })
-                                                              .Read(read => read.Action("ApplicationBranch", "BranchUser", new { id = "#=Id#" }))
-                                                              .Create(create => create.Action("EditingBranches_Create", "ApplicationUser", new { id = "#=Id#" }))
-                                                              .Update(create => create.Action("EditingBranches_Create", "ApplicationUser", new { id = "#=Id#" }))
-                                  ).ToClientTemplate()
+                                                      .Name("userBranch_#=Id#")
+                                                      .Columns(columns =>
+                                                      {
+                                                          columns.Bound(c => c.BranchName);
+                                                          columns.Bound(c => c.Remark);
+                                                          columns.Bound(c => c.IsAllowed).ClientTemplate("<input  type='checkbox'  \\#= IsAllowed ? checked='checked': checked='' \\# class='checkbox'  />");
+                                                          columns.Bound(c => c.IsDefault).ClientTemplate("<input  type='checkbox' \\#= IsDefault ? checked='checked': checked='' \\# class='checkbox'  />");
+                                          //columns.Command(command => { command.Edit(); }).Width(180);
+                                      })
+                                                      .ToolBar(toolbar =>
+                                                                //  toolbar.Save()
+                                                toolbar.Template(@<text>
+                                                     <a class="k-button k-button-icontext k-grid-save-changes" href='\#'><span class="k-icon k-i-save-changes"></span> Save Changes</a>
+                                                    <a class="k-button k-button-icontext k-grid-cancel-changes" href='\#'><span class="k-icon k-i-cancel-changes"></span> Cancel Changes</a>
+                                                        @Html.Kendo().Button().Name("assignBranchbtn#=Id#").Content("Select All").Events(events => events.Click("sendBranch")).Enable(true).ToClientTemplate()
+                                                    </text>
+                                                    )
+                                                ).Filterable()
+                                                                  .Events(events =>
+                                                                  {
+                                                                      events.DataBound("branchdetaildatabound");
+                                                                  })
+                                                                          .Editable(editable => editable.Mode(GridEditMode.InCell))
+                                                                         .Scrollable(height => height.Height(500))
+                                                                  .DataSource(dataSource => dataSource
+                                                                      .Ajax()
+                                                                               .Events(events => events.Error("error_handler")
+                                                                                  .Sync("sync_handler"))
+                                                                       .Batch(true)
+                                                                                  .Model(model =>
+                                                                                  {
+                                                                                      model.Id(p => p.BranchId);
+                                                                                  })
+                                                                                              .Read(read => read.Action("ApplicationBranch", "BranchUser", new { id = "#=Id#" }))
+                                                                                              .Create(create => create.Action("EditingBranches_Create", "ApplicationUser", new { id = "#=Id#" }))
+                                                                                              .Update(create => create.Action("EditingBranches_Create", "ApplicationUser", new { id = "#=Id#" }))
+                                                                  ).ToClientTemplate()
     )
 
 }
 
 @helper Signature()
 {
-  
+
     @(Html.Kendo().Grid<ApplicationUserSignature>()
-                                .Name("Signature#=Id#") // template expression, to be evaluated in the master context
-                                .Columns(columns =>
-                                {
-                                    columns.Bound(c => c.Sign)
-                                    .ClientTemplate("<img src='data:image/png;base64,\\#=Image64\\#' class='imgLink' />");
-                                })
-                            .DataSource(dataSource => dataSource
-                            .Ajax()
+                                                                .Name("Signature#=Id#") // template expression, to be evaluated in the master context
+                                                                .Columns(columns =>
+                                                                {
+                                                                    columns.Bound(c => c.Sign)
+                                                                    .ClientTemplate("<img src='data:image/png;base64,\\#=Image64\\#' class='imgLink' width='100',height='100' />");
+                                                                })
+                                                              .ToolBar(toolbar =>
+                                                              {
+                                                                  toolbar.Create();
 
-                            .ServerOperation(false)
-                            .Events(ev => ev.Error("error_handler(\"Signature#=Id#\")")
-                            .RequestStart("onRequestStart(\"Signature#=Id#\")")
-                            .RequestEnd("onRequestEnd(\"Signature#=Id#\")"))
+                                                              })
+                                                              .Filterable()
+                                                                .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                                                .TemplateName("UserSignatureEditor")
+                                                                .Window(w => w.Width(500).Title("Signature")))
+                                                                .Events(ev => ev.Save("OnDrawSignature"))
+                                                                .DataSource(dataSource => dataSource
+                                                                .Ajax()
 
-                            .Model(model => model.Id(p => p.ApplicationUserSignatureId))
-                            .Read(read => read.Action("Signatures_Read", "UserProfile", new { id="#=Id#"}))
-                       ).ToClientTemplate())
+                                                            .ServerOperation(false)
+                                                            .Events(ev => ev.Error("error_handler(\"Signature#=Id#\")")
+                                                            .RequestStart("onRequestStart(\"Signature#=Id#\")")
+                                                            .RequestEnd("onRequestEnd(\"Signature#=Id#\")"))
+
+                                                            .Model(model => model.Id(p => p.ApplicationUserSignatureId))
+                                                            .Read(read => read.Action("Signatures_Read", "UserProfile", new { id = "#=Id#" }))
+                                                            .Create(create => create.Action("Signatures_CreateAdmin", "UserProfile", new { id = "#=Id#" }))
+                                                            .Update(update => update.Action("Signatures_UpdateAdmin", "UserProfile", new { id = "#=Id#" }))
+                                                            .Destroy(des => des.Action("Signatures_Destroy", "UserProfile", new { id = "#=Id#" }))
+                                                       ).ToClientTemplate())
 
 
 }
 <script>
+
+
 
     function filterEmployees() {
         return {
@@ -297,7 +316,7 @@
             success: function (result) {
                 // toastr.warnning(result.Message);
                 alert(result.Message);
-                location.reload(true);
+
             }, //end succ
             error: function (result) {
                 alert(result);
@@ -457,44 +476,42 @@
 
     function sendBranch(e) {
 
-
+        
 
         var items = {};
 
         var count = 0;
         var gridbranch = $(branchGridName).data("kendoGrid");
+        console.log($(branchGridName).find("input:checked"))
 
         $(branchGridName).find("input:checked").each(function () {
 
             var item = gridbranch.dataItem($(this).closest('tr'));
 
-            items['result[' + count + '].BranchName'] = item.BranchName;
-            items['result[' + count + '].BranchId'] = item.BranchId;
-            items['result[' + count + '].IsAllowed'] = item.IsAllowed;
-            items['result[' + count + '].IsDefault'] = item.IsDefault;
-            items['result[' + count + '].Remark'] = item.Remark;
+            
+            items['result[' + count + '].IsAllowed'] = true;
             count++;
         });
 
-        items['result[' + count + '].BranchName'] = "masterGridParameter";
-        items['result[' + count + '].BranchId'] = masterId;
-        items['result[' + count + '].IsAllowed'] = false;
-        items['result[' + count + '].IsDefault'] = false;
-        items['result[' + count + '].Remark'] = "master Grid Description";
+        //items['result[' + count + '].BranchName'] = "masterGridParameter";
+        //items['result[' + count + '].BranchId'] = masterId;
+        //items['result[' + count + '].IsAllowed'] = false;
+        //items['result[' + count + '].IsDefault'] = false;
+        //items['result[' + count + '].Remark'] = "master Grid Description";
 
 
 
-        buttonNameBranch = "#assignBranchbtn" + masterId;
-        var button = $(buttonNameBranch).data("kendoButton");
-        button.enable(false);
-        $.ajax({
+        //buttonNameBranch = "#assignBranchbtn" + masterId;
+        //var button = $(buttonNameBranch).data("kendoButton");
+        //button.enable(false);
+        @*$.ajax({
             type: "POST",
             data: items,
             url: '@Url.Action("Branches", "ApplicationUser")',
             success: function (result) {
                 console.log(result);
             }
-        });
+        });*@
 
 
     }
@@ -562,6 +579,29 @@
         });
     }
 
+
+    //signature
+    function OnDrawSignature() {
+        var uid = $(".k-edit-form-container").closest("[data-role=window]").data("uid");
+        model = $("#Signature" + masterId).data("kendoGrid").dataSource.getByUid(uid);
+        model.set("Sign", $("#hidden").val());
+        console.log(model.Sign);
+
+    }
+    function onSuccess() {
+
+        //var uid = $(".k-edit-form-container").closest("[data-role=window]").data("uid");
+        //model = $("#Signature" + codeid).data("kendoGrid").dataSource.getByUid(uid);
+        //model.set("TrId", codeid);
+        masterGrid = $("#Signature" + masterId).data("kendoGrid").dataSource.read();
+
+        var windowCont = $('.k-popup-edit-form.k-window-content');
+        return;
+
+        //if it was first click on kendo grid edit button exit function
+        //otherwise popup window will be closed immidiatelly
+
+    }
 
 </script>
 
@@ -632,3 +672,24 @@
 
     }
 </script>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+</style>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

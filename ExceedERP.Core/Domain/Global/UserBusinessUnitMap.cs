@@ -4,7 +4,8 @@
     {
         public int UserBusinessUnitMapId { get; set; }
         public string UserId { get; set; }
-        public string BusinessUnitId { get; set; }
+        public int BusinessUnitId { get; set; }
+        public bool IsDefault { get; set; }
     }
   
 }

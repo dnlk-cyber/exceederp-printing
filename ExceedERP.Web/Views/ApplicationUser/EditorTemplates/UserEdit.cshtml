@@ -1,57 +1,179 @@
 ﻿@model ExceedERP.Web.Models.RegisterViewModel
 
-<div class="forUpdate">
+
+
+
+<div class="row">
+
+    <div class="col-sm-5">
+        <div class="form-group">
+            <label>Employee</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+
+                                                  .DataValueField("EmployeeId")
+                                                  .DataTextField("FullNameaEnglish")
+                                                  .OptionLabel("Select Employee..")
+                                                  .Filter("contains")
+                                                  .Events(e => e.Change("GetName"))
+                                                  .MinLength(2)
+                                                  .Height(400)
+                                                  .HtmlAttributes(new { style = "width:100%" })
+                                                  .DataSource(dataSource =>
+                                                  {
+                                                      dataSource.Read(read => read.Action("GetEmployeeMap", "ApplicationUser", new { area = "" }).Data("filterEmployees"))
+                                                          .ServerFiltering(true);
+                                                  })
+
+
+                //      .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                //            "<span>Photo</span>" +
+                //             "<span>Full Name</span>" +
+                //            "</div>")
+                //     .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.EmployeeId#-Photo/" + "#:data.EmployeeId#.jpg" + ");'></div>" +
+                //"<div class='Employee-name'>#:FullNameaEnglish#</div>")
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5">
+        <div class="form-group">
+            <label>User Name</label>
+            <div>
+                @Html.Kendo().TextBoxFor(m => m.UserName).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-5">
+        <div class="form-group">
+            <label>First Name</label>
+            <div>
+                @Html.Kendo().TextBoxFor(x => x.FirstName).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5">
+        <div class="form-group">
+            <label>Middle Name</label>
+            <div>
+                @Html.Kendo().TextBoxFor(x => x.MiddleName).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-5">
+        <div class="form-group">
+            <label>Last Name</label>
+            <div>
+                @Html.Kendo().TextBoxFor(x => x.LastName).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5">
+        <div class="form-group">
+            <label>Email</label>
+            <div>
+                @Html.Kendo().TextBoxFor(x => x.Email).HtmlAttributes(new { placeholder = "email@email.com", required = "required", type = "email", data_email_msg = "Email format is not valid", style = "width:100%" })
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-5">
+        <div class="form-group">
+            <label>Password</label>
+            <div>
+                @Html.Kendo().TextBoxFor(x => x.Password).HtmlAttributes(new { type = "password", style = "width:100%" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5">
+        <div class="form-group">
+            <label>Phone Number</label>
+            <div>
+                @Html.Kendo().MaskedTextBoxFor(x => x.PhoneNo).Mask("(+999) 000-00-00-00").HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-sm-5">
+        <div class="form-group">
+            <label>Confirm Password</label>
+            <div>
+                @Html.Kendo().TextBoxFor(x => x.ConfirmPassword).HtmlAttributes(new { type = "password", style = "width:100%" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-5">
+        <div class="form-group">
+            <div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*<div class="forUpdate">
     <ul id="fieldlist">
-        
-         <div class="k-grouping-row">
+
+        <div class="k-grouping-row">
             <div class="form-group">
 
 
                 <div class="col-md-10">
-                    @Html.LabelFor(m => m.UserName, new {@class = "col-md-4 k-label"})
+                    @Html.LabelFor(m => m.UserName, new { @class = "col-md-4 k-label" })
                     @Html.Kendo().TextBoxFor(m => m.UserName).HtmlAttributes(new { style = "width:300px" })
 
                 </div>
             </div>
         </div>
-        <br/>
-        <br/>
+        <br />
+        <br />
         <div class="k-grouping-row">
             <div class="form-group">
-                                <div class="col-md-10">
+                <div class="col-md-10">
                     @Html.LabelFor(m => m.EmployeeId, new { @class = "col-md-4 k-label" })
-                   @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
-                         //.Name("EmployeeId")
-                         .DataValueField("PersonId")
-                        .DataTextField("FullName")
-                           .OptionLabel("Select Employee..")
-                            .Filter("contains")
-                            .Events (e=> e.Change ("GetName"))
-                            .MinLength(2)
-                            .HtmlAttributes(new { style = "width:280px" })
-                             .DataSource(dataSource =>
-                             {
-                                 dataSource.Read(read => read.Action("GetEmployeeMap", "ApplicationUser", new { area = "" }).Data("filterEmployees"))
-                                     .ServerFiltering(true);
-                             })
-                                                    //.BindTo((System.Collections.IEnumerable)ViewData["EmployeeList"])
-                                                    //         .ValuePrimitive(true)
+                    @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                                          //.Name("EmployeeId")
+                                          .DataValueField("PersonId")
+                                         .DataTextField("FullName")
+                                            .OptionLabel("Select Employee..")
+                                             .Filter("contains")
+                                             .Events(e => e.Change("GetName"))
+                                             .MinLength(2)
+                                             .HtmlAttributes(new { style = "width:280px" })
+                                              .DataSource(dataSource =>
+                                              {
+                                                  dataSource.Read(read => read.Action("GetEmployeeMap", "ApplicationUser", new { area = "" }).Data("filterEmployees"))
+                                                      .ServerFiltering(true);
+                                              })
+                                                                     //.BindTo((System.Collections.IEnumerable)ViewData["EmployeeList"])
+                                                                     //         .ValuePrimitive(true)
 
 
-                                                    .Height(400)
-                                                            .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
-                                        "<span>Photo</span>" +
-                                        "<span>Full Name</span>" +
-                                    "</div>")
-                                            .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
-                                            "<div class='Employee-name'>#:FullName#</div>")
-                )
+                                                                     .Height(400)
+                                                                             .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                                                         "<span>Photo</span>" +
+                                                         "<span>Full Name</span>" +
+                                                     "</div>")
+                                                             .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
+                                                             "<div class='Employee-name'>#:FullName#</div>")
+                    )
 
                 </div>
             </div>
         </div>
-        <br/>
-        <br/>
+        <br />
+        <br />
         <div class="k-grouping-row">
             <div class="form-group">
                 <div class="col-md-10">
@@ -60,8 +182,8 @@
                 </div>
             </div>
         </div>
-        <br/>
-        <br/>
+        <br />
+        <br />
 
         <div class="k-grouping-row">
 
@@ -72,8 +194,8 @@
                 </div>
             </div>
         </div>
-        <br/>
-        <br/>
+        <br />
+        <br />
 
         <div class="k-grouping-row">
 
@@ -84,19 +206,19 @@
                 </div>
             </div>
         </div>
-        <br/>
-        <br/>
-      
+        <br />
+        <br />
+
         <div class="k-grouping-row">
             <div class="form-group">
                 <div class="col-md-10">
-                    @Html.LabelFor(m => m.Email, new {@class = "col-md-4 k-label"})
-                    @Html.Kendo().TextBoxFor(x => x.Email).HtmlAttributes(new {placeholder = "email@email.com", required = "required", type = "email", data_email_msg = "Email format is not valid", style = "width:300px" })
+                    @Html.LabelFor(m => m.Email, new { @class = "col-md-4 k-label" })
+                    @Html.Kendo().TextBoxFor(x => x.Email).HtmlAttributes(new { placeholder = "email@email.com", required = "required", type = "email", data_email_msg = "Email format is not valid", style = "width:300px" })
                 </div>
             </div>
         </div>
-        <br/>
-        <br/>
+        <br />
+        <br />
 
         <div class="k-grouping-row">
             <div class="form-group">
@@ -111,7 +233,7 @@
 <div class="forCreate">
 
     <ul id="fieldlist2">
-       
+
         <br />
         <br />
         <div class="k-grouping-row">
@@ -138,83 +260,84 @@
 
 
 
-</ul>
+    </ul>
 
 
 
 
-</div>
+</div>*@
 
 
 
 
 
-    <style>
-        #fieldlist {
-            margin: 0;
-            padding: 0;
-        }
-        #fieldlist2 {
-            margin: 0;
-            padding: 0;
-        }
+@*<style>
+    #fieldlist {
+        margin: 0;
+        padding: 0;
+    }
 
-            #fieldlist li {
-                list-style: none;
-                padding-bottom: .7em;
-                text-align: left;
-            }
+    #fieldlist2 {
+        margin: 0;
+        padding: 0;
+    }
 
-            #fieldlist label {
-                display: block;
-                padding-bottom: .3em;
-                font-weight: bold;
-                text-transform: uppercase;
-                font-size: 12px;
-                color: #444;
-            }
+    #fieldlist li {
+        list-style: none;
+        padding-bottom: .7em;
+        text-align: left;
+    }
 
-            #fieldlist li.status {
-                text-align: center;
-            }
+    #fieldlist label {
+        display: block;
+        padding-bottom: .3em;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 12px;
+        color: #444;
+    }
 
-            #fieldlist li .k-widget:not(.k-tooltip),
-            #fieldlist li .k-textbox {
-                margin: 0 5px 5px 0;
-            }
+    #fieldlist li.status {
+        text-align: center;
+    }
 
-        .confirm {
-            padding-top: 1em;
-        }
+    #fieldlist li .k-widget:not(.k-tooltip),
+    #fieldlist li .k-textbox {
+        margin: 0 5px 5px 0;
+    }
 
-        .valid {
-            color: green;
-        }
+    .confirm {
+        padding-top: 1em;
+    }
 
-        .invalid {
-            color: red;
-        }
+    .valid {
+        color: green;
+    }
 
-        #fieldlist li input[type="checkbox"] {
-            margin: 0 5px 0 0;
-        }
+    .invalid {
+        color: red;
+    }
 
-        span.k-widget.k-tooltip-validation {
-            display: inline-block;
-            width: 160px;
-            text-align: left;
-            border: 0;
-            padding: 0;
-            margin: 0;
-            background: none;
-            box-shadow: none;
-            color: red;
-        }
+    #fieldlist li input[type="checkbox"] {
+        margin: 0 5px 0 0;
+    }
 
-        .k-tooltip-validation .k-warning {
-            display: none;
-        }
-    </style>
+    span.k-widget.k-tooltip-validation {
+        display: inline-block;
+        width: 160px;
+        text-align: left;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        background: none;
+        box-shadow: none;
+        color: red;
+    }
+
+    .k-tooltip-validation .k-warning {
+        display: none;
+    }
+</style>
 
 
 
@@ -239,4 +362,4 @@
         line-height: 32px;
         padding-left: 3px;
     }
-</style>
+</style>*@
