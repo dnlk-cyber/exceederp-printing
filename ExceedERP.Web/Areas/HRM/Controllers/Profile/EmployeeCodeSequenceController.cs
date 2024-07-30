@@ -15,6 +15,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
+    [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser)]
     public class EmployeeCodeSequenceController : Controller
     {
         // GET: HRM/EmployeeCodeSequence

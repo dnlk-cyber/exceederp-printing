@@ -16,7 +16,7 @@ using ExceedERP.Web.Helpers;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
    
-    [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin, HrmConstants.HRProfileUser)]
+    [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser)]
     public class EmployeeTypesController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -104,6 +104,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult EmployeeType_Destroy([DataSourceRequest]DataSourceRequest request, EmployeeType employeeType)
         {
             ModelState.Clear();
+            var isExist = db.Person_Employee.Any(x => x.EmployeeTypeId == employeeType.EmployeeTypeId);
+            if (isExist)
+            {
+                ModelState.AddModelError("", "You can't delete it.It is applied in Employee Profile");
+            }
             if (ModelState.IsValid)
             {
                 var entity = new EmployeeType

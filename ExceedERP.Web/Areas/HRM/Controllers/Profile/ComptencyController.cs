@@ -15,7 +15,7 @@ using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
-    [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser)]
     public class ComptencyController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

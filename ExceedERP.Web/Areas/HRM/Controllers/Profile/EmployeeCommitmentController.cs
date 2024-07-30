@@ -27,7 +27,7 @@ using ExceedERP.Web.Hubs;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
 
-    [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin, HrmConstants.HRProfileUser)]
+    [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser)]
     public class EmployeeCommitmentController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

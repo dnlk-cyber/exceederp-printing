@@ -23,7 +23,7 @@ using ExceedERP.Core.Domain.Global;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
    
-    [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
     public class EmployeeCosignController : BaseController
     {
         // GET: HRM/EmployeeExperience

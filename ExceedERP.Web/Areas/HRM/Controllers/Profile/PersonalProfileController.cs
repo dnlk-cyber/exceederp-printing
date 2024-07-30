@@ -22,7 +22,7 @@ using ExceedERP.Helpers.Common;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
   
-    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService)]
     public class PersonalProfileController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

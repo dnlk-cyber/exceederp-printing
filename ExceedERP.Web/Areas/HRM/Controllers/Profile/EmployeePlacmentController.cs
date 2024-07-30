@@ -25,7 +25,7 @@ using ExceedERP.Core.Domain.Global;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
 
-    [AuthorizeRoles(HrmConstants.HRPlacementAdmin, HrmConstants.HRPlacementUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRPlacementAdmin, HrmConstants.HRPlacementUser)]
     public class EmployeePlacmentController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

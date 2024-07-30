@@ -11,9 +11,12 @@ using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.HRM;
+using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 {
+    [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser,HrmConstants.HRAdmin)]
     public class HRMSettingController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

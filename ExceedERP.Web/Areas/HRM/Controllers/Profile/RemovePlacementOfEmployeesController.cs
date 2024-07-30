@@ -25,7 +25,7 @@ using Kendo.Mvc;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
 
-    [AuthorizeRoles(HrmConstants.HRPlacementAdmin, HrmConstants.HRPlacementUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRPlacementAdmin, HrmConstants.HRPlacementUser)]
     public class RemovePlacementOfEmployeesController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

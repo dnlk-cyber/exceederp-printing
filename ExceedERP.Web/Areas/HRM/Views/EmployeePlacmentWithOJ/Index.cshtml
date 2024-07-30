@@ -55,15 +55,13 @@
                 "# if (IsApprove) { #" +
                 "checked='checked'" +
                 "# } #" +
-                "/>"
-                ).Width(100);
+                "/>").Width(100);
             columns.Bound(c => c.IsPend).ClientTemplate(
                 "<input type='checkbox' disabled = 'true' value='#= IsPend#' " +
                 "# if (IsPend) { #" +
                 "checked='checked'" +
                 "# } #" +
-                "/>"
-                ).Width(100);
+                "/>").Width(100);
             columns.Bound(c => c.ResponsibilityLevel).Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
             columns.Bound(c => c.Remark).Width(100);
             columns.Command(command =>

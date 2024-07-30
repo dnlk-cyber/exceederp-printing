@@ -23,7 +23,7 @@ using ExceedERP.Core.Domain.Global;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
 
-    //[AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin)]
     public class EmployeeTrainingController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

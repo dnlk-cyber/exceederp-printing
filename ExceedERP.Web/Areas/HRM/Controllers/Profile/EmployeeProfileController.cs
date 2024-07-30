@@ -36,7 +36,7 @@ using ExceedERP.Core.Domain.ArchiveManagement;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
 
-    [AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin)]
     public class EmployeeProfileController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -71,6 +71,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             ViewData["businessUnits"] = businessUnits;
             var workunits = db.MainCompanyStructures.Select(x => new { x.OrgStructureId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") }).ToList();
             ViewData["workunits"] = workunits;
+            ViewData["employeeType"] = db.EmployeeTypes.Select(x => new { x.EmployeeTypeId, x.Name }).AsQueryable();
             GetPlacementAfterSystem();
 
             return View();
@@ -696,6 +697,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                         }
                     }
                     file.SaveAs(path);
+                    var employeeCode = db.Person_Employee.Find(HRMInputs.EmployeeId);
+
                     var checkExistance = db.Attachments.Where(x => x.Reference == HRMInputs.EmployeeId.ToString() && x.Description == HRMInputs.EmployeeId.ToString() + "." + fileExtension && x.ReferenceType == AttachmentType.PHOTO).ToList();
                     if (checkExistance != null)
                     {
@@ -707,7 +710,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     {
 
                         Reference = HRMInputs.EmployeeId.ToString(),
-                        Description = HRMInputs.EmployeeId.ToString() + "." + fileExtension,
+                        Description = employeeCode !=null? employeeCode.EmployeeCode + "." + fileExtension: file.FileName,
                         FileType = file.ContentType,
                         ReferenceType = AttachmentType.PHOTO,
                         Index = 0,
@@ -754,12 +757,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     if (!System.IO.File.Exists(path))
                     {
                         file.SaveAs(path);
+                        var employeeCode = db.Person_Employee.Find(HRMInputs.EmployeeId);
 
                         var entity = new Attachment
                         {
 
                             Reference = HRMInputs.EmployeeId.ToString(),
-                            Description = HRMInputs.EmployeeId.ToString() + "-" + txtValue + "-" + fileName,
+                            Description = employeeCode != null ? employeeCode.EmployeeCode  + "-" + txtValue + "-" + fileName: txtValue + "-" + fileName,
                             FileName = txtValue,
                             FileType = file.ContentType,
                             ReferenceType = AttachmentType.DOCUMENT,
@@ -1366,11 +1370,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             }
             return 1;
         }
+
         private List<int> GetEmployeeIdInProhabition(List<Person_Employee> employees)
         {
             List<int> employeeIds = new List<int>(); 
             int probationAmount = 0;
-            //var employee = db.Person_Employee.Where(x => x.EmployeeId == empId).FirstOrDefault();
             employees = employees.Where(x => (DateTime.Now.Date-x.HiredDate.Date ).TotalDays < 90).ToList();
            
             foreach (var employee in employees)
@@ -1381,29 +1385,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                .Select(offset => employee.HiredDate.AddDays(1))
                .Where(date => date.DayOfWeek != DayOfWeek.Sunday && !holidays.Contains(date))
                .Count();
-                //for (DateTime currentDate = employee.HiredDate; probationAmount <= 60 && currentDate.Date <= DateTime.Now.Date; currentDate = currentDate.AddDays(1))
-                //{
-                //    // Exclude weekends (Saturday and Sunday) and holidays
-
-                //    if ( currentDate.DayOfWeek != DayOfWeek.Sunday &&
-                //    !holidays.Contains(currentDate))
-                //    {
-                //        probationAmount++;
-
-
-                //    }
-
-                //}
                 if(probationAmount <= 60)
                 {
 
                     employeeIds.Add(employee.EmployeeId);
                 }
-                        
-                    
+                 
+            }
+            return employeeIds;
+        }
+        private List<int> GetContactEmployeeId(List<ContactVM> employees)
+        {
+            List<int> employeeIds = new List<int>(); 
+            foreach (var employee in employees)
+            {
+                var contract = db.Contract.Where(x =>x.EmployeeId==employee.EmployeeId).Where(x=>x.To>=employee.AssignmentDate&&x.To>=DateTime.Now).OrderByDescending(x=>x.To).FirstOrDefault();
+                if(contract != null&& ((contract.To.Date - DateTime.Now.Date).TotalDays<=30))
+                {
+                    employeeIds.Add(employee.EmployeeId);
 
 
-                
+                }
+                 
             }
             return employeeIds;
         }
@@ -1598,6 +1601,67 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return Json(result);
         }
+
+        [AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
+        public ActionResult ContractEmolyee30DaysLeft_Read([DataSourceRequest]DataSourceRequest request)
+        {
+
+            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            List<ContactVM>contacts = db.Placements.Where(x =>x.EmployementType ==EmployeeStatus.CONTRACT &&x.isCurrent).Select(x=>new ContactVM {EmployeeId= x.EmployeeId, AssignmentDate = x.AssignmentDate}).ToList();
+            List<int> employeeIds = GetContactEmployeeId(contacts);
+            var person_employees = db.Person_Employee
+                            .Where(x=> employeeIds.Contains(x.EmployeeId))
+                            .Where(x => mybraches.Contains(x.BranchId.ToString()) 
+                            && x.IsActive 
+                            && x.IsPlaced).ToList();
+            DataSourceResult result = person_employees.ToDataSourceResult(request, person_Employee => new
+            {
+                EmployeeId = person_Employee.EmployeeId,
+                EmployeeCode = person_Employee.EmployeeCode,
+                MothersFullName = person_Employee.MothersFullName,
+                BirthPlace = person_Employee.BirthPlace,
+                Nation = person_Employee.Nation,
+                Region = person_Employee.Region,
+                Religion = person_Employee.Religion,
+                MartialStatus = person_Employee.MartialStatus,
+                Status = person_Employee.Status,
+                HiredDate = person_Employee.HiredDate,
+                FirstName = person_Employee.FirstName,
+                MiddleName = person_Employee.MiddleName,
+                LastName = person_Employee.LastName,
+                Nationality = person_Employee.Nationality,
+                DateOfBirth = person_Employee.DateOfBirth,
+                Title = person_Employee.Title,
+                Gender = person_Employee.Gender,
+                CategoryID = person_Employee.CategoryID,
+                IsActive = person_Employee.IsActive,
+                Remark = person_Employee.Remark,
+                DateCreated = person_Employee.DateCreated,
+                LastModified = person_Employee.LastModified,
+                CreatedBy = person_Employee.CreatedBy,
+                ModifiedBy = person_Employee.ModifiedBy,
+                OrgBranchName = person_Employee.OrgBranchName,
+                FirstNameEnglish = person_Employee.FirstNameEnglish,
+                MiddleNameEnglish = person_Employee.MiddleNameEnglish,
+                LastNameEnglish = person_Employee.LastNameEnglish,
+                DateOfBirthAm = person_Employee.DateOfBirthAm,
+                HiredDateAmharic = person_Employee.HiredDateAmharic,
+                ProhabitionState = CheckProhabition(person_Employee.EmployeeId),
+                BranchId = person_Employee.BranchId,//Branch(person_Employee.EmployeeId),
+                IsProbationEnd = person_Employee.Status == EmployeeStatus.PROBATION ? Probation(person_Employee.EmployeeId) : false,
+                ContratLeftDay = GetContractLeftDay(person_Employee.EmployeeId),
+                PhoneNo = person_Employee.PhoneNo,
+                City = person_Employee.City,
+                SubCity = person_Employee.SubCity,
+                Wereda = person_Employee.Wereda,
+                EmployeeTypeId = person_Employee.EmployeeTypeId,
+                IsPlaced = person_Employee.IsPlaced,
+                Age = EmployeeHelper.GetAge(person_Employee.EmployeeId)
+            });
+
+            return Json(result);
+        }
+
         [AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
         public ActionResult Person_Employee_Read([DataSourceRequest]DataSourceRequest request)
         {
@@ -1681,6 +1745,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             {
                 var splitDateB = person_Employee.DateOfBirthAm.Split('/');
                 person_Employee.DateOfBirth = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateB[0]), Convert.ToInt32(splitDateB[1]), Convert.ToInt32(splitDateB[2]));
+
             }
             else
             {
@@ -2165,6 +2230,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 }
                 pp.LookupId = place.LookupId;
                 pp.AssignmentDate = place.AssignmentDateAmharic;
+                pp.Date = place.AssignmentDate;
                 pp.IsHead = place.IsHead;
                 pp.IsCurrent = place.isCurrent;
                 pp.Salary = place.Salary;
@@ -2961,11 +3027,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return Json(new[] { employeeFolderAttachment }.ToDataSourceResult(request, ModelState));
         }
+        
         protected override void Dispose(bool disposing)
         {
             db.Dispose();
             base.Dispose(disposing);
         }
 
+    }
+    public class ContactVM
+    {
+        public  int EmployeeId { get; set; }
+        public  DateTime AssignmentDate { get; set; }
     }
 }

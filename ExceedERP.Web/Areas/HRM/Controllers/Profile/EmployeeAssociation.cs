@@ -16,7 +16,7 @@ using ExceedERP.Web.Helpers;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
    
-    [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin, HrmConstants.HRProfileUser)]
+    [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser)]
     public class EmployeeAssociationController : BaseController
     {
         // GET: HRM/EmployeeExperience

@@ -20,7 +20,7 @@ using ExceedERP.Helpers.Common;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
 
-    [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser)]
     public class EmployeePlacmentHistoryController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -171,7 +171,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             var person = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == placementHistory.EmployeeId);
             if(person != null)
             {
-                if(placementHistory.From < person.HiredDate)
+                if(placementHistory.From < person.HiredDate && !person.IsReHired)
                 {
                     ModelState.AddModelError("","Internal Experience date should be after hire date");
                 }
@@ -181,7 +181,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             if (placements.Any())
             {
                 DateTime firstAssignment = placements.Select(x => x.AssignmentDate).Min();
-                if (firstAssignment.Year != 1)
+                if (firstAssignment.Year != 1 && person !=null && !person.IsReHired)
                 {
                     if (placementHistory.From >= firstAssignment || placementHistory.To >= firstAssignment)
                     {
@@ -265,7 +265,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             }
 
             var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == placementHistory.EmployeeId);
-            if (person != null)
+            if (person != null&& !person.IsReHired)
             {
                 if (placementHistory.From < person.HiredDate)
                 {
@@ -279,7 +279,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 DateTime firstAssignment = placements.Select(x => x.AssignmentDate).Min();
                 if (firstAssignment.Year != 1)
                 {
-                    if (placementHistory.From >= firstAssignment || placementHistory.To >= firstAssignment)
+                    if (placementHistory.From >= firstAssignment || placementHistory.To >= firstAssignment && person != null && !person.IsReHired)
                     {
                         ModelState.AddModelError("", "you can register only the experience before the system starts");
                     }

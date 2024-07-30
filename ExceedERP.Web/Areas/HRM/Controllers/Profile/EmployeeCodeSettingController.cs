@@ -15,6 +15,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
+
     public class EmployeeCodeSettingController : Controller
     {
         // GET: HRM/EmployeeCodeSetting

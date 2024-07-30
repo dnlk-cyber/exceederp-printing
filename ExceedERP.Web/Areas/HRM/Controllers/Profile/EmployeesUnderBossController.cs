@@ -67,7 +67,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                         employee.EmployeeCode = emp.EmployeeCode;
                         employee.FullName = emp.FullNameaEnglish;
                         //employee.IsCurrent = emp.isCurrent;
-
                         employeesList.Add(employee);
                     }
 

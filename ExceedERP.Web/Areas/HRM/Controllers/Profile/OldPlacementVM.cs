@@ -15,6 +15,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public int LookupId { get; set; }
         public string JobTitle { get; set; }
         public string AssignmentDate { get; set; }
+        public DateTime Date { get; set; }
         public bool IsHead { get; set; }
         public bool IsCurrent { get; set; }
         public decimal Salary { get; set; }

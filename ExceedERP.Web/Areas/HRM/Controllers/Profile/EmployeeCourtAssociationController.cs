@@ -13,7 +13,7 @@ using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
-    [Authorize(Roles = HR_Profile_Admin + "," + HR_Profile_User + "," + HR_Admin)]
+    [Authorize(Roles = HR_Profile_Admin + "," + HR_Profile_User)]
     public class EmployeeCourtAssociationController : BaseController
     {
         // GET: HRM/EmployeeExperience
