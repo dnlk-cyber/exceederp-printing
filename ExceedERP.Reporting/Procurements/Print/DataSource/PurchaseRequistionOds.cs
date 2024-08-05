@@ -51,18 +51,25 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                     headerDs.CreatedBy =
                         EmployeeHelper.GetEmployeeEnglishName(
                             UserHelper.GetUserEmployeeId(pr.CreatedBy));
+                    headerDs.CreatedBySignature = SignatureHelper.GetUserSignature(pr.CreatedBy);
                     if (pr.DateCreated != null)
                         headerDs.CreatedDate = (DateTime) pr.DateCreated;
+
+                  
 
                     headerDs.ApproverName =
                         EmployeeHelper.GetEmployeeEnglishName(
                             UserHelper.GetUserEmployeeId(pr.OnlineApprovedBy));
+                    headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(pr.OnlineApprovedBy);
+
                     if (pr.OnlineApprovedTime != null)
                         headerDs.ApprovalDate = (DateTime) pr.OnlineApprovedTime;
 
                     headerDs.AuthorizerName =
                         EmployeeHelper.GetEmployeeEnglishName(
                             UserHelper.GetUserEmployeeId(pr.SecondOnlineApprovedBy));
+                    headerDs.AuthorizedBySignature = SignatureHelper.GetUserSignature(pr.SecondOnlineApprovedBy);
+
                     if (pr.SecondOnlineApprovedTime != null)
                         headerDs.AuthorizationDate = (DateTime) pr.SecondOnlineApprovedTime;
 
@@ -70,6 +77,8 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                     headerDs.PrApproverName =
                         EmployeeHelper.GetEmployeeEnglishName(
                             UserHelper.GetUserEmployeeId(pr.MiddleOnlineApprovedBy));
+                    headerDs.PrApprovedBySignature = SignatureHelper.GetUserSignature(pr.MiddleOnlineApprovedBy);
+
                     if (pr.MiddleOnlineApprovedTime != null)
                         headerDs.PrApprovalDate = (DateTime)pr.MiddleOnlineApprovedTime;
 
@@ -87,12 +96,16 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                             headerDs.CreatedBy =
                                 EmployeeHelper.GetEmployeeEnglishName(
                                     UserHelper.GetUserEmployeeId(storeRequisition.CreatedBy));
+                            headerDs.CreatedBySignature = SignatureHelper.GetUserSignature(storeRequisition.CreatedBy);
+
                             if (storeRequisition.DateCreated != null)
                                 headerDs.CreatedDate = (DateTime)storeRequisition.DateCreated;
 
                             headerDs.ApproverName =
                                 EmployeeHelper.GetEmployeeEnglishName(
                                     UserHelper.GetUserEmployeeId(storeRequisition.SecondOnlineApprovedBy));
+                            headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(storeRequisition.SecondOnlineApprovedBy);
+
                             if (storeRequisition.SecondOnlineApprovedTime != null)
                                 headerDs.ApprovalDate = (DateTime)storeRequisition.SecondOnlineApprovedTime;
 
@@ -100,12 +113,16 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                             headerDs.PrApproverName =
                                 EmployeeHelper.GetEmployeeEnglishName(
                                     UserHelper.GetUserEmployeeId(pr.OnlineApprovedBy));
+                            headerDs.PrApprovedBySignature = SignatureHelper.GetUserSignature(pr.OnlineApprovedBy);
+
                             if (pr.OnlineApprovedTime != null)
                                 headerDs.PrApprovalDate = (DateTime)pr.OnlineApprovedTime;
 
                             headerDs.AuthorizerName =
                                 EmployeeHelper.GetEmployeeEnglishName(
                                     UserHelper.GetUserEmployeeId(pr.SecondOnlineApprovedBy));
+                            headerDs.AuthorizedBySignature = SignatureHelper.GetUserSignature(pr.SecondOnlineApprovedBy);
+
                             if (pr.SecondOnlineApprovedTime != null)
                                 headerDs.AuthorizationDate = (DateTime)pr.SecondOnlineApprovedTime;
                         }
@@ -118,12 +135,16 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                             headerDs.CreatedBy =
                                 EmployeeHelper.GetEmployeeEnglishName(
                                     UserHelper.GetUserEmployeeId(fixedRequisition.CreatedBy));
+                            headerDs.CreatedBySignature = SignatureHelper.GetUserSignature(fixedRequisition.CreatedBy);
+
                             if (fixedRequisition.DateCreated != null)
                                 headerDs.CreatedDate = (DateTime)fixedRequisition.DateCreated;
 
                             headerDs.ApproverName =
                                 EmployeeHelper.GetEmployeeEnglishName(
                                     UserHelper.GetUserEmployeeId(fixedRequisition.SecondOnlineApprovedBy));
+                            headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(fixedRequisition.SecondOnlineApprovedBy);
+
                             if (fixedRequisition.SecondOnlineApprovedTime != null)
                                 headerDs.ApprovalDate = (DateTime)fixedRequisition.SecondOnlineApprovedTime;
 
@@ -131,12 +152,16 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                             headerDs.PrApproverName =
                                 EmployeeHelper.GetEmployeeEnglishName(
                                     UserHelper.GetUserEmployeeId(pr.OnlineApprovedBy));
+                            headerDs.PrApprovedBySignature = SignatureHelper.GetUserSignature(pr.OnlineApprovedBy);
+
                             if (pr.OnlineApprovedTime != null)
                                 headerDs.PrApprovalDate = (DateTime)pr.OnlineApprovedTime;
 
                             headerDs.AuthorizerName =
                                 EmployeeHelper.GetEmployeeEnglishName(
                                     UserHelper.GetUserEmployeeId(pr.SecondOnlineApprovedBy));
+                            headerDs.AuthorizedBySignature = SignatureHelper.GetUserSignature(pr.SecondOnlineApprovedBy);
+
                             if (pr.SecondOnlineApprovedTime != null)
                                 headerDs.AuthorizationDate = (DateTime)pr.SecondOnlineApprovedTime;
                         }
@@ -147,24 +172,32 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                         headerDs.CreatedBy =
                             EmployeeHelper.GetEmployeeEnglishName(
                                 UserHelper.GetUserEmployeeId(pr.CreatedBy));
+                        headerDs.CreatedBySignature = SignatureHelper.GetUserSignature(pr.CreatedBy);
+
                         if (pr.DateCreated != null)
                             headerDs.CreatedDate = (DateTime)pr.DateCreated;
 
                         headerDs.ApproverName =
                             EmployeeHelper.GetEmployeeEnglishName(
                                 UserHelper.GetUserEmployeeId(pr.OnlineApprovedBy));
+                        headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(pr.OnlineApprovedBy);
+
                         if (pr.OnlineApprovedTime != null)
                             headerDs.ApprovalDate = (DateTime)pr.OnlineApprovedTime;
 
                         headerDs.PrApproverName =
                             EmployeeHelper.GetEmployeeEnglishName(
                                 UserHelper.GetUserEmployeeId(pr.MiddleOnlineApprovedBy));
+                        headerDs.PrApprovedBySignature = SignatureHelper.GetUserSignature(pr.MiddleOnlineApprovedBy);
+
                         if (pr.MiddleOnlineApprovedTime != null)
                             headerDs.PrApprovalDate = (DateTime)pr.MiddleOnlineApprovedTime;
 
                         headerDs.AuthorizerName =
                             EmployeeHelper.GetEmployeeEnglishName(
                                 UserHelper.GetUserEmployeeId(pr.SecondOnlineApprovedBy));
+                        headerDs.AuthorizedBySignature = SignatureHelper.GetUserSignature(pr.SecondOnlineApprovedBy);
+
                         if (pr.SecondOnlineApprovedTime != null)
                             headerDs.AuthorizationDate = (DateTime)pr.SecondOnlineApprovedTime;
 

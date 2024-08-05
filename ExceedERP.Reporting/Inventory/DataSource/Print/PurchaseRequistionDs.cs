@@ -54,11 +54,15 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print
                     if (pr.DateCreated != null)
                         headerDs.CreatedDate = (DateTime) pr.DateCreated;
 
+                    headerDs.CreatedBySignature = SignatureHelper.GetUserSignature(pr.CreatedBy);
+
                     headerDs.ApproverName =
                         EmployeeHelper.GetEmployeeEnglishName(
                             UserHelper.GetUserEmployeeId(pr.OnlineApprovedBy));
                     if (pr.OnlineApprovedTime != null)
                         headerDs.ApprovalDate = (DateTime) pr.OnlineApprovedTime;
+
+                    headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(pr.OnlineApprovedBy);
 
                     headerDs.AuthorizerName =
                         EmployeeHelper.GetEmployeeEnglishName(
@@ -66,6 +70,7 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print
                     if (pr.MiddleOnlineApprovedTime != null)
                         headerDs.AuthorizationDate = (DateTime) pr.MiddleOnlineApprovedTime;
 
+                    headerDs.AuthorizedBySignature = SignatureHelper.GetUserSignature(pr.MiddleOnlineApprovedBy);
                     #endregion
                 }
                 else
@@ -76,15 +81,19 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print
                     {
                         headerDs.CreatedBy =
                             EmployeeHelper.GetEmployeeEnglishName(
-                                UserHelper.GetUserEmployeeId(pr.CreatedBy));
-                        if (pr.DateCreated != null)
-                            headerDs.CreatedDate = (DateTime) pr.DateCreated;
+                                UserHelper.GetUserEmployeeId(storeRequisition.CreatedBy));
+                        if (storeRequisition.DateCreated != null)
+                            headerDs.CreatedDate = (DateTime) storeRequisition.DateCreated;
+
+                        headerDs.CreatedBySignature = SignatureHelper.GetUserSignature(storeRequisition.CreatedBy);
 
                         headerDs.ApproverName =
                             EmployeeHelper.GetEmployeeEnglishName(
-                                UserHelper.GetUserEmployeeId(pr.OnlineApprovedBy));
-                        if (pr.OnlineApprovedTime != null)
-                            headerDs.ApprovalDate = (DateTime) pr.OnlineApprovedTime;
+                                UserHelper.GetUserEmployeeId(storeRequisition.SecondOnlineApprovedBy));
+                        if (storeRequisition.SecondOnlineApprovedTime != null)
+                            headerDs.ApprovalDate = (DateTime) storeRequisition.SecondOnlineApprovedTime;
+
+                        headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(storeRequisition.SecondOnlineApprovedBy);
                     }
 
                     headerDs.AuthorizerName =
@@ -93,14 +102,9 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print
                     if (pr.OnlineApprovedTime != null)
                         headerDs.AuthorizationDate = (DateTime)pr.OnlineApprovedTime;
 
+                    headerDs.AuthorizedBySignature = SignatureHelper.GetUserSignature(pr.OnlineApprovedBy);
                     #endregion
                 }
-
-                headerDs.BudgetAuthorizerName =
-                        EmployeeHelper.GetEmployeeEnglishName(
-                            UserHelper.GetUserEmployeeId(pr.BudgetApprovedBy));
-                if (pr.BudgetApprovedTime != null)
-                    headerDs.BudgetAuthorizationDate = (DateTime)pr.BudgetApprovedTime;
 
                 headerDs.PRDate = pr.DateCreated.GetValueOrDefault().ToShortDateString();
                 headerDs.StoreRequistionNo = InventoryPrintHelper.GetId(pr.StoreRequisitionID);

@@ -12,19 +12,18 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print.ViewModel
         public string StoreRequistionNo { get; set; }
         public string Requestor { get; set; }
         public string ApproverName { get; set; }//sr
+        public Image ApprovedBySignature { get; set; }
         public DateTime ApprovalDate { get; set; }//sr
-        public Image ApprovalBySignature { get; set; }
 
         public string PrApproverName { get; set; }//pr
+        public Image PrApprovedBySignature { get; set; }
         public DateTime PrApprovalDate { get; set; }//pr
         public string AuthorizerName { get; set; }
+        public Image AuthorizedBySignature { get; set; }
         public DateTime AuthorizationDate { get; set; }
-        public Image AuthorizerBySignature { get; set; }
-        public string BudgetAuthorizerName { get; set; }
-        public DateTime BudgetAuthorizationDate { get; set; }
         public string CreatedBy { get; set; }
+        public Image CreatedBySignature { get; set; }
         public DateTime CreatedDate { get; set; }
-        public Image PreparedBySignature { get; set; }
         public string RequestingDate { get; set; }
         public string RequestingDepartment { get; set; }
         public string RequestingStore { get; set; }
