@@ -59,6 +59,7 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox7 = new Telerik.Reporting.TextBox();
             this.textBox5 = new Telerik.Reporting.TextBox();
             this.textBox8 = new Telerik.Reporting.TextBox();
+            this.headerSubReportLandScape1 = new ExceedERP.Reporting.SharedDesigners.HeaderSubReportLandScape();
             this.BranchDS = new Telerik.Reporting.ObjectDataSource();
             this.TypeDS = new Telerik.Reporting.ObjectDataSource();
             this.subTypeDS = new Telerik.Reporting.ObjectDataSource();
@@ -108,7 +109,6 @@ namespace ExceedERP.Reporting.Fleet.View
             this.StatusDS = new Telerik.Reporting.ObjectDataSource();
             this.reportHeaderSection1 = new Telerik.Reporting.ReportHeaderSection();
             this.subReport1 = new Telerik.Reporting.SubReport();
-            this.headerSubReportLandScape1 = new ExceedERP.Reporting.SharedDesigners.HeaderSubReportLandScape();
             ((System.ComponentModel.ISupportInitialize)(this.headerSubReportLandScape1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -167,6 +167,10 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox8.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.8560528755187988D), Telerik.Reporting.Drawing.Unit.Inch(0.24000003933906555D));
             this.textBox8.StyleName = "Civic.GrandTotal";
             this.textBox8.Value = "Total";
+            // 
+            // headerSubReportLandScape1
+            // 
+            this.headerSubReportLandScape1.Name = "HeaderSubReportLandScape";
             // 
             // BranchDS
             // 
@@ -232,9 +236,9 @@ namespace ExceedERP.Reporting.Fleet.View
             // 
             // crosstab1
             // 
-            this.crosstab1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.3394851684570313D)));
-            this.crosstab1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.3394851684570313D)));
-            this.crosstab1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.3394851684570313D)));
+            this.crosstab1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.3394852876663208D)));
+            this.crosstab1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.3394852876663208D)));
+            this.crosstab1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.3394852876663208D)));
             this.crosstab1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1D)));
             this.crosstab1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.24000000953674316D)));
             this.crosstab1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.24000000953674316D)));
@@ -679,10 +683,6 @@ namespace ExceedERP.Reporting.Fleet.View
             instanceReportSource1.ReportDocument = this.headerSubReportLandScape1;
             this.subReport1.ReportSource = instanceReportSource1;
             this.subReport1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2D), Telerik.Reporting.Drawing.Unit.Inch(0.29999998211860657D));
-            // 
-            // headerSubReportLandScape1
-            // 
-            this.headerSubReportLandScape1.Name = "HeaderSubReportLandScape";
             // 
             // FuelConsumption
             // 

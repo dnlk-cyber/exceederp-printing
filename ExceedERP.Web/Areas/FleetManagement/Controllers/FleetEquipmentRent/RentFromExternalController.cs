@@ -34,7 +34,19 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         // GET: /FleetManagement/RentFromExternal/
         public ActionResult Index()
         {
-            ViewData["EquipmentName"] = db.EquipmentName.Select(x => new { x.EquipmentNameID, x.Name }).ToList();
+            ViewData["Category"] = db.EquipmentIdentity.Select(s => new
+            {
+                Value = s.EquipmentIdentityID,
+                Text = s.EquipmentCategoryName
+            }).ToList();
+
+            ViewData["Type"] = db.EquipmentType.Select(s => new
+            {
+                Value = s.EquipmentTypeID,
+                Text = s.EquipmentTypeName
+            }).ToList();
+
+            ViewData["EquipmentName"] = db.EquipmentName.Select(x => new { Value = x.EquipmentNameID, Text = x.Name }).ToList();
             ViewData["Fleet"] = db.Fleets.Select(s => new
             {
                 Text = s.PlateNumber + " " + s.SerialNo,

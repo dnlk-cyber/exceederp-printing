@@ -73,7 +73,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             {
                 Guid FId = Guid.Parse(fleetId);
 
-                var dryLoadingTimesheets = db.DryLoadingTimeSheets.Where(x => x.FleetsID == FId).ToList();
+                var dryLoadingTimesheets = db.DryLoadingTimeSheets.Where(x => x.FleetsID == FId && x.CostSheetApproved).ToList();
 
                 dryLoadingTimesheets = dryLoadingTimesheets.Where(x => x.TripStartDate.Date >= from.Date && x.TripStartDate <= to.Date).ToList();
 

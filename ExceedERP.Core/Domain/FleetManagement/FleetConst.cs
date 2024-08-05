@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -52,5 +52,10 @@ namespace ExceedERP.Core.Domain.FleetManagement
         public const string PMActualSchedule = "Equipment Plan and Evaluation Summary For Month";
         public const string FleetInsurance = "Fleet Insurance Report";
         public const string FleetAccident = "Fleet Accident Report";
+        public const string TotalFleetFuelConsumption = "Fleet Fuel Consumption Report";
+        public const string FleetAnnualPlanSummary = "Fleet Annual Plan Summary Report";
+        public const string UtilizationSummary = "Utilizaiton Summary Report";
+        public const string MonthlyUtilizationSummary = "Monthly Utilizaiton Summary Report"; 
+        public const string UtilizationSummaryToDate = "To-Date Utilizaiton Summary Report"; 
     }
 }

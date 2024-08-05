@@ -16,7 +16,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<SubTypeViewModel> GetOwnMachinery(string type, string status)
+        public List<SubTypeViewModel> GetOwnMachinery(string type, string status, string categoryId, string subCategory)
         {
             List<SubTypeViewModel> list = new List<SubTypeViewModel>();
             bool.TryParse(type, out bool typeBool);
@@ -47,7 +47,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             //    list.Add(record);
             //}
             #endregion
-
+            
             var fleetList = db.Fleets.ToList();
             var equipmentTypeList = db.EquipmentType.ToList();
             if (type != null)
@@ -57,6 +57,17 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             if(status != null)
             {
                 fleetList = fleetList.Where(x => x.Status.ToLower() == status.ToLower()).ToList();
+            }
+            if (!string.IsNullOrWhiteSpace(categoryId))
+            {
+                Guid.TryParse(categoryId, out Guid id);
+                fleetList = fleetList.Where(x => x.EquipmentIdentityID == id).ToList();
+            }
+            
+            if (!string.IsNullOrWhiteSpace(subCategory))
+            {
+                Guid.TryParse(subCategory, out Guid equipmentTypeId);
+                fleetList = fleetList.Where(x => x.EquipmentTypeID == equipmentTypeId).ToList();
             }
             var typeByFleet = equipmentTypeList
                 .GroupJoin(fleetList,

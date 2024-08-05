@@ -21,7 +21,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             {
 
                 Guid FId = Guid.Parse(fleetId);
-                var wagonDrillTimesheets = db.WagonDrillTimesheets.Where(x => x.FleetsID == FId).ToList();
+                var wagonDrillTimesheets = db.WagonDrillTimesheets.Where(x => x.FleetsID == FId && x.TimeSheetApproved).ToList();
 
 
                 wagonDrillTimesheets = wagonDrillTimesheets.Where(x => x.Date.Date >= from.Date && x.Date.Date <= to.Date).ToList();

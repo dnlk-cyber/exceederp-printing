@@ -1,6 +1,7 @@
 ﻿using ExceedERP.ApplicationServices.FleetManagement.FleetMaintenance;
 using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Maintenance;
@@ -110,6 +111,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             ViewData["Service"] = db.RepairType.Select(s => new {
                 Code = s.RepairTypeID,
                 Name = s.Code + "-" + s.Name
+            }).ToList();
+
+            ViewData["TaxRate"] = db.GLTaxRates.Select(s => new
+            {
+                Value = s.GLTaxRateID,
+                Text = s.TaxName
             }).ToList();
             return View();
         }
@@ -445,6 +452,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             var jobid = id;
             var serviceCenterJob = _ServiceCenterJobService.GetById(jobid);
+            serviceCenterJob.IsSubmittedToServiceCenter = true;
             serviceCenterJob.IsSecondOnlineApproved = true;
             serviceCenterJob.SecondOnlineApprovedBy = User.Identity.Name;
             serviceCenterJob.SecondOnlineApprovedTime = DateTime.Now;
@@ -878,6 +886,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         #endregion
 
+
+        
 
     }
 }

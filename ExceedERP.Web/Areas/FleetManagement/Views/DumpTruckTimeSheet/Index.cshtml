@@ -15,11 +15,20 @@
         .Columns(columns =>
         {
             columns.Bound(c => c.DumpTruckTimeSheetId).Title("#").Filterable(false).Width(30);
+           // columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
+           // columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
+           // columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
+
             columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["Fleets"], "Value", "Text").Title("Equipment Name").Width(110).Filterable(ftb => ftb.Multi(true).Search(true));
             columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(110);
             columns.Bound(c => c.Date).Width(70);
-            columns.Bound(c => c.TypeOfWorkExcuted).Title("Work Excuted").Width(100);
-            
+            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Value", "Text").Title("Branch Name").Width(100);
+
+            //columns.Bound(c => c.TypeOfWorkExcuted).Title("Work Excuted").Width(100);
+
+            columns.Bound(c => c.NetworkingHour).Width(100);
+            columns.Bound(c => c.DownHour).Width(100);
+            columns.Bound(c => c.IdleHour).Width(100);
             columns.Bound(c => c.TimeSheetStatus).Width(100);
 
             columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
@@ -113,6 +122,7 @@
                                     columns.Bound(c => c.ActualDistance).Width(100);
                                     columns.Bound(c => c.Capacity).Width(100)/*.HtmlAttributes(new { onInput = "handleCapacityChange(this.value)"})*/;
                                     columns.Bound(c => c.TotalHaulage).Width(100);
+                                    columns.Bound(c => c.DumpTruckTypeOfWork).Width(100);
                                     columns.Bound(c => c.TypeOfWork).Width(100);
 
                                     columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
@@ -195,7 +205,36 @@
 
 </script>
 
+<script type="text/javascript">
+     function filterEquipmentType() {
+        var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
 
+        return {
+            timeSheetEquipmentType: "@ViewBag.dumpTruck",
+            equipmentIdentityId: $("#EquipmentCategoryId").val(),
+            search: filterInput.val()
+        };
+
+    }
+
+    function filterEquipmentNames() {
+        var dropdownlist = $("#EquipmentNameId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentTypeId: $("#EquipmentTypeId").val(),
+            search: filterInput.val()
+        };
+    }
+
+function filterPlateNumber() {
+        return {
+            equipmentNameId: $("#EquipmentNameId").val(),
+            text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+</script>
 <script>
 
     var timeSheetApproved;

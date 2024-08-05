@@ -25,7 +25,20 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
             return View();
         }
 
-
+        private bool IsSRReviewed(int id)
+        {
+            var sr = db.StoreRequisitions.Find(id);
+            if (sr != null)
+            {
+                if (sr.IsSecondOnlineApproved)
+                    return true;
+            }
+            return false;
+        }
+        private string GetStore(int id)
+        {
+            return db.StoreRequisitions.Find(id).StoreCode;
+        }
         //[AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment)]
         public ActionResult SparePartStoreRequisitionItems_Read([DataSourceRequest]DataSourceRequest request , int id )
         {
@@ -47,8 +60,9 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                 IsApproved = storeRequisitionItem.IsApproved,
                 ItemSpecification = storeRequisitionItem.ItemSpecification,
                 Unit= ExceedERP.Helpers.Inventory.InventoryHelper.GetItemUom(storeRequisitionItem.ItemCode),
-                CurrentBalance = 0,
-                CurrentAPrice = storeRequisitionItem.CurrentAPrice
+               // CurrentBalance = 0,
+                CurrentAPrice = storeRequisitionItem.CurrentAPrice,
+                CurrentBalance = IsSRReviewed(storeRequisitionItem.StoreRequisitionID) ? storeRequisitionItem.CurrentBalance : ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, GetStore(storeRequisitionItem.StoreRequisitionID)),
             });
 
             return Json(result);
@@ -59,6 +73,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SparePartStoreRequisitionItems_Create([DataSourceRequest]DataSourceRequest request, StoreRequisitionItem storeRequisitionItem , int id)
         {
+            var sr = db.StoreRequisitions.Find(id);
             storeRequisitionItem.IssuedQuantity = 0;
             storeRequisitionItem.PurchaseQuantity = 0;
             if (storeRequisitionItem.ApprovedQuantity > storeRequisitionItem.RequestedQuantity)
@@ -91,8 +106,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                     PurchaseQuantity = 0,//assuming all will be given
                     IsApproved = storeRequisitionItem.IsApproved,
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
+                    CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, sr.StoreCode),
 
-                   
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Now,
                     CurrentAPrice = storeRequisitionItem.CurrentAPrice,
@@ -115,6 +130,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SparePartStoreRequisitionItems_Update([DataSourceRequest]DataSourceRequest request, StoreRequisitionItem storeRequisitionItem)
         {
+            var sr = db.StoreRequisitions.Find(storeRequisitionItem.StoreRequisitionID);
             storeRequisitionItem.IssuedQuantity = 0;
             storeRequisitionItem.PurchaseQuantity = 0;
             if (storeRequisitionItem.ApprovedQuantity > storeRequisitionItem.RequestedQuantity)
@@ -155,7 +171,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                     CreatedBy = storeRequisitionItem.CreatedBy,
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Now,
-                    CurrentAPrice = storeRequisitionItem.CurrentAPrice
+                    CurrentAPrice = storeRequisitionItem.CurrentAPrice,
+                    CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, sr.StoreCode),
                 };
 
                 db.StoreRequisitionItems.Attach(entity);

@@ -1,6 +1,7 @@
 using ExceedERP.ApplicationServices.FleetManagement.FleetEquipmentRent;
 using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
 using ExceedERP.ApplicationServices.FleetManagement.FleetResource;
+using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent;
@@ -29,6 +30,16 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public ActionResult Index()
         {
             return View();
+        }
+        public JsonResult GetUoM()
+        {
+            var unitOfm = db.UoMs.AsQueryable();
+            return Json(unitOfm.Select(i => new
+            {
+                UoMName = i.UoMName,
+                Value = i.UoMName
+            })
+            , JsonRequestBehavior.AllowGet);
         }
         //public JsonResult GetTimeSheetData(int id)
         //{
@@ -60,6 +71,20 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         //    }
         //}
+
+        public JsonResult GetGlPeriodForPlanAndEvaluation(int fiscalYearId)
+        {
+
+            var glPeriod = db.GLPeriods.Where(x => x.GlFiscalYearId == fiscalYearId);
+            
+            var result = glPeriod.Select(s => new
+            {
+                Value = s.GLPeriodId,
+                Text = s.Name
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+
+        }
         public JsonResult GetFleetRentalRequest(int supplierId, int branchId)
         {
             var rentFromExternal = db.RentFromExternal.FirstOrDefault(x => x.ProcurementSupplierID == supplierId && x.BranchId == branchId);
@@ -372,6 +397,21 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(equipIdentities, JsonRequestBehavior.AllowGet);
         }
+        public ActionResult GetEquipmentIdentitiesNullable(string search)
+        {
+            var equipmentIdentities = db.EquipmentIdentity.ToList();
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                equipmentIdentities = equipmentIdentities.Where(x => x.EquipmentCategoryName.ToLower().Contains(search)).ToList();
+            }
+            var equipIdentities = equipmentIdentities.Select(s => new
+            {
+                Id = (Guid?)s.EquipmentIdentityID,
+                Name = s.EquipmentCategoryName
+            }).ToList();
+
+            return Json(equipIdentities, JsonRequestBehavior.AllowGet);
+        }
         public ActionResult GetBranchForSiteVehicleTransfer(string searchKey)
         {
             var branches = db.Branch.ToList();
@@ -606,6 +646,22 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+        public ActionResult GetEquipmentNamesNullable(Guid? equipmentTypeId, string text)
+        {
+            var equipmentNames = db.EquipmentName.Where(x => x.EquipmentTypeId == equipmentTypeId).ToList();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                equipmentNames = equipmentNames.Where(x => x.Name.ToLower().Contains(text.ToLower())).ToList();
+            }
+            var result = equipmentNames.Select(s => new
+            {
+                Name = s.Name,
+                s.EquipmentTypeId,
+                Id = (Guid?)s.EquipmentNameID
+            });
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
         public JsonResult GetExternalFleet(Guid? equipmentTypeId, string search)
         {
@@ -621,12 +677,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetExternalFleetForRentFromExternalEquipment(Guid? equipmentTypeId, string search)
+        public JsonResult GetExternalFleetForRentFromExternalEquipment(Guid? equipmentNameID, string search)
         {
-            var fleets = db.Fleets.Where(x => x.EquipmentTypeID == equipmentTypeId && x.WayOfSupplyenum == WayOfSupplyenum.Rental);
+            var fleets = db.Fleets.Where(x => x.EquipmentNameID == equipmentNameID && x.WayOfSupplyenum == WayOfSupplyenum.Rental);
             if (!string.IsNullOrWhiteSpace(search))
             {
-                fleets = fleets.Where(x => x.PlateNumber.Contains(search) || x.SerialNo.Contains(search));
+                fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(search.ToLower()) || x.SerialNo.ToLower().Contains(search.ToLower()));
             }
             var result = fleets.Select(s => new
             {
@@ -867,11 +923,31 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             });
             return Json(data, JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetFleetTimesheetSerialNumber(TimeSheetType timeSheetEquipmentType, string text)
+        public ActionResult GetEquipmentTypesTimeSheet(TimeSheetType timeSheetEquipmentType, Guid? equipmentIdentityId, string search)
         {
-            var equipmentTypeId = new HashSet<Guid>(db.EquipmentType.Where(x => x.TimeSheetType == timeSheetEquipmentType).Select(x => x.EquipmentTypeID));
+            var equipmentTypes = db.EquipmentType
+                .Where(x => x.EquipmentIdentityID == equipmentIdentityId)
+                .Where(x => x.TimeSheetType == timeSheetEquipmentType)
+                .ToList();
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                equipmentTypes = equipmentTypes.Where(x => x.EquipmentTypeName.ToLower().Contains(search.ToLower())).ToList();
+            }
+            var equipTypes = equipmentTypes.Select(s => new
+            {
+                Id = (Guid?)s.EquipmentTypeID,
+                s.EquipmentIdentityID,
+                Name = s.EquipmentTypeName
+            }).ToList();
 
-            var fleets = db.Fleets.Where(x => equipmentTypeId.Contains(x.EquipmentTypeID)).AsQueryable();
+            return Json(equipTypes, JsonRequestBehavior.AllowGet);
+
+        }
+        public JsonResult GetFleetTimesheetSerialNumber(/*TimeSheetType timeSheetEquipmentType, */string text, Guid equipmentNameId)
+        {
+            //var equipmentTypeId = new HashSet<Guid>(db.EquipmentType.Where(x => x.TimeSheetType == timeSheetEquipmentType).Select(x => x.EquipmentTypeID));
+
+            var fleets = db.Fleets.Where(x => x.EquipmentNameID == equipmentNameId).AsQueryable();
             if (!string.IsNullOrWhiteSpace(text))
             {
                 fleets = fleets.Where(x => x.PlateNumber.ToLower().Contains(text.ToLower()) || x.SerialNo.ToLower().Contains(text.ToLower())).AsQueryable();
@@ -932,7 +1008,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             var supplier = db.ProcurementSuppliers.ToList();
             if (!string.IsNullOrWhiteSpace(text))
             {
-                supplier = supplier.Where(x => x.Name.Contains(text)).ToList();
+                supplier = supplier.Where(x => x.Name.ToLower().Contains(text.ToLower())).ToList();
             }
             var result = supplier.Select(x => new
             {
@@ -1196,6 +1272,18 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
 
             return Json(fleet.MinFuelStandard + "_" + fleet.TypeOfFuel + "_" + fleet.RentalRate + "_" + fleet.CurentOdoMeter + "_" + fleet.Location + "_" + fleet.OperatorName + "_" + fleet.IdealRentalRate + "_" + fleet.EquipmentName, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult JobOrderReferenceNumber(Guid id)
+        {
+            var serviceCenterJob = db.ServiceCenterJob.FirstOrDefault(x => x.ServiceCenterJobId == id);
+            var jobOrder = db.JobOrder.FirstOrDefault(x => x.JobOrderID == serviceCenterJob.JobOrderID);
+
+            var result = new
+            {
+                ReferenceNo = serviceCenterJob.Num.ToString()
+            };
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
     }
 }

@@ -17,12 +17,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ExceedERP.Core.Domain.FleetManagement.RentalPayment;
+using ExceedERP.Core.Domain.FleetManagement;
 
 namespace ExceedERP.DataAccess.Context
 {
     
     public class FleetManagementEntityConfiguration
     {
+        public class FleetRentalRateEntityTypeConfiguration : EntityTypeConfiguration<FleetRentalRate>
+        {
+            public FleetRentalRateEntityTypeConfiguration()
+            {
+                this.ToTable("FleetRentalRate", "FleetManagement");
+                this.HasKey<int>(p => p.FleetRentalRateId);
+            }
+        }
+        public class EquipmentRateEntityTypeConfiguration : EntityTypeConfiguration<EquipmentRate>
+        {
+            public EquipmentRateEntityTypeConfiguration()
+            {
+                this.ToTable("EquipmentRate", "FleetManagement");
+                this.HasKey<int>(p => p.EquipmentRateId);
+            }
+        }
         public class FleetAnnualPlanEntitytypeConfiguration : EntityTypeConfiguration<FleetAnnualPlan>
         {
             public FleetAnnualPlanEntitytypeConfiguration()

@@ -3,10 +3,8 @@ using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
@@ -38,6 +36,17 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
                 Value = s.FleetsID,
                 Text = s.PlateNumber + " " + s.SerialNo
             }).ToList();
+
+            ViewData["GlFiscalYear"] = db.GLFiscalYears.Select(s => new
+            {
+                Value = s.GlFiscalYearId,
+                Text = s.Name
+            }).ToList();
+            ViewData["GlPeriod"] = db.GLPeriods.Select(s => new
+            {
+                Value = s.GLPeriodId,
+                Text = s.Name
+            }).ToList();
             return View();
         }
         public ActionResult FleetAnnualPlan_Read([DataSourceRequest] DataSourceRequest request)
@@ -56,6 +65,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
                 model.DateCreated = DateTime.Today;
                 db.FleetAnnualPlans.Add(model);
                 db.SaveChanges();
+                GenerateAnnualPlanDetail(model.FleetAnnualPlanId);
             }
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
@@ -77,10 +87,31 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
             {
 
                 var annualPlan = db.FleetAnnualPlans.Find(model.FleetAnnualPlanId);
+                var fleetAnnualPlanDetails = db.FleetAnnualPlanDetails.Where(x => x.FleetAnnualPlanId == annualPlan.FleetAnnualPlanId).ToList();
+                if (fleetAnnualPlanDetails.Any())
+                {
+                    db.FleetAnnualPlanDetails.RemoveRange(fleetAnnualPlanDetails);
+                    db.SaveChanges();
+                }
                 db.FleetAnnualPlans.Remove(annualPlan);
                 db.SaveChanges();
             }
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
+        }
+        private void GenerateAnnualPlanDetail(int fleetAnnualPlanId)
+        {
+            var annualPlan = db.FleetAnnualPlans.Find(fleetAnnualPlanId);
+            var glPeriod = db.GLPeriods.Where(x => x.GlFiscalYearId == annualPlan.GlFiscalYearId).ToList();
+            foreach (var item in glPeriod)
+            {
+                var entity = new FleetAnnualPlanDetail
+                {
+                    GlPeriodId = item.GLPeriodId,
+                    FleetAnnualPlanId = annualPlan.FleetAnnualPlanId
+                };
+                db.FleetAnnualPlanDetails.Add(entity);
+            }
+            db.SaveChanges();
         }
     }
 }

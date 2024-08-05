@@ -13,10 +13,15 @@
                 columns.Bound(c => c.FleetInsuranceId).Title("S.No").Width(50);
                 columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "Id", "Name").Title("Fleet Plate No").Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
                 columns.ForeignKey(c => c.InsuranceCompanyId, (IEnumerable)ViewData["InsuranceCompany"], "InsuranceCompanyId", "InsuranceCompanyName").Title("Company").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+                columns.Bound(c => c.InsuranceType).Width(80);
                 columns.Bound(c => c.PremiumCost).Width(80);
                 columns.Bound(c => c.DueDate).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+                columns.Bound(c => c.ThirdPartyInsurance).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
                 columns.Bound(c => c.ExpireDate).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
-                columns.Bound(c => c.Attachment).Title("Email").Width(80);
+              
+                columns.Bound(c => c.ComprehensiveInsurance).Width(80);
+                columns.Bound(c => c.PolicyNo).Width(80);
+                columns.Bound(c => c.Attachment).Width(80);
                 columns.Bound(c => c.Description).Title("Descrption").Width(140);
                 columns.Bound(c => c.HasExpired).Visible(false);
                 columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);

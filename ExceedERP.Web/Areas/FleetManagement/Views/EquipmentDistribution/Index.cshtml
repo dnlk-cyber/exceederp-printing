@@ -363,7 +363,10 @@
                                               {
                                                   //columns.Bound(c => c.ApTravelOrderId).ClientTemplate("#=appendZeros(ApTravelOrderId)#").Width(100).Title("ID");
                                                   columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(200).EditorTemplateName("EmployeeSelector").Filterable(ftb => ftb.Multi(true).Search(true));
-                                                  columns.ForeignKey(p => p.FromBusinessUnitId, (IEnumerable)ViewData["Structure"], "OrgStructureId", "Name").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
+                                                  if (GlobalHelper.IsMultipleBusinessUnit())
+                                                  {
+                                                      columns.ForeignKey(c => c.FromBusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(180).EditorTemplateName("BusinessUnitSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+                                                  }
                                                   columns.ForeignKey(p => p.FromBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
 
                                                   columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["Structure"], "OrgStructureId", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");

@@ -80,11 +80,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             {
                 ModelState.AddModelError(string.Empty, "Due Date and Expire Date needs to have value");
             }
-            var exists = db.FleetInsurance.Where(x => x.FleetsID == fleetsInsurance.FleetsID).ToList();
-            if (exists.Any())
-            {
-                ModelState.AddModelError(string.Empty, "This Item is already registred!");
-            }
+            //var exists = db.FleetInsurance.Where(x => x.FleetsID == fleetsInsurance.FleetsID).ToList();
+            //if (exists.Any())
+            //{
+            //    ModelState.AddModelError(string.Empty, "This Item is already registred!");
+            //}
             if (ModelState.IsValid)
             {
                 var entity = new FleetInsurance

@@ -50,7 +50,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
         }
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EquipmentDistrbutionViewModel> GetDistrubtionList(string Type, string Branch, string Structure, string status, DateTime? StartDate, DateTime? EndDate)
+        public List<EquipmentDistrbutionViewModel> GetDistrubtionList(string equipmentNameId, string fleetId, string Type, string Branch, string Structure, string status, DateTime? StartDate, DateTime? EndDate)
         {
             List<EquipmentDistrbutionViewModel> EquipmentDistrbutionList = new List<EquipmentDistrbutionViewModel>();
             EquipmentDistrbutionViewModel EquipmentDistrbutionModel;
@@ -123,7 +123,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             if (!string.IsNullOrEmpty(status))
             {
 
-                VehicleDistributions = VehicleDistributions.Where(x => x.EquipmentStatus == status).ToList();
+                VehicleDistributions = VehicleDistributions.Where(x => x.Status == status).ToList();
             }
 
             if (!string.IsNullOrEmpty(Type))
@@ -154,11 +154,20 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     EquipmentStatus = requestedEquipment.EquipmentStatus;
                     RequestedQuantity = requestedEquipment.Quantity;
                 }
-               
-                
+                if (!string.IsNullOrWhiteSpace(equipmentNameId))
+                {
+                    Guid.TryParse(equipmentNameId, out Guid id);
+                    AssignedEquipments = AssignedEquipments.Where(x => x.EquipmentNameID == id).ToList();
+                }
+                if (!string.IsNullOrWhiteSpace(fleetId))
+                {
+                    Guid.TryParse(fleetId, out Guid id);
+                    AssignedEquipments = AssignedEquipments.Where(x => x.FleetId == id).ToList();
+
+                }
                 foreach (var AssignedEquipment in AssignedEquipments)
                 {
-
+                    var additionalInfo = db.AssignedEquipmentAdditionalInfos.FirstOrDefault(x => x.AssignedEquipmentId == AssignedEquipment.AssignedEquipmentID);
                     EquipmentDistrbutionModel = new EquipmentDistrbutionViewModel
                     {
                         AssignedQuantity = AssignedEquipments.Count,
@@ -176,7 +185,31 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         AmharicName = AmharicName,
                         Name = Name,
                         LogoFileName = LogoFileName,
-                        Address = Address
+                        Address = Address,
+                        KmTravelledPerLitre = additionalInfo?.KmTravelledPerLitre ?? 0,
+                        KmTravelledTotal = additionalInfo?.KmTravelledTotal ?? 0,
+                        KmInterSite = additionalInfo?.KmInterSite ?? 0,
+                        KmGrandTotal = additionalInfo?.KmGrandTotal ?? 0,
+                        ReqFuelInLiter = additionalInfo?.ReqFuelInLiter ?? 0,
+                        TotalInLitre = additionalInfo?.TotalInLitre ?? 0,
+                        FromDeppot = additionalInfo?.FromDeppot ?? 0,
+                        InCashLiter = additionalInfo?.InCashLiter ?? 0,
+                        FuelRate = additionalInfo?.FuelRate ?? 0,
+                        InCash = additionalInfo?.InCash ?? 0, 
+                        FromProject = additionalInfo?.FromProject ?? 0,
+                        OilReqForEngine = additionalInfo?.OilReqForEngine ?? 0,
+                        OilReqForOther = additionalInfo?.OilReqForOther ?? 0,
+                        GreaseReq = additionalInfo?.GreaseReq ?? 0,
+                        TotalPerdium = additionalInfo?.TotalPerdium ?? 0,
+                        TotalBirr = additionalInfo?.TotalBirr ?? 0,
+
+                        EquipmentType = db.EquipmentName.FirstOrDefault(x => x.EquipmentNameID == AssignedEquipment.EquipmentNameID)?.Name ?? "",
+                        PlateNo = db.Fleets.FirstOrDefault(x => x.FleetsID == AssignedEquipment.FleetId)?.PlateNumber ?? "",
+                        OperatorName = db.Operator.FirstOrDefault(x => x.OperatorID == AssignedEquipment.OperatorId)?.FullName ?? "",
+                        ReasonForTravel = VehicleDistribution?.ReasonForTravel,
+                        EmployeeName = GetFullName(VehicleDistribution?.EmployeeId ?? 0),
+                        StartOdometer = AssignedEquipment.StartOdometr,
+                        EndOdometer = AssignedEquipment.EndOdometer
                     };
                     
                     EquipmentDistrbutionList.Add(EquipmentDistrbutionModel);
@@ -198,6 +231,13 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
             return EquipmentDistrbutionList;
         }
-
+        private string GetFullName(int id)
+        {
+            if(id == 0)
+            {
+                return "";
+            }
+            return db.Person_Employee.FirstOrDefault(x => x.EmployeeId == id).FirstName + "-" + db.Person_Employee.FirstOrDefault(x => x.EmployeeId == id).MiddleName + "-" + db.Person_Employee.FirstOrDefault(x => x.EmployeeId == id).LastName;
+        }
     }
 }

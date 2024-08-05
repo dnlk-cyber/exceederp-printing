@@ -22,7 +22,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             {
 
                 Guid FId = Guid.Parse(fleetId);
-                var lightVehicleTimeSheets = db.LightVehicleTimeSheets.OrderByDescending(x => x.Date).Where(x => x.FleetsID == FId).ToList();
+                var lightVehicleTimeSheets = db.LightVehicleTimeSheets.OrderByDescending(x => x.Date).Where(x => x.FleetsID == FId && x.TimeSheetApproved).ToList();
 
                 lightVehicleTimeSheets = lightVehicleTimeSheets.Where(x => x.Date.Date >= from.Date && x.Date.Date <= to.Date).ToList();
 

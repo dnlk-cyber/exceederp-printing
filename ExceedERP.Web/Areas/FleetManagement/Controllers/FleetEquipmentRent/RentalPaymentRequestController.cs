@@ -49,7 +49,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         public ActionResult RentalPaymentRequests_Read([DataSourceRequest] DataSourceRequest request)
         {
             var rentalPaymentRequests = db.RentalPaymentRequests;
-            DataSourceResult result = rentalPaymentRequests.ToDataSourceResult(request, rentalPaymentRequest => new
+            DataSourceResult result = rentalPaymentRequests.ToDataSourceResult(request, rentalPaymentRequest => new RentalPaymentRequest
             {
                 RentalPaymentRequestId = rentalPaymentRequest.RentalPaymentRequestId,
                 EmployeeId = rentalPaymentRequest.EmployeeId,
@@ -99,6 +99,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 IsFinanceApproved = rentalPaymentRequest.IsFinanceApproved,
                 FinanceApprovedBy = rentalPaymentRequest.FinanceApprovedBy,
                 FinanceApprovedTime = rentalPaymentRequest.FinanceApprovedTime,
+                AmountDue = rentalPaymentRequest.AmountDue,
+                TotalAmount = rentalPaymentRequest.TotalAmount,
+                IsVoid = rentalPaymentRequest.IsVoid,
+                Paid = rentalPaymentRequest.Paid,
+                VoidBy = rentalPaymentRequest.VoidBy,
+                VoidTime = rentalPaymentRequest.VoidTime,
                 
             });
             return Json(result);
@@ -190,69 +196,76 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult RentalPaymentRequests_Update([DataSourceRequest] DataSourceRequest request, RentalPaymentRequest rentalPaymentRequest)
         {
+            
             if (ModelState.IsValid)
             {
-                var durations = db.GLPeriods.Where(x => x.GLPeriodId == rentalPaymentRequest.GLPeriodId)
-                 .Select(x => new { x.DateFrom, x.DateTo })
-                 .FirstOrDefault();
-                var entity = new RentalPaymentRequest
+                var durations = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == rentalPaymentRequest.GLPeriodId);
+                if(durations != null)
                 {
-                    RentalPaymentRequestId = rentalPaymentRequest.RentalPaymentRequestId,
-                    EmployeeId = rentalPaymentRequest.EmployeeId,
-                    BranchId = rentalPaymentRequest.BranchId,
-                    ReasonofPayment = rentalPaymentRequest.ReasonofPayment,
-                    RequestDate = rentalPaymentRequest.RequestDate,
-                    Refference = rentalPaymentRequest.Refference,
-                    Remark = rentalPaymentRequest.Remark,
-                    GLPeriodId = rentalPaymentRequest.GLPeriodId,
-                    GLFiscalYearId = rentalPaymentRequest.GLFiscalYearId,
-                    DurationFrom = durations.DateFrom,
-                    DurationTo = durations.DateTo,
-                    OrgStructureId = rentalPaymentRequest.OrgStructureId,
-                    ProcurementSupplierID = rentalPaymentRequest.ProcurementSupplierID,
-                    BusinessUnitId = rentalPaymentRequest.BusinessUnitId,
-                    IsBudgetApproved = rentalPaymentRequest.IsBudgetApproved,
-                    BudgetApprovedBy = rentalPaymentRequest.BudgetApprovedBy,
-                    BudgetApprovedTime = rentalPaymentRequest.BudgetApprovedTime,
-                    ForwardedFrom = rentalPaymentRequest.ForwardedFrom,
-                    ForwardedTo = rentalPaymentRequest.ForwardedTo,
-                    IsFinalApproval = rentalPaymentRequest.IsFinalApproval,
-                    CurrentApprovalStep = rentalPaymentRequest.CurrentApprovalStep,
-                    IsDepartmentOnlineApproved = rentalPaymentRequest.IsDepartmentOnlineApproved,
-                    DepartmentOnlineApprovedBy = rentalPaymentRequest.DepartmentOnlineApprovedBy,
-                    DepartmentOnlineApprovedTime = rentalPaymentRequest.DepartmentOnlineApprovedTime,
-                    IsDepartmentSendForApproval = rentalPaymentRequest.IsDepartmentSendForApproval,
-                    DepartmentSendForApprovalBy = rentalPaymentRequest.DepartmentSendForApprovalBy,
-                    DepartmentSendForApprovalTime = rentalPaymentRequest.DepartmentSendForApprovalTime,
-                    IsOnlineApproved = rentalPaymentRequest.IsOnlineApproved,
-                    OnlineApprovedBy = rentalPaymentRequest.OnlineApprovedBy,
-                    OnlineApprovedTime = rentalPaymentRequest.OnlineApprovedTime,
-                    IsSendForApproval = rentalPaymentRequest.IsSendForApproval,
-                    SendForApprovalBy = rentalPaymentRequest.SendForApprovalBy,
-                    SendForApprovalTime = rentalPaymentRequest.SendForApprovalTime,
-                    IsOnlineTransferred = rentalPaymentRequest.IsOnlineTransferred,
-                    IsOnlineTransferredBy = rentalPaymentRequest.IsOnlineTransferredBy,
-                    OnlineTransferredTime = rentalPaymentRequest.OnlineTransferredTime,
-                    OrgBranchName = rentalPaymentRequest.OrgBranchName,
-                    IsVoid = rentalPaymentRequest.IsVoid,
-                    VoidBy = rentalPaymentRequest.VoidBy,
-                    VoidTime = rentalPaymentRequest.VoidTime,
-                    DateCreated = rentalPaymentRequest.DateCreated,
-                    CreatedBy = rentalPaymentRequest.CreatedBy,
-                    LastModified = DateTime.Now,
-                    ModifiedBy = User.Identity.Name,
-                    IsFinanceSendForApproval = rentalPaymentRequest.IsFinanceSendForApproval,
-                    FinanceSendForApprovalBy = rentalPaymentRequest.FinanceSendForApprovalBy,
-                    FinanceSendForApprovalTime = rentalPaymentRequest.FinanceSendForApprovalTime,
-                    IsFinanceApproved = rentalPaymentRequest.IsFinanceApproved,
-                    FinanceApprovedBy = rentalPaymentRequest.FinanceApprovedBy,
-                    FinanceApprovedTime = rentalPaymentRequest.FinanceApprovedTime,
-                };
-                db.RentalPaymentRequests.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
+                    rentalPaymentRequest.DurationFrom = durations.DateFrom;
+                    rentalPaymentRequest.DurationTo = durations.DateTo;
+                    rentalPaymentRequest.LastModified = DateTime.Today;
+                    rentalPaymentRequest.ModifiedBy = User.Identity.Name;
+                    db.RentalPaymentRequests.Attach(rentalPaymentRequest);
+                    db.Entry(rentalPaymentRequest).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                //var entity = new RentalPaymentRequest
+                //{
+                //    RentalPaymentRequestId = rentalPaymentRequest.RentalPaymentRequestId,
+                //    EmployeeId = rentalPaymentRequest.EmployeeId,
+                //    BranchId = rentalPaymentRequest.BranchId,
+                //    ReasonofPayment = rentalPaymentRequest.ReasonofPayment,
+                //    RequestDate = rentalPaymentRequest.RequestDate,
+                //    Refference = rentalPaymentRequest.Refference,
+                //    Remark = rentalPaymentRequest.Remark,
+                //    GLPeriodId = rentalPaymentRequest.GLPeriodId,
+                //    GLFiscalYearId = rentalPaymentRequest.GLFiscalYearId,
+                //    DurationFrom = durations.DateFrom,
+                //    DurationTo = durations.DateTo,
+                //    OrgStructureId = rentalPaymentRequest.OrgStructureId,
+                //    ProcurementSupplierID = rentalPaymentRequest.ProcurementSupplierID,
+                //    BusinessUnitId = rentalPaymentRequest.BusinessUnitId,
+                //    IsBudgetApproved = rentalPaymentRequest.IsBudgetApproved,
+                //    BudgetApprovedBy = rentalPaymentRequest.BudgetApprovedBy,
+                //    BudgetApprovedTime = rentalPaymentRequest.BudgetApprovedTime,
+                //    ForwardedFrom = rentalPaymentRequest.ForwardedFrom,
+                //    ForwardedTo = rentalPaymentRequest.ForwardedTo,
+                //    IsFinalApproval = rentalPaymentRequest.IsFinalApproval,
+                //    CurrentApprovalStep = rentalPaymentRequest.CurrentApprovalStep,
+                //    IsDepartmentOnlineApproved = rentalPaymentRequest.IsDepartmentOnlineApproved,
+                //    DepartmentOnlineApprovedBy = rentalPaymentRequest.DepartmentOnlineApprovedBy,
+                //    DepartmentOnlineApprovedTime = rentalPaymentRequest.DepartmentOnlineApprovedTime,
+                //    IsDepartmentSendForApproval = rentalPaymentRequest.IsDepartmentSendForApproval,
+                //    DepartmentSendForApprovalBy = rentalPaymentRequest.DepartmentSendForApprovalBy,
+                //    DepartmentSendForApprovalTime = rentalPaymentRequest.DepartmentSendForApprovalTime,
+                //    IsOnlineApproved = rentalPaymentRequest.IsOnlineApproved,
+                //    OnlineApprovedBy = rentalPaymentRequest.OnlineApprovedBy,
+                //    OnlineApprovedTime = rentalPaymentRequest.OnlineApprovedTime,
+                //    IsSendForApproval = rentalPaymentRequest.IsSendForApproval,
+                //    SendForApprovalBy = rentalPaymentRequest.SendForApprovalBy,
+                //    SendForApprovalTime = rentalPaymentRequest.SendForApprovalTime,
+                //    IsOnlineTransferred = rentalPaymentRequest.IsOnlineTransferred,
+                //    IsOnlineTransferredBy = rentalPaymentRequest.IsOnlineTransferredBy,
+                //    OnlineTransferredTime = rentalPaymentRequest.OnlineTransferredTime,
+                //    OrgBranchName = rentalPaymentRequest.OrgBranchName,
+                //    IsVoid = rentalPaymentRequest.IsVoid,
+                //    VoidBy = rentalPaymentRequest.VoidBy,
+                //    VoidTime = rentalPaymentRequest.VoidTime,
+                //    DateCreated = rentalPaymentRequest.DateCreated,
+                //    CreatedBy = rentalPaymentRequest.CreatedBy,
+                //    LastModified = DateTime.Now,
+                //    ModifiedBy = User.Identity.Name,
+                //    IsFinanceSendForApproval = rentalPaymentRequest.IsFinanceSendForApproval,
+                //    FinanceSendForApprovalBy = rentalPaymentRequest.FinanceSendForApprovalBy,
+                //    FinanceSendForApprovalTime = rentalPaymentRequest.FinanceSendForApprovalTime,
+                //    IsFinanceApproved = rentalPaymentRequest.IsFinanceApproved,
+                //    FinanceApprovedBy = rentalPaymentRequest.FinanceApprovedBy,
+                //    FinanceApprovedTime = rentalPaymentRequest.FinanceApprovedTime,
+                //};
+                
                 #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "Rental payment request update", "Success", User.Identity.Name, $"updated rental payment request {entity.RentalPaymentRequestId} ", Modules.FleetManagement);
+                UserHelper.OperationLog(Request.UserHostAddress, "Rental payment request update", "Success", User.Identity.Name, $"updated rental payment request {rentalPaymentRequest.RentalPaymentRequestId} ", Modules.FleetManagement);
                 #endregion
             }
             return Json(new[] { rentalPaymentRequest }.ToDataSourceResult(request, ModelState));

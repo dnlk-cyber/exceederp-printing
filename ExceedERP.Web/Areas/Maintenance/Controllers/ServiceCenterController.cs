@@ -20,24 +20,27 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.Maintenance.Controllers
 {
-   // [AuthorizeRoles(MaintenanceRoles.ServiceUser)]
+    // [AuthorizeRoles(MaintenanceRoles.ServiceUser)]
     public class ServiceCenterController : Controller
     {
         public async Task<ActionResult> Index()
         {
             ViewData["EquipmentsList"] = db.EquipmentInformation.Select(e => new { e.EquipmentInformationId, e.LicensePlate, e.DeviceNumber }).ToList();
             await GetMaintainaceDue();
-            ViewData["SubCategories"] = db.ItemCategorys.Select(s => new {
+            ViewData["SubCategories"] = db.ItemCategorys.Select(s => new
+            {
                 Code = s.ItemCategoryCode,
                 Name = s.Name
             }).ToList();
             var employee = db.Person_Employee;
             var mechanic = db.MechanicCrew;
-            ViewData["Mechanic"] = mechanic.Select(s => new {
+            ViewData["Mechanic"] = mechanic.Select(s => new
+            {
                 Code = s.MechanicCrewID,
-                Name = s.Person_Employee.EmployeeCode + " "+s.Person_Employee.FirstNameEnglish + " " + s.Person_Employee.MiddleNameEnglish + " " + s.Person_Employee.LastNameEnglish
+                Name = s.Person_Employee.EmployeeCode + " " + s.Person_Employee.FirstNameEnglish + " " + s.Person_Employee.MiddleNameEnglish + " " + s.Person_Employee.LastNameEnglish
             }).AsQueryable();
-            ViewData["JobOrderDetail"] = db.JobOrderDetail.Select(s => new {
+            ViewData["JobOrderDetail"] = db.JobOrderDetail.Select(s => new
+            {
                 Code = s.JobOrderDetailID,
                 Name = s.RepairType.Code + "-" + s.RepairType.Name
 
@@ -55,7 +58,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                  GLPeriodId = i.InventoryPeriodId
              }).AsQueryable();
             ViewData["inventoryPeriods"] = selectedinventoryPeriods;
-            ViewData["JobCauses"] = db.JobCauses.Select(s => new {
+            ViewData["JobCauses"] = db.JobCauses.Select(s => new
+            {
                 Code = s.JobCausesId,
                 Name = s.Description
             }).ToList();
@@ -73,7 +77,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             ViewData["defaultCategory"] = categories.FirstOrDefault();
             var store = db.InventoryStores.AsQueryable();
             ViewData["stores"] = store;
-            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
+            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new
+            {
                 Code = s.OrganizationCustomerID,
                 Name = s.TradeName
             }).ToList();
@@ -92,11 +97,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             }).ToList();
 
             var selectedEmployee = employee.Select(
-                i => new
-                {
-                    Name = i.EmployeeCode + " " + i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
-                    Code = i.EmployeeId
-                }).AsQueryable();
+            i => new
+            {
+                Name = i.EmployeeCode + " " + i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+                Code = i.EmployeeId
+            }).AsQueryable();
             ViewData["personEmployees"] = selectedEmployee;
 
             var selectedcostCenter = costCenter.Select(
@@ -107,7 +112,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 }).AsQueryable();
 
             ViewData["costCenters"] = selectedcostCenter;
-            ViewData["Service"] = db.RepairType.Select(s => new {
+            ViewData["Service"] = db.RepairType.Select(s => new
+            {
                 Code = s.RepairTypeID,
                 Name = s.Code + "-" + s.Name
             }).ToList();
@@ -129,7 +135,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             JobOrderDetailService = new JobOrderDetailService();
             _JobOrderService = new JobOrderService();
-            _ServiceCenterJobService=new ServiceCenterJobService();
+            _ServiceCenterJobService = new ServiceCenterJobService();
             _FleetService = new FleetService();
             _AdministrativeApprovalService = new AdministrativeJobApprovalService();
             _ServiceService = new ServiceService();
@@ -347,16 +353,16 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             var jsnMssg = new
             {
-                Message = "successfully transfered", 
+                Message = "successfully transfered",
                 Error = false
             };
             var serviceCenter = db.ServiceCenterJob.FirstOrDefault(x => x.ServiceCenterJobId == Id);
-            if(serviceCenter != null)
+            if (serviceCenter != null)
             {
                 serviceCenter.IsExternalMaintenanceCenter = true;
                 db.Entry(serviceCenter).State = EntityState.Modified;
                 db.SaveChanges();
-               
+
                 return Json(jsnMssg, JsonRequestBehavior.AllowGet);
             }
             var jMssg = new
@@ -477,8 +483,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         //    db.SaveChanges();
         //    return RedirectToAction("index", "ServiceCenter");
         //}
-        
-            //Copy 
+
+        //Copy 
         public ActionResult CloseWorkShop(Guid id)
         {
             var jobid = id;
@@ -493,7 +499,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             // Added After JobOrder Stoped Closing 2/26/2024
             var jobOrder = db.JobOrder.Find(serviceCenterJob.JobOrderID);
-            if(jobOrder != null)
+            if (jobOrder != null)
             {
                 jobOrder.IsSubmittedToServiceCenter = true;
                 db.JobOrder.Attach(jobOrder);

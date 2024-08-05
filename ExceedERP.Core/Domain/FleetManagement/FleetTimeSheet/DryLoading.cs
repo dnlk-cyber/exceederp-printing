@@ -10,6 +10,12 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
     public class DryLoadingTimeSheet: OperationsCostTimeSheet
     {
         public int DryLoadingTimeSheetId { get; set; }
+        [Display(Name = "Equipment Category")]
+        public Guid? EquipmentCategoryId { get; set; }
+        [Display(Name = "Equipment Type")]
+        public Guid? EquipmentTypeId { get; set; }
+        [Display(Name = "Equipment Name")]
+        public Guid? EquipmentNameId { get; set; }
         [DisplayName("Supplier Name")]
         public int? ProcurementSupplierID { get; set; }
         [Required]
@@ -18,6 +24,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         [Required]
         [DisplayName("Working Hour")]
         public decimal WorkingHour { get; set; }
+        [Display(Name ="Down Hour")]
+        public decimal Downhour { get; set; }
         [Required]
         [DisplayName("Trip Start Place")]
         public string TripStartPlace { get; set; }

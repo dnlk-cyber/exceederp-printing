@@ -34,13 +34,33 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         // GET: /FleetManagement/TireIssue/
         public ActionResult Index()
         {
+            ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            {
+                Value = s.EquipmentIdentityID,
+                Text = s.EquipmentCategoryName
+            }).ToList();
+            ViewData["type"] = db.EquipmentType.Select(s => new
+            {
+                Value = s.EquipmentTypeID,
+                Text = s.EquipmentTypeName
+            }).ToList();
+            ViewData["name"] = db.EquipmentName.Select(s => new
+            {
+                Value = s.EquipmentNameID,
+                Text = s.Name
+            }).ToList();
+            ViewData["fleet"] = db.Fleets.Select(s => new
+            {
+                Value = s.FleetsID,
+                Text = s.PlateNumber + "-" + s.SerialNo
+            }).ToList();
             return View();
         }
 
 
         public ActionResult TireIssue_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var TireIssue = _TireIssueService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(t => new TireIssue
+            var TireIssue = _TireIssueService.GetAll().ToList().Select(t => new TireIssue
             {
 
                 UnitPrice = t.UnitPrice,
@@ -65,8 +85,13 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 ModifiedBy = t.ModifiedBy,
                 LastModified = t.LastModified,
                 IssueId = t.IssueId,
-
-                IssueItemId = t.IssueItemId
+                FleetId = t.FleetId,
+                IssueItemId = t.IssueItemId,
+                EquipmentIdentityID = t.EquipmentIdentityID,
+                EquipmentNameID = t.EquipmentNameID,
+                EquipmentTireId = t.EquipmentTireId,
+                EquipmentTypeID = t.EquipmentTypeID,
+                TireReturnId = t.TireReturnId
 
             }
                 );
@@ -81,15 +106,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             IOperatorService _OperatorService = new OperatorService();
             IFleetService fleetService = new FleetService();
             ITireReturnService _TireReturnService = new TireReturnService();
-            //try
-            //{
-            //TireReturn Return = _TireReturnService.GetAll().ToList().Where(x => x.TireReturnID.ToString() == TireIssue.SerialNo).FirstOrDefault();
-            //EquipmentTyre Tyre = db.EquipmentTyres.ToList().Where(x => x.fleetId == Return.FleetId && x.SerialNo == Return.SerialNo).FirstOrDefault();
-
-            Fleets fleet = fleetService.GetAll().ToList().Where(x => x.FleetsID == TireIssue.FleetId).FirstOrDefault();
+            
+            //Fleets fleet = fleetService.GetAll().ToList().Where(x => x.FleetsID == TireIssue.FleetId).FirstOrDefault();
+            var fleet = db.Fleets.Find(TireIssue.FleetId);
             TireIssue.TireIssueID = Guid.NewGuid();
             TireIssue.TireReturnId = Guid.NewGuid();
-            TireIssue.FleetId = fleet.FleetsID;
+            //TireIssue.FleetId = fleet.FleetsID;
             TireIssue.Brand = TireIssue.Brand;
             TireIssue.InstalledDate = DateTime.Now;
             TireIssue.StoreCode = TireIssue.StoreCode;
@@ -117,7 +139,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public ActionResult TireIssue_Update([DataSourceRequest] DataSourceRequest request, TireIssue TireIssue)
         {
             IFleetService fleetService = new FleetService();
-            Fleets fleet = fleetService.GetAll().Where(x => x.PlateNumber == TireIssue.PlateNumber).FirstOrDefault();
+            Fleets fleet = fleetService.GetAll().Where(x => x.PlateNumber == TireIssue.PlateNumber || x.FleetsID == TireIssue.FleetId).FirstOrDefault();
 
             if (TireIssue != null)
             {

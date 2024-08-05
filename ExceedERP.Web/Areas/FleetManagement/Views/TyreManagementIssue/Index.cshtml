@@ -3,12 +3,18 @@
   
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend> Tire/Battery Issue</legend>
+<legend> Tyre/Battery Issue</legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssue>()
     .Name("grid")
     .Columns(columns =>
     {
+
+
         columns.Bound(e => e.IssueType).Width(140);
+        columns.ForeignKey(c => c.EquipmentIdentityID, (IEnumerable)ViewData["category"], "Value", "Text").Width(100);
+        columns.ForeignKey(c => c.EquipmentTypeID, (IEnumerable)ViewData["type"], "Value", "Text").Width(100);
+        columns.ForeignKey(c => c.EquipmentNameID, (IEnumerable)ViewData["name"], "Value", "Text").Width(100);
+        columns.ForeignKey(c => c.FleetId, (IEnumerable)ViewData["fleet"], "Value", "Text").Width(100);
         columns.Bound(e => e.PlateNumber).Width(140);
         columns.Bound(e => e.Brand).Width(140);
         columns.Bound(e => e.SerialNo).Width(140);

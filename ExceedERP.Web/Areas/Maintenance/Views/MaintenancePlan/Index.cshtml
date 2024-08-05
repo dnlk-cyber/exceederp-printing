@@ -1,0 +1,181 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Annual Plan</h2>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.MaintenancePlan>()
+                                                .Name("grid")
+                                                .Columns(columns =>
+                                                {
+
+                                                    columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120);
+                                                    columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120);
+                                                    
+                                                    columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["GlFiscalYear"], "Value", "Text").Width(120);
+
+                                                    columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                                                })
+                                                .ToolBar(commands => commands.Create())
+                                                .Editable(editable =>
+                                                {
+                                                    editable.Mode(GridEditMode.PopUp).TemplateName("MaintenancePlanPopUpTemplate");
+                                                    editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
+                                                })
+                                                .Filterable()
+                                                .Events(e => e.DetailExpand("DetailExpand"))
+                                                .Scrollable(e => e.Height(550))
+                                                .DataSource(dataSource => dataSource
+                                                    .Ajax()
+                                                    .Events(ev => ev
+                                                                .Error("error_handler(\"grid\")")
+                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+                                                    .Model(model => model.Id(p => p.MaintenancePlanId))
+                                                    .Read(read => read.Action("Read", "MaintenancePlan"))
+                                                    .Create(create => create.Action("Create", "MaintenancePlan"))
+                                                    .Update(update => update.Action("Update", "MaintenancePlan"))
+                                                    .Destroy(delete => delete.Action("Delete", "MaintenancePlan"))
+
+                                                ).ClientDetailTemplateId("tabs")
+)
+
+<script id="tabs" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                                                                                                .Name("tabstrip_grid_#=MaintenancePlanId#")
+                                                                                                .SelectedIndex(0)
+                                                                                                .Items(itemn =>
+                                                                                                {
+                                                                                                    itemn.Add().Text("Monthly Plan").Content(@<text>@Detail()</text>);
+
+                                                                                                        }).ToClientTemplate())
+</script>
+
+
+
+@helper Detail()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.MaintenancePlanDetail>()
+                                                        .Name("grid_#=MaintenancePlanId#")
+                                                        .Columns(columns =>
+                                                        {
+                                                            columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["GlPeriod"], "Value", "Text").Width(120);
+
+                                                            columns.Bound(c => c.CMQuantity).Width(100);
+                                                            columns.Bound(c => c.CMCost).Width(100);
+                                                            columns.Bound(c => c.PMQuantity).Width(100);
+                                                            columns.Bound(c => c.PMCost).Width(100);
+
+                                                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                                                        })
+                                                        //.ToolBar(commands => commands.Create())
+                                                        .Editable(editable =>
+                                                        {
+                                                            editable.Mode(GridEditMode.PopUp).TemplateName("MaintenancePlanDetailPopUp");
+                                                            editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
+                                                        })
+                                                        .Filterable()
+                                                        .Scrollable()
+                                                        .DataSource(dataSource => dataSource
+                                                            .Ajax()
+                                                                .Events(ev => ev
+                                                                .Error("error_handler(\"grid_#=MaintenancePlanId#\")")
+                                                                .RequestStart("onRequestStart(\"grid_#=MaintenancePlanId#\")")
+                                                                .RequestEnd("onRequestEnd(\"grid_#=MaintenancePlanId#\")"))
+                                                            .Model(model => model.Id(p => p.MaintenancePlanDetailId))
+                                                            .Read(read => read.Action("Read", "MaintenancePlanDetail", new { id = "#=MaintenancePlanId#" }))
+                                                            //.Create(create => create.Action("Create", "MaintenancePlanDetail", new { id = "#=MaintenancePlanId#" }))
+                                                            .Update(update => update.Action("Update", "MaintenancePlanDetail"))
+                                                            .Destroy(delete => delete.Action("Delete", "MaintenancePlanDetail"))
+
+                                                        ).ToClientTemplate()
+    )
+}
+
+
+<script type="text/javascript">
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var fiscalYearId;
+    var fleetAnnualPlanId;
+    function DetailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        fiscalYearId = masterDataItem.GlFiscalYearId;
+        fleetAnnualPlanId = masterDataItem.FleetAnnualPlanId;
+    }
+    function getFiscalYear() {
+        return {
+            fiscalYearId: fiscalYearId
+        }
+    }
+
+    function filterFleet() {
+        return {
+            text: $("#FleetId").data("kendoDropDownList").filterInput.val(),
+            equipmentNameId: $("#EquipmentNameId").val()
+        };
+    }
+    function filterEquipmentNames() {
+        var dropdownlist = $("#EquipmentNameId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentTypeId: $("#EquipmentTypeId").val(),
+            search: filterInput.val()
+        };
+    }
+    function filterPlateNumber() {
+        var dropdownlist = $("#EquipmentName").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentNameID: $("#EquipmentNameID").val(),
+            search: filterInput.val()
+        };
+    }
+    function filterCategory() {
+        var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentIdentityId: $("#EquipmentCategoryId").val(),
+            search: filterInput.val()
+        };
+
+    }
+
+
+    function filterFixedAssetSubCategory() {
+
+        var dropdownlist = $("#SubType").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            Id: $("#EquipmentTypeId").val(),
+            Search: filterInput.val()
+        };
+    }
+
+</script>
+
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

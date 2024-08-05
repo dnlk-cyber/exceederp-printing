@@ -25,13 +25,32 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
          
         public ActionResult Index(TimeSheetType dumpTruck)
         {
+            ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            {
+                Text = s.EquipmentCategoryName,
+                Value = s.EquipmentIdentityID
+            }).ToList();
+            ViewData["type"] = db.EquipmentType.Select(s => new
+            {
+                Text = s.EquipmentTypeName,
+                Value = s.EquipmentTypeID
+            }).ToList();
+            ViewData["name"] = db.EquipmentName.Select(s => new
+            {
+                Text = s.Name,
+                Value = s.EquipmentNameID
+            }).ToList();
             ViewData["Fleets"] = db.Fleets.Select(x => new
             {
                 Value = x.FleetsID,
                 Text = x.PlateNumber
             }).ToList();
+            ViewData["branch"] = db.Branch.Select(s => new
+            {
+                Value = s.BranchId,
+                Text = s.Name
+            }).ToList();
 
-           
             ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
 
             ViewBag.dumpTruck = dumpTruck;
@@ -88,8 +107,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 TimeSheetApprovedBy = dumpTruckTimeSheet.TimeSheetApprovedBy,
                 TimeSheetApprovedDate = dumpTruckTimeSheet.TimeSheetApprovedDate,
                 TimeSheetSendForAproval = dumpTruckTimeSheet.TimeSheetSendForAproval,
-                OperatorId = dumpTruckTimeSheet.OperatorId
-                
+                OperatorId = dumpTruckTimeSheet.OperatorId,
+                EquipmentCategoryId = dumpTruckTimeSheet.EquipmentCategoryId,
+                EquipmentTypeId = dumpTruckTimeSheet.EquipmentTypeId,
+                EquipmentNameId = dumpTruckTimeSheet.EquipmentNameId
+
             });
 
             return Json(result);
@@ -136,7 +158,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     TireCost = dumpTruckTimeSheet.TireCost,
                     BranchId = dumpTruckTimeSheet.BranchId,
                     BusinessUnitId = dumpTruckTimeSheet.BusinessUnitId,
-                    OperatorId = dumpTruckTimeSheet.OperatorId
+                    OperatorId = dumpTruckTimeSheet.OperatorId,
+                    EquipmentCategoryId = dumpTruckTimeSheet.EquipmentCategoryId,
+                    EquipmentTypeId = dumpTruckTimeSheet.EquipmentTypeId,
+                    EquipmentNameId = dumpTruckTimeSheet.EquipmentNameId
                 };
 
                 db.DumpTruckTimeSheets.Add(entity);
@@ -192,8 +217,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     BranchId = dumpTruckTimeSheet.BranchId,
                     BusinessUnitId = dumpTruckTimeSheet.BusinessUnitId,
                     OperatorId = dumpTruckTimeSheet.OperatorId,
-                    TimeSheetStatus = MaintenanceConst.Pending
-
+                    TimeSheetStatus = MaintenanceConst.Pending,
+                    EquipmentCategoryId = dumpTruckTimeSheet.EquipmentCategoryId,
+                    EquipmentTypeId = dumpTruckTimeSheet.EquipmentTypeId,
+                    EquipmentNameId = dumpTruckTimeSheet.EquipmentNameId
                 };
 
                 db.DumpTruckTimeSheets.Attach(entity);
@@ -247,8 +274,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     TireCost = dumpTruckTimeSheet.TireCost,
                     BranchId = dumpTruckTimeSheet.BranchId,
                     BusinessUnitId = dumpTruckTimeSheet.BusinessUnitId,
-                    OperatorId = dumpTruckTimeSheet.OperatorId
-
+                    OperatorId = dumpTruckTimeSheet.OperatorId,
+                    EquipmentCategoryId = dumpTruckTimeSheet.EquipmentCategoryId,
+                    EquipmentTypeId = dumpTruckTimeSheet.EquipmentTypeId,
+                    EquipmentNameId = dumpTruckTimeSheet.EquipmentNameId
                 };
 
                 db.DumpTruckTimeSheets.Attach(entity);

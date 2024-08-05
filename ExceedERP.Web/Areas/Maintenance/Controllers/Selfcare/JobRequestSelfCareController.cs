@@ -519,115 +519,117 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             var request = new DataSourceRequest();
             // var jobRequest = db.JobRequest.Find(id);
 
-            try
+            //try
+            //{
+
+            string Odometer = string.Empty;
+            string EquipmentType = string.Empty;
+            string AssetNum = string.Empty;
+            string PlateNum = string.Empty;
+            Guid EquipmentTypeId = Guid.Empty;
+            //  var model = db.AdministrativeJobApproval.Find(id);
+
+            var Request = db.JobRequest.FirstOrDefault(x => x.JobRequestId == id);
+            var maintenanceCenter = db.MaintenanceCenter.FirstOrDefault(x => x.MaintenanceCenterID == Request.MaintenanceCenterId);
+            var fleet = db.Fleets.FirstOrDefault(x => x.PlateNumber == Request.LicensePlate || x.SerialNo == Request.LicensePlate);
+            if (Request != null && fleet != null)
             {
 
-                string Odometer = string.Empty;
-                string EquipmentType = string.Empty;
-                string AssetNum = string.Empty;
-                string PlateNum = string.Empty;
-                Guid EquipmentTypeId = Guid.Empty;
-              //  var model = db.AdministrativeJobApproval.Find(id);
-                
-                    var Request = db.JobRequest.FirstOrDefault(x => x.JobRequestId == id);
-                    var maintenanceCenter = db.MaintenanceCenter.FirstOrDefault(x => x.MaintenanceCenterID == Request.MaintenanceCenterId);
-                    if (Request != null)
-                    {
+                //if (model.Status == ApprovalStatuses.Approve)
+                //{
+                var JobOrder = new JobOrder();
 
-                        //if (model.Status == ApprovalStatuses.Approve)
-                        //{
-                        var JobOrder = new JobOrder();
+                JobOrder.JobOrderID = Guid.NewGuid();
+                JobOrder.EquipmentInformationId = Request.EquipmentInformationId == null ? Guid.Empty : Request.EquipmentInformationId.Value;
+                //JobOrder.ProjectName = Request.ProjectName;
+                JobOrder.CurrentFuel = Request.FuelAmount;
+                JobOrder.LicensePlate = Request.LicensePlate;
+                JobOrder.FleetsID = fleet.FleetsID;
+                JobOrder.EquipmentName = Request.EquipmentName;
+                JobOrder.OperatorName = Request.OperatorName;
+                JobOrder.AssetNum = AssetNum;
+                JobOrder.Referance = Request.Num;
+                JobOrder.IsPM = Request.IsPM;
+                JobOrder.Odometer = Request.Odometer;
+                JobOrder.EquipmentType = EquipmentType;
+                //JobOrder.EquipmentTypeId = EquipmentTypeId;
+                JobOrder.MaintenanceCenter = maintenanceCenter.Name; // just name
+                JobOrder.MaintenanceCenterId = Request.MaintenanceCenterId; // Added Field to track maintenanceCenter
+                JobOrder.PercentCompleted = string.Empty;
+                JobOrder.Odometer = Request.Odometer;
+                JobOrder.InspectorComments = string.Empty;
+                JobOrder.DateCompleted = DateTime.Now;
+                JobOrder.DateCreated = DateTime.Now;
+                JobOrder.LabourCost = 0;
+                JobOrder.SpareCost = 0;
+                JobOrder.IsExternal = Request.Source == JobRequestSource.ExternalVehicle ? true : false;
+                JobOrder.DateIssued = DateTime.Now;
+                JobOrder.Type = string.Empty;
+                JobOrder.EquipmentNo = PlateNum;
+                JobOrder.InspectedBy = Request.Requester;
+                JobOrder.Status = MaintenanceConst.Pending;
+                //JobOrder.Site = Request.ProjectName;
+                JobOrder.SendForApprovalTime = DateTime.Now;
+                JobOrder.OnlineApprovedTime = DateTime.Now;
+                JobOrder.IsSentToWorkShop = false;
+                JobOrder.IsSubmittedToServiceCenter = false;
+                JobOrder.CreatedBy = User.Identity.Name;
+                JobOrder.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+                JobOrder.OrgStructureId = Request.OrgStructureId;
+                JobOrder.BranchId = Request.BranchId;
+                JobOrder.BusinessUnitId = Request.BusinessUnitId;
+                JobOrder.RequesterId = Request.RequesterId;
+                db.JobOrder.Add(JobOrder);
+                db.SaveChanges();
 
-                    JobOrder.JobOrderID = Guid.NewGuid();
-                    JobOrder.EquipmentInformationId = Request.EquipmentInformationId == null ? Guid.Empty : Request.EquipmentInformationId.Value;
-                    //JobOrder.ProjectName = Request.ProjectName;
-                    JobOrder.CurrentFuel = Request.FuelAmount;
-                    JobOrder.LicensePlate = Request.LicensePlate;
-                    JobOrder.EquipmentName = Request.EquipmentName;
-                    JobOrder.OperatorName = Request.OperatorName;
-                    JobOrder.AssetNum = AssetNum;
-                    JobOrder.Referance = Request.Num;
-                    JobOrder.IsPM = Request.IsPM;
-                    JobOrder.Odometer = Request.Odometer;
-                    JobOrder.EquipmentType = EquipmentType;
-                    //JobOrder.EquipmentTypeId = EquipmentTypeId;
-                    JobOrder.MaintenanceCenter = maintenanceCenter.Name; // just name
-                    JobOrder.MaintenanceCenterId = Request.MaintenanceCenterId; // Added Field to track maintenanceCenter
-                    JobOrder.PercentCompleted = string.Empty;
-                    JobOrder.Odometer = Request.Odometer;
-                    JobOrder.InspectorComments = string.Empty;
-                    JobOrder.DateCompleted = DateTime.Now;
-                    JobOrder.DateCreated = DateTime.Now;
-                    JobOrder.LabourCost = 0;
-                    JobOrder.SpareCost = 0;
-                    JobOrder.IsExternal = Request.Source == JobRequestSource.ExternalVehicle ? true : false;
-                    JobOrder.DateIssued = DateTime.Now;
-                    JobOrder.Type = string.Empty;
-                    JobOrder.EquipmentNo = PlateNum;
-                    JobOrder.InspectedBy = Request.Requester;
-                    JobOrder.Status = MaintenanceConst.Pending;
-                    //JobOrder.Site = Request.ProjectName;
-                    JobOrder.SendForApprovalTime = DateTime.Now;
-                    JobOrder.OnlineApprovedTime = DateTime.Now;
-                    JobOrder.IsSentToWorkShop = false;
-                    JobOrder.IsSubmittedToServiceCenter = false;
-                    JobOrder.CreatedBy = User.Identity.Name;
-                    JobOrder.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-                    JobOrder.OrgStructureId = Request.OrgStructureId;
-                    JobOrder.BranchId = Request.BranchId;
-                    JobOrder.BusinessUnitId = Request.BusinessUnitId;
-                    JobOrder.RequesterId = Request.RequesterId;
-                    db.JobOrder.Add(JobOrder);
-                    db.SaveChanges();
+                //Fleet.Status = MaintenanceConst.OnMaintenance;
+                //Fleet.CurentOdoMeter = Request.Odometer;
 
-                    //Fleet.Status = MaintenanceConst.OnMaintenance;
-                    //Fleet.CurentOdoMeter = Request.Odometer;
+                //_FleetService.Update(Fleet);
 
-                    //_FleetService.Update(Fleet);
+                Request.IsOnlineApproved = true;
+                Request.OnlineApprovedBy = User.Identity.Name;
+                Request.OnlineApprovedTime = DateTime.Now;
+                Request.JobOrderStatus = JobOrderStatus.Progress;
+                Notify.NotifyUser(new NotifModels { DeadLine = DateTime.Now, Message = "Request with No " + Request.Num + " Approved ", Title = " Approved Job Request ", URL = Url.Action("Index", "JobRequest", new { area = "FleetManagment" }) });
 
-                    Request.IsOnlineApproved = true;
-                        Request.OnlineApprovedBy = User.Identity.Name;
-                        Request.OnlineApprovedTime = DateTime.Now;
+                // }
+                //if (model.Status == ApprovalStatuses.Reject)
+                //{
 
-                        Notify.NotifyUser(new NotifModels { DeadLine = DateTime.Now, Message = "Request with No " + Request.Num + " Approved ", Title = " Approved Job Request ", URL = Url.Action("Index", "JobRequest", new { area = "FleetManagment" }) });
+                //    Request.IsSendForApproval = false;
 
-                        // }
-                        //if (model.Status == ApprovalStatuses.Reject)
-                        //{
+                //}
+                Request.Status = ApprovalStatuses.Approve.ToString();
 
-                        //    Request.IsSendForApproval = false;
-
-                        //}
-                        Request.Status = ApprovalStatuses.Approve.ToString();
-
-                        db.JobRequest.Attach(Request);
-                        db.Entry(Request).State = EntityState.Modified;
-                        db.SaveChanges();
+                db.JobRequest.Attach(Request);
+                db.Entry(Request).State = EntityState.Modified;
+                db.SaveChanges();
 
 
 
 
-                        var adminApproval = new AdministrativeJobApproval();
+                var adminApproval = new AdministrativeJobApproval();
 
-                        adminApproval.AdministrativeJobId = Request.JobRequestId;
-                        adminApproval.Status = ApprovalStatuses.Approve;
-                      //  adminApproval.Remark = model.Remark;
-                        adminApproval.CreatedBy = User.Identity.Name;
-                        adminApproval.DateCreated = DateTime.Now;
+                adminApproval.AdministrativeJobId = Request.JobRequestId;
+                adminApproval.Status = ApprovalStatuses.Approve;
+                //  adminApproval.Remark = model.Remark;
+                adminApproval.CreatedBy = User.Identity.Name;
+                adminApproval.DateCreated = DateTime.Now;
 
-                        db.AdministrativeJobApproval.Add(adminApproval);
-                        db.SaveChanges();
-                    }
-
-                
-
+                db.AdministrativeJobApproval.Add(adminApproval);
+                db.SaveChanges();
             }
 
-            catch (Exception e)
-            {
-                return Json(e.Message, JsonRequestBehavior.AllowGet);
 
-            }
+
+            //}
+
+            //catch (Exception e)
+            //{
+            //    return Json(e.Message, JsonRequestBehavior.AllowGet);
+
+            //}
             var formattedData = new
             {
                 Message = "Approved Successefuly.",

@@ -16,6 +16,13 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public int WagonDrillTimesheetId { get; set; }
         [DisplayName("Supplier Name")]
         public int? ProcurementSupplierID { get; set; }
+        [Display(Name ="Equipment Category")]
+        public Guid? EquipmentCategoryId { get; set; }
+        [Display(Name = "Equipment Type")]
+        public Guid? EquipmentTypeId { get; set; }
+        [Display(Name = "Equipment Name")]
+        public Guid? EquipmentNameId { get; set; }
+        [Display(Name ="Plate/Category")]
         public Guid FleetsID { get; set; }
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [DisplayName("Date")]

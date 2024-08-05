@@ -127,6 +127,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         public int RequesterId { get; set; }
         [Display(Name ="Is Insured")]
         public bool IsInsured { get; set; }
+        public string Description { get; set; } 
     }
 
     public enum ServiceCenterStatus

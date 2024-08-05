@@ -1,4 +1,4 @@
-namespace ExceedERP.Core.Domain.Maintenance
+﻿namespace ExceedERP.Core.Domain.Maintenance
 {
     public  class MaintenanceRoles
     {

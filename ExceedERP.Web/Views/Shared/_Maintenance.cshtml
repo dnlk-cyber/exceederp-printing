@@ -1,4 +1,4 @@
-﻿@using ExceedERP.Core.Domain.Maintenance;
+@using ExceedERP.Core.Domain.Maintenance;
 
 
 @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceAdmin)
@@ -74,60 +74,62 @@
                                 <ul class="submenu">
                                     <li id="m01" class="actionlinlk">@Html.ActionLink("Equipment Reception Form", "Index", "VehicleReceptionForm", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
 
-                                    @*@if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestor))
-        {*@
+
                                     <li id="m02" class="actionlinlk">@Html.ActionLink("Maintenance Request", "Index", "JobRequest", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
 
-                                    @*}*@
+
                                     @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceOrderUser))
                                     {
                                         @*<li id="Maintenance009" class="actionlinlk">@Html.ActionLink("Job Order", "Index", "JobOrder", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                                        <li id="Maintenance009" class="actionlinlk">@Html.ActionLink("Job Order", "Index", "JobOrder", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
-                                        
-                                    <li class="">
-                                        <a href="#" class="dropdown-toggle">
-                                            <i class="menu-icon fa fa-caret-right"></i>
-                                            Job Order
-                                            <b class="arrow fa fa-angle-down"></b>
+            <li id="Maintenance009" class="actionlinlk">@Html.ActionLink("Job Order", "Index", "JobOrder", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
 
-                                        </a>
+                                        <li class="">
+                                            <a href="#" class="dropdown-toggle">
+                                                <i class="menu-icon fa fa-caret-right"></i>
+                                                Job Order
+                                                <b class="arrow fa fa-angle-down"></b>
 
-                                        <b class="arrow"></b>
+                                            </a>
 
-                                        <ul class="submenu">
-                                            <li id="m03" class="actionlinlk">@Html.ActionLink("Open/Pending", "Index", "JobOrder", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                                            <li id="m04" class="actionlinlk">@Html.ActionLink("Closed", "Index", "JobOrderClosed", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                                        </ul>
-                                    </li>
-                                            }
-                                            @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.ServiceUser))
-                                            {
-                                            <li id="m05" class="actionlinlk">@Html.ActionLink("Service Center", "Index", "ServiceCenter", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                                            <li id="m005" class="actionlinlk">@Html.ActionLink("External Service Center ", "Index", "ExternalServiceCenter", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                                            <b class="arrow"></b>
 
-                                            }
-                                            @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.ServiceUser))
-                                            {
-                                                <li id="m06" class="actionlinlk">@Html.ActionLink("Store Requisitions", "Index", "SparePartStoreRequisition", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                                            <ul class="submenu">
+                                                <li id="m03" class="actionlinlk">@Html.ActionLink("Open/Pending", "Index", "JobOrder", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                                                <li id="m03" class="actionlinlk">@Html.ActionLink("Approve and close", "ClosingJobs", "JobOrder", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                                                <li id="m04" class="actionlinlk">@Html.ActionLink("Closed", "Index", "JobOrderClosed", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                                            </ul>
+                                        </li>
+                                    }
+                                    @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.ServiceUser))
+                                    {
+                                        <li id="m05" class="actionlinlk">@Html.ActionLink("Service Center", "Index", "ServiceCenter", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                                        <li id="m005" class="actionlinlk">@Html.ActionLink("External Service Center ", "Index", "ExternalServiceCenter", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
 
-                                            }
-                                            @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceWorkShopUser))
-                                            {
+                                    }
+                                    @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.ServiceUser))
+                                    {
+                                        <li id="m06" class="actionlinlk">@Html.ActionLink("Store Requisitions", "Index", "SparePartStoreRequisition", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
 
-                                                <li id="m07" class="actionlinlk">@Html.ActionLink("Work Shop", "Index", "WorkShop", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                                                @*<li id="Maintenance0351" class="actionlinlk">@Html.ActionLink(" Store Requestion ", "Index", "StoreRequestion", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
+                                    }
+                                    @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceWorkShopUser))
+                                    {
 
-                                            }
+                                        <li id="m07" class="actionlinlk">@Html.ActionLink("Work Shop", "Index", "WorkShop", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                                        @*<li id="Maintenance0351" class="actionlinlk">@Html.ActionLink(" Store Requestion ", "Index", "StoreRequestion", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
 
-                                            @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestor)
-                                                || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestApprover))
-                                            {
-                                                @*<li id="Maintenance015" class="actionlinlk">@Html.ActionLink("For External", "Index", "OtherCompanyMaintenance", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                    <li id="Maintenance016" class="actionlinlk">@Html.ActionLink("Outsource", "Index", "OutsourceMaintenance", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
+                                    }
 
-                                            }
+                                    @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestor)
+                                        || HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestApprover))
+                                    {
+                                        @*<li id="Maintenance015" class="actionlinlk">@Html.ActionLink("For External", "Index", "OtherCompanyMaintenance", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                                        <li id="Maintenance016" class="actionlinlk">@Html.ActionLink("Outsource", "Index", "OutsourceMaintenance", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
 
-                                        </ul>
+                                    }
+
+                                    <li id="m07" class="actionlinlk">@Html.ActionLink("Maintenance Plan", "Index", "MaintenancePlan", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+
+                                </ul>
                             </li>
                         }
                         @if (User.IsInRole(ExceedERP.Core.Domain.CRM.CRMRoles.SalesQuoteSecondApprover))
@@ -146,50 +148,28 @@
                             </li>
                         }
 
-
-                        
-
-
-
                     </ul>
                 </li>
             }
-
-
             @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceReport))
             {
                 <li class="">
                     <a href="#" class="dropdown-toggle">
                         <i class="menu-icon fa fa-caret-right"></i>
-
                         Report
                         <b class="arrow fa fa-angle-down"></b>
                     </a>
-
                     <b class="arrow"></b>
-
-                    <ul class="submenu">
-                        @*<li id="MaintenanceR034" class="actionlinlk">@Html.ActionLink(" Job Order ", "WorkOrder", "FleetReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                            <li id="MaintenanceR035" class="actionlinlk">@Html.ActionLink(" Job Request ", "JobRequestReport", "FleetReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
+                    <ul class="submenu">                      
                         <li id="mr01" class="actionlinlk">@Html.ActionLink(" Maintenance Report ", "MaintenanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
                         <li id="mr02" class="actionlinlk">@Html.ActionLink("Internal Maintenance Cost ", "InternalMaintenanceCost", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                        @*<li id="maintenaceR7878" class="actionlinlk">@Html.ActionLink(" Job Request Status ", "JObRequestStatus", "FleetReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
                         <li id="mr03" class="actionlinlk">@Html.ActionLink(" Maintenance Duration", "MaintenanceDuration", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
                         <li id="mr04" class="actionlinlk">@Html.ActionLink(" Maintenance Summary", "MaintenanceSummary", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                        @*<li id="MaintenanceR047" class="actionlinlk">@Html.ActionLink(" Maintenance Summary External Vs Internal", "MaintenaceSummary", "FleetReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
-                        @*<li id="MaintenanceR047" class="actionlinlk">@Html.ActionLink("Equipent Type Cost", "EquipmentMaintenaceSummary", "FleetReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-
-                            <li id="MaintenanceR048" class="actionlinlk">@Html.ActionLink(" Maintenance By Service Type ", "ServiceType", "FleetReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-
-                            <li id="MaintenanceCR049" class="actionlinlk">@Html.ActionLink(" PM Schedule", "PMSchedule", "FleetReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                            <li id="MaintenanceR014" class="actionlinlk">@Html.ActionLink("Plan Vs Actual Schedule", "PMActualSchedule", "FleetReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-
-                            <li id="MaintenanceLR049" class="actionlinlk">@Html.ActionLink("  Logistic Plan ", "LogisticPlan", "FleetReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
-                        @*<li id="MaintenanceRS01124" class="actionlinlk">@Html.ActionLink("SparePart Consumption", "SparePartConsumption", "FleetReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                            <li id="MaintenanceRS01124" class="actionlinlk">@Html.ActionLink("Periodic Inspection (ቦሎ)", "EquipmentInspection", "FleetReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                        *@
+                        <li id="mr04" class="actionlinlk">@Html.ActionLink("Daily Maintenance Report", "DailyMaintenanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="mr04" class="actionlinlk">@Html.ActionLink("Machinary And Vehicle Maintenance Report", "MachinaryAndVehicelMaintenanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>                       
+                        <li id="mr04" class="actionlinlk">@Html.ActionLink("Weekly CM & PM Performance Report", "WeeklyCMPMPerformanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>                       
+                        @*<li id="mr04" class="actionlinlk">@Html.ActionLink("Weekly CM & PM Performance Summary Report", "WeeklyCMPMPerformanceSummaryReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@                       
                     </ul>
-
                 </li>
             }
             @if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceAdmin))
@@ -197,7 +177,6 @@
                 <li class="">
                     <a href="#" class="dropdown-toggle">
                         <i class="menu-icon fa fa-caret-right"></i>
-
                         Setting
                         <b class="arrow fa fa-angle-down"></b>
                     </a>

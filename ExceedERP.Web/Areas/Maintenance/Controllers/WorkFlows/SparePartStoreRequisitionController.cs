@@ -213,16 +213,16 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
 
 
 
-            if (!String.IsNullOrEmpty(storeRequisition.Reference))
-            {
-                var exists = _db.StoreRequisitions.Where(x => x.Reference == storeRequisition.Reference && x.IsVoid == false).ToList();
+            //if (!String.IsNullOrEmpty(storeRequisition.Reference))
+            //{
+            //    var exists = _db.StoreRequisitions.Where(x => x.Reference == storeRequisition.Reference && x.IsVoid == false).ToList();
 
-                if (exists.Any())
-                {
-                    ModelState.AddModelError("Reference",
-                        storeRequisition.Reference + " is already exists in the system.");
-                }
-            }
+            //    if (exists.Any())
+            //    {
+            //        ModelState.AddModelError("Reference",
+            //            storeRequisition.Reference + " is already exists in the system.");
+            //    }
+            //}
 
             if (storeRequisition.IsForOther && storeRequisition.ForBranchId==null)
             {

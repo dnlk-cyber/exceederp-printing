@@ -1,4 +1,5 @@
-﻿using ExceedERP.DataAccess.Context;
+﻿using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -28,8 +29,11 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     Description = fleetInsurance.Description,
                     DueDate = fleetInsurance?.DueDate,
                     ExpireDate = fleetInsurance?.ExpireDate,
-                    PremiumCost = fleetInsurance.PremiumCost
-                    
+                    PremiumCost = fleetInsurance.PremiumCost,
+                    ComprehensiveInsurance = fleetInsurance.ComprehensiveInsurance,
+                    InsuranceType = fleetInsurance.InsuranceType,
+                    PolicyNo = fleetInsurance.PolicyNo,
+                    ThirdPartyInsurance = fleetInsurance.ThirdPartyInsurance
                 };
 
                 list.Add(fleetInsuranceViewModel);
@@ -47,5 +51,10 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         public DateTime? ExpireDate { get; set; }
         public string Attachment { get; set; }
         public string Description { get; set; }
+        public FleetInsuranceTypeEnum InsuranceType { get; set; }
+        public decimal ThirdPartyInsurance { get; set; }
+        public decimal ComprehensiveInsurance { get; set; }
+        public string PolicyNo { get; set; }
+        
     }
 }

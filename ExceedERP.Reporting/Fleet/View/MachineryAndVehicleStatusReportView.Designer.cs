@@ -34,6 +34,8 @@ namespace ExceedERP.Reporting.Fleet.View
             Telerik.Reporting.ReportParameter reportParameter2 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter3 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter4 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter5 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter6 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.Drawing.StyleRule styleRule1 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule2 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule3 = new Telerik.Reporting.Drawing.StyleRule();
@@ -48,8 +50,11 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox5 = new Telerik.Reporting.TextBox();
             this.textBox6 = new Telerik.Reporting.TextBox();
             this.textBox7 = new Telerik.Reporting.TextBox();
+            this.headerSubReportLandScape1 = new ExceedERP.Reporting.SharedDesigners.HeaderSubReportLandScape();
             this.statusParameterOds = new Telerik.Reporting.ObjectDataSource();
             this.typeStatParmOds = new Telerik.Reporting.ObjectDataSource();
+            this.subCategoryOds = new Telerik.Reporting.ObjectDataSource();
+            this.Category = new Telerik.Reporting.ObjectDataSource();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.materTable = new Telerik.Reporting.Table();
             this.textBox28 = new Telerik.Reporting.TextBox();
@@ -76,7 +81,7 @@ namespace ExceedERP.Reporting.Fleet.View
             this.rentalOds = new Telerik.Reporting.ObjectDataSource();
             this.reportHeaderSection1 = new Telerik.Reporting.ReportHeaderSection();
             this.subReport1 = new Telerik.Reporting.SubReport();
-            this.headerSubReportLandScape1 = new ExceedERP.Reporting.SharedDesigners.HeaderSubReportLandScape();
+            this.objectDataSource1 = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this.headerSubReportLandScape1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -168,6 +173,10 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox7.StyleName = "BlueOpal.TableHeader";
             this.textBox7.Value = "Location";
             // 
+            // headerSubReportLandScape1
+            // 
+            this.headerSubReportLandScape1.Name = "HeaderSubReportLandScape";
+            // 
             // statusParameterOds
             // 
             this.statusParameterOds.DataMember = "GetStatus";
@@ -179,6 +188,20 @@ namespace ExceedERP.Reporting.Fleet.View
             this.typeStatParmOds.DataMember = "GetStatusType";
             this.typeStatParmOds.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.MachineryAndVehicleStatusParameterOds);
             this.typeStatParmOds.Name = "typeStatParmOds";
+            // 
+            // subCategoryOds
+            // 
+            this.subCategoryOds.DataMember = "GetEquipmentSubCategory";
+            this.subCategoryOds.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetParameters);
+            this.subCategoryOds.Name = "subCategoryOds";
+            this.subCategoryOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("categoryId", typeof(string), "= Parameters.category.Value")});
+            // 
+            // Category
+            // 
+            this.Category.DataMember = "GetEquipmentCategory";
+            this.Category.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetParameters);
+            this.Category.Name = "Category";
             // 
             // detailSection1
             // 
@@ -348,14 +371,14 @@ namespace ExceedERP.Reporting.Fleet.View
             // machineryAndVehicleTable
             // 
             this.machineryAndVehicleTable.Bindings.Add(new Telerik.Reporting.Binding("DataSource", "= Fields.Machineries"));
-            this.machineryAndVehicleTable.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.5550223588943481D)));
+            this.machineryAndVehicleTable.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.5550222396850586D)));
             this.machineryAndVehicleTable.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.80458307266235352D)));
-            this.machineryAndVehicleTable.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.90595966577529907D)));
+            this.machineryAndVehicleTable.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.90595978498458862D)));
             this.machineryAndVehicleTable.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.87803518772125244D)));
-            this.machineryAndVehicleTable.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.95729285478591919D)));
-            this.machineryAndVehicleTable.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.98551201820373535D)));
-            this.machineryAndVehicleTable.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.79553502798080444D)));
-            this.machineryAndVehicleTable.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0000002384185791D)));
+            this.machineryAndVehicleTable.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.95729297399520874D)));
+            this.machineryAndVehicleTable.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.98551177978515625D)));
+            this.machineryAndVehicleTable.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.79553508758544922D)));
+            this.machineryAndVehicleTable.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0000003576278687D)));
             this.machineryAndVehicleTable.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.2625001072883606D)));
             this.machineryAndVehicleTable.Body.SetCellContent(0, 0, this.textBox21);
             this.machineryAndVehicleTable.Body.SetCellContent(0, 1, this.textBox25);
@@ -484,7 +507,9 @@ namespace ExceedERP.Reporting.Fleet.View
             this.ownMachinerySds.Name = "ownMachinerySds";
             this.ownMachinerySds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("type", typeof(string), "= Parameters.Type.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("status", typeof(string), "= Parameters.Status.Value")});
+            new Telerik.Reporting.ObjectDataSourceParameter("status", typeof(string), "= Parameters.Status.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("categoryId", typeof(string), "= Parameters.category.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("subCategory", typeof(string), "= Parameters.subCategory.Value")});
             // 
             // textBox18
             // 
@@ -530,9 +555,9 @@ namespace ExceedERP.Reporting.Fleet.View
             this.subReport1.ReportSource = instanceReportSource1;
             this.subReport1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.9999995231628418D), Telerik.Reporting.Drawing.Unit.Inch(0.29999998211860657D));
             // 
-            // headerSubReportLandScape1
+            // objectDataSource1
             // 
-            this.headerSubReportLandScape1.Name = "HeaderSubReportLandScape";
+            this.objectDataSource1.Name = "objectDataSource1";
             // 
             // MachineryAndVehicleStatusReportView
             // 
@@ -545,25 +570,41 @@ namespace ExceedERP.Reporting.Fleet.View
             this.PageSettings.Margins = new Telerik.Reporting.Drawing.MarginsU(Telerik.Reporting.Drawing.Unit.Inch(1D), Telerik.Reporting.Drawing.Unit.Inch(1D), Telerik.Reporting.Drawing.Unit.Inch(1D), Telerik.Reporting.Drawing.Unit.Inch(1D));
             this.PageSettings.PaperKind = System.Drawing.Printing.PaperKind.Letter;
             reportParameter1.AllowNull = true;
-            reportParameter1.AvailableValues.DataSource = this.statusParameterOds;
+            reportParameter1.AvailableValues.DataSource = this.Category;
             reportParameter1.AvailableValues.DisplayMember = "= Fields.Text";
             reportParameter1.AvailableValues.ValueMember = "= Fields.Value";
-            reportParameter1.Name = "Status";
-            reportParameter1.Text = "Status";
+            reportParameter1.Name = "category";
+            reportParameter1.Text = "category";
             reportParameter1.Visible = true;
             reportParameter2.AllowNull = true;
-            reportParameter2.AvailableValues.DataSource = this.typeStatParmOds;
+            reportParameter2.AvailableValues.DataSource = this.subCategoryOds;
             reportParameter2.AvailableValues.DisplayMember = "= Fields.Text";
             reportParameter2.AvailableValues.ValueMember = "= Fields.Value";
-            reportParameter2.Name = "Type";
-            reportParameter2.Text = "Own/Rental";
+            reportParameter2.Name = "subCategory";
+            reportParameter2.Text = "subCategory";
             reportParameter2.Visible = true;
-            reportParameter3.Name = "FormTitle";
-            reportParameter4.Name = "FormNumber";
+            reportParameter3.AllowNull = true;
+            reportParameter3.AvailableValues.DataSource = this.statusParameterOds;
+            reportParameter3.AvailableValues.DisplayMember = "= Fields.Text";
+            reportParameter3.AvailableValues.ValueMember = "= Fields.Value";
+            reportParameter3.Name = "Status";
+            reportParameter3.Text = "Status";
+            reportParameter3.Visible = true;
+            reportParameter4.AllowNull = true;
+            reportParameter4.AvailableValues.DataSource = this.typeStatParmOds;
+            reportParameter4.AvailableValues.DisplayMember = "= Fields.Text";
+            reportParameter4.AvailableValues.ValueMember = "= Fields.Value";
+            reportParameter4.Name = "Type";
+            reportParameter4.Text = "Own/Rental";
+            reportParameter4.Visible = true;
+            reportParameter5.Name = "FormTitle";
+            reportParameter6.Name = "FormNumber";
             this.ReportParameters.Add(reportParameter1);
             this.ReportParameters.Add(reportParameter2);
             this.ReportParameters.Add(reportParameter3);
             this.ReportParameters.Add(reportParameter4);
+            this.ReportParameters.Add(reportParameter5);
+            this.ReportParameters.Add(reportParameter6);
             styleRule1.Selectors.AddRange(new Telerik.Reporting.Drawing.ISelector[] {
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.TextItemBase)),
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.HtmlTextBox))});
@@ -650,5 +691,8 @@ namespace ExceedERP.Reporting.Fleet.View
         private Telerik.Reporting.ReportHeaderSection reportHeaderSection1;
         private Telerik.Reporting.SubReport subReport1;
         private SharedDesigners.HeaderSubReportLandScape headerSubReportLandScape1;
+        private Telerik.Reporting.ObjectDataSource objectDataSource1;
+        private Telerik.Reporting.ObjectDataSource subCategoryOds;
+        private Telerik.Reporting.ObjectDataSource Category;
     }
 }

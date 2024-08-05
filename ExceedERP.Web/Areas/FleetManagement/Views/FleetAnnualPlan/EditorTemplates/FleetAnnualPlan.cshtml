@@ -79,3 +79,37 @@
     </div>
 
 </div>
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Fiscal year</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.GlFiscalYearId)
+                                                         .OptionLabel("Select Year")
+                                                         .AutoBind(false)
+                                                         .DataValueField("GlFiscalYearId")
+                                                         .DataTextField("Name")
+                                                         .DataSource(dataSource =>
+                                                         {
+                                                             dataSource.Read(read => read.Action("GetOpenYears", "GlobalDataProvider", new { area = "Common" }))
+                                                              .ServerFiltering(false);
+                                                         }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Grade</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.EquipmentGrade)
+                         .OptionLabel("Task Type...")
+                         .DataTextField("Text")
+                         .DataValueField("Value")
+
+                         .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation.EquipmentGrade))
+                         )
+                )
+            </div>
+        </div>
+    </div>
+</div>

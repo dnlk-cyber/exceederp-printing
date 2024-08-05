@@ -12,6 +12,12 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
     {
         [Key]
         public int LightVehicleTimeSheetId { get; set; }
+        [Display(Name = "Equipment Category")]
+        public Guid? EquipmentCategoryId { get; set; }
+        [Display(Name = "Equipment Type")]
+        public Guid? EquipmentTypeId { get; set; }
+        [Display(Name = "Equipment Name")]
+        public Guid? EquipmentNameId { get; set; }
         public Guid FleetsID { get; set; }
         [Required]
         [DataType(DataType.Date)]

@@ -51,27 +51,32 @@
                     .Actions(actions => actions.Close())
 
 )
+                        @*<div>
+                            <a onclick='return CleanData()' href=' \#' title="Re-Populate JobOrder"><i class="fa fa-plus-square fa-2x"></i></a>
+
+                        </div>*@
+
 @(Html.Kendo().Grid<JobOrder>()
                     .Name("grid")
                     .Columns(columns =>
                     {
-                        columns.Bound(e => e.Num).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+                        columns.Bound(e => e.Num).Width(80);
                         //columns.Bound(e => e.IsExternal).Width(80);
                         columns.Bound(e => e.IsInsured).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsInsured #' " + " # if (IsPM) { #" + "checked='checked'" + "# } #" + " />").Width(100);
-
                         //columns.ForeignKey(e => e.EquipmentInformationId, (IEnumerable)ViewData["EquipmentsList"], "EquipmentInformationId", "LicensePlate").Title("License Place").Width(150);
                         //columns.Bound(e => e.ProjectName).Title("Location").Width(100);
-                        columns.ForeignKey(e => e.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Title("Customer").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                        columns.Bound(e => e.LicensePlate).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
-                        columns.Bound(e => e.EquipmentName).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+                        columns.ForeignKey(e => e.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Title("Customer").Width(150);
+                        columns.Bound(e => e.EquipmentName).Width(100);
+                        columns.Bound(e => e.LicensePlate).Width(100);
+
                         columns.Bound(e => e.IsRework).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsRework? checked='checked': checked='' #/>");
                         columns.ForeignKey(e => e.RequesterId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(120);
                         if (GlobalHelper.IsMultipleBusinessUnit())
                         {
                             columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(120).EditorTemplateName("BusinessUnitSelector");
                         }
-                        columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120).EditorTemplateName("AllBranchSelector").Filterable(ftb => ftb.Multi(true).Search(true));
-                        columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["Structure"], "OrgStructureId", "Name").Title("Work Unit").Width(120).EditorTemplateName("WorkUnitCostCenterSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+                        columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120).EditorTemplateName("AllBranchSelector");
+                        columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["Structure"], "OrgStructureId", "Name").Title("Work Unit").Width(120).EditorTemplateName("WorkUnitCostCenterSelector");
 
                         //  columns.Bound(e => e.Type).Width(100);
                         columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").Width(120);
@@ -79,21 +84,19 @@
                         columns.Bound(e => e.DateCreated).Title("Date Created").Format("{0:yyyy-MM-dd}").Width(100);
                         columns.Bound(e => e.OnlineApprovedTime).Title("Date Approved").Format("{0:yyyy-MM-dd}").Width(100);
                         columns.Bound(e => e.SecondOnlineApprovedTime).Title("Date Closed").Format("{0:yyyy-MM-dd}").Width(100); columns.Bound(e => e.Status).Width(100);
-                        columns.Bound(e => e.Status).Width(100);
-                        columns.Bound(e => e.Referance).Width(100);
-
-
+                        columns.Bound(e => e.Status).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+                        columns.Bound(e => e.Referance).Width(100).Filterable(ftb => ftb.Multi(true).Search(true)
+                            .DataSource(ds => ds.Read(r => r.Action("Unique", "JobOrder").Data("{ field: 'Referance' }"))));
+                        columns.Bound(e => e.Description).Width(100);
 
                         columns.Command(command =>
                         {
-
                             command.Custom("cmd-rework-request").Text("&nbsp;Rework").Click("reworkJobOrder").IconClass("fa fa-repeat");
                             command.Custom("cmd-deliver-request").Text("&nbsp;Deliver").Click("deliverJobOrder").IconClass("fa fa-truck");
                             command.Destroy().Text(" Approve & Close").IconClass("fa fa-check");
                             command.Custom("cmd-reject-request").Text("&nbsp; Reject").Click("rejectJobOrderClosingRequest").IconClass("fa fa-close");
                             command.Custom("cmd-open-request").Text("&nbsp; Open").Click("openJobOrder").IconClass("fa fa-open");
                         }).Width(250);
-
 
                     })
 
@@ -225,7 +228,7 @@
                                                                                             items.Add().Text(" Job Services ").Content(@<text>
                                                                                                 # if (IsOnlineApproved)
                                                                                                 {#
-                                                                                                <a onclick='return addToServiceCenter("#=JobOrderID#")' href=' \#' title="Add to Service Center"><i class="fa fa-plus-square fa-2x"></i></a>
+                                                                                                    <a onclick='return addToServiceCenter("#=JobOrderID#")' href=' \#' title="Add to Service Center"><i class="fa fa-plus-square fa-2x"></i></a>
 
                                                                                                 # }#
                                                                                                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.JobOrderDetail>()
@@ -310,47 +313,47 @@
                                                         );
                                                             items.Add().Text("Technical Approval").Content(@<text>
                                                                 @(Html.Kendo().Grid<ExceedERP.Web.Areas.Maintenance.Models.TechnicalApprovalViewModel>()
-                                                                                                                                            .Name("Technicalgrid_#=JobOrderID#")
-                                                                                                                                            .Columns(columns =>
-                                                                                                                                            {
-                                                                                            //columns.Bound(e => e.Type).EditorTemplateName("MCtypeBind").Width(100);
-                                                                                            //columns.Bound(e => e.MaintenanceCenter).Title(" Center").EditorTemplateName("MCByTypeBind").Width(120);
-                                                                                            columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").EditorTemplateName("MCByTypeBind").Width(120);
-                                                                                columns.Bound(o => o.ApproveStatus).EditorTemplateName("ApprovalStatusBind").Width(126);
-                                                                                columns.Bound(c => c.Remark).Width(120);
-                                                                                columns.Bound(c => c.CreatedBy).Width(120);
-                                                                                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
-                                                                                columns.Command(command => { command.Edit().Text("Approve"); }).Width(250);
+                                                                                .Name("Technicalgrid_#=JobOrderID#")
+                                                                                .Columns(columns =>
+                                                                                {
+                                                                                    //columns.Bound(e => e.Type).EditorTemplateName("MCtypeBind").Width(100);
+                                                                                    //columns.Bound(e => e.MaintenanceCenter).Title(" Center").EditorTemplateName("MCByTypeBind").Width(120);
+                                                                                    columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").EditorTemplateName("MCByTypeBind").Width(120);
+                                                                                    columns.Bound(o => o.ApproveStatus).EditorTemplateName("ApprovalStatusBind").Width(126);
+                                                                                    columns.Bound(c => c.Remark).Width(120);
+                                                                                    columns.Bound(c => c.CreatedBy).Width(120);
+                                                                                    columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                                                                                    columns.Command(command => { command.Edit().Text("Approve"); }).Width(250);
 
-                                                                            })
-                                                                                                                                            .Events(e => e.DataBound("approveonDataBound"))
-                                                                                                                                            .Editable(editable =>
-                                                                                                                                            {
+                                                                                })
+                                                                                .Events(e => e.DataBound("approveonDataBound"))
+                                                                                .Editable(editable =>
+                                                                                {
 
-                                                                                editable.DisplayDeleteConfirmation("Approve");
-                                                                            })
-                                                                                                                                            .DataSource(dataSource => dataSource
-                                                                                                                                            .Ajax()
-                                                                                                                                            .ServerOperation(false)
-                                                                                                                                            .PageSize(6)
-                                                                                                                                            .Model(model =>
-                                                                                                                                            {
+                                                                                    editable.DisplayDeleteConfirmation("Approve");
+                                                                                })
+                                                                                .DataSource(dataSource => dataSource
+                                                                                .Ajax()
+                                                                                .ServerOperation(false)
+                                                                                .PageSize(6)
+                                                                                .Model(model =>
+                                                                                {
                                                                                 model.Id(p => p.JobOrderID);
                                                                                 model.Field(p => p.CreatedBy).Editable(false);
                                                                                 model.Field(p => p.DateCreated).Editable(false);
-                                                                            }
+                                                                                }
 
-                                                                                                                                            ).Events(ev => ev
-                                                                                                                                            .Error("error_handler(\"Technicalgrid_#=JobOrderID#\")")
-                                                                                                                                            .RequestStart("onRequestStart(\"Technicalgrid_#=JobOrderID#\")")
-                                                                                                                                            .RequestEnd("onRequestEnd(\"Technicalgrid_#=JobOrderID#\")"))
-                                                                                                                                            .Create(update => update.Action("Technical_Approval", "TechnicalJobApproval"))
-                                                                                                                                            .Read(read => read.Action("TechnicalApproval_Read", "TechnicalJobApproval", new { Id = "#=JobOrderID#" }))
-                                                                                                                                            .Update(update => update.Action("Technical_Approval", "TechnicalJobApproval"))
+                                                                                ).Events(ev => ev
+                                                                                .Error("error_handler(\"Technicalgrid_#=JobOrderID#\")")
+                                                                                .RequestStart("onRequestStart(\"Technicalgrid_#=JobOrderID#\")")
+                                                                                .RequestEnd("onRequestEnd(\"Technicalgrid_#=JobOrderID#\")"))
+                                                                                    .Create(update => update.Action("Technical_Approval", "TechnicalJobApproval"))
+                                                                                    .Read(read => read.Action("TechnicalApproval_Read", "TechnicalJobApproval", new { Id = "#=JobOrderID#" }))
+                                                                                    .Update(update => update.Action("Technical_Approval", "TechnicalJobApproval"))
 
-                                                                                                                                        )
+                                                                                )
 
-                                                                                                                                        .ToClientTemplate())
+                                                                                .ToClientTemplate())
                                                             </text>
                                                                     );
                                         })
@@ -791,6 +794,23 @@
             type: "POST",
             url: '@Url.Action("AfterApprovalAddJobOrderDetail", "TechnicalJobApproval", new { area = "Maintenance" })',
             data: { jobOrderId: id },
+            success: function (result) {
+               
+                alert(result);
+               
+                location.reload(true);
+            }, 
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+     function CleanData() {
+        
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CleanJobOrder", "JobOrder", new { area = "Maintenance" })',
+           // data: { jobOrderId: id },
             success: function (result) {
                
                 alert(result);

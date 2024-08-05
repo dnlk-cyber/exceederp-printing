@@ -63,18 +63,14 @@
         <div class="form-group">
             @Html.LabelFor(model => model.InsuranceType, htmlAttributes: new { @class = "control-label col-sm-2", style = "width:100%" })
             <div>
-                @(Html.Kendo().DropDownListFor(model => model.InsuranceType)
-                                                .Name("Source")
-                                                .DataTextField("Text")
-                                                .DataValueField("Value")
-
-                                                .Filter(FilterType.Contains)
-                                                .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsuranceTypeEnum)))
-                                                .Events(ev =>
-                                                {
-                                                    ev.Change("handleInsuranceTypeChange");
-                                                    ev.DataBound("handleInsuranceTypeChange");
-                                                }).HtmlAttributes(new { style = "width:100%" })
+               
+                @(Html.Kendo().DropDownListFor(m => m.InsuranceType)
+                                 .OptionLabel("Task Type...")
+                                 .DataTextField("Text")
+                                 .DataValueField("Value")
+                                 .AutoBind(true)
+                                 .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsuranceTypeEnum))
+                                 )
                 )
             </div>
         </div>

@@ -1,0 +1,16 @@
+@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+                 .ValuePrimitive(true)
+                  .AutoBind(false)
+                  .OptionLabel("Select Business Unit...")
+                      .DataTextField("Name")
+                              .DataValueField("Code")
+                          .Filter("contains")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetAllBusinessUnits", "GlobalDataProvider", new { area = "Common" }))
+                                            .ServerFiltering(false);
+                  })
+)
+@Html.ValidationMessageFor(m => m)

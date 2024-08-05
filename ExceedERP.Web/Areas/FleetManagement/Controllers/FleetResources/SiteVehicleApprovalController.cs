@@ -77,7 +77,18 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return RedirectToActionPermanent("Index", "SitesVehicleTransfer", new { area = "FleetManagement" });
         }
-
+        private void ChangeSiteTransferOnFleet(Guid fleetId, int branchId)
+        {
+            var fleet = db.Fleets.Find(fleetId);
+            var branch = db.Branch.FirstOrDefault(x => x.BranchId == branchId);
+            if (fleet != null && branch != null)
+            {
+                fleet.Location = branch.Name;
+                fleet.BranchId = branch.BranchId;
+                db.Entry(fleet).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+        }
         [AuthorizeRoles(FleetManagementRoles.RentApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SiteVehicle_Approve([DataSourceRequest]DataSourceRequest request, SiteVehicleApproval SiteVehicleApproval, string EId)
@@ -87,7 +98,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 Guid Id = Guid.Parse(EId);
                 var entity = db.SitesVehicleTransfer.Where(x => x.SitesVehicleTransferID == Id).FirstOrDefault();
                 var fleet = db.Fleets.Where(x => x.FleetsID == entity.FleetsID).FirstOrDefault();
-
+               
                 var AssetRegistrations = db.AssetRegistrations.Where(x => x.Tag == fleet.UnitNum).FirstOrDefault();
                 if (SiteVehicleApproval.Status == MaintenanceConst.Approved)
                 {
@@ -102,6 +113,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     db.Entry(entity).State = EntityState.Modified;
                     db.SaveChanges();
 
+                    // Change Branch on Fleet table
+                    ChangeSiteTransferOnFleet(entity.FleetsID, entity.BranchId);
 
                     var Location_Track = db.LocationTrackings.Where(x=>x.IsCurrent).FirstOrDefault();
                     var Branch = db.Branch.Where(x=>x.Name == entity.DestinationSite).FirstOrDefault();

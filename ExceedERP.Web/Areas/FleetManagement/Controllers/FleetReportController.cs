@@ -512,5 +512,35 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
             return View();
         }
+        public ActionResult TotalFleetFuelConsumption()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.TotalFleetFuelConsumption, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult FleetAnnualPlanSummary()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.FleetAnnualPlanSummary, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+
+        public ActionResult UtilizationSummary()  
+        {   
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.UtilizationSummary, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+
+        public ActionResult MonthlyUtilizationSummary()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.MonthlyUtilizationSummary, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
     }
 }

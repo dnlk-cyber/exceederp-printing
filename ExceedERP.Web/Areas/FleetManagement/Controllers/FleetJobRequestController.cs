@@ -450,7 +450,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 //  var model = db.AdministrativeJobApproval.Find(id);
 
                 var Request = db.JobRequest.Where(x => x.JobRequestId == id).FirstOrDefault();
-                if (Request != null)
+                var fleet = db.Fleets.FirstOrDefault(x => x.PlateNumber == Request.LicensePlate || x.SerialNo == Request.LicensePlate);
+                if (Request != null && fleet != null)
                 {
 
                     //if (model.Status == ApprovalStatuses.Approve)
@@ -462,6 +463,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     //JobOrder.ProjectName = Request.ProjectName;
                     JobOrder.CurrentFuel = Request.FuelAmount;
                     JobOrder.LicensePlate = Request.LicensePlate;
+                    JobOrder.FleetsID = fleet.FleetsID;
                     JobOrder.EquipmentName = Request.EquipmentName;
                     JobOrder.OperatorName = Request.OperatorName;
                     JobOrder.AssetNum = AssetNum;

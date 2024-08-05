@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -21,6 +21,8 @@ namespace ExceedERP.Core.Domain.Maintenance
         [Display(Name = "Sub-Total")]
         public decimal SubTotal { get; set; }
         public decimal Tax { get; set; }
+        [Required]
+        public int GlTaxRateId { get; set; }
         public decimal Total { get; set; }
         public Guid ServiceCenterJobId { get; set; }
     }

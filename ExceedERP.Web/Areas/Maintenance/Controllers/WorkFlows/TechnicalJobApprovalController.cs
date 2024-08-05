@@ -145,7 +145,6 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             try
             {
-
                 ExceedDbContext db = new ExceedDbContext();
                 TechnicalJobApproval approval = new TechnicalJobApproval();
                 _JobOrderDetailService = new JobOrderDetailService();
@@ -307,6 +306,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                                 ServiceID = d.ServiceID,
                                 ModifiedBy = d.ModifiedBy,
                                 DateCreated = d.DateCreated,
+                                JobOrderDetailId = d.JobOrderDetailID
 
                             };
                             db.JobOrderServiceCenterDetails.Add(jobOrderServiceCenterDetail);
@@ -407,6 +407,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                                 ServiceID = d.ServiceID,
                                 ModifiedBy = d.ModifiedBy,
                                 DateCreated = d.DateCreated,
+                                JobOrderDetailId = d.JobOrderDetailID
                             };
                             db.JobOrderServiceCenterDetails.Add(jobOrderServiceCenterDetail);
                             db.SaveChanges();
@@ -457,14 +458,16 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 ErrorMessage = "Failed to add"
 
             };
-            var jobOrder = db.JobOrder.FirstOrDefault(x => x.JobOrderID == jobOrderId);
+            var jobOrder = db.JobOrder.AsNoTracking().FirstOrDefault(x => x.JobOrderID == jobOrderId);
             if (jobOrder != null)
             {
-                var jobOrderDetail = db.JobOrderDetail.Where(x => x.JobOrderID == jobOrder.JobOrderID);
-                foreach (var detail in jobOrderDetail)
+                var jobOrderDetail = db.JobOrderDetail.AsNoTracking().Where(x => x.JobOrderID == jobOrder.JobOrderID).ToList();
+                foreach (var d in jobOrderDetail)
                 {
-                    var serviceCenterJob = db.ServiceCenterJob.FirstOrDefault(x => x.ServiceCenterId == detail.ServiceCenterId);
-                    if(serviceCenterJob == null)
+                    var serviceCenterJob = db.ServiceCenterJob.AsNoTracking()
+                        .FirstOrDefault(x => x.ServiceCenterId == d.ServiceCenterId && x.JobOrderID == d.JobOrderID);
+                    var serviceDetail = db.JobOrderServiceCenterDetails.FirstOrDefault(x => x.JobOrderDetailId == d.JobOrderDetailID);
+                    if (serviceCenterJob == null) 
                     {
                         var jobOrderServiceCenter = new ServiceCenterJob
                         {
@@ -473,7 +476,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                             AssetNum = jobOrder.AssetNum,
                             BattreyCost = jobOrder.BattreyCost,
                             ComponentCost = jobOrder.ComponentCost,
-                            CreatedBy = jobOrder.CreatedBy,
+                            CreatedBy = User.Identity.Name,
                             CurrentFuel = jobOrder.CurrentFuel,
                             CustomerId = jobOrder.CustomerId,
                             DateCompleted = jobOrder.DateCompleted,
@@ -500,7 +503,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                             LicensePlate = jobOrder.LicensePlate,
                             MaintenanceCenter = jobOrder.MaintenanceCenter,
                             MaintenanceCenterId = jobOrder.MaintenanceCenterId,
-                            ServiceCenterId = detail.ServiceCenterId,
+                            ServiceCenterId = d.ServiceCenterId,
                             Num = jobOrder.Num,
                             Odometer = jobOrder.Odometer,
                             OilLubricantCost = jobOrder.OilLubricantCost,
@@ -527,33 +530,57 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                             IsSendForApproval = jobOrder.IsSendForApproval,
                             IsVoid = jobOrder.IsVoid,
                             Remark = jobOrder.Remark,
-
+                            IsExternalMaintenanceCenter = false,
+                            IsInsured = jobOrder.IsInsured
                         };
 
                         db.ServiceCenterJob.Add(jobOrderServiceCenter);
                         db.SaveChanges();
+
                         var jobOrderServiceCenterDetail = new JobOrderServiceCenterDetail
                         {
                             JobOrderServiceCenterDetailId = Guid.NewGuid(),
                             ServiceCenterJobId = jobOrderServiceCenter.ServiceCenterJobId,
-                            SubCategoryCode = detail.SubCategoryCode,
-                            JobCausesId = detail.JobCausesId,
-                            ServiceGroup = detail.ServiceGroup,
-                            RepairTypeID = detail.RepairTypeID,
-                            ServiceCenterId = detail.ServiceCenterId,
-                            Status = detail.Status,
-                            ApprovalStatus = detail.ApprovalStatus,
-                            Remark = detail.Remark,
-                            ServiceID = detail.ServiceID,
-                            ModifiedBy = detail.ModifiedBy,
-                            DateCreated = detail.DateCreated,
-
+                            SubCategoryCode = d.SubCategoryCode,
+                            JobCausesId = d.JobCausesId,
+                            ServiceGroup = d.ServiceGroup,
+                            RepairTypeID = d.RepairTypeID,
+                            ServiceCenterId = d.ServiceCenterId,
+                            Status = d.Status,
+                            ApprovalStatus = d.ApprovalStatus,
+                            Remark = d.Remark,
+                            ServiceID = d.ServiceID,
+                            ModifiedBy = d.ModifiedBy,
+                            DateCreated = d.DateCreated,
+                            JobOrderDetailId = d.JobOrderDetailID
                         };
                         db.JobOrderServiceCenterDetails.Add(jobOrderServiceCenterDetail);
                         db.SaveChanges();
-
-
+                        
                     }
+                    else if(serviceDetail == null)
+                    {
+                        var jobOrderServiceCenterDetail = new JobOrderServiceCenterDetail
+                        {
+                            JobOrderServiceCenterDetailId = Guid.NewGuid(),
+                            ServiceCenterJobId = serviceCenterJob.ServiceCenterJobId,
+                            SubCategoryCode = d.SubCategoryCode,
+                            JobCausesId = d.JobCausesId,
+                            ServiceGroup = d.ServiceGroup,
+                            RepairTypeID = d.RepairTypeID,
+                            ServiceCenterId = d.ServiceCenterId,
+                            Status = d.Status,
+                            ApprovalStatus = d.ApprovalStatus,
+                            Remark = d.Remark,
+                            ServiceID = d.ServiceID,
+                            ModifiedBy = d.ModifiedBy,
+                            DateCreated = d.DateCreated,
+                            JobOrderDetailId = d.JobOrderDetailID
+                        };
+                        db.JobOrderServiceCenterDetails.Add(jobOrderServiceCenterDetail);
+                        db.SaveChanges();
+                    }
+
 
                 }
 

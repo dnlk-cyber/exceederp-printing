@@ -23,9 +23,29 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         ExceedDbContext db = new ExceedDbContext();
         public ActionResult Index(TimeSheetType dryLoading)
         {
+            ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            {
+                Text = s.EquipmentCategoryName,
+                Value = s.EquipmentIdentityID
+            }).ToList();
+            ViewData["type"] = db.EquipmentType.Select(s => new
+            {
+                Text = s.EquipmentTypeName,
+                Value = s.EquipmentTypeID
+            }).ToList();
+            ViewData["name"] = db.EquipmentName.Select(s => new
+            {
+                Text = s.Name,
+                Value = s.EquipmentNameID
+            }).ToList();
             ViewData["fleet"] = db.Fleets.Select(x => new { x.FleetsID, x.PlateNumber }).ToList();
             ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
             ViewBag.dryLoading = dryLoading;
+            ViewData["branch"] = db.Branch.Select(s => new
+            {
+                Value = s.BranchId,
+                Text = s.Name
+            }).ToList();
             return View();
         }
         public ActionResult DryLoadingTimeSheets_Read([DataSourceRequest] DataSourceRequest request)
@@ -81,7 +101,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 TimeSheetApprovedBy = dryLoadingTimeSheet.TimeSheetApprovedBy,
                 TimeSheetApprovedDate = dryLoadingTimeSheet.TimeSheetApprovedDate,
                 TimeSheetSendForAproval = dryLoadingTimeSheet.TimeSheetSendForAproval,
-                OperatorId = dryLoadingTimeSheet.OperatorId
+                OperatorId = dryLoadingTimeSheet.OperatorId,
+                Downhour = dryLoadingTimeSheet.Downhour,
+               EquipmentCategoryId = dryLoadingTimeSheet.EquipmentCategoryId,
+               EquipmentTypeId = dryLoadingTimeSheet.EquipmentTypeId,
+               EquipmentNameId = dryLoadingTimeSheet.EquipmentNameId
 
             });
             return Json(result);
@@ -108,7 +132,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     PerDiem = dryLoadingTimeSheet.PerDiem,
                     IdleHour = dryLoadingTimeSheet.IdleHour,
                     ReasonForIdle = dryLoadingTimeSheet.ReasonForIdle,
-                    DateCreated = DateTime.Now.Date,
+                    DateCreated = DateTime.Today,
                     CreatedBy = User.Identity.Name,
                     ModifiedBy = dryLoadingTimeSheet.ModifiedBy,
                     LastModified = dryLoadingTimeSheet.LastModified,
@@ -130,7 +154,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     BusinessUnitId = dryLoadingTimeSheet.BusinessUnitId,
                     Category = dryLoadingTimeSheet.Category,
                     OperatorId = dryLoadingTimeSheet.OperatorId,
-                    TimeSheetStatus = MaintenanceConst.Pending
+                    TimeSheetStatus = MaintenanceConst.Pending,
+                    Downhour = dryLoadingTimeSheet.Downhour,
+                    EquipmentCategoryId = dryLoadingTimeSheet.EquipmentCategoryId,
+                    EquipmentTypeId = dryLoadingTimeSheet.EquipmentTypeId,
+                    EquipmentNameId = dryLoadingTimeSheet.EquipmentNameId
                 };
                 db.DryLoadingTimeSheets.Add(entity);
                 db.SaveChanges();
@@ -167,7 +195,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     DateCreated = dryLoadingTimeSheet.DateCreated,
                     CreatedBy = dryLoadingTimeSheet.CreatedBy,
                     ModifiedBy = User.Identity.Name,
-                    LastModified = DateTime.Now.Date,
+                    LastModified = DateTime.Today,
 
                     AsphaltRate = dryLoadingTimeSheet.AsphaltRate,
                     FuelRate = dryLoadingTimeSheet.FuelRate,
@@ -185,7 +213,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     BranchId = dryLoadingTimeSheet.BranchId,
                     BusinessUnitId = dryLoadingTimeSheet.BusinessUnitId,
                     Category = dryLoadingTimeSheet.Category,
-                    OperatorId = dryLoadingTimeSheet.OperatorId
+                    OperatorId = dryLoadingTimeSheet.OperatorId,
+                    Downhour = dryLoadingTimeSheet.Downhour,
+                    EquipmentCategoryId = dryLoadingTimeSheet.EquipmentCategoryId,
+                    EquipmentTypeId = dryLoadingTimeSheet.EquipmentTypeId,
+                    EquipmentNameId = dryLoadingTimeSheet.EquipmentNameId
                 };
                 db.DryLoadingTimeSheets.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
@@ -198,6 +230,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         }
         public ActionResult DryLoadingTimeSheets_Destroy([DataSourceRequest] DataSourceRequest request, DryLoadingTimeSheet dryLoadingTimeSheet)
         {
+
             if (ModelState.IsValid)
             {
                 var entity = new DryLoadingTimeSheet
@@ -239,7 +272,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     BranchId = dryLoadingTimeSheet.BranchId,
                     BusinessUnitId = dryLoadingTimeSheet.BusinessUnitId,
                     Category = dryLoadingTimeSheet.Category,
-                    OperatorId = dryLoadingTimeSheet.OperatorId
+                    OperatorId = dryLoadingTimeSheet.OperatorId,
+                    Downhour = dryLoadingTimeSheet.Downhour,
+                    EquipmentCategoryId = dryLoadingTimeSheet.EquipmentCategoryId,
+                    EquipmentTypeId = dryLoadingTimeSheet.EquipmentTypeId,
+                    EquipmentNameId = dryLoadingTimeSheet.EquipmentNameId
                 };
 
                 db.DryLoadingTimeSheets.Attach(entity);

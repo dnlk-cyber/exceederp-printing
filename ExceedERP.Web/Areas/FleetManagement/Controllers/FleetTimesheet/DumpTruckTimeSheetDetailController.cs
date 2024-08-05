@@ -37,8 +37,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 TotalHaulage = model.TotalHaulage,
                 Capacity = model.Capacity,
                 ActualDistance = model.ActualDistance,
-                RentalRate = model.RentalRate
-                
+                RentalRate = model.RentalRate,
+                DumpTruckTypeOfWork = model.DumpTruckTypeOfWork
+
             });
 
             return Json(result);
@@ -60,6 +61,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     Capacity = model.Capacity,
                     RentalRate = model.RentalRate,
                     TotalHaulage = model.NumberOfTrip * model.Capacity,
+                    DumpTruckTypeOfWork = model.DumpTruckTypeOfWork
                 };
                 entity.DumpTruckTimeSheetId = dtId;
                 db.DumpTruckTimeSheetDetails.Add(entity);

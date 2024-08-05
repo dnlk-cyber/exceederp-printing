@@ -11,6 +11,23 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
+
+    public class MaintenancePlanEntityTypeConfiguration : EntityTypeConfiguration<MaintenancePlan>
+    {
+        public MaintenancePlanEntityTypeConfiguration()
+        {
+            this.ToTable("MaintenancePlan", "Maintenance");
+            this.HasKey<int>(p => p.MaintenancePlanId);
+        }
+    }
+    public class MaintenancePlanDetailEntityTypeConfiguration : EntityTypeConfiguration<MaintenancePlanDetail>
+    {
+        public MaintenancePlanDetailEntityTypeConfiguration()
+        {
+            this.ToTable("MaintenancePlanDetail", "Maintenance");
+            this.HasKey<int>(p => p.MaintenancePlanDetailId);
+        }
+    }
     public class AdditionalWorkShopDetailEntityTypeConfiguration : EntityTypeConfiguration<AdditionalWorkShopDetail> 
     {
         public AdditionalWorkShopDetailEntityTypeConfiguration()

@@ -7,14 +7,22 @@
                         columns.Bound(c => c.LightVehicleTimeSheetId).Title("S.No").Width(50);
                         columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "FleetsID", "Name").Title("Equipment Name").Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
                         columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(100); columns.Bound(c => c.Date).Width(100);
+                        columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Value", "Text").Title("Branch Name").Width(100);
                         columns.Bound(c => c.MorningTimeStart).Title("Morning Time Start").Width(100);
                         columns.Bound(c => c.MorningTimeEnd).Title("Morning Time End").Width(100);
                         columns.Bound(c => c.AfternoonTimeStart).Title("Afternoon Time Start").Width(100);
                         columns.Bound(c => c.AfternoonTimeEnd).Title("Afternoon Time End").Width(100);
                         columns.Bound(c => c.NightTimeStart).Title("Night Time Start").Width(100);
                         columns.Bound(c => c.NightTimeEnd).Title("Night Time End").Width(100);
-                        
+                        //columns.Bound(c => c.NetHour).Title("Night Time End").Width(100);
+                        columns.Bound(c => c.DownHours).Title("Night Time End").Width(100);
+                        columns.Bound(c => c.IdleHours).Title("Night Time End").Width(100);
+
                         columns.Bound(c => c.TimeSheetStatus).Width(100);
+                        //columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
+                        // columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
+                        //columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
+
 
                         columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(160);
                     })
@@ -141,7 +149,36 @@
 </script>
 
 
+<script type="text/javascript">
+     function filterEquipmentType() {
+        var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
 
+        return {
+            timeSheetEquipmentType: "@ViewBag.machineryType",
+            equipmentIdentityId: $("#EquipmentCategoryId").val(),
+            search: filterInput.val()
+        };
+
+    }
+
+    function filterEquipmentNames() {
+        var dropdownlist = $("#EquipmentNameId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentTypeId: $("#EquipmentTypeId").val(),
+            search: filterInput.val()
+        };
+    }
+
+function filterPlateNumber() {
+        return {
+            equipmentNameId: $("#EquipmentNameId").val(),
+            text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+</script>
 <script type="text/javascript">
 
     var timeSheetApproved;

@@ -191,13 +191,14 @@
                                         .Name("Equipment#=RentFromExternalID#")
                                         .Columns(columns =>
                                         {
-                                        columns.ForeignKey(e => e.FleetId, (IEnumerable)ViewData["Fleet"], "Value", "Text").Width(120);
-                                        columns.Bound(e => e.RentalRate).Title("Rental rate").Width(120);
-                                        columns.Bound(e => e.IdleRentalRate).Width(80);
-                                        columns.Bound(e => e.RentType).Width(80);
-                                        columns.Bound(e => e.RentalRate).Width(80);
-                                        columns.Bound(e => e.IdleRentalRate).Width(80);
-                                    
+                                            columns.ForeignKey(e => e.EquipmentIdentityID, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120);
+                                            columns.ForeignKey(e => e.EquipmentTypeID, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120);
+                                            columns.ForeignKey(e => e.EquipmentNameID, (IEnumerable)ViewData["EquipmentName"], "Value", "Text").Width(120);
+                                            columns.ForeignKey(e => e.FleetId, (IEnumerable)ViewData["Fleet"], "Value", "Text").Width(120);
+                                            columns.Bound(e => e.RentalRate).Title("Rental rate").Width(120);
+                                            columns.Bound(e => e.IdleRentalRate).Width(80);
+                                            columns.Bound(e => e.RentType).Width(80);
+                                        
                                         columns.Command(command =>
                                         {
                                             command.Edit(); command.Destroy();
@@ -433,7 +434,7 @@
         };
     } 
     function filterPlateNumber() {
-        var dropdownlist = $("#EquipmentName").data("kendoDropDownList");
+        var dropdownlist = $("#FleetId").data("kendoDropDownList");
         var filterInput = dropdownlist.filterInput;
 
         return {
@@ -537,7 +538,7 @@
     }
     function filterSupplier() {
         return {
-            text: $("#ProcurementSupplierID").val()
+            text: $("#ProcurementSupplierID").data("kendoDropDownList").filterInput.val(),
         };
     }
     function onChangeFleet()

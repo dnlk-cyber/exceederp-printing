@@ -484,6 +484,10 @@
     <Compile Include="Migrations\202407151836194_hrmperformanceeval.Designer.cs">
       <DependentUpon>202407151836194_hrmperformanceeval.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202408050631246_fleetandmaintenance.cs" />
+    <Compile Include="Migrations\202408050631246_fleetandmaintenance.Designer.cs">
+      <DependentUpon>202408050631246_fleetandmaintenance.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -802,6 +806,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202407151836194_hrmperformanceeval.resx">
       <DependentUpon>202407151836194_hrmperformanceeval.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202408050631246_fleetandmaintenance.resx">
+      <DependentUpon>202408050631246_fleetandmaintenance.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

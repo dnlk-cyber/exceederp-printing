@@ -88,6 +88,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Models
         public bool IsBuilding { get; set; }
         [Display(Name = "Location of Building")]
         public string Location { get; set; }
+       
         [Display(Name = "Contractor")]
         public string Contractor { get; set; }
          public bool  IsRegistered { get; set; }

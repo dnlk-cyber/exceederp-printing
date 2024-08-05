@@ -23,13 +23,33 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         ExceedDbContext db = new ExceedDbContext();        
         public ActionResult Index(TimeSheetType wagonDrill)
         {
+            ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            {
+                Text = s.EquipmentCategoryName,
+                Value = s.EquipmentIdentityID
+            }).ToList();
+            ViewData["type"] = db.EquipmentType.Select(s => new
+            {
+                Text = s.EquipmentTypeName,
+                Value = s.EquipmentTypeID
+            }).ToList();
+            ViewData["name"] = db.EquipmentName.Select(s => new
+            {
+                Text = s.Name,
+                Value = s.EquipmentNameID
+            }).ToList();
+
             ViewBag.wagonDrill = wagonDrill;
             ViewData["fleet"] = db.Fleets.Select(x => new
             {
                 Value = x.FleetsID,
                 Text = x.EquipmentName + "-" + x.SerialNo
             }).ToList();
-
+            ViewData["branch"] = db.Branch.Select(s => new
+            {
+                Value = s.BranchId,
+                Text = s.Name
+            }).ToList();
             ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
             return View();
         }
@@ -84,7 +104,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 TimeSheetSendForAproval =   wagonDrillTimesheet.TimeSheetSendForAproval,
                 OperatorId = wagonDrillTimesheet.OperatorId,
                 ReasonForDown = wagonDrillTimesheet.ReasonForDown,
-                ReasonForIdle = wagonDrillTimesheet.ReasonForIdle
+                ReasonForIdle = wagonDrillTimesheet.ReasonForIdle,
+                //EquipmentCategoryId = wagonDrillTimesheet.EquipmentCategoryId,
+                //EquipmentTypeId = wagonDrillTimesheet.EquipmentTypeId,
+                //EquipmentNameId = wagonDrillTimesheet.EquipmentNameId
             });
             return Json(result);
         }
@@ -131,7 +154,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     OperatorId = wagonDrillTimesheet.OperatorId,
                     TimeSheetStatus = MaintenanceConst.Pending,
                     ReasonForDown = wagonDrillTimesheet.ReasonForDown,
-                    ReasonForIdle = wagonDrillTimesheet.ReasonForIdle
+                    ReasonForIdle = wagonDrillTimesheet.ReasonForIdle,
+                    //EquipmentCategoryId = wagonDrillTimesheet.EquipmentCategoryId,
+                    //EquipmentTypeId = wagonDrillTimesheet.EquipmentTypeId,
+                    //EquipmentNameId = wagonDrillTimesheet.EquipmentNameId
                 };
                 db.WagonDrillTimesheets.Add(entity);
                 db.SaveChanges();
@@ -185,7 +211,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     BusinessUnitId = wagonDrillTimesheet.BusinessUnitId,
                     OperatorId = wagonDrillTimesheet.OperatorId,
                     ReasonForDown = wagonDrillTimesheet.ReasonForDown,
-                    ReasonForIdle = wagonDrillTimesheet.ReasonForIdle
+                    ReasonForIdle = wagonDrillTimesheet.ReasonForIdle,
+                    //EquipmentCategoryId = wagonDrillTimesheet.EquipmentCategoryId,
+                    //EquipmentTypeId = wagonDrillTimesheet.EquipmentTypeId,
+                    //EquipmentNameId = wagonDrillTimesheet.EquipmentNameId
                 };
                 db.WagonDrillTimesheets.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
@@ -238,7 +267,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     BusinessUnitId = wagonDrillTimesheet.BusinessUnitId,
                     OperatorId = wagonDrillTimesheet.OperatorId,
                     ReasonForDown = wagonDrillTimesheet.ReasonForDown,
-                    ReasonForIdle = wagonDrillTimesheet.ReasonForIdle
+                    ReasonForIdle = wagonDrillTimesheet.ReasonForIdle,
+                    //EquipmentCategoryId = wagonDrillTimesheet.EquipmentCategoryId,
+                    //EquipmentTypeId = wagonDrillTimesheet.EquipmentTypeId,
+                    //EquipmentNameId = wagonDrillTimesheet.EquipmentNameId
                 };
                 db.WagonDrillTimesheets.Attach(entity);
                 db.WagonDrillTimesheets.Remove(entity);

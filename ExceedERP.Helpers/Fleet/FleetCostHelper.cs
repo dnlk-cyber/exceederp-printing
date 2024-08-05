@@ -2,6 +2,7 @@
 using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent;
+
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.DataAccess.Context;
@@ -401,7 +402,7 @@ namespace ExceedERP.Helpers.Fleet
 
                 foreach (var service in Services)
                 {
-                    var Std = db.Service.Where(x => x.ServiceName == service.ServiceName).FirstOrDefault();
+                    var Std = db.Service.Where(x => x.ServiceName == service.RepairTypeID.ToString()).FirstOrDefault();
                     if (Std != null)
                     {
                         Rate = Rate + decimal.Parse(Std.STDTime.ToString());
@@ -519,6 +520,37 @@ namespace ExceedERP.Helpers.Fleet
             return Cost;
         }
 
+        public decimal GetJobOrderSpareCost(JobOrder JobOrder)
+        {
+
+            FleetReportHelper fleetReportHelper = new FleetReportHelper();
+
+            decimal Cost = decimal.Zero;
+
+            //var StoreRequestions = db.StoreRequisitions.Where(x => x.JobOrderNo == JobOrder.Num.ToString() || x.JobOrderNo == JobOrder.JobOrderID.ToString());
+            //foreach (var StoreRequestion in StoreRequestions)
+            //{
+            //    var Requistions = fleetReportHelper.GetInventoryIssueItem(x => x.Issue.StoreRequisitionID == StoreRequestion.StoreRequisitionID).ToList();
+            //    var SpareMap = Mapping.Where(x => x.SpareType == SpareType).ToList();
+            //    foreach (var Map in SpareMap)
+            //    {
+            //        var Item = Requistions.Where(x => x.InventoryItem.ItemCategory.ItemCategoryCode == Map.InventoryCategoryId).ToList();
+
+
+            //        Cost = Cost + Item.Sum(x => x.Total);
+
+
+            //    }
+            //}
+            var sparePartsAndMaterials = db.ServiceSpare.Where(s => s.ServiceID == JobOrder.JobOrderID).ToList();
+            if (sparePartsAndMaterials.Any())
+            {
+                Cost = sparePartsAndMaterials.Sum(s => s.TotalPrice);
+            }
+
+
+            return Cost;
+        }
         public decimal GetEquipmentTotalServiceCost(List<JobOrder> JobOrders, List<InventorySparePartMapping> Mapping)
         {
             FleetReportHelper fleetReportHelper = new FleetReportHelper();

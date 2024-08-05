@@ -14,7 +14,12 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
     public class DumpTruckTimeSheet : OperationsCostTimeSheet
     {
         public int DumpTruckTimeSheetId { get; set; }
-        
+        [Display(Name = "Equipment Category")]
+        public Guid? EquipmentCategoryId { get; set; }
+        [Display(Name = "Equipment Type")]
+        public Guid? EquipmentTypeId { get; set; }
+        [Display(Name = "Equipment Name")]
+        public Guid? EquipmentNameId { get; set; }
         [Required]
         [Column(TypeName = "DATE")]
         [DisplayName("Date")]
@@ -109,6 +114,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public string LoadingLocationTo { get; set; }
         [Display(Name ="No of Trips"), Required]
         public int NumberOfTrip { get; set; }
+        public DumpTruckTypeOfWork DumpTruckTypeOfWork { get; set; }
         [Display(Name ="Type of Work"), Required]
         public string TypeOfWork { get; set; }
         [Display(Name ="Actual Distance"), Required]

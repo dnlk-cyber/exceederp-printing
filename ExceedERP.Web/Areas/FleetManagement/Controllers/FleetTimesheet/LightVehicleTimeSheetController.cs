@@ -26,9 +26,29 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
 
         public ActionResult Index(TimeSheetType lightVehicle)
         {
+            ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            {
+                Text = s.EquipmentCategoryName,
+                Value = s.EquipmentIdentityID
+            }).ToList();
+            ViewData["type"] = db.EquipmentType.Select(s => new
+            {
+                Text = s.EquipmentTypeName,
+                Value = s.EquipmentTypeID
+            }).ToList();
+            ViewData["name"] = db.EquipmentName.Select(s => new
+            {
+                Text = s.Name,
+                Value = s.EquipmentNameID
+            }).ToList();
             ViewBag.machineryType = lightVehicle;
             ViewData["fleet"] = db.Fleets.Select(x => new { x.FleetsID, Name = x.PlateNumber + "-" + x.SerialNo }).ToList();
             ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
+            ViewData["branch"] = db.Branch.Select(s => new
+            {
+                Value = s.BranchId,
+                Text = s.Name
+            }).ToList();
 
             return View();
         }
@@ -98,8 +118,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 TimeSheetApprovedBy = model.TimeSheetApprovedBy,
                 TimeSheetApprovedDate = model.TimeSheetApprovedDate,
 
-                OperatorId = model.OperatorId
-
+                OperatorId = model.OperatorId,
+                EquipmentCategoryId = model.EquipmentCategoryId,
+                EquipmentTypeId = model.EquipmentTypeId,
+                EquipmentNameId = model.EquipmentNameId
             });
             return Json(result);
         }
@@ -167,7 +189,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     OperatorId = model.OperatorId,
                     TimeSheetStatus = MaintenanceConst.Pending,
                     CreatedBy = User.Identity.Name,
-                    DateCreated = DateTime.Today
+                    DateCreated = DateTime.Today,
+                    EquipmentCategoryId = model.EquipmentCategoryId,
+                    EquipmentTypeId = model.EquipmentTypeId,
+                    EquipmentNameId = model.EquipmentNameId
                 };
 
                 db.LightVehicleTimeSheets.Add(entity);
@@ -260,7 +285,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     TireCost = model.TireCost,
                     BranchId = model.BranchId,
                     BusinessUnitId = model.BusinessUnitId,
-                    OperatorId = model.OperatorId
+                    OperatorId = model.OperatorId,
+                    EquipmentCategoryId = model.EquipmentCategoryId,
+                    EquipmentTypeId = model.EquipmentTypeId,
+                    EquipmentNameId = model.EquipmentNameId
                 };
 
                 

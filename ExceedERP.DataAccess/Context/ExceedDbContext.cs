@@ -121,6 +121,7 @@ using ExceedERP.Core.Domain.Maintenance.Settings;
 using ExceedERP.Core.Domain.Planning.Project;
 using ExceedERP.Core.Domain.Planning;
 using ExceedERP.Core.Domain.Planning.BusinessPlanDevelopment;
+using ExceedERP.Core.Domain.FleetManagement;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -905,6 +906,8 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region FleetManagement
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetRentalRateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentRateEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetAnnualPlanEntitytypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetAnnualPlanDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetBatteryAndTireEntityTypeConfiguration());
@@ -1036,6 +1039,8 @@ namespace ExceedERP.DataAccess.Context
 
             #endregion
             #region Maintenance
+            modelBuilder.Configurations.Add(new MaintenancePlanEntityTypeConfiguration()); //
+            modelBuilder.Configurations.Add(new MaintenancePlanDetailEntityTypeConfiguration()); //
             modelBuilder.Configurations.Add(new AdditionalWorkShopDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExternalServiceCenterPaymentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PMScheduleEntityTypeConfiguration());
@@ -3072,6 +3077,8 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<BatteryApproval> BatteryApproval { get; set; }
 
         #endregion
+        public DbSet<FleetRentalRate> FleetRentalRates { get; set; }
+        public DbSet<EquipmentRate> EquipmentRates { get; set; }
         public DbSet<FleetAnnualPlan> FleetAnnualPlans { get; set; }
         public DbSet<FleetAnnualPlanDetail> FleetAnnualPlanDetails { get; set; }
         public DbSet<FleetBatteryAndTire> FleetBatteryAndTires { get; set; }
@@ -3083,6 +3090,8 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<AssignedEquipmentAdditionalInfo> AssignedEquipmentAdditionalInfos { get; set; }
         #endregion
         #region Maintenance
+        public DbSet<MaintenancePlan> MaintenancePlans { get; set; }
+        public DbSet<MaintenancePlanDetail> MaintenancePlanDetails { get; set; }
         public DbSet<AdditionalWorkShopDetail> AdditionalWorkShopDetails { get; set; }
         public DbSet<ExternalServiceCenterPayment> ExternalServiceCenterPayments { get; set; }
         public DbSet<PeriodicEquipmentInspection> PeriodicEquipmentInspection { get; set; }

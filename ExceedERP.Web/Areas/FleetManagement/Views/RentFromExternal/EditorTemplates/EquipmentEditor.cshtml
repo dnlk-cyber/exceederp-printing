@@ -8,6 +8,7 @@
             <label>Equipment Category</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.EquipmentIdentityID)
+                    .AutoBind(true)
                                 .DataTextField("Name")
                                 .DataValueField("Id").Filter(FilterType.Contains)
                                 .OptionLabel("Select Category")
@@ -22,6 +23,7 @@
             <label>Equipment Type</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.EquipmentTypeID)
+                    .AutoBind(true)
                                      .DataTextField("Name")
                                      .DataValueField("Id")
                                      .OptionLabel("Select Equipment Type")
@@ -47,7 +49,7 @@
             <label>Equipment Name</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.EquipmentNameID)
-                                                       .AutoBind(false)
+                                                       .AutoBind(true)
                                                        .Enable(false)
                                                        .DataTextField("Name")
                                                          .DataValueField("Id")
@@ -65,16 +67,16 @@
             <label>Plate/Serial</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.FleetId)
-                                                              .AutoBind(false)
+                                                              .AutoBind(true)
                                                               .Enable(false)
                                                               .DataTextField("Text")
                                                                 .DataValueField("Value")
                                                                 .Filter(FilterType.Contains)
                                                                 .OptionLabel("Select")
                                                               .DataSource(d => d.Read(r => r.Action("GetExternalFleetForRentFromExternalEquipment", "FleetManagementDataProvider")
-                                                              .Data("filterEquipmentNames"))
+                                                              .Data("filterPlateNumber"))
                                                               .ServerFiltering(true))
-                                                              .CascadeFrom("EquipmentTypeID"))
+                                                              .CascadeFrom("EquipmentNameID"))
             </div>
         </div>
     </div>

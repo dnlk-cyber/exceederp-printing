@@ -1,5 +1,6 @@
-using ExceedERP.ApplicationServices.FleetManagement.FleetMaintenance;
+﻿using ExceedERP.ApplicationServices.FleetManagement.FleetMaintenance;
 using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
+using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Areas.FleetManagement.Models;
@@ -114,7 +115,46 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 Code = s.RepairTypeID,
                 Name = s.Code + "-" + s.Name
             }).ToList();
+            SetInitials();
             return View();
+        }
+        public void SetInitials()
+        {
+            ViewData["Tax"] = db.GLTaxRates.ToList();
+            ViewData["SalesStore"] = db.SalesStores.Select(s => new { s.SalesStoreId, s.Description }).ToList();
+            ViewData["VoucherExtension"] = db.VoucherExtensions.AsQueryable();
+            ViewData["Thing"] = db.Products.AsQueryable();
+            ViewData["SalesStore"] = db.SalesStores;
+            ViewData["OrganizationCustomers"] = db.OrganizationCustomers;
+
+            ViewData["OrganizationCust"] = db.OrganizationCustomers.ToList();
+
+            ViewData["VoucherList"] = db.SalesQuoteVouchers.AsQueryable();
+            ViewData["CartList"] = db.Carts.AsQueryable();
+            var termList = db.Terms;
+            //var lookUpList = db.Lookups.ToList();
+            //foreach (Term term in termList)
+            //{
+            //    Lookup selectedCaegory = lookUpList.Where(l => l.LookupId.ToString() == term.LookupId).ToList().FirstOrDefault();
+            //    if (selectedCaegory != null)
+            //    {
+            //        term.CategoryDescription = selectedCaegory.Description;
+            //    }
+            //}
+
+            ViewData["TermList"] = termList.ToList();
+            ViewData["SerialDefinitionList"] = db.SerialDefinitions.AsQueryable();
+            ViewData["VoucherReferenceList"] = db.SalesQuoteVouchers.AsQueryable();
+            ViewData["StoreList"] = db.Stores.AsQueryable();
+            ViewData["VoucherExtensionList"] = db.VoucherExtensions.AsQueryable();
+
+            ViewData["Branches"] = db.Branch.Select(b => new { b.BranchId, b.Name, b.Abbreviation }).ToList();
+            ViewData["CRMPeriods"] = db.CRMPeriods.Select(b => new { b.CRMPeriodId, b.Name }).ToList();
+
+            ViewData["AddtionalCostTypes"] = db.AdditionalCosts.Select(a => new { a.AdditionalCostId, a.Name }).ToList();
+            ViewData["QuotationTerms"] = db.QuotationTerms.Select(a => new { a.QuotationTermId, a.QuotationInDays, a.Desription }).ToList();
+
+            ViewData["RepairTypes"] = db.RepairType.Select(r => new { RepairTypeId = r.RepairTypeID.ToString(), r.Name });
         }
         public WorkShopController()
         {
@@ -126,6 +166,101 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             _ServiceCenterJobService=new ServiceCenterJobService();
             _ServiceJobOrderDetailService=new ServiceJobOrderDetailService();
         }
+
+        #region SalesQuote
+        public ActionResult Vouchers_Read([DataSourceRequest]DataSourceRequest request, Guid id)
+        {
+            List<SalesQuoteVoucherView> voulist = new List<SalesQuoteVoucherView>();
+            List<SalesQuoteVoucher> quoteVouchers = new List<SalesQuoteVoucher>();
+
+            //var assignedStores = db.SalesPersonAssignments.Where(a => a.UserName == User.Identity.Name).Select(a => a.SalesStoreId).ToList();
+            var serviceCenterJobOrder = db.ServiceCenterJob.Find(id);
+            quoteVouchers = db.SalesQuoteVouchers
+                    .Where(b => b.Source == SalesQuoteSource.Maintenance && b.JobOrderNumber == serviceCenterJobOrder.JobOrderID.ToString()).ToList();
+            foreach (var vou in quoteVouchers)
+            {
+                decimal tottax = 0;
+                decimal totgrand = 0;
+
+                var lineItems = db.LineItems.Where(t => t.Voucher == vou.SalesQuoteVoucherID.ToString() && t.VoucherDefinitionID == "0").ToList();
+                var serviceLineItems = db.ServiceLineItems.Where(t => t.VoucherId == vou.SalesQuoteVoucherID && t.VoucherType == CRMVoucherType.SalesQuote).ToList();
+
+                
+                if (lineItems.Any())
+                {
+                    tottax += lineItems.Sum(x => x.TaxAmount);
+                    totgrand += lineItems.Sum(x => x.TotalAmount);
+                }
+                if (serviceLineItems.Any())
+                {
+                    tottax += serviceLineItems.Sum(x => x.TaxAmount);
+                    totgrand += serviceLineItems.Sum(x => x.TotalAmount);
+                }
+
+                voulist.Add(new SalesQuoteVoucherView
+                {
+                    SalesQuoteVoucherID = vou.SalesQuoteVoucherID,
+                    Source = vou.Source,
+                    Period = vou.Period,
+                    OrganizationCustomerId = vou.OrganizationCustomerId,
+                    Date = vou.Date,
+                    GrandTotal = totgrand,
+                    IsIssued = vou.IsIssued,
+                    IssuedDate = vou.IssuedDate,
+                    DueDate = vou.DueDate,
+                    QuotationTermId = vou.QuotationTermId,
+                    IsVoid = vou.IsVoid,
+                    BranchId = vou.BranchId,
+                    StoreID = vou.StoreID,
+                    CRMPeriodId = vou.CRMPeriodId,
+                    SubTotal = 0,
+                    PaymentMethod = vou.PaymentMethod,
+                    LastObjectState = vou.LastObjectState,
+                    Remark = vou.Remark,
+                    ModifiedBy = vou.ModifiedBy,
+                    LastModified = vou.LastModified,
+                    DateCreated = vou.DateCreated,
+                    CreatedBy = vou.CreatedBy,
+                    Status = vou.LastObjectState,
+                    JobOrderNumber = vou.JobOrderNumber,
+                    PlateNo = vou.PlateNo,
+
+                    IsMiddleSendForApproval = vou.IsMiddleSendForApproval,
+                    MiddleOnlineApprovedBy = vou.MiddleOnlineApprovedBy,
+                    MiddleOnlineApprovedTime = vou.MiddleOnlineApprovedTime,
+                    MiddleSendForApprovalBy = vou.MiddleSendForApprovalBy,
+                    MiddleSendForApprovalTime = vou.MiddleSendForApprovalTime,
+                    IsMiddleOnlineApproved = vou.IsMiddleOnlineApproved,
+
+                    SecondOnlineApprovedBy = vou.SecondOnlineApprovedBy,
+                    SecondSendForApprovalTime = vou.SecondSendForApprovalTime,
+                    SecondOnlineApprovedTime = vou.SecondOnlineApprovedTime,
+                    SecondSendForApprovalBy = vou.SecondSendForApprovalBy,
+                    IsSecondSendForApproval = vou.IsSecondSendForApproval,
+                    IsSecondOnlineApproved = vou.IsSecondOnlineApproved,
+                    SecondVoidBy = vou.SecondVoidBy,
+                    SecondVoidTime = vou.SecondVoidTime,
+                    IsSecondVoid = vou.IsSecondVoid,
+
+                    IsOnlineApproved = vou.IsOnlineApproved,
+                    IsOnlineTransferred = vou.IsOnlineTransferred,
+                    IsSendForApproval = vou.IsSendForApproval,
+                    OnlineApprovedBy = vou.OnlineApprovedBy,
+                    IsOnlineTransferredBy = vou.IsOnlineTransferredBy,
+                    SendForApprovalTime = vou.SendForApprovalTime,
+                    SendForApprovalBy = vou.SendForApprovalBy,
+                    OnlineApprovedTime = vou.OnlineApprovedTime,
+                    OnlineTransferredTime = vou.OnlineTransferredTime,
+
+                });
+            }
+            voulist.OrderByDescending(x => x.SalesQuoteVoucherID);
+
+            return Json(voulist.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+
+
+        }
+        #endregion
 
         public ActionResult WorkShops_Read([DataSourceRequest] DataSourceRequest request)
         {

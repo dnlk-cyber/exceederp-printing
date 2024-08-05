@@ -75,7 +75,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
                 Guid FId = Guid.Parse(fleetId);
 
-                var lightVehicleTimeSheets = db.LightVehicleTimeSheets.OrderByDescending(x => x.Date).Where(x => x.FleetsID == FId).ToList();
+                var lightVehicleTimeSheets = db.LightVehicleTimeSheets.OrderByDescending(x => x.Date).Where(x => x.FleetsID == FId && x.CostSheetApproved).ToList();
 
 
                 lightVehicleTimeSheets = lightVehicleTimeSheets.Where(x => x.Date.Date >= from.Date && x.Date.Date <= to.Date).ToList();
@@ -141,7 +141,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     timeSheet.Perdium = lightVehicleTimeSheet.Perdium;
                     timeSheet.Salary = lightVehicleTimeSheet.Salary;
                     // Calculated
-                    timeSheet.TotalCost = timeSheet.FuelCost + timeSheet.LubricantCost + timeSheet.MaintenanceCost + timeSheet.TireCost + timeSheet.Perdium + timeSheet.Salary;
+                    timeSheet.TotalCost = timeSheet.LubricantCost + timeSheet.MaintenanceCost + timeSheet.TireCost + timeSheet.Perdium + timeSheet.Salary;
                     timeSheet.NetIncome = timeSheet.TotalRevenue - timeSheet.TotalCost;
                     list.Add(timeSheet);
                 }

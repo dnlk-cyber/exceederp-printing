@@ -14,18 +14,28 @@
                             .Columns(columns =>
                             {
                                 columns.Bound(c => c.DryLoadingTimeSheetId).Title("#").Width(60);
+                                //columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
+                                //columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
+                                //columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
+
                                 columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "FleetsID", "PlateNumber").Title("Equipment Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
                                 columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(100);
+                                columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Value", "Text").Title("Branch Name").Width(100);
                                 columns.Bound(c => c.WorkItem).Width(100);
+                                columns.Bound(c => c.FuelInLiter).Width(100);
                                 columns.Bound(c => c.WorkingHour).Width(100);
+                                columns.Bound(c => c.Downhour).Width(100);
+                                columns.Bound(c => c.IdleHour).Width(100);
                                 columns.Bound(c => c.TripStartPlace).Title("Start Place").Width(100);
                                 columns.Bound(c => c.TriplArrivalPlace).Title("Arrival Place").Width(100);
                                 columns.Bound(c => c.TripStartDate).Title("Start Date").Width(100);
                                 columns.Bound(c => c.TripArrivalDate).Title("Arrival Date").Width(100);
                                 columns.Bound(c => c.Asphalt).Title("Asphalt(Km)").Width(120);
                                 columns.Bound(c => c.Gravel).Title("Gravel(Km)").Width(120);
+
                                 columns.Bound(c => c.TimeSheetStatus).Width(100);
-                                
+                                columns.Bound(c => c.TimeSheetStatus).Width(100);
+
                                 columns.Command(command => { command.Edit().UpdateText("save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
                             })
                             .ToolBar(toolbar =>
@@ -149,6 +159,36 @@
 
 </script>
 
+<script type="text/javascript">
+     function filterEquipmentType() {
+        var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            timeSheetEquipmentType: "@ViewBag.dryLoading",
+            equipmentIdentityId: $("#EquipmentCategoryId").val(),
+            search: filterInput.val()
+        };
+
+    }
+
+    function filterEquipmentNames() {
+        var dropdownlist = $("#EquipmentNameId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentTypeId: $("#EquipmentTypeId").val(),
+            search: filterInput.val()
+        };
+    }
+
+function filterPlateNumber() {
+        return {
+            equipmentNameId: $("#EquipmentNameId").val(),
+            text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+</script>
 
 <script>
 

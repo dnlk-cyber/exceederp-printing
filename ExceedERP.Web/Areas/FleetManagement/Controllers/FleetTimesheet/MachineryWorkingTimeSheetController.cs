@@ -26,11 +26,31 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
 
         public ActionResult Index(TimeSheetType machinery)
         {
+            ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            {
+                Text = s.EquipmentCategoryName,
+                Value = s.EquipmentIdentityID
+            }).ToList();
+            ViewData["type"] = db.EquipmentType.Select(s => new
+            {
+                Text = s.EquipmentTypeName,
+                Value = s.EquipmentTypeID
+            }).ToList();
+            ViewData["name"] = db.EquipmentName.Select(s => new
+            {
+                Text = s.Name,
+                Value = s.EquipmentNameID
+            }).ToList();
             ViewBag.machineryType = machinery;
             ViewData["fleet"] = db.Fleets.Select(x => new
             {
                 Value = x.FleetsID,
                 Text = x.SerialNo
+            }).ToList();
+            ViewData["branch"] = db.Branch.Select(s => new
+            {
+                Value = s.BranchId,
+                Text = s.Name
             }).ToList();
             ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
 
@@ -104,7 +124,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 TimeSheetSendForApprovalBy = machineryWorkingTimeSheet.TimeSheetSendForApprovalBy,
                 TimeSheetSendForApprovalTime = machineryWorkingTimeSheet.TimeSheetSendForApprovalTime,
                 OperatorId = machineryWorkingTimeSheet.OperatorId,
-                GreaseRate = machineryWorkingTimeSheet.GreaseRate
+                GreaseRate = machineryWorkingTimeSheet.GreaseRate,
+                EquipmentCategoryId = machineryWorkingTimeSheet.EquipmentCategoryId,
+                EquipmentTypeId = machineryWorkingTimeSheet.EquipmentTypeId,
+                EquipmentNameId = machineryWorkingTimeSheet.EquipmentNameId
 
             });
             return Json(result);
@@ -174,7 +197,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     TimeSheetStatus = MaintenanceConst.Pending,
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Today,
-                    GreaseRate = machineryWorkingTimeSheet.GreaseRate
+                    GreaseRate = machineryWorkingTimeSheet.GreaseRate,
+                    EquipmentCategoryId = machineryWorkingTimeSheet.EquipmentCategoryId,
+                    EquipmentTypeId = machineryWorkingTimeSheet.EquipmentTypeId,
+                    EquipmentNameId = machineryWorkingTimeSheet.EquipmentNameId
                 };
 
                 db.MachineryWorkingTimeSheets.Add(entity);
@@ -268,7 +294,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     BranchId = machineryWorkingTimeSheet.BranchId,
                     BusinessUnitId = machineryWorkingTimeSheet.BusinessUnitId,
                     OperatorId = machineryWorkingTimeSheet.OperatorId,
-                    GreaseRate = machineryWorkingTimeSheet.GreaseRate
+                    GreaseRate = machineryWorkingTimeSheet.GreaseRate,
+                    EquipmentCategoryId = machineryWorkingTimeSheet.EquipmentCategoryId,
+                    EquipmentTypeId = machineryWorkingTimeSheet.EquipmentTypeId,
+                    EquipmentNameId = machineryWorkingTimeSheet.EquipmentNameId
                 };
 
                 
@@ -334,7 +363,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     TireCost = machineryWorkingTimeSheet.TireCost,
 
                     OperatorId = machineryWorkingTimeSheet.OperatorId,
-                    GreaseRate = machineryWorkingTimeSheet.GreaseRate
+                    GreaseRate = machineryWorkingTimeSheet.GreaseRate,
+                    EquipmentCategoryId = machineryWorkingTimeSheet.EquipmentCategoryId,
+                    EquipmentTypeId = machineryWorkingTimeSheet.EquipmentTypeId,
+                    EquipmentNameId = machineryWorkingTimeSheet.EquipmentNameId
                 };
 
                 db.MachineryWorkingTimeSheets.Attach(entity);

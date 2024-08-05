@@ -74,13 +74,28 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             if (fleetId != null)
             {
 
-
-                var machineryTimeSheets = db.MachineryWorkingTimeSheets.OrderByDescending(x => x.Date).ToList();
+                
+                var machineryTimeSheets = db.MachineryWorkingTimeSheets.OrderByDescending(x => x.Date).Where(x => x.CostSheetApproved).ToList();
                 var categories = db.EquipmentIdentity.ToList();
                 var equipmentTypes = db.EquipmentType.ToList();
 
                 Guid.TryParse(fleetId, out Guid FId);
                 machineryTimeSheets = machineryTimeSheets.Where(x => x.FleetsID == FId && x.Date.Date >= from.Date && x.Date.Date <= to.Date).ToList();
+                #region Rental Rate
+                //var fleet = db.Fleets.FirstOrDefault(x => x.FleetsID == FId);
+                var fleetList = db.Fleets.ToList();
+                var fleetRentalRates = db.FleetRentalRates.ToList();
+                var timeSheetBranchIds = new HashSet<int>(machineryTimeSheets.Select(s => s.BranchId));
+                var timeSheetDates = new HashSet<int>(machineryTimeSheets.Select(s => s.Date.Year));
+                fleetRentalRates = fleetRentalRates.Where(x => timeSheetBranchIds.Contains(x.BranchId)).ToList();
+                fleetRentalRates = fleetRentalRates.Where(x => timeSheetDates.Contains(x.Year.Year)).ToList();
+
+                foreach (var item in fleetRentalRates)
+                {
+                    var equipmentRates = db.EquipmentRates.Where(x => x.FleetRentalRateId == item.FleetRentalRateId).ToList();
+                  
+                }
+                #endregion
 
 
                 if (project != null)

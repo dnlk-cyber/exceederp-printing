@@ -256,11 +256,11 @@
        <div class="form-group">
            <div class="k-label">
 
-               @Html.LabelFor(model => model.UnitNum)
+               <label>Asset Code</label>
            </div>
          
            @(Html.Kendo().DropDownListFor(model => model.AssetId)
-               //.AutoBind(false)
+               .AutoBind(true)
                .Enable(false)
                .DataTextField("EquipmentName")
                .DataValueField("PlateNumber")

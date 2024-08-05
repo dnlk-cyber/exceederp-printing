@@ -1,4 +1,4 @@
-﻿using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
+using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.DataAccess.Context;
@@ -209,7 +209,8 @@ namespace ExceedERP.Helpers.Fleet
             }
             if (!string.IsNullOrWhiteSpace(EquipmentName))
             {
-                Fleets = Fleets.Where(x => x.EquipmentName.ToString() == EquipmentName).ToList();
+                Guid.TryParse(EquipmentName, out Guid id);
+                Fleets = Fleets.Where(x => x.EquipmentNameID == id).ToList();
             }
             if (!string.IsNullOrWhiteSpace(SerialNumber))
             {

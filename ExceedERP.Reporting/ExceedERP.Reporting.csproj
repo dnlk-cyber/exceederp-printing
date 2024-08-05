@@ -1667,8 +1667,13 @@
     <Compile Include="Fleet\DataSource\ExternalMaintenanceDataSource.cs" />
     <Compile Include="Fleet\DataSource\ExternalRentDataSource.cs" />
     <Compile Include="Fleet\DataSource\FleetAccidentOds.cs" />
+    <Compile Include="Fleet\DataSource\FleetAnnualPlanSummeryOds.cs" />
     <Compile Include="Fleet\DataSource\FleetDataSource.cs" />
     <Compile Include="Fleet\DataSource\FleetInsuranceOds.cs" />
+    <Compile Include="Fleet\DataSource\FleetMonthlyUtilizationSummary.cs" />
+    <Compile Include="Fleet\DataSource\FleetMonthlyUtilizationSummaryToDate.cs" />
+    <Compile Include="Fleet\DataSource\FleetParameters.cs" />
+    <Compile Include="Fleet\DataSource\FleetUtilizationSummaryOds.cs" />
     <Compile Include="Fleet\DataSource\FuelConsumptionDataSource.cs" />
     <Compile Include="Fleet\DataSource\FuelConsumptionSummaryDataSource.cs" />
     <Compile Include="Fleet\DataSource\FuelDataSource.cs" />
@@ -1703,6 +1708,7 @@
     <Compile Include="Fleet\DataSource\TimeSheetSummaryDataSource.cs" />
     <Compile Include="Fleet\DataSource\TireDataSource.cs" />
     <Compile Include="Fleet\DataSource\TireLogDataSource.cs" />
+    <Compile Include="Fleet\DataSource\TotalFleetFuelConsumptionOds.cs" />
     <Compile Include="Fleet\DataSource\WagonDrillExternalTimesheetDataSource.cs" />
     <Compile Include="Fleet\DataSource\WagonDrillTimesheetObjectDataSource.cs" />
     <Compile Include="Fleet\DataSource\WagonDrillTimeSheetOnlyOds.cs" />
@@ -1968,6 +1974,12 @@
     <Compile Include="Fleet\View\FleetAccidentNestedReportView.Designer.cs">
       <DependentUpon>FleetAccidentNestedReportView.cs</DependentUpon>
     </Compile>
+    <Compile Include="Fleet\View\FleetAnnualPlanSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\FleetAnnualPlanSummary.Designer.cs">
+      <DependentUpon>FleetAnnualPlanSummary.cs</DependentUpon>
+    </Compile>
     <Compile Include="Fleet\View\FleetInsurance.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1979,6 +1991,12 @@
     </Compile>
     <Compile Include="Fleet\View\FleetReport.Designer.cs">
       <DependentUpon>FleetReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\FleetUtilizationSummaryDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\FleetUtilizationSummaryDesign.Designer.cs">
+      <DependentUpon>FleetUtilizationSummaryDesign.cs</DependentUpon>
     </Compile>
     <Compile Include="Fleet\View\FuelConsumption.cs">
       <SubType>Component</SubType>
@@ -2063,6 +2081,12 @@
     </Compile>
     <Compile Include="Fleet\View\MaintenanceOrder.Designer.cs">
       <DependentUpon>MaintenanceOrder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\MonhtlyUtilizationSummaryDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\MonhtlyUtilizationSummaryDesign.Designer.cs">
+      <DependentUpon>MonhtlyUtilizationSummaryDesign.cs</DependentUpon>
     </Compile>
     <Compile Include="Fleet\View\Operator.cs">
       <SubType>Component</SubType>
@@ -2184,11 +2208,23 @@
     <Compile Include="Fleet\View\TireReport.Designer.cs">
       <DependentUpon>TireReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="Fleet\View\TotalFleetFuelConsumptionDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\TotalFleetFuelConsumptionDesign.Designer.cs">
+      <DependentUpon>TotalFleetFuelConsumptionDesign.cs</DependentUpon>
+    </Compile>
     <Compile Include="Fleet\View\ttttt.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Fleet\View\ttttt.Designer.cs">
       <DependentUpon>ttttt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\UtilizationToDate.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\UtilizationToDate.Designer.cs">
+      <DependentUpon>UtilizationToDate.cs</DependentUpon>
     </Compile>
     <Compile Include="Fleet\View\VVCC.cs">
       <SubType>Component</SubType>
@@ -3717,7 +3753,9 @@
     <Compile Include="JobCosting\DataSource\JobCostingParameterOds.cs" />
     <Compile Include="JobCosting\ViewModel\JobOrderCardVM.cs" />
     <Compile Include="Maintenance\DataSource\DailyMaintenanceReport.cs" />
+    <Compile Include="Maintenance\DataSource\InternalMaintenanceReportImproved.cs" />
     <Compile Include="Maintenance\DataSource\JobOrderOds.cs" />
+    <Compile Include="Maintenance\DataSource\MachinaryAndVehicleMaintenancereportOds.cs" />
     <Compile Include="Maintenance\DataSource\MaintenanceDurationOds.cs" />
     <Compile Include="Maintenance\DataSource\MaintenanceInternalReportOds.cs" />
     <Compile Include="Maintenance\DataSource\MaintenanceJobRequestOds.cs" />
@@ -3725,6 +3763,8 @@
     <Compile Include="Maintenance\DataSource\MaintenanceReportOds.cs" />
     <Compile Include="Maintenance\DataSource\MaintenanceSummaryOds.cs" />
     <Compile Include="Maintenance\DataSource\OrderTypeOds.cs" />
+    <Compile Include="Maintenance\DataSource\WeeklyCmPmPerformanceReportOds.cs" />
+    <Compile Include="Maintenance\DataSource\WeeklyCMPMPerformanceSummaryReport.cs" />
     <Compile Include="Maintenance\DataSource\WorkOrderWorkSheetOds.cs" />
     <Compile Include="Maintenance\Design\DailyMaintenanceReport.cs">
       <SubType>Component</SubType>
@@ -3737,6 +3777,12 @@
     </Compile>
     <Compile Include="Maintenance\Design\InternalMaintenanceCostDesign.Designer.cs">
       <DependentUpon>InternalMaintenanceCostDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\InternalMaintenanceDesignImproved.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\InternalMaintenanceDesignImproved.Designer.cs">
+      <DependentUpon>InternalMaintenanceDesignImproved.cs</DependentUpon>
     </Compile>
     <Compile Include="Maintenance\Design\JobOrderDesign.cs">
       <SubType>Component</SubType>
@@ -3768,6 +3814,12 @@
     <Compile Include="Maintenance\Design\MaintenanceJobOrderDesign.Designer.cs">
       <DependentUpon>MaintenanceJobOrderDesign.cs</DependentUpon>
     </Compile>
+    <Compile Include="Maintenance\Design\MaintenancePlanReportDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\MaintenancePlanReportDesign.Designer.cs">
+      <DependentUpon>MaintenancePlanReportDesign.cs</DependentUpon>
+    </Compile>
     <Compile Include="Maintenance\Design\MaintenanceReportDesign.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -3785,6 +3837,12 @@
     </Compile>
     <Compile Include="Maintenance\Design\MaintenanceSummaryDesign.Designer.cs">
       <DependentUpon>MaintenanceSummaryDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\WeeklyCmPmPerformanceDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\WeeklyCmPmPerformanceDesign.Designer.cs">
+      <DependentUpon>WeeklyCmPmPerformanceDesign.cs</DependentUpon>
     </Compile>
     <Compile Include="Maintenance\Design\WorkOrderWorkSheetDesign.cs">
       <SubType>Component</SubType>
@@ -5250,11 +5308,17 @@
     <EmbeddedResource Include="Fleet\View\FleetAccidentNestedReportView.resx">
       <DependentUpon>FleetAccidentNestedReportView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\FleetAnnualPlanSummary.resx">
+      <DependentUpon>FleetAnnualPlanSummary.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\FleetInsurance.resx">
       <DependentUpon>FleetInsurance.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\FleetReport.resx">
       <DependentUpon>FleetReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\FleetUtilizationSummaryDesign.resx">
+      <DependentUpon>FleetUtilizationSummaryDesign.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\FuelConsumption.resx">
       <DependentUpon>FuelConsumption.cs</DependentUpon>
@@ -5297,6 +5361,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\MaintenanceOrder.resx">
       <DependentUpon>MaintenanceOrder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\MonhtlyUtilizationSummaryDesign.resx">
+      <DependentUpon>MonhtlyUtilizationSummaryDesign.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\Operator.resx">
       <DependentUpon>Operator.cs</DependentUpon>
@@ -5355,8 +5422,14 @@
     <EmbeddedResource Include="Fleet\View\TireReport.resx">
       <DependentUpon>TireReport.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\TotalFleetFuelConsumptionDesign.resx">
+      <DependentUpon>TotalFleetFuelConsumptionDesign.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\ttttt.resx">
       <DependentUpon>ttttt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\UtilizationToDate.resx">
+      <DependentUpon>UtilizationToDate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\VVCC.resx">
       <DependentUpon>VVCC.cs</DependentUpon>
@@ -5916,6 +5989,9 @@
     <EmbeddedResource Include="Maintenance\Design\InternalMaintenanceCostDesign.resx">
       <DependentUpon>InternalMaintenanceCostDesign.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\InternalMaintenanceDesignImproved.resx">
+      <DependentUpon>InternalMaintenanceDesignImproved.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\JobOrderDesign.resx">
       <DependentUpon>JobOrderDesign.cs</DependentUpon>
     </EmbeddedResource>
@@ -5931,6 +6007,9 @@
     <EmbeddedResource Include="Maintenance\Design\MaintenanceJobOrderDesign.resx">
       <DependentUpon>MaintenanceJobOrderDesign.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\MaintenancePlanReportDesign.resx">
+      <DependentUpon>MaintenancePlanReportDesign.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\MaintenanceReportDesign.resx">
       <DependentUpon>MaintenanceReportDesign.cs</DependentUpon>
     </EmbeddedResource>
@@ -5939,6 +6018,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\MaintenanceSummaryDesign.resx">
       <DependentUpon>MaintenanceSummaryDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\WeeklyCmPmPerformanceDesign.resx">
+      <DependentUpon>WeeklyCmPmPerformanceDesign.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\WorkOrderWorkSheetDesign.resx">
       <DependentUpon>WorkOrderWorkSheetDesign.cs</DependentUpon>

@@ -26,7 +26,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             {
 
 
-                var machineryTimeSheetOnly = db.MachineryWorkingTimeSheets.OrderByDescending(x => x.Date).ToList();
+                var machineryTimeSheetOnly = db.MachineryWorkingTimeSheets.OrderByDescending(x => x.Date).Where(x => x.TimeSheetApproved).ToList();
                 Guid.TryParse(fleetId, out Guid FId);
                 machineryTimeSheetOnly = machineryTimeSheetOnly.Where(x => x.FleetsID == FId && x.Date.Date >= from.Date && x.Date.Date <= to.Date).ToList();
 

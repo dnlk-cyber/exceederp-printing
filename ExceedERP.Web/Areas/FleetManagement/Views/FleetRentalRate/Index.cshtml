@@ -1,0 +1,114 @@
+﻿
+<label>Rental Rate</label>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRentalRate>()
+                                                .Name("grid")
+                                                .Columns(columns =>
+                                                {
+
+                                                    columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "Value", "Text").Width(120).Title("Branch");
+
+                                                    //columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["GlFiscalYear"], "Value", "Text").Width(120).Title("Fiscal Year");
+                                                    columns.Bound(c => c.Year).Width(100);
+                                                    columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                                                })
+                                                .ToolBar(commands => commands.Create())
+                                                .Editable(editable =>
+                                                {
+                                                    editable.Mode(GridEditMode.InLine);
+                                                    editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
+                                                })
+                                                .Filterable()
+                                                
+                                                .Scrollable(s => s.Height(550))
+                                                .DataSource(dataSource => dataSource
+                                                    .Ajax()
+                                                    .Model(model => model.Id(p => p.FleetRentalRateId))
+                                                    .Read(read => read.Action("RentalRate_Read", "FleetRentalRate"))
+                                                    .Create(create => create.Action("FleetRentalRate_Create", "FleetRentalRate"))
+                                                    .Update(update => update.Action("FleetRentalRate_Update", "FleetRentalRate"))
+                                                    .Destroy(delete => delete.Action("FleetRentalRate_Delete", "FleetRentalRate"))
+
+                                                ).ClientDetailTemplateId("tabs")
+)
+
+<script id="tabs" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                                                                                                .Name("tabstrip_grid_#=FleetRentalRateId#")
+                                                                                                .SelectedIndex(0)
+                                                                                                .Items(itemn =>
+                                                                                                {
+                                                                                                    itemn.Add().Text("Monthly Plan").Content(@<text>@EquipmentRate()</text>);
+
+                                                                                                        }).ToClientTemplate())
+</script>
+
+
+@helper EquipmentRate()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentRate>()
+                                                    .Name("grid_#=FleetRentalRateId#")
+                                                    .Columns(columns =>
+                                                    {
+                                                        columns.ForeignKey(c => c.EquipmentCatagoryId, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120);
+                                                        columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120);
+                                                        columns.Bound(c => c.UoM).Width(120);
+                                                        columns.Bound(c => c.CapacityFrom).Width(120);
+                                                        columns.Bound(c => c.CapacityTo).Width(120);
+                                                        columns.Bound(c => c.ManufacturingYearFrom).Width(120);
+                                                        columns.Bound(c => c.ManufacturingYearTo).Width(120);
+                                                        columns.Bound(c => c.Rate).Width(120);
+
+                                                        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                                                    })
+                                                    .ToolBar(commands => commands.Create())
+                                                    .Editable(editable =>
+                                                    {
+                                                        editable.Mode(GridEditMode.PopUp).TemplateName("EquipmentRateTemplate");
+                                                        editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
+                                                    })
+                                                    .Filterable()
+                                                    .Scrollable()
+                                                    .DataSource(dataSource => dataSource
+                                                        .Ajax()
+                                                        .Model(model => model.Id(p => p.EquipmentRateId))
+                                                        .Read(read => read.Action("EquipmentRent_Read", "EquipmentRate", new { id = "#=FleetRentalRateId#" }))
+                                                        .Create(create => create.Action("EquipmentRate_Create", "EquipmentRate", new { id = "#=FleetRentalRateId#" }))
+                                                        .Update(update => update.Action("EquipmentRate_Update", "EquipmentRate"))
+                                                        .Destroy(delete => delete.Action("EquipmentRate_Delete", "EquipmentRate"))
+
+                                                    ).ToClientTemplate()
+    )
+
+}
+
+
+<script type="text/javascript">
+    function filterCategory() {
+        var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentIdentityId: $("#EquipmentCatagoryId").val(),
+            search: filterInput.val()
+        };
+
+    }
+</script>
+
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

@@ -35,6 +35,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         // GET: /FleetManagement/VehicleDistribution/
         public ActionResult Index()
         {
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                var businessUnits = db.BusinessUnits.ToList();
+                ViewData["BusinessUnits"] = businessUnits;
+            }
             ViewData["Fleets"] = db.Fleets.ToList().Select(s => new {
                 Id = s.FleetsID,
                 s.OrgBranchName,

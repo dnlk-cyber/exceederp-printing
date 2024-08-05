@@ -1,0 +1,200 @@
+﻿
+@model ExceedERP.Core.Domain.FleetManagement.EquipmentRate
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Category</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentCatagoryId)
+                                                        .DataTextField("Name")
+                                                        .DataValueField("Id")
+                                                        .Filter(FilterType.Contains)
+                                                        .OptionLabel("Select Category")
+                                                        .HtmlAttributes(new { style = "width:100%" })
+                                                        .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider"))
+                                                        .ServerFiltering(false)))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentTypeId)
+                                           .DataTextField("Name")
+                                           .DataValueField("Id")
+                                           .OptionLabel("Select Equipment Type")
+                                           .Filter(FilterType.Contains)
+                                           .DataSource(d =>
+                                           {
+                                               d.Read(r =>
+                                               {
+                                                   r.Action("GetEquipmentTypes", "FleetManagementDataProvider")
+                                                   .Data("filterCategory");
+                                               })
+                                               .ServerFiltering(true);
+                                           })
+                                           .Enable(false)
+                                           .AutoBind(false)
+                                           .CascadeFrom("EquipmentCatagoryId"))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Unit</label>
+            <div>
+
+                @(Html.Kendo().DropDownListFor(model => model.UoM)
+                            .ValuePrimitive(true)
+                            .OptionLabel("Select unit...")
+                            .DataTextField("UoMName")
+                            .DataValueField("Value")
+                            .Filter("contains")
+
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetUoM", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                                    .ServerFiltering(true);
+                            }).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Capacity From</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.CapacityFrom).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Capacity To</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.CapacityTo).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>distance From</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.DistanceFrom).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Distance To</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.DistanceTo).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Manuf Year From</label>
+            <div>
+                @Html.Kendo().DatePickerFor(model => model.ManufacturingYearFrom).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Manuf Year To</label>
+            <div>
+                @Html.Kendo().DatePickerFor(model => model.ManufacturingYearTo).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Number of Seats From</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.NumberOfSeatsFrom).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>No of Seat To</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.NumberOfSeatsTo).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Type Of Work</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.DumpTruckTypeOfWork)
+                                                        .DataTextField("Text")
+                                                        .DataValueField("Value")
+
+                                                        .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.DumpTruckTypeOfWork))
+                                                        )
+                                                    .HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Road Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.RoadType)
+                                                               .DataTextField("Text")
+                                                               .DataValueField("Value")
+
+                                                               .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRoadType))
+                                                               )
+                                                           .HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Spray Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.SprayingType)
+                                                               .DataTextField("Text")
+                                                               .DataValueField("Value")
+
+                                                               .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.SprayingType))
+                                                               )
+                                                           .HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Rate</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.Rate).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label></label>
+            <div>
+               
+            </div>
+        </div>
+    </div>
+</div>
+

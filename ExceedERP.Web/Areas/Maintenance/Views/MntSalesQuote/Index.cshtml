@@ -59,18 +59,13 @@
               columns.Bound(c => c.CreatedBy).Width(80);
               columns.Bound(c => c.Status).Width(80);
               columns.Bound(c => c.Remark).Width(100);
-
-              //columns.Command(command =>
-              //{
-              //    command.Edit();
-              //    command.Destroy();
-              //}).Width(200);
+              
           })
           .Selectable()
           .Scrollable(s => s.Height(500))
           .ToolBar(toolbar =>
           {
-              //toolbar.Create();
+             
               toolbar.Excel();
           })
           .Events(ev =>
@@ -78,24 +73,14 @@
               ev.DetailExpand("onDetailExpandUser");
               ev.DataBound("onDataBound");
           })
-          //.Editable(editable =>
-          //{
-          //    editable.Mode(GridEditMode.PopUp);
-          //    editable.TemplateName("SaleQuoteEditor");
-          //    editable.Window(w =>
-          //    {
-          //        w.Scrollable(false);
-          //        w.Title("Sales Quote Voucher");
-          //    });
-          //})
+          
           .HtmlAttributes(new { style = "height: 700px;" })
           .Pageable(pageable => pageable
-                                .Input(true)
-                                .Numeric(false)
-                                .Refresh(true)
-                                .PageSizes(true)
-                                .ButtonCount(5))
-
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
                 .Scrollable()
                 .Sortable()
                 .Filterable()
@@ -137,9 +122,7 @@
         {
         items.Add().Text("Detail").Content(
             @<text>
-                @*#if (!IsMiddleOnlineApproved && !IsMiddleSendForApproval){#
-                    <a onclick='return sendForFirstApproval("#=SalesQuoteVoucherID#")' href='\#' title="Send for 1st Approval"><i class="fa fa-share-square fa-2x text-info"></i></a>
-                #}#*@
+                
                 #if (IsMiddleOnlineApproved&& !IsSecondOnlineApproved && !IsSecondSendForApproval && !IsOnlineApproved && !IsSendForApproval){#
                     <a onclick='return sendForSecondApproval("#=SalesQuoteVoucherID#")' href='\#' title="Send for 2nd Approval"><i class="fa fa-share-square fa-2x text-danger"></i></a>
                 #}#
@@ -196,34 +179,7 @@
                     @ServiceLineItemHelper()
                 #}#  
             </text>);
-        @*items.Add().Text("Commission Line Items").Content(
-            @<text>
-                #if(IsMiddleOnlineApproved && !IsSecondOnlineApproved &&!IsOnlineApproved && !IsSendForApproval){#
-                    @CommissionHelperWithCrud()
-                #}else{#
-                    @CommissionHelper()
-                #}#
-            </text>);*@
-        @*items.Add().Text("Additional Cost").Content(
-            @<text>
-                #if(IsMiddleOnlineApproved && !IsSecondOnlineApproved &&!IsOnlineApproved && !IsSendForApproval){#
-                    @AdditionHelperWithCrud()
-                #}else{#
-                    @AdditionHelper()
-                #}#
-            </text>);*@
-       
-        @*if (User.IsInRole(CRMRoles.SalesQuoteFirstApprover))
-        {
-            items.Add().Text("First Validation").Content(
-            @<text>
-                #if(!IsMiddleOnlineApproved && !IsOnlineApproved && !IsSendForApproval){#
-                    @FirstValidationHelperWithCrud()
-                #}else{#
-                    @FirstValidationHelper()
-                #}#
-            </text>);
-        }*@
+        
         if (User.IsInRole(CRMRoles.SalesQuoteSecondApprover))
         {
             items.Add().Text("Second Validation").Content(
@@ -235,17 +191,6 @@
                 #}#
             </text>);
         }
-        @*if (User.IsInRole(CRMRoles.SalesQuoteApprover))
-        {
-            items.Add().Text("Third Validation").Content(
-            @<text>
-                #if(IsSecondOnlineApproved&& !IsOnlineApproved && IsSendForApproval){#
-                    @ValidationHelperWithCrud()
-                #}else{#
-                    @ValidationHelper()
-                #}#
-            </text>);
-        }*@
         
         }).ToClientTemplate()
 
@@ -284,7 +229,7 @@
                     columns.ForeignKey(c => c.WithholdingType, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Withholding Type").Width(120);
                     columns.Bound(c => c.WithholdingAmount).Width(100);
                     columns.Bound(c => c.WithholdTax).ClientTemplate("<input type='checkbox'  disabled='true' \\#= WithholdTax? checked='checked': checked='' \\# class='checkbox'  />").Width(80);
-                    //columns.Bound(c => c.Vat).Format("{0:N2}").Width(60);
+                    
                     columns.Bound(c => c.Status).Width(60);
 
                     columns.Command(command =>
@@ -303,7 +248,7 @@
                     w.Title("Line Item");
                     w.Scrollable(false);
                 }))
-                //.HtmlAttributes(new { style = "height: 350px;" })
+                
                 .Pageable(pageable => pageable
                     .Input(true)
                     .Numeric(false)
@@ -314,8 +259,7 @@
                 .Scrollable()
                 .Sortable()
                 .Filterable()
-                //.Scrollable(h => h.Height(500))
-                //.Events(e => e.Edit("AddCostItemInit"))
+                
                 .DataSource(dataSource => dataSource
                     .Ajax()
                     .ServerOperation(false)
@@ -419,17 +363,7 @@
                             command.Destroy();
                         }).Width(180);
                     })
-                    //.ToolBar(toolbar =>
-                    //{
-                    //    toolbar.Create();
-                    //})
-                    //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ServiceLineitemEditorTemplate")
-                    //.Window(w =>
-                    //{
-                    //    w.Title("Line Item");
-                    //    w.Scrollable(false);
-                    //}))
-                    //.HtmlAttributes(new { style = "height: 350px;" })
+                    
                     .Pageable(pageable => pageable
                         .Input(true)
                         .Numeric(false)

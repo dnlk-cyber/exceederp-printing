@@ -74,7 +74,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             {
 
 
-                var wagonDrillTimesheets = db.WagonDrillTimesheets.ToList();
+                var wagonDrillTimesheets = db.WagonDrillTimesheets.Where(x => x.CostSheetApproved).ToList();
 
                 if (fleetId != null)
                 {

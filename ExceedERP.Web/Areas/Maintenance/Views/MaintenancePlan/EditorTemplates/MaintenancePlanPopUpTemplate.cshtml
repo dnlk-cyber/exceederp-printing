@@ -1,0 +1,103 @@
+﻿
+@model ExceedERP.Core.Domain.Maintenance.MaintenancePlan
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Category</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentCategoryId)
+                                                                                .DataTextField("Name")
+                                                                                .DataValueField("Id")
+                                                                                .Filter(FilterType.Contains)
+                                                                                .OptionLabel("Select Category")
+                                                                                .HtmlAttributes(new { style = "width:100%" })
+                                                                                .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                                                                                .ServerFiltering(false)))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentTypeId)
+                                                            .DataTextField("Name")
+                                                            .DataValueField("Id")
+                                                            .OptionLabel("Select Equipment Type")
+                                                            .Filter(FilterType.Contains)
+                                                            .DataSource(d =>
+                                                            {
+                                                                d.Read(r =>
+                                                                {
+                                                                    r.Action("GetEquipmentTypes", "FleetManagementDataProvider", new { area = "FleetManagement" })
+                                                                    .Data("filterCategory");
+                                                                })
+                                                                .ServerFiltering(true);
+                                                            })
+                                                            .Enable(false)
+                                                            .AutoBind(false)
+                                                            .CascadeFrom("EquipmentCategoryId")
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Fiscal year</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.GlFiscalYearId)
+                                                                                                         .OptionLabel("Select Year")
+                                                                                                         .AutoBind(false)
+                                                                                                         .DataValueField("GlFiscalYearId")
+                                                                                                         .DataTextField("Name")
+                                                                                                         .DataSource(dataSource =>
+                                                                                                         {
+                                                                                                             dataSource.Read(read => read.Action("GetOpenYears", "GlobalDataProvider", new { area = "Common" }))
+                                                                                                              .ServerFiltering(false);
+                                                                                                         }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Total Quantity</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.TotalQuantity).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Ava. Quantity</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.AverageAvailableQuantity).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Av. PM Cost</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.AverageMaintenanceCostPM).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Av. CM Cost</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.AverageMaintenanceCostCM).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,64 @@
+﻿@model ExceedERP.Core.Domain.Maintenance.MaintenancePlanDetail
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Month</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.GlPeriodId)
+                                          .OptionLabel("Select Period")
+                                          .AutoBind(true)
+                                          .DataValueField("Value")
+                                          .DataTextField("Text")
+                                          
+                                          .DataSource(dataSource =>
+                                          {
+                                              dataSource.Read(read => read.Action("GetGlPeriodForPlanAndEvaluation", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("getFiscalYear"))
+                                              .ServerFiltering(true);
+                                          })
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>CM Quantity</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.CMQuantity).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>CM Cost</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.CMCost).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>PM Quantity</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.PMQuantity).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>PM Cost</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.PMCost).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>    
+</div>
+

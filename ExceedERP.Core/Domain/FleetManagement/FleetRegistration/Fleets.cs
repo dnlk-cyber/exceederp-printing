@@ -210,6 +210,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public virtual ICollection<Fuel> Fuels { get; set; }
         [Display(Name ="Horse Power")]
         public decimal HorsePower { get; set; }
+        public int BranchId { get; set; } 
     }
     public enum WayOfSupplyenum
     {

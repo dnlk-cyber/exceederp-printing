@@ -338,7 +338,8 @@
                                                                 columns.Bound(o => o.Quantity).Width(80);
                                                                 columns.Bound(o => o.UnitPrice).Width(100);
                                                                 columns.Bound(o => o.SubTotal).Width(100);
-                                                                columns.Bound(o => o.Tax).Width(100);
+                                                                //columns.Bound(o => o.Tax).Width(100);
+                                                                columns.ForeignKey(p => p.GlTaxRateId, (IEnumerable)ViewData["TaxRate"], "Value", "Text").Width(100);
                                                                 columns.Bound(o => o.Total).Width(100);
                                                                             
 
@@ -1752,7 +1753,7 @@ $(this).find(".progress").kendoProgressBar({
 value: dataItem.Progress
 });
 
-if (dataItem.IsSubmittedToServiceCenter && !dataItem.IsSecondOnlineApproved) {
+if (!dataItem.IsSecondOnlineApproved) {
 $(this).find(".k-grid-cmd-reject-request").show();
 $(this).find(".k-grid-cmd-aprove-request").show();
 
@@ -2212,7 +2213,7 @@ var grid = this,
 dataItem = grid.dataItem(e.currentTarget.closest("tr"));
 $.ajax({
 type: "POST",
-url: '@Url.Action("closeWorkShop", "ServiceCenter", new { area = "Maintenance" })',
+url: '@Url.Action("CloseWorkShop", "ServiceCenter", new { area = "Maintenance" })',
 data: { id: dataItem.ServiceCenterJobId },
 success: function (result) {
 //alert(result.Message);

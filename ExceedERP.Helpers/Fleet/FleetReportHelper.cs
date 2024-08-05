@@ -1,15 +1,8 @@
-﻿using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
-using ExceedERP.Core.Domain.FleetManagement;
-using ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent;
-using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
-using ExceedERP.Core.Domain.Inventory;
+﻿using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Helpers.Fleet
 {

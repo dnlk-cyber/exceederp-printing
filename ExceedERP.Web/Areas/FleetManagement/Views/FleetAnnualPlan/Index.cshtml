@@ -10,10 +10,12 @@
                                     .Name("grid")
                                     .Columns(columns =>
                                     {
+                                        columns.Bound(c => c.EquipmentGrade).Width(100);
                                         columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120);
                                         columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120);
                                         columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["Name"], "Value", "Text").Width(120);
                                         columns.ForeignKey(c => c.FleetId, (IEnumerable)ViewData["Fleet"], "Value", "Text").Width(120);
+                                        columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["GlFiscalYear"], "Value", "Text").Width(120);
                                         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
                                     })
                                     .ToolBar(commands => commands.Create())
@@ -23,9 +25,14 @@
                                         editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
                                     })
                                     .Filterable()
-                                    .Scrollable()
+                                    .Events(e => e.DetailExpand("DetailExpand"))
+                                    .Scrollable(e => e.Height(550))
                                     .DataSource(dataSource => dataSource
                                         .Ajax()
+                                        .Events(ev => ev
+                                                    .Error("error_handler(\"grid\")")
+                                                    .RequestStart("onRequestStart(\"grid\")")
+                                                    .RequestEnd("onRequestEnd(\"grid\")"))
                                         .Model(model => model.Id(p => p.FleetAnnualPlanId))
                                         .Read(read => read.Action("FleetAnnualPlan_Read", "FleetAnnualPlan"))
                                         .Create(create => create.Action("FleetAnnualPlan_Create", "FleetAnnualPlan"))
@@ -54,6 +61,7 @@
                                             .Name("grid_#=FleetAnnualPlanId#")
                                             .Columns(columns =>
                                             {
+                                                columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["GlPeriod"], "Value", "Text").Width(120);
 
                                                 columns.Bound(c => c.NumberOfEquipmentInMonth).Width(100);
                                                 columns.Bound(c => c.WorkingHourPerDay).Width(100);
@@ -75,7 +83,7 @@
                                                 columns.Bound(c => c.Salary).Width(100);
                                                 columns.Bound(c => c.TotalExpectedExpense).Width(100);
                                                 columns.Bound(c => c.ExpectedTotalProfit).Width(100);
-                                               
+
                                                 columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
                                             })
                                             .ToolBar(commands => commands.Create())
@@ -88,7 +96,11 @@
                                             .Scrollable()
                                             .DataSource(dataSource => dataSource
                                                 .Ajax()
-                                                .Model(model => model.Id(p => p.FleetAnnualPlanId))
+                                                    .Events(ev => ev
+                                                    .Error("error_handler(\"grid_#=FleetAnnualPlanId#\")")
+                                                    .RequestStart("onRequestStart(\"grid_#=FleetAnnualPlanId#\")")
+                                                    .RequestEnd("onRequestEnd(\"grid_#=FleetAnnualPlanId#\")"))
+                                                .Model(model => model.Id(p => p.FleetAnnualPlanDetailId))
                                                 .Read(read => read.Action("FleetAnnualPlanDetail_Read", "FleetAnnualPlanDetail", new { id = "#=FleetAnnualPlanId#" }))
                                                 .Create(create => create.Action("FleetAnnualPlanDetail_Create", "FleetAnnualPlanDetail", new { id = "#=FleetAnnualPlanId#" }))
                                                 .Update(update => update.Action("FleetAnnualPlanDetail_Update", "FleetAnnualPlanDetail"))
@@ -99,6 +111,24 @@
 }
 
 <script type="text/javascript">
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var fiscalYearId;
+    var fleetAnnualPlanId;
+    function DetailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        fiscalYearId = masterDataItem.GlFiscalYearId;
+        fleetAnnualPlanId = masterDataItem.FleetAnnualPlanId;
+    }
+    function getFiscalYear() {
+        return {
+            fiscalYearId: fiscalYearId          
+        }
+    }
+
     function filterFleet() {
         return {
             text: $("#FleetId").data("kendoDropDownList").filterInput.val(),

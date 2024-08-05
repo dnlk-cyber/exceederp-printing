@@ -15,6 +15,8 @@
                 <div class="col-md-6">
                  @(Html.Kendo().DropDownListFor(model => model.EquipmentIdentityID)
                        .DataTextField("Name")
+                       .ValuePrimitive(true)
+                       .AutoBind(true)
                        .DataValueField("Id").Filter(FilterType.Contains)
                        .OptionLabel("Select Equipment Category")
                        .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider"))
@@ -28,6 +30,8 @@
                 @Html.LabelFor(model => model.FleetId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.FleetId)
+                        .AutoBind(true)
+                        .ValuePrimitive(true)
                                 .DataTextField("EquipmentName")
                                 .DataValueField("FleetsID")
                                 .OptionLabel(" Select ").Filter(FilterType.Contains)
@@ -73,6 +77,8 @@
                     @(Html.Kendo().DropDownListFor(model => model.EquipmentTypeID)
                             .DataTextField("Name")
                             .DataValueField("Id")
+                            .ValuePrimitive(true)
+                            .AutoBind(true)
                             .OptionLabel("Select Equipment Type")
                             .Filter(FilterType.Contains)
                             .DataSource(d =>
@@ -145,8 +151,9 @@
                 @Html.Label("Equipment Name", htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.EquipmentNameID)
-                           .AutoBind(false)
+                           .AutoBind(true)
                            .Enable(false)
+                           .ValuePrimitive(true)
                            .DataTextField("Name")
                            .DataValueField("Id")
                            .Filter(FilterType.Contains)

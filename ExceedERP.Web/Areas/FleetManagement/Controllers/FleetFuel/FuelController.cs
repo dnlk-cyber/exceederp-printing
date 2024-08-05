@@ -6,11 +6,11 @@ using ExceedERP.Web.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;     
+using System.Web.Mvc;
 using ExceedERP.Core.Domain.FleetManagement.FuelManagement;
 using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
-   
+
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Areas.FleetManagement.Models;
@@ -22,6 +22,8 @@ using Kendo.Mvc;
 using System.Linq.Expressions;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Finance.AP.Travel;
+using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
@@ -40,9 +42,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
         //
         // GET: /FleetManagement/Fuel/
-        public  ActionResult  Index()
+        public ActionResult Index()
         {
-          
+
             return View();
         }
 
@@ -60,27 +62,28 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public ActionResult Fuel_Read([DataSourceRequest] DataSourceRequest request)
         {
 
+
             List<IssueItem> IssuesFuelItem = new List<IssueItem>();
             IFleetService _FleetService = new FleetService();
-            var Fleets = _FleetService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).ToList();
+            var FleetList = _FleetService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).ToList();
 
             string dateFrom = string.Empty;
             string dateTo = string.Empty;
             string plateAssetNo = string.Empty;
 
             if (request.Filters.Any())
-                
+
             {
 
 
-                foreach( var f in request.Filters)
+                foreach (var f in request.Filters)
                 {
 
                     var filterDescriptor = f as CompositeFilterDescriptor;
                     var compositeFilterDescriptor = f as List<CompositeFilterDescriptor>;
 
 
-                    var param = (Kendo.Mvc.FilterDescriptor) filterDescriptor.FilterDescriptors[0];
+                    var param = (Kendo.Mvc.FilterDescriptor)filterDescriptor.FilterDescriptors[0];
                     var paramcomposite = (Kendo.Mvc.CompositeFilterDescriptor)filterDescriptor.FilterDescriptors[1];
                     var firstparam = (Kendo.Mvc.FilterDescriptor)paramcomposite.FilterDescriptors[0];
                     var secondparam = (Kendo.Mvc.FilterDescriptor)paramcomposite.FilterDescriptors[1];
@@ -89,7 +92,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     {
                         plateAssetNo = param.Value.ToString();
                     }
-
+             
                     if (firstparam != null && firstparam.Member == "To")
                     {
                         dateTo = firstparam.Value.ToString();
@@ -105,40 +108,43 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             {
                 var DateFrom = DateTime.Parse(dateFrom);
                 var DateTo = DateTime.Parse(dateTo);
-                IssuesFuelItem = db.IssueItems.AsNoTracking().Where(x => x.Issue.IsFuel == true && x.Issue.PlateNo.ToUpper().Contains( plateAssetNo.ToUpper()) && x.DateCreated >= DateFrom && x.DateCreated <= DateTo ).OrderByDescending(x => x.DateCreated).ToList();
+                IssuesFuelItem = db.IssueItems.AsNoTracking().Where(x => x.Issue.IsFuel == true && x.Issue.PlateNo.ToUpper().Contains(plateAssetNo.ToUpper()) && x.DateCreated >= DateFrom && x.DateCreated <= DateTo).OrderByDescending(x => x.DateCreated).ToList();
             }
 
             if (!string.IsNullOrWhiteSpace(dateFrom) && !string.IsNullOrWhiteSpace(dateTo) && string.IsNullOrWhiteSpace(plateAssetNo))
             {
                 var DateFrom = DateTime.Parse(dateFrom);
                 var DateTo = DateTime.Parse(dateTo);
-                IssuesFuelItem = db.IssueItems.AsNoTracking().Where(x => x.Issue.IsFuel == true &&   x.DateCreated >= DateFrom && x.DateCreated <= DateTo).OrderByDescending(x => x.DateCreated).ToList();
+                IssuesFuelItem = db.IssueItems.AsNoTracking().Where(x => x.Issue.IsFuel == true && x.DateCreated >= DateFrom && x.DateCreated <= DateTo).OrderByDescending(x => x.DateCreated).ToList();
             }
             if (string.IsNullOrWhiteSpace(dateFrom) && string.IsNullOrWhiteSpace(dateTo) && !string.IsNullOrWhiteSpace(plateAssetNo))
             {
-                
-                IssuesFuelItem = db.IssueItems.AsNoTracking().Where(x => x.Issue.IsFuel == true && x.Issue.PlateNo.ToUpper().Contains(plateAssetNo.ToUpper()) ).OrderByDescending(x => x.DateCreated).Take(100).ToList();
+
+                IssuesFuelItem = db.IssueItems.AsNoTracking().Where(x => x.Issue.IsFuel == true && x.Issue.PlateNo.ToUpper().Contains(plateAssetNo.ToUpper())).OrderByDescending(x => x.DateCreated).Take(100).ToList();
             }
             if (string.IsNullOrWhiteSpace(dateFrom) && string.IsNullOrWhiteSpace(dateTo) && string.IsNullOrWhiteSpace(plateAssetNo))
             {
- 
-                IssuesFuelItem = db.IssueItems.AsNoTracking().Where(x => x.Issue.IsFuel == true ).OrderByDescending(x => x.DateCreated).Take(100).ToList();
+
+                IssuesFuelItem = db.IssueItems.AsNoTracking().Where(x => x.Issue.IsFuel == true).OrderByDescending(x => x.DateCreated).Take(100).ToList();
             }
 
             request.Filters = null;
-            return Json(IssuesFuelItem.Select(o => new  
+
+
+
+            return Json(IssuesFuelItem.Select(o => new
             {
                 FuelID = o.IssueID,
                 FleetsID = o.Issue.OrgStructureId,
                 ReceiptNo = o.Issue.StoreCode,
                 FuelType = o.ItemCategory.Name,
                 FuelFilledAmount = o.ApprovedQuantity,
-               Description =  o.Issue.Reference,
+                Description = o.Issue.Reference,
                 PlanKmHr = o.Issue.ReadingKM,
                 InitialKmHr = o.Issue.ReadingKM,
                 FinalKmHr = o.Issue.ReadingKM,
-                EquipmentName = GetEquipmentName(o.Issue.PlateNo, Fleets),
-                AssetNo = GetAssetNo(o.Issue.PlateNo, Fleets),
+                EquipmentName = GetEquipmentName(o.Issue.PlateNo, FleetList),
+                AssetNo = GetAssetNo(o.Issue.PlateNo, FleetList),
                 UnitPrice = o.UnitPrice,
                 TotalFuelcost = o.Total,
                 Remark = o.Issue.PlateNo,
@@ -149,13 +155,60 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 DateCreated = o.DateCreated,
                 LastModified = o.LastModified,
                 CreatedBy = o.Issue.IssueDate,
-                ModifiedBy = o.ModifiedBy
+                ModifiedBy = o.ModifiedBy,
+                
 
             }).ToDataSourceResult(request));
         }
 
+        //private decimal GetFuelSum(string plateNo)
+        //{
+        //    decimal fuelSum = 0;
+        //    List<Fleets> fleets = new List<Fleets>();
+
+        //    if (!string.IsNullOrWhiteSpace(plateNo))
+        //    {
+
+
+        //        var fleet = db.Fleets.FirstOrDefault(x => x.PlateNumber == plateNo);
+
+        //        var assignedEquipments = db.AssignedEquipment.Where(x => x.FleetId == fleet.FleetsID);
+        //        foreach (var assignedEquipment in assignedEquipments)
+        //        {
+        //            var requestEquipment = db.RequestedEquipments.FirstOrDefault(x => x.VehicleDemandId == assignedEquipment.VehicleDemandId);
+
+        //            var distibution = db.VehicleDistribution.FirstOrDefault(x => x.RequestID == requestEquipment.RequestNumber);
+
+                    
+
+        //            var apTravelOrder = db.ApTravelOrders.Where(x => x.VehicleDistributionID == distibution.VehicleDistributionID).ToList();
+        //            foreach (var travelOrder in apTravelOrder)
+        //            {
+
+        //                var advancePayments = db.ApTravelOrderAdvancePayments.Where(x => x.ApTravelOrderId == travelOrder.ApTravelOrderId && x.Type == TravelPaymentType.Fuel).ToList();
+        //                foreach (var advancePayment in advancePayments)
+        //                {
+        //                    fuelSum += advancePayment.Total;
+        //                }
+        //                var claims = db.ApTravelExpenseClaims.Where(x => x.ApTravelOrderId == travelOrder.ApTravelOrderId).ToList();
+        //                foreach (var claim in claims)
+        //                {
+        //                    var claimExpenses = db.ApTravelExpenseExpenses.Where(x => x.ApTravelExpenseClaimId == claim.ApTravelExpenseClaimId && x.Type == TravelPaymentType.Fuel).ToList();
+        //                    foreach (var claimExpese in claimExpenses)
+        //                    {
+        //                        fuelSum += claimExpese.Total;
+        //                    }
+        //                }
+        //            }
+        //        }
+                
+        //        return fuelSum;
+        //    }
+        //    return 0;
+        //}
+
         public string GetAssetNo(string p, List<Fleets> fleets)
-        { 
+        {
             var Fleet = fleets.Where(x => x.PlateNumber == p).FirstOrDefault();
             if (Fleet != null)
             {

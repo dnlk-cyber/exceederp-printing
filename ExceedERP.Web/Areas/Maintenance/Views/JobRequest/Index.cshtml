@@ -120,10 +120,7 @@ editable.DisplayDeleteConfirmation("Are You Sure to Delete Job Request? ");
                     <div class="row">
                         <div class="col-md-6">
                             <a href='@Url.Action("JobRequest", "PrintJob")/?Id=#=JobRequestId#' title="Print Job Request"><i class="fa fa-print fa-2x"></i></a>
-                            # if (IsSendForApproval || IsOnlineApproved)
-                            {#
-                            <a href='@Url.Action("MakeVoid", "JobRequest")/?Id=#=JobRequestId#' title="Make Void"><i class="fa fa-step-backward fa-2x"></i></a>
-                            # }#
+                            
                         </div>
                     </div>
                     <hr />

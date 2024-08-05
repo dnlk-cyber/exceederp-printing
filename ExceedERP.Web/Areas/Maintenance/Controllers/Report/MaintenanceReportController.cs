@@ -42,5 +42,34 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.Report
             ViewBag.FormNumber = number;
             return View();
         }
+        public ActionResult MachinaryAndVehicelMaintenanceReport()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.MachinaryAndVehicelMaintenanceReport, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult WeeklyCMPMPerformanceReport()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.WeeklyCMPMPerformanceReport, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult WeeklyCMPMPerformanceSummaryReport()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.WeeklyCMPMPerformanceReport, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult InternalMaintenanceCostReport()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.Maintenance, MaintenanceIsoConst.InternalMaintenanceCostReport, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+
     }
 }

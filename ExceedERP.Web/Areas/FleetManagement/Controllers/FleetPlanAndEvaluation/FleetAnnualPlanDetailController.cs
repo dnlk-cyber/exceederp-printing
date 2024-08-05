@@ -3,10 +3,8 @@ using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
@@ -44,6 +42,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
             }
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
+
+        
         public ActionResult FleetAnnualPlanDetail_Update([DataSourceRequest] DataSourceRequest request, FleetAnnualPlanDetail model)
         {
             if (model.EfficiencyPercentile > 1 || model.EfficiencyPercentile < 0 || model.InefficiencyPercentile > 1 || model.InefficiencyPercentile < 0)
@@ -56,11 +56,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
                 model.ModifiedBy = User.Identity.Name;
                 model.LastModified = DateTime.Today;
                 CalculateValues(model);
+                
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
+                
             }
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
+        
         public ActionResult FleetAnnualPlanDetail_Delete([DataSourceRequest] DataSourceRequest request, FleetAnnualPlanDetail model)
         {
             if (ModelState.IsValid)

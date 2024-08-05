@@ -1,4 +1,4 @@
-using ExceedERP.Core.Domain.Common;
+﻿using ExceedERP.Core.Domain.Common;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;

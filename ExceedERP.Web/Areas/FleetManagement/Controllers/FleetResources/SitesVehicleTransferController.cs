@@ -13,6 +13,7 @@ using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Global;
+using System.Data.Entity;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
@@ -133,7 +134,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     sitesVehicleTransfer.DateCreated = DateTime.Now;
                     sitesVehicleTransfer.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
                     bool IsInserted = _SitesVehicleTransferService.Insert(sitesVehicleTransfer);
-
+                    //ChangeSiteTransferOnFleet(sitesVehicleTransfer.FleetsID, sitesVehicleTransfer.BranchId);
                     var EquipmentTyres = db.EquipmentTyres.Where(x => x.fleetId == sitesVehicleTransfer.FleetsID && x.Isattached).ToList();
 
                     foreach (var EquipmentTyre in EquipmentTyres)
@@ -160,7 +161,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
             return Json(new[] { sitesVehicleTransfer }.ToDataSourceResult(request, ModelState));
         }
-
+       
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SitesVehicleTransfer_Update([DataSourceRequest] DataSourceRequest request, SitesVehicleTransfer SitesVehicleTransfer)
         {
@@ -177,6 +178,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                             SitesVehicleTransfer.LastModified = DateTime.Now;
                             SitesVehicleTransfer.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
                             _SitesVehicleTransferService.Update(SitesVehicleTransfer);
+                    //ChangeSiteTransferOnFleet(SitesVehicleTransfer.FleetsID, SitesVehicleTransfer.BranchId);
                     #region operation log
                     UserHelper.OperationLog(Request.UserHostAddress, "Site vehicle transfer registration", "Success", User.Identity.Name, $"updated site vehicle transfer {SitesVehicleTransfer.SitesVehicleTransferID}", Modules.FleetManagement);
                     #endregion

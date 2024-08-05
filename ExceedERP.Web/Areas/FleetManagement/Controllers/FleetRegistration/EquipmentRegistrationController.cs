@@ -988,8 +988,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             ModelState.Clear();
             if (fleets.AssetId==null)
                 ModelState.AddModelError("AssetNull", "Please select asset !");
-            if (fleets.UnitNum==null)
-                ModelState.AddModelError("AssetCodeNull", "Please select asset code !");
+            //if (fleets.UnitNum==null)
+            //    ModelState.AddModelError("AssetCodeNull", "Please select asset code !");
             IEquipmentNameService _equipmentNameService = new EquipmentNameService();
             IFleetService _FleetService = new FleetService();
             AssetRegistration Asset = db.AssetRegistrations.Where(x => x.AssetRegistrationId == fleets.AssetId || x.AssetRegistrationId.ToString() == fleets.SerialNo || x.AssetRegistrationId.ToString() == fleets.PlateNumber).FirstOrDefault();
@@ -1011,6 +1011,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 {
                     fleets.DateCreated = DateTime.Today;
                     fleets.AssetId = Asset.AssetRegistrationId;
+                    fleets.BranchId = Asset.BranchId;
                     fleets.FleetsID = Guid.NewGuid();
                     fleets.LastMaintained = DateTime.Now;
                     fleets.PreviousOdoMeter = fleets.CurentOdoMeter;
@@ -1174,6 +1175,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     if (fleets != null)
                     {
                         fleets.AssetId = Asset.AssetRegistrationId;
+                        fleets.BranchId = Asset.BranchId;
                         fleets.LastMaintained = DateTime.Now;
                         fleets.PreviousOdoMeter = fleets.CurentOdoMeter;
                         fleets.Status = MaintenanceConst.ACTIVE;

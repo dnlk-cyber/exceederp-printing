@@ -76,7 +76,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             if (fleetId != null)
             {
                 Guid FId = Guid.Parse(fleetId);
-                var dumpTruckTimeSheets = db.DumpTruckTimeSheets.Where(x => x.FleetsID == FId).ToList();
+                var dumpTruckTimeSheets = db.DumpTruckTimeSheets.Where(x => x.FleetsID == FId && x.CostSheetApproved).ToList();
                 dumpTruckTimeSheets = dumpTruckTimeSheets.Where(x => x.Date.Date >= from.Date && x.Date.Date <= to.Date).ToList();
                
                 if (!string.IsNullOrWhiteSpace(businessUnitId))

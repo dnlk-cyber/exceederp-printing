@@ -58,12 +58,12 @@
         {
             commands.Create(); //commands.Excel();
                                //commands.Pdf();
-}).Editable(editable =>
-{
-editable.Window(w => w.Title("Customer Request"));
-editable.Mode(GridEditMode.PopUp).TemplateName("CommonJobRequestEditorTemplate");
-editable.DisplayDeleteConfirmation("Are You Sure to Delete Job Request? ");
-})
+        }).Editable(editable =>
+        {
+        editable.Window(w => w.Title("Customer Request"));
+        editable.Mode(GridEditMode.PopUp).TemplateName("CommonJobRequestEditorTemplate");
+        editable.DisplayDeleteConfirmation("Are You Sure to Delete Job Request? ");
+        })
         .HtmlAttributes(new { style = "height: 520px;" })
 
         .Pageable(pageable => pageable
@@ -138,7 +138,7 @@ editable.DisplayDeleteConfirmation("Are You Sure to Delete Job Request? ");
             </div>
         </text>
                             );
-                                        items.Add().Text(" Causes  ").Content(@<text>
+                                        items.Add().Text("Causes").Content(@<text>
                                             <a href='@Url.Action("JobRequest", "PrintJob")/?Id=#=JobRequestId#' title="Print Job Request"><i class="fa fa-print fa-2x"></i></a>
                                             # if (IsSendForApproval == false || IsSendForApproval == "false")
                                             {#
@@ -212,9 +212,9 @@ editable.DisplayDeleteConfirmation("Are You Sure to Delete Job Request? ");
                                         );*@
                                                 items.Add().Text("Administrative Approval").Content(@<text>
                                                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.AdministrativeJobApproval>()
-                                                                                         .Name("JobOrderAdmingrid_#=JobRequestId#")
-                                                                                        .Columns(columns =>
-                                                                                        {
+                                                                            .Name("JobOrderAdmingrid_#=JobRequestId#")
+                                                                            .Columns(columns =>
+                                                                            {
                                                                             columns.Bound(o => o.Status).EditorTemplateName("ApprovalStatusBind").Width(126);
                                                                             columns.Bound(o => o.Remark).Width(160);
                                                                             columns.Bound(o => o.CreatedBy).Width(120);
@@ -226,21 +226,21 @@ editable.DisplayDeleteConfirmation("Are You Sure to Delete Job Request? ");
                                                                                 command.Custom("cmd-reject-request").HtmlAttributes(new { @class = "kendoDanger" })
                                                                                   .Text("&nbsp;Reject").Click("rejectJobRequest").IconClass("fa fa-close");
                                                                     //command.Custom().Text("Approve");
-                                                                }).Width(250);
+                                                                            }).Width(250);
                                                                         }).Events(ev =>
                                                                         {
                                                                             ev.DataBound("approveonDataBound");
                                                                         })
-                                                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                            .DataSource(dataSource => dataSource
-                                                                                            .Ajax()
-                                                                                            .PageSize(20)
-                                                                                            .Model(model =>
-                                                                                            {
-                                                                                model.Id(p => p.AdministrativeJobApprovalID);
-                                                                                model.Field(p => p.CreatedBy).Editable(false);
-                                                                                model.Field(p => p.DateCreated).Editable(false);
-                                                                            }).Events(ev => ev
+                                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                    .DataSource(dataSource => dataSource
+                                                                                    .Ajax()
+                                                                                    .PageSize(20)
+                                                                                    .Model(model =>
+                                                                                    {
+                                                                        model.Id(p => p.AdministrativeJobApprovalID);
+                                                                        model.Field(p => p.CreatedBy).Editable(false);
+                                                                        model.Field(p => p.DateCreated).Editable(false);
+                                                                        }).Events(ev => ev
                                                                                 .Error("error_handler(\"JobOrderAdmingrid_#=JobRequestId#\")")
                                                                                 .RequestStart("onRequestStart(\"JobOrderAdmingrid_#=JobRequestId#\")")
                                                                                 .RequestEnd("onRequestEnd(\"JobOrderAdmingrid_#=JobRequestId#\")"))
@@ -273,7 +273,7 @@ editable.DisplayDeleteConfirmation("Are You Sure to Delete Job Request? ");
 
         $.ajax({
             type: "POST",
-            url: '@Url.Action("ApproveJobRequest", "JobRequest", new { area = "Maintenance" })',
+            url: '@Url.Action("ApproveJobRequest", "JobRequestSelfCare", new { area = "Maintenance" })',
             data: { id: masterId },
             success: function (result) {
                 console.log(result.Message);

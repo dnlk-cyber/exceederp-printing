@@ -645,7 +645,7 @@
     <Compile Include="Domain\FleetManagement\EquipmentInspection\RentalMVInspection.cs" />
     <Compile Include="Domain\FleetManagement\EquipmentPlanandEvaluation\EquipmentPlanandEvaluations.cs" />
     <Compile Include="Domain\FleetManagement\EquipmentPlanandEvaluation\EquipmentPlanEvaluationApproval.cs" />
-    <Compile Include="Domain\FleetManagement\EquipmentPlanandEvaluation\FleetPlan.cs" />
+    <Compile Include="Domain\FleetManagement\EquipmentPlanandEvaluation\FleetAnnualPlan.cs" />
     <Compile Include="Domain\FleetManagement\EquipmentPlanandEvaluation\PlanAndEvaluationApproval.cs" />
     <Compile Include="Domain\FleetManagement\FleetConst.cs" />
     <Compile Include="Domain\FleetManagement\FleetEquipmentRent\ExternalRentedEquipment.cs" />
@@ -663,6 +663,7 @@
     <Compile Include="Domain\FleetManagement\FleetEquipmentRent\RentRequestApproval.cs" />
     <Compile Include="Domain\FleetManagement\FleetEquipmentRent\RentToExternal.cs" />
     <Compile Include="Domain\FleetManagement\FleetEquipmentRent\RentToExternalApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetFuelConsumption.cs" />
     <Compile Include="Domain\FleetManagement\FleetInsurances\FleetInsurance.cs" />
     <Compile Include="Domain\FleetManagement\FleetInsurances\FleetInsuranceType.cs" />
     <Compile Include="Domain\FleetManagement\FleetInsurances\FleetInsuranceTypeDetail.cs" />
@@ -707,6 +708,7 @@
     <Compile Include="Domain\FleetManagement\FleetRegistration\OwningandOperatingCostConstant.cs" />
     <Compile Include="Domain\FleetManagement\FleetRegistration\TimeSheet.cs" />
     <Compile Include="Domain\FleetManagement\FleetRegistration\TimeSheetApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRentalRate.cs" />
     <Compile Include="Domain\FleetManagement\FleetResource\AssignedEquipment.cs" />
     <Compile Include="Domain\FleetManagement\FleetResource\AssignEquipmentApproval.cs" />
     <Compile Include="Domain\FleetManagement\FleetResource\DriverAssignment.cs" />
@@ -1077,6 +1079,7 @@
     <Compile Include="Domain\Maintenance\MaintenanceCenter.cs" />
     <Compile Include="Domain\Maintenance\MaintenanceInterval.cs" />
     <Compile Include="Domain\Maintenance\MaintenanceIsoConst.cs" />
+    <Compile Include="Domain\Maintenance\MaintenancePlan.cs" />
     <Compile Include="Domain\Maintenance\MaintenanceRoles.cs" />
     <Compile Include="Domain\Maintenance\MaintenanceTool.cs" />
     <Compile Include="Domain\Maintenance\MaintenanceToolIssueAndReturn.cs" />

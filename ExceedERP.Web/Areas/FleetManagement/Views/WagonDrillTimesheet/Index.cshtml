@@ -11,14 +11,20 @@
                     .Columns(columns =>
                     {
                         columns.Bound(c => c.WagonDrillTimesheetId).Title("#").Width(70);
+                       // columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
+                        //columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
+                        //columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
                         columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "Value", "Text").Title("Equipment Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
                         columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(100);
+                        columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Value", "Text").Title("Branch Name").Width(100);
                         columns.Bound(c => c.WorkItem).Width(100);
                         columns.Bound(c => c.OperationNetWorkingHour).Width(120);
+                        columns.Bound(c => c.IdleHour).Width(120);
+                        columns.Bound(c => c.DownTime).Width(120);
                         columns.Bound(c => c.NumberOfHolesDrilled).Width(120);
                         columns.Bound(c => c.OperationDrilledHoleDepth).Width(120);
-                        
-                        
+
+
                         columns.Bound(c => c.IdleRateHour).Width(120);
                         columns.Bound(c => c.TimeSheetStatus).Width(120);
 
@@ -150,7 +156,34 @@
 
 
 <script>
+    function filterEquipmentType() {
+        var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        
+        return {
+            timeSheetEquipmentType: "@ViewBag.wagonDrill",
+            equipmentIdentityId: $("#EquipmentCategoryId").val(),
+            search: filterInput.val()
+        };
 
+    }
+
+    function filterEquipmentNames() {
+        var dropdownlist = $("#EquipmentNameId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentTypeId: $("#EquipmentTypeId").val(),
+            search: filterInput.val()
+        };
+    }
+
+    function filterFleet() {
+        return {
+            text: $("#FleetId").data("kendoDropDownList").filterInput.val(),
+            equipmentNameId: $("#EquipmentNameId").val()
+        };
+    }
     var timeSheetApproved;
     var timeSheetSendForAproval;
     var wagonDrillTimeSheetId;
@@ -232,12 +265,13 @@
 
     }
 
-    function fetchTimesheetEquipmentType() {
+    function filterPlateNumber() {
         return {
-            timeSheetEquipmentType: "@ViewBag.wagonDrill",
+            equipmentNameId: $("#EquipmentNameId").val(),
             text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
         }
     }
+
     function filterOperator() {
         return {
             text: $("#OperatorId").data("kendoDropDownList").filterInput.val()

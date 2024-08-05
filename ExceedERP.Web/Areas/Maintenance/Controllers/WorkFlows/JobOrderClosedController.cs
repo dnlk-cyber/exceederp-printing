@@ -236,7 +236,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                    InspectorComments = GetMaintenaceDuration(j.JobOrderID),
                    IsOnlineApproved = j.IsOnlineApproved,
                    LabourCost = fleetCostHelper.GetLabourCost(j),
-                   //SpareCost = fleetCostHelper.GetJobOrderSpareCost(j),
+                   SpareCost = fleetCostHelper.GetJobOrderSpareCost(j),
                    //TyreCost = fleetCostHelper.GetJobOrderSpareCost(j, inventoryMapping, SpareType.Tyre),
                    //OilLubricantCost = fleetCostHelper.GetJobOrderSpareCost(j, inventoryMapping, SpareType.Oil_Lubricant),
                    //OtherCost = fleetCostHelper.GetJobOrderSpareCost(j, inventoryMapping, SpareType.Other),

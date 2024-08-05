@@ -72,7 +72,8 @@
             <div>
                 @(Html.Kendo().DropDownListFor(n => n.GLFiscalYearId)
                                          .OptionLabel("Select Year")
-                                         .AutoBind(false)
+                                         .AutoBind(true)
+                                         .ValuePrimitive(true)
                                          .DataValueField("GlFiscalYearId")
                                          .DataTextField("Name")
                                          .DataSource(dataSource =>
@@ -116,7 +117,7 @@
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.GLPeriodId)
                                   .OptionLabel("Select Period")
-                                  .AutoBind(false)
+                                  .AutoBind(true)
                                   .DataValueField("GLPeriodId")
                                   .DataTextField("Name")
                                   .CascadeFrom("GLFiscalYearId")

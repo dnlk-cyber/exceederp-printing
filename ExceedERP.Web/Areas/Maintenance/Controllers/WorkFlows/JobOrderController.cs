@@ -1,6 +1,7 @@
 ﻿using ExceedERP.ApplicationServices.FleetManagement.FleetMaintenance;
 using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Maintenance;
@@ -17,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -45,24 +47,25 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             _JobOrderDetailService = new JobOrderDetailService();
         }
 
-        //
-        // GET: /FleetManagement/JobOrder/
-        public async Task<ActionResult> Index()  
+        public async Task<ActionResult> ClosingJobs()
         {
-            
-            ViewData["Service"] = db.RepairType.Select(s => new {
+            ViewData["Service"] = db.RepairType.Select(s => new
+            {
                 Code = s.RepairTypeID,
                 Name = s.Code + "-" + s.Name
             }).ToList();
-            ViewData["SubCategories"] = db.ItemCategorys.Select(s => new {
+            ViewData["SubCategories"] = db.ItemCategorys.Select(s => new
+            {
                 Code = s.ItemCategoryCode,
                 Name = s.Name
             }).ToList();
-            ViewData["JobCauses"] = db.JobCauses.ToList().Select(s => new {
+            ViewData["JobCauses"] = db.JobCauses.ToList().Select(s => new
+            {
                 Code = s.JobCausesId,
                 Name = XAPI.Common.RemoveSpecialChars(s.Description)
             }).ToList();
-            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
+            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new
+            {
                 Code = s.OrganizationCustomerID,
                 Name = s.TradeName
             }).ToList();
@@ -73,14 +76,63 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 Id = s.MaintenanceCenterID,
                 Name = s.Name
             }).ToList();
-           
+
 
             ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new
             {
                 Name = s.Name,
                 Id = s.ServiceCenterId
             }).ToList();
-            
+
+
+            ViewData["EquipmentsList"] = db.EquipmentInformation.Select(e => new { e.EquipmentInformationId, e.LicensePlate, e.DeviceNumber }).ToList();
+            await GetMaintainaceDue();
+            ViewBag.ServiceType = db.MaintenanceType.ToList();
+
+            //UpdateJobOrderStatus();
+            PopulateViewData();
+            return View();
+        }
+        //
+        // GET: /FleetManagement/JobOrder/
+        public async Task<ActionResult> Index()
+        {
+
+            ViewData["Service"] = db.RepairType.Select(s => new
+            {
+                Code = s.RepairTypeID,
+                Name = s.Code + "-" + s.Name
+            }).ToList();
+            ViewData["SubCategories"] = db.ItemCategorys.Select(s => new
+            {
+                Code = s.ItemCategoryCode,
+                Name = s.Name
+            }).ToList();
+            ViewData["JobCauses"] = db.JobCauses.ToList().Select(s => new
+            {
+                Code = s.JobCausesId,
+                Name = XAPI.Common.RemoveSpecialChars(s.Description)
+            }).ToList();
+            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new
+            {
+                Code = s.OrganizationCustomerID,
+                Name = s.TradeName
+            }).ToList();
+
+
+            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
+            {
+                Id = s.MaintenanceCenterID,
+                Name = s.Name
+            }).ToList();
+
+
+            ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new
+            {
+                Name = s.Name,
+                Id = s.ServiceCenterId
+            }).ToList();
+
 
             ViewData["EquipmentsList"] = db.EquipmentInformation.Select(e => new { e.EquipmentInformationId, e.LicensePlate, e.DeviceNumber }).ToList();
             await GetMaintainaceDue();
@@ -146,7 +198,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
 
-            IQueryable<JobOrder> jobOrders = 
+            IQueryable<JobOrder> jobOrders =
                 db.JobOrder
                 .AsNoTracking()
                 .ToList()
@@ -208,11 +260,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 OrgStructureId = j.OrgStructureId,
                 CreatedAtBranchId = j.CreatedAtBranchId,
                 CreatedAtBusinessUnitId = j.CreatedAtBusinessUnitId,
-                IsInsured = j.IsInsured
+                IsInsured = j.IsInsured,
+                Description = j.Description
             });
 
             return Json(result);
-            
+
         }
         public ActionResult JobOrderClosed_Read([DataSourceRequest] DataSourceRequest request)
         {
@@ -252,7 +305,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 SecondOnlineApprovedTime = j.SecondOnlineApprovedTime,
                 OnlineApprovedTime = j.OnlineApprovedTime,
                 DateCreated = j.DateCreated,
-               
+
                 IsSubmittedToServiceCenter = j.IsSubmittedToServiceCenter,
                 IsSendForApproval = j.IsSendForApproval,
                 IsSecondSendForApproval = j.IsSecondSendForApproval,
@@ -264,7 +317,66 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 OrgStructureId = j.OrgStructureId,
                 CreatedAtBranchId = j.CreatedAtBranchId,
                 CreatedAtBusinessUnitId = j.CreatedAtBusinessUnitId,
-                IsInsured = j.IsInsured
+                IsInsured = j.IsInsured,
+                Description = j.Description
+            });
+
+            return Json(result);
+
+        }
+        public ActionResult JobOrderClosing_Read([DataSourceRequest] DataSourceRequest request)
+        {
+            IQueryable<JobOrder> jobOrders =
+                db.JobOrder
+                .AsNoTracking()
+                .ToList()
+                .Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name))
+                .Where(x => x.Status != "Closed")
+                .Where(x => x.IsSubmittedToServiceCenter)
+                .AsQueryable();
+            DataSourceResult result = jobOrders.ToDataSourceResult(request, j => new JobOrder
+            {
+                IsPM = j.IsPM,
+                IsRework = j.IsRework,
+                CustomerId = db.JobRequest.Where(q => q.Num == j.Referance).FirstOrDefault()?.CustomerId,
+                EquipmentName = j.EquipmentName,
+                CurrentFuel = j.CurrentFuel,
+                ProjectName = j.ProjectName,
+                RejectionReason = j.RejectionReason,
+                Progress = GetProgressPercent(j.JobOrderID),
+                Status = j.Status,
+                PercentCompleted = j.AssetNum + "--" + j.EquipmentName,
+                MaintenanceCenter = j.MaintenanceCenter,
+                Num = j.JobOrderNum ?? j.Num,
+                JobOrderNum = j.JobOrderNum,
+                JobOrderID = j.JobOrderID,
+                Type = j.Type,
+                LicensePlate = j.LicensePlate,
+                IsExternal = j.IsExternal,
+                EquipmentInformationId = j.EquipmentInformationId,
+                FailureReason = j.FailureReason,
+                AdvanceMeasure = j.AdvanceMeasure,
+                Referance = j.Referance,
+                Odometer = j.Odometer,
+                InspectorComments = GetMaintenaceDuration(j.JobOrderID),
+                IsOnlineApproved = j.IsOnlineApproved,
+                SecondOnlineApprovedTime = j.SecondOnlineApprovedTime,
+                OnlineApprovedTime = j.OnlineApprovedTime,
+                DateCreated = j.DateCreated,
+
+                IsSubmittedToServiceCenter = j.IsSubmittedToServiceCenter,
+                IsSendForApproval = j.IsSendForApproval,
+                IsSecondSendForApproval = j.IsSecondSendForApproval,
+                IsSecondOnlineApproved = j.IsSecondOnlineApproved,
+                IsOnlineTransferred = j.IsOnlineTransferred,
+                MaintenanceCenterId = j.MaintenanceCenterId,
+                BranchId = j.BranchId,
+                BusinessUnitId = j.BusinessUnitId,
+                OrgStructureId = j.OrgStructureId,
+                CreatedAtBranchId = j.CreatedAtBranchId,
+                CreatedAtBusinessUnitId = j.CreatedAtBusinessUnitId,
+                IsInsured = j.IsInsured,
+                Description = j.Description
             });
 
             return Json(result);
@@ -301,7 +413,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                    InspectorComments = GetMaintenaceDuration(j.JobOrderID),
                    IsOnlineApproved = j.IsOnlineApproved,
                    LabourCost = fleetCostHelper.GetLabourCost(j),
-                   //SpareCost = fleetCostHelper.GetJobOrderSpareCost(j),
+                   SpareCost = fleetCostHelper.GetJobOrderSpareCost(j),
                    //TyreCost = fleetCostHelper.GetJobOrderSpareCost(j, inventoryMapping, SpareType.Tyre),
                    //OilLubricantCost = fleetCostHelper.GetJobOrderSpareCost(j, inventoryMapping, SpareType.Oil_Lubricant),
                    //OtherCost = fleetCostHelper.GetJobOrderSpareCost(j, inventoryMapping, SpareType.Other),
@@ -654,7 +766,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             var request = new DataSourceRequest();
             var jobOrder = db.JobOrder.Find(id);
-            if(jobOrder!=null)
+            if (jobOrder != null)
             {
                 var reJobOrder = new JobOrder();
                 reJobOrder.JobOrderID = Guid.NewGuid();
@@ -686,9 +798,9 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             var request = new DataSourceRequest();
             var jobOrder = db.JobOrder.Find(id);
-            if(jobOrder!=null&&jobOrder.Status== MaintenanceConst.Closed)
+            if (jobOrder != null && jobOrder.Status == MaintenanceConst.Closed)
             {
-               
+
                 jobOrder.Status = MaintenanceConst.Delivered;
                 db.JobOrder.Attach(jobOrder);
                 db.Entry(jobOrder).State = EntityState.Modified;
@@ -709,7 +821,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
         public ActionResult JobOrder_Destroy([DataSourceRequest] DataSourceRequest request, JobOrder jobOrder)
         {
-           
+
             IJobOrderDetailService _JobOrderDetailService = new JobOrderDetailService();
             IServiceSpareService _ServiceSpareService = new ServiceSpareService();
             var JobOrder = _JobOrderService.GetById(jobOrder.JobOrderID);
@@ -721,7 +833,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
 
             var updateStatus = _JobOrderService.Update(JobOrder);
-            
+
             var jobOrderDetail = db.JobOrderDetail.Where(x => x.JobOrderID == JobOrder.JobOrderID).ToList();
             var jobRequests = db.JobRequest.Where(x => x.Num == JobOrder.Referance).ToList();
             foreach (var item in jobOrderDetail)
@@ -765,16 +877,105 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 //    });
                 //}
                 CRMMaintenanceIntegrationHelper.CreateSalesQuoteVoucherFromMaintenance(JobOrder, User.Identity.Name);
+
+                var maintenanceCenter = db.MaintenanceCenter.FirstOrDefault(x => x.MaintenanceCenterID == JobOrder.MaintenanceCenterId);
+                if(maintenanceCenter != null)
+                {
+                    if (maintenanceCenter.IsExternal)
+                    {
+                        GenerateExternalPaymentRequest(jobOrder.Num);
+                    }
+                }
+                
             }
 
             // return Json(new[] { JobOrder }.ToDataSourceResult(request));
             return Redirect("Index");
-           
+
             //return Json(new[] { jobOrder }.ToDataSourceResult(request));
-           
+
 
 
         }
+        #region ExternalMaintenancePaymentRequest
+        public void GenerateExternalPaymentRequest(int num)
+        {
+            var jobOrder = db.JobOrder.FirstOrDefault(x => x.Num == num);
+            if (jobOrder != null)
+            {
+
+                var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == jobOrder.RequesterId);
+                if (placement != null)
+                {
+                    var serviceCenterJob = db.ServiceCenterJob.FirstOrDefault(x => x.Num == num);
+                    if (serviceCenterJob != null)
+                    {
+                        var request = new PaymentRequest
+                        {
+                            SupplierId = "0",
+                            IsNewSupplier = false,
+                            Supplier = " ",
+                            Purchaser = 0,
+                            ReasonOfPayment = $"Vehicle Plate No {jobOrder.LicensePlate} Repair",
+                            RequestDate = DateTime.Now.Date,
+                            RequestDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year),
+                            InvoiceNo = "0",
+                            PurchaseRequestNo = "0",
+                            PONo = "0",
+                            GRN = "0",
+                            BranchId = jobOrder.BranchId,
+                            BusinessUnitId = jobOrder.BusinessUnitId,
+                            OrgStuructureId = placement.OrgStructureId,
+                            EmployeeId = jobOrder.RequesterId,
+                            Paid = false,
+                            FromBranchId = jobOrder.BranchId,
+                            FromBusinessUnitId = jobOrder.BusinessUnitId,
+                            CreatedAtBranchId = jobOrder.BranchId,
+                            CreatedAtBusinessUnitId = jobOrder.BusinessUnitId,
+                            CreatedAtOrgStructureId = placement.OrgStructureId,
+                            CreatedBy = User.Identity.Name,
+                            DateCreated = DateTime.Now.Date,
+                            ModifiedBy = User.Identity.Name,
+                            LastModified = DateTime.Now.Date,
+                            CurrentApprovalStep = 0,
+                            IsDepartmentOnlineApproved = true,
+                            DepartmentOnlineApprovedBy = User.Identity.Name,
+                            DepartmentOnlineApprovedTime = DateTime.Now,
+                        };
+                        db.PaymentRequests.Add(request);
+                        db.SaveChanges();
+                        var payments = db.ExternalServiceCenterPayments.Where(x => x.ServiceCenterJobId == serviceCenterJob.ServiceCenterJobId);
+                        if (payments.Any())
+                        {
+                            foreach (var payment in payments)
+                            {
+                                var requestDetail = new PaymentRequestLine
+                                {
+                                    PaymentRequestId = request.PaymentRequestId,
+                                    Amount = payment.SubTotal,
+                                    TaxAmount = 0,
+                                    TotalAmount = payment.Total,
+                                    ItemName = "0",
+                                    GLTaxRateID = payment.GlTaxRateId,
+                                    Description = $"External Maintenance: {payment.CostType}",
+                                    Remark = "",
+                                    CreatedBy = User.Identity.Name,
+                                    DateCreated = DateTime.Now.Date,
+                                    ModifiedBy = User.Identity.Name,
+                                    LastModified = DateTime.Now.Date,
+                                };
+                                db.PaymentRequestLines.Add(requestDetail);
+                            }
+                           
+                            db.SaveChanges();
+                        }
+                    }
+                }
+
+            }
+
+        }
+        #endregion
         public string GetJobStatus(string Id)
         {
 
@@ -889,7 +1090,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 ViewData["Error"] = "Job order has not any service";
                 return RedirectToAction("Index");
             }
-            if (JobOrder != null&& jobOrderDetail!=0)
+            if (JobOrder != null && jobOrderDetail != 0)
             {
 
                 _JobOrderService.Update(JobOrder);
@@ -912,7 +1113,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 item.ApprovalStatus = ApprovalStatuses.Pending;
 
                 db.Entry(item).State = EntityState.Modified;
-               
+
             }
             db.SaveChanges();
 
@@ -920,8 +1121,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             jobOrder.IsSendForApproval = false;
             db.Entry(jobOrder).State = EntityState.Modified;
             db.SaveChanges();
-           
-            return RedirectToAction("Index"); 
+
+            return RedirectToAction("Index");
         }
 
         public ActionResult UpdateType(string Id, string[] JobType)
@@ -1019,17 +1220,31 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             return View("Index");
         }
 
-        
+        public void CleanJobOrder()
+        {
+            var jobOrders = db.JobOrder.ToList();
+            foreach (var jobOrder in jobOrders)
+            {
+                var fleet = db.Fleets.FirstOrDefault(x => x.PlateNumber == jobOrder.LicensePlate || x.SerialNo == jobOrder.LicensePlate);
+                if (fleet != null)
+                {
+                    jobOrder.FleetsID = fleet.FleetsID;
+                    db.Entry(jobOrder).State = EntityState.Modified;                   
+                }
+            }
+            db.SaveChanges();
+        }
+
         public void UpdateJobOrderStatus()
         {
-            var jobOrders=db.JobOrder.Where(x=>x.Status== MaintenanceConst.Open).ToList();
+            var jobOrders = db.JobOrder.Where(x => x.Status == MaintenanceConst.Open).ToList();
 
             foreach (var job in jobOrders)
             {
-                var services=db.ServiceCenterJob
-                    .Where(x=>x.JobOrderID==job.JobOrderID).ToList();
+                var services = db.ServiceCenterJob
+                    .Where(x => x.JobOrderID == job.JobOrderID).ToList();
 
-                if(services.Any())
+                if (services.Any())
                 {
                     var uncompleted = services.Where(x => x.Status != MaintenanceConst.Closed).ToList();
                     if (!uncompleted.Any())
@@ -1274,6 +1489,45 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
 
         #endregion
+
+
+        public ActionResult Unique(string field)
+        {
+            var result = db.JobOrder.ToList().Distinct(new JobOrderComparer(field));
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+    }
+    public class JobOrderComparer : IEqualityComparer<JobOrder>
+    {
+        private string field;
+
+        private PropertyInfo prop;
+
+        public JobOrderComparer(string field)
+        {
+            this.field = field;
+            prop = typeof(JobOrder).GetProperty(field);
+        }
+        public bool Equals(JobOrder x, JobOrder y)
+        {
+            var valueX = prop.GetValue(x, null);
+            var valueY = prop.GetValue(y, null);
+            if (valueX == null)
+            {
+                return valueY == null;
+            }
+            return valueX.Equals(valueY);
+        }
+
+        public int GetHashCode(JobOrder obj)
+        {
+            var value = prop.GetValue(obj, null);
+            if (value == null)
+            {
+                return 0;
+            }
+            return value.GetHashCode();
+        }
     }
 }
 

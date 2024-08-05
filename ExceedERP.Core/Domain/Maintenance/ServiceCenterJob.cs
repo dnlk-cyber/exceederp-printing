@@ -167,6 +167,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         //nav to ServiceCenter
         [Display(Name = "Service Center")]
         public int? ServiceCenterId { get; set; } // new ft added
+        public Guid JobOrderDetailId { get; set; } // new
 
     }
 
