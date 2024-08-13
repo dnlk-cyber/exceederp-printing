@@ -23,7 +23,7 @@
                                                     .HtmlAttributes(new { style = "width:150px" })
                                                     .DataSource(dataSource =>
                                                     {
-                                                        dataSource.Read(read => read.Action("GetFiscalYear", "EmployeePerformance", new { area = "HRM" }))
+                                                        dataSource.Read(read => read.Action("GetFiscalYearForPerformance", "HRMDataProvider", new { area = "HRM" }))
                                                             .ServerFiltering(false);
                                                     })
 
@@ -747,7 +747,8 @@
     function filterBranch() {
         return {
             businessUnitId: $("#businessUnit").val(),
-            searchText: $("#BranchId").data("kendoDropDownList").filterInput.val(),
+            searchText: $("#branch").data("kendoDropDownList").filterInput.val(),
+
         };
     }
     function onMeasurementDefinitionChange() {

@@ -21,6 +21,7 @@ using ExceedERP.Core.Domain.Common.HRM;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
+    [AuthorizeRoles(HrmConstants.HRLeaveAdmin, HrmConstants.HRLeaveUser)]
     public class LeavePayablesController : BaseController
     {
         ExceedDbContext db = new ExceedDbContext();
@@ -36,6 +37,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             var workunits = db.MainCompanyStructures.ToList();
             ViewData["workunits"] = workunits;
             ViewData["businessUnits"] = db.BusinessUnits;
+
             return View();
         }
         
@@ -110,10 +112,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 db.SaveChanges();
 
                 #region operation log
-              
-                   
-                        UserHelper.OperationLog(Request.UserHostAddress, "Leave payable Setting", "Success", User.Identity.Name, "Leave payable Setting is Updated By  " + User.Identity.Name,Modules.HRM);
-                
+                UserHelper.OperationLog(Request.UserHostAddress, "Leave payable Setting", "Success", User.Identity.Name, "Leave payable Setting is Updated By  " + User.Identity.Name,Modules.HRM);                
                 #endregion
             }
 

@@ -1141,7 +1141,8 @@ namespace ExceedERP.Core.Domain.Common
         [Display(Name = "Enum_LeaveType_Leave_With_Out_Pay", ResourceType = typeof(Resources))]
         Leave_With_Out_Pay,
         [Display(Name = "Enum_LeaveType_Bereavement", ResourceType = typeof(Resources))]
-        Bereavement
+        Bereavement,
+        DayOff
 
     }
 

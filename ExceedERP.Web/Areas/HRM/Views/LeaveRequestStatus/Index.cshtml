@@ -6,7 +6,7 @@
 }
 <legend>@Resources.NavigatorLeave_LeaveRequests</legend>
 @(Html.Kendo().Grid<LeaveRequest>()
-          .Name("LeaveRequestgrid")
+      .Name("LeaveRequestgrid")
       .Columns(columns =>
       {
           columns.Bound(c => c.IsApproved).Visible(false);
@@ -21,6 +21,12 @@
           columns.Bound(c => c.FromAmharic).Width (100);
           columns.Bound(c => c.ToAmharic).Width (100);
           columns.Bound(c => c.Status).Width (100);
+          columns.Bound(c => c.IsOnlineApproved).ClientTemplate(
+               "<input type='checkbox' disabled = 'true' value='#=IsOnlineApproved#' " +
+               "# if (IsOnlineApproved) { #" +
+               "checked='checked'" +
+               "# } #" +
+               "/>").Width(120);
           columns.Bound(c => c.LeaveBalance).Width(120);
           columns.Bound(c => c.LeaveDays).Width (130);
           columns.Bound(c => c.Reason).Width (150);
@@ -33,7 +39,7 @@
       })
       .ToolBar(toolbar =>
       {
-              toolbar.Template(@<text>
+      toolbar.Template(@<text>
                     <div class="toolbar">
                                            
                                             
@@ -50,21 +56,21 @@
                     </div>
 
                 </text>);
-               
+
       })
       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequests); window.Scrollable(false); }))
       .Scrollable(h => h.Height(500))
       .Sortable(sortable =>
       {
-        sortable.SortMode(GridSortMode.SingleColumn);
+          sortable.SortMode(GridSortMode.SingleColumn);
 
-    })
+      })
       .Filterable()
       .Events(e =>
       {
-        e.DataBound("onDataBound");
-        e.DetailExpand("onDetailExpandUser");
-    })
+          e.DataBound("onDataBound");
+          e.DetailExpand("onDetailExpandUser");
+      })
       .Pageable(pageable => pageable
                             .Input(true)
                             .Numeric(false)
@@ -76,17 +82,19 @@
           .Sort(sort => sort.Add("LeaveRequestId").Descending())
           .Events(events =>
           {
-        events.Error("error_handler(\"LeaveRequestgrid\")");
-        events.RequestStart("onRequestStart(\"LeaveRequestgrid\")");
-        events.RequestEnd("onRequestEnd(\"LeaveRequestgrid\")");
+              events.Error("error_handler(\"LeaveRequestgrid\")");
+              events.RequestStart("onRequestStart(\"LeaveRequestgrid\")");
+              events.RequestEnd("onRequestEnd(\"LeaveRequestgrid\")");
 
-    })
+          })
            .Model(model =>
            {
-        model.Id(p => p.LeaveRequestId);
-        model.Field(p => p.BranchId).Editable(false);
-        model.Field(p => p.BusinessUnitId).Editable(false);
-    })
+               model.Id(p => p.LeaveRequestId);
+               model.Field(p => p.BranchId).Editable(false);
+               model.Field(p => p.BusinessUnitId).Editable(false);
+               model.Field(p => p.IsOnlineApproved).Editable(false);
+
+           })
               .Read(read => read.Action("LeaveRequest_Read", "LeaveRequestStatus"))
               .Create(create => create.Action("LeaveRequest_Create", "LeaveRequestStatus"))
               .Update(update => update.Action("LeaveRequest_Update", "LeaveRequestStatus"))
@@ -96,44 +104,47 @@
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-            .Name("tabstrip_#=LeaveRequestId#")
-            .SelectedIndex(0)
-            .Items(items =>
-            {
-                items.Add().Text(Resources.HR_RequestStatus).Content(
-                @<text>
+        .Name("tabstrip_#=LeaveRequestId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text(Resources.HR_RequestStatus).Content(
+            @<text>
 
-                    @(Html.Kendo().Grid<RequestesStatus>()
-                            .Name("RequestesStatusgrid#=LeaveRequestId#")
-                            .Columns(columns =>
+                @(Html.Kendo().Grid<RequestesStatus>()
+                        .Name("RequestesStatusgrid#=LeaveRequestId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.RequestId).Visible(false);
+                            columns.Bound(c => c.IsApproved).Visible(false);
+                            columns.Bound(c => c.DateReqStatAm).Width(150);
+                            columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutDepApprove").Width(200);
+                            columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                            columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                            columns.Bound(c => c.Remark).Width(200);
+
+                            columns.Command(command =>
                             {
-                                columns.Bound(c => c.RequestId).Visible(false);
-                                columns.Bound(c => c.IsApproved).Visible(false);
-                                columns.Bound(c => c.DateReqStatAm).Width(150);
-                                columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutDepApprove").Width(200);
-                                columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                columns.Bound(c => c.Remark).Width(200);
+                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                command.Destroy().Text(Resources.ActionButton_Cancel);
+                            });
 
-                                columns.Command(command =>
-                                {
-                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                    command.Destroy().Text(Resources.ActionButton_Cancel);
-                                });
 
-                            })
-                            .ToolBar(toolbar =>
-                            {
-                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                            })
-                            .Editable(editable => editable.Mode(GridEditMode.InLine))
-                            .Scrollable()
-                            .Events(e =>
-                            {
-                                e.DataBound("onRequestesStatusDataBound");
+                        })
+                        .ToolBar(toolbar =>
+                        {
+                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
 
-                            })
-                            .DataSource(dataSource => dataSource
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable()
+                        .Events(e =>
+                        {
+                            e.DataBound("onRequestesStatusDataBound");
+
+
+                        })
+                         .DataSource(dataSource => dataSource
                                 .Ajax()
                                 .Events(events =>
                                 {
@@ -343,7 +354,7 @@
                 }
                 else if (r == "Dapproved") {
                     $(gridName).find(".k-toolbar").hide(); //hide toolbar
-                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-top", gridName).show();
                     $(".k-grid-edit", gridName).show();
                     $(".k-grid-delete", gridName).show();
                 }
@@ -402,8 +413,8 @@
             else {
 
                 row.css("background-color", "lightgreen");
-                row.find(".k-grid-edit").remove();
-                row.find(".k-grid-delete").remove();
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").show();
             }
 
 

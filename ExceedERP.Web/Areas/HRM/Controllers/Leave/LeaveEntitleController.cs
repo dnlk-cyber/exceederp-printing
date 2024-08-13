@@ -20,7 +20,7 @@ using ExceedERP.Core.Domain;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
 
-    [AuthorizeRoles(HrmConstants.HRLeaveUser, HrmConstants.HRLeaveAdmin, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRLeaveUser, HrmConstants.HRLeaveAdmin)]
     public class LeaveEntitleController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -1228,9 +1228,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         {
             ModelState.Clear();
 
+            // First Validation: Balance should not exceed the entitled amount
             if (leaveEntitle.Balance > leaveEntitle.Amount)
             {
-                ModelState.AddModelError("", "Balance can't exceed entitle amount");
+                ModelState.AddModelError("", "Balance can't exceed the entitled amount.");
+                return Json(new[] { leaveEntitle }.ToDataSourceResult(request, ModelState));
+            }
+
+            // Second Validation: Both Balance and Amount should not be less than zero
+            if (leaveEntitle.Balance < 0 || leaveEntitle.Amount < 0)
+            {
+                ModelState.AddModelError("", "Both Balance and entitled amount cannot be less than zero.");
+                return Json(new[] { leaveEntitle }.ToDataSourceResult(request, ModelState));
             }
 
             var maximumLeave = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.MAXIMUM_LEAVE_ENTITLEMENT.ToString());
@@ -1239,6 +1248,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 if (leaveEntitle.Balance > Convert.ToDecimal(maximumLeave.CurrentValue) || leaveEntitle.Amount > Convert.ToDecimal(maximumLeave.CurrentValue))
                 {
                     ModelState.AddModelError("", "Entitle amount can't exceed leave maximum setting");
+                    return Json(new[] { leaveEntitle }.ToDataSourceResult(request, ModelState));
+
                 }
             }
 
@@ -1246,6 +1257,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             if (year != null)
             {
                 ModelState.AddModelError("", "Cannot Register more than once per ayear");
+                return Json(new[] { leaveEntitle }.ToDataSourceResult(request, ModelState));
+
             }
 
             if (ModelState.IsValid)
@@ -1309,10 +1322,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         public ActionResult LeavesEntitle_Update([DataSourceRequest]DataSourceRequest request, LeaveEntitle leaveEntitle)
         {
             ModelState.Clear();
-            //if (leaveEntitle.Balance > leaveEntitle.Amount)
-            //{
-            //    ModelState.AddModelError("", "Balance can't exceed entitle amount");
-            //}
+            // First Validation: Balance should not exceed the entitled amount
+            if (leaveEntitle.Balance > leaveEntitle.Amount)
+            {
+                ModelState.AddModelError("", "Balance can't exceed the entitled amount.");
+                return Json(new[] { leaveEntitle }.ToDataSourceResult(request, ModelState));
+            }
+
+            // Second Validation: Both Balance and Amount should not be less than zero
+            if (leaveEntitle.Balance < 0 || leaveEntitle.Amount < 0)
+            {
+                ModelState.AddModelError("", "Both Balance and entitled amount cannot be less than zero.");
+                return Json(new[] { leaveEntitle }.ToDataSourceResult(request, ModelState));
+            }
+
             var maximumLeave = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.MAXIMUM_LEAVE_ENTITLEMENT.ToString());
             if (maximumLeave != null && (leaveEntitle.Balance > Convert.ToDecimal(maximumLeave.CurrentValue) || leaveEntitle.Amount > Convert.ToDecimal(maximumLeave.CurrentValue)))
             {

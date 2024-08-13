@@ -7,14 +7,13 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>Leave Voids</legend>
+<legend>@Resources.Leave_Return</legend>
 @(Html.Kendo().Grid<LeaveReturn>()
-          .Name("LeaveReturngrid")
+      .Name("LeaveReturngrid")
       .Columns(columns =>
       {
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-
-          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(80);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
           columns.Bound(c => c.FromAm).EditorTemplateName("Calander").Width(150);
           columns.Bound(c => c.ToAm).EditorTemplateName("Calander").Width(150);
           columns.Bound(c => c.Amount).Width(100);
@@ -36,25 +35,27 @@
           }
       })
 
-                  .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequest); window.Scrollable(false); }))
-                  .Events(events => events.DetailExpand("onDetailExpandUser"))
-    .Scrollable(h => h.Height(500))
-             .Groupable()
-                      .Sortable(sortable =>
-                      {
-                          sortable.SortMode(GridSortMode.SingleColumn);
-                      })
-          .Filterable()
-               .Events(e =>
-               {
-                   e.Save("GetDate");
-                   e.Edit("GetDate");
-               })
-               .Events(e =>
-               {
-                   e.DataBound("onDataBound");
-               })
-             .Pageable(pageable => pageable
+      .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequest); window.Scrollable(false); }))
+      .Events(events => events.DetailExpand("onDetailExpandUser"))
+      .Scrollable(h => h.Height(500))
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+
+      })
+      .Filterable()
+      .Events(e =>
+      {
+          e.Save("GetDate");
+          e.Edit("GetDate");
+
+      })
+      .Events(e =>
+      {
+          e.DataBound("onDataBound");
+
+      })
+      .Pageable(pageable => pageable
                                         .Input(true)
                       .Numeric(false)
                       .Refresh(true)
@@ -87,15 +88,14 @@
      {
          items.Add().Text(Resources.HR_RequestStatus).Content(
            @<text>
-               @* <legend>Status</legend>*@
 
                @(Html.Kendo().Grid<RequestesStatus>()
                  .Name("RequestesStatusgrid_#=LeaveReturnId#")
                  .Columns(columns =>
                  {
                      //columns.Bound(c => c.RequestId);
-                     columns.Bound(c => c.DateReqStatAm).Width(120);
-                     columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(200);
+                     columns.Bound(c => c.DateReqStatAm).EditorTemplateName("Calander").Width(120);
+                     columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutWaitingForApprovalAndApprove").Width(200);
                      //columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["UserName"], "EmployeeId", "UserName").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
                      columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
                      columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true)); columns.Bound(c => c.Remark).Width(100);
@@ -110,7 +110,7 @@
                  {
                      // toolbar.Custom().Action("SendForApproval", "LeaveReturn").Text(Resources.HR_Send_For_Approval);
                      //toolbar.Custom().Action("LeaveRequestLetter", "PrintableLetter", new { id = "#=LeaveRequestId#"}).Text("Print");
-
+                     toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
                  })
 
 

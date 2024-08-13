@@ -20,6 +20,7 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
+    [AuthorizeRoles(HrmConstants.HRLeaveAdmin, HrmConstants.HRLeaveUser)]
     public class SickLeaveSettingController : BaseController
     {
         ExceedDbContext db = new ExceedDbContext();

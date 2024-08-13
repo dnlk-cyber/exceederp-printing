@@ -18,7 +18,7 @@ using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
-    [AuthorizeRoles(HrmConstants.HRLeaveAdmin, HrmConstants.HRAdmin, HrmConstants.HRLeaveUser)]
+    [AuthorizeRoles(HrmConstants.HRLeaveAdmin, HrmConstants.HRLeaveUser)]
     public class LeaveController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -93,6 +93,42 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
 
         }
+
+        public ActionResult RemoveRedundantLeaves()
+        {
+            // Find all groups of duplicates
+            var duplicateGroups = db.Leaves
+                .GroupBy(x => new
+                {
+                    x.EmployeeId,
+                    x.LeaveType,
+                    x.Amount,
+                    x.GlFiscalYearId,
+                    x.From,
+                    x.To,
+                    x.OrgName,
+                    x.Before,
+                    x.After,
+                    x.Remark
+                })
+                .Where(g => g.Count() > 1)
+                .ToList();
+
+            // Remove all but one record in each group
+            foreach (var group in duplicateGroups)
+            {
+                var duplicates = group.Skip(1).ToList(); // Keep one record, remove the rest
+                foreach (var duplicate in duplicates)
+                {
+                    db.Leaves.Remove(duplicate);
+                }
+            }
+
+            db.SaveChanges();
+
+            return Content("Redundant leaves have been removed.");
+        }
+
         [AuthorizeRoles(HrmConstants.HRLeaveAdmin, HrmConstants.HRAdmin, HrmConstants.HRLeaveUser)]
         public ActionResult Leaves_Read([DataSourceRequest]DataSourceRequest request)
         {
@@ -212,258 +248,254 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     ModelState.AddModelError("", "End date over lap other leave taken date");
                 }
             }
-
+            if (FromAmharic == null || ToAmharic == null)
+            {
+                ModelState.AddModelError("", "Date form and to values are mandatory!!");
+            }
+            else if (From.Date > To.Date)
+            {
+                ModelState.AddModelError("", "Please Check the date range!!");
+            }
             if (ModelState.IsValid)
             {
-                if (FromAmharic == null || ToAmharic == null)
+               
+                
+                var holidayList = db.Holidays.Where(x => x.GlFiscalYearId == leave.GlFiscalYearId).ToList();
+                if (holidayList.Any())
                 {
-                    ModelState.AddModelError("", "Date form and to values are mandatory!!");
+                    foreach (var h in holidayList)
+                    {
+                        if (h.Date >= From && h.Date <= To)
+                        {
+                            count++;
+                        }
+                    }
                 }
-                else if (From.Date > To.Date)
+                weekDays = GetWeekDays(From, To);
+
+                var entity = new Core.Domain.HRM.LeaveManagment.Leave
                 {
-                    ModelState.AddModelError("", "Please Check the date range!!");
+                    EmployeeId = leave.EmployeeId,
+                    LeaveType = leave.LeaveType,
+                    Amount = leave.Amount,
+                    GlFiscalYearId = leave.GlFiscalYearId,
+                    From = From,
+                    To = To,
+                    OrgName = leave.OrgName,
+                    Before = leave.Before,
+                    After = leave.After,
+                    Remark = leave.Remark,
+                    EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == leave.EmployeeId).EmployeeCode,
+                    FromAmharic = FromAmharic,
+                    ToAmharic = ToAmharic,
+                    DateCreated = leave.DateCreated,
+                    LastModified = leave.LastModified,
+                    CreatedBy = leave.CreatedBy,
+                    ModifiedBy = leave.ModifiedBy,
+                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                    Hours = leave.Hours,
+                    Day = leave.Day,
+                    MorningOrAfternoon = leave.MorningOrAfternoon,
+                };
+                entity.From = From;
+                entity.To = To;
+
+                if (entity.LeaveType != LeaveType.ANNUAL)
+                {
+                    entity.LeaveActionTypes = LeaveActionTypes.Without_Plan;
                 }
                 else
                 {
-                    var holidayList = db.Holidays.Where(x => x.GlFiscalYearId == leave.GlFiscalYearId).ToList();
-                    if (holidayList.Any())
+                    entity.LeaveActionTypes = leave.LeaveActionTypes;
+                }
+
+                if (entity.LeaveType == LeaveType.ANNUAL)
+                {
+                    entity.Amount = To.Subtract(From).Days + 1 - count;
+                    entity.Amount = entity.Amount - Convert.ToDecimal(weekDays);
+                    if (leave.Day == LeaveDay.Half_Day)
                     {
-                        foreach (var h in holidayList)
+                        decimal checkWeekEnd = To.Subtract(From).Days + 1 - count;
+                        double amt = GetHalf(From, To);
+                        double notHalf = GetNotHalf(From, To);
+                        bool isHalf = IsHalf(From, To);
+                        if (isHalf)
                         {
-                            if (h.Date >= From && h.Date <= To)
-                            {
-                                count++;
-                            }
+                            entity.Amount = (checkWeekEnd - Convert.ToDecimal(notHalf)) / 2;
                         }
-                    }
-                    weekDays = GetWeekDays(From, To);
-
-                    var entity = new Core.Domain.HRM.LeaveManagment.Leave
-                    {
-                        EmployeeId = leave.EmployeeId,
-                        LeaveType = leave.LeaveType,
-                        Amount = leave.Amount,
-                        GlFiscalYearId = leave.GlFiscalYearId,
-                        From = From,
-                        To = To,
-                        OrgName = leave.OrgName,
-                        Before = leave.Before,
-                        After = leave.After,
-                        Remark = leave.Remark,
-                        EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == leave.EmployeeId).EmployeeCode,
-                        FromAmharic = FromAmharic,
-                        ToAmharic = ToAmharic,
-                        DateCreated = leave.DateCreated,
-                        LastModified = leave.LastModified,
-                        CreatedBy = leave.CreatedBy,
-                        ModifiedBy = leave.ModifiedBy,
-                        OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                        Hours = leave.Hours,
-                        Day = leave.Day,
-                        MorningOrAfternoon = leave.MorningOrAfternoon,
-                    };
-                    entity.From = From;
-                    entity.To = To;
-
-                    if (entity.LeaveType != LeaveType.ANNUAL)
-                    {
-                        entity.LeaveActionTypes = LeaveActionTypes.Without_Plan;
-                    }
-                    else
-                    {
-                        entity.LeaveActionTypes = leave.LeaveActionTypes;
-                    }
-
-                    if (entity.LeaveType == LeaveType.ANNUAL)
-                    {
-                        entity.Amount = To.Subtract(From).Days + 1 - count;
-                        entity.Amount = entity.Amount - Convert.ToDecimal(weekDays);
-                        if (leave.Day == LeaveDay.Half_Day)
+                        else
                         {
-                            decimal checkWeekEnd = To.Subtract(From).Days + 1 - count;
-                            double amt = GetHalf(From, To);
-                            double notHalf = GetNotHalf(From, To);
-                            bool isHalf = IsHalf(From, To);
-                            if (isHalf)
-                            {
-                                entity.Amount = (checkWeekEnd - Convert.ToDecimal(notHalf)) / 2;
-                            }
-                            else
-                            {
-                                entity.Amount = entity.Amount / 2;
-                            }
-
-                        }
-
-                        decimal days = entity.Amount * 8;
-                        decimal leaveDays = entity.Amount * entity.Hours;
-                        entity.Amount = (days - leaveDays) / 8;
-
-
-
-                    }
-                    else
-                    {
-                        // entity.Amount = To.Subtract(From).Days;
-
-                        entity.Amount = To.Subtract(From).Days + 1;
-
-                        if (entity.Day == LeaveDay.Half_Day)
-                        {
-                          
                             entity.Amount = entity.Amount / 2;
-
                         }
 
+                    }
+
+                    decimal days = entity.Amount * 8;
+                    decimal leaveDays = entity.Amount * entity.Hours;
+                    entity.Amount = (days - leaveDays) / 8;
+
+
+
+                }
+                else 
+                {
+                    // entity.Amount = To.Subtract(From).Days;
+
+                    entity.Amount = To.Subtract(From).Days + 1;
+
+                    if (entity.Day == LeaveDay.Half_Day&&entity.LeaveType != LeaveType.DayOff)
+                    {
+                          
+                        entity.Amount = entity.Amount / 2;
+
+                    }
+
+                    db.Leaves.Add(entity);
+                    db.SaveChanges();
+
+                    leave.TakenLeaveId = entity.TakenLeaveId;
+
+                }
+                if(entity.LeaveType == LeaveType.SICK_LEAVE)
+                {
+                    var sickLeave = db.SickLeaveSettings.FirstOrDefault();
+                    if(sickLeave != null)
+                    {
+                        if(Convert.ToDouble(entity.Amount) >= sickLeave.CurrentValue)
+                        {
+                            var employee = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == entity.EmployeeId);
+                            if(employee != null)
+                            {
+                                employee.IsActive = false;
+
+                                db.Entry(employee).State = EntityState.Modified;
+                                db.SaveChanges();
+
+                                var placement = db.Placements.FirstOrDefault(x=>x.EmployeeId == employee.EmployeeId && x.isCurrent);
+                                if(placement != null)
+                                {
+                                    placement.isCurrent = false;
+
+                                    db.Entry(placement).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                            }
+                        }
+                    }
+                }
+                if (entity.LeaveType == LeaveType.ANNUAL)
+                {
+
+                    #region update balance
+
+
+                    //=========================================================================
+
+                    var totalSum = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == leave.EmployeeId).ToList();
+
+                    var totalEntitle = totalSum.Sum(x => x.Balance);
+                    if (totalEntitle < entity.Amount)
+                    {
+                        ModelState.AddModelError("", "your request amount is greater than your balance");
+                    }
+                    else
+                    {
                         db.Leaves.Add(entity);
                         db.SaveChanges();
 
                         leave.TakenLeaveId = entity.TakenLeaveId;
 
-                    }
-                    if(entity.LeaveType == LeaveType.SICK_LEAVE)
-                    {
-                        var sickLeave = db.SickLeaveSettings.FirstOrDefault();
-                        if(sickLeave != null)
+
+                        decimal dateAsked = entity.Amount;
+                        decimal dateLeft = 0;
+                        do
                         {
-                            if(Convert.ToDouble(entity.Amount) >= sickLeave.CurrentValue)
+
+                            List<LeaveModel> leaveList = new List<LeaveModel>();
+                            var yearLists = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == leave.EmployeeId).ToList();
+
+
+
+                            foreach (var year in yearLists)
                             {
-                                var employee = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == entity.EmployeeId);
-                                if(employee != null)
+                                var leavel = new LeaveModel();
+                                var gl = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == year.GlFiscalYearId);
+                                if (gl != null)
                                 {
-                                    employee.IsActive = false;
-
-                                    db.Entry(employee).State = EntityState.Modified;
-                                    db.SaveChanges();
-
-                                    var placement = db.Placements.FirstOrDefault(x=>x.EmployeeId == employee.EmployeeId && x.isCurrent);
-                                    if(placement != null)
-                                    {
-                                        placement.isCurrent = false;
-
-                                        db.Entry(placement).State = EntityState.Modified;
-                                        db.SaveChanges();
-                                    }
+                                    leavel.Year = gl.DateTo;
                                 }
+
+                                leaveList.Add(leavel);
                             }
-                        }
-                    }
-                    if (entity.LeaveType == LeaveType.ANNUAL)
-                    {
-
-                        #region update balance
-
-
-                        //=========================================================================
-
-                        var totalSum = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == leave.EmployeeId).ToList();
-
-                        var totalEntitle = totalSum.Sum(x => x.Balance);
-                        if (totalEntitle < entity.Amount)
-                        {
-                            ModelState.AddModelError("", "your request amount is greater than your balance");
-                        }
-                        else
-                        {
-                            db.Leaves.Add(entity);
-                            db.SaveChanges();
-
-                            leave.TakenLeaveId = entity.TakenLeaveId;
-
-
-                            decimal dateAsked = entity.Amount;
-                            decimal dateLeft = 0;
-                            do
+                            var smallestDate = leaveList.Min(x => x.Year);
+                            if (smallestDate != null)
                             {
-
-                                List<LeaveModel> leaveList = new List<LeaveModel>();
-                                var yearLists = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == leave.EmployeeId).ToList();
-
-
-
-                                foreach (var year in yearLists)
+                                var id = db.GLFiscalYears.FirstOrDefault(x => x.DateTo.Year == smallestDate.Year);
+                                if (id != null)
                                 {
-                                    var leavel = new LeaveModel();
-                                    var gl = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == year.GlFiscalYearId);
-                                    if (gl != null)
+                                    var entiteledEmployee = db.LeavesEntitle.FirstOrDefault
+                                        (x => x.EmployeeId == leave.EmployeeId && x.GlFiscalYearId == id.GlFiscalYearId && !x.IsExpired);
+                                    if (entiteledEmployee != null)
                                     {
-                                        leavel.Year = gl.DateTo;
-                                    }
-
-                                    leaveList.Add(leavel);
-                                }
-                                var smallestDate = leaveList.Min(x => x.Year);
-                                if (smallestDate != null)
-                                {
-                                    var id = db.GLFiscalYears.FirstOrDefault(x => x.DateTo.Year == smallestDate.Year);
-                                    if (id != null)
-                                    {
-                                        var entiteledEmployee = db.LeavesEntitle.FirstOrDefault
-                                            (x => x.EmployeeId == leave.EmployeeId && x.GlFiscalYearId == id.GlFiscalYearId && !x.IsExpired);
-                                        if (entiteledEmployee != null)
+                                        if (entiteledEmployee.Balance < dateAsked)
                                         {
-                                            if (entiteledEmployee.Balance < dateAsked)
+                                            dateLeft = dateAsked - entiteledEmployee.Balance;
+                                            if (dateLeft >= 0)
                                             {
-                                                dateLeft = dateAsked - entiteledEmployee.Balance;
-                                                if (dateLeft >= 0)
-                                                {
-                                                    //if (id.Status == Core.Domain.Finance.GL.FiscalYearStatus.Close)
-                                                    //{
-                                                        entiteledEmployee.Balance = 0;
-                                                        entiteledEmployee.IsExpired = true;
-
-                                                        db.Entry(entiteledEmployee).State = EntityState.Modified;
-                                                        db.SaveChanges();
-                                                    //}
-                                                    dateAsked = dateLeft;
-                                                }
-                                            }
-
-                                            else
-                                            {
-                                                dateLeft = entiteledEmployee.Balance - dateAsked;
-                                                if (dateLeft >= 0)
-                                                {
-                                                    entiteledEmployee.Balance = dateLeft;
-
-                                                    if (dateLeft == 0)
-                                                    {
-                                                        //if (id.Status == Core.Domain.Finance.GL.FiscalYearStatus.Close)
-                                                        //{
-                                                            entiteledEmployee.IsExpired = true;
-                                                        //}
-                                                    }
+                                                //if (id.Status == Core.Domain.Finance.GL.FiscalYearStatus.Close)
+                                                //{
+                                                    entiteledEmployee.Balance = 0;
+                                                    entiteledEmployee.IsExpired = true;
 
                                                     db.Entry(entiteledEmployee).State = EntityState.Modified;
                                                     db.SaveChanges();
+                                                //}
+                                                dateAsked = dateLeft;
+                                            }
+                                        }
 
-                                                    dateLeft = 0;
+                                        else
+                                        {
+                                            dateLeft = entiteledEmployee.Balance - dateAsked;
+                                            if (dateLeft >= 0)
+                                            {
+                                                entiteledEmployee.Balance = dateLeft;
+
+                                                if (dateLeft == 0)
+                                                {
+                                                    //if (id.Status == Core.Domain.Finance.GL.FiscalYearStatus.Close)
+                                                    //{
+                                                        entiteledEmployee.IsExpired = true;
+                                                    //}
                                                 }
+
+                                                db.Entry(entiteledEmployee).State = EntityState.Modified;
+                                                db.SaveChanges();
+
+                                                dateLeft = 0;
                                             }
                                         }
                                     }
                                 }
+                            }
 
 
-                            } while (dateLeft > 0);
-                        }
+                        } while (dateLeft > 0);
                     }
-
-                    #endregion
-
-                    #region operation log
-                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if(person != null)
-                    {
-                        var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                      
-                            UserHelper.OperationLog(Request.UserHostAddress, "Leave Taken", "Success", User.Identity.Name, "Leave Taken for "+ person.EmployeeCode + " is Created By  " + User.Identity.Name,Modules.HRM);
-
-                        
-                    }
-                    
-                    #endregion
                 }
+
+                #endregion
+                #region operation log
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                if(person != null)
+                {
+                    var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                    UserHelper.OperationLog(Request.UserHostAddress, "Leave Taken", "Success", User.Identity.Name, "Leave Taken for "+ person.EmployeeCode + " is Created By  " + User.Identity.Name,Modules.HRM);
+                        
+                }
+                    
+                #endregion
+                
 
             }
 
