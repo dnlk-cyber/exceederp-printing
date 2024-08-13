@@ -25,6 +25,7 @@
                                         editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
                                     })
                                     .Filterable()
+                                    .Pageable()
                                     .Events(e => e.DetailExpand("DetailExpand"))
                                     .Scrollable(e => e.Height(550))
                                     .DataSource(dataSource => dataSource
@@ -100,7 +101,13 @@
                                                     .Error("error_handler(\"grid_#=FleetAnnualPlanId#\")")
                                                     .RequestStart("onRequestStart(\"grid_#=FleetAnnualPlanId#\")")
                                                     .RequestEnd("onRequestEnd(\"grid_#=FleetAnnualPlanId#\")"))
-                                                .Model(model => model.Id(p => p.FleetAnnualPlanDetailId))
+                                                .Model(model => 
+                                                {
+                                                    model.Id(p => p.FleetAnnualPlanDetailId);
+                                                    model.Field(p => p.GlPeriodId).Editable(false);
+                                                    model.Field(p => p.DateFrom).Editable(false);
+                                                    model.Field(p => p.DateTo).Editable(false);
+                                                    })
                                                 .Read(read => read.Action("FleetAnnualPlanDetail_Read", "FleetAnnualPlanDetail", new { id = "#=FleetAnnualPlanId#" }))
                                                 .Create(create => create.Action("FleetAnnualPlanDetail_Create", "FleetAnnualPlanDetail", new { id = "#=FleetAnnualPlanId#" }))
                                                 .Update(update => update.Action("FleetAnnualPlanDetail_Update", "FleetAnnualPlanDetail"))

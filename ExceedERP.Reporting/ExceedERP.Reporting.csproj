@@ -3755,8 +3755,10 @@
     <Compile Include="Maintenance\DataSource\DailyMaintenanceReport.cs" />
     <Compile Include="Maintenance\DataSource\InternalMaintenanceReportImproved.cs" />
     <Compile Include="Maintenance\DataSource\JobOrderOds.cs" />
+    <Compile Include="Maintenance\DataSource\JobOrderPrintOds.cs" />
     <Compile Include="Maintenance\DataSource\MachinaryAndVehicleMaintenancereportOds.cs" />
     <Compile Include="Maintenance\DataSource\MaintenanceDurationOds.cs" />
+    <Compile Include="Maintenance\DataSource\MaintenanceDurationOdsNew.cs" />
     <Compile Include="Maintenance\DataSource\MaintenanceInternalReportOds.cs" />
     <Compile Include="Maintenance\DataSource\MaintenanceJobRequestOds.cs" />
     <Compile Include="Maintenance\DataSource\MaintenanceParametersOds.cs" />
@@ -3789,6 +3791,12 @@
     </Compile>
     <Compile Include="Maintenance\Design\JobOrderDesign.Designer.cs">
       <DependentUpon>JobOrderDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Maintenance\Design\JobOrderPrintDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Maintenance\Design\JobOrderPrintDesign.Designer.cs">
+      <DependentUpon>JobOrderPrintDesign.cs</DependentUpon>
     </Compile>
     <Compile Include="Maintenance\Design\JobRequest.cs">
       <SubType>Component</SubType>
@@ -5994,6 +6002,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\JobOrderDesign.resx">
       <DependentUpon>JobOrderDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Maintenance\Design\JobOrderPrintDesign.resx">
+      <DependentUpon>JobOrderPrintDesign.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\JobRequest.resx">
       <DependentUpon>JobRequest.cs</DependentUpon>

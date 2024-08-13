@@ -330,9 +330,8 @@ function filterPlateNumber() {
     }
     function fetchTimesheetEquipmentType() {
         return {
-            @*timeSheetEquipmentType: "@ViewBag.machineryType",*@
+            timeSheetEquipmentType: "@ViewBag.machineryType",
             text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
-            equipmentNameId: $("#EquipmentNameId").val(),
         }
     }
 

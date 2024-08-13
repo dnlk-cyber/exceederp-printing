@@ -1,0 +1,195 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>External Maintenance Payment Request</h2>
+
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.ExternalMaintenancePaymentRequest>()
+                                                .Name("grid")
+                                                .Columns(columns =>
+                                                {
+                                                    columns.Bound(c => c.JobNum).Width(100);
+                                                    columns.ForeignKey(c => c.FleetId, (IEnumerable)ViewData["Fleet"], "Value", "Text").Width(120).Title("Plate No");
+                                                    columns.ForeignKey(c => c.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Value", "Text").Width(120).Title("maintenance Center");
+                                                    columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "Value", "Text").Width(120).Title("Branch");
+                                                    columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnit"], "Value", "Text").Width(120).Title("Business Unit");
+                                                    columns.Bound(c => c.EquipmentName).Width(100);
+                                                    columns.Bound(c => c.EnteranceDate).Width(100);
+                                                    columns.Bound(c => c.ExitDate).Width(100);
+
+                                                    columns.Command(command =>
+                                                    {
+                                                        command.Custom("approve").Text("Approve").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+
+                                                    }).Width(180);
+                                                })
+
+                                                .Filterable()
+                                                //.Events(e => e.DetailExpand("DetailExpand"))
+                                                .Events(e => e.DataBound("dataBound"))
+                                                .Pageable()
+                                                .Sortable()
+                                                .Scrollable(e => e.Height(550))
+                                                .DataSource(dataSource => dataSource
+                                                    .Ajax()
+                                                    .Sort(sort => sort.Add(e => e.ExternalMaintenancePaymenntrequestId).Descending())
+                                                    .Events(ev => ev
+                                                                .Error("error_handler(\"grid\")")
+                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+                                                    .Model(model => model.Id(p => p.ExternalMaintenancePaymenntrequestId))
+                                                    .Read(read => read.Action("Read", "ExternalMaintenancePaymentRequest"))
+                                                //.Create(create => create.Action("Create", "ExternalMaintenancePaymentRequest"))
+                                                //.Update(update => update.Action("Update", "ExternalMaintenancePaymentRequest"))
+                                                //.Destroy(delete => delete.Action("Delete", "ExternalMaintenancePaymentRequest"))
+
+                                                ).ClientDetailTemplateId("tabs")
+)
+
+
+<script id="tabs" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                                                                                                        .Name("tabstrip_grid_#=ExternalMaintenancePaymenntrequestId#")
+                                                                                                        
+                                                                                                        .Items(itemn =>
+                                                                                                        {
+                                                                                                            itemn.Add().Text("Detail")
+                                                                                                .Content(@<text>
+                                                                                                    <legend>Detail</legend>
+                                                                                                    <div class="box">
+                                                                                                        <div class="box-col">
+
+                                                                                                            # if (!IsSendForApproval)
+                                                                                                            {#
+                                                                                                            <a onclick='return sendForApproval("#=ExternalMaintenancePaymenntrequestId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                                                                            # }#
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </text>);
+
+                                                                                                            itemn.Add().Text("Payment Detail")
+                                                                                                            .Content(@<text>@Detail()</text>);
+
+                                                                                                                }).ToClientTemplate())
+</script>
+
+
+
+
+
+
+@helper Detail()
+{
+
+    @(Html.Kendo().Grid< ExceedERP.Core.Domain.Maintenance.ExternalMaintenancePaymentRequestDetail>()
+                                                    .Name("grid_#=ExternalMaintenancePaymenntrequestId#")
+                                                    .Columns(columns =>
+                                                    {
+                                                        columns.Bound(c => c.CostType).Width(100);
+                                                        columns.Bound(c => c.Date).Width(100);
+                                                        columns.Bound(c => c.Quantity).Width(100);
+                                                        columns.Bound(c => c.UnitPrice).Width(100);
+                                                        columns.Bound(c => c.SubTotal).Width(100);
+                                                        columns.ForeignKey(c => c.GlTaxRateId, (IEnumerable)ViewData["GlTaxRate"], "Value", "Text").Width(120);
+
+                                                        columns.Bound(c => c.Total).Width(100);
+
+
+                                                        //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+                                                    })
+                                                    //.ToolBar(commands => commands.Create())
+                                                    //.Editable(editable =>
+                                                    //{
+                                                    //    editable.Mode(GridEditMode.PopUp).TemplateName("AnnualPlanDetail");
+                                                    //    editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
+                                                    //})
+                                                    .Filterable()
+                                                    .Scrollable()
+                                                    .DataSource(dataSource => dataSource
+                                                        .Ajax()
+                                                            .Events(ev => ev
+                                                            .Error("error_handler(\"grid_#=ExternalMaintenancePaymenntrequestId#\")")
+                                                            .RequestStart("onRequestStart(\"grid_#=ExternalMaintenancePaymenntrequestId#\")")
+                                                            .RequestEnd("onRequestEnd(\"grid_#=ExternalMaintenancePaymenntrequestId#\")"))
+                                                        .Model(model => model.Id(p => p.ExternalMaintenancePaymentRequestDetailId))
+                                                        .Read(read => read.Action("Read_Detail", "ExternalMaintenancePaymentRequest", new { id = "#=ExternalMaintenancePaymenntrequestId#" }))
+
+
+                                                    ).ToClientTemplate()
+    )
+}
+
+<script type="text/javascript">
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            $(this).find(".k-grid-reject").hide();
+            if (dataItem.IsOnlineApproved) {
+                
+                $(this).find(".k-grid-approve").hide();
+                //$(this).find(".k-grid-reject").hide();
+               
+            }
+            else if (dataItem.IsSendForApproval) {
+                //$(this).find(".k-grid-edit").hide();
+                //$(this).find(".k-grid-check").hide();
+                //$(this).find(".k-grid-delete").hide();
+                //$(this).find(".k-grid-reject").show();
+
+                $(this).find(".k-grid-approve").show();
+            }
+            else {
+                $(this).find(".k-grid-approve").hide();
+            }
+
+        });
+    }
+
+     function sendForApproval(id) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ExternalMaintenancePaymentRequest", new { area = "Maintenance" })',
+            data: { id: id },
+            success: function (result) {
+
+                alert(result);
+
+                location.reload(true);
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+     function handleApprove(e) {
+        if (confirm("Are you sure you want to approve?")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Approve", "ExternalMaintenancePaymentRequest", new { Area = "Maintenance" })',
+                data: { id: dataItem.ExternalMaintenancePaymenntrequestId},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+</script>

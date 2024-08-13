@@ -107,10 +107,11 @@
             //columns.Bound(e => e.ProjectName).Title("Location").Width(100);
             columns.ForeignKey(e => e.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Title("Customer").Width(150);
                         columns.Bound(e => e.LicensePlate).Width(100);
+                        columns.Bound(e => e.EquipmentName).Width(100).Title("Equipment Name");
                         columns.Bound(e => e.IsRework).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsRework? checked='checked': checked='' #/>");
                         columns.Bound(e => e.IsInsured).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsInsured? checked='checked': checked='' #/>");
 
-            //columns.Bound(e => e.MaintenanceCenter).Width(200);
+            
             columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").Width(140);
                         columns.ForeignKey(e => e.ServiceCenterId, (IEnumerable)ViewData["ServiceCenter"], "Id", "Name").Width(150);
                         columns.Bound(e => e.Status).Width(200); ;

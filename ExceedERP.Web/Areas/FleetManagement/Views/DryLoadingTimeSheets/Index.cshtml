@@ -117,14 +117,14 @@
                                                                                                                             .Name("TimeSheetApproval#=DryLoadingTimeSheetId#")
                                                                                                                             .Columns(columns =>
                                                                                                                             {
-                                                                                                                                     columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+                                                                                                                                columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
 
-                                                                                                                                     columns.Bound(o => o.Remark).Width(200);
-                                                                                                                                     columns.Bound(c => c.CreatedBy).Width(150);
-                                                                                                                                     columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
-                                                                                                                                     columns.Command(command => { command.Edit(); }).Width(250);
+                                                                                                                                columns.Bound(o => o.Remark).Width(200);
+                                                                                                                                columns.Bound(c => c.CreatedBy).Width(150);
+                                                                                                                                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                                                                                                                                columns.Command(command => { command.Edit(); }).Width(250);
 
-                                                                                                                                 })
+                                                                                                                            })
                                                                                                                             .ToolBar(commands => commands.Create().Text("Approve Request"))
                                                                                                                             .Events(ev =>
                                                                                                                             {

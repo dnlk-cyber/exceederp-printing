@@ -108,9 +108,9 @@ namespace ExceedERP.Reporting.Fleet.Printing.DataSource
                     SiteTransferViewModel.Description = SiteTransfer.Description;
                     SiteTransferViewModel.EquipmentType = SiteTransfer.Fleet.EquipmentType.EquipmentTypeName;
 
-                    if (SiteTransfer.BatteryStatus == BatteryStatus.New)
+                    if (SiteTransfer.BatteryStatus ==BatteryStatus.New)
                         SiteTransferViewModel.AmpereNew = true;
-                    if (SiteTransfer.BatteryStatus == BatteryStatus.Old)
+                    if (SiteTransfer.BatteryStatus ==BatteryStatus.Old)
                         SiteTransferViewModel.AmpereOld = true;
                     if (SiteTransfer.TransferMode == Core.Domain.FleetManagement.TransferMode.Loaded)
                         SiteTransferViewModel.ByAnotherVehicle = true;

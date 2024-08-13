@@ -1635,6 +1635,8 @@
     <Compile Include="Areas\Maintenance\Controllers\ExternalServiceCenterController.cs" />
     <Compile Include="Areas\Maintenance\Controllers\ExternalServiceCenterPaymentController.cs" />
     <Compile Include="Areas\Maintenance\Controllers\MaintenanceCheckListController.cs" />
+    <Compile Include="Areas\Maintenance\Controllers\MaintenanceCompanyDocumentsController.cs" />
+    <Compile Include="Areas\Maintenance\Controllers\MaintenanceCompanyDocumentTypesController.cs" />
     <Compile Include="Areas\Maintenance\Controllers\MaintenanceDashboardController.cs" />
     <Compile Include="Areas\Maintenance\Controllers\MaintenanceDataProviderController.cs" />
     <Compile Include="Areas\Maintenance\Controllers\MaintenanceHomeController.cs" />
@@ -1683,9 +1685,11 @@
     <Compile Include="Areas\Maintenance\Controllers\WorkFlows\DailyCareDetailItemController.cs" />
     <Compile Include="Areas\Maintenance\Controllers\WorkFlows\DailyCareDetailLogController.cs" />
     <Compile Include="Areas\Maintenance\Controllers\WorkFlows\DailyCareLogController.cs" />
+    <Compile Include="Areas\Maintenance\Controllers\WorkFlows\ExternalMaintenancePaymentRequestController.cs" />
     <Compile Include="Areas\Maintenance\Controllers\WorkFlows\FollowUpController.cs" />
     <Compile Include="Areas\Maintenance\Controllers\WorkFlows\JobCausesController.cs" />
     <Compile Include="Areas\Maintenance\Controllers\WorkFlows\JobOrderClosedController.cs" />
+    <Compile Include="Areas\Maintenance\Controllers\WorkFlows\JobOrderClosingController.cs" />
     <Compile Include="Areas\Maintenance\Controllers\WorkFlows\JobOrderController.cs" />
     <Compile Include="Areas\Maintenance\Controllers\WorkFlows\JobOrderDetailController.cs" />
     <Compile Include="Areas\Maintenance\Controllers\WorkFlows\JobRequestController.cs" />
@@ -6846,6 +6850,11 @@
     <Content Include="Areas\Maintenance\Views\MaintenanceReport\WeeklyCMPMPerformanceReport.cshtml" />
     <Content Include="Areas\Maintenance\Views\MaintenanceReport\WeeklyCMPMPerformanceSummaryReport.cshtml" />
     <Content Include="Areas\Maintenance\Views\WorkShop.7z" />
+    <Content Include="Areas\FleetManagement\Views\FleetReport\UtilizationSummaryToDate.cshtml" />
+    <Content Include="Areas\Maintenance\Views\ExternalMaintenancePaymentRequest\Index.cshtml" />
+    <Content Include="Areas\Maintenance\Views\JobOrderClosing\Index.cshtml" />
+    <Content Include="Areas\Maintenance\Views\MaintenanceCompanyDocumentTypes\Index.cshtml" />
+    <Content Include="Areas\Maintenance\Views\MaintenancePrint\JobPrintNew.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
@@ -8757,7 +8766,6 @@
     <Folder Include="Areas\Inventory\Views\StoreItemBalance\EditorTemplates\" />
     <Folder Include="Areas\Inventory\Views\StoreKeeperAssignment\EditorTemplates\" />
     <Folder Include="Areas\Maintenance\Views\EquipmentInformation\StoreRequisition\EditorTemplates\" />
-    <Folder Include="Areas\Maintenance\Views\ExternalMaintenancePaymentRequest\" />
     <Folder Include="Areas\Maintenance\Views\ExternalServiceCenterPayment\" />
     <Folder Include="Areas\Maintenance\Views\MainStoreRequisition\EditorTemplates\" />
     <Folder Include="Areas\Maintenance\Views\MaintenancePlanDetail\" />

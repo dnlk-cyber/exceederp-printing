@@ -1062,6 +1062,7 @@
     <Compile Include="Domain\Maintenance\ExternalComponent.cs" />
     <Compile Include="Domain\Maintenance\ExternalComponentDetail.cs" />
     <Compile Include="Domain\Maintenance\ExternalCrew.cs" />
+    <Compile Include="Domain\Maintenance\ExternalMaintenancePaymentRequest.cs" />
     <Compile Include="Domain\Maintenance\ExternalMaterial.cs" />
     <Compile Include="Domain\Maintenance\ExternalServiceCenterPayment.cs" />
     <Compile Include="Domain\Maintenance\FailureReason.cs" />
@@ -1077,6 +1078,7 @@
     <Compile Include="Domain\Maintenance\LogisticPlanDetail.cs" />
     <Compile Include="Domain\Maintenance\MaintenaceInspectionLog.cs" />
     <Compile Include="Domain\Maintenance\MaintenanceCenter.cs" />
+    <Compile Include="Domain\Maintenance\MaintenanceCompanyDocumentType.cs" />
     <Compile Include="Domain\Maintenance\MaintenanceInterval.cs" />
     <Compile Include="Domain\Maintenance\MaintenanceIsoConst.cs" />
     <Compile Include="Domain\Maintenance\MaintenancePlan.cs" />

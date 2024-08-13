@@ -46,7 +46,24 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 Value = s.BranchId,
                 Text = s.Name
             }).ToList();
+            RepopulateTimeSheet();
             return View();
+        }
+        public void RepopulateTimeSheet()
+        {
+            var timesheets = db.DryLoadingTimeSheets.ToList();
+            if (timesheets.Any())
+            {
+                foreach (var item in timesheets)
+                {
+                    item.EquipmentCategoryId = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID)?.EquipmentIdentityID;
+                    item.EquipmentTypeId = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID)?.EquipmentTypeID;
+                    item.EquipmentNameId = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID)?.EquipmentNameID;
+                    db.Entry(item).State = EntityState.Modified;
+                }
+                db.SaveChanges();
+            }
+            
         }
         public ActionResult DryLoadingTimeSheets_Read([DataSourceRequest] DataSourceRequest request)
         {

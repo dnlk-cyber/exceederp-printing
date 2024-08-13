@@ -24,14 +24,14 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             {
                 var plans = db.FleetAnnualPlans.Where(x => x.GlFiscalYearId == fiscalYearId).ToList();
                 var planDetails = db.FleetAnnualPlanDetails.Where(x => DbFunctions.TruncateTime(x.DateFrom) <= DateTime.Today.Date).ToList();
-                
-                
+
+
 
 
                 var joinedPlans = from plan in plans
                                   join detail in planDetails
                                   on plan.FleetAnnualPlanId equals detail.FleetAnnualPlanId
-                            
+
                                   select new
                                   {
                                       GlFiscalYearId = plan.GlFiscalYearId,
@@ -39,18 +39,20 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                                       FleetId = plan.FleetId,
                                       PlanHour = detail.ExpectedEffectiveWorkingHrPerMonth,
                                       GlPeriodId = detail.GlPeriodId,
-                                      Quantity = detail.NumberOfEquipmentInMonth
-
+                                      Quantity = detail.NumberOfEquipmentInMonth,
+                                      DateFrom = detail.DateFrom
                                   };
 
 
-                var groupedPlans = joinedPlans.GroupBy(g => new { g.EquipmentTypeId})
+                var groupedPlans = joinedPlans.GroupBy(g => new { g.EquipmentTypeId, g.GlFiscalYearId})
                     .Select(s => new
                     {
                         s.Key.EquipmentTypeId,
+                        s.Key.GlFiscalYearId,
                         //s.Key.GlPeriodId,
                         PlanedHour = s.Sum(x => (decimal?)x.PlanHour) ?? 0,
-                        Quantity = s.Sum(x => (decimal?)x.Quantity) ?? 0
+                        //Quantity = s.Sum(x => (decimal?)x.Quantity) ?? 0
+                        Quantity = s.OrderByDescending(x => x.DateFrom).First().Quantity
                         //Quantity = s.Select(x => x.FleetId).Distinct(),
                     }).ToList();
 
@@ -65,10 +67,10 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                             EquipmentTypeName = equipmentType.EquipmentTypeName,
                             PlanQuantity = (int)groupedPlan.Quantity,
                             PlannedMonthlyHour = groupedPlan.PlanedHour,
-                            ActualMonthlyAvaliableQuantity = GetActualQuantity(groupedPlan.EquipmentTypeId),
-                            ActualMonthlyOperationalHour = GetActualOperationalHour(groupedPlan.EquipmentTypeId),
-                            ActualMonthlyDownHour = GetDownHour(groupedPlan.EquipmentTypeId),
-                            ActualMonthlyIdleHour = GetIdleHour(groupedPlan.EquipmentTypeId),
+                            ActualMonthlyAvaliableQuantity = GetActualQuantity(groupedPlan.EquipmentTypeId, groupedPlan.GlFiscalYearId),
+                            ActualMonthlyOperationalHour = GetActualOperationalHour(groupedPlan.EquipmentTypeId, groupedPlan.GlFiscalYearId),
+                            ActualMonthlyDownHour = GetDownHour(groupedPlan.EquipmentTypeId, groupedPlan.GlFiscalYearId),
+                            ActualMonthlyIdleHour = GetIdleHour(groupedPlan.EquipmentTypeId, groupedPlan.GlFiscalYearId),
                             PlanVsActualDownHourRatio = 0,
                             PlanVsActualHourRatio = 0,
                             PlanVsActualIdleHourRatio = 0
@@ -91,7 +93,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
 
         #region GetIdleHour
-        private decimal GetIdleHour(Guid equipmentTypeId)
+        private decimal GetIdleHour(Guid equipmentTypeId, int glFiscalYearId)
         {
             decimal totalDownHour = 0;
             var equipmentType = db.EquipmentType.Find(equipmentTypeId);
@@ -101,19 +103,19 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 switch (equipmentType.TimeSheetType)
                 {
                     case TimeSheetType.DryLoading:
-                        totalDownHour = GetDryloadIdleHour(equipmentTypeId);
+                        totalDownHour = GetDryloadIdleHour(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.DumpTruck:
-                        totalDownHour = GetDumpTruckIdleHour(equipmentTypeId);
+                        totalDownHour = GetDumpTruckIdleHour(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.LightVehicle:
-                        totalDownHour = GetLightVehicleIdleHour(equipmentTypeId);
+                        totalDownHour = GetLightVehicleIdleHour(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.Machinery:
-                        totalDownHour = GetMachinaryIdle(equipmentTypeId);
+                        totalDownHour = GetMachinaryIdle(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.WagonDrill:
-                        totalDownHour = GetWagonDrillIdleHour(equipmentTypeId);
+                        totalDownHour = GetWagonDrillIdleHour(equipmentTypeId, glFiscalYearId);
                         break;
 
                 }
@@ -121,52 +123,52 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             return totalDownHour;
         }
 
-        private decimal GetDryloadIdleHour(Guid equipmentTypeId)
+        private decimal GetDryloadIdleHour(Guid equipmentTypeId, int glFiscalYearId)
         {
-           
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
             return db.DryLoadingTimeSheets.Where(x => x.TimeSheetApproved)
                 .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                .Where(dryLoad => DbFunctions.TruncateTime(dryLoad.TripStartDate) <= DateTime.Today.Date)
+                .Where(x => DbFunctions.TruncateTime(x.TripStartDate) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.TripStartDate) <= DateTime.Today.Date)
                 .Sum(s => (decimal?)s.IdleHour) ?? 0;
         }
 
-        private decimal GetDumpTruckIdleHour(Guid equipmentTypeId)
-        { 
-           
-            
+        private decimal GetDumpTruckIdleHour(Guid equipmentTypeId, int glFiscalYearId)
+        {
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
+
             return db.DumpTruckTimeSheets.Where(x => x.TimeSheetApproved)
                .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
+                .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
                .Sum(s => (decimal?)s.IdleHour) ?? 0;
 
         }
-        private decimal GetMachinaryIdle(Guid equipmentTypeId)
+        private decimal GetMachinaryIdle(Guid equipmentTypeId, int glFiscalYearId)
         {
-           
-           
+
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
 
             return db.MachineryWorkingTimeSheets.Where(x => x.TimeSheetApproved)
                .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
+                .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
                 .Sum(s => (decimal?)s.IdleHours) ?? 0;
 
         }
-        private decimal GetLightVehicleIdleHour(Guid equipmentTypeId)
+        private decimal GetLightVehicleIdleHour(Guid equipmentTypeId, int glFiscalYearId)
         {
-            
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
 
             return db.LightVehicleTimeSheets.Where(x => x.TimeSheetApproved)
                .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
+                .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
                 .Sum(s => (decimal?)s.IdleHours) ?? 0;
 
         }
-        private decimal GetWagonDrillIdleHour(Guid equipmentTypeId)
+        private decimal GetWagonDrillIdleHour(Guid equipmentTypeId, int glFiscalYearId)
         {
-
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
             return db.WagonDrillTimesheets.Where(x => x.TimeSheetApproved)
                .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
+                .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
                 .Sum(s => (decimal?)s.IdleHour) ?? 0;
 
 
@@ -174,7 +176,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         #endregion
 
         #region GetDownHour
-        private decimal GetDownHour(Guid equipmentTypeId)
+        private decimal GetDownHour(Guid equipmentTypeId, int glFiscalYearId)
         {
             decimal totalDownHour = 0;
             var equipmentType = db.EquipmentType.Find(equipmentTypeId);
@@ -184,19 +186,19 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 switch (equipmentType.TimeSheetType)
                 {
                     case TimeSheetType.DryLoading:
-                        totalDownHour = GetDryloadDownHour(equipmentTypeId);
+                        totalDownHour = GetDryloadDownHour(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.DumpTruck:
-                        totalDownHour = GetDumpTruckDownHour(equipmentTypeId);
+                        totalDownHour = GetDumpTruckDownHour(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.LightVehicle:
-                        totalDownHour = GetLightVehicleDownHour(equipmentTypeId);
+                        totalDownHour = GetLightVehicleDownHour(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.Machinery:
-                        totalDownHour = GetMachinaryDownHour(equipmentTypeId);
+                        totalDownHour = GetMachinaryDownHour(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.WagonDrill:
-                        totalDownHour = GetWagonDrillDownHour(equipmentTypeId);
+                        totalDownHour = GetWagonDrillDownHour(equipmentTypeId, glFiscalYearId);
                         break;
 
                 }
@@ -204,49 +206,49 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             return totalDownHour;
         }
 
-        private decimal GetDryloadDownHour(Guid equipmentTypeId)
+        private decimal GetDryloadDownHour(Guid equipmentTypeId, int glFiscalYearId)
         {
-          
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
             return db.DryLoadingTimeSheets.Where(x => x.TimeSheetApproved)
                  .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                 .Where(dryLoad => DbFunctions.TruncateTime(dryLoad.TripStartDate) <= DateTime.Today.Date)
+                 .Where(x => DbFunctions.TruncateTime(x.TripStartDate) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.TripStartDate) <= DateTime.Today.Date)
                 .Sum(s => (decimal?)s.Downhour) ?? 0;
 
 
         }
-        private decimal GetDumpTruckDownHour(Guid equipmentTypeId)
+        private decimal GetDumpTruckDownHour(Guid equipmentTypeId, int glFiscalYearId)
         {
-          
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
             return db.DumpTruckTimeSheets.Where(x => x.TimeSheetApproved)
                .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
+                .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
                 .Sum(s => (decimal?)s.DownHour) ?? 0;
 
         }
-        private decimal GetMachinaryDownHour(Guid equipmentTypeId)
+        private decimal GetMachinaryDownHour(Guid equipmentTypeId, int glFiscalYearId)
         {
-           
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
             return db.MachineryWorkingTimeSheets.Where(x => x.TimeSheetApproved)
                 .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                 .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
+                 .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
                  .Sum(s => (decimal?)s.DownHours) ?? 0;
 
         }
-        private decimal GetLightVehicleDownHour(Guid equipmentTypeId)
+        private decimal GetLightVehicleDownHour(Guid equipmentTypeId, int glFiscalYearId)
         {
-           
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
             return db.LightVehicleTimeSheets.Where(x => x.TimeSheetApproved)
                .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
+                .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
                 .Sum(s => (decimal?)s.DownHours) ?? 0;
 
         }
-        private decimal GetWagonDrillDownHour(Guid equipmentTypeId)
+        private decimal GetWagonDrillDownHour(Guid equipmentTypeId, int glFiscalYearId)
         {
-            
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
             return db.WagonDrillTimesheets.Where(x => x.TimeSheetApproved)
                  .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                  .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
+                  .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
                   .Sum(s => (decimal?)s.DownTime) ?? 0;
 
 
@@ -254,7 +256,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         #endregion
 
         #region GetActualQuantity
-        private int GetActualQuantity(Guid equipmentTypeId)
+        private int GetActualQuantity(Guid equipmentTypeId, int glFiscalYearId)
         {
             int quantity = 0;
             var equipmentType = db.EquipmentType.Find(equipmentTypeId);
@@ -264,19 +266,19 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 switch (equipmentType.TimeSheetType)
                 {
                     case TimeSheetType.DryLoading:
-                        quantity = GetDryloadQuantity(equipmentTypeId);
+                        quantity = GetDryloadQuantity(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.DumpTruck:
-                        quantity = GetDumpTruckQuantity(equipmentTypeId);
+                        quantity = GetDumpTruckQuantity(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.LightVehicle:
-                        quantity = GetLightVehicleQuantity(equipmentTypeId);
+                        quantity = GetLightVehicleQuantity(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.Machinery:
-                        quantity = GetMachinaryQuantity(equipmentTypeId);
+                        quantity = GetMachinaryQuantity(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.WagonDrill:
-                        quantity = GetWagonDrillQuantity(equipmentTypeId);
+                        quantity = GetWagonDrillQuantity(equipmentTypeId, glFiscalYearId);
                         break;
 
                 }
@@ -284,60 +286,62 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             return quantity;
         }
 
-        private int GetDryloadQuantity(Guid equipmentTypeId)
-        {           
+        private int GetDryloadQuantity(Guid equipmentTypeId, int glFiscalYearId)
+        {
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
+
             return db.DryLoadingTimeSheets.Where(x => x.TimeSheetApproved)
-                .Where(x => DbFunctions.TruncateTime(x.TripStartDate) <= DateTime.Today.Date)
+                .Where(x => DbFunctions.TruncateTime(x.TripStartDate) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.TripStartDate) <= DateTime.Today.Date)
                 .Where(x => x.EquipmentTypeId == equipmentTypeId)
                  .Select(dryLoad => dryLoad.FleetsID)
                 .Distinct()
                 .Count();            
         }
-        private int GetDumpTruckQuantity(Guid equipmentTypeId)
+        private int GetDumpTruckQuantity(Guid equipmentTypeId, int glFiscalYearId)
         {
-           
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
             return db.DumpTruckTimeSheets.Where(x => x.TimeSheetApproved)
                  .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                 .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
+                .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
                  .Select(dryLoad => dryLoad.FleetsID)
                  .Distinct()
                  .Count();
 
         }
-        private int GetMachinaryQuantity(Guid equipmentTypeId)
+        private int GetMachinaryQuantity(Guid equipmentTypeId, int glFiscalYearId)
         {
-          
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
             return db.MachineryWorkingTimeSheets.Where(x => x.TimeSheetApproved)
                  .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                 .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
+                .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
                  .Select(dryLoad => dryLoad.FleetsID)
                 .Distinct()
                 .Count();
 
         }
-        private int GetLightVehicleQuantity(Guid equipmentTypeId)
+        private int GetLightVehicleQuantity(Guid equipmentTypeId, int glFiscalYearId)
         {
-            
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
             return db.LightVehicleTimeSheets.Where(x => x.TimeSheetApproved)
                 .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
+                .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
                 .Select(dryLoad => dryLoad.FleetsID)
                 .Distinct()
                 .Count();
 
         }
-        private int GetWagonDrillQuantity(Guid equipmentTypeId)
+        private int GetWagonDrillQuantity(Guid equipmentTypeId, int glFiscalYearId)
         {
-            
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
 
-            
+
             return db.WagonDrillTimesheets.Where(x => x.TimeSheetApproved)
                  .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                 .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
+                .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
                  .Select(dryLoad => dryLoad.FleetsID)
                 .Distinct()
                 .Count();
@@ -347,7 +351,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
 
         #region OpHour
-        private decimal GetActualOperationalHour(Guid equipmentTypeId)
+        private decimal GetActualOperationalHour(Guid equipmentTypeId, int glFiscalYearId)
         {
             decimal opHour = 0;
             var equipmentType = db.EquipmentType.Find(equipmentTypeId);
@@ -357,19 +361,19 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 switch (equipmentType.TimeSheetType)
                 {
                     case TimeSheetType.DryLoading:
-                        opHour = GetDryloadOpHour(equipmentTypeId);
+                        opHour = GetDryloadOpHour(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.DumpTruck:
-                        opHour = GetDumpTruckOpHour(equipmentTypeId);
+                        opHour = GetDumpTruckOpHour(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.LightVehicle:
-                        opHour = GetLightVehicleOpHour(equipmentTypeId);
+                        opHour = GetLightVehicleOpHour(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.Machinery:
-                        opHour = GetMachinaryOpHour(equipmentTypeId);
+                        opHour = GetMachinaryOpHour(equipmentTypeId, glFiscalYearId);
                         break;
                     case TimeSheetType.WagonDrill:
-                        opHour = GetWagonDrillOpHour(equipmentTypeId);
+                        opHour = GetWagonDrillOpHour(equipmentTypeId, glFiscalYearId);
                         break;
 
                 }
@@ -377,9 +381,9 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             return opHour;
         }
 
-        private decimal GetDryloadOpHour(Guid equipmentTypeId)
+        private decimal GetDryloadOpHour(Guid equipmentTypeId, int glFiscalYearId)
         {
-           
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
             return db.DryLoadingTimeSheets.Where(x => x.TimeSheetApproved)
                .Where(x => x.EquipmentTypeId == equipmentTypeId)
                .Where(dryLoad => DbFunctions.TruncateTime(dryLoad.TripStartDate) <= DateTime.Today.Date)
@@ -388,38 +392,39 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         }
 
 
-        private decimal GetDumpTruckOpHour(Guid equipmentTypeId)
+        private decimal GetDumpTruckOpHour(Guid equipmentTypeId, int glFiscalYearId)
         {
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
             return db.DumpTruckTimeSheets.Where(x => x.TimeSheetApproved)
                  .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                 .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
+                 .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
                  .Sum(s => (decimal?)s.NetworkingHour) ?? 0;
 
         }
-        private decimal GetMachinaryOpHour(Guid equipmentTypeId)
+        private decimal GetMachinaryOpHour(Guid equipmentTypeId, int glFiscalYearId)
         {
-            
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
             return db.MachineryWorkingTimeSheets.Where(x => x.TimeSheetApproved)
                 .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date).ToList()
+                .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date).ToList()
                 .Sum(s => CalculateMachineryNetWorkingHour(s));
 
         }
-        private decimal GetLightVehicleOpHour(Guid equipmentTypeId)
+        private decimal GetLightVehicleOpHour(Guid equipmentTypeId, int glFiscalYearId)
         {
-            
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
             return db.LightVehicleTimeSheets.Where(x => x.TimeSheetApproved)
                  .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                 .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date).ToList()
+                 .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date).ToList()
                  .Sum(s => CalculateLightVehicleNetWorkingHour(s));
 
         }
-        private decimal GetWagonDrillOpHour(Guid equipmentTypeId)
+        private decimal GetWagonDrillOpHour(Guid equipmentTypeId, int glFiscalYearId)
         {
-            
+            var glFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == glFiscalYearId);
             return db.WagonDrillTimesheets.Where(x => x.TimeSheetApproved)
                  .Where(x => x.EquipmentTypeId == equipmentTypeId)
-                 .Where(x => DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
+                 .Where(x => DbFunctions.TruncateTime(x.Date) >= glFiscalYear.DateFrom.Date && DbFunctions.TruncateTime(x.Date) <= DateTime.Today.Date)
                  .Sum(s => (decimal?)s.OperationNetWorkingHour) ?? 0;
 
         }

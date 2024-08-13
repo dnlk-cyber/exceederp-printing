@@ -148,219 +148,221 @@
 
                         <script id="template" type="text/kendo-tmpl">
                             @(Html.Kendo().TabStrip()
-                                                                .Name("tabStrip_#=JobOrderID#")
-                                                                .SelectedIndex(0)
-                                                                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-                                                                .Items(items =>
-                                                                {
-                                                                    items.Add().Text("Job Summary").Content(@<text>
+                                                                        .Name("tabStrip_#=JobOrderID#")
+                                                                        .SelectedIndex(0)
+                                                                        .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                                                        .Items(items =>
+                                                                        {
+                                                                            items.Add().Text("Job Summary").Content(@<text>
 
 
-                                                                        # if (IsSendForApproval == false)
-                                                                        {#
+                                                                                # if (IsSendForApproval == false)
+                                                                                {#
 
-                                                                        <a href='@Url.Action("Technical_SendForApproval", "JobOrder")/?Id=#=JobOrderID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                                                        # }#
+                                                                                <a href='@Url.Action("Technical_SendForApproval", "JobOrder")/?Id=#=JobOrderID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                                                # }#
+                                                                                <a href='@Url.Action("JobPrintNew", "MaintenancePrint")/?id=#=JobOrderID#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
 
-                                                                        <a href='@Url.Action("JobOrder", "MaintenancePrint")/#=Num#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
-                                                                        # if (Status == "Rejected"  )
-                                                                        {#
-                                                                        <br />
+                                                                                @*<a href='@Url.Action("JobOrder", "MaintenancePrint")/#=Num#' title="Print"><i class="fa fa-print  fa-2x"></i></a>*@
+                                                                                # if (Status == "Rejected"  )
+                                                                                {#
+                                                                                <br />
 
-                                                                        <label>Reject Reason: </label>
-                                                                        #=RejectionReason#
-                                                                        <br />
-                                                                        # }#
-                                                                        @*# if (IsSendForApproval == true )
-                                                                        {#
-                                                                        <div class="row col-md-12">
-                                                                            <div class="col-md-3">
-                                                                            </div>
-                                                                            <label>Progress </label>
+                                                                                <label>Reject Reason: </label>
+                                                                                #=RejectionReason#
+                                                                                <br />
+                                                                                # }#
+                                                                                @*# if (IsSendForApproval == true )
+                                                            {#
+                                                            <div class="row col-md-12">
+                                                                <div class="col-md-3">
+                                                                </div>
+                                                                <label>Progress </label>
 
-                                                                            <div data-role='progressbar' id="progress#=Num#" class='k-widget k-progressbar k-progressbar-horizontal  '><span class='k-progress-status-wrap'><span class='k-progress-status'>#=Progress#%</span></span><div class='k-state-selected' style='width: #=Progress#%; '><span class='k-progress-status-wrap' style='width: 150%;'><span class='k-progress-status'>#=Progress#%</span></span></div></div>
-                                                                            <button type="button" class="k-primary"> <span class="badge"> #=Progress#%</span></button><button type="button" class="btn btn-primary">Duration <span class="badge"> #=InspectorComments#</span></button>
-
-
-                                                                        </div>
-                                                                        <div class="row">
-                                                                            <div class="col-md-1">
-                                                                            </div>
-                                                                            <div class="col-md-5">
-                                                                                <div id="CostChart#=JobOrderID#" data-role="chart" class="k-chart" style="position: relative; touch-action: pan-y;"> </div>
-                                                                            </div>
-
-                                                                            <div class="col-md-3">
-                                                                                <div id="EfficencyGauge#=JobOrderID#" data-role="radialgauge" class="k-gauge">
-                                                                                </div>
-                                                                            </div>
-
-                                                                        </div>
-                                                                        # }#*@
-
-                                                                        # if (IsSendForApproval == false || IsSendForApproval == "false")
-                                                                        {#
-
-                                                                        <form action=@Url.Action("UpdateType","JobOrder") method="post">
-                                                                            <select name="JobType" multiple style="height : 50px; width : 250px;" required>
-                                                                                @foreach (var Type in ViewBag.ServiceType as List<MaintenanceType>)
-                                                                    {
-                                                                    <option value="@Type.Name">@Type.Name</option>
-                                                    }
-                                                                /**/
-                                                                                /**/
-                                                                                /**/
-                                                                                /**/
-                                                                                /**/
+                                                                <div data-role='progressbar' id="progress#=Num#" class='k-widget k-progressbar k-progressbar-horizontal  '><span class='k-progress-status-wrap'><span class='k-progress-status'>#=Progress#%</span></span><div class='k-state-selected' style='width: #=Progress#%; '><span class='k-progress-status-wrap' style='width: 150%;'><span class='k-progress-status'>#=Progress#%</span></span></div></div>
+                                                                <button type="button" class="k-primary"> <span class="badge"> #=Progress#%</span></button><button type="button" class="btn btn-primary">Duration <span class="badge"> #=InspectorComments#</span></button>
 
 
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-1">
+                                                                </div>
+                                                                <div class="col-md-5">
+                                                                    <div id="CostChart#=JobOrderID#" data-role="chart" class="k-chart" style="position: relative; touch-action: pan-y;"> </div>
+                                                                </div>
 
-                                                                            </select>
-                                                                            <input type="hidden" name="Id" value="#=JobOrderID#">
-                                                                            <input type="submit" class="k-primary  form-control " value=" Update " />
+                                                                <div class="col-md-3">
+                                                                    <div id="EfficencyGauge#=JobOrderID#" data-role="radialgauge" class="k-gauge">
+                                                                    </div>
+                                                                </div>
 
-                                                                        </form>
+                                                            </div>
+                                                            # }#*@
 
-                                                                        # }#
+                                                                                # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                                                                {#
+
+                                                                                <form action=@Url.Action("UpdateType","JobOrder") method="post">
+                                                                                    <select name="JobType" multiple style="height : 50px; width : 250px;" required>
+                                                                                        @foreach (var Type in ViewBag.ServiceType as List<MaintenanceType>)
+                                                                            {
+                                                                            <option value="@Type.Name">@Type.Name</option>
+                                                            }
+                                                                        /**/
+                                                                                        /**/
+                                                                                        /**/
+                                                                                        /**/
+                                                                                        /**/
+                                                                                        /**/
 
 
 
+                                                                                    </select>
+                                                                                    <input type="hidden" name="Id" value="#=JobOrderID#">
+                                                                                    <input type="submit" class="k-primary  form-control " value=" Update " />
+
+                                                                                </form>
+
+                                                                                # }#
 
 
 
-                                                                    </text>
-                                    );
-                                                    items.Add().Text(" Job Services ").Content(@<text>
-                                                        # if (IsOnlineApproved)
-                                                        {#
-                                                        <a onclick='return addToServiceCenter("#=JobOrderID#")' href=' \#' title="Add to Service Center"><i class="fa fa-plus-square fa-2x"></i></a>
 
-                                                        # }#
-                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.JobOrderDetail>()
-                                                                                            .Name("JobServicegrid_#=JobOrderID#")
-                                                                                            .Columns(columns =>
-                                                                                            {
-                                                                columns.ForeignKey(e => e.SubCategoryCode, (IEnumerable)ViewData["SubCategories"], "Code", "Name").EditorTemplateName("SubCategoryTemplate").Width(120);
 
-                                                                columns.ForeignKey(e => e.JobCausesId, (IEnumerable)ViewData["JobCauses"], "Code", "Name").EditorTemplateName("JobCause").Width(120);
-                                                                columns.Bound(e => e.ServiceGroup).EditorTemplateName("ServiceCategoryEnumMapping").Width(120);
-                                                                columns.ForeignKey(e => e.RepairTypeID, (IEnumerable)ViewData["Service"], "Code", "Name").EditorTemplateName("RepairTypeTemplate").Width(150);
-                                                                columns.ForeignKey(e => e.ServiceCenterId, (IEnumerable)ViewData["ServiceCenter"], "Id", "Name").EditorTemplateName("ServiceCenter").Width(150);
-                                                                columns.Bound(o => o.Status).Width(100);
-                                                                columns.Bound(o => o.ApprovalStatus).Width(100);
-                                                                columns.Bound(o => o.Remark).Width(100).Title("Failure");
-                                                                columns.Command(command => { command.Edit(); }).Width(250);
 
-                                                            }).Events(e => e.DataBound("approveonDataBound"))
-                                                                .ToolBar(t => t.Create())
-                                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                .Pageable(p => p.Refresh(true))
-                                                                .DataSource(dataSource => dataSource
-                                                                .Ajax()
-                                                                .PageSize(20)
+                                                                            </text>
+                            );
+                                                            items.Add().Text(" Job Services ").Content(@<text>
+                                                                # if (IsOnlineApproved)
+                                                                {#
+                                                                <a onclick='return addToServiceCenter("#=JobOrderID#")' href=' \#' title="Add to Service Center"><i class="fa fa-plus-square fa-2x"></i></a>
 
-                                                                .Model(model =>
-                                                                {
-                                                                model.Id(p => p.JobOrderDetailID);
-                                                                model.Field(p => p.MaintenanceCenter).Editable(false);
-                                                                model.Field(p => p.Remark).Editable(true);
-                                                                model.Field(p => p.ApprovalStatus).Editable(false);
-                                                                model.Field(p => p.Status).Editable(false);
-                                                            }).Events(ev => ev
+                                                                # }#
+                                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.JobOrderDetail>()
+                                                                                                            .Name("JobServicegrid_#=JobOrderID#")
+                                                                                                            .Columns(columns =>
+                                                                                                            {
+                                                                                columns.ForeignKey(e => e.SubCategoryCode, (IEnumerable)ViewData["SubCategories"], "Code", "Name").EditorTemplateName("SubCategoryTemplate").Width(120);
+
+                                                                                columns.ForeignKey(e => e.JobCausesId, (IEnumerable)ViewData["JobCauses"], "Code", "Name").EditorTemplateName("JobCause").Width(120);
+                                                                                columns.Bound(e => e.ServiceGroup).EditorTemplateName("ServiceCategoryEnumMapping").Width(120);
+                                                                                columns.ForeignKey(e => e.RepairTypeID, (IEnumerable)ViewData["Service"], "Code", "Name").EditorTemplateName("RepairTypeTemplate").Width(150);
+                                                                                columns.ForeignKey(e => e.ServiceCenterId, (IEnumerable)ViewData["ServiceCenter"], "Id", "Name").EditorTemplateName("ServiceCenter").Width(150);
+                                                                                columns.Bound(o => o.Status).Width(100);
+                                                                                columns.Bound(o => o.ApprovalStatus).Width(100);
+                                                                                columns.Bound(o => o.Remark).Width(100).Title("Failure");
+                                                                                columns.Command(command => { command.Edit(); }).Width(250);
+
+                                                                            }).Events(e => e.DataBound("approveonDataBound"))
+                                                                                .ToolBar(t => t.Create())
+                                                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                .Pageable(p => p.Refresh(true))
+                                                                                .DataSource(dataSource => dataSource
+                                                                                .Ajax()
+                                                                                .PageSize(20)
+
+                                                                                .Model(model =>
+                                                                                {
+                                                    model.Id(p => p.JobOrderDetailID);
+                                                    model.Field(p => p.MaintenanceCenter).Editable(false);
+                                                    model.Field(p => p.Remark).Editable(true);
+                                                    model.Field(p => p.ApprovalStatus).Editable(false);
+                                                    model.Field(p => p.Status).Editable(false);
+                                                }).Events(ev => ev
                                                                                                     .Error("error_handler(\"JobServicegrid_#=JobOrderID#\")")
                                                                                                     .RequestStart("onRequestStart(\"JobServicegrid_#=JobOrderID#\")")
                                                                                                     .RequestEnd("onRequestEnd(\"JobServicegrid_#=JobOrderID#\")"))
-                                                                                                .Create(create => create.Action("JobOrderDetail_Create", "JobOrderDetail", new { jobDetailOrderID = "#=JobOrderID#" }))
-                                                                                                .Read(read => read.Action("OrderService", "JobOrderDetail", new { jobOrderID = "#=JobOrderID#" }))
-                                                                                                .Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail"))
+                                                                                                                .Create(create => create.Action("JobOrderDetail_Create", "JobOrderDetail", new { jobDetailOrderID = "#=JobOrderID#" }))
+                                                                                                                .Read(read => read.Action("OrderService", "JobOrderDetail", new { jobOrderID = "#=JobOrderID#" }))
+                                                                                                                .Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail"))
 
-                                                                                            )
+                                                                                                            )
+
+                                                                                                        .ToClientTemplate())
+
+                                                            </text>
+                                                    );
+
+                                            items.Add().Text(" Causes  ").Content(@<text>
+
+
+                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.JobCauses>()
+                                                                                        .Name("JobCauses_#=JobOrderID#")
+                                                                                        .Columns(columns =>
+                                                                                        {
+                                            columns.Bound(o => o.Name).Width(120);
+                                            columns.Bound(o => o.Description).EditorTemplateName("JobReasonDescEditor").Width(200);
+                                            columns.Command(command =>
+                                                                    {
+
+        }).Width(100);
+
+                                        })
+
+                                                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                        .DataSource(dataSource => dataSource
+                                                                                        .Ajax()
+                                                                                        .PageSize(20)
+                                                                                        .Model(model => model.Id(p => p.JobCausesId)).Events(ev => ev
+                                                                                        .Error("error_handler(\"JobCauses_#=JobOrderID#\")")
+                                                                                        .RequestStart("onRequestStart(\"JobCauses_#=JobOrderID#\")")
+                                                                                        .RequestEnd("onRequestEnd(\"JobCauses_#=JobOrderID#\")"))
+                                                                                        .Read(read => read.Action("JobCausesOrder_Read", "JobCauses", new { Id = "#=Referance#" }))
+
+
+                                                                                        )
+                                                                                        .Pageable(p => p.Refresh(true))
 
                                                                                         .ToClientTemplate())
 
-                                                    </text>
-                                                );
+                                            </text>
+                                        );
+                            items.Add().Text("Technical Approval").Content(@<text>
+                                @(Html.Kendo().Grid<ExceedERP.Web.Areas.Maintenance.Models.TechnicalApprovalViewModel>()
+                                                                            .Name("Technicalgrid_#=JobOrderID#")
+                                                                            .Columns(columns =>
+                                                                            {
+                                //columns.Bound(e => e.Type).EditorTemplateName("MCtypeBind").Width(100);
+                                //columns.Bound(e => e.MaintenanceCenter).Title(" Center").EditorTemplateName("MCByTypeBind").Width(120);
+                                columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").EditorTemplateName("MCByTypeBind").Width(120);
+                    columns.Bound(o => o.ApproveStatus).EditorTemplateName("ApprovalStatusBind").Width(126);
+                    columns.Bound(c => c.Remark).Width(120);
+                    columns.Bound(c => c.CreatedBy).Width(120);
+                    columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                    columns.Command(command => { command.Edit().Text("Approve"); }).Width(250);
 
-                                    items.Add().Text(" Causes  ").Content(@<text>
+                })
+                                                                            .Events(e => e.DataBound("approveonDataBound"))
+                                                                            .Editable(editable =>
+                                                                            {
 
+                    editable.DisplayDeleteConfirmation("Approve");
+                })
+                                                                            .DataSource(dataSource => dataSource
+                                                                            .Ajax()
+                                                                            .ServerOperation(false)
+                                                                            .PageSize(6)
+                                                                            .Model(model =>
+                                                                            {
+                    model.Id(p => p.JobOrderID);
+                    model.Field(p => p.CreatedBy).Editable(false);
+                    model.Field(p => p.DateCreated).Editable(false);
+                }
 
-                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.JobCauses>()
-                                                                        .Name("JobCauses_#=JobOrderID#")
-                                                                        .Columns(columns =>
-                                                                        {
-                            columns.Bound(o => o.Name).Width(120);
-                            columns.Bound(o => o.Description).EditorTemplateName("JobReasonDescEditor").Width(200);
-                            columns.Command(command =>
-                                        {
-
-}).Width(100);
-
-                        })
-
-                                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                        .DataSource(dataSource => dataSource
-                                                                        .Ajax()
-                                                                        .PageSize(20)
-                                                                        .Model(model => model.Id(p => p.JobCausesId)).Events(ev => ev
-                                                                        .Error("error_handler(\"JobCauses_#=JobOrderID#\")")
-                                                                        .RequestStart("onRequestStart(\"JobCauses_#=JobOrderID#\")")
-                                                                        .RequestEnd("onRequestEnd(\"JobCauses_#=JobOrderID#\")"))
-                                                                        .Read(read => read.Action("JobCausesOrder_Read", "JobCauses", new { Id = "#=Referance#" }))
-
+                                                                            ).Events(ev => ev
+                                                                            .Error("error_handler(\"Technicalgrid_#=JobOrderID#\")")
+                                                                            .RequestStart("onRequestStart(\"Technicalgrid_#=JobOrderID#\")")
+                                                                            .RequestEnd("onRequestEnd(\"Technicalgrid_#=JobOrderID#\")"))
+                                                                            .Create(update => update.Action("Technical_Approval", "TechnicalJobApproval"))
+                                                                            .Read(read => read.Action("TechnicalApproval_Read", "TechnicalJobApproval", new { Id = "#=JobOrderID#" }))
+                                                                            .Update(update => update.Action("Technical_Approval", "TechnicalJobApproval"))
 
                                                                         )
-                                                                        .Pageable(p => p.Refresh(true))
 
                                                                         .ToClientTemplate())
-
-                                    </text>
-                                    );
-                    items.Add().Text("Technical Approval").Content(@<text>
-                            @(Html.Kendo().Grid<ExceedERP.Web.Areas.Maintenance.Models.TechnicalApprovalViewModel>()
-                                                                .Name("Technicalgrid_#=JobOrderID#")
-                                                                .Columns(columns =>
-                                                                {
-                            //columns.Bound(e => e.Type).EditorTemplateName("MCtypeBind").Width(100);
-                            //columns.Bound(e => e.MaintenanceCenter).Title(" Center").EditorTemplateName("MCByTypeBind").Width(120);
-                            columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").EditorTemplateName("MCByTypeBind").Width(120);
-                columns.Bound(o => o.ApproveStatus).EditorTemplateName("ApprovalStatusBind").Width(126);
-                columns.Bound(c => c.Remark).Width(120);
-                columns.Bound(c => c.CreatedBy).Width(120);
-                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
-                columns.Command(command => { command.Edit().Text("Approve"); }).Width(250);
-
-            })
-                                                                .Events(e => e.DataBound("approveonDataBound"))
-                                                                .Editable(editable =>
-                                                                {
-
-                editable.DisplayDeleteConfirmation("Approve");
-            })
-                                                                .DataSource(dataSource => dataSource
-                                                                .Ajax()
-                                                                .ServerOperation(false)
-                                                                .PageSize(6)
-                                                                .Model(model =>
-                                                                {
-                model.Id(p => p.JobOrderID);
-                model.Field(p => p.CreatedBy).Editable(false);
-                model.Field(p => p.DateCreated).Editable(false);
-            }
-
-                                                                ).Events(ev => ev
-                                                                .Error("error_handler(\"Technicalgrid_#=JobOrderID#\")")
-                                                                .RequestStart("onRequestStart(\"Technicalgrid_#=JobOrderID#\")")
-                                                                .RequestEnd("onRequestEnd(\"Technicalgrid_#=JobOrderID#\")"))
-                                                                .Create(update => update.Action("Technical_Approval", "TechnicalJobApproval"))
-                                                                .Read(read => read.Action("TechnicalApproval_Read", "TechnicalJobApproval", new { Id = "#=JobOrderID#" }))
-                                                                .Update(update => update.Action("Technical_Approval", "TechnicalJobApproval"))
-
-                                                            )
-
-                                                            .ToClientTemplate())
-                        </text>
-                                                );
-    })
+                            </text>
+                                                    );
+        })
 
 
 

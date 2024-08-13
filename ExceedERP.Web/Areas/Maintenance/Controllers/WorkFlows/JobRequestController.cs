@@ -457,7 +457,6 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
 
         public ActionResult ApproveJobRequest(Guid id)
-
         {
             var request = new DataSourceRequest();
             // var jobRequest = db.JobRequest.Find(id);
@@ -475,7 +474,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             var Request = db.JobRequest.FirstOrDefault(x => x.JobRequestId == id);
             var maintenanceCenter = db.MaintenanceCenter.FirstOrDefault(x => x.MaintenanceCenterID == Request.MaintenanceCenterId);
             var fleet = db.Fleets.FirstOrDefault(x => x.PlateNumber == Request.LicensePlate || x.SerialNo == Request.LicensePlate);
-            if (Request != null && fleet != null)
+            if (Request != null/* && fleet != null*/)
             {
 
                 //if (model.Status == ApprovalStatuses.Approve)
@@ -487,7 +486,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 //JobOrder.ProjectName = Request.ProjectName;
                 JobOrder.CurrentFuel = Request.FuelAmount;
                 JobOrder.LicensePlate = Request.LicensePlate;
-                JobOrder.FleetsID = fleet.FleetsID;
+                JobOrder.FleetsID = fleet?.FleetsID ?? Guid.Empty;
                 JobOrder.EquipmentName = Request.EquipmentName;
                 JobOrder.OperatorName = Request.OperatorName;
                 JobOrder.AssetNum = AssetNum;
@@ -652,6 +651,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         public JsonResult EquipmentNameReturn(string plateNo)
         {
             var fleet = db.Fleets.FirstOrDefault(x => x.PlateNumber == plateNo || x.SerialNo == plateNo);
+            //var equip = db.EquipmentInformation.FirstOrDefault(x => x.LicensePlate == plateNo);
             if (fleet != null)
             {
                 var equipmentName = db.EquipmentName.FirstOrDefault(x => x.EquipmentNameID == fleet.EquipmentNameID);
@@ -661,13 +661,15 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 };
                 return Json(data, JsonRequestBehavior.AllowGet);
             }
+            
             else
             {
+                var equip = db.EquipmentInformation.FirstOrDefault(x => x.LicensePlate == plateNo);
                 var data = new
                 {
-                    EquipmentName = "Not Found"
+                    EquipmentName = equip?.GroupName ?? ""
                 };
-                return Json(data);
+                return Json(data, JsonRequestBehavior.AllowGet);
             }
 
         }

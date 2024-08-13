@@ -11,6 +11,38 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
+    public class MaintenanceCompanyDocumentTypeEntityTypeConfiguration : EntityTypeConfiguration<MaintenanceCompanyDocumentType>
+    {
+        public MaintenanceCompanyDocumentTypeEntityTypeConfiguration()
+        {
+            this.ToTable("MaintenanceCompanyDocumentType", "Maintenance");
+            this.HasKey<int>(p => p.MaintenanceCompanyDocumentTypeId);
+        }
+    }
+    public class MaintenanceCompanyDocumentEntityTypeConfiguration : EntityTypeConfiguration<MaintenanceCompanyDocument>
+    {
+        public MaintenanceCompanyDocumentEntityTypeConfiguration() 
+        {
+            this.ToTable("MaintenanceCompanyDocument", "Maintenance");
+            this.HasKey<int>(p => p.MaintenanceCompanyDocumentId);
+        }
+    }
+    public class ExternalMaintenancePaymentRequestEntityTypeConfiguration : EntityTypeConfiguration<ExternalMaintenancePaymentRequest>
+    {
+        public ExternalMaintenancePaymentRequestEntityTypeConfiguration()
+        {
+            this.ToTable("ExternalMaintenancePaymentRequest", "Maintenance");
+            this.HasKey<int>(p => p.ExternalMaintenancePaymenntrequestId);
+        }
+    }
+    public class ExternalMaintenancePaymentRequestDetailEntityTypeConfiguration : EntityTypeConfiguration<ExternalMaintenancePaymentRequestDetail>
+    {
+        public ExternalMaintenancePaymentRequestDetailEntityTypeConfiguration()
+        {
+            this.ToTable("ExternalMaintenancePaymentRequestDetail", "Maintenance");
+            this.HasKey<int>(p => p.ExternalMaintenancePaymentRequestDetailId);
+        }
+    }
 
     public class MaintenancePlanEntityTypeConfiguration : EntityTypeConfiguration<MaintenancePlan>
     {

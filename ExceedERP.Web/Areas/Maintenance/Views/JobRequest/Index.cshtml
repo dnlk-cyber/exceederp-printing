@@ -226,12 +226,12 @@ editable.DisplayDeleteConfirmation("Are You Sure to Delete Job Request? ");
                                                                                                          .Name("JobOrderAdmingrid_#=JobRequestId#")
                                                                                                         .Columns(columns =>
                                                                                                         {
-                                                                                                                                    columns.Bound(o => o.Status).EditorTemplateName("ApprovalStatusBind").Width(126);
-                                                                                                                                    columns.Bound(o => o.Remark).Width(160);
-                                                                                                                                    columns.Bound(o => o.CreatedBy).Width(120);
-                                                                                                                                    columns.Bound(o => o.DateCreated).Format("{0:d}").Width(120);
-                                                                                                                                    columns.Command(command =>
-                                                                                                                        {
+                                                                                                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalStatusBind").Width(126);
+                                                                                                            columns.Bound(o => o.Remark).Width(160);
+                                                                                                            columns.Bound(o => o.CreatedBy).Width(120);
+                                                                                                            columns.Bound(o => o.DateCreated).Format("{0:d}").Width(120);
+                                                                                                            columns.Command(command =>
+                                                                                                        {
                                                                                                                         command.Custom("cmd-approve-request").HtmlAttributes(new { @class = "kendoPrimary" })
                                                                                                                           .Text("&nbsp;Approve").Click("approveJobRequest").IconClass("fa fa-check");
                                                                                                                         command.Custom("cmd-reject-request").HtmlAttributes(new { @class = "kendoDanger" })

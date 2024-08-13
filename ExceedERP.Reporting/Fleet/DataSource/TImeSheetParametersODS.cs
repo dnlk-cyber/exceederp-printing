@@ -153,6 +153,17 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             }).ToList();
             return list;
         }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<GenericVm> GetWeeks()
+        {
+            return new List<GenericVm>
+            {
+                new GenericVm {Value = "1", Text = "Week One"},
+                new GenericVm {Value = "2", Text = "Week Two"},
+                new GenericVm {Value = "3", Text = "Week Three"},
+                new GenericVm {Value = "4", Text = "Week Four"},
+            };
+        }
         public class GenericVm
         {
             public string Text { get; set; }

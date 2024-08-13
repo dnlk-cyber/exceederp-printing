@@ -542,5 +542,13 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             ViewBag.FormNumber = number;
             return View();
         }
+
+        public ActionResult UtilizationSummaryToDate()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.UtilizationSummaryToDate, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
     }
 }

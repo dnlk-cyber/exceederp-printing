@@ -81,7 +81,6 @@
                     .DataTextField("PlateNumber")
                     .DataValueField("FleetsID")
                     .Filter("contains")
-                    .CascadeFrom("EquipmentNameId")
                     .MinLength(2)
                     .DataSource(dataSource =>
                     {

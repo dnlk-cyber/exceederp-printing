@@ -488,6 +488,10 @@
     <Compile Include="Migrations\202408050631246_fleetandmaintenance.Designer.cs">
       <DependentUpon>202408050631246_fleetandmaintenance.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202408131325502_fleetmaintenanceupg.cs" />
+    <Compile Include="Migrations\202408131325502_fleetmaintenanceupg.Designer.cs">
+      <DependentUpon>202408131325502_fleetmaintenanceupg.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -809,6 +813,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202408050631246_fleetandmaintenance.resx">
       <DependentUpon>202408050631246_fleetandmaintenance.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202408131325502_fleetmaintenanceupg.resx">
+      <DependentUpon>202408131325502_fleetmaintenanceupg.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

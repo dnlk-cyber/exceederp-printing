@@ -49,6 +49,11 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             ViewBag.Id = Id;
             return View();
         }
+        public ActionResult JobPrintNew(string id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
         public ActionResult WorkShop(string Id)
         {
             ViewBag.Id = Id;

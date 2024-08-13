@@ -15,6 +15,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
         // GET: FleetManagement/FleetAnnualPlanDetail
         public ActionResult Index()
         {
+            
             return View();
         }
 
@@ -24,6 +25,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
 
             return Json(annualPlans.ToDataSourceResult(request, ModelState));
         }
+        
 
         public ActionResult FleetAnnualPlanDetail_Create([DataSourceRequest] DataSourceRequest request, FleetAnnualPlanDetail model, int id)
         {
@@ -33,6 +35,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
             }
             if (ModelState.IsValid)
             {
+                model.DateFrom = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == model.GlPeriodId).DateFrom;
+                model.DateTo = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == model.GlPeriodId).DateTo;
                 model.FleetAnnualPlanId = id;
                 model.CreatedBy = User.Identity.Name;
                 model.DateCreated = DateTime.Today;
@@ -52,7 +56,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
             }
             if (ModelState.IsValid)
             {
-
+                //model.DateFrom = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == model.GlPeriodId).DateFrom;
+                //model.DateTo = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == model.GlPeriodId).DateTo;
                 model.ModifiedBy = User.Identity.Name;
                 model.LastModified = DateTime.Today;
                 CalculateValues(model);

@@ -23,13 +23,13 @@ namespace ExceedERP.Reporting.Maintenance.DataSource
             IList<MaintenanceDurationViewModel> models = new List<MaintenanceDurationViewModel>();
             var jobOrders = db.JobOrder.Where(q=>q.IsOnlineApproved).ToList();
             if(startDate!=null  && endDate!=null)
-                {
+            {
                 jobOrders = jobOrders.Where(q => q.OnlineApprovedTime.HasValue? q.OnlineApprovedTime.Value.Date >= startDate.Date  && q.OnlineApprovedTime.Value.Date <= endDate.Date: false).ToList();
             }
             foreach(var jobOrder in jobOrders)
             {
                 MaintenanceDurationViewModel model = new MaintenanceDurationViewModel();
-                if (jobOrder != null &&jobOrder.LicensePlate!=null)
+                if (jobOrder != null && jobOrder.LicensePlate!=null)
                 {
                    
                   

@@ -128,6 +128,8 @@
                                     }
 
                                     <li id="m07" class="actionlinlk">@Html.ActionLink("Maintenance Plan", "Index", "MaintenancePlan", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                                    <li id="m07" class="actionlinlk">@Html.ActionLink("External Payment Request", "Index", "ExternalMaintenancePaymentRequest", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                                    <li id="m07" class="actionlinlk">@Html.ActionLink("Document Library", "Index", "MaintenanceCompanyDocumentTypes", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
 
                                 </ul>
                             </li>
@@ -160,15 +162,18 @@
                         <b class="arrow fa fa-angle-down"></b>
                     </a>
                     <b class="arrow"></b>
-                    <ul class="submenu">                      
-                        <li id="mr01" class="actionlinlk">@Html.ActionLink(" Maintenance Report ", "MaintenanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                        <li id="mr02" class="actionlinlk">@Html.ActionLink("Internal Maintenance Cost ", "InternalMaintenanceCost", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                        <li id="mr03" class="actionlinlk">@Html.ActionLink(" Maintenance Duration", "MaintenanceDuration", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
-                        <li id="mr04" class="actionlinlk">@Html.ActionLink(" Maintenance Summary", "MaintenanceSummary", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                    <ul class="submenu">     
+                        
+                        <li id="mr01" class="actionlinlk">@Html.ActionLink("Internal Maintenance Cost", "InternalMaintenanceCostReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="mr01" class="actionlinlk">@Html.ActionLink("Maintenance Report ", "MaintenanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        @*<li id="mr02" class="actionlinlk">@Html.ActionLink("Internal Maintenance Cost ", "InternalMaintenanceCost", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
+                        @*<li id="mr03" class="actionlinlk">@Html.ActionLink(" Maintenance Duration", "MaintenanceDuration", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
+                        <li id="mr04" class="actionlinlk">@Html.ActionLink(" Maintenance Summary", "MaintenanceSummary", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@
                         <li id="mr04" class="actionlinlk">@Html.ActionLink("Daily Maintenance Report", "DailyMaintenanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>
                         <li id="mr04" class="actionlinlk">@Html.ActionLink("Machinary And Vehicle Maintenance Report", "MachinaryAndVehicelMaintenanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>                       
                         <li id="mr04" class="actionlinlk">@Html.ActionLink("Weekly CM & PM Performance Report", "WeeklyCMPMPerformanceReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>                       
-                        @*<li id="mr04" class="actionlinlk">@Html.ActionLink("Weekly CM & PM Performance Summary Report", "WeeklyCMPMPerformanceSummaryReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@                       
+                        @*<li id="mr04" class="actionlinlk">@Html.ActionLink("Weekly CM & PM Performance Summary Report", "WeeklyCMPMPerformanceSummaryReport", "MaintenanceReport", new { area = "Maintenance" }, null)<b class="arrow"></b></li>*@   
+                        <li id="invrep1" class="actionlinlk">@Html.ActionLink("Stock Balance", "StockBalanceByCategory", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
                     </ul>
                 </li>
             }

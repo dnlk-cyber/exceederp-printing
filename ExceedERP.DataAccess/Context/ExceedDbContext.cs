@@ -1039,6 +1039,10 @@ namespace ExceedERP.DataAccess.Context
 
             #endregion
             #region Maintenance
+            modelBuilder.Configurations.Add(new MaintenanceCompanyDocumentTypeEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new MaintenanceCompanyDocumentEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new ExternalMaintenancePaymentRequestEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new ExternalMaintenancePaymentRequestDetailEntityTypeConfiguration()); //
             modelBuilder.Configurations.Add(new MaintenancePlanEntityTypeConfiguration()); //
             modelBuilder.Configurations.Add(new MaintenancePlanDetailEntityTypeConfiguration()); //
             modelBuilder.Configurations.Add(new AdditionalWorkShopDetailEntityTypeConfiguration());
@@ -3090,6 +3094,10 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<AssignedEquipmentAdditionalInfo> AssignedEquipmentAdditionalInfos { get; set; }
         #endregion
         #region Maintenance
+        public DbSet<MaintenanceCompanyDocumentType> MaintenanceCompanyDocumentTypes { get; set; }
+        public DbSet<MaintenanceCompanyDocument> MaintenanceCompanyDocuments { get; set; }
+        public DbSet<ExternalMaintenancePaymentRequest> ExternalMaintenancePaymentRequests { get; set; }
+        public DbSet<ExternalMaintenancePaymentRequestDetail> ExternalMaintenancePaymentRequestDetails { get; set; }
         public DbSet<MaintenancePlan> MaintenancePlans { get; set; }
         public DbSet<MaintenancePlanDetail> MaintenancePlanDetails { get; set; }
         public DbSet<AdditionalWorkShopDetail> AdditionalWorkShopDetails { get; set; }

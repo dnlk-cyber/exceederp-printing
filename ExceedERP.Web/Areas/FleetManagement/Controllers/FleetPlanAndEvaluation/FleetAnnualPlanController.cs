@@ -15,6 +15,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
         // GET: FleetManagement/FleetAnnualPlan
         public ActionResult Index()
         {
+
             ViewData["Category"] = db.EquipmentIdentity.Select(s => new
             {
                 Value = s.EquipmentIdentityID,
@@ -47,7 +48,19 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
                 Value = s.GLPeriodId,
                 Text = s.Name
             }).ToList();
+            //GenerateDate();
             return View();
+        }
+        private void GenerateDate()
+        {
+            var details = db.FleetAnnualPlanDetails.ToList();
+            foreach (var item in details)
+            {
+                item.DateFrom = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == item.GlPeriodId).DateFrom;
+                item.DateTo = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == item.GlPeriodId).DateTo;
+                db.Entry(item).State = EntityState.Modified;
+            }
+            db.SaveChanges();
         }
         public ActionResult FleetAnnualPlan_Read([DataSourceRequest] DataSourceRequest request)
         {
@@ -107,7 +120,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
                 var entity = new FleetAnnualPlanDetail
                 {
                     GlPeriodId = item.GLPeriodId,
-                    FleetAnnualPlanId = annualPlan.FleetAnnualPlanId
+                    FleetAnnualPlanId = annualPlan.FleetAnnualPlanId,
+                    DateFrom = item.DateFrom,
+                    DateTo = item.DateTo
                 };
                 db.FleetAnnualPlanDetails.Add(entity);
             }

@@ -365,6 +365,8 @@
                                                                 .Model(model =>
                                                                 {
                                                                     model.Id(p => p.ExternalServiceCenterPaymentId);
+                                                                    model.Field(p => p.SubTotal).Editable(false);
+                                                                    model.Field(p => p.Total).Editable(false);
                                                      
                                                                 }).Events(ev => ev
                                                                     .Error("error_handler(\"CAGrid_#=ServiceCenterJobId#\")")

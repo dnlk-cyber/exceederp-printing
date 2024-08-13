@@ -53,19 +53,20 @@
                 //columns.ForeignKey(e => e.EquipmentInformationId, (IEnumerable)ViewData["EquipmentsList"], "EquipmentInformationId", "LicensePlate").Title("License Place").Width(150);
                 //columns.Bound(e => e.ProjectName).Title("Location").Width(100);
                 columns.Bound(e => e.LicensePlate).Width(100);
+                columns.Bound(e => e.EquipmentName).Width(100).Title("Equipment Name");
                 columns.Bound(e => e.Referance).Width(100);
                 //columns.Bound(e => e.MaintenanceCenter).Width(200);
                 columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").Width(140);
                 columns.ForeignKey(e => e.ServiceCenterId, (IEnumerable)ViewData["ServiceCenter"], "Id", "Name").Width(150);
                 columns.Bound(e => e.Status).Width(200);
                 columns.Command(command =>
-            {
-                if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceServiceRejecter))
                 {
-                    command.Custom("cmd-aprove-request").Text("&nbsp; Approve").Click("approveWorkShop").HtmlAttributes(new { @class = "approve" }).IconClass("fa fa-ok");
-                    command.Custom("cmd-reject-request").Text("&nbsp; Reject").Click("rejectWorkShop").HtmlAttributes(new { @class = "reject" }).IconClass("fa fa-close");
-                }
-            }).Width(100);
+                    if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceServiceRejecter))
+                    {
+                        command.Custom("cmd-aprove-request").Text("&nbsp; Approve").Click("approveWorkShop").HtmlAttributes(new { @class = "approve" }).IconClass("fa fa-ok");
+                        command.Custom("cmd-reject-request").Text("&nbsp; Reject").Click("rejectWorkShop").HtmlAttributes(new { @class = "reject" }).IconClass("fa fa-close");
+                    }
+                }).Width(100);
             })
 
             .Editable(editable =>

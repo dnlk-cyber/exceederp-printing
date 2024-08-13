@@ -51,7 +51,24 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 Text = s.Name
             }).ToList();
             ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
+            RepopulateTimeSheet();
             return View();
+        }
+        public void RepopulateTimeSheet()
+        {
+            var timesheets = db.WagonDrillTimesheets.ToList();
+            if (timesheets.Any())
+            {
+                foreach (var item in timesheets)
+                {
+                    item.EquipmentCategoryId = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID)?.EquipmentIdentityID;
+                    item.EquipmentTypeId = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID)?.EquipmentTypeID;
+                    item.EquipmentNameId = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID)?.EquipmentNameID;
+                    db.Entry(item).State = EntityState.Modified;
+                }
+                db.SaveChanges();
+            }
+
         }
         public ActionResult WagonDrillTimesheets_Read([DataSourceRequest] DataSourceRequest request)
         {

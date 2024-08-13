@@ -285,7 +285,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 CurrentFuel = j.CurrentFuel,
                 ProjectName = j.ProjectName,
                 RejectionReason = j.RejectionReason,
-                Progress = GetProgressPercent(j.JobOrderID),
+                //Progress = GetProgressPercent(j.JobOrderID),
                 Status = j.Status,
                 PercentCompleted = j.AssetNum + "--" + j.EquipmentName,
                 MaintenanceCenter = j.MaintenanceCenter,
@@ -300,7 +300,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 AdvanceMeasure = j.AdvanceMeasure,
                 Referance = j.Referance,
                 Odometer = j.Odometer,
-                InspectorComments = GetMaintenaceDuration(j.JobOrderID),
+                //InspectorComments = GetMaintenaceDuration(j.JobOrderID),
                 IsOnlineApproved = j.IsOnlineApproved,
                 SecondOnlineApprovedTime = j.SecondOnlineApprovedTime,
                 OnlineApprovedTime = j.OnlineApprovedTime,
@@ -343,7 +343,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 CurrentFuel = j.CurrentFuel,
                 ProjectName = j.ProjectName,
                 RejectionReason = j.RejectionReason,
-                Progress = GetProgressPercent(j.JobOrderID),
+                // Progress = GetProgressPercent(j.JobOrderID),
                 Status = j.Status,
                 PercentCompleted = j.AssetNum + "--" + j.EquipmentName,
                 MaintenanceCenter = j.MaintenanceCenter,
@@ -358,7 +358,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 AdvanceMeasure = j.AdvanceMeasure,
                 Referance = j.Referance,
                 Odometer = j.Odometer,
-                InspectorComments = GetMaintenaceDuration(j.JobOrderID),
+                //InspectorComments = GetMaintenaceDuration(j.JobOrderID),
                 IsOnlineApproved = j.IsOnlineApproved,
                 SecondOnlineApprovedTime = j.SecondOnlineApprovedTime,
                 OnlineApprovedTime = j.OnlineApprovedTime,
@@ -879,14 +879,14 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 CRMMaintenanceIntegrationHelper.CreateSalesQuoteVoucherFromMaintenance(JobOrder, User.Identity.Name);
 
                 var maintenanceCenter = db.MaintenanceCenter.FirstOrDefault(x => x.MaintenanceCenterID == JobOrder.MaintenanceCenterId);
-                if(maintenanceCenter != null)
+                if (maintenanceCenter != null)
                 {
                     if (maintenanceCenter.IsExternal)
                     {
                         GenerateExternalPaymentRequest(jobOrder.Num);
                     }
                 }
-                
+
             }
 
             // return Json(new[] { JobOrder }.ToDataSourceResult(request));
@@ -903,74 +903,56 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             var jobOrder = db.JobOrder.FirstOrDefault(x => x.Num == num);
             if (jobOrder != null)
             {
-
-                var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == jobOrder.RequesterId);
-                if (placement != null)
+                
+                var serviceCenterJob = db.ServiceCenterJob.FirstOrDefault(x => x.Num == num);
+                if (serviceCenterJob != null)
                 {
-                    var serviceCenterJob = db.ServiceCenterJob.FirstOrDefault(x => x.Num == num);
-                    if (serviceCenterJob != null)
+                    ExternalMaintenancePaymentRequest externalMaintenancePaymentRequest = new ExternalMaintenancePaymentRequest
                     {
-                        var request = new PaymentRequest
+                        BranchId = jobOrder.BranchId,
+                        BusinessUnitId = jobOrder.OrgStructureId,
+                        CreatedBy = User.Identity.Name,
+                        DateCreated = DateTime.Today, 
+                        EnteranceDate = jobOrder.DateCreated,
+                        EquipmentName = jobOrder.EquipmentName,
+                        ExitDate = jobOrder.DateCompleted,
+                        FleetId = jobOrder.FleetsID,
+                        
+                        MaintenanceCenterId = serviceCenterJob.MaintenanceCenterId,
+
+                        JobNum = (int)serviceCenterJob.Num
+
+                    };
+                    db.ExternalMaintenancePaymentRequests.Add(externalMaintenancePaymentRequest);
+                    db.SaveChanges();
+                    var payments = db.ExternalServiceCenterPayments.Where(x => x.ServiceCenterJobId == serviceCenterJob.ServiceCenterJobId);
+                    if (payments.Any())
+                    {
+                        foreach (var payment in payments)
                         {
-                            SupplierId = "0",
-                            IsNewSupplier = false,
-                            Supplier = " ",
-                            Purchaser = 0,
-                            ReasonOfPayment = $"Vehicle Plate No {jobOrder.LicensePlate} Repair",
-                            RequestDate = DateTime.Now.Date,
-                            RequestDateAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year),
-                            InvoiceNo = "0",
-                            PurchaseRequestNo = "0",
-                            PONo = "0",
-                            GRN = "0",
-                            BranchId = jobOrder.BranchId,
-                            BusinessUnitId = jobOrder.BusinessUnitId,
-                            OrgStuructureId = placement.OrgStructureId,
-                            EmployeeId = jobOrder.RequesterId,
-                            Paid = false,
-                            FromBranchId = jobOrder.BranchId,
-                            FromBusinessUnitId = jobOrder.BusinessUnitId,
-                            CreatedAtBranchId = jobOrder.BranchId,
-                            CreatedAtBusinessUnitId = jobOrder.BusinessUnitId,
-                            CreatedAtOrgStructureId = placement.OrgStructureId,
-                            CreatedBy = User.Identity.Name,
-                            DateCreated = DateTime.Now.Date,
-                            ModifiedBy = User.Identity.Name,
-                            LastModified = DateTime.Now.Date,
-                            CurrentApprovalStep = 0,
-                            IsDepartmentOnlineApproved = true,
-                            DepartmentOnlineApprovedBy = User.Identity.Name,
-                            DepartmentOnlineApprovedTime = DateTime.Now,
-                        };
-                        db.PaymentRequests.Add(request);
-                        db.SaveChanges();
-                        var payments = db.ExternalServiceCenterPayments.Where(x => x.ServiceCenterJobId == serviceCenterJob.ServiceCenterJobId);
-                        if (payments.Any())
-                        {
-                            foreach (var payment in payments)
+                            ExternalMaintenancePaymentRequestDetail detail = new ExternalMaintenancePaymentRequestDetail
                             {
-                                var requestDetail = new PaymentRequestLine
-                                {
-                                    PaymentRequestId = request.PaymentRequestId,
-                                    Amount = payment.SubTotal,
-                                    TaxAmount = 0,
-                                    TotalAmount = payment.Total,
-                                    ItemName = "0",
-                                    GLTaxRateID = payment.GlTaxRateId,
-                                    Description = $"External Maintenance: {payment.CostType}",
-                                    Remark = "",
-                                    CreatedBy = User.Identity.Name,
-                                    DateCreated = DateTime.Now.Date,
-                                    ModifiedBy = User.Identity.Name,
-                                    LastModified = DateTime.Now.Date,
-                                };
-                                db.PaymentRequestLines.Add(requestDetail);
-                            }
-                           
-                            db.SaveChanges();
+                                CostType = payment.CostType,
+                                Date = payment.Date,
+                                ExternalMaintenancePaymenntrequestId = externalMaintenancePaymentRequest.ExternalMaintenancePaymenntrequestId,
+                                GlTaxRateId = payment.GlTaxRateId,
+                                SubTotal = payment.SubTotal,
+                                UnitPrice = payment.UnitPrice,
+                                RepairDescribtion = "",
+                                Total = payment.Total,
+                                Quantity = payment.Quantity,
+                                CreatedBy = User.Identity.Name,
+                                DateCreated = DateTime.Now.Date,
+                                ModifiedBy = User.Identity.Name,
+                                LastModified = DateTime.Now.Date,
+                            };
+                            db.ExternalMaintenancePaymentRequestDetails.Add(detail);
                         }
+
+                        db.SaveChanges();
                     }
                 }
+
 
             }
 
@@ -1229,7 +1211,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 if (fleet != null)
                 {
                     jobOrder.FleetsID = fleet.FleetsID;
-                    db.Entry(jobOrder).State = EntityState.Modified;                   
+                    db.Entry(jobOrder).State = EntityState.Modified;
                 }
             }
             db.SaveChanges();

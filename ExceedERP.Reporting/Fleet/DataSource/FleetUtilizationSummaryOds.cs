@@ -18,17 +18,18 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
         [DataObjectMethod(DataObjectMethodType.Select)]
 
-        public List<FleetUtilizationSummaryViewModel> GetUtilization(string glFiscalYearId, string glPeriodId)
+        public List<FleetUtilizationSummaryViewModel> GetUtilization(string glFiscalYearId, string glPeriodId, string week)
         {
             List<FleetUtilizationSummaryViewModel> summaryList = new List<FleetUtilizationSummaryViewModel>();
-            if (int.TryParse(glFiscalYearId, out int fiscalYearId))
+            if (int.TryParse(glFiscalYearId, out int fiscalYearId) && int.TryParse(glPeriodId, out int periodId) && int.TryParse(week, out int weekVal))
             {
                 var plans = db.FleetAnnualPlans.Where(x => x.GlFiscalYearId == fiscalYearId).ToList();
                 var planDetails = db.FleetAnnualPlanDetails.ToList();
-                if (int.TryParse(glPeriodId, out int periodId))
-                {
-                    planDetails = planDetails.Where(x => x.GlPeriodId == periodId).ToList();
-                }
+
+                planDetails = planDetails.Where(x => x.GlPeriodId == periodId).ToList();
+
+                
+                       
 
                 var joinedPlans = from plan in plans
                                   join detail in planDetails
@@ -64,12 +65,12 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         var ut = new FleetUtilizationSummaryViewModel
                         {
                             EquipmentTypeName = equipmentType.EquipmentTypeName,
-                            PlanQuantity = (int)groupedPlan.Quantity/4,
-                            PlannedMonthlyHour = groupedPlan.PlanedHour/4,
-                            ActualMonthlyAvaliableQuantity = GetActualQuantity(groupedPlan.EquipmentTypeId, groupedPlan.GlPeriodId)/4,
-                            ActualMonthlyOperationalHour = GetActualOperationalHour(groupedPlan.EquipmentTypeId, groupedPlan.GlPeriodId)/4,
-                            ActualMonthlyDownHour = GetDownHour(groupedPlan.EquipmentTypeId, groupedPlan.GlPeriodId)/4,
-                            ActualMonthlyIdleHour = GetIdleHour(groupedPlan.EquipmentTypeId, groupedPlan.GlPeriodId)/4,
+                            PlanQuantity = (int)groupedPlan.Quantity / 4,
+                            PlannedMonthlyHour = groupedPlan.PlanedHour / 4,
+                            ActualMonthlyAvaliableQuantity = GetActualQuantity(groupedPlan.EquipmentTypeId, groupedPlan.GlPeriodId, weekVal),
+                            ActualMonthlyOperationalHour = GetActualOperationalHour(groupedPlan.EquipmentTypeId, groupedPlan.GlPeriodId, weekVal),
+                            ActualMonthlyDownHour = GetDownHour(groupedPlan.EquipmentTypeId, groupedPlan.GlPeriodId, weekVal),
+                            ActualMonthlyIdleHour = GetIdleHour(groupedPlan.EquipmentTypeId, groupedPlan.GlPeriodId, weekVal),
                             PlanVsActualDownHourRatio = 0,
                             PlanVsActualHourRatio = 0,
                             PlanVsActualIdleHourRatio = 0
@@ -91,7 +92,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         }
 
         #region GetIdleHour
-        private decimal GetIdleHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetIdleHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             decimal totalDownHour = 0;
             var equipmentType = db.EquipmentType.Find(equipmentTypeId);
@@ -101,19 +102,19 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 switch (equipmentType.TimeSheetType)
                 {
                     case TimeSheetType.DryLoading:
-                        totalDownHour = GetDryloadIdleHour(equipmentTypeId, glPeriodId);
+                        totalDownHour = GetDryloadIdleHour(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.DumpTruck:
-                        totalDownHour = GetDumpTruckIdleHour(equipmentTypeId, glPeriodId);
+                        totalDownHour = GetDumpTruckIdleHour(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.LightVehicle:
-                        totalDownHour = GetLightVehicleIdleHour(equipmentTypeId, glPeriodId);
+                        totalDownHour = GetLightVehicleIdleHour(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.Machinery:
-                        totalDownHour = GetMachinaryIdle(equipmentTypeId, glPeriodId);
+                        totalDownHour = GetMachinaryIdle(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.WagonDrill:
-                        totalDownHour = GetWagonDrillIdleHour(equipmentTypeId, glPeriodId);
+                        totalDownHour = GetWagonDrillIdleHour(equipmentTypeId, glPeriodId, week);
                         break;
 
                 }
@@ -121,7 +122,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             return totalDownHour;
         }
 
-        private decimal GetDryloadIdleHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetDryloadIdleHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -135,15 +136,32 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             // Get the start and end dates for the GL period
             var startDate = glPeriod.DateFrom.Date;
             var endDate = glPeriod.DateTo.Date;
+
 
             // Join the filtered DryLoadingTimeSheets with the fleet IDs
-            return db.DryLoadingTimeSheets.Where(x => x.TimeSheetApproved)
-                .Where(dryLoad => fleetIds.Contains(dryLoad.FleetsID))
-                .Where(dryLoad => DbFunctions.TruncateTime(dryLoad.TripStartDate) >= startDate && DbFunctions.TruncateTime(dryLoad.TripStartDate) <= endDate)
-                .Sum(s => (decimal?)s.IdleHour) ?? 0;
+            var dryLoad = db.DryLoadingTimeSheets.Where(x => x.TimeSheetApproved)
+           .Where(x => fleetIds.Contains(x.FleetsID))
+           .Where(x => DbFunctions.TruncateTime(x.TripStartDate) >= startDate && DbFunctions.TruncateTime(x.TripStartDate) <= endDate).ToList();
+
+            switch (week)
+            {
+                case 1:
+                    dryLoad = dryLoad.Where(x => x.TripStartDate.Date >= startDate && x.TripStartDate.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    dryLoad = dryLoad.Where(x => x.TripStartDate.Date >= startDate.AddDays(7) && x.TripStartDate < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    dryLoad = dryLoad.Where(x => x.TripStartDate.Date >= startDate.AddDays(14) && x.TripStartDate < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    dryLoad = dryLoad.Where(x => x.TripStartDate >= startDate.AddDays(21) && x.TripStartDate < endDate).ToList();
+                    break;
+            }
+            return dryLoad.Sum(s => (decimal?)s.IdleHour) ?? 0;
         }
 
-        private decimal GetDumpTruckIdleHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetDumpTruckIdleHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -160,13 +178,29 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
 
-            return db.DumpTruckTimeSheets.Where(x => x.TimeSheetApproved)
-                .Where(dryLoad => fleetIds.Contains(dryLoad.FleetsID))
-                .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate)
-               .Sum(s => (decimal?)s.IdleHour) ?? 0;
+            var dumpTruck = db.DumpTruckTimeSheets.Where(x => x.TimeSheetApproved)
+                 .Where(dryLoad => fleetIds.Contains(dryLoad.FleetsID))
+                 .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate).ToList();
+               
+            switch (week)
+            {
+                case 1:
+                    dumpTruck = dumpTruck.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    dumpTruck = dumpTruck.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    dumpTruck = dumpTruck.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    dumpTruck = dumpTruck.Where(x => x.Date >= startDate.AddDays(21) && x.Date < endDate).ToList();
+                    break;
+            };
 
+            return dumpTruck.Sum(s => (decimal?)s.IdleHour) ?? 0;
         }
-        private decimal GetMachinaryIdle(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetMachinaryIdle(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -182,13 +216,29 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
 
-            return db.MachineryWorkingTimeSheets.Where(x => x.TimeSheetApproved)
-                .Where(x => fleetIds.Contains(x.FleetsID))
-                .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate)
-                .Sum(s => (decimal?)s.IdleHours) ?? 0;
+            var machine = db.MachineryWorkingTimeSheets.Where(x => x.TimeSheetApproved)
+                 .Where(x => fleetIds.Contains(x.FleetsID))
+                 .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate).ToList();
+                
+            switch (week)
+            {
+                case 1:
+                    machine = machine.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    machine = machine.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    machine = machine.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    machine = machine.Where(x => x.Date >= startDate.AddDays(21) && x.Date < endDate).ToList();
+                    break;
+            };
 
+            return machine.Sum(s => (decimal?)s.IdleHours) ?? 0;
         }
-        private decimal GetLightVehicleIdleHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetLightVehicleIdleHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -204,13 +254,29 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
 
-            return db.LightVehicleTimeSheets.Where(x => x.TimeSheetApproved)
-                .Where(x => fleetIds.Contains(x.FleetsID))
-                .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate)
-                .Sum(s => (decimal?)s.IdleHours) ?? 0;
+            var lightVehicle = db.LightVehicleTimeSheets.Where(x => x.TimeSheetApproved)
+                 .Where(x => fleetIds.Contains(x.FleetsID))
+                 .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate).ToList();
+                
 
+            switch (week)
+            {
+                case 1:
+                    lightVehicle = lightVehicle.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    lightVehicle = lightVehicle.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    lightVehicle = lightVehicle.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    lightVehicle = lightVehicle.Where(x => x.Date >= startDate.AddDays(21) && x.Date < endDate).ToList();
+                    break;
+            };
+            return lightVehicle.Sum(s => (decimal?)s.IdleHours) ?? 0;
         }
-        private decimal GetWagonDrillIdleHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetWagonDrillIdleHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -226,17 +292,31 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
 
-            return db.WagonDrillTimesheets.Where(x => x.TimeSheetApproved)
+            var wagon = db.WagonDrillTimesheets.Where(x => x.TimeSheetApproved)
                 .Where(x => fleetIds.Contains(x.FleetsID))
-                .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate)
-                .Sum(s => (decimal?)s.IdleHour) ?? 0;
-
-
+                .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate).ToList();
+                
+            switch (week)
+            {
+                case 1:
+                    wagon = wagon.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    wagon = wagon.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    wagon = wagon.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    wagon = wagon.Where(x => x.Date >= startDate.AddDays(21) && x.Date < endDate).ToList();
+                    break;
+            };
+            return wagon.Sum(s => (decimal?)s.IdleHour) ?? 0;
         }
         #endregion
 
         #region GetDownHour
-        private decimal GetDownHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetDownHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             decimal totalDownHour = 0;
             var equipmentType = db.EquipmentType.Find(equipmentTypeId);
@@ -246,19 +326,19 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 switch (equipmentType.TimeSheetType)
                 {
                     case TimeSheetType.DryLoading:
-                        totalDownHour = GetDryloadDownHour(equipmentTypeId, glPeriodId);
+                        totalDownHour = GetDryloadDownHour(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.DumpTruck:
-                        totalDownHour = GetDumpTruckDownHour(equipmentTypeId, glPeriodId);
+                        totalDownHour = GetDumpTruckDownHour(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.LightVehicle:
-                        totalDownHour = GetLightVehicleDownHour(equipmentTypeId, glPeriodId);
+                        totalDownHour = GetLightVehicleDownHour(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.Machinery:
-                        totalDownHour = GetMachinaryDownHour(equipmentTypeId, glPeriodId);
+                        totalDownHour = GetMachinaryDownHour(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.WagonDrill:
-                        totalDownHour = GetWagonDrillDownHour(equipmentTypeId, glPeriodId);
+                        totalDownHour = GetWagonDrillDownHour(equipmentTypeId, glPeriodId, week);
                         break;
 
                 }
@@ -266,7 +346,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             return totalDownHour;
         }
 
-        private decimal GetDryloadDownHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetDryloadDownHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -280,14 +360,29 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
-            return db.DryLoadingTimeSheets.Where(x => x.TimeSheetApproved)
-                 .Where(dryLoad => fleetIds.Contains(dryLoad.FleetsID))
-                 .Where(dryLoad => DbFunctions.TruncateTime(dryLoad.TripStartDate) >= startDate && DbFunctions.TruncateTime(dryLoad.TripStartDate) <= endDate)
-                .Sum(s => (decimal?)s.Downhour) ?? 0;
-
+            var dryload = db.DryLoadingTimeSheets.Where(x => x.TimeSheetApproved)
+                  .Where(dryLoad => fleetIds.Contains(dryLoad.FleetsID))
+                  .Where(dryLoad => DbFunctions.TruncateTime(dryLoad.TripStartDate) >= startDate && DbFunctions.TruncateTime(dryLoad.TripStartDate) <= endDate).ToList();
+                
+            switch (week)
+            {
+                case 1:
+                    dryload = dryload.Where(x => x.TripStartDate.Date >= startDate && x.TripStartDate.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    dryload = dryload.Where(x => x.TripStartDate.Date >= startDate.AddDays(7) && x.TripStartDate.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    dryload = dryload.Where(x => x.TripStartDate.Date >= startDate.AddDays(14) && x.TripStartDate.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    dryload = dryload.Where(x => x.TripStartDate >= startDate.AddDays(21) && x.TripStartDate.Date < endDate).ToList();
+                    break;
+            };
+            return dryload.Sum(s => (decimal?)s.Downhour) ?? 0;
 
         }
-        private decimal GetDumpTruckDownHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetDumpTruckDownHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -301,13 +396,28 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
-            return db.DumpTruckTimeSheets.Where(x => x.TimeSheetApproved)
+            var dump = db.DumpTruckTimeSheets.Where(x => x.TimeSheetApproved)
                 .Where(dryLoad => fleetIds.Contains(dryLoad.FleetsID))
-                .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate)
-                .Sum(s => (decimal?)s.DownHour) ?? 0;
-
+                .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate).ToList();
+                
+            switch (week)
+            {
+                case 1:
+                    dump = dump.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    dump = dump.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    dump = dump.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    dump = dump.Where(x => x.Date >= startDate.AddDays(21) && x.Date.Date < endDate).ToList();
+                    break;
+            };
+            return dump.Sum(s => (decimal?)s.DownHour) ?? 0;
         }
-        private decimal GetMachinaryDownHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetMachinaryDownHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -321,13 +431,28 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
-            return db.MachineryWorkingTimeSheets.Where(x => x.TimeSheetApproved)
+            var machine = db.MachineryWorkingTimeSheets.Where(x => x.TimeSheetApproved)
                  .Where(x => fleetIds.Contains(x.FleetsID))
-                 .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate)
-                 .Sum(s => (decimal?)s.DownHours) ?? 0;
-
+                 .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate).ToList();
+                 
+            switch (week)
+            {
+                case 1:
+                    machine = machine.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    machine = machine.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    machine = machine.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    machine = machine.Where(x => x.Date >= startDate.AddDays(21) && x.Date.Date < endDate).ToList();
+                    break;
+            };
+            return machine.Sum(s => (decimal?)s.DownHours) ?? 0;
         }
-        private decimal GetLightVehicleDownHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetLightVehicleDownHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -341,13 +466,29 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
-            return db.LightVehicleTimeSheets.Where(x => x.TimeSheetApproved)
+            var lVechile = db.LightVehicleTimeSheets.Where(x => x.TimeSheetApproved)
                 .Where(x => fleetIds.Contains(x.FleetsID))
-                .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate)
-                .Sum(s => (decimal?)s.DownHours) ?? 0;
+                .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate).ToList();
+                
 
+            switch (week)
+            {
+                case 1:
+                    lVechile = lVechile.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    lVechile = lVechile.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    lVechile = lVechile.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    lVechile = lVechile.Where(x => x.Date >= startDate.AddDays(21) && x.Date.Date < endDate).ToList();
+                    break;
+            };
+            return lVechile.Sum(s => (decimal?)s.DownHours) ?? 0;
         }
-        private decimal GetWagonDrillDownHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetWagonDrillDownHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -361,17 +502,33 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
-            return db.WagonDrillTimesheets.Where(x => x.TimeSheetApproved)
+            var wagon = db.WagonDrillTimesheets.Where(x => x.TimeSheetApproved)
                   .Where(x => fleetIds.Contains(x.FleetsID))
-                  .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate)
-                  .Sum(s => (decimal?)s.DownTime) ?? 0;
+                  .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate).ToList();
+                  
 
+            switch (week)
+            {
+                case 1:
+                    wagon = wagon.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    wagon = wagon.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    wagon = wagon.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    wagon = wagon.Where(x => x.Date >= startDate.AddDays(21) && x.Date.Date < endDate).ToList();
+                    break;
+            };
+            return wagon.Sum(s => (decimal?)s.DownTime) ?? 0;
 
         }
         #endregion
 
         #region GetActualQuantity
-        private int GetActualQuantity(Guid equipmentTypeId, int glPeriodId)
+        private int GetActualQuantity(Guid equipmentTypeId, int glPeriodId, int week)
         {
             int quantity = 0;
             var equipmentType = db.EquipmentType.Find(equipmentTypeId);
@@ -381,19 +538,19 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 switch (equipmentType.TimeSheetType)
                 {
                     case TimeSheetType.DryLoading:
-                        quantity = GetDryloadQuantity(equipmentTypeId, glPeriodId);
+                        quantity = GetDryloadQuantity(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.DumpTruck:
-                        quantity = GetDumpTruckQuantity(equipmentTypeId, glPeriodId);
+                        quantity = GetDumpTruckQuantity(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.LightVehicle:
-                        quantity = GetLightVehicleQuantity(equipmentTypeId, glPeriodId);
+                        quantity = GetLightVehicleQuantity(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.Machinery:
-                        quantity = GetMachinaryQuantity(equipmentTypeId, glPeriodId);
+                        quantity = GetMachinaryQuantity(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.WagonDrill:
-                        quantity = GetWagonDrillQuantity(equipmentTypeId, glPeriodId);
+                        quantity = GetWagonDrillQuantity(equipmentTypeId, glPeriodId, week);
                         break;
 
                 }
@@ -401,7 +558,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             return quantity;
         }
 
-        private int GetDryloadQuantity(Guid equipmentTypeId, int glPeriodId)
+        private int GetDryloadQuantity(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -415,15 +572,30 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
-            return db.DryLoadingTimeSheets.Where(x => x.TimeSheetApproved)
+            var dry = db.DryLoadingTimeSheets.Where(x => x.TimeSheetApproved)
                .Where(dryLoad => fleetIds.Contains(dryLoad.FleetsID))
                .Where(dryLoad => DbFunctions.TruncateTime(dryLoad.TripStartDate) >= startDate && DbFunctions.TruncateTime(dryLoad.TripStartDate) <= endDate)
-               .Select(dryLoad => dryLoad.FleetsID)
+               .ToList();
+            switch (week)
+            {
+                case 1:
+                    dry = dry.Where(x => x.TripStartDate.Date >= startDate && x.TripStartDate.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    dry = dry.Where(x => x.TripStartDate.Date >= startDate.AddDays(7) && x.TripStartDate.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    dry = dry.Where(x => x.TripStartDate.Date >= startDate.AddDays(14) && x.TripStartDate.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    dry = dry.Where(x => x.TripStartDate >= startDate.AddDays(21) && x.TripStartDate.Date < endDate).ToList();
+                    break;
+            };
+            return dry.Select(dryLoad => dryLoad.FleetsID)
                 .Distinct()
                 .Count();
-
         }
-        private int GetDumpTruckQuantity(Guid equipmentTypeId, int glPeriodId)
+        private int GetDumpTruckQuantity(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -437,15 +609,30 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
-            return db.DumpTruckTimeSheets.Where(x => x.TimeSheetApproved)
+            var dump = db.DumpTruckTimeSheets.Where(x => x.TimeSheetApproved)
                  .Where(dryLoad => fleetIds.Contains(dryLoad.FleetsID))
-                 .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate)
-                 .Select(dryLoad => dryLoad.FleetsID)
+                 .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate).ToList();
+                 
+            switch (week)
+            {
+                case 1:
+                    dump = dump.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    dump = dump.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    dump = dump.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    dump = dump.Where(x => x.Date >= startDate.AddDays(21) && x.Date.Date < endDate).ToList();
+                    break;
+            };
+            return dump.Select(dryLoad => dryLoad.FleetsID)
                 .Distinct()
                 .Count();
-
         }
-        private int GetMachinaryQuantity(Guid equipmentTypeId, int glPeriodId)
+        private int GetMachinaryQuantity(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -459,15 +646,31 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
-            return db.MachineryWorkingTimeSheets.Where(x => x.TimeSheetApproved)
+            var dump = db.MachineryWorkingTimeSheets.Where(x => x.TimeSheetApproved)
                  .Where(x => fleetIds.Contains(x.FleetsID))
-                 .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate)
-                 .Select(dryLoad => dryLoad.FleetsID)
+                 .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate).ToList();
+                 
+
+            switch (week)
+            {
+                case 1:
+                    dump = dump.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    dump = dump.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    dump = dump.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    dump = dump.Where(x => x.Date >= startDate.AddDays(21) && x.Date.Date < endDate).ToList();
+                    break;
+            };
+            return dump.Select(dryLoad => dryLoad.FleetsID)
                 .Distinct()
                 .Count();
-
         }
-        private int GetLightVehicleQuantity(Guid equipmentTypeId, int glPeriodId)
+        private int GetLightVehicleQuantity(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -481,15 +684,31 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
-            return db.LightVehicleTimeSheets.Where(x => x.TimeSheetApproved)
+            var lv = db.LightVehicleTimeSheets.Where(x => x.TimeSheetApproved)
                 .Where(x => fleetIds.Contains(x.FleetsID))
-                .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate)
-                .Select(dryLoad => dryLoad.FleetsID)
+                .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate).ToList();
+                
+
+            switch (week)
+            {
+                case 1:
+                    lv = lv.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    lv = lv.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    lv = lv.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    lv = lv.Where(x => x.Date >= startDate.AddDays(21) && x.Date.Date < endDate).ToList();
+                    break;
+            };
+            return lv.Select(x => x.FleetsID)
                 .Distinct()
                 .Count();
-
         }
-        private int GetWagonDrillQuantity(Guid equipmentTypeId, int glPeriodId)
+        private int GetWagonDrillQuantity(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -503,10 +722,26 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
-            return db.WagonDrillTimesheets.Where(x => x.TimeSheetApproved)
+            var lv = db.WagonDrillTimesheets.Where(x => x.TimeSheetApproved)
                  .Where(x => fleetIds.Contains(x.FleetsID))
-                 .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate)
-                 .Select(dryLoad => dryLoad.FleetsID)
+                 .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate).ToList();
+                 
+            switch (week)
+            {
+                case 1:
+                    lv = lv.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    lv = lv.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    lv = lv.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    lv = lv.Where(x => x.Date >= startDate.AddDays(21) && x.Date.Date < endDate).ToList();
+                    break;
+            };
+            return lv.Select(x => x.FleetsID)
                 .Distinct()
                 .Count();
 
@@ -515,7 +750,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
 
         #region OpHour
-        private decimal GetActualOperationalHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetActualOperationalHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             decimal opHour = 0;
             var equipmentType = db.EquipmentType.Find(equipmentTypeId);
@@ -525,19 +760,19 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 switch (equipmentType.TimeSheetType)
                 {
                     case TimeSheetType.DryLoading:
-                        opHour = GetDryloadOpHour(equipmentTypeId, glPeriodId);
+                        opHour = GetDryloadOpHour(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.DumpTruck:
-                        opHour = GetDumpTruckOpHour(equipmentTypeId, glPeriodId);
+                        opHour = GetDumpTruckOpHour(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.LightVehicle:
-                        opHour = GetLightVehicleOpHour(equipmentTypeId, glPeriodId);
+                        opHour = GetLightVehicleOpHour(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.Machinery:
-                        opHour = GetMachinaryOpHour(equipmentTypeId, glPeriodId);
+                        opHour = GetMachinaryOpHour(equipmentTypeId, glPeriodId, week);
                         break;
                     case TimeSheetType.WagonDrill:
-                        opHour = GetWagonDrillOpHour(equipmentTypeId, glPeriodId);
+                        opHour = GetWagonDrillOpHour(equipmentTypeId, glPeriodId, week);
                         break;
 
                 }
@@ -545,7 +780,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             return opHour;
         }
 
-        private decimal GetDryloadOpHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetDryloadOpHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -559,15 +794,31 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range and aggregate working hour
-            return db.DryLoadingTimeSheets.Where(x => x.TimeSheetApproved)
+            var dry = db.DryLoadingTimeSheets.Where(x => x.TimeSheetApproved)
                .Where(dryLoad => fleetIds.Contains(dryLoad.FleetsID))
                .Where(dryLoad => DbFunctions.TruncateTime(dryLoad.TripStartDate) >= startDate && DbFunctions.TruncateTime(dryLoad.TripStartDate) <= endDate)
-                                 .Sum(s => (decimal?)s.WorkingHour) ?? 0;
+                          .ToList();       
 
+            switch (week)
+            {
+                case 1:
+                    dry = dry.Where(x => x.TripStartDate.Date >= startDate && x.TripStartDate.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    dry = dry.Where(x => x.TripStartDate.Date >= startDate.AddDays(7) && x.TripStartDate.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    dry = dry.Where(x => x.TripStartDate.Date >= startDate.AddDays(14) && x.TripStartDate.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    dry = dry.Where(x => x.TripStartDate >= startDate.AddDays(21) && x.TripStartDate.Date < endDate).ToList();
+                    break;
+            };
+            return dry.Sum(s => (decimal?)s.WorkingHour) ?? 0;
         }
 
 
-        private decimal GetDumpTruckOpHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetDumpTruckOpHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -581,13 +832,29 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
-            return db.DumpTruckTimeSheets.Where(x => x.TimeSheetApproved)
+            var dry = db.DumpTruckTimeSheets.Where(x => x.TimeSheetApproved)
                  .Where(dryLoad => fleetIds.Contains(dryLoad.FleetsID))
                  .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate)
-                 .Sum(s => (decimal?)s.NetworkingHour) ?? 0;
+                 .ToList();
 
+            switch (week)
+            {
+                case 1:
+                    dry = dry.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    dry = dry.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    dry = dry.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    dry = dry.Where(x => x.Date >= startDate.AddDays(21) && x.Date.Date < endDate).ToList();
+                    break;
+            };
+            return dry.Sum(s => (decimal?)s.NetworkingHour) ?? 0;
         }
-        private decimal GetMachinaryOpHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetMachinaryOpHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -601,13 +868,29 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
-            return db.MachineryWorkingTimeSheets.Where(x => x.TimeSheetApproved)
+            var dry = db.MachineryWorkingTimeSheets.Where(x => x.TimeSheetApproved)
                 .Where(x => fleetIds.Contains(x.FleetsID))
                 .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate).ToList()
-                .Sum(s => CalculateMachineryNetWorkingHour(s));
+                .ToList();
 
+            switch (week)
+            {
+                case 1:
+                    dry = dry.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    dry = dry.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    dry = dry.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    dry = dry.Where(x => x.Date >= startDate.AddDays(21) && x.Date.Date < endDate).ToList();
+                    break;
+            };
+            return dry.Sum(s => CalculateMachineryNetWorkingHour(s));
         }
-        private decimal GetLightVehicleOpHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetLightVehicleOpHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -621,13 +904,29 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
-            return db.LightVehicleTimeSheets.Where(x => x.TimeSheetApproved)
+            var dry = db.LightVehicleTimeSheets.Where(x => x.TimeSheetApproved)
                  .Where(x => fleetIds.Contains(x.FleetsID))
                  .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate).ToList()
-                 .Sum(s => CalculateLightVehicleNetWorkingHour(s));
+                 .ToList();
 
+            switch (week)
+            {
+                case 1:
+                    dry = dry.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    dry = dry.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    dry = dry.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    dry = dry.Where(x => x.Date >= startDate.AddDays(21) && x.Date.Date < endDate).ToList();
+                    break;
+            };
+            return dry.Sum(s => CalculateLightVehicleNetWorkingHour(s));
         }
-        private decimal GetWagonDrillOpHour(Guid equipmentTypeId, int glPeriodId)
+        private decimal GetWagonDrillOpHour(Guid equipmentTypeId, int glPeriodId, int week)
         {
             // Retrieve the GL period from the database
             var glPeriod = db.GLPeriods.Find(glPeriodId);
@@ -641,11 +940,27 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 .ToList();
 
             // Join the DryLoadingTimeSheets with the fleet IDs within the GL period date range
-            return db.WagonDrillTimesheets.Where(x => x.TimeSheetApproved)
+            var dry = db.WagonDrillTimesheets.Where(x => x.TimeSheetApproved)
                  .Where(x => fleetIds.Contains(x.FleetsID))
                  .Where(x => DbFunctions.TruncateTime(x.Date) >= startDate && DbFunctions.TruncateTime(x.Date) <= endDate)
-                 .Sum(s => (decimal?)s.OperationNetWorkingHour) ?? 0;
+                 .ToList();
 
+            switch (week)
+            {
+                case 1:
+                    dry = dry.Where(x => x.Date.Date >= startDate && x.Date.Date < startDate.AddDays(7)).ToList();
+                    break;
+                case 2:
+                    dry = dry.Where(x => x.Date.Date >= startDate.AddDays(7) && x.Date.Date < startDate.AddDays(14)).ToList();
+                    break;
+                case 3:
+                    dry = dry.Where(x => x.Date.Date >= startDate.AddDays(14) && x.Date.Date < startDate.AddDays(21)).ToList();
+                    break;
+                case 4:
+                    dry = dry.Where(x => x.Date >= startDate.AddDays(21) && x.Date.Date < endDate).ToList();
+                    break;
+            };
+            return dry.Sum(s => (decimal?)s.OperationNetWorkingHour) ?? 0;
         }
         #endregion
         private decimal CalculateMachineryNetWorkingHour(MachineryWorkingTimeSheet machineryTimeSheet)

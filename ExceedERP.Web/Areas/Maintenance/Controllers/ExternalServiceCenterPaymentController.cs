@@ -34,7 +34,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 SubTotal = model.SubTotal,
                 Tax = model.Tax,
                 Total = model.Total,
-                UnitPrice = model.UnitPrice
+                UnitPrice = model.UnitPrice,
+                GlTaxRateId = model.GlTaxRateId
             });
             return Json(result);
         }
@@ -43,8 +44,13 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
             ModelState.Clear();
             model.ServiceCenterJobId = scId;
+            var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GlTaxRateId);
+            if (tax == null)
+                ModelState.AddModelError("", "Tax rate needed");
             if (ModelState.IsValid)
             {
+                model.SubTotal = model.UnitPrice * model.Quantity;
+                model.Total = model.SubTotal + model.SubTotal * tax.Rate;
                 
                 db.ExternalServiceCenterPayments.Add(model);
                 db.SaveChanges();
@@ -54,8 +60,14 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         }
         public ActionResult ExternalServiceCenterPayment_Update([DataSourceRequest] DataSourceRequest request, ExternalServiceCenterPayment model)
         {
+            var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GlTaxRateId);
+            if (tax == null)
+                ModelState.AddModelError("", "Tax rate needed");
             if (ModelState.IsValid)
             {
+                model.SubTotal = model.UnitPrice * model.Quantity;
+                model.Total = model.SubTotal + model.SubTotal * tax.Rate;
+
                 db.ExternalServiceCenterPayments.Attach(model);
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();

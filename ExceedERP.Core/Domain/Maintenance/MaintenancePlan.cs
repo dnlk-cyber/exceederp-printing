@@ -16,6 +16,8 @@ namespace ExceedERP.Core.Domain.Maintenance
         public Guid EquipmentCategoryId { get; set; }
         [Display(Name = "Equipment Type")]
         public Guid EquipmentTypeId { get; set; }
+        [Display(Name = "Equipment Name")]
+        
         public int GlFiscalYearId { get; set; } // GlFiscalYear
         public int TotalQuantity { get; set; }
         public decimal AverageAvailableQuantity { get; set; }

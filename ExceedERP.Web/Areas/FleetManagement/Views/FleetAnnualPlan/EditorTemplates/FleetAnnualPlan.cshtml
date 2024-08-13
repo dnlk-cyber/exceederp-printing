@@ -86,7 +86,7 @@
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.GlFiscalYearId)
                                                          .OptionLabel("Select Year")
-                                                         .AutoBind(false)
+                                                         .AutoBind(true)
                                                          .DataValueField("GlFiscalYearId")
                                                          .DataTextField("Name")
                                                          .DataSource(dataSource =>

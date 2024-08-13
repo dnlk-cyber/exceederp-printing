@@ -54,11 +54,27 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
 
             ViewBag.dumpTruck = dumpTruck;
+            RepopulateTimeSheet();
             return View();
         }
 
 
+        public void RepopulateTimeSheet()
+        {
+            var timesheets = db.DumpTruckTimeSheets.ToList();
+            if (timesheets.Any())
+            {
+                foreach (var item in timesheets)
+                {
+                    item.EquipmentCategoryId = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID)?.EquipmentIdentityID;
+                    item.EquipmentTypeId = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID)?.EquipmentTypeID;
+                    item.EquipmentNameId = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID)?.EquipmentNameID;
+                    db.Entry(item).State = EntityState.Modified;
+                }
+                db.SaveChanges();
+            }
 
+        }
         public ActionResult DumpTruckTimeSheets_Read([DataSourceRequest] DataSourceRequest request)
         {
             var dumpTruckTimeSheets = db.DumpTruckTimeSheets;

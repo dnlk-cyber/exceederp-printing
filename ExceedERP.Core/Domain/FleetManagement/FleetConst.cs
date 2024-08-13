@@ -54,7 +54,7 @@ namespace ExceedERP.Core.Domain.FleetManagement
         public const string FleetAccident = "Fleet Accident Report";
         public const string TotalFleetFuelConsumption = "Fleet Fuel Consumption Report";
         public const string FleetAnnualPlanSummary = "Fleet Annual Plan Summary Report";
-        public const string UtilizationSummary = "Utilizaiton Summary Report";
+        public const string UtilizationSummary = "Weekly Utilizaiton Summary Report";
         public const string MonthlyUtilizationSummary = "Monthly Utilizaiton Summary Report"; 
         public const string UtilizationSummaryToDate = "To-Date Utilizaiton Summary Report"; 
     }

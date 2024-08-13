@@ -43,8 +43,10 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
         public ActionResult SparePartStoreRequisitionItems_Read([DataSourceRequest]DataSourceRequest request , int id )
         {
             IQueryable<StoreRequisitionItem> storerequisitionItems = db.StoreRequisitionItems.Where(p => p.StoreRequisitionID == id);
-            DataSourceResult result = storerequisitionItems.ToDataSourceResult(request, storeRequisitionItem => new {
-
+            DataSourceResult result = storerequisitionItems.ToDataSourceResult(request, storeRequisitionItem => new 
+            {
+                
+                AgreementPrice = storeRequisitionItem.AgreementPrice,
                 StoreRequisitionItemID = storeRequisitionItem.StoreRequisitionItemID,
                 StoreRequisitionID = storeRequisitionItem.StoreRequisitionID,
                 ItemCategoryCode = storeRequisitionItem.ItemCategoryCode,
@@ -89,6 +91,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
             {
                 ModelState.AddModelError("exist", "Item " +storeRequisitionItem.ItemCode+" already exists");
             }
+            ModelState.Remove("AgreementPrice");
             if (ModelState.IsValid)
             {
                 var entity = new StoreRequisitionItem
@@ -148,6 +151,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
             {
                 ModelState.AddModelError("exist", "Item " + storeRequisitionItem.ItemCode + " already exists");
             }
+            ModelState.Remove("AgreementPrice");
+            
             if (ModelState.IsValid)
             {
                 var entity = new StoreRequisitionItem
