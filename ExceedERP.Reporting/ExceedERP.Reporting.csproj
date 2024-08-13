@@ -2250,6 +2250,16 @@
     <Compile Include="Fleet\View\WagonDrillTimesheetReport.Designer.cs">
       <DependentUpon>WagonDrillTimesheetReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="Health\DataSource\AccidentObjectDataSource.cs" />
+    <Compile Include="Health\DataSource\MedicalRequestODS.cs" />
+    <Compile Include="Health\Design\MedicalRequestReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Health\Design\MedicalRequestReport.Designer.cs">
+      <DependentUpon>MedicalRequestReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Health\ViewModel\AccidentViewModel.cs" />
+    <Compile Include="Health\ViewModel\MedicalRequestVM.cs" />
     <Compile Include="HelpDesk\DataSource\MaintenanceFormODS.cs" />
     <Compile Include="HelpDesk\Designer\MaintenanceForm.cs">
       <SubType>Component</SubType>
@@ -5450,6 +5460,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\WagonDrillTimesheetReport.resx">
       <DependentUpon>WagonDrillTimesheetReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Health\Design\MedicalRequestReport.am.resx">
+      <DependentUpon>MedicalRequestReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Health\Design\MedicalRequestReport.om.resx">
+      <DependentUpon>MedicalRequestReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Health\Design\MedicalRequestReport.resx">
+      <DependentUpon>MedicalRequestReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HelpDesk\Designer\MaintenanceForm.resx">
       <DependentUpon>MaintenanceForm.cs</DependentUpon>

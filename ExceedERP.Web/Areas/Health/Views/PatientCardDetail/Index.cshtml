@@ -1,0 +1,30 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Health
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Patient Card Detail</legend>
+@(Html.Kendo().Grid<PatientCardDetail>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.PatientId);
+        columns.Bound(c => c.Date);
+        columns.Bound(c => c.DiagnosisTratment);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PatientCardDetailId))
+          .Read(read => read.Action("PatientCardDetail_Read", "PatientCardDetail"))
+          .Create(create => create.Action("PatientCardDetail_Create", "PatientCardDetail"))
+          .Update(update => update.Action("PatientCardDetail_Update", "PatientCardDetail"))
+          .Destroy(destroy => destroy.Action("PatientCardDetail_Destroy", "PatientCardDetail"))
+      )
+)

@@ -1,0 +1,393 @@
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Insurance.InsuranceNew
+@using ExceedERP.Web.Areas.Insurance.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Insurance Policy Renewals</legend>
+@(Html.Kendo().Grid<InsurancePolicyRenewal>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+
+            columns.Bound(c => c.InsurancePolicyRenewalId).Title("#").Width(60);
+
+            columns.ForeignKey(c => c.EmployeeId, (IEnumerable<EmployeeViewModel>)ViewData["personEmployees"], "EmployeeId", "FullName")
+                .EditorTemplateName("ActiveEmployees")
+                .Filterable(ftb => ftb.Multi(true).Search(true))
+                .Width(200);
+
+            columns.ForeignKey(c => c.OrgStructureId, (IEnumerable<OrgStructureViewModel>)ViewData["workUnit"], "OrgStructureId", "Name")
+                .Filterable(ftb => ftb.Multi(true).Search(true))
+                .Width(120);
+
+            columns.ForeignKey(c => c.BranchId, (IEnumerable<BranchViewModel>)ViewData["branch"], "BranchId", "Name")
+                .Filterable(ftb => ftb.Multi(true).Search(true))
+                .Width(120);
+
+            columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable<BusinessUnitViewModel>)ViewData["businessUnit"], "BusinessUnitId", "Name")
+                .Filterable(ftb => ftb.Multi(true).Search(true))
+                .Width(120);
+
+            columns.Bound(c => c.ResponsibilityLevel)
+                .Filterable(ftb => ftb.Multi(true).Search(true))
+                .Width(200);
+
+            columns.Bound(c => c.EmployementType)
+                .Filterable(ftb => ftb.Multi(true).Search(true))
+                .Width(200);
+
+            columns.Bound(c => c.Remark).Width(120);
+            columns.Bound(c => c.Description).Width(100);
+            columns.Command(command =>
+            {
+                command.Edit().UpdateText("save").CancelText("Cancel").Text("Edit");
+                command.Destroy().Text("Delete");
+
+            }).Title("Action").Width(200);
+
+
+
+        })
+        .ToolBar(toolbar =>
+        {
+            //toolbar.Create();
+
+
+        })
+            //.Editable(editable => editable.Mode(GridEditMode.PopUp)
+            //  .TemplateName("ServiceRequestTemplate")
+            //  .Window(win => win.Title("General service works request form").Width(800)))
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+             .Pageable()
+            .Filterable()
+             .Events(ev =>
+             {
+                 ev.DetailExpand("onDetailExpandUser");
+                 ev.DataBound("onDataBound");
+
+             })
+            .Scrollable(s => s.Height(550))
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .Model(model =>
+                {
+                    model.Id(p => p.InsurancePolicyRenewalId);
+                    //  model.Field(p => p.EmployeeId).Editable(false);
+                    model.Field(p => p.InsurancePolicyRenewalId).Editable(false);
+                    model.Field(p => p.BranchId).Editable(false);
+                    model.Field(p => p.BusinessUnitId).Editable(false);
+
+                })
+                .Events(ev => ev
+                .Error("error_handler(\"grid\")")
+                .RequestStart("onRequestStart(\"grid\")")
+                .RequestEnd("onRequestEnd(\"grid\")"))
+                .Read(read => read.Action("InsurancePolicyRenewals_Read", "InsurancePolicyRenewals"))
+                .Create(create => create.Action("InsurancePolicyRenewals_Create", "InsurancePolicyRenewals"))
+                .Update(update => update.Action("InsurancePolicyRenewals_Update", "InsurancePolicyRenewals"))
+                .Destroy(destroy => destroy.Action("InsurancePolicyRenewals_Destroy", "InsurancePolicyRenewals"))
+            ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=InsurancePolicyRenewalId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+
+          items.Add().Text("Attachments").Content(
+          @<text>
+
+            <button onclick='UploadFile(#=InsurancePolicyRenewalId#)' class='fa fa-upload btn btn-primary'>&nbsp;Upload </button>
+
+            @(Html.Kendo().Grid<MedicalExpenseRefundAttachment>()
+                .Name("MedicalAttachmentGrid#=InsurancePolicyRenewalId#")
+                .Columns(columns =>
+                {
+
+                    columns.Bound(c => c.FileName).ClientTemplate("<a href='/Insurance/MedicalExpenseRefundAttachments/DownloadAttachment?medicalAttachmentId=\\#=MedicalExpenseRefundAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+
+                    columns.Template(e => { }).ClientTemplate("<a href='/Insurance/MedicalExpenseRefundAttachments/DownloadAttachment?medicalAttachmentId=\\#=MedicalExpenseRefundAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
+                    columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+
+                    columns.Command(command =>
+                    {
+                        command.Destroy().Text("Delete");
+                    }).Width(300);
+                    
+
+                })
+                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument")
+                .Window(window =>
+                {
+                    window.Title("");
+                    window.Scrollable(false);
+
+
+
+
+                }))
+                .Scrollable(h => h.Height("auto"))
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .Sort(sort => sort.Add(c => c.MedicalExpenseRefundAttachmentId).Descending())
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"MedicalAttachmentGrid#=InsurancePolicyRenewalId#\")");
+                    events.RequestStart("onRequestStart(\"MedicalAttachmentGrid#=InsurancePolicyRenewalId#\")");
+                    events.RequestEnd("onRequestEnd(\"MedicalAttachmentGrid#=InsurancePolicyRenewalId#\")");
+
+
+
+                })
+                .Model(model => model.Id(p => p.MedicalExpenseRefundAttachmentId))
+                .Read(read => read.Action("MedicalExpenseRefundAttachments_Read", "MedicalExpenseRefundAttachments", new { id = "#=InsurancePolicyRenewalId#", area = "Insurance" }))
+                .Create(create => create.Action("MedicalExpenseRefundAttachments_Create", "MedicalExpenseRefundAttachments", new { id = "#=InsurancePolicyRenewalId#", area = "Insurance" }))
+                .Update(update => update.Action("MedicalExpenseRefundAttachments_Update", "MedicalExpenseRefundAttachments"))
+                .Destroy(destroy => destroy.Action("MedicalExpenseRefundAttachments_Destroy", "MedicalExpenseRefundAttachments"))
+                ).ToClientTemplate())
+
+                  </text>);
+                items.Add().Text("Department Validation").Content(
+                @<text>
+                    @(Html.Kendo().Grid<MedicalExpenseRefundDepartmentApproval>()
+                        .Name("MedicalExpenseRefundDepartmentApprovalgrid_#=EmployeeMedicalExpenseRefundId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.Status).Width(150);
+                            columns.Bound(c => c.Remark).Width(150);
+                            columns.Command(command =>
+                            {
+                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                command.Destroy().Text(Resources.ActionButton_Cancel);
+
+
+                            });
+
+
+
+
+                        })
+                        .ToolBar(toolbar =>
+                        {
+
+                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable(h => h.Height(500))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Events(events =>
+                            {
+
+                                events.Error("error_handler(\"MedicalExpenseRefundDepartmentApprovalgrid_#=InsurancePolicyRenewalId#\")");
+                                events.RequestStart("onRequestStart(\"MedicalExpenseRefundDepartmentApprovalgrid_#=InsurancePolicyRenewalId#\")");
+                                events.RequestEnd("onRequestEnd(\"MedicalExpenseRefundDepartmentApprovalgrid_#=InsurancePolicyRenewalId#\")");
+
+
+
+
+                            })
+                            .Model(model =>
+                            {
+                                model.Id(p => p.MedicalExpenseRefundDepartmentApprovalId);
+
+
+                            })
+                            .Read(read => read.Action("MedicalExpenseRefundDepartmentValidation_Read", "MedicalExpenseRefundDepartmentValidation", new { id = "#=InsurancePolicyRenewalId#" }))
+                            .Create(create => create.Action("MedicalExpenseRefundDepartmentValidation_Create", "MedicalExpenseRefundDepartmentValidation", new { id = "#=InsurancePolicyRenewalId#" }))
+                            .Update(update => update.Action("MedicalExpenseRefundDepartmentValidation_Update", "MedicalExpenseRefundDepartmentValidation"))
+                            .Destroy(destroy => destroy.Action("MedicalExpenseRefundDepartmentValidation_Destroy", "MedicalExpenseRefundDepartmentValidation"))
+                        ).ToClientTemplate()
+                )
+
+               </text>);
+               items.Add().Text("Insurance Validation").Content(
+                @<text>
+                @(Html.Kendo().Grid<MedicalExpenseRefundApproval>()
+                    .Name("MedicalExpenseRefundApprovalgrid_#=InsurancePolicyRenewalId#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.Status).Width(150);
+                        columns.Bound(c => c.Remark).Width(150);
+                        columns.Command(command =>
+                        {
+                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                            command.Destroy().Text(Resources.ActionButton_Cancel);
+
+
+                        });
+
+
+
+
+                    })
+                    .ToolBar(toolbar =>
+                    {
+
+                        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+
+
+
+
+                    })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable(h => h.Height(500))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Events(events =>
+                            {
+
+                                    events.Error("error_handler(\"MedicalExpenseRefundApprovalgrid_#=InsurancePolicyRenewalId#\")");
+                                    events.RequestStart("onRequestStart(\"MedicalExpenseRefundApprovalgrid_#=InsurancePolicyRenewalId#\")");
+                                    events.RequestEnd("onRequestEnd(\"MedicalExpenseRefundApprovalgrid_#=InsurancePolicyRenewalId#\")");
+
+
+
+                                })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.MedicalExpenseRefundApprovalId);
+
+
+                                })
+                                .Read(read => read.Action("MedicalExpenseRefundValidation_Read", "MedicalExpenseRefundValidation", new { id = "#=InsurancePolicyRenewalId#" }))
+                                .Create(create => create.Action("MedicalExpenseRefundValidation_Create", "MedicalExpenseRefundValidation", new { id = "#=InsurancePolicyRenewalId#" }))
+                                .Update(update => update.Action("MedicalExpenseRefundValidation_Update", "MedicalExpenseRefundValidation"))
+                                .Destroy(destroy => destroy.Action("MedicalExpenseRefundValidation_Destroy", "MedicalExpenseRefundValidation"))
+                            ).ToClientTemplate()
+
+                         )
+
+                 </text>);
+                }).ToClientTemplate())
+</script>
+@(Html.Kendo().Window()
+        .Name("UploadDoc")
+        .Title("Upload File")
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(400).Content(
+        @<text>
+            <div class="form-group">
+                <form action="@Url.Action("UploadIncomingMedicalFiles", "MedicalExpenseRefundAttachments", new { })" method="post" , new { enctype="multipart/form-data" }>
+                    <input type="hidden" name="masterId" id="masterId">
+                    <div class="row">
+                        <div class="col-md-10">
+                            @Html.TextBox("file", "", new { type = "file", required = "true" })
+                            <br />
+                        </div>
+                    </div>
+                    <div>
+                        <div class="editor-field">
+                            <label>Description</label>
+                            @Html.TextArea("Description", null, new { placeholder = "Description", style = "width: 90%; max-width: 90%;height:60%" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-7"></div>
+                        <input type="submit" class="btn-primary k-button" value=" Submit " />
+                    </div>
+
+                </form>
+                <div class="pull-right">
+
+                </div>
+            </div>
+        </text>)
+)
+<script>
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.InsurancePolicyRenewalId;
+        var gridName = "#MedicalExpenseRefundApprovalgrid_" + masterId;
+       
+        if (masterDataItem.IsDepartmentOnlineApproved) {
+            $(gridName).find(".k-toolbar").show();
+            $(".k-grid-top", gridName).show();
+            $(".k-grid-edit", gridName).show();
+            $(".k-grid-delete", gridName).hide();
+            
+        }
+        if (masterDataItem.IsOnlineApproved) {
+            $(gridName).find(".k-toolbar").hide(); //hide toolbar
+            $(".k-grid-top", gridName).hide();
+            $(".k-grid-edit", gridName).hide();
+            $(".k-grid-delete", gridName).hide();
+          
+        }
+        else {
+            $(gridName).find(".k-toolbar").show(); //hide toolbar
+            $(".k-grid-top", gridName).show();
+            $(".k-grid-edit", gridName).show();
+            $(".k-grid-delete", gridName).hide();
+            //$(".k-grid-edit", gridNameMaster).show();
+            //$(".k-grid-delete", gridNameMaster).hide();
+        }
+
+
+    }
+
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsDepartmentOnlineApproved ) {
+
+                row.find(".k-grid-delete").remove();
+                $(".k-grid-top").show();
+
+            }
+            if ( dataItem.IsOnlineApproved) {
+
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+                $(".k-grid-top").show();
+
+            }
+            else {
+
+                row.find(".k-grid-delete").remove();
+
+            }
+
+
+        }
+    }
+
+
+
+</script>
+<script>
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    //function filterAssignEmployees() {
+    //    return {
+    //        text: $("#ServiceProviderEmployeeId").data("kendoDropDownList").filterInput.val(),
+    //    }
+    //}
+    function UploadFile(id) {
+        $("#masterId").val(id);
+        var wnd = $("#UploadDoc").data("kendoWindow");
+        wnd.center().open();
+    }
+
+</script>

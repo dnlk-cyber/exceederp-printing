@@ -1,0 +1,185 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization 
+@using ExceedERP.Core.Domain.Health
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Laboratory Setting</legend>
+
+@(Html.Kendo().Grid<LaboratoryCatagory>()
+                  .Name("LaboratoryCatagorygrid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.Catagory).Width(120);
+
+                  columns.Command(command => {
+                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                      command.Destroy();
+                  }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+                         .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("setting").Window(window => { window.Title("Laboratory Setting"); window.Scrollable(false); }))
+        .Scrollable(h => h.Height(500))
+                     .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                  .Filterable()
+                     .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Events(events =>
+                   {
+                       events.Error("error_handler(\"LaboratoryCatagorygrid\")");
+                       events.RequestStart("onRequestStart(\"LaboratoryCatagorygrid\")");
+                       events.RequestEnd("onRequestEnd(\"LaboratoryCatagorygrid\")");
+                   })
+
+              .Model(model => model.Id(p => p.LaboratoryCatagoryId))
+          .Read(read => read.Action("LaboratorySetting_Read", "LaboratorySetting"))
+          .Create(create => create.Action("LaboratorySetting_Create", "LaboratorySetting"))
+          .Update(update => update.Action("LaboratorySetting_Update", "LaboratorySetting"))
+          .Destroy(destroy => destroy.Action("LaboratorySetting_Destroy", "LaboratorySetting"))
+          ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                 .Name("tabstrip_#=LaboratoryCatagoryId#")
+                  .SelectedIndex(0)
+                  .Items(items =>
+                  {
+                      items.Add().Text("Tests").Content(
+                        @<text>
+                            @*<legend>Referral Sheet</legend>*@
+                            @(Html.Kendo().Grid<LaboratoryTests>()
+                                           .Name("LaboratoryTestsGrid_#=LaboratoryCatagoryId#")
+                       .Columns(columns =>
+                       {
+                           columns.Bound(c => c.Test);
+                           columns.Bound(c => c.Reference);
+                           columns.Bound(c => c.Result);
+                           columns.Command(command =>
+                           {
+                               
+                                   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              
+                                   command.Destroy().Text(Resources.ActionButton_Cancel);
+                               
+                           }).Width(200);
+                       })
+                       .ToolBar(toolbar =>
+                       {
+                           
+
+                               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                           
+                       })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("ReferralSheet").Window(window => { window.Title(""); window.Scrollable(false); }))
+                        .Scrollable(h => h.Height(300))
+                       //   .Groupable()
+                       //            .Sortable(sortable =>
+                       //            {
+                       //                sortable.SortMode(GridSortMode.SingleColumn);
+                       //            })
+                       //.Filterable()
+                       //   .Pageable(pageable => pageable
+                       //                              .Input(true)
+                       //                              .Numeric(false)
+                       //                              .Refresh(true)
+                       //                              .PageSizes(true)
+                       //                              .ButtonCount(5))
+                       //.Events(x =>
+                       //       {
+                       //           x.Save("GetDate");
+                       //           x.Edit("GetDate");
+                       //       })
+                       .DataSource(dataSource => dataSource
+                           .Ajax()
+                                       .Events(events =>
+                                       {
+                                           events.Error("error_handler(\"LaboratoryTestsGrid_#=LaboratoryCatagoryId#\")");
+                                           events.RequestStart("onRequestStart(\"LaboratoryTestsGrid_#=LaboratoryCatagoryId#\")");
+                                           events.RequestEnd("onRequestEnd(\"LaboratoryTestsGrid_#=LaboratoryCatagoryId#\")");
+                                       })
+
+                           .Model(model => model.Id(p => p.LaboratoryTestsId))
+                                           .Read(read => read.Action("LaboratoryTest_Read", "LaboratoryTest", new { id = "#=LaboratoryCatagoryId#" }))
+                                           .Create(create => create.Action("LaboratoryTest_Create", "LaboratoryTest", new { id = "#=LaboratoryCatagoryId#" }))
+                           .Update(update => update.Action("LaboratoryTest_Update", "LaboratoryTest"))
+                           .Destroy(destroy => destroy.Action("LaboratoryTest_Destroy", "LaboratoryTest"))
+                       ).ToClientTemplate()
+                            )
+
+                            @*<a href='@Url.Action("ReferalSheet", "PrintableLetter")/?id=#=PatientId#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
+                        </text>
+
+
+                                  );
+                          }).ToClientTemplate())
+</script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+
+</script>
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "ReferralSheet")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

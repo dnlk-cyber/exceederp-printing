@@ -1,0 +1,71 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Insurance.Setting
+@using ExceedERP.Core.Localization 
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.Nav_Employee_Insurance @Resources.NavigatorReport_Detail_InsurancePayment @Resources.Settings</legend>
+@(Html.Kendo().Grid<InsurancePaymentSetting>()
+          .Name("InsuranceSettinggrid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.InsurancePaymentSettingId).Title("S.N").Width(80);
+              columns.Bound(c => c.BenefitType);
+              columns.Bound(c => c.EmployeeType);
+              columns.Bound(c => c.PaymentAmount);
+              columns.Bound(c => c.Level);
+              columns.Bound(c => c.CurrentValue);
+              columns.Bound(c => c.Remark);
+              columns.Command(command => {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }).Width(200);
+          })
+          .ToolBar(toolbar => {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+          .Filterable()
+          .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+               {
+
+                   events.Error("error_handler(\"InsuranceSettinggrid\")");
+                   events.RequestStart("onRequestStart(\"InsuranceSettinggrid\")");
+                   events.RequestEnd("onRequestEnd(\"InsuranceSettinggrid\")");
+               })
+
+          .Model(model => {
+              model.Id(p => p.InsurancePaymentSettingId);
+              model.Field(p => p.InsurancePaymentSettingId).Editable(false);
+              model.Field(p => p.PaymentAmount).DefaultValue(0);
+              model.Field(p => p.Level).DefaultValue(-1);
+              model.Field(p => p.EmployeeType).DefaultValue(-1);
+
+          })
+          .Read(read => read.Action("InsurancePaymentSettings_Read", "InsurancePaymentSettings"))
+          .Create(create => create.Action("InsurancePaymentSettings_Create", "InsurancePaymentSettings"))
+          .Update(update => update.Action("InsurancePaymentSettings_Update", "InsurancePaymentSettings"))
+          .Destroy(destroy => destroy.Action("InsurancePaymentSettings_Destroy", "InsurancePaymentSettings"))
+      )
+)
+<script>
+  
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+
+<script>
+   
+</script>

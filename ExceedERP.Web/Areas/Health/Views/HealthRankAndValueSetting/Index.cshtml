@@ -1,0 +1,309 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.Health
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*<legend>Health Setting</legend>*@
+@(Html.Kendo().TabStrip()
+          .Name("SettingTabStrip")
+          .Animation(animation =>
+          animation.Open(effect =>
+          effect.Fade(FadeDirection.In)))
+          .Items(tabstrip =>
+          {
+              tabstrip.Add()
+                      .Text("Health Setting By Rank")
+                      .Selected(true)
+                      .Content(@<text>
+           @(Html.Kendo().Grid<HealthRankAndValueSetting>()
+          .Name("HealthSettinggrid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["Rank"], "RankId", "RankName").Width(200);
+              columns.Bound(c => c.CurrentValue).Width(100);
+              columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .Selectable(selectable =>
+         {
+             selectable.Mode(GridSelectionMode.Single);
+             selectable.Type(GridSelectionType.Row);
+         })
+            
+             .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                   .Input(true)
+                   .Numeric(false)
+                   .Refresh(true)
+                   .PageSizes(true)
+                   .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+               {
+                   events.Error("error_handler(\"HealthSettinggrid\")");
+                   events.RequestStart("onRequestStart(\"HealthSettinggrid\")");
+                   events.RequestEnd("onRequestEnd(\"HealthSettinggrid\")");
+               })
+
+          .Model(model => model.Id(p => p.HealthRankAndValueSettingId))
+          .Read(read => read.Action("HealthRankAndValueSetting_Read", "HealthRankAndValueSetting"))
+          .Create(create => create.Action("HealthRankAndValueSetting_Create", "HealthRankAndValueSetting"))
+          .Update(update => update.Action("HealthRankAndValueSetting_Update", "HealthRankAndValueSetting"))
+          .Destroy(destroy => destroy.Action("HealthRankAndValueSetting_Destroy", "HealthRankAndValueSetting"))
+          )
+)
+)
+                    </text>);
+
+tabstrip.Add()
+.Text("Health Setting By Responsiblity Level")
+.Content(@<text>
+    @(Html.Kendo().Grid<HealthResponsiblityLevelValueSetting>()
+    .Name("Responsiblitylevelrid")
+    .Columns(columns =>
+    {
+        columns.Bound(c => c.Level).Width(200);
+        columns.Bound(c => c.CurrentValue).Width(200);
+        columns.Command(command =>
+        {
+           
+         command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+         command.Destroy().Text(Resources.ActionButton_Cancel);//
+            
+        });
+    })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Scrollable(h => h.Height(500))
+      .Sortable(sortable =>
+       {
+           sortable.SortMode(GridSortMode.SingleColumn);
+       })
+       .Filterable()
+       .Pageable(pageable => pageable
+       .Input(true)
+       .Numeric(false)
+       .Refresh(true)
+       .PageSizes(true)
+       .ButtonCount(5))
+         .DataSource(dataSource => dataSource
+             .Ajax()
+                 .Events(events =>
+                 {
+                     events.Error("error_handler(\"Responsiblitylevelrid\")");
+                     events.RequestStart("onRequestStart(\"Responsiblitylevelrid\")");
+                     events.RequestEnd("onRequestEnd(\"Responsiblitylevelrid\")");
+                 })
+
+            .Model(model => model.Id(p => p.HealthResponsiblityLevelValueSettingId))
+            .Read(read => read.Action("HealthResponsiblityLevelValueSettings_Read", "HealthResponsiblityLevelValueSettings"))
+            .Create(create => create.Action("HealthResponsiblityLevelValueSettings_Create", "HealthResponsiblityLevelValueSettings"))
+            .Update(update => update.Action("HealthResponsiblityLevelValueSettings_Update", "HealthResponsiblityLevelValueSettings"))
+            .Destroy(destroy => destroy.Action("HealthResponsiblityLevelValueSettings_Destroy", "HealthResponsiblityLevelValueSettings"))
+             )
+                        )
+</text>);
+
+ tabstrip.Add()
+    .Text("Payment Coverage Setting")
+    .Selected(true)
+    .Content(@<text>
+           @(Html.Kendo().Grid<PaymentCoverageSetting>()
+                  .Name("PaymentCoverageSettinggrid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.Payment).Width(200);
+                      columns.Bound(c => c.Description).Width(150);
+                      columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+                  })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Selectable(selectable =>
+                    {
+                        selectable.Mode(GridSelectionMode.Single);
+                        selectable.Type(GridSelectionType.Row);
+
+                    })
+
+                    .Scrollable(h => h.Height(500))
+                    .Groupable()
+                    .Sortable(sortable =>
+                    {
+                        sortable.SortMode(GridSortMode.SingleColumn);
+
+                    })
+                    .Filterable()
+                    .Pageable(pageable => pageable
+                       .Input(true)
+                       .Numeric(false)
+                       .Refresh(true)
+                       .PageSizes(true)
+                       .ButtonCount(5))
+                    .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(events =>
+                          {
+                              events.Error("error_handler(\"PaymentCoverageSettinggrid\")");
+                              events.RequestStart("onRequestStart(\"PaymentCoverageSettinggrid\")");
+                              events.RequestEnd("onRequestEnd(\"PaymentCoverageSettinggrid\")");
+
+                          })
+
+                            .Model(model => model.Id(p => p.PaymentCoverageSettingId))
+                            .Read(read => read.Action("PaymentCoverageSettings_Read", "PaymentCoverageSettings"))
+                            .Create(create => create.Action("PaymentCoverageSettings_Create", "PaymentCoverageSettings"))
+                            .Update(update => update.Action("PaymentCoverageSettings_Update", "PaymentCoverageSettings"))
+                            .Destroy(destroy => destroy.Action("PaymentCoverageSettings_Destroy", "PaymentCoverageSettings"))
+                            )
+)
+)
+                    </text>);
+   tabstrip.Add()
+    .Text(" Health Benefit Settings")
+    .Content(@<text>
+        @(Html.Kendo().Grid<HealthBenefitSetting>()
+        .Name("HealthBenefitSettingsgrid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.BenefitType).EditorTemplateName("BenefitType").Width(140);
+            columns.Bound(c => c.BenfitValue).Width(200);
+            columns.Bound(c => c.Description).Width(120);
+            columns.Command(command =>
+            {
+
+                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                command.Destroy().Text(Resources.ActionButton_Cancel);//
+
+            });
+        })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Selectable(selectable =>
+          {
+              selectable.Mode(GridSelectionMode.Single);
+              selectable.Type(GridSelectionType.Row);
+          })
+          .Scrollable(h => h.Height(500))
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+           .Filterable()
+           .Pageable(pageable => pageable
+           .Input(true)
+           .Numeric(false)
+           .Refresh(true)
+           .PageSizes(true)
+           .ButtonCount(5))
+           .DataSource(dataSource => dataSource
+                 .Ajax()
+                 .Events(events =>
+                 {
+                     events.Error("error_handler(\"HealthBenefitSettingsgrid\")");
+                     events.RequestStart("onRequestStart(\"HealthBenefitSettingsgrid\")");
+                     events.RequestEnd("onRequestEnd(\"HealthBenefitSettingsgrid\")");
+
+                 })
+
+                .Model(model => model.Id(p => p.HealthBenefitSettingId))
+                .Read(read => read.Action("HealthBenefitSettings_Read", "HealthBenefitSettings"))
+                .Create(create => create.Action("HealthBenefitSettings_Create", "HealthBenefitSettings"))
+                .Update(update => update.Action("HealthBenefitSettings_Update", "HealthBenefitSettings"))
+                .Destroy(destroy => destroy.Action("HealthBenefitSettings_Destroy", "HealthBenefitSettings"))
+                 )
+                            )
+    </text>);
+
+        tabstrip.Add()
+        .Text(" Health Expense & Tax Setting")
+        .Content(@<text>
+            @(Html.Kendo().Grid<HealthExpenseAndTaxSetting>()
+            .Name("HealthExpenseAndTaxSettinggrid")
+            .Columns(columns =>
+            {
+                columns.ForeignKey(c => c.ApSetupItemId,(IEnumerable)ViewData["ApSetupItem"], "ApSetupItemId","Name").EditorTemplateName("ApSetupItem").Width(200);
+                columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["TaxRate"], "GLTaxRateID", "TaxName").EditorTemplateName("TaxRate").Width(200);
+                columns.Bound(c => c.Description).Width(120);
+                columns.Command(command =>
+                {
+
+                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                    command.Destroy().Text(Resources.ActionButton_Cancel);//
+
+                });
+            })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Selectable(selectable =>
+              {
+                  selectable.Mode(GridSelectionMode.Single);
+                  selectable.Type(GridSelectionType.Row);
+              })
+              .Scrollable(h => h.Height(500))
+              .Sortable(sortable =>
+              {
+                  sortable.SortMode(GridSortMode.SingleColumn);
+              })
+               .Filterable()
+               .Pageable(pageable => pageable
+               .Input(true)
+               .Numeric(false)
+               .Refresh(true)
+               .PageSizes(true)
+               .ButtonCount(5))
+                 .DataSource(dataSource => dataSource
+                     .Ajax()
+                         .Events(events =>
+                         {
+                             events.Error("error_handler(\"HealthExpenseAndTaxSettinggrid\")");
+                             events.RequestStart("onRequestStart(\"HealthExpenseAndTaxSettinggrid\")");
+                             events.RequestEnd("onRequestEnd(\"HealthExpenseAndTaxSettinggrid\")");
+                         })
+
+                    .Model(model => model.Id(p => p.HealthExpenseAndTaxSettingId))
+                    .Read(read => read.Action("HealthExpenseAndTaxSettings_Read", "HealthExpenseAndTaxSettings"))
+                    .Create(create => create.Action("HealthExpenseAndTaxSettings_Create", "HealthExpenseAndTaxSettings"))
+                    .Update(update => update.Action("HealthExpenseAndTaxSettings_Update", "HealthExpenseAndTaxSettings"))
+                    .Destroy(destroy => destroy.Action("HealthExpenseAndTaxSettings_Destroy", "HealthExpenseAndTaxSettings"))
+                     )
+                                )
+        </text>);
+})
+)
+
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

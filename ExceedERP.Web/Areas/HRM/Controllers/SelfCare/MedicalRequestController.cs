@@ -18,6 +18,7 @@ using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Hubs;
+using ExceedERP.Core.Domain.Health;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {

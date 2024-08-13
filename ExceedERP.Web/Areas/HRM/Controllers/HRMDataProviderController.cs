@@ -27,7 +27,7 @@ using ExceedERP.Core.Domain.Archive;
 using ExceedERP.Core.Domain.Finance;
 using DocumentFormat.OpenXml.Drawing;
 using System.Data.Entity;
-using ExceedERP.Core.Domain.HRM.HealthAndInsurance;
+using ExceedERP.Core.Domain.Insurance;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers
 {

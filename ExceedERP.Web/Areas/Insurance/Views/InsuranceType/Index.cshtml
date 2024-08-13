@@ -1,0 +1,33 @@
+﻿@using ExceedERP.Core.Localization
+@using  System.Collections
+@using ExceedERP.Core.Domain.Insurance
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Insurance.InsuranceType>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["insuranceTypes"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+              //columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["InsuranceType"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+              columns.Bound(c => c.InsuranceTypeGroup);
+              columns.Bound(c => c.Name);
+              columns.Bound(c => c.Remark);
+              columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(model => model.Id(p => p.InsuranceTypeId))
+              .Read(read => read.Action("InsuranceType_Read", "InsuranceType"))
+              .Create(create => create.Action("InsuranceType_Create", "InsuranceType"))
+              .Update(update => update.Action("InsuranceType_Update", "InsuranceType"))
+              .Destroy(destroy => destroy.Action("InsuranceType_Destroy", "InsuranceType"))
+          )
+)

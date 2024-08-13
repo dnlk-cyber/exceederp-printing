@@ -1,0 +1,24 @@
+﻿using ExceedERP.Core.Domain.Common;
+using System.ComponentModel.DataAnnotations;
+
+
+namespace ExceedERP.Core.Domain.Insurance
+{
+    public class InsuranceCategory : TrackUserOperation
+    {
+        [Key]
+        public int InsuranceCategoryId { get; set; }
+        [Required]
+        [Display(Name = "HR_HealthAndInsurance_InsuranceCategory_Name", ResourceType = typeof(Localization.Resources))]
+        public string Name { get; set; }
+        //[Required]
+        [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
+        public string Remark { get; set; }
+
+        [Required]
+        [Display(Name = "HR_HealthAndInsurance_InsuranceCategory_Name", ResourceType = typeof(Localization.Resources))]
+        public int InsuranceTypeId { get; set; }
+        public virtual InsuranceType InsuranceType { get; set; }
+
+    }
+}

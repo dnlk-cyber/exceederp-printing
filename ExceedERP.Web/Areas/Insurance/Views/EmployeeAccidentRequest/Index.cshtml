@@ -1,0 +1,322 @@
+﻿@model ExceedERP.Core.Domain.Insurance.EmployeeAccident
+@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Employee Accident Request</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Insurance.EmployeeAccident>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Name"], "EmployeeId", "FullNameaEnglish").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+            columns.Bound(c => c.DailyLabour).Width(160);
+            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+            //columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Workunit"], "OrgStructureId", "Name").Width(120);
+            //columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Jobtitle"], "LookupId", "Description").Width(120);
+            columns.Bound(c => c.BirthDate).Width(120);
+            columns.Bound(c => c.Salary).Width(120);
+            columns.Bound(c => c.EmployeementType).Width(120);
+            columns.Bound(c => c.Description).Width(120);
+            columns.Bound(c => c.AccidentDateAmh).EditorTemplateName("Calander").Width(120);
+            //columns.Bound(c => c.AccidentDate).Width(120);
+            columns.Bound(c => c.AccidentTime).Width(120);
+            columns.Bound(c => c.IsAtWorkPlace).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsAtWorkPlace ? checked='checked' :'' # >").Width(120);
+            columns.Bound(c => c.IsOnDuety).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsOnDuety ? checked='checked' :'' # >").Width(120);
+            columns.Bound(c => c.Witness).Width(120);
+
+            columns.Command(command =>
+            {
+
+
+                //command.Custom("").Text("Send For Approval").Click("sendforapproval");
+                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+                command.Destroy().Text(Resources.ActionButton_Cancel);
+
+            }).Width(300);
+
+        })
+
+        .ToolBar(toolbar =>
+        {
+
+
+        toolbar.Template(@<text>
+
+                @if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                {
+
+                    @item.CreateButton()
+
+                }
+
+        </text>);
+
+
+        })
+              .Events(ev =>
+              {
+                  ev.Edit("onEditBound");
+                  ev.DataBound("onDataBound");
+                  ev.DetailExpand("onDetailExpand");
+              })
+               .Events(x =>
+               {
+                   x.Edit("GetDate");
+                   x.Save("GetDate");
+               })
+              .Editable(editable =>
+              {
+                  editable.Mode(GridEditMode.PopUp).TemplateName("EmployeeAccident");//.Window(x => x.Title("Accident Registration "));
+                  editable.DisplayDeleteConfirmation("Are You Sure To Remove Accident");
+              })
+           .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                             .Scrollable(h => h.Height(500))
+      //  .ClientDetailTemplateId("template")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .AutoSync(false)
+          .ServerOperation(false)
+          .Sort(sort=>sort.Add(x=>x.EmployeeAccidentId).Descending())
+          .Model(model =>
+          {
+              model.Id(p => p.EmployeeAccidentId);
+              //model.Field(p => p.AccidentDateAmh).Editable(false);
+              //model.Field(p => p.AccidentTime).Editable(false);
+              //model.Field(p => p.BranchId).Editable(false);
+              //model.Field(p => p.Description).Editable(false);
+              //model.Field(p => p.EmployeeId).Editable(false);
+              //model.Field(p => p.EmployeementType).Editable(false);
+              //model.Field(p => p.LookupId).Editable(false);
+              //model.Field(p => p.LevelOfInjuired).Editable(false);
+              //model.Field(p => p.Witness).Editable(false);
+              //model.Field(p => p.OrgStructureId).Editable(false);
+
+          })
+          .Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("EmployeeAccidentRequest_Read", "EmployeeAccidentRequest"))
+          .Create(create => create.Action("EmployeeAccidentRequest_Create", "EmployeeAccidentRequest"))
+          .Update(update => update.Action("EmployeeAccidentRequest_Update", "EmployeeAccidentRequest"))
+          .Destroy(destroy => destroy.Action("EmployeeAccidentRequest_Destroy", "EmployeeAccidentRequest"))
+      ).ClientDetailTemplateId("template")
+      )
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                    .Name("tabStrip_#=EmployeeAccidentId#")
+                    .SelectedIndex(0)
+                    .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                    .Items(items =>
+                    {
+                        items.Add().Text("Detail").Content(
+                            @<text>
+                               <div class="box">                   
+                                   <div class="box-col">
+                                            # if (IsSendForApproval == false || IsSendForApproval == "false") {#
+                                            <a href='@Url.Action("SendForApproval", "EmployeeAccidentRequest")/?id=#=EmployeeAccidentId#' title="Send for Approval">
+                                                <i class="fa fa-share-square fa-2x">Send for Approval</i>
+                                            </a>
+                                            # }#
+                                       
+                                   </div>
+                                    
+                               </div>
+                                     
+                                <div class="row">
+                                    <div class="label">
+                                        CreatedBy:  #=CreatedBy#
+                                    </div>
+                                                    
+                                </div>
+
+                                <div class="row">
+                                    <div class="label">
+                                        Last Modified By: #=LastModifiedBy#
+                                    </div>
+                                                   
+                                </div>
+                                        
+
+                            </text>
+
+
+                            );
+                            })
+                                                                                                                                                                                                                                                                                                                                        .ToClientTemplate())
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 1000px;
+    }
+</style>
+
+<script>
+
+    var IsApproved;
+    var IsSendForApproved;
+    var masterId;
+
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.EmployeeAccidentId;
+        //IsApproved = masterDataItem.IsOnlineApproved;
+        IsSendForApproved = masterDataItem.IsSendForApproval;
+
+        var DetailGrid = "#DetailGrid" + masterId;
+        if (IsSendForApproved == true) {
+            $(DetailGrid).find(".k-toolbar").hide(); //hide toolbar
+            $(".k-grid-top", DetailGrid).remove();
+        }
+    }
+    //function onDataBound(e) {
+    //    var grid = this;
+
+    //    grid.tbody.find("tr[role='row']").each(function () {
+    //        var dataItem = grid.dataItem(this);
+    //        if (dataItem.IsSendForApproval == true || dataItem.IsSendForApproval == "true") {
+    //            $(this).find(".k-grid-edit").remove();
+    //            $(this).find(".k-grid-delete").remove();
+    //        }
+    //    });
+    //}
+</script>
+<script>
+
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsSendForApproval === true ) {
+
+                row.css("background-color", "lightgreen");
+
+            }
+            //else if (dataItem.IsCompleted === true) {
+
+            //    row.css("background-color", "grey");
+
+            //}
+
+
+
+        }
+
+    }
+    //function onOutOfSystemChange(checkbox) {
+
+    //    //var isChecked = checkbox.checked;
+    //    //var hide = document.querySelector('.classTobeHidden1');
+    //    //var show = document.querySelector('.classTobeShown1');
+
+    //    //if ($(checkbox).is(":checked"))  {
+    //    //    hide.style.display = 'none';
+    //    //    show.style.display = 'block';
+    //    //} else {
+    //    //    hide.style.display = 'block';
+    //    //    show.style.display = 'none';
+    //    if ($(checkbox).is(":checked")) {
+    //        $("#show").show();
+    //        $("#hide").hide();
+           
+    //    } else {
+    //        $("#show").show();
+    //        $("#hide").hide();
+    //        $("#IsForOther").prop("disabled", false);
+    //    }
+    //    //}
+    //}
+
+    function onOutOfSystemChange(obj) {
+        if ($(obj).is(":checked")) {
+            $("#classTobeShown1").show();
+            $("#classTobeHidden1").hide();
+
+        } else {
+            $("#classTobeHidden1").show();
+            $("#classTobeShown1").hide();
+           // $("#IsForOther").prop("disabled", false);
+        }
+    }
+
+    function onEditBound(e) {
+        //var check = $("#IsOutOFSystem").trigger("change");
+        //if (check.value()) {
+        //    var Hide = document.querySelector('.classTobeHidden1');
+        //    var show = document.querySelector('.classTobeShown1');
+
+        //    Hide.style.display = 'none';
+        //    show.style.display = 'block';
+        //}
+    }
+</script>
+
+<script>
+    function sendforapproval(e) {
+
+
+        var row = $(e.target).closest("tr");
+        var grid = $("#grid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.EmployeeAccidentId;
+
+
+        if (id.length !== 0 )
+        {
+
+            $.ajax({
+                url: '@Url.Action("SendForApproval", "EmployeeAccidentRequest")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                   // $("#OrgStructureId").val(r).trigger("change");;
+
+                }
+
+
+
+            });
+
+        }
+    }
+</script>
+<script>
+    function filterCategories() {
+        return {
+            OrgStructureId: $("#OrgStructureId").val(),
+            searchText: $("#LookupId").data("kendoDropDownList").filterInput.val()
+        };
+    }
+</script>
+
+<script>
+    function GetDate() {
+
+        $("#AccidentDateAmh").trigger("change");
+
+    }
+
+</script>

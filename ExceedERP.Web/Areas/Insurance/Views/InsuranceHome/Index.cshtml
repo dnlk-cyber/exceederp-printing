@@ -1,0 +1,125 @@
+
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Health
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav class="navbar navbar-default">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".js-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">@Resources.NavigatorHealthInsurance_Insurance</a>
+        </div>
+
+
+        <div class="collapse navbar-collapse js-navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown mega-dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i> Actions </a>
+
+                    <ul class="dropdown-menu mega-dropdown-menu row">
+                        @if (HttpContext.Current.User.IsInRole("Insurance_Admin")
+                            || HttpContext.Current.User.IsInRole("Insurance_User"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">Input</li>
+                                    <li class="divider"></li>
+                                    @if (HttpContext.Current.User.IsInRole("Insurance_User") || HttpContext.Current.User.IsInRole("Insurance_Admin"))
+                                    {
+
+
+                                        <li>@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_EmployeeInsurance, "Index", "Insurance", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                        <li>@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_OtherInsurance, "Index", "OtherInsurance", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    }
+                                    @if (HttpContext.Current.User.IsInRole("Insurance_Admin"))
+                                    {
+
+                                        <li>@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_Insurance, "Index", "PPEInsurance", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+
+                                    }
+
+                                </ul>
+                            </li>
+                          }
+                        @if (HttpContext.Current.User.IsInRole("Insurance_Admin") ||
+                            HttpContext.Current.User.IsInRole("Insurance_User"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">Employee</li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">  Accidents Records </li>
+                                    @if (HttpContext.Current.User.IsInRole("Insurance_Admin"))
+                                    {
+
+                                        <li>@Html.ActionLink("Accident", "Index", "Accident", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                        <li>@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_AccidentRecord, "Index", "AccidentRecord", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                        <li>@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_EmployeeAccident, "Index", "EmployeeAccident", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+
+                                    }
+
+
+                                </ul>
+                            </li>
+                        }
+                        @if (HttpContext.Current.User.IsInRole("Insurance_Admin")
+                            || HttpContext.Current.User.IsInRole("Insurance_User"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">Report</li>
+                                    <li class="divider"></li>
+
+                                    <li>@Html.ActionLink("Yearly Total Car Accident", "YearlyTotalCarAccident", "InsuranceReports", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    <li>@Html.ActionLink("Accidents In Project", "AccidentFromProjects", "InsuranceReports", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    <li>@Html.ActionLink("Accident With Money", "AccidentWithMoney", "InsuranceReports", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    <li>@Html.ActionLink("Accident Covered By Insurance And Asked For Insurance", "AccidentCoveredByInsuranceAndAskedForInsurance", "InsuranceReports", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    <li>@Html.ActionLink("Total Accident In Our Employees", "TotalAccidentInOurEmployees", "InsuranceReports", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    <li>@Html.ActionLink("Costs To Get Medn Insurance", "CostsToGetMednInsurance", "InsuranceReports", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    <li>@Html.ActionLink("Arbon Paid For Assets", "ArbonPaidForAssets", "InsuranceReports", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    <li>@Html.ActionLink("Complated Works In BRP Schedule", "ComplatedWorksInBRPSchedule", "InsuranceReports", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+
+                                </ul>
+                            </li>
+                        }
+                        @if (HttpContext.Current.User.IsInRole("Insurance_Admin"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">Setup</li>
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_EmployeeInsuranceGroup, "Index", "InsuranceGroup", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    <li>@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_InsuranceCategory, "Index", "InsuranceCategory", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    <li>@Html.ActionLink(ExceedERP.Core.Localization.Resources.Insurance_Insurance_Type, "Index", "InsuranceType", new { area = "Insurance" }, new { target = "_blank" })<b class="arrow"></b></li>
+
+
+
+                                </ul>
+                            </li>
+                        }
+
+                    </ul>
+
+                </li>
+            </ul>
+
+        </div>
+        <!-- /.nav-collapse -->
+    </nav>
+</div>
+
+
+<script>
+    jQuery(document).on('click', '.mega-dropdown', function (e) {
+        e.stopPropagation()
+    })
+</script>
+

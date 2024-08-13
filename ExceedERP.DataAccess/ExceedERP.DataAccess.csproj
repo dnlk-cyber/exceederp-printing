@@ -74,8 +74,10 @@
     <Compile Include="Context\CRMEntityConfiguration.cs" />
     <Compile Include="Context\EntityConfiguration.cs" />
     <Compile Include="Context\FleetManagementEntityConfiguration.cs" />
+    <Compile Include="Context\HealthEntityConfiguration.cs" />
     <Compile Include="Context\HRMEntityConfiguration.cs" />
     <Compile Include="Context\InfoDeskEntityConfiguration.cs" />
+    <Compile Include="Context\InsuranceEntityConfiguration.cs" />
     <Compile Include="Context\InventoryEntityConfiguration.cs" />
     <Compile Include="Context\MaintenanceEntityTypeConfiguration.cs" />
     <Compile Include="Context\ManufacturingEntityConfiguration.cs" />
@@ -492,6 +494,10 @@
     <Compile Include="Migrations\202408131325502_fleetmaintenanceupg.Designer.cs">
       <DependentUpon>202408131325502_fleetmaintenanceupg.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202408131355265_healthandinsuranceupg.cs" />
+    <Compile Include="Migrations\202408131355265_healthandinsuranceupg.Designer.cs">
+      <DependentUpon>202408131355265_healthandinsuranceupg.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -816,6 +822,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202408131325502_fleetmaintenanceupg.resx">
       <DependentUpon>202408131325502_fleetmaintenanceupg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202408131355265_healthandinsuranceupg.resx">
+      <DependentUpon>202408131355265_healthandinsuranceupg.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

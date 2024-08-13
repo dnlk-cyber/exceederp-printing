@@ -1,0 +1,95 @@
+
+@using ExceedERP.Core.Localization
+
+ @if (User.IsInRole("Insurance_Admin") || HttpContext.Current.User.IsInRole("Insurance_User"))
+  {
+
+<li class="">
+    
+    <a href="#" class="dropdown-toggle">
+        <i class="menu-icon fa fa-stethoscope"></i>
+        <span class="menu-text">
+            @ExceedERP.Core.Localization.Resources.NavigatorHealthInsurance_Insurance
+        </span>
+        <b class="arrow fa fa-angle-down"></b>
+    </a>
+    <b class="arrow"></b>
+    <ul class="submenu">
+
+        @if (HttpContext.Current.User.IsInRole("Insurance_User") || HttpContext.Current.User.IsInRole("Insurance_Admin"))
+        {
+
+
+            <li id="Insurance1188" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_EmployeeInsurance, "Index", "Insurance", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+            // <li id="hrm1189" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_EmployeeInsurance, "Index", "CourtInsurance", new { area = "HRM" }, null)<b class="arrow"></b></li>
+            <li id="Insurance1189" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_OtherInsurance, "Index", "OtherInsurance", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+            @*<li id="hrm1189" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorBenefit_FixedAssetAccidentRecord, "Index", "FixedAssetAccidentRecord", new { area = "HRM" }, null)<b class="arrow"></b></li>*@
+        }
+
+        @if (HttpContext.Current.User.IsInRole("Insurance_Admin"))
+        {
+            <li id="Insurance116" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_EmployeeInsuranceGroup, "Index", "InsuranceGroup", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+            <li id="Insurance117" class="actionlinlk">@*@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_InsuranceSettings, "Index", "InsuranceSetting", new { area = "HRM" }, null)<b class="arrow"></b>*@</li>
+            // <li id="hrm118" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_InsuranceSettings, "Index", "CourtInsuranceSetting", new { area = "HRM" }, null)<b class="arrow"></b></li>
+            <li id="Insurance118" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_InsuranceCategory, "Index", "InsuranceCategory", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+            <li id="Insurance11896" class="actionlinlk">@Html.ActionLink("Accident", "Index", "Accident", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+            <li id="Insurance185" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_AccidentRecord, "Index", "AccidentRecord", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+
+            <li id="Insurance11896" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_EmployeeAccident, "Index", "EmployeeAccident", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+
+            <li id="Insurance11896" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_Insurance, "Index", "PPEInsurance", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+
+        }
+
+
+
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Insurance Report
+
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+
+            <b class="arrow"></b>
+            <ul class="submenu">
+
+
+
+                <li id="Insurance1188" class="actionlinlk">@Html.ActionLink("Yearly Total Car Accident", "YearlyTotalCarAccident", "InsuranceReports", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+                <li id="Insurance1189" class="actionlinlk">@Html.ActionLink("Accidents In Project", "AccidentFromProjects", "InsuranceReports", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+                <li id="Insurance1189" class="actionlinlk">@Html.ActionLink("Accident With Money", "AccidentWithMoney", "InsuranceReports", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+                <li id="Insurance1189" class="actionlinlk">@Html.ActionLink("Accident Covered By Insurance And Asked For Insurance", "AccidentCoveredByInsuranceAndAskedForInsurance", "InsuranceReports", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+                <li id="Insurance1189" class="actionlinlk">@Html.ActionLink("Total Accident In Our Employees", "TotalAccidentInOurEmployees", "InsuranceReports", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+                <li id="Insurance1189" class="actionlinlk">@Html.ActionLink("Costs To Get Medn Insurance", "CostsToGetMednInsurance", "InsuranceReports", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+                <li id="Insurance1189" class="actionlinlk">@Html.ActionLink("Arbon Paid For Assets", "ArbonPaidForAssets", "InsuranceReports", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+                <li id="Insurance1189" class="actionlinlk">@Html.ActionLink("Complated Works In BRP Schedule", "ComplatedWorksInBRPSchedule", "InsuranceReports", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+
+
+            </ul>
+        </li>
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                @Resources.NavigatorHealthAndInsurance_InsuranceSettings
+
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+
+            <b class="arrow"></b>
+            <ul class="submenu">
+
+
+
+                <li id="Insurance11896" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.Insurance_Insurance_Type, "Index", "InsuranceType", new { area = "Insurance" }, null)<b class="arrow"></b></li>
+
+
+            </ul>
+        </li>
+    </ul>
+</li>
+
+
+  }
+
+

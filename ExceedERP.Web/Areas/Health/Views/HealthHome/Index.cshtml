@@ -1,0 +1,122 @@
+
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Health
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav class="navbar navbar-default">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".js-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">@Resources.NavigatorHealthInsurance_Health</a>
+        </div>
+
+
+        <div class="collapse navbar-collapse js-navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown mega-dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i> Actions </a>
+
+                    <ul class="dropdown-menu mega-dropdown-menu row">
+                        @if (HttpContext.Current.User.IsInRole("Health_User")
+                            || HttpContext.Current.User.IsInRole("Health_Admin")
+                            || HttpContext.Current.User.IsInRole("Health_Approver")
+                            || HttpContext.Current.User.IsInRole("HR_Manager_SelfService"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">Input</li>
+                                    <li class="divider"></li>
+                                    @if (HttpContext.Current.User.IsInRole("Health_User") || HttpContext.Current.User.IsInRole("Health_Admin"))
+                                    {
+                                        <li id="health115" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_PatientCard, "Index", "PatientCard", new { area = "Health" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                        <li id="health108" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_Prescription, "Index", "Prescription", new { area = "Health" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                        <li id="health109" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_SickLeave, "Index", "PatientsLeave", new { area = "Health" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                        <li id="health110" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_ReferralSheet, "Index", "ReferralSheet", new { area = "Health" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    }
+                                    <li id="health185fgj" class="actionlinlk">@Html.ActionLink("Laboratory Result", "Index", "PatientCardSentToLaboratory", new { area = "Health" }, new { target = "_blank" })<b class="arrow"></b></li>
+
+
+                                </ul>
+                            </li>
+                        }
+                        @if (HttpContext.Current.User.IsInRole("Health_Approver")||
+                            HttpContext.Current.User.IsInRole("Health_Admin"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">Health Process</li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header"> Process</li>
+                                    @if (HttpContext.Current.User.IsInRole("Health_Approver") || HttpContext.Current.User.IsInRole("HR_Manager_SelfService") || HttpContext.Current.User.IsInRole("Health_Admin"))
+                                    {
+                                        <li id="health164" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_MedicalRequests, "Index", "MedicalRequestStatus", new { area = "Health" }, new { target = "_blank" })<b class="arrow"></b></li>
+
+                                        <li id="health1844" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.Emyployee_Health_Value, "Index", "HealthRankAndValue", new { area = "Health" }, new { target = "_blank" })<b class="arrow"></b></li>
+
+                                    }
+
+
+
+                                </ul>
+                            </li>
+                        }
+                        @if (HttpContext.Current.User.IsInRole("Payroll_Report")
+                            || HttpContext.Current.User.IsInRole("Payroll_View"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">Report</li>
+                                    <li class="divider"></li>
+                                    <li id="health118" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_ClinicReport, "Clinic", "HealthReport", new { area = "Health" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    <li id="health168" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.Emyployee_Health_Value_Report, "EmployeeHealthPayment", "HealthReport", new { area = "Health" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    <li id="health98155" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_RefferalSheet, "PatientReferralReport", "HealthReport", new { area = "Health" }, new { target = "_blank" })<b class="arrow"></b>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        @if (HttpContext.Current.User.IsInRole("Health_Admin"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">Setup</li>
+                                    <li class="divider"></li>
+                                    <li id="health98155" class="actionlinlk">
+                                        @Html.ActionLink("Laboratory Setting", "Index", "LaboratorySetting", new { area = "Health" }, new { target = "_blank" })<b class="arrow"></b>
+                                    </li>
+
+                                    <li id="health6444" class="actionlinlk">
+                                        @Html.ActionLink(Resources.Emyployee_Health_Setting, "Index", "HealthRankAndValueSetting", new { area = "Health" }, new { target = "_blank" })<b class="arrow"></b>
+                                    </li>
+
+
+
+                                </ul>
+                            </li>
+                        }
+
+                    </ul>
+
+                </li>
+            </ul>
+
+        </div>
+        <!-- /.nav-collapse -->
+    </nav>
+</div>
+
+
+<script>
+    jQuery(document).on('click', '.mega-dropdown', function (e) {
+        e.stopPropagation()
+    })
+</script>
+

@@ -1,0 +1,27 @@
+﻿@using ExceedERP.Core.Localization
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.Payroll.OverTime>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.NormalHours);
+        columns.Bound(c => c.NightHours);
+        columns.Bound(c => c.HolidayHours);
+        columns.Bound(c => c.RestdayHours);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.OverTimeId))
+          .Read(read => read.Action("OverTimes_Read", "OverTime"))
+          .Create(create => create.Action("OverTimes_Create", "OverTime"))
+          .Update(update => update.Action("OverTimes_Update", "OverTime"))
+          .Destroy(destroy => destroy.Action("OverTimes_Destroy", "OverTime"))
+      )
+)

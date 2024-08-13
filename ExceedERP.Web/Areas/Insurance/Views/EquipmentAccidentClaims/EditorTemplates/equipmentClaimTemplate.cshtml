@@ -1,0 +1,486 @@
+@using System.Collections
+@using ExceedERP.Helpers
+@model ExceedERP.Core.Domain.Insurance.InsuranceNew.EquipmentAccidentClaim
+@Html.HiddenFor(model => model.EquipmentAccidentClaimId)
+
+<!-- Add CSS styles directly within the view -->
+<style>
+    .form {
+        padding: 10px;
+    }
+
+    .fullrow {
+        margin-bottom: 10px;
+    }
+
+    .ro1 {
+        padding: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 10px;
+    }
+
+    .control-label {
+        text-align: left;
+        font-weight: bold;
+    }
+
+    .col-md-12,
+    .col-md-6 {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .text-danger {
+        color: #ff0000;
+    }
+</style>
+
+<div class="form">
+    <div class="row fullrow">
+        <!-- Column 1 -->
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.FleetsID@*, htmlAttributes: new { @class = "control-label col-md-8" }*@)
+                <div class="col-md-12">
+                    @Html.TextBoxFor(model => model.FleetsID, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                    @*@(Html.Kendo().DropDownListFor(model => model.FleetsID)
+                        .ValuePrimitive(true)
+                        .OptionLabel("Select Fleet")
+                        .DataTextField("Name")
+                        .DataValueField("FleetsID")
+                        .Filter("contains")
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetFleet", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                            .ServerFiltering(false);
+                        }))*@
+
+                    @Html.ValidationMessageFor(model => model.FleetsID, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.AccidentDateAm@*, htmlAttributes: new { @class = "control-label col-md-8" }*@)
+                <div class="col-md-12">
+                    @Html.TextBoxFor(model => model.AccidentDateAm, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                    @Html.ValidationMessageFor(model => model.AccidentDateAm, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.AccidentTime)
+                <div class="col-md-12">
+                    @Html.Kendo().TimePickerFor(model => model.AccidentTime)
+                    @Html.ValidationMessageFor(model => model.AccidentTime, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            @*<div class="form-group">
+                 @Html.LabelFor(model => model.RequestRecorderEmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+                 <div class="col-md-12">
+                     @(Html.Kendo().DropDownListFor(model => model.RequestRecorderEmployeeId)
+                                                             .ValuePrimitive(true)
+                                                             .OptionLabel("Select Employee")
+                                                             .DataTextField("Name")
+                                                             .DataValueField("RequestRecorderEmployeeId")
+                                                             .Filter("contains")
+                                                             .DataSource(dataSource =>
+                                                             {
+                                                                 dataSource.Read(read => read.Action("GetEmployees", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                                                                 .ServerFiltering(false);
+                                                             })
+
+                     )
+                     @Html.ValidationMessageFor(model => model.RequestRecorderEmployeeId, "", new { @class = "text-danger" })
+                 </div>
+                </div>*@
+            <div class="form-group">
+                @Html.LabelFor(model => model.IsCollissionWithAnotherVehicle)
+                <div class="col-md-12">
+                    @Html.CheckBoxFor(model => model.IsCollissionWithAnotherVehicle, new { id = "IsCollissionWithAnotherVehicle" })
+                    @Html.ValidationMessageFor(model => model.IsCollissionWithAnotherVehicle, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 2 -->
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.DriverName)
+                <div class="col-md-12">
+                    @Html.Kendo().TextBoxFor(model => model.DriverName)
+                    @Html.ValidationMessageFor(model => model.DriverName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.InsuranceBranch, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+                    @Html.Kendo().TextBoxFor(model => model.InsuranceBranch)
+                    @Html.ValidationMessageFor(model => model.InsuranceBranch, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.AccidentID, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+                    @Html.Kendo().TextBoxFor(model => model.AccidentID)
+                    @Html.ValidationMessageFor(model => model.AccidentID, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.AccidentDetail)
+                <div class="col-md-12">
+                    @Html.Kendo().TextBoxFor(model => model.AccidentDetail)
+                    @Html.ValidationMessageFor(model => model.AccidentDetail, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Column 3 -->
+        <div class="col-md-3 ro1">
+
+            <div class="form-group" id="CollidedOnerNameGroup">
+                @Html.LabelFor(model => model.CollidedOnerName)
+                <div class="col-md-12">
+                    @(Html.Kendo().TextBoxFor(model => model.CollidedOnerName))
+                    @Html.ValidationMessageFor(model => model.CollidedOnerName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group" id="CollidedAddressGroup">
+                @Html.LabelFor(model => model.CollidedAddress)
+                <div class="col-md-12">
+                    @Html.Kendo().TextBoxFor(model => model.CollidedAddress)
+                    @Html.ValidationMessageFor(model => model.CollidedAddress, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group" id="CollidedPlateNoGroup">
+                @Html.LabelFor(model => model.CollidedPlateNo)
+                <div class="col-md-12">
+                    @Html.Kendo().TextBoxFor(model => model.CollidedPlateNo)
+                    @Html.ValidationMessageFor(model => model.CollidedPlateNo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group" id="CollidedPhoneGroup">
+                @Html.LabelFor(model => model.CollidedPhone)
+                <div class="col-md-12">
+                    @Html.Kendo().TextBoxFor(model => model.CollidedPhone)
+                    @Html.ValidationMessageFor(model => model.CollidedPhone, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="row fullrow">
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.EquipmentType)
+                <div class="col-md-8">
+                    @Html.Kendo().TextBoxFor(model => model.EquipmentType)
+                    @Html.ValidationMessageFor(model => model.EquipmentType, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.MachineOperatorName)
+                <div class="col-md-8">
+                    @Html.Kendo().TextBoxFor(model => model.MachineOperatorName)
+                    @Html.ValidationMessageFor(model => model.MachineOperatorName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.PaymentAmount)
+                <div class="col-md-8">
+                    @Html.Kendo().NumericTextBoxFor(model => model.PaymentAmount)
+                    @Html.ValidationMessageFor(model => model.PaymentAmount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.Kendo().TextBoxFor(model => model.Remark)
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*<div class="row fullrow">
+
+         Column 1 
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.EquipmentType, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+                    @Html.Kendo().TextBoxFor(model => model.EquipmentType)
+                    @Html.ValidationMessageFor(model => model.EquipmentType, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.MachineOperatorName, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+                    @Html.Kendo().TextBoxFor(model => model.MachineOperatorName)
+                    @Html.ValidationMessageFor(model => model.MachineOperatorName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.PaymentAmount, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+                    @Html.Kendo().NumericTextBoxFor(model => model.PaymentAmount)
+                    @Html.ValidationMessageFor(model => model.PaymentAmount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+                    @Html.Kendo().TextBoxFor(model => model.Remark)
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>*@
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Function to toggle visibility and disable state of related fields
+            function toggleFieldsVisibility() {
+                var isChecked = $('#IsCollissionWithAnotherVehicle').is(':checked');
+
+                // Toggle visibility and disable state for related fields
+                $('#CollidedOnerNameGroup, #CollidedAddressGroup, #CollidedPlateNoGroup, #CollidedPhoneGroup').each(function () {
+                    $(this).toggle(!isChecked);
+                    $('input, select', this).prop('disabled', isChecked);
+                });
+            }
+
+            // Initial call to set initial state based on checkbox
+            toggleFieldsVisibility();
+
+            // Bind change event to checkbox
+            $('#IsCollissionWithAnotherVehicle').change(function () {
+                toggleFieldsVisibility();
+            });
+        });
+    </script>
+}
+
+@*@using System.Collections
+    @using ExceedERP.Helpers
+    @model ExceedERP.Core.Domain.Insurance.InsuranceNew.EquipmentAccidentClaim
+    @Html.HiddenFor(model => model.EquipmentAccidentClaimId)
+
+    <!-- Add CSS styles directly within the view -->
+    <style>
+        .form {
+            padding: 20px;
+        }
+
+        .fullrow {
+            margin-bottom: 20px;
+        }
+
+        .ro1 {
+            padding: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .col-md-12,
+        .col-md-6 {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .text-danger {
+            color: #ff0000;
+        }
+    </style>
+
+    <div class="form">
+        <div class="row fullrow">
+            <!-- Column 1 -->
+            <div class="col-md-3 ro1">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FleetsID, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @(Html.Kendo().DropDownListFor(model => model.FleetsID)
+                                                      .ValuePrimitive(true)
+                                                      .OptionLabel("Select Fleet")
+                                                      .DataTextField("Name")
+                                                      .DataValueField("FleetsID")
+                                                      .Filter("contains")
+                                                      .DataSource(dataSource =>
+                                                      {
+                                                          dataSource.Read(read => read.Action("GetFleet", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                                                          .ServerFiltering(false);
+                                                      })
+                        )
+                        @Html.ValidationMessageFor(model => model.FleetsID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AccidentDateAm, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @Html.TextBoxFor(model => model.AccidentDateAm, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                        @Html.ValidationMessageFor(model => model.AccidentDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AccidentTime, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @Html.Kendo().TimePickerFor(model => model.AccidentTime)
+                        @Html.ValidationMessageFor(model => model.AccidentTime, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.RequestRecorderEmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @(Html.Kendo().DropDownListFor(model => model.RequestRecorderEmployeeId)
+                                                        .ValuePrimitive(true)
+                                                        .OptionLabel("Select Employee")
+                                                        .DataTextField("Name")
+                                                        .DataValueField("RequestRecorderEmployeeId")
+                                                        .Filter("contains")
+                                                        .DataSource(dataSource =>
+                                                        {
+                                                            dataSource.Read(read => read.Action("GetEmployees", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                                                            .ServerFiltering(false);
+                                                        })
+
+                            )
+                        @Html.ValidationMessageFor(model => model.RequestRecorderEmployeeId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 2 -->
+            <div class="col-md-3 ro1">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.DriverName, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @Html.Kendo().TextBoxFor(model => model.DriverName)
+                        @Html.ValidationMessageFor(model => model.DriverName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.InsuranceBranch, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @Html.Kendo().TextBoxFor(model => model.InsuranceBranch)
+                        @Html.ValidationMessageFor(model => model.InsuranceBranch, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AccidentID, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @Html.Kendo().TextBoxFor(model => model.AccidentID)
+                        @Html.ValidationMessageFor(model => model.AccidentID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AccidentDetail, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @Html.Kendo().TextBoxFor(model => model.AccidentDetail)
+                        @Html.ValidationMessageFor(model => model.AccidentDetail, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Column 3 -->
+            <div class="col-md-3 ro1">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.IsCollissionWithAnotherVehicle, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @Html.CheckBoxFor(model => model.IsCollissionWithAnotherVehicle)
+                        @Html.ValidationMessageFor(model => model.IsCollissionWithAnotherVehicle, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CollidedOnerName, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @(Html.Kendo().TextBoxFor(model => model.CollidedOnerName))
+                        @Html.ValidationMessageFor(model => model.CollidedOnerName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CollidedAddress, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @Html.Kendo().TextBoxFor(model => model.CollidedAddress)
+                        @Html.ValidationMessageFor(model => model.CollidedAddress, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CollidedPlateNo, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @Html.Kendo().TextBoxFor(model => model.CollidedPlateNo)
+                        @Html.ValidationMessageFor(model => model.CollidedPlateNo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CollidedPhone, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @Html.Kendo().TextBoxFor(model => model.CollidedPhone)
+                        @Html.ValidationMessageFor(model => model.CollidedPhone, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 4 -->
+            <div class="col-md-3 ro1">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.EquipmentType, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @Html.Kendo().TextBoxFor(model => model.EquipmentType)
+                        @Html.ValidationMessageFor(model => model.EquipmentType, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.MachineOperatorName, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @Html.Kendo().TextBoxFor(model => model.MachineOperatorName)
+                        @Html.ValidationMessageFor(model => model.MachineOperatorName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PaymentAmount, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @Html.Kendo().NumericTextBoxFor(model => model.PaymentAmount)
+                        @Html.ValidationMessageFor(model => model.PaymentAmount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-12">
+                        @Html.Kendo().TextBoxFor(model => model.Remark)
+                        @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>*@

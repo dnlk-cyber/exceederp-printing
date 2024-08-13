@@ -14,7 +14,6 @@ using ExceedERP.Core.Domain.Construction;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM;
-using ExceedERP.Core.Domain.HRM.HealthAndInsurance;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Helpers.Budget;
@@ -24,6 +23,7 @@ using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Models;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using ExceedERP.Core.Domain.Insurance;
 
 namespace ExceedERP.Web.Controllers
 { 

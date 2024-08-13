@@ -11,7 +11,8 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.HRM.HealthAndInsurance;
+
+using ExceedERP.Core.Domain.Insurance;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {

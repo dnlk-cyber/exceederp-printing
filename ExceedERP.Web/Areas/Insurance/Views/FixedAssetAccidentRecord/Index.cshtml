@@ -1,0 +1,121 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Insurance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorBenefit_FixedAssetAccidentRecord</legend>
+@(Html.Kendo().Grid<FixedAssetAccidentRecord>()
+          .Name("FixedAssetAccidentRecord")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(200);
+          columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["AssetList"], "FleetsID", "Name").EditorTemplateName("Asset").Width(200);
+          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "AmharicName").EditorTemplateName("Branch").Width(200);
+        columns.Bound(c => c.PlateNumber);
+        columns.Bound(c => c.Amount);
+        columns.Bound(c => c.Remark);
+       
+      columns.Command(command =>
+      {
+          if (HttpContext.Current.User.IsInRole("Insurance_User"))
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+          }
+          if (HttpContext.Current.User.IsInRole("Insurance_Admin"))
+          {
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }
+      }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          if (HttpContext.Current.User.IsInRole("Insurance_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+         .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .HtmlAttributes(new { style = "height: 550px;" })
+                       .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+                       .Filterable()
+                      .Scrollable()
+                  .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+                  .Events(events =>
+                                {
+
+                                    events.Error("error_handler(\"FixedAssetAccidentRecord\")");
+                                    events.RequestStart("onRequestStart(\"FixedAssetAccidentRecord\")");
+                                    events.RequestEnd("onRequestEnd(\"FixedAssetAccidentRecord\")");
+                                })
+                              
+          .Model(model =>
+          {
+              model.Id(p => p.FixedAssetAccidentRecordId);
+              model.Field(p => p.PlateNumber).Editable( false);
+          })
+          .Read(read => read.Action("FixedAssetAccidentRecords_Read", "FixedAssetAccidentRecord"))
+          .Create(create => create.Action("FixedAssetAccidentRecords_Create", "FixedAssetAccidentRecord"))
+          .Update(update => update.Action("FixedAssetAccidentRecords_Update", "FixedAssetAccidentRecord"))
+          .Destroy(destroy => destroy.Action("FixedAssetAccidentRecords_Destroy", "FixedAssetAccidentRecord"))
+          ).ClientDetailTemplateId("template")
+      )
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip_#=FixedAssetAccidentRecordId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              //**************************************Identification****************************************************//
+              items.Add().Text(Resources.Details).Content(
+                @<text>
+                  @(Html.Kendo().Grid<VehicleAccidentDetail>()
+      .Name("VehicleAccidentDetail_#=FixedAssetAccidentRecordId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.AccidentType).EditorTemplateName( "Enum").Width( 180);
+          columns.Bound(c => c.IsThirdPartAccident).ClientTemplate("<input type='checkbox' \\#= IsThirdPartAccident? checked='checked': checked='' \\# class='checkbox'  />");
+          columns.Bound(c => c.AccidentLevel).EditorTemplateName("Enum").Width(180);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .HtmlAttributes(new { style = "height: 550px;" })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Events(events =>
+ {
+
+events.Error("error_handler(\"VehicleAccidentDetail_#=FixedAssetAccidentRecordId#\")");
+events.RequestStart("onRequestStart(\"VehicleAccidentDetail_#=FixedAssetAccidentRecordId#\")");
+ events.RequestEnd("onRequestEnd(\"VehicleAccidentDetail_#=FixedAssetAccidentRecordId#\")");
+ })
+          
+          .Model(model => model.Id(p => p.VehicleAccidentDetailId))
+                  .Read(read => read.Action("VehicleAccidentDetail_Read", "VehicleAccidentDetail", new { id = "#=FixedAssetAccidentRecordId#" }))
+                  .Create(create => create.Action("VehicleAccidentDetail_Create", "VehicleAccidentDetail", new { idTwo = "#=FixedAssetAccidentRecordId#" }))
+          .Update(update => update.Action("VehicleAccidentDetail_Update", "VehicleAccidentDetail"))
+          .Destroy(destroy => destroy.Action("VehicleAccidentDetail_Destroy", "VehicleAccidentDetail"))
+      ).ToClientTemplate()
+                )
+                             </text>
+
+
+                   );
+
+          }).ToClientTemplate())
+</script>

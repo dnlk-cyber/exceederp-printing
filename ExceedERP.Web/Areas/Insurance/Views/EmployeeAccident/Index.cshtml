@@ -1,0 +1,110 @@
+﻿@model ExceedERP.Core.Domain.Insurance.EmployeeAccident
+@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Employee Accident Recored</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Insurance.EmployeeAccident>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Name"], "EmployeeId", "FullNameaEnglish").Width(120);
+          columns.Bound(c => c.DailyLabour).Width(160);
+          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(120);
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Workunit"], "OrgStructureId", "Name").Width(120);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Jobtitle"], "LookupId", "Description").Width(120);
+          columns.Bound(c => c.AccidentDateAmh).EditorTemplateName("Calander").Width(120);
+          columns.Bound(c => c.IsAtWorkPlace).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsAtWorkPlace ? checked='checked' :'' # >").Width(120);
+          columns.Bound(c => c.IsOnDuety).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsAtWorkPlace ? checked='checked' :'' # >").Width(120);
+          columns.Bound(c => c.Witness).Width(120);
+
+          columns.Command(command =>
+          {
+
+
+              //command.Custom("").Text("Send For Approval").Click("sendforapproval");
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+
+          }).Width(300);
+      })
+
+         .ToolBar(toolbar =>
+         {
+
+
+         toolbar.Template(@<text>
+
+        @*@if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+        {
+
+            @item.CreateButton()
+        
+        }*@
+
+        </text>);
+
+
+         })
+      //.Events(ev =>
+      //{
+      //    ev.DataBound("onDataBound"); ev.DetailExpand("onDetailExpand");
+      //})
+      .Editable(editable =>
+      {
+          editable.Mode(GridEditMode.PopUp).TemplateName("EmployeeAccident").Window(x => x.Title("Employee Accident "));
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Accident");
+      })
+
+      .HtmlAttributes(new { style = "height: 520px;" })
+      .Pageable(pageable => pageable
+                .Input(true)
+                .Numeric(false)
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+
+     .Scrollable()
+     .Sortable()
+     .Filterable()
+     .Scrollable(h => h.Height(500))
+     //.ClientDetailTemplateId("template")
+     .DataSource(dataSource => dataSource
+          .Ajax()
+          .ServerOperation(false)
+          .Sort(sort => sort.Add(x => x.EmployeeAccidentId).Descending())
+          .Model(model =>
+          {
+              model.Id(p => p.EmployeeAccidentId);
+              //model.Field(p => p.AccidentID).Editable(false);
+
+          })
+          .Events(ev => ev
+                        .Error("error_handler(\"grid\")")
+                        .RequestStart("onRequestStart(\"grid\")")
+                        .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("EmployeeAccident_Read", "EmployeeAccident"))
+          .Create(create => create.Action("EmployeeAccident_Create", "EmployeeAccident"))
+          .Update(update => update.Action("EmployeeAccident_Update", "EmployeeAccident"))
+          .Destroy(destroy => destroy.Action("EmployeeAccident_Destroy", "EmployeeAccident"))
+      ))
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 1000px;
+    }
+</style>
+
+<script>
+    function filterCategories() {
+        return
+        {
+            OrgStructureId: $("#OrgStructureId").val(),
+            searchText: $("#LookupId").data("kendoDropDownList").filterInput.val()
+        };
+    }
+</script>

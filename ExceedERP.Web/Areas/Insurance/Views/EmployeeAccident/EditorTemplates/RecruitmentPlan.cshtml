@@ -1,0 +1,18 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+
+              .DataTextField("Description")
+          .DataValueField("RecruitmentPlanId")
+      .CascadeFrom("OrgStructureId")
+      .Filter("contains")
+          .OptionLabel(Resources.Select)
+      
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetJobTitleFromPlanToVac", "HRMDataProvider", new { area = "HRM" }).Data("filterJobTitle"))
+              .ServerFiltering(true);
+      })
+      .ValuePrimitive(true)          
+      )

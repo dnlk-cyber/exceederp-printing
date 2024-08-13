@@ -624,20 +624,12 @@
     {
         @Html.Partial("_APTS")
     }
-    @*@Html.Partial("_Production")*@
 
 
 
-    @if (HttpContext.Current.User.IsInRole("Health_User") ||
-         HttpContext.Current.User.IsInRole("Health_Admin") ||
-         HttpContext.Current.User.IsInRole("Health_Approver") ||
-         HttpContext.Current.User.IsInRole("HR_Manager_SelfService") ||
-         HttpContext.Current.User.IsInRole("Insurance_Admin") ||
-         HttpContext.Current.User.IsInRole("Insurance_User")
-        )
-    {
-        @Html.Partial("_HealtInsurance")
-    }
+
+    @Html.Partial("_Health")
+    @Html.Partial("_Insurance")
 
     @if (HttpContext.Current.User.IsInRole("Archive_Admin") ||
          HttpContext.Current.User.IsInRole("Archive_Report") ||

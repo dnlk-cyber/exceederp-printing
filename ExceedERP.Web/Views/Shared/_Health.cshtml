@@ -1,0 +1,68 @@
+
+@using ExceedERP.Core.Localization
+        @if ( HttpContext.Current.User.IsInRole("Health_User") 
+            || HttpContext.Current.User.IsInRole("Health_Admin") 
+            || HttpContext.Current.User.IsInRole("Health_Approver") 
+            || HttpContext.Current.User.IsInRole("HR_Manager_SelfService"))
+        {
+
+            <li class="">
+                    <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-stethoscope"></i>
+                    <span class="menu-text">
+                        @ExceedERP.Core.Localization.Resources.NavigatorHealthInsurance_Health
+                    </span>
+                    <b class="arrow fa fa-angle-down"></b>
+                   </a>
+                <b class="arrow"></b>
+                <ul class="submenu">
+                    @if (HttpContext.Current.User.IsInRole("Health_User") || HttpContext.Current.User.IsInRole("Health_Admin"))
+                    {
+                        <li id="health115" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_PatientCard, "Index", "PatientCard", new { area = "Health" }, null)<b class="arrow"></b></li>
+                        <li id="health108" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_Prescription, "Index", "Prescription", new { area = "Health" }, null)<b class="arrow"></b></li>
+                        <li id="health109" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_SickLeave, "Index", "PatientsLeave", new { area = "Health" }, null)<b class="arrow"></b></li>
+                        <li id="health110" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_ReferralSheet, "Index", "ReferralSheet", new { area = "Health" }, null)<b class="arrow"></b></li>
+                    }
+                    @*<li id="health185fgdg" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.Health_Patient_Result, "Index", "PatientResult", new { area = "HRM" }, null)<b class="arrow"></b></li>*@
+                    <li id="health185fgj" class="actionlinlk">@Html.ActionLink("Laboratory Result", "Index", "PatientCardSentToLaboratory", new { area = "Health" }, null)<b class="arrow"></b></li>
+                    @*<li id="health185" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.Health_Laboratory, "Index", "Laboratory", new { area = "HRM" }, null)<b class="arrow"></b></li>*@
+                    <li id="health1844" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.Emyployee_Health_Value, "Index", "HealthRankAndValue", new { area = "Health" }, null)<b class="arrow"></b></li>
+
+
+                    @if (HttpContext.Current.User.IsInRole("Health_Approver") || HttpContext.Current.User.IsInRole("HR_Manager_SelfService") || HttpContext.Current.User.IsInRole("Health_Admin"))
+                    {
+                        <li id="health164" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_MedicalRequests, "Index", "MedicalRequestStatus", new { area = "Health" }, null)<b class="arrow"></b></li>
+                        <li id="health118" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_ClinicReport, "Clinic", "HealthReport", new { area = "Health" }, null)<b class="arrow"></b></li>
+                        <li id="health168" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.Emyployee_Health_Value_Report, "EmployeeHealthPayment", "HealthReport", new { area = "Health" }, null)<b class="arrow"></b></li>
+                        <li id="health98155" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_RefferalSheet, "PatientReferralReport", "HealthReport", new { area = "Health" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="health98155" class="actionlinlk">
+                            @Html.ActionLink("Laboratory Setting", "Index", "LaboratorySetting", new { area = "Health" }, null)<b class="arrow"></b>
+                        </li>
+                    }
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            @Resources.Settings
+
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+
+
+
+                            <li id="health6444" class="actionlinlk">@Html.ActionLink(Resources.Emyployee_Health_Setting, "Index", "HealthRankAndValueSetting", new { area = "Health" }, null)<b class="arrow"></b></li>
+
+
+                        </ul>
+                    </li>
+
+                </ul>
+            </li>
+
+        }
+       
+

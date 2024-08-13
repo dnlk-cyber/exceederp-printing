@@ -1,0 +1,392 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Health
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorSelfCare_MedicalRequests</legend>
+@(Html.Kendo().Grid<MedicalRequest>()
+              .Name("MedicalRequestgrid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.EmployeeCode).Width(150);
+              columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200);
+              columns.Bound(c => c.DateAmharic).Width(200);
+              columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["OrgStructureId"], "OrgStructureId", "Name").EditorTemplateName("Organization").Width(250);
+              columns.Bound(c => c.Remark);
+              columns.Command(command =>
+              {
+
+
+      //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);
+  }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+  // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+})
+            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("MedicalRequest").Window(window => { window.Title(Resources.NavigatorSelfCare_MedicalRequests); window.Scrollable(false); }))
+            .Scrollable(h => h.Height(500))
+                .Groupable()
+                .Sortable(sortable =>
+                {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+
+                })
+               .Events(events => events.DetailExpand("onDetailExpandUser"))
+               .Filterable()
+               // .Events(events => events.DetailExpand("onDetailExpandUser"))
+               .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+              .DataSource(dataSource => dataSource
+                   .Ajax()
+                   .Events(events =>
+                   {
+                       events.Error("error_handler(\"MedicalRequestgrid\")");
+                       events.RequestStart("onRequestStart(\"MedicalRequestgrid\")");
+                       events.RequestEnd("onRequestEnd(\"MedicalRequestgrid\")");
+                   })
+
+              .Model(model => model.Id(p => p.MedicalRequestId))
+                  .Read(read => read.Action("MedicalRequest_Read", "MedicalRequestStatus"))
+                  .Create(create => create.Action("MedicalRequest_Create", "MedicalRequestStatus"))
+                  .Update(update => update.Action("MedicalRequest_Update", "MedicalRequestStatus"))
+                  .Destroy(destroy => destroy.Action("MedicalRequest_Destroy", "MedicalRequestStatus"))
+              ).ClientDetailTemplateId("template")
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                .Name("tabstrip_#=MedicalRequestId#")
+                .SelectedIndex(0)
+                .Items(items =>
+                {
+
+                    items.Add().Text("Attachments").Content(
+                        @<text>
+
+                            <button onclick='UploadFile(#=MedicalRequestId#)' class='fa fa-upload btn btn-primary'>&nbsp;Upload </button>
+
+                            @(Html.Kendo().Grid<MedicalAttachment>()
+                                    .Name("MedicalAttachmentGrid#=MedicalRequestId#")
+                                    .Columns(columns =>
+                                    {
+
+                                        columns.Bound(c => c.FileName).ClientTemplate("<a href='/Health/MedicalAttachments/DownloadAttachment?medicalAttachmentId=\\#=MedicalAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+
+                                        columns.Template(e => { }).ClientTemplate("<a href='/Health/MedicalAttachments/DownloadAttachment?medicalAttachmentId=\\#=MedicalAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
+                                        columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+
+                                        columns.Command(command =>
+                                        {
+                                            command.Destroy().Text("Delete");
+                                        }).Width(300);
+
+
+
+                                    })
+                                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument")
+                                    .Window(window =>
+                                    {
+                                        window.Title("");
+                                        window.Scrollable(false);
+                                    }))
+                                    .Scrollable(h => h.Height("auto"))
+                                    .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Sort(sort => sort.Add(c => c.MedicalAttachmentId).Descending())
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"MedicalAttachmentGrid#=MedicalRequestId#\")");
+                                        events.RequestStart("onRequestStart(\"MedicalAttachmentGrid#=MedicalRequestId#\")");
+                                        events.RequestEnd("onRequestEnd(\"MedicalAttachmentGrid#=MedicalRequestId#\")");
+                                    })
+                                    .Model(model => model.Id(p => p.MedicalAttachmentId))
+                                    .Read(read => read.Action("MedicalAttachments_Read", "MedicalAttachments", new { id = "#=MedicalRequestId#", area = "Health" }))
+                                    .Create(create => create.Action("MedicalAttachments_Create", "MedicalAttachments", new { id = "#=MedicalRequestId#", area = "Health" }))
+                                    .Update(update => update.Action("MedicalAttachments_Update", "MedicalAttachments"))
+                                    .Destroy(destroy => destroy.Action("MedicalAttachments_Destroy", "MedicalAttachments"))
+                                    ).ToClientTemplate())
+                        </text>);
+
+
+                         items.Add().Text(Resources.HR_RequestStatus).Content(
+                         @<text>
+                         @(Html.Kendo().Grid<RequestesStatus>()
+                            .Name("RequestesStatusgrid_#=MedicalRequestId#")
+                            .Columns(columns =>
+                            {
+                                //columns.Bound(c => c.RequestId);
+                                columns.Bound(c => c.DateReqStatAm).Width(150);
+                                columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutDepApprove").Width(300);
+                                columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                columns.Bound(c => c.Remark).Width(150);
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel);
+                                });
+
+
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+
+                            })
+                           .Editable(editable => editable.Mode(GridEditMode.InLine))
+                           .Scrollable()
+                           .DataSource(dataSource => dataSource
+                               .Ajax()
+                               .Events(events =>
+                               {
+                                   events.Error("error_handler(\"RequestesStatusgrid_#=MedicalRequestId#\")");
+                                   events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=MedicalRequestId#\")");
+                                   events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=MedicalRequestId#\")");
+
+
+                               })
+                               .Model(model =>
+                               {
+                                   model.Id(p => p.RequestStatusId);
+                                   model.Field(p => p.DateReqStatAm).Editable(false);
+                                   model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                   model.Field(p => p.ApproverId).Editable(false);
+                                   model.Field(p => p.ApproverDepartment).Editable(false);
+
+
+                               })
+
+
+                               .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=MedicalRequestId#", referenceType = "Medical" }))
+                               .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=MedicalRequestId#", referenceType2 = "Medical" }))
+                               .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
+                               .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                           ).ToClientTemplate())
+                        <a href='@Url.Action("MedicalRequestLetter", "HealthReport")/?id=#=MedicalRequestId#' target="_blank" title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+
+
+        </text>);
+
+
+
+  items.Add().Text(Resources.HR_HealthAndInsurance_Transfer).Content(
+    @<text>
+
+        @(Html.Kendo().Grid<ReferralForm>()
+                  .Name("ReferralFormgrid_#=MedicalRequestId#")
+                  .Columns(columns =>
+                  {
+
+              columns.Bound(c => c.ReferredDateAmharic).EditorTemplateName("Calander").Width(120);
+              columns.Bound(c => c.ReferredTime).Width(120);
+              columns.Bound(c => c.ReturnedDateAmharic).EditorTemplateName("Calander").Width(120);
+              columns.Bound(c => c.ReturnedTime).Width(150);
+              columns.Bound(c => c.Remark).Width(120);
+              columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          })
+                  .ToolBar(toolbar =>
+                  {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("ReferralForm").Window(window => { window.Title("Transfer Patient to clinic"); window.Scrollable(false); }))
+                  .Scrollable(h => h.Height(500))
+                  .Events(x =>
+                  {
+              x.Edit("GetDate");
+              x.Save("GetDate");
+
+
+          })
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Events(events =>
+                      {
+                  events.Error("error_handler(\"ReferralFormgrid_#=MedicalRequestId#\")");
+                  events.RequestStart("onRequestStart(\"ReferralFormgrid_#=MedicalRequestId#\")");
+                  events.RequestEnd("onRequestEnd(\"ReferralFormgrid_#=MedicalRequestId#\")");
+
+              })
+
+                      .Model(model => model.Id(p => p.ReferralFormId))
+                      .Read(read => read.Action("ReferralForm_Read", "ReferralForm", new { id = "#=MedicalRequestId#" }))
+                      .Create(create => create.Action("ReferralForm_Create", "ReferralForm", new { id = "#=MedicalRequestId#" }))
+                      .Update(update => update.Action("ReferralForm_Update", "ReferralForm"))
+                      .Destroy(destroy => destroy.Action("ReferralForm_Destroy", "ReferralForm"))
+                  ).ToClientTemplate()
+        )
+        )
+
+
+
+    </text>);
+//*****************************************************************************************************//
+
+
+}).ToClientTemplate())
+</script>
+@(Html.Kendo().Window()
+            .Name("UploadDoc")
+            .Title("Upload File")
+            .Visible(false)
+            .Modal(true)
+            .Draggable(true)
+            .Width(400).Content(
+            @<text>
+                <div class="form-group">
+                    <form action="@Url.Action("UploadIncomingMedicalFiles", "MedicalAttachments", new { })" method="post" , new { enctype="multipart/form-data" }>
+                        <input type="hidden" name="masterId" id="masterId">
+                        <div class="row">
+                            <div class="col-md-10">
+                                @Html.TextBox("file", "", new { type = "file", required = "true" })
+                                <br />
+                            </div>
+                        </div>
+                        <div>
+                            <div class="editor-field">
+                                <label>Description</label>
+                                @Html.TextArea("Description", null, new { placeholder = "Description", style = "width: 90%; max-width: 90%;height:60%" })
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-7"></div>
+                            <input type="submit" class="btn-primary k-button" value=" Submit " />
+                        </div>
+
+                    </form>
+                    <div class="pull-right">
+
+                    </div>
+                </div>
+            </text>)
+)
+<script>
+
+    function UploadFile(id) {
+        $("#masterId").val(id);
+        var wnd = $("#UploadDoc").data("kendoWindow");
+        wnd.center().open();
+    }
+</script>
+
+<script>
+
+    function sync_handler(e) {
+        this.read();
+    }
+        function AssignDate() {
+            var list = AssignDates();
+            return list;
+        }
+      function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#ReferredDateAmharic").trigger("change");
+        $("#ReturnedDateAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "ReferralForm")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+    function filterCategories() {
+        return {
+            DeptId: $("#DeptId").val()
+        };
+    }
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#MedicalRequestgrid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.MedicalRequestId;
+        var gridName = "#RequestesStatusgrid_" + masterId;
+        $.ajax({
+            url: '@Url.Action("CheckStatus", "MedicalRequestStatus")',
+
+            data: { masterId: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r == "true") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-add", gridName).hide();
+                }
+                else if (r == "approved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+                }
+                else if (r == "Dapproved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).show();
+                    $(".k-grid-delete", gridName).show();
+                }
+                else {
+                    $(gridName).find(".k-toolbar").show(); //hide toolbar
+                    $(".k-grid-add", gridName).show();
+                }
+
+            }
+
+        });
+
+    }
+    function valueMapper(options) {
+        $.ajax({
+            url: "/HRM/HRMDataProvider/Employee_ValueMapper/",
+            data: {
+                value: options.value || 0,
+                status: 1,
+                excludeId: -1
+            },
+            success: function (data) {
+                options.success(data);
+            }
+        });
+    }
+
+    function convertValues(value) {
+        var data = {};
+
+        value = $.isArray(value) ? value : [value];
+
+        for (var idx = 0; idx < value.length; idx++) {
+            data["values[" + idx + "]"] = value[idx];
+        }
+
+        return data;
+    }
+</script>

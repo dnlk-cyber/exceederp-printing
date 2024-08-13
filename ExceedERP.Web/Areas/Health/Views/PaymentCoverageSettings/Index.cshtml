@@ -1,0 +1,86 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.Health
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*<legend>Health Setting</legend>*@
+
+
+@(Html.Kendo().TabStrip()
+          .Name("SettingTabStrip")
+          .Animation(animation =>
+          animation.Open(effect =>
+          effect.Fade(FadeDirection.In)))
+          .Items(tabstrip =>
+          {
+              tabstrip.Add()
+                      .Text("Payment Coverage Setting")
+                      .Selected(true)
+                      .Content(@<text>
+           @(Html.Kendo().Grid<PaymentCoverageSetting>()
+                  .Name("PaymentCoverageSettinggrid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.Payment).Width(200);
+                      columns.Bound(c => c.Description).Width(150);
+                      columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+                  })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Selectable(selectable =>
+                    {
+                        selectable.Mode(GridSelectionMode.Single);
+                        selectable.Type(GridSelectionType.Row);
+
+                    })
+
+                    .Scrollable(h => h.Height(500))
+                    .Groupable()
+                    .Sortable(sortable =>
+                    {
+                        sortable.SortMode(GridSortMode.SingleColumn);
+
+                    })
+                    .Filterable()
+                    .Pageable(pageable => pageable
+                       .Input(true)
+                       .Numeric(false)
+                       .Refresh(true)
+                       .PageSizes(true)
+                       .ButtonCount(5))
+                    .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(events =>
+                          {
+                              events.Error("error_handler(\"PaymentCoverageSettinggrid\")");
+                              events.RequestStart("onRequestStart(\"PaymentCoverageSettinggrid\")");
+                              events.RequestEnd("onRequestEnd(\"PaymentCoverageSettinggrid\")");
+
+                          })
+
+                            .Model(model => model.Id(p => p.PaymentCoverageSettingId))
+                            .Read(read => read.Action("PaymentCoverageSettings_Read", "PaymentCoverageSettings"))
+                            .Create(create => create.Action("PaymentCoverageSettings_Create", "PaymentCoverageSettings"))
+                            .Update(update => update.Action("PaymentCoverageSettings_Update", "PaymentCoverageSettings"))
+                            .Destroy(destroy => destroy.Action("PaymentCoverageSettings_Destroy", "PaymentCoverageSettings"))
+                            )
+)
+)
+                    </text>);
+
+
+
+})
+)
+
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

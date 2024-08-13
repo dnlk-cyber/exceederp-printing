@@ -55,7 +55,6 @@ using ExceedERP.Core.Domain.FleetManagement.FleetSalvageStore;
 using ExceedERP.Core.Domain.FleetManagement.FleetTireManagement;
 using ExceedERP.Core.Domain.FleetManagement.FuelManagement;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
-using ExceedERP.Core.Domain.HRM.HealthAndInsurance;
 using ExceedERP.Core.Domain.HRM.LeaveManagment;
 using ExceedERP.Core.Domain.HRM.Payroll;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
@@ -122,6 +121,10 @@ using ExceedERP.Core.Domain.Planning.Project;
 using ExceedERP.Core.Domain.Planning;
 using ExceedERP.Core.Domain.Planning.BusinessPlanDevelopment;
 using ExceedERP.Core.Domain.FleetManagement;
+using ExceedERP.Core.Domain.Insurance.InsuranceNew;
+using ExceedERP.Core.Domain.Health;
+using ExceedERP.Core.Domain.Insurance;
+using ExceedERP.Core.Domain.Insurance.Setting;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -755,32 +758,9 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new HolidayEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new WeekendEntityTypeConfiguration());
             #endregion
-            #region Health and Insurance
-            modelBuilder.Configurations.Add(new ReferralFormEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ReferralSheetEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PatientsLeaveEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PrescriptionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new TreatmentEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PatientCardEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PatientCardDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new InsuranceEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new InsuranceGroupEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new AccidentRecordEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new AccidentMedicalRecordEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new RestitutionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CourtInsuranceEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new InsuranceTypeEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new InsuranceCategoryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new OtherInsuranceEntityTypeConfiguration());
-            //modelBuilder.Configurations.Add(new FixedAssetAccidentRecordEntityTypeConfiguration());
-            //modelBuilder.Configurations.Add(new VehicleAccidentDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PatientResultEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PatientResultDetailEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PatientDrugOrderEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new DiagnosisEntityTypeConfiguration());
-            #endregion
+         
             #region SelfCare
-            modelBuilder.Configurations.Add(new MedicalRequestEntityTypeConfiguration());
+           
             modelBuilder.Configurations.Add(new LeaveRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExperienceRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new TrainingApplicantEntityTypeConfiguration());
@@ -828,10 +808,10 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new DrugToTransferTemporaryListsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new DrugStoreTransferEntityTypeConfiguration());
 
-            modelBuilder.Configurations.Add(new LaboratoryCatagoryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LaboratoryTestsEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LaboratoryCatagoryPatientCardEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new LaboratoryTestPatientCardEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new LaboratoryCatagoryEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new LaboratoryTestsEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new LaboratoryCatagoryPatientCardEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new LaboratoryTestPatientCardEntityTypeConfiguration());
 
             modelBuilder.Configurations.Add(new LaboratoryDrugRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LaboratoryDrugRequestItemEntityTypeConfiguration());
@@ -1852,6 +1832,76 @@ namespace ExceedERP.DataAccess.Context
             #endregion
             #endregion
 
+            #region Health 
+            modelBuilder.Configurations.Add(new MedicalRequestEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new MedicalAttachmentEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new HealthRankAndValueSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new HealthResponsiblityLevelValueSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PaymentCoverageSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new HealthRankAndValueEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new HealthRankAndValueValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new HealthBenefitSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new HealthExpenseAndTaxSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new HealthAttachmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ReferralFormEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ReferralSheetEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PatientsLeaveEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrescriptionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TreatmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PatientCardEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PatientCardDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PatientResultEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PatientResultDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PatientDrugOrderEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new DiagnosisEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LaboratoryCatagoryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LaboratoryTestsEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LaboratoryTestPatientCardEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LaboratoryCatagoryPatientCardEntityTypeConfiguration());
+            #endregion
+            #region Insurance
+
+
+            modelBuilder.Configurations.Add(new InsuranceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InsuranceGroupEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AccidentRecordEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AccidentMedicalRecordEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new RestitutionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new CourtInsuranceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InsuranceTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InsuranceCategoryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new OtherInsuranceEntityTypeConfiguration());
+            #region New
+            modelBuilder.Configurations.Add(new EmployeeMedicalExpenseRefundEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new MedicalExpenseRefundAttachmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new MedicalExpenseRefundDepartmentApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new MedicalExpenseRefundApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeAccidentInsuranceClaimEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AccidentInsuranceClaimAttachmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AccidentInsuranceClaimDepartmentApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AccidentInsuranceClaimApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeAccidentCreditServiceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AccidentCreditServiceAttachmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AccidentCreditServiceDepartmentApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AccidentCreditServiceApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InsurancePolicyRenewalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PolicyRenewalAttachmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PolicyRenewalDepartmentApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PolicyRenewalApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EquipmentAccidentClaimEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EquipmentAccidentClaimAttachmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AccidentClaimDepartmentApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AccidentClaimApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FireAndLightningInsuranceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FireAndLightningInsuranceDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FireAndLightningInsuranceApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FireAndLightningInsuranceDepartmentApprovalEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FireAndLightningInsuranceAttachmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InsurancePaymentSettingEntityTypeConfiguration());
+
+            #endregion
+            #endregion
         }
         public DbSet<ConsProjectType> ConsProjectTypes { get; set; }
         #region Planning
@@ -2775,35 +2825,7 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<DisciplinaryCase> DisciplinaryCases { get; set; }
         public System.Data.Entity.DbSet<DisciplineMeasuerByMoney> DisciplineMeasuerByMoney { get; set; }
         #endregion
-
-        #region Health and Insurance
-        public System.Data.Entity.DbSet<HealthRankAndValue> HealthRankAndValues { get; set; }
-        public System.Data.Entity.DbSet<HealthRankAndValueSetting> HealthRankAndValueSettings { get; set; }
-        public System.Data.Entity.DbSet<ReferralForm> ReferralForm { get; set; }
-        public System.Data.Entity.DbSet<ReferralSheet> ReferralSheet { get; set; }
-        public System.Data.Entity.DbSet<PatientsLeave> PatientsLeave { get; set; }
-
-        public System.Data.Entity.DbSet<Treatment> Treatment { get; set; }
-        public System.Data.Entity.DbSet<PatientCard> PatientCard { get; set; }
-        public System.Data.Entity.DbSet<PatientCardDetail> PatientCardDetail { get; set; }
-        public System.Data.Entity.DbSet<InsuranceGroup> InsuranceGroup { get; set; }
-        public System.Data.Entity.DbSet<Insurance> Insurance { get; set; }
-        public System.Data.Entity.DbSet<AccidentRecord> AccidentRecords { get; set; }
-        public System.Data.Entity.DbSet<AccidentMedicalRecord> AccidentMedicalRecords { get; set; }
-        public System.Data.Entity.DbSet<Restitution> Restitutions { get; set; }
-        public System.Data.Entity.DbSet<CourtInsurance> CourtInsurance { get; set; }
-        public System.Data.Entity.DbSet<InsuranceType> InsuranceType { get; set; }
-        public System.Data.Entity.DbSet<InsuranceCategory> InsuranceCategory { get; set; }
-        public System.Data.Entity.DbSet<EmployeeAccident> EmployeeAccidents { get; set; }
-        public System.Data.Entity.DbSet<OtherInsurance> OtherInsurance { get; set; }
-        //public System.Data.Entity.DbSet<FixedAssetAccidentRecord> FixedAssetAccidentRecords { get; set; }
-        //public System.Data.Entity.DbSet<VehicleAccidentDetail> VehicleAccidentDetails { get; set; }
-        public System.Data.Entity.DbSet<PatientResult> PatientResults { get; set; }
-        public System.Data.Entity.DbSet<PatientResultDetail> PatientResultDetails { get; set; }
-        public System.Data.Entity.DbSet<PatientDrugOrder> PatientDrugOrders { get; set; }
-        public System.Data.Entity.DbSet<Diagnosis> Diagnosis { get; set; }
-        public System.Data.Entity.DbSet<Prescription> Prescription { get; set; }
-        #endregion        
+                
 
         #region Self Care
         public System.Data.Entity.DbSet<TrainingApplicant> TrainingApplicants { get; set; }
@@ -2883,10 +2905,10 @@ namespace ExceedERP.DataAccess.Context
         #region APTS
         public System.Data.Entity.DbSet<DrugToTransferTemporaryLists> DrugToTransferTemporaryLists { get; set; }
         public System.Data.Entity.DbSet<DrugStoreTransfer> DrugStoreTransfers { get; set; }
-        public DbSet<LaboratoryCatagory> LaboratoryCatagories { get; set; }
-        public DbSet<LaboratoryTests> LaboratoryTests { get; set; }
-        public DbSet<LaboratoryCatagoryPatientCard> LaboratoryCatagoryPatientCards { get; set; }
-        public DbSet<LaboratoryTestPatientCard> LaboratoryTestPatientCards { get; set; }
+       // public DbSet<LaboratoryCatagory> LaboratoryCatagories { get; set; }
+        //public DbSet<LaboratoryTests> LaboratoryTests { get; set; }
+       // public DbSet<LaboratoryCatagoryPatientCard> LaboratoryCatagoryPatientCards { get; set; }
+        //public DbSet<LaboratoryTestPatientCard> LaboratoryTestPatientCards { get; set; }
         public DbSet<LaboratoryDrugRequest> LaboratoryDrugRequests { get; set; }
         public DbSet<LaboratoryDrugRequestItem> LaboratoryDrugRequestItems { get; set; }
         public DbSet<EmergencyDrugRequest> EmergencyDrugRequests { get; set; }
@@ -4161,6 +4183,77 @@ namespace ExceedERP.DataAccess.Context
 
         #endregion
 
+        #region Health
+        public System.Data.Entity.DbSet<MedicalAttachment> MedicalAttachments { get; set; }
+        public System.Data.Entity.DbSet<HealthRankAndValue> HealthRankAndValues { get; set; }
+        public System.Data.Entity.DbSet<HealthRankAndValueValidation> HealthRankAndValueValidation { get; set; }
+        public System.Data.Entity.DbSet<HealthRankAndValueSetting> HealthRankAndValueSettings { get; set; }
+        public System.Data.Entity.DbSet<HealthResponsiblityLevelValueSetting> HealthResponsiblityLevelValueSettings { get; set; }
+        public System.Data.Entity.DbSet<PaymentCoverageSetting> PaymentCoverageSettings { get; set; }
+        public System.Data.Entity.DbSet<HealthBenefitSetting> HealthBenefitSettings { get; set; }
+        public System.Data.Entity.DbSet<HealthExpenseAndTaxSetting> HealthExpenseAndTaxSettings { get; set; }
+        public System.Data.Entity.DbSet<HealthAttachment> HealthAttachments { get; set; }
+        public System.Data.Entity.DbSet<ReferralForm> ReferralForm { get; set; }
+        public System.Data.Entity.DbSet<ReferralSheet> ReferralSheet { get; set; }
+        public System.Data.Entity.DbSet<PatientsLeave> PatientsLeave { get; set; }
+        public System.Data.Entity.DbSet<Treatment> Treatment { get; set; }
+        public System.Data.Entity.DbSet<PatientCard> PatientCard { get; set; }
+        public System.Data.Entity.DbSet<PatientCardDetail> PatientCardDetail { get; set; }
+        public System.Data.Entity.DbSet<PatientResult> PatientResults { get; set; }
+        public System.Data.Entity.DbSet<PatientResultDetail> PatientResultDetails { get; set; }
+        public System.Data.Entity.DbSet<PatientDrugOrder> PatientDrugOrders { get; set; }
+        public System.Data.Entity.DbSet<Diagnosis> Diagnosis { get; set; }
+        public System.Data.Entity.DbSet<Prescription> Prescription { get; set; }
+        public DbSet<LaboratoryTests> LaboratoryTests { get; set; }
+        public DbSet<LaboratoryCatagory> LaboratoryCatagories { get; set; }
+        public DbSet<LaboratoryTestPatientCard> LaboratoryTestPatientCards { get; set; }
+        public DbSet<LaboratoryCatagoryPatientCard> LaboratoryCatagoryPatientCards { get; set; }
+        #endregion
+        #region Insurance
+        public System.Data.Entity.DbSet<InsuranceGroup> InsuranceGroup { get; set; }
+        public System.Data.Entity.DbSet<Insurance> Insurance { get; set; }
+        public System.Data.Entity.DbSet<AccidentRecord> AccidentRecords { get; set; }
+        public System.Data.Entity.DbSet<AccidentMedicalRecord> AccidentMedicalRecords { get; set; }
+        public System.Data.Entity.DbSet<Restitution> Restitutions { get; set; }
+        public System.Data.Entity.DbSet<CourtInsurance> CourtInsurance { get; set; }
+        public System.Data.Entity.DbSet<InsuranceType> InsuranceType { get; set; }
+        public System.Data.Entity.DbSet<InsuranceCategory> InsuranceCategory { get; set; }
+        public System.Data.Entity.DbSet<EmployeeAccident> EmployeeAccidents { get; set; }
+        public System.Data.Entity.DbSet<OtherInsurance> OtherInsurance { get; set; }
+        public System.Data.Entity.DbSet<FixedAssetAccidentRecord> FixedAssetAccidentRecords { get; set; }
+        public System.Data.Entity.DbSet<VehicleAccidentDetail> VehicleAccidentDetails { get; set; }
+        #region new Insurance 
+        public System.Data.Entity.DbSet<EmployeeMedicalExpenseRefund> EmployeeMedicalExpenseRefunds { get; set; }
+        public System.Data.Entity.DbSet<MedicalExpenseRefundAttachment> MedicalExpenseRefundAttachments { get; set; }
+        public System.Data.Entity.DbSet<MedicalExpenseRefundDepartmentApproval> MedicalExpenseRefundDepartmentApprovals { get; set; }
+        public System.Data.Entity.DbSet<MedicalExpenseRefundApproval> MedicalExpenseRefundApprovals { get; set; }
+        public System.Data.Entity.DbSet<EmployeeAccidentInsuranceClaim> EmployeeAccidentInsuranceClaims { get; set; }
+        public System.Data.Entity.DbSet<AccidentInsuranceClaimAttachment> AccidentInsuranceClaimAttachments { get; set; }
+        public System.Data.Entity.DbSet<AccidentInsuranceClaimDepartmentApproval> AccidentInsuranceClaimDepartmentApprovals { get; set; }
+        public System.Data.Entity.DbSet<AccidentInsuranceClaimApproval> AccidentInsuranceClaimApprovals { get; set; }
+        public System.Data.Entity.DbSet<EmployeeAccidentCreditService> EmployeeAccidentCreditServices { get; set; }
+        public System.Data.Entity.DbSet<AccidentCreditServiceAttachment> AccidentCreditServiceAttachments { get; set; }
+        public System.Data.Entity.DbSet<AccidentCreditServiceDepartmentApproval> AccidentCreditServiceDepartmentApprovals { get; set; }
+        public System.Data.Entity.DbSet<AccidentCreditServiceApproval> AccidentCreditServiceApprovals { get; set; }
+        public System.Data.Entity.DbSet<InsurancePolicyRenewal> InsurancePolicyRenewals { get; set; }
+        public System.Data.Entity.DbSet<PolicyRenewalAttachment> PolicyRenewalAttachments { get; set; }
+        public System.Data.Entity.DbSet<PolicyRenewalDepartmentApproval> PolicyRenewalDepartmentApprovals { get; set; }
+        public System.Data.Entity.DbSet<PolicyRenewalApproval> PolicyRenewalApprovals { get; set; }
+        public System.Data.Entity.DbSet<EquipmentAccidentClaim> EquipmentAccidentClaims { get; set; }
+        public System.Data.Entity.DbSet<EquipmentAccidentClaimAttachment> EquipmentAccidentClaimAttachment { get; set; }
+        public System.Data.Entity.DbSet<AccidentClaimDepartmentApproval> AccidentClaimDepartmentApprovals { get; set; }
+        public System.Data.Entity.DbSet<AccidentClaimApproval> AccidentClaimApprovals { get; set; }
+        public System.Data.Entity.DbSet<FireAndLightningInsurance> FireAndLightningInsurances { get; set; }
+        public System.Data.Entity.DbSet<FireAndLightningInsuranceDetail> FireAndLightningInsuranceDetails { get; set; }
+        public System.Data.Entity.DbSet<FireAndLightningInsuranceAttachment> FireAndLightningInsuranceAttachment { get; set; }
+        public System.Data.Entity.DbSet<FireAndLightningInsuranceDepartmentApproval> FireAndLightningInsuranceDepartmentApprovals { get; set; }
+        public System.Data.Entity.DbSet<FireAndLightningInsuranceApproval> FireAndLightningInsuranceApprovals { get; set; }
+        public System.Data.Entity.DbSet<InsurancePaymentSetting> InsurancePaymentSettings { get; set; }
+
+
+
+        #endregion
+        #endregion
         //#region  Estimation
         //#region Printimg Estimation
         //public DbSet<PrintingStep> PrintingSteps { get; set; }

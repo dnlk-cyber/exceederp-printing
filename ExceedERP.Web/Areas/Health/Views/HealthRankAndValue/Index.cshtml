@@ -1,0 +1,471 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Health
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Health Value and Payment </legend>
+@(Html.Kendo().Grid<HealthRankAndValue>()
+       .Name("Healthgrid")
+       .Columns(columns =>
+       {
+
+           columns.Bound(c => c.PaymentRequestId).Title("Request Id ").Width(120);
+           // columns.Bound(c => c.EmployeeCode).Width(130).ClientGroupHeaderTemplate("#=value# // Total Used Amount : #=aggregates.UsedAmount.sum#");
+           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeList").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));//.ClientGroupFooterTemplate("#=aggregates.UsedAmount.sum#");
+           columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+           columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+           columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYear"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));//.ClientGroupHeaderTemplate("#=value# //  Used Amount Per Budget Year : #=aggregates.UsedAmount.sum# //  Remaining Per Budget Year : #=aggregates.RemainingAmount.min#");
+           columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Period"], "GLPeriodId", "Name").EditorTemplateName("GLFPeriods").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+           columns.Bound(c => c.RecoredDate).Hidden().Width(120);
+           columns.Bound(c => c.ClinicName).Width(120);
+           columns.Bound(c => c.DateAmh).EditorTemplateName("Calander").Width(130);
+           columns.Bound(c => c.RecoredDateAmh).EditorTemplateName("Calander").Width(130);
+           columns.Bound(c => c.AllowedAmount).Width(130);
+           columns.Bound(c => c.TotalPaid).Width(130);
+           columns.Bound(c => c.UsedAmount).Width(130);
+           columns.Bound(c => c.StaffContribution).Width(130);
+           columns.Bound(c => c.RemainingAmount).Width(150);
+           columns.Bound(c => c.BenefitType).Width(150);
+           columns.Bound(c => c.PaymentType).Width(150);
+           columns.Bound(c => c.PaymentCoverage).Width(150);
+           columns.Bound(c => c.IsOtherBenifit).Hidden();
+           columns.Bound(c => c.IsPartnerOrGov).ClientTemplate(
+             "<input type='checkbox' disabled = 'true' value='#= IsPartnerOrGov#' " +
+             "# if (IsPartnerOrGov) { #" +
+             "checked='checked'" +
+             "# } #" +
+             "/>").Width(140);
+           columns.Command(command =>
+           { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+               command.Destroy().Text(Resources.ActionButton_Cancel);
+
+           }).Width(200);
+
+
+       })
+       .ToolBar(toolbar =>
+       {
+           toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+       })
+       .Editable(editable => editable.Mode(GridEditMode.PopUp)
+            .TemplateName("HealthRankAndValue")
+            .Window(window =>
+            {
+                window.Title(Resources.Emyployee_Health_Value);
+
+            }))
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+        })
+        .Events(ev => {
+            ev.DetailExpand("onDetailExpandUser");
+        })
+        .Scrollable(h => h.Height(500))
+        .Sortable(sortable =>
+        {
+            sortable.SortMode(GridSortMode.SingleColumn);
+
+
+
+        })
+        .Filterable()
+        .Events(x =>
+        {
+            x.Edit("GetDate");
+            x.Save("GetDate");
+        })
+        .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .Aggregates(x =>
+        {
+            x.Add(f => f.UsedAmount).Sum();
+            x.Add(f => f.RemainingAmount).Min();
+
+        })
+        .Sort(sort => sort.Add(x => x.HealthRankAndValueId).Descending())
+        //.Group(x => x.Add(p => p.EmployeeCode))
+        //.Group(x => x.Add(p => p.EmployeeId))
+        //.Group(x => x.Add(p => p.GlFiscalYearId))
+        .Events(events =>
+        {
+            events.Error("error_handler(\"Healthgrid\")");
+            events.RequestStart("onRequestStart(\"Healthgrid\")");
+            events.RequestEnd("onRequestEnd(\"Healthgrid\")");
+
+
+
+        })
+        .Model(model =>
+        {
+            model.Id(p => p.HealthRankAndValueId);
+            model.Field(p => p.AllowedAmount).Editable(false);
+            model.Field(p => p.UsedAmount).Editable(false);
+            model.Field(p => p.StaffContribution).Editable(false);
+            model.Field(p => p.RemainingAmount).Editable(false);
+            model.Field(p => p.BranchId).Editable(false);
+            //model.Field(p => p.EmployeeCode).Editable(false);
+            model.Field(p => p.PaymentRequestId).Editable(false);
+
+
+        })
+        .Read(read => read.Action("HealthRankAndValue_Read", "HealthRankAndValue"))
+        .Create(create => create.Action("HealthRankAndValue_Create", "HealthRankAndValue"))
+        .Update(update => update.Action("HealthRankAndValue_Update", "HealthRankAndValue"))
+        .Destroy(destroy => destroy.Action("HealthRankAndValue_Destroy", "HealthRankAndValue"))
+        ).ClientDetailTemplateId("Rank_Value_template")
+)
+
+@(Html.Kendo().Window().Name("IncomingAttachementWindow")
+        .Title(Resources.UploadFile)
+        .Visible(false)
+        .Modal(true)
+          .Content(@<text>
+
+          
+            <input type="text" id="HealthAttachmentId" name="HealthAttachmentId" hidden />
+            <div class="editor-field">
+                <input type="file" name="letter" id="letter[]" class="form-control" multiple />
+            </div>
+
+            <br />
+            <div class="editor-field">
+                @Html.TextArea("description", null, new { placeholder = "Description", style = "width: 90%; max-width: 90%;height:60%" })
+            </div>
+            <br />
+
+           
+
+            <div class="pull-right">
+                @Html.Kendo().Button().Name("btnTo").Content("Upload").Events(e => e.Click("AttachArchiveFiles"))
+
+            </div>
+
+        </text>)
+                .Pinned(true)
+                .Draggable(true)
+                .Width(300)
+)
+
+<script id="Rank_Value_template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=HealthRankAndValueId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+
+
+            items.Add().Text("Validation").Content(
+            @<text>
+                           
+                @(Html.Kendo().Grid<HealthRankAndValueValidation>()
+                    .Name("Validation_grid#=HealthRankAndValueId#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.Status).Width(150);
+                        columns.Bound(c => c.Remark).Width(150);
+                        columns.Command(command =>
+                        {
+                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { id = "ccEditButton" });
+                            command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { id = "ccDeleteButton" });
+
+                        });
+
+
+                    })
+                    .ToolBar(toolbar =>
+                    {
+
+                        toolbar.Create().Text(Resources.ActionButton_AddNewRecord).HtmlAttributes(new { id = "ccAddButton" });
+
+                    })
+                    .Events(e =>
+                    {
+                        e.DataBound("onDetailDataBound");
+
+                    })
+
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Scrollable()
+                    .Selectable()
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Events(events =>
+                        {
+                            events.Error("error_handler(\"Validation_grid#=HealthRankAndValueId#\")");
+                            events.RequestStart("onRequestStart(\"Validation_grid#=HealthRankAndValueId#\")");
+                            events.RequestEnd("onRequestEnd(\"Validation_grid#=HealthRankAndValueId#\")");
+
+                        })
+
+
+                        .Model(model => model.Id(p => p.HealthRankAndValueValidationId))
+                        .Read(read => read.Action("HealthRankAndValueValidation_Read", "HealthRankAndValueValidation", new { vId = "#=HealthRankAndValueId#" }))
+                        .Create(create => create.Action("HealthRankAndValueValidation_Create", "HealthRankAndValueValidation", new { vId = "#=HealthRankAndValueId#" }))
+                        .Update(update => update.Action("HealthRankAndValueValidation_Update", "HealthRankAndValueValidation"))
+                        .Destroy(destroy => destroy.Action("HealthRankAndValueValidation_Destroy", "HealthRankAndValueValidation"))
+
+
+                        ).ToClientTemplate()
+                        )
+
+                        </text>);
+                        items.Add().Text("Attachments").Content(
+                        @<text>
+                                                
+                                <button onclick='UploadFile(#=HealthRankAndValueId#)' class='fa fa-upload btn btn-primary'>&nbsp;Upload </button>
+
+                            @(Html.Kendo().Grid<HealthAttachment>()
+                                    .Name("HealthAttachmentGrid#=HealthRankAndValueId#")
+                                    .Columns(columns =>
+                                    {
+
+                                        columns.Bound(c => c.FileName).ClientTemplate("<a href='/Health/HealthAttachments/DownloadAttachment?healthAttachmentId=\\#=HealthAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+
+                                        columns.Template(e => { }).ClientTemplate("<a href='/Health/HealthAttachments/DownloadAttachment?healthAttachmentId=\\#=HealthAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
+                                        columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+
+                                        columns.Command(command =>
+                                        {
+                                            command.Destroy().Text("Delete");
+                                        }).Width(300);
+
+                                    })
+                                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument")
+                                    .Window(window =>
+                                    {
+                                        window.Title("");
+                                        window.Scrollable(false);
+                                    }))
+                                    .Scrollable(h => h.Height("auto"))
+                                    .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Sort(sort => sort.Add(c => c.HealthAttachmentId).Descending())
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"HealthAttachmentGrid#=HealthRankAndValueId#\")");
+                                        events.RequestStart("onRequestStart(\"HealthAttachmentGrid#=HealthRankAndValueId#\")");
+                                        events.RequestEnd("onRequestEnd(\"HealthAttachmentGrid#=HealthRankAndValueId#\")");
+                                    })
+                                    .Model(model => model.Id(p => p.HealthAttachmentId))
+                                    .Read(read => read.Action("HealthAttachments_Read", "HealthAttachments", new { id = "#=HealthRankAndValueId#", area = "Health" }))
+                                    .Create(create => create.Action("HealthAttachments_Create", "HealthAttachments", new { id = "#=HealthRankAndValueId#", area = "Health" }))
+                                    .Update(update => update.Action("HealthAttachments_Update", "HealthAttachments"))
+                                    .Destroy(destroy => destroy.Action("HealthAttachments_Destroy", "HealthAttachments"))
+                                    ).ToClientTemplate())
+                        </text>);
+
+
+                    }).ToClientTemplate()
+                    )
+</script>
+
+
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+    function GetDate() {
+
+        $("#DateAmh").trigger("change");
+        $("#RecoredDateAmh").trigger("change");
+    }
+
+</script>
+
+<script>
+    function OpenAttachementWindow() {
+
+        $("#Healthgrid").val(masterId);
+
+        var wnd = $("#IncomingAttachementWindow").data("kendoWindow");
+        wnd.center().open();
+    }
+    function filterperiods() {
+
+        return {
+            GlFiscalYearId: $("#GlFiscalYearId").val()
+        };
+    }
+
+
+    var masterId = 0;
+     function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+         var masterGrid = $("#Healthgrid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+         masterId = masterDataItem.HealthRankAndValueId;
+         var gridName = "#Validation_grid" + masterId;
+        $.ajax({
+            url: '@Url.Action("CheckStatuses", "HealthRankAndValueValidation")',
+
+            data: { masterId: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r == "true") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).remove();
+                }
+
+                else if (r == "false") {
+                    $(gridName).find(".k-toolbar").show(); //hide toolbar
+                    //$(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).show();
+                    $(".k-grid-delete", gridName).show();
+                }
+            }
+
+        });
+
+    }
+    function onDetailDataBound(e) {
+        var gridName = "#Validation_grid" + masterId;
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+            if (dataItem.Status == 0) {
+
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+              //  $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                $(".k-grid-top", gridName).remove();
+                row.css("background-color", "gray");
+            }
+            if (dataItem.IsDirect === false) {
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find("#approve").hide();
+            }
+
+        }
+    }
+</script>
+<script>
+    function onBranch(e) {
+        var branchId = $("#BenefitType").data("kendoDropDownList").value();
+        console.log("the branchId="+branchId);
+    }
+    function EnableDisableBenefitType(e) {
+        var x = $('#IsOtherBenifit').is(':checked');;
+        if (x == true) {
+
+            $("#BenefitType").data("kendoDropDownList").enable(true);
+            // Disable the checkbox
+            $("#IsPartnerOrGov").prop("disabled", true);
+
+
+        }
+        else {
+
+            $("#BenefitType").data("kendoDropDownList").enable(false);
+            $("#BenefitType").data("kendoDropDownList").enable(false);
+
+            $("#IsPartnerOrGov").prop("disabled", false);
+
+            // $("#ProformaId").data("kendoDropDownList").value(0);//.trigger("change");
+            $("#BenefitType").data("kendoDropDownList").val(0);
+            $("#BenefitType").trigger("change");
+        }
+    
+    }
+
+    function AttachArchiveFiles() {
+        try {
+           
+            $.ajax({
+                url: '@Url.Action("UploadIncomingHealthFiles", "HealthAttachments")',
+                //contentType: "application/json; charset=utf-8",
+                data: function () {
+                    var data = new FormData();
+
+                   // var kkk = $("#letter").get(0).files[0];
+                    $.each($("input[type=file]"), function (i, obj) {
+                        $.each(obj.files, function (j, file) {
+                            data.append('letter[' + j + ']', file);
+                        })
+                    });
+
+                    //data.append("file", $("#letter").get(0).files[0]);
+                    data.append("description", $("#description").val());
+                    data.append("masterId", masterId);
+                  
+                    return data;
+                }(),
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (result) {
+                    var wnd = $("#IncomingAttachementWindow").data("kendoWindow");
+                    wnd.close();
+
+                    $("#HealthAttachmentGrid" + masterId).data("kendoGrid").dataSource.read();
+                    //$("#IncommingLetterRegistration").data("kendoGrid").dataSource.read();
+                }
+            });
+        } catch (e) {
+            // alert("Please select the row!!");
+        }
+    }
+    function UploadFile(id) {
+        $("#masterId").val(id);
+        var wnd = $("#UploadDoc").data("kendoWindow");
+        wnd.center().open();
+    }
+</script>
+
+
+@(Html.Kendo().Window()
+                    .Name("UploadDoc")
+                    .Title("Upload File")
+                    .Visible(false)
+                    .Modal(true)
+                    .Draggable(true)
+                    .Width(400).Content(
+                    @<text>
+                        <div class="form-group">
+                            <form action="@Url.Action("UploadIncomingHealthFiles", "HealthAttachments", new { })" method="post" , new { enctype="multipart/form-data" }>
+                                <input type="hidden" name="masterId" id="masterId">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        @Html.TextBox("file", "", new { type = "file", required = "true" })
+                                        <br />
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="editor-field">
+                                        @Html.TextArea("Description", null, new { placeholder = "Description", style = "width: 90%; max-width: 90%;height:60%" })
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-7"></div>
+                                    <input type="submit" class="btn-primary k-button" value=" Submit " />
+                                </div>
+
+                            </form>
+                            <div class="pull-right">
+
+                            </div>
+                        </div>
+                    </text>)
+)

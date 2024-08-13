@@ -1,0 +1,141 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Insurance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorHealthAndInsurance_OtherInsurance</legend>
+@(Html.Kendo().Grid<OtherInsurance>()
+      .Name("OtherInsurance")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.InsuranceTypeId, (IEnumerable)ViewData["InsuranceType"], "InsuranceTypeId", "Name").EditorTemplateName("Type").Width(150);
+          columns.ForeignKey(c => c.InsuranceCategoryId, (IEnumerable)ViewData["InsuranceCategory"], "InsuranceCategoryId", "Name").EditorTemplateName("Category").Width(150);
+          columns.Bound(c => c.FromInsuranceAmhric).EditorTemplateName("Calander").Width(200);
+          columns.Bound(c => c.ToInsuranceAmharic).EditorTemplateName("Calander").Width(200);
+          columns.Bound(c => c.SumofInsured).Width(150);
+          columns.Bound(c => c.Rate).Width(150);
+          columns.Bound(c => c.Premium).Width(150);
+          columns.Bound(c => c.Stamp).Width(150);
+          columns.Bound(c => c.ThirdParty).Width(150);
+          columns.Bound(c => c.Total).Width(150);
+          //columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("Insurance_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("Insurance_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          if (HttpContext.Current.User.IsInRole("Insurance_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("OtherInsurance").Window(window => { window.Title(Resources.NavigatorRecruitment_RecruitmentRequest); window.Scrollable(false); }))
+          .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+                  .Events(e => { e.Save("GetDate");
+                      e.Edit("GetDate"); })
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+               {
+                   events.Error("error_handler(\"OtherInsurance\")");
+                   events.RequestStart("onRequestStart(\"OtherInsurance\")");
+                   events.RequestEnd("onRequestEnd(\"OtherInsurance\")");
+               })
+
+              .Model(model => { model.Id(p => p.OtherInsuranceId);
+                  model.Field(p => p.Premium).Editable (false);
+                  model.Field(p => p.Total).Editable (false);})
+          .Read(read => read.Action("OtherInsurance_Read", "OtherInsurance"))
+          .Create(create => create.Action("OtherInsurance_Create", "OtherInsurance"))
+          .Update(update => update.Action("OtherInsurance_Update", "OtherInsurance"))
+          .Destroy(destroy => destroy.Action("OtherInsurance_Destroy", "OtherInsurance"))
+      )
+)
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 900px;
+    }
+</style>
+
+<script>
+function GetDate( )
+    {
+
+        var x = AssignDate();
+        var y = x;
+        $("#ToInsuranceAmharic").trigger("change");
+        $("#FromInsuranceAmhric").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "OtherInsurance")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                r = result;
+                }
+
+                });
+                }
+                }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+
+   
+
+</script>
+<script>
+    function filterCategory() {
+        return {
+            InsuranceTypeId: $("#InsuranceTypeId").val()
+        };
+    }
+</script>

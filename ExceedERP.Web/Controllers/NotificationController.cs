@@ -10,7 +10,6 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM;
-using ExceedERP.Core.Domain.HRM.HealthAndInsurance;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Helpers.Common;

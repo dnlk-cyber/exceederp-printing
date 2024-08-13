@@ -1,0 +1,218 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsurance
+@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>PPE Insurance</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsurance>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.InsuranceTypeId, (IEnumerable)ViewData["InsuranceType"], "InsuranceTypeId", "Name").Width(150);
+          columns.ForeignKey(c => c.InsuranceCategoryId, (IEnumerable)ViewData["InsuranceCatagory"], "InsuranceCategoryId", "Name").Width(150);
+          columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["Equipment"], "FleetsID", "EquipmentName").Width(150);
+        
+          columns.Bound(o => o.Description).Width(150);
+          columns.Bound(o => o.City).Width(150);
+          columns.Bound(o => o.DueDate).Width(150);
+          columns.Bound(o => o.ExpireDate).Width(150);
+
+          columns.Bound(o => o.InsuranceCompany).Width(150);
+          columns.Bound(o => o.PremiumCost).Format("{0:d}").Width(150);
+          columns.Bound(o => o.Status).Width(150);
+
+
+          columns.Command(command =>
+          {
+
+
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+
+          }).Width(300);
+
+      })
+      // .ToolBar(commands => commands.Create())
+      //.Events(ev =>
+      //{
+      //    ev.DataBound("onDataBound"); ev.DetailExpand("onDetailExpand");
+      //})
+      .Editable(editable =>
+      {
+          editable.Mode(GridEditMode.PopUp).TemplateName("Insurance");//.Window(x => x.Title("Accident Registration "));
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Accident");
+      })
+           .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                             .Scrollable(h => h.Height(500))
+                                .ClientDetailTemplateId("template")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .ServerOperation(false)
+          .Model(model =>
+          {
+              model.Id(p => p.FleetInsuranceID);
+
+          })
+                               .Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+          .Create(update => update.Action("PPEInsurance_Create", "PPEInsurance"))
+          .Read(read => read.Action("PPEInsurance_Read", "PPEInsurance"))
+          .Update(update => update.Action("PPEInsurance_Update", "PPEInsurance"))
+          .Destroy(update => update.Action("PPEInsurance_Destroy", "PPEInsurance"))
+      ))
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                 .Name("tabStrip_#=FleetInsuranceID#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+                items.Add().Text("Detail").Content(
+                    @<text>
+                        <div>
+                            @*<div class="box">
+
+                                                               <div class="box-col">
+                                                                   # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                                                   {#
+                                <a href='@Url.Action("SendForOnlineApproval", "AccidentRegistration")/?Id=#=AccidentID#' title="Send for Insurance"><i class="fa fa-share-square fa-2x"></i></a>
+                                                                   # }#
+
+
+                                                               </div>
+                                                           </div>*@
+                            <div class="demo-section k-header export-app">
+                                <div class="demo-section content-wrapper">
+
+                                    <form>
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.CreatedBy)
+                                                    </div>
+                                                    <div>
+                                                        #=CreatedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.DateCreated)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.ModifiedBy)
+                                                    </div>
+                                                    <div>
+
+                                                        #=ModifiedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.LastModified)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </text>
+
+
+            );
+            })
+                                                                                                                                                                                                                                                                                                                        .ToClientTemplate())
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 550px;
+    }
+</style>
+
+<script>
+
+    var IsApproved;
+    var IsSendForApproved;
+    var masterId;
+
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.RentFromExternalID;
+        IsApproved = masterDataItem.IsOnlineApproved;
+        IsSendForApproved = masterDataItem.IsSendForApproval;
+
+        var FleetInsuranceTypegrid = "#FleetInsuranceTypegrid" + masterId;
+        if (IsSendForApproved == true) {
+            $(FleetInsuranceTypegrid).find(".k-toolbar").hide(); //hide toolbar
+            $(".k-grid-top", FleetInsuranceTypegrid).remove();
+        }
+    }
+    function onDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+             if (dataItem.IsSendForApproval == true || dataItem.IsSendForApproval == "true") {
+                  $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+             }
+        });
+    }
+</script>
+<script>
+    function filterCategories() {
+        return {
+            InsuranceTypeId: $("#InsuranceTypeId").val()
+            //searchText: $("#LookupId").data("kendoDropDownList").filterInput.val()
+        };
+    }
+</script>

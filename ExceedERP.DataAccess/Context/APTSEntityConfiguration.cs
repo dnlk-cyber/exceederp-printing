@@ -16,7 +16,6 @@ using ExceedERP.Core.Domain.HRM.Attendance;
 using ExceedERP.Core.Domain.HRM.Company;
 using ExceedERP.Core.Domain.HRM.Discipline;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
-using ExceedERP.Core.Domain.HRM.HealthAndInsurance;
 using ExceedERP.Core.Domain.HRM.HRMPlan;
 using ExceedERP.Core.Domain.HRM.LeaveManagment;
 using ExceedERP.Core.Domain.HRM.Letters;
@@ -27,6 +26,7 @@ using ExceedERP.Core.Domain.HRM.SalaryStructure;
 using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.Core.Domain.APTS;
+using ExceedERP.Core.Domain.Health;
 
 namespace ExceedERP.DataAccess
 {
@@ -66,46 +66,46 @@ namespace ExceedERP.DataAccess
 
         }
     }
-    public class LaboratoryCatagoryEntityTypeConfiguration : EntityTypeConfiguration<LaboratoryCatagory>
-    {
+    //public class LaboratoryCatagoryEntityTypeConfiguration : EntityTypeConfiguration<LaboratoryCatagory>
+    //{
 
-        public LaboratoryCatagoryEntityTypeConfiguration()
-        {
-            this.ToTable("LaboratoryCatagory", "APTS");
-            this.HasKey<int>(o => o.LaboratoryCatagoryId);
+    //    public LaboratoryCatagoryEntityTypeConfiguration()
+    //    {
+    //        this.ToTable("LaboratoryCatagory", "APTS");
+    //        this.HasKey<int>(o => o.LaboratoryCatagoryId);
 
-        }
-    }
-    public class LaboratoryTestsEntityTypeConfiguration : EntityTypeConfiguration<LaboratoryTests>
-    {
+    //    }
+    //}
+    //public class LaboratoryTestsEntityTypeConfiguration : EntityTypeConfiguration<LaboratoryTests>
+    //{
 
-        public LaboratoryTestsEntityTypeConfiguration()
-        {
-            this.ToTable("LaboratoryTests", "APTS");
-            this.HasKey<int>(o => o.LaboratoryTestsId);
+    //    public LaboratoryTestsEntityTypeConfiguration()
+    //    {
+    //        this.ToTable("LaboratoryTests", "APTS");
+    //        this.HasKey<int>(o => o.LaboratoryTestsId);
 
-        }
-    }
-    public class LaboratoryCatagoryPatientCardEntityTypeConfiguration : EntityTypeConfiguration<LaboratoryCatagoryPatientCard>
-    {
+    //    }
+    //}
+    //public class LaboratoryCatagoryPatientCardEntityTypeConfiguration : EntityTypeConfiguration<LaboratoryCatagoryPatientCard>
+    //{
 
-        public LaboratoryCatagoryPatientCardEntityTypeConfiguration()
-        {
-            this.ToTable("LaboratoryCatagoryPatientCard", "APTS");
-            this.HasKey<int>(o => o.LaboratoryCatagoryPatientCardId);
+    //    public LaboratoryCatagoryPatientCardEntityTypeConfiguration()
+    //    {
+    //        this.ToTable("LaboratoryCatagoryPatientCard", "APTS");
+    //        this.HasKey<int>(o => o.LaboratoryCatagoryPatientCardId);
 
-        }
-    }
-    public class LaboratoryTestPatientCardEntityTypeConfiguration : EntityTypeConfiguration<LaboratoryTestPatientCard>
-    {
+    //    }
+    //}
+    //public class LaboratoryTestPatientCardEntityTypeConfiguration : EntityTypeConfiguration<LaboratoryTestPatientCard>
+    //{
 
-        public LaboratoryTestPatientCardEntityTypeConfiguration()
-        {
-            this.ToTable("LaboratoryTestPatientCard", "APTS");
-            this.HasKey<int>(o => o.LaboratoryTestPatientCardId);
+    //    public LaboratoryTestPatientCardEntityTypeConfiguration()
+    //    {
+    //        this.ToTable("LaboratoryTestPatientCard", "APTS");
+    //        this.HasKey<int>(o => o.LaboratoryTestPatientCardId);
 
-        }
-    }
+    //    }
+    //}
 
     public class APTSRequestStatusEntityTypeConfiguration : EntityTypeConfiguration<APTSRequestStatus>
     {

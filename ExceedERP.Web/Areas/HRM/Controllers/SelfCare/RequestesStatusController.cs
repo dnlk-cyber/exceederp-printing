@@ -27,7 +27,7 @@ using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.Helpers.HR;
 using ExceedERP.Core.Domain.HRM.Payroll;
-using ExceedERP.Core.Domain.HRM.HealthAndInsurance;
+using ExceedERP.Core.Domain.Health;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
