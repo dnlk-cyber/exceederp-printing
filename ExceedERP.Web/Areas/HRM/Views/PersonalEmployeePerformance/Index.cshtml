@@ -196,7 +196,7 @@
                           <label id="result" style="color:red">  </label>
 
                           <br />
-                          <label>Approval : </label>
+                          <label>Submission : </label>
                           <br />
                           <label id="approval" style="color:red">  </label>
                            
@@ -387,6 +387,10 @@
                 document.getElementById("weight").innerHTML = r.Weight;
                 document.getElementById("result").innerHTML = r.Result;
                 document.getElementById("approval").innerHTML = r.Approval;
+                if (r.Approval === "Submitted") {
+                    document.getElementById("approveButtonStyle").style.display = "none";
+
+                }
             }
 
         });
@@ -507,11 +511,12 @@
 
                         if (r == "true")
                         {
-                            document.getElementById("approval").innerHTML = "Approved";
+                            document.getElementById("approval").innerHTML = "Submitted";
                         }
                         else {
-                            document.getElementById("approval").innerHTML = "Not Approved";
+                            document.getElementById("approval").innerHTML = "Not Submitted";
                         }
+                        var grid = $("#Measurementgrid").data("kendoGrid");
                         grid.dataSource.read();
                     }
 

@@ -204,18 +204,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         public JsonResult GetEvaluationWeightandResult(int evaluationCriteriaId, int employeeId, int yearId, int periodId)
         {
             decimal result = 0;
-            string approval = "Not Approved";
+            string approval = "Not Submitted";
 
             var employeePerformance = db.EmployeePerformances.FirstOrDefault(x => x.EmployeeId == employeeId && x.GlFiscalYearId == yearId && x.GlPeriodId == periodId && x.EvaluationCriteriaTypeId == evaluationCriteriaId);
             if (employeePerformance != null)
             {
                 if (employeePerformance.IsApproved)
                 {
-                    approval = "Approved";
+                    approval = "Submitted";
                 }
                 else
                 {
-                    approval = "Not Approved";
+                    approval = "Not Submitted";
                 }
 
                 var empMeasurments = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == employeePerformance.EmployeePerformanceId).ToList();

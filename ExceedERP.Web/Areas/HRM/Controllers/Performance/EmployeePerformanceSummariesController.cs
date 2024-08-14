@@ -158,7 +158,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
            // var subordinates = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(id);
             var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(id);
             var employeePerformances = db.EmployeePerformances
-                                .Where(x => x.IsApproved && subordinates.Contains(x.EmployeeId) &&x.EmployeeId!=id).DistinctBy(x => new
+                                .Where(x => x.IsApproved 
+                                && subordinates.Contains(x.EmployeeId) 
+                                &&x.EmployeeId!=id).DistinctBy(x => new
                                 {
                                     x.EmployeeId,
                                     x.GlFiscalYearId,
@@ -197,7 +199,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             //List<int> employees = GetActiveEmployeeFromCurrentUserBranch(User.Identity.Name);
             //var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             //var subordinates = EmployeeHelper.GetSubordinates(id);
-            var employeePerformances = db.EmployeePerformances.Where(x => x.EmployeeId==employeeId&&x.GlFiscalYearId==fiscalyearId&&x.GlPeriodId==quarterId&x.IsApproved).ToList();     
+            var employeePerformances = db.EmployeePerformances.Where(x => x.EmployeeId==employeeId
+                                                                        &&x.GlFiscalYearId==fiscalyearId
+                                                                        &&x.GlPeriodId==quarterId
+                                                                        &&x.IsApproved).ToList();     
             //IQueryable<EmployeePerformance> employeePerformances = db.EmployeePerformances;
             DataSourceResult result = employeePerformances.ToDataSourceResult(request, employeePerformance => new
             {
