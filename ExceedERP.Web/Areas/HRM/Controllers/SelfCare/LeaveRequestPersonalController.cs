@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -63,8 +63,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             ViewData["EmployeeName"] = employeName;
 
 
-            ViewData["UserName"] = dbApplication.Users.ToList();
+           // ViewData["UserName"] = dbApplication.Users.ToList();
             ViewData["Department"] = db.MainCompanyStructures.ToList();
+            var branches = db.Branch;
+            ViewData["branches"] = branches;
+            var businessUnits = db.BusinessUnits;
+            ViewData["businessUnits"] = businessUnits;
 
         }
         public void SetDate(string name, string value)
@@ -294,7 +298,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
         public bool CheckStatusForBackColor(int leaveId)
         {
-            var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Leave").FirstOrDefault();
+            var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && (x.Status == RequestStatus.APPROVE||x.Status == RequestStatus.DEPARTMENT_APPROVAL) && x.ReferenceType == "Leave").FirstOrDefault();
             if (reques != null)
             {
                 return true;
@@ -307,7 +311,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             foreach (var leave in leaveRequests)
             {
-                if (leave.Type != LeaveType.ANNUAL)
+                if (leave.Type != LeaveType.ANNUAL|| leave.Type != LeaveType.DayOff)
                 {
                     var requestStatus = db.RequestesStatus.FirstOrDefault(x => x.RequestId == leave.LeaveRequestId && x.Status == RequestStatus.APPROVE);
                     if (requestStatus != null)
@@ -419,258 +423,204 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             return Json(result);
         }
+
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult LeaveRequestPersonal_Create([DataSourceRequest]DataSourceRequest request, LeaveRequest leaveRequest)
+        public ActionResult LeaveRequestPersonal_Create([DataSourceRequest] DataSourceRequest request, LeaveRequest leaveRequest)
         {
-            int count = 0;
-            double weekDays = 0;
-            int holidays = 0;
             ModelState.Clear();
             decimal entitleBal = 0;
 
             #region Pre Conditions for validation
 
-            if (leaveRequest.FromAmharic != null)
+            if (string.IsNullOrEmpty(leaveRequest.FromAmharic) || string.IsNullOrEmpty(leaveRequest.ToAmharic))
             {
-                var splitDate = leaveRequest.FromAmharic.Split('/');
-                leaveRequest.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            else
-            {
-                ModelState.AddModelError("", "From Date is mandatory");
-            }
-            if (leaveRequest.ToAmharic != null)
-            {
-                var splitDate = leaveRequest.ToAmharic.Split('/');
-                leaveRequest.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            else
-            {
-                ModelState.AddModelError("", "To Date is mandatory");
+                ModelState.AddModelError("", "Both From and To Date fields are mandatory");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
 
-            if (leaveRequest.From.Date > leaveRequest.To.Date)
+            leaveRequest.From = ParseEthiopicDate(leaveRequest.FromAmharic);
+            leaveRequest.To = ParseEthiopicDate(leaveRequest.ToAmharic);
+
+            if (leaveRequest.From > leaveRequest.To)
             {
-                ModelState.AddModelError("", "Date From should less or equal to date To!!");
+                ModelState.AddModelError("", "From Date field should be less or equal to To date field!!");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
 
-            var per = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom <= leaveRequest.From.Date && x.DateTo >= leaveRequest.From.Date);
-            if (per == null)
+            //if (leaveRequest.From < DateTime.Now.Date)
+            //{
+            //    ModelState.AddModelError("", "From date must not be a past date!!");
+            //    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+            //}
+
+            var fiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom <= leaveRequest.From && x.DateTo >= leaveRequest.From);
+            if (fiscalYear == null)
             {
-                var messages = "Check your Period if it defined";
-                return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+                return new JavaScriptResult { Script = "alert('Check your Period if it is defined');" };
             }
 
-            leaveRequest.LeaveDays = GetLeaveDays(leaveRequest.From, leaveRequest.To, per.GlFiscalYearId, leaveRequest.Day, leaveRequest.Type);
+            leaveRequest.LeaveDays = GetLeaveDays(leaveRequest.From, leaveRequest.To, fiscalYear.GlFiscalYearId, leaveRequest.Day, leaveRequest.Type);
 
-
-            if (!leaveRequest.IsForOther)
-            {
-                leaveRequest.EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            }
-            else
-            {
-                leaveRequest.EmployeeId = leaveRequest.EmployeeId;
-            }
+            leaveRequest.EmployeeId = leaveRequest.IsForOther ? leaveRequest.EmployeeId : UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
             if (leaveRequest.EmployeeId == 0)
             {
-                ModelState.AddModelError("", "Please select employee First!! Or refresh the page to clear the cach");
+                ModelState.AddModelError("", "Please select an employee first!! Or refresh the page to clear the cache");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
+
             #endregion
 
             #region Validations
 
-          
-            var entitleBalan = db.LeavesEntitle.Where(x => x.EmployeeId == leaveRequest.EmployeeId && !x.IsExpired);
+            entitleBal = db.LeavesEntitle.Where(x => x.EmployeeId == leaveRequest.EmployeeId && !x.IsExpired).Sum(x => x.Balance);
 
-            if (entitleBalan.Any())
-            {
-                entitleBal = entitleBalan.Sum(x => x.Balance);
-            }
             if (leaveRequest.LeaveDays > entitleBal && leaveRequest.Type == LeaveType.ANNUAL)
             {
-                ModelState.AddModelError("", "you requested more than your balance");
+                ModelState.AddModelError("", "You requested more than your balance");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
-            var leaveReqPrev = db.LeaveRequest.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && ((x.From <= leaveRequest.From && x.To >= leaveRequest.From) || (x.From <= leaveRequest.To && x.To >= leaveRequest.To)));
-            if (leaveReqPrev != null)
+
+            if (db.LeaveRequest.Any(x => x.EmployeeId == leaveRequest.EmployeeId && ((x.From <= leaveRequest.From && x.To >= leaveRequest.From) || (x.From <= leaveRequest.To && x.To >= leaveRequest.To))))
             {
-                ModelState.AddModelError("", "Your request is overlap with other request");
+                ModelState.AddModelError("", "Your request overlaps with another request");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
-            var emp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId);
-            if (emp != null && leaveRequest.Type == LeaveType.MATERNITY && emp.Gender == Gender.MALE)
+
+            var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId&&x.IsActive);
+            if (employee != null)
             {
-                ModelState.AddModelError("", "Male can't take Maternity Leave ");
-            }
-            if (leaveRequest.Type == LeaveType.MATERNITY)
-            {
-                var config = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == LeaveHrmSetting.Maternitiy.ToString());
-                if (config != null)
+                if (leaveRequest.Type == LeaveType.MATERNITY && employee.Gender == Gender.MALE)
                 {
-                    var allowedDays = Convert.ToDecimal(config.CurrentValue);
-                    if (leaveRequest.LeaveDays > allowedDays)
+                    ModelState.AddModelError("", "Males can't take Maternity Leave");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+                }
+
+                if (leaveRequest.Type == LeaveType.PATERNITY && employee.Gender == Gender.FEMALE)
+                {
+                    ModelState.AddModelError("", "Females can't take Paternity Leave");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+                }
+
+                if (leaveRequest.Type == LeaveType.MATERNITY)
+                {
+                    var config = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == LeaveHrmSetting.Maternitiy.ToString());
+                    if (config != null)
                     {
-                        ModelState.AddModelError("", "You are requesting maternity leave above the setting value");
-                    }
-                    var maternityRequests = db.LeaveRequest.Where(x=>x.Type == LeaveType.MATERNITY &&  x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId).ToList();
-                    if(maternityRequests.Any())
-                    {
-                        var totalAskedMaternity = maternityRequests.Sum(x => x.LeaveDays) + leaveRequest.LeaveDays;
-                        if(totalAskedMaternity > allowedDays)
+                        var allowedDays = Convert.ToDecimal(config.CurrentValue);
+                        if (leaveRequest.LeaveDays > allowedDays)
                         {
-                            ModelState.AddModelError("", "You can't take materinit leave more than "+allowedDays +" in one year, check your previous maternity leave request");
+                            ModelState.AddModelError("", "You are requesting maternity leave above the setted Maximum value");
+                            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+                        }
+
+                        var maternityRequests = db.LeaveRequest.Where(x => x.Type == LeaveType.MATERNITY && x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == fiscalYear.GlFiscalYearId).ToList();
+                        if (maternityRequests.Any() && maternityRequests.Sum(x => x.LeaveDays) + leaveRequest.LeaveDays > allowedDays)
+                        {
+                            ModelState.AddModelError("", $"You can't take maternity leave more than {allowedDays} days in one year, check your previous maternity leave requests");
+                            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                         }
                     }
                 }
             }
-            if (emp != null && leaveRequest.Type == LeaveType.PATERNITY && emp.Gender == Gender.FEMALE)
-            {
-                ModelState.AddModelError("", "Female can't take Paternity Leave ");
-            }
+
             if (leaveRequest.LeaveActionTypes == LeaveActionTypes.Forced)
             {
                 if (leaveRequest.Type != LeaveType.ANNUAL && leaveRequest.Type != LeaveType.OTHER && leaveRequest.Type != LeaveType.Leave_With_Out_Pay)
                 {
-                    ModelState.AddModelError("", "You can't take Forced Leave for " + leaveRequest.Type + " it's allowed for only Annual,Leave without pay and Other leave types");
+                    ModelState.AddModelError("", $"You can't take Forced Leave for {leaveRequest.Type}, it's allowed only for Annual, Leave without pay, and Other leave types");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
             }
 
-
             if (leaveRequest.Type == LeaveType.ANNUAL)
             {
-
-                var leavePlans = db.LeavePlans.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId);
-                if (leavePlans != null && leaveRequest.LeaveActionTypes == LeaveActionTypes.With_Plan)
+                var leavePlan = db.LeavePlans.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
+                if (leavePlan != null && leaveRequest.LeaveActionTypes == LeaveActionTypes.With_Plan)
                 {
-                    if (leaveRequest.From.Date >= leavePlans.From.Date && leaveRequest.To.Date <= leavePlans.To.Date)
+                    if (leaveRequest.From < leavePlan.From || leaveRequest.To > leavePlan.To || leaveRequest.LeaveDays > leavePlan.LeaveAmount)
                     {
-
-                        if (leaveRequest.LeaveDays > leavePlans.LeaveAmount)
-                        {
-                            ModelState.AddModelError("", "The requested amount is greater than your plan!!");
-                        }
-
-
+                        ModelState.AddModelError("", "The requested leave amount or dates are outside of your plan");
+                        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                     }
-                    else if (leaveRequest.From.Date < leavePlans.From.Date || leaveRequest.To.Date > leavePlans.To.Date)
-                    {
-                        ModelState.AddModelError("", "Date you select is out of your Plan date range!!");
-                    }
-
                 }
                 else if (leaveRequest.LeaveActionTypes == LeaveActionTypes.With_Plan)
                 {
-                    ModelState.AddModelError("", "You should set leave plan for this period!!");
+                    ModelState.AddModelError("", "You should set a leave plan for this period!!");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
-
             }
 
             if (leaveRequest.LeaveDays == 0)
             {
                 ModelState.AddModelError("", "Leave Days must be greater than 0!!");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
 
-
-            var leave = db.Leaves.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId);
-            if (leave != null)
+            var existingLeave = db.Leaves.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
+            if (existingLeave != null)
             {
-                if (leaveRequest.From.Date >= leave.From && leaveRequest.From.Date <= leave.To)
+                if ((leaveRequest.From >= existingLeave.From && leaveRequest.From <= existingLeave.To) || (leaveRequest.To >= existingLeave.From && leaveRequest.To <= existingLeave.To))
                 {
-                    ModelState.AddModelError("", "Intial date overlap other leave taken date. please select other date range");
-                }
-                if (leaveRequest.To.Date >= leave.From && leaveRequest.To.Date <= leave.To)
-                {
-                    ModelState.AddModelError("", "End date over lapother leave taken date. please select other date range");
+                    ModelState.AddModelError("", "Selected date range overlaps with other leave taken date. Please select another date range");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
             }
 
-            var entitelCurrentYear = db.LeavesEntitle.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId);
-
-            if (entitelCurrentYear != null && leaveRequest.Type == LeaveType.ANNUAL)
+            var entitleCurrentYear = db.LeavesEntitle.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
+            if (entitleCurrentYear != null && leaveRequest.Type == LeaveType.ANNUAL)
             {
-                var workedDays = (leaveRequest.To - per.DateFrom.Date).Days;
+                var totalEntitle = entitleBal;
+                var exactDeserve = GetEmployeeDeserveLeaveDays(fiscalYear.DateFrom, leaveRequest.To, entitleCurrentYear.Amount, entitleCurrentYear.Balance, totalEntitle);
+                var currentYearDeserve = GetCurrentYearDeserve(fiscalYear.DateFrom, leaveRequest.To, entitleCurrentYear.Amount);
 
-                var totalEntitle = entitleBalan.Sum(x => x.Balance);
-
-                var exactDeserve = GetEmployeeDeserveLeaveDays(per.DateFrom, leaveRequest.To, entitelCurrentYear.Amount, entitelCurrentYear.Balance, totalEntitle);
-
-                //var leaveRequests = db.LeaveRequest.Where(x => x.EmployeeId == EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId && x.Type == LeaveType.ANNUAL);
-                //if (leaveRequests.Any())
-                //{
-                var currentYearDeserve = GetCurrentYearDeserve(per.DateFrom, leaveRequest.To, entitelCurrentYear.Amount);
-                var currentYearBalance = entitelCurrentYear.Balance;
-                var currentYearEntitle = entitelCurrentYear.Amount;
-
-                var previousLeftBalance = GetPreviosYearLeftBalance(entitelCurrentYear.Balance, totalEntitle);
-                // var leaveRequestedDays = leaveRequests.Sum(x => x.LeaveDays);
-                //var leftBalance = exactDeserve - leaveRequestedDays;
-
-                if (previousLeftBalance == 0 && leaveRequest.LeaveDays > currentYearDeserve && leaveRequest.Type == LeaveType.ANNUAL)
+                if (exactDeserve == 0 || leaveRequest.LeaveDays > exactDeserve)
                 {
-                    ModelState.AddModelError("", "you can't take this amount of leave  in this period ");
+                    ModelState.AddModelError("", "You can't take this amount of leave in this period");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
 
-                if (leaveRequest.LeaveDays > previousLeftBalance && leaveRequest.Type == LeaveType.ANNUAL)
+                var leaveRequests = db.LeaveRequest.Where(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == fiscalYear.GlFiscalYearId && x.Type == LeaveType.ANNUAL && !x.IsOnlineApproved);
+                if (leaveRequests.Any())
                 {
-                    var neededFromCurrentYear = leaveRequest.LeaveDays - previousLeftBalance;
-                    var takenFromCurrentYear = currentYearEntitle - currentYearBalance;
-                    var needed = takenFromCurrentYear + neededFromCurrentYear;
-                    if (neededFromCurrentYear > currentYearDeserve)
+                    var leaveRequestedDays = leaveRequests.Sum(x => x.LeaveDays);
+                    var totalNeeded = leaveRequestedDays + leaveRequest.LeaveDays;
+                    if (totalNeeded > exactDeserve)
                     {
-                        ModelState.AddModelError("", "you request exceed your deserve amount");
-                    }
-                    if (needed > currentYearDeserve)
-                    {
-                        ModelState.AddModelError("", "you request exceed your left deserve amount");
-                    }
-                    var leaveRequests = db.LeaveRequest.Where(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId && x.Type == LeaveType.ANNUAL && !x.IsOnlineApproved);
-                    if (leaveRequests.Any())
-                    {
-                        var leaveRequestedDays = leaveRequests.Sum(x => x.LeaveDays);
-                        var sumofRequest = leaveRequestedDays + leaveRequest.LeaveDays;
-
-                        if (sumofRequest > previousLeftBalance)
-                        {
-                            var neededFromNow = sumofRequest - previousLeftBalance;
-                            var totalNeeded = neededFromNow + takenFromCurrentYear;
-                            if (neededFromNow > currentYearDeserve)
-                            {
-                                ModelState.AddModelError("", "you have other waiting requests so sum of days exceed your deserve amount");
-                            }
-                            if (totalNeeded > currentYearDeserve)
-                            {
-                                ModelState.AddModelError("", "you have other waiting requests so sum of days exceed your left deserve amount");
-                            }
-                        }
+                        ModelState.AddModelError("", "You have other waiting requests so the sum of days exceeds your deserved amount");
+                        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                     }
                 }
-
-                //}               
-
             }
             else if (leaveRequest.Type == LeaveType.ANNUAL)
             {
                 ModelState.AddModelError("", "You have no entitlement for this budget year");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
+            var placement = db.Placements.Where(x => x.EmployeeId == leaveRequest.EmployeeId && x.isCurrent == true).FirstOrDefault();
 
+            if (placement != null)
+            {
+                leaveRequest.BranchId = placement.BranchId;
+                leaveRequest.BusinessUnitId = placement.BusinessUnitId;
+            }
+            else
+            {
+                ModelState.AddModelError("placement", "Employee does not have a current placement");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+            }
             #endregion
 
             if (ModelState.IsValid)
             {
+                var totalBalance = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == leaveRequest.EmployeeId).Sum(x => x.Balance);
+                leaveRequest.LeaveActionTypes = leaveRequest.Type != LeaveType.ANNUAL ? LeaveActionTypes.Without_Plan : leaveRequest.LeaveActionTypes;
 
-                var total = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == leaveRequest.EmployeeId);
-                if (total.Any())
-                {
-                    Total = total.Sum(x => x.Balance);
-                }
-                if (leaveRequest.Type != LeaveType.ANNUAL)
-                {
-                    leaveRequest.LeaveActionTypes = LeaveActionTypes.Without_Plan;
-                }
-
-                var entity = new LeaveRequest
+                var newRequest = new LeaveRequest
                 {
                     EmployeeId = leaveRequest.EmployeeId,
+                    BranchId = leaveRequest.BranchId,
                     From = leaveRequest.From,
                     To = leaveRequest.To,
                     LeaveDays = leaveRequest.LeaveDays,
@@ -678,9 +628,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     LeaveActionTypes = leaveRequest.LeaveActionTypes,
                     Reason = leaveRequest.Reason,
                     Remark = leaveRequest.Remark,
-                    GlFiscalYearId = per.GlFiscalYearId,//leaveRequest.GlFiscalYearId,
+                    GlFiscalYearId = fiscalYear.GlFiscalYearId,
                     RequestDate = DateTime.Now,
-                    LeaveBalance = Total,
+                    LeaveBalance = totalBalance,
                     FromAmharic = leaveRequest.FromAmharic,
                     ToAmharic = leaveRequest.ToAmharic,
                     Day = leaveRequest.Day,
@@ -688,310 +638,596 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     Hours = leaveRequest.Hours,
                     IsForOther = leaveRequest.IsForOther,
                     EmployeeCode = inputs.GetEmployeeCode(leaveRequest.EmployeeId),
-                    RequesterId = UserInformationHelper.GetEmployeeId(User.Identity.Name),
-
+                    RequesterId = UserInformationHelper.GetEmployeeId(User.Identity.Name)
                 };
 
-
-
-                //entity.From = leaveRequest.From;
-                //entity.To = leaveRequest.To;
-
-                db.LeaveRequest.Add(entity);
+                db.LeaveRequest.Add(newRequest);
                 db.SaveChanges();
-                leaveRequest.LeaveRequestId = entity.LeaveRequestId;
-                IsForOther = false;
+                leaveRequest.LeaveRequestId = newRequest.LeaveRequestId;
 
-                #region Commented
-
-                //if (entity.Type == LeaveType.ANNUAL)
-                //{
-                //    entity.LeaveDays = leaveRequest.To.Subtract(leaveRequest.From).Days + 1 - count;
-                //    entity.LeaveDays = entity.LeaveDays - Convert.ToDecimal(weekDays);
-                //    if (entity.Day == LeaveDay.ግማሽ_ቀን)
-                //    {
-                //        decimal checkWeekEnd = leaveRequest.To.Subtract(leaveRequest.From).Days + 1 - count;
-                //        double amt = GetHalf(leaveRequest.From, leaveRequest.To);
-                //        double notHalf = GetNotHalf(leaveRequest.From, leaveRequest.To);
-                //        bool isHalf = IsHalf(leaveRequest.From, leaveRequest.To);
-                //        if (isHalf)
-                //        {
-                //            entity.LeaveDays = (checkWeekEnd - Convert.ToDecimal(notHalf)) / 2;
-                //        }
-                //        else
-                //        {
-                //            entity.LeaveDays = entity.LeaveDays / 2;
-                //        }
-
-                //    }
-
-                //    decimal days = entity.LeaveDays * 8;
-                //    decimal leaveDays = entity.LeaveDays * entity.Hours;
-                //    entity.LeaveDays = (days - leaveDays) / 8;
-
-                //    db.LeaveRequest.Add(entity);
-                //    db.SaveChanges();
-                //    leaveRequest.LeaveRequestId = entity.LeaveRequestId;
-                //    IsForOther = false;
-
-
-                //}
-                //else
-                //{
-
-                //    entity.LeaveDays = leaveRequest.To.Subtract(leaveRequest.From).Days + 1;
-                //    if (entity.Day == LeaveDay.ግማሽ_ቀን)
-                //    {
-                //        entity.LeaveDays = entity.LeaveDays / 2;
-                //    }
-
-                //    db.LeaveRequest.Add(entity);
-                //    db.SaveChanges();
-                //    leaveRequest.LeaveRequestId = entity.LeaveRequestId;
-                //    IsForOther = false;
-
-                //}
-
-                #endregion
-
-                #region operation log
-
-                UserHelper.OperationLog(Request.UserHostAddress, "LeaveRequestPersonal ", "Success", User.Identity.Name, User.Identity.Name + " Reqeust Leave of Type " + entity.Type + " Leave Request Id " + entity.LeaveRequestId, Modules.HRM);
-
-                #endregion
-
-
+                UserHelper.OperationLog(Request.UserHostAddress, "LeaveRequestPersonal", "Success", User.Identity.Name, $"{User.Identity.Name} requested leave of type {newRequest.Type}, Leave Request Id {newRequest.LeaveRequestId}", Modules.HRM);
             }
 
             return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
         }
+        
+
+        // [AcceptVerbs(HttpVerbs.Post)]
+        //public ActionResult LeaveRequestPersonal_Create([DataSourceRequest]DataSourceRequest request, LeaveRequest leaveRequest)
+        //{
+        //    int count = 0;
+        //    double weekDays = 0;
+        //    int holidays = 0;
+        //    ModelState.Clear();
+        //    decimal entitleBal = 0;
+
+        //    #region Pre Conditions for validation
+        //    if (leaveRequest.FromAmharic == null || leaveRequest.ToAmharic == null)
+        //    {
+        //        ModelState.AddModelError("", "Both From   and To Date fields are mandatory");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //    }
+
+        //    var splitFromDate = leaveRequest.FromAmharic.Split('/');
+        //    leaveRequest.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitFromDate[0]), Convert.ToInt32(splitFromDate[1]), Convert.ToInt32(splitFromDate[2]));
+
+        //    var splitToDate = leaveRequest.ToAmharic.Split('/');
+        //    leaveRequest.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitToDate[0]), Convert.ToInt32(splitToDate[1]), Convert.ToInt32(splitToDate[2]));
+
+        //    if (leaveRequest.From.Date > leaveRequest.To.Date)
+        //    {
+        //        ModelState.AddModelError("", "From Date field  should less or equal to  To date field!!");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //    }
+        //    if (leaveRequest.From.Date < DateTime.Now.Date)
+        //    {
+        //        ModelState.AddModelError("", "From date must not be past date!!");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //    }
+
+        //    var per = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom <= leaveRequest.From.Date && x.DateTo >= leaveRequest.From.Date);
+        //    if (per == null)
+        //    {
+        //        var messages = "Check your Period if it defined";
+        //        return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+        //    }
+
+        //    leaveRequest.LeaveDays = GetLeaveDays(leaveRequest.From, leaveRequest.To, per.GlFiscalYearId, leaveRequest.Day, leaveRequest.Type);
+
+
+        //    if (!leaveRequest.IsForOther)
+        //    {
+        //        leaveRequest.EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+        //    }
+        //    else
+        //    {
+        //        leaveRequest.EmployeeId = leaveRequest.EmployeeId;
+        //    }
+
+        //    if (leaveRequest.EmployeeId == 0)
+        //    {
+        //        ModelState.AddModelError("", "Please select employee First!! Or refresh the page to clear the cach");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //    }
+        //    #endregion
+
+        //    #region Validations
+
+
+        //    var entitleBalan = db.LeavesEntitle.Where(x => x.EmployeeId == leaveRequest.EmployeeId && !x.IsExpired);
+
+        //    if (entitleBalan.Any())
+        //    {
+        //        entitleBal = entitleBalan.Sum(x => x.Balance);
+        //    }
+        //    if (leaveRequest.LeaveDays > entitleBal && leaveRequest.Type == LeaveType.ANNUAL)
+        //    {
+        //        ModelState.AddModelError("", "you requested more than your balance");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //    }
+        //    var leaveReqPrev = db.LeaveRequest.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && ((x.From <= leaveRequest.From && x.To >= leaveRequest.From) || (x.From <= leaveRequest.To && x.To >= leaveRequest.To)));
+        //    if (leaveReqPrev != null)
+        //    {
+        //        ModelState.AddModelError("", "Your request is overlap with other request");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //    }
+        //    var emp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId);
+        //    if (emp != null && leaveRequest.Type == LeaveType.MATERNITY && emp.Gender == Gender.MALE)
+        //    {
+        //        ModelState.AddModelError("", "Male can't take Maternity Leave ");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //    }
+        //    if (leaveRequest.Type == LeaveType.MATERNITY)
+        //    {
+        //        var config = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == LeaveHrmSetting.Maternitiy.ToString());
+        //        if (config != null)
+        //        {
+        //            var allowedDays = Convert.ToDecimal(config.CurrentValue);
+        //            if (leaveRequest.LeaveDays > allowedDays)
+        //            {
+        //                ModelState.AddModelError("", "You are requesting maternity leave above the setting value");
+        //                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //            }
+        //            var maternityRequests = db.LeaveRequest.Where(x=>x.Type == LeaveType.MATERNITY &&  x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId).ToList();
+        //            if(maternityRequests.Any())
+        //            {
+        //                var totalAskedMaternity = maternityRequests.Sum(x => x.LeaveDays) + leaveRequest.LeaveDays;
+        //                if(totalAskedMaternity > allowedDays)
+        //                {
+        //                    ModelState.AddModelError("", "You can't take materinit leave more than "+allowedDays +" in one year, check your previous maternity leave request");
+        //                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //                }
+        //            }
+        //        }
+        //    }
+        //    if (emp != null && leaveRequest.Type == LeaveType.PATERNITY && emp.Gender == Gender.FEMALE)
+        //    {
+        //        ModelState.AddModelError("", "Female can't take Paternity Leave ");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //    }
+        //    if (leaveRequest.LeaveActionTypes == LeaveActionTypes.Forced)
+        //    {
+        //        if (leaveRequest.Type != LeaveType.ANNUAL && leaveRequest.Type != LeaveType.OTHER && leaveRequest.Type != LeaveType.Leave_With_Out_Pay)
+        //        {
+        //            ModelState.AddModelError("", "You can't take Forced Leave for " + leaveRequest.Type + " it's allowed for only Annual,Leave without pay and Other leave types");
+        //            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //        }
+        //    }
+
+
+        //    if (leaveRequest.Type == LeaveType.ANNUAL)
+        //    {
+
+        //        var leavePlans = db.LeavePlans.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId);
+        //        if (leavePlans != null && leaveRequest.LeaveActionTypes == LeaveActionTypes.With_Plan)
+        //        {
+        //            if (leaveRequest.From.Date >= leavePlans.From.Date && leaveRequest.To.Date <= leavePlans.To.Date)
+        //            {
+
+        //                if (leaveRequest.LeaveDays > leavePlans.LeaveAmount)
+        //                {
+        //                    ModelState.AddModelError("", "The requested amount is greater than your plan!!");
+        //                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //                }
+
+
+        //            }
+        //            else if (leaveRequest.From.Date < leavePlans.From.Date || leaveRequest.To.Date > leavePlans.To.Date)
+        //            {
+        //                ModelState.AddModelError("", "Date you select is out of your Plan date range!!");
+        //                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //            }
+
+        //        }
+        //        else if (leaveRequest.LeaveActionTypes == LeaveActionTypes.With_Plan)
+        //        {
+        //            ModelState.AddModelError("", "You should set leave plan for this period!!");
+        //            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //        }
+
+        //    }
+
+        //    if (leaveRequest.LeaveDays == 0)
+        //    {
+        //        ModelState.AddModelError("", "Leave Days must be greater than 0!!");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //    }
+
+
+        //    var leave = db.Leaves.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId);
+        //    if (leave != null)
+        //    {
+        //        if (leaveRequest.From.Date >= leave.From && leaveRequest.From.Date <= leave.To)
+        //        {
+        //            ModelState.AddModelError("", "Intial date overlap other leave taken date. please select other date range");
+        //            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //        }
+        //        if (leaveRequest.To.Date >= leave.From && leaveRequest.To.Date <= leave.To)
+        //        {
+        //            ModelState.AddModelError("", "End date over lapother leave taken date. please select other date range");
+        //            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //        }
+        //    }
+
+        //    var entitelCurrentYear = db.LeavesEntitle.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId);
+
+        //    if (entitelCurrentYear != null && leaveRequest.Type == LeaveType.ANNUAL)
+        //    {
+        //        var workedDays = (leaveRequest.To - per.DateFrom.Date).Days;
+
+        //        var totalEntitle = entitleBalan.Sum(x => x.Balance);
+
+        //        var exactDeserve = GetEmployeeDeserveLeaveDays(per.DateFrom, leaveRequest.To, entitelCurrentYear.Amount, entitelCurrentYear.Balance, totalEntitle);
+
+        //        //var leaveRequests = db.LeaveRequest.Where(x => x.EmployeeId == EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId && x.Type == LeaveType.ANNUAL);
+        //        //if (leaveRequests.Any())
+        //        //{
+        //        var currentYearDeserve = GetCurrentYearDeserve(per.DateFrom, leaveRequest.To, entitelCurrentYear.Amount);
+        //        var currentYearBalance = entitelCurrentYear.Balance;
+        //        var currentYearEntitle = entitelCurrentYear.Amount;
+
+        //        var previousLeftBalance = GetPreviosYearLeftBalance(entitelCurrentYear.Balance, totalEntitle);
+        //        // var leaveRequestedDays = leaveRequests.Sum(x => x.LeaveDays);
+        //        //var leftBalance = exactDeserve - leaveRequestedDays;
+
+        //        if (previousLeftBalance == 0 && leaveRequest.LeaveDays > currentYearDeserve && leaveRequest.Type == LeaveType.ANNUAL)
+        //        {
+        //            ModelState.AddModelError("", "you can't take this amount of leave  in this period ");
+        //            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //        }
+
+        //        if (leaveRequest.LeaveDays > previousLeftBalance && leaveRequest.Type == LeaveType.ANNUAL)
+        //        {
+        //            var neededFromCurrentYear = leaveRequest.LeaveDays - previousLeftBalance;
+        //            var takenFromCurrentYear = currentYearEntitle - currentYearBalance;
+        //            var needed = takenFromCurrentYear + neededFromCurrentYear;
+        //            if (neededFromCurrentYear > currentYearDeserve)
+        //            {
+        //                ModelState.AddModelError("", "you request exceed your deserve amount");
+        //                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //            }
+        //            if (needed > currentYearDeserve)
+        //            {
+        //                ModelState.AddModelError("", "you request exceed your left deserve amount");
+        //                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //            }
+        //            var leaveRequests = db.LeaveRequest.Where(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId && x.Type == LeaveType.ANNUAL && !x.IsOnlineApproved);
+        //            if (leaveRequests.Any())
+        //            {
+        //                var leaveRequestedDays = leaveRequests.Sum(x => x.LeaveDays);
+        //                var sumofRequest = leaveRequestedDays + leaveRequest.LeaveDays;
+
+        //                if (sumofRequest > previousLeftBalance)
+        //                {
+        //                    var neededFromNow = sumofRequest - previousLeftBalance;
+        //                    var totalNeeded = neededFromNow + takenFromCurrentYear;
+        //                    if (neededFromNow > currentYearDeserve)
+        //                    {
+        //                        ModelState.AddModelError("", "you have other waiting requests so sum of days exceed your deserve amount");
+        //                        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //                    }
+        //                    if (totalNeeded > currentYearDeserve)
+        //                    {
+        //                        ModelState.AddModelError("", "you have other waiting requests so sum of days exceed your left deserve amount");
+        //                        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //        //}               
+
+        //    }
+        //    else if (leaveRequest.Type == LeaveType.ANNUAL)
+        //    {
+        //        ModelState.AddModelError("", "You have no entitlement for this budget year");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //    }
+
+        //    #endregion
+
+        //    if (ModelState.IsValid)
+        //    {
+
+        //        var total = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == leaveRequest.EmployeeId);
+        //        if (total.Any())
+        //        {
+        //            Total = total.Sum(x => x.Balance);
+        //        }
+        //        if (leaveRequest.Type != LeaveType.ANNUAL)
+        //        {
+        //            leaveRequest.LeaveActionTypes = LeaveActionTypes.Without_Plan;
+        //        }
+
+        //        var entity = new LeaveRequest
+        //        {
+        //            EmployeeId = leaveRequest.EmployeeId,
+        //            BranchId = leaveRequest.BranchId,
+        //            From = leaveRequest.From,
+        //            To = leaveRequest.To,
+        //            LeaveDays = leaveRequest.LeaveDays,
+        //            Type = leaveRequest.Type,
+        //            LeaveActionTypes = leaveRequest.LeaveActionTypes,
+        //            Reason = leaveRequest.Reason,
+        //            Remark = leaveRequest.Remark,
+        //            GlFiscalYearId = per.GlFiscalYearId,//leaveRequest.GlFiscalYearId,
+        //            RequestDate = DateTime.Now,
+        //            LeaveBalance = Total,
+        //            FromAmharic = leaveRequest.FromAmharic,
+        //            ToAmharic = leaveRequest.ToAmharic,
+        //            Day = leaveRequest.Day,
+        //            MorningOrAfternoon = leaveRequest.MorningOrAfternoon,
+        //            Hours = leaveRequest.Hours,
+        //            IsForOther = leaveRequest.IsForOther,
+        //            EmployeeCode = inputs.GetEmployeeCode(leaveRequest.EmployeeId),
+        //            RequesterId = UserInformationHelper.GetEmployeeId(User.Identity.Name),
+
+        //        };
+        //        //entity.From = leaveRequest.From;
+        //        //entity.To = leaveRequest.To;
+        //        db.LeaveRequest.Add(entity);
+        //        db.SaveChanges();
+        //        leaveRequest.LeaveRequestId = entity.LeaveRequestId;
+        //        IsForOther = false;
+
+        //        #region Commented
+
+        //        //if (entity.Type == LeaveType.ANNUAL)
+        //        //{
+        //        //    entity.LeaveDays = leaveRequest.To.Subtract(leaveRequest.From).Days + 1 - count;
+        //        //    entity.LeaveDays = entity.LeaveDays - Convert.ToDecimal(weekDays);
+        //        //    if (entity.Day == LeaveDay.ግማሽ_ቀን)
+        //        //    {
+        //        //        decimal checkWeekEnd = leaveRequest.To.Subtract(leaveRequest.From).Days + 1 - count;
+        //        //        double amt = GetHalf(leaveRequest.From, leaveRequest.To);
+        //        //        double notHalf = GetNotHalf(leaveRequest.From, leaveRequest.To);
+        //        //        bool isHalf = IsHalf(leaveRequest.From, leaveRequest.To);
+        //        //        if (isHalf)
+        //        //        {
+        //        //            entity.LeaveDays = (checkWeekEnd - Convert.ToDecimal(notHalf)) / 2;
+        //        //        }
+        //        //        else
+        //        //        {
+        //        //            entity.LeaveDays = entity.LeaveDays / 2;
+        //        //        }
+
+        //        //    }
+
+        //        //    decimal days = entity.LeaveDays * 8;
+        //        //    decimal leaveDays = entity.LeaveDays * entity.Hours;
+        //        //    entity.LeaveDays = (days - leaveDays) / 8;
+
+        //        //    db.LeaveRequest.Add(entity);
+        //        //    db.SaveChanges();
+        //        //    leaveRequest.LeaveRequestId = entity.LeaveRequestId;
+        //        //    IsForOther = false;
+
+
+        //        //}
+        //        //else
+        //        //{
+
+        //        //    entity.LeaveDays = leaveRequest.To.Subtract(leaveRequest.From).Days + 1;
+        //        //    if (entity.Day == LeaveDay.ግማሽ_ቀን)
+        //        //    {
+        //        //        entity.LeaveDays = entity.LeaveDays / 2;
+        //        //    }
+
+        //        //    db.LeaveRequest.Add(entity);
+        //        //    db.SaveChanges();
+        //        //    leaveRequest.LeaveRequestId = entity.LeaveRequestId;
+        //        //    IsForOther = false;
+
+        //        //}
+
+        //        #endregion
+
+        //        #region operation log
+
+        //        UserHelper.OperationLog(Request.UserHostAddress, "LeaveRequestPersonal ", "Success", User.Identity.Name, User.Identity.Name + " Reqeust Leave of Type " + entity.Type + " Leave Request Id " + entity.LeaveRequestId, Modules.HRM);
+
+        //        #endregion
+
+
+        //    }
+
+        //    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //}
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeaveRequestPersonal_Update([DataSourceRequest]DataSourceRequest request, LeaveRequest leaveRequest)
         {
-            int count = 0;
-            double weekDays = 0;
-            int holidays = 0;
             ModelState.Clear();
-            if (leaveRequest.IsOnlineApproved)
+            decimal entitleBal = 0;
+
+            #region Pre Conditions for validation
+
+            if (string.IsNullOrEmpty(leaveRequest.FromAmharic) || string.IsNullOrEmpty(leaveRequest.ToAmharic))
             {
-                ModelState.AddModelError("", "you can't modify approved requestes");
+                ModelState.AddModelError("", "Both From and To Date fields are mandatory");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
 
+            leaveRequest.From = ParseEthiopicDate(leaveRequest.FromAmharic);
+            leaveRequest.To = ParseEthiopicDate(leaveRequest.ToAmharic);
 
-            #region Pre Requestes 
-            if (leaveRequest.FromAmharic != null)
+            if (leaveRequest.From > leaveRequest.To)
             {
-                var splitDate = leaveRequest.FromAmharic.Split('/');
-                leaveRequest.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            else
-            {
-                ModelState.AddModelError("", "From Date is mandatory");
-            }
-            if (leaveRequest.ToAmharic != null)
-            {
-                var splitDate = leaveRequest.ToAmharic.Split('/');
-                leaveRequest.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            else
-            {
-                ModelState.AddModelError("", "To Date is mandatory");
+                ModelState.AddModelError("", "From Date field should be less or equal to To date field!!");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
 
-            var per = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom <= leaveRequest.From.Date && x.DateTo >= leaveRequest.From.Date);
-            if (per == null)
+            //if (leaveRequest.From < DateTime.Now.Date)
+            //{
+            //    ModelState.AddModelError("", "From date must not be a past date!!");
+            //    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+            //}
+
+            var fiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom <= leaveRequest.From && x.DateTo >= leaveRequest.From);
+            if (fiscalYear == null)
             {
-                var messages = "Check your Period if it defined";
-                return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+                return new JavaScriptResult { Script = "alert('Check your Period if it is defined');" };
             }
 
-            leaveRequest.LeaveDays = GetLeaveDays(leaveRequest.From, leaveRequest.To, per.GlFiscalYearId, leaveRequest.Day, leaveRequest.Type);
+            leaveRequest.LeaveDays = GetLeaveDays(leaveRequest.From, leaveRequest.To, fiscalYear.GlFiscalYearId, leaveRequest.Day, leaveRequest.Type);
+
+            leaveRequest.EmployeeId = leaveRequest.IsForOther ? leaveRequest.EmployeeId : UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+            if (leaveRequest.EmployeeId == 0)
+            {
+                ModelState.AddModelError("", "Please select an employee first!! Or refresh the page to clear the cache");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+            }
 
             #endregion
 
-            decimal entitleBal = 0;
-            var entitleBalan = db.LeavesEntitle.Where(x => x.EmployeeId == leaveRequest.EmployeeId && !x.IsExpired);
+            #region Validations
 
-            if (entitleBalan.Any())
-            {
-                entitleBal = entitleBalan.Sum(x => x.Balance);
-            }
+            entitleBal = db.LeavesEntitle.Where(x => x.EmployeeId == leaveRequest.EmployeeId && !x.IsExpired).Sum(x => x.Balance);
+
             if (leaveRequest.LeaveDays > entitleBal && leaveRequest.Type == LeaveType.ANNUAL)
             {
-                ModelState.AddModelError("", "you requested morethan your balance");
+                ModelState.AddModelError("", "You requested more than your balance");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
-            var leaveReqPrev = db.LeaveRequest.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.LeaveRequestId != leaveRequest.LeaveRequestId && ((x.From <= leaveRequest.From && x.To >= leaveRequest.From) || (x.From <= leaveRequest.To && x.To >= leaveRequest.To)));
-            if (leaveReqPrev != null)
+
+            if (db.LeaveRequest.Any(x => x.EmployeeId == leaveRequest.EmployeeId && ((x.From <= leaveRequest.From && x.To >= leaveRequest.From) || (x.From <= leaveRequest.To && x.To >= leaveRequest.To))))
             {
-                ModelState.AddModelError("", "Your request is overlap with other request");
+                ModelState.AddModelError("", "Your request overlaps with another request");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
-            var emp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId);
-            if (emp != null && leaveRequest.Type == LeaveType.MATERNITY && emp.Gender == Gender.MALE)
+
+            var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.IsActive);
+            if (employee != null)
             {
-                ModelState.AddModelError("", "Male can't take Maternity Leave ");
-            }
-            if (leaveRequest.Type == LeaveType.MATERNITY)
-            {
-                var config = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == LeaveHrmSetting.Maternitiy.ToString());
-                if (config != null)
+                if (leaveRequest.Type == LeaveType.MATERNITY && employee.Gender == Gender.MALE)
                 {
-                    var allowedDays = Convert.ToDecimal(config.CurrentValue);
-                    if (leaveRequest.LeaveDays > allowedDays)
+                    ModelState.AddModelError("", "Males can't take Maternity Leave");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+                }
+
+                if (leaveRequest.Type == LeaveType.PATERNITY && employee.Gender == Gender.FEMALE)
+                {
+                    ModelState.AddModelError("", "Females can't take Paternity Leave");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+                }
+
+                if (leaveRequest.Type == LeaveType.MATERNITY)
+                {
+                    var config = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == LeaveHrmSetting.Maternitiy.ToString());
+                    if (config != null)
                     {
-                        ModelState.AddModelError("", "You are requesting maternity leave above the setting value");
-                    }
-                    var maternityRequests = db.LeaveRequest.Where(x => x.Type == LeaveType.MATERNITY && x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId && x.LeaveRequestId != leaveRequest.LeaveRequestId).ToList();
-                    if (maternityRequests.Any())
-                    {
-                        var totalAskedMaternity = maternityRequests.Sum(x => x.LeaveDays) + leaveRequest.LeaveDays;
-                        if (totalAskedMaternity > allowedDays)
+                        var allowedDays = Convert.ToDecimal(config.CurrentValue);
+                        if (leaveRequest.LeaveDays > allowedDays)
                         {
-                            ModelState.AddModelError("", "You can't take materinit leave more than " + allowedDays + " in one year, check your previous maternity leave request");
+                            ModelState.AddModelError("", "You are requesting maternity leave above the setted Maximum value");
+                            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+                        }
+
+                        var maternityRequests = db.LeaveRequest.Where(x => x.Type == LeaveType.MATERNITY && x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == fiscalYear.GlFiscalYearId).ToList();
+                        if (maternityRequests.Any() && maternityRequests.Sum(x => x.LeaveDays) + leaveRequest.LeaveDays > allowedDays)
+                        {
+                            ModelState.AddModelError("", $"You can't take maternity leave more than {allowedDays} days in one year, check your previous maternity leave requests");
+                            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                         }
                     }
                 }
             }
-            if (emp != null && leaveRequest.Type == LeaveType.PATERNITY && emp.Gender == Gender.FEMALE)
-            {
-                ModelState.AddModelError("", "Female can't take Paternity Leave ");
-            }
+
             if (leaveRequest.LeaveActionTypes == LeaveActionTypes.Forced)
             {
                 if (leaveRequest.Type != LeaveType.ANNUAL && leaveRequest.Type != LeaveType.OTHER && leaveRequest.Type != LeaveType.Leave_With_Out_Pay)
                 {
-                    ModelState.AddModelError("", "You can't take Forced Leave for " + leaveRequest.Type + " it's allowed for only Annual,Leave without pay and Other leave types");
+                    ModelState.AddModelError("", $"You can't take Forced Leave for {leaveRequest.Type}, it's allowed only for Annual, Leave without pay, and Other leave types");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
             }
-
 
             if (leaveRequest.Type == LeaveType.ANNUAL)
             {
-
-                var leavePlans = db.LeavePlans.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId);
-                if (leavePlans != null && leaveRequest.LeaveActionTypes == LeaveActionTypes.With_Plan)
+                var leavePlan = db.LeavePlans.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
+                if (leavePlan != null && leaveRequest.LeaveActionTypes == LeaveActionTypes.With_Plan)
                 {
-                    if (leaveRequest.From.Date >= leavePlans.From.Date && leaveRequest.To.Date <= leavePlans.To.Date)
+                    if (leaveRequest.From < leavePlan.From || leaveRequest.To > leavePlan.To || leaveRequest.LeaveDays > leavePlan.LeaveAmount)
                     {
-
-                        if (leaveRequest.LeaveDays > leavePlans.LeaveAmount)
-                        {
-                            ModelState.AddModelError("", "The requested amount is greater than your plan!!");
-                        }
-
-
+                        ModelState.AddModelError("", "The requested leave amount or dates are outside of your plan");
+                        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                     }
-                    else if (leaveRequest.From.Date < leavePlans.From.Date || leaveRequest.To.Date > leavePlans.To.Date)
-                    {
-                        ModelState.AddModelError("", "Date you select is out of your Plan date range!!");
-                    }
-
                 }
                 else if (leaveRequest.LeaveActionTypes == LeaveActionTypes.With_Plan)
                 {
-                    ModelState.AddModelError("", "You should set leave plan for this period!!");
+                    ModelState.AddModelError("", "You should set a leave plan for this period!!");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
-
             }
 
-
-            if (leaveRequest.From.Date > leaveRequest.To.Date)
-            {
-                ModelState.AddModelError("", "Date from should less or equal to date to!!");
-            }
-            else if (leaveRequest.LeaveDays == 0)
+            if (leaveRequest.LeaveDays == 0)
             {
                 ModelState.AddModelError("", "Leave Days must be greater than 0!!");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
 
-
-            var leave = db.Leaves.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId);
-            if (leave != null)
+            var existingLeave = db.Leaves.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
+            if (existingLeave != null)
             {
-                if (leaveRequest.From.Date >= leave.From && leaveRequest.From.Date <= leave.To)
+                if ((leaveRequest.From >= existingLeave.From && leaveRequest.From <= existingLeave.To) || (leaveRequest.To >= existingLeave.From && leaveRequest.To <= existingLeave.To))
                 {
-                    ModelState.AddModelError("", "Intial date overlap other leave taken date. please select other date range");
-                }
-                if (leaveRequest.To.Date >= leave.From && leaveRequest.To.Date <= leave.To)
-                {
-                    ModelState.AddModelError("", "End date over lapother leave taken date. please select other date range");
+                    ModelState.AddModelError("", "Selected date range overlaps with other leave taken date. Please select another date range");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
             }
 
-            var entitelCurrentYear = db.LeavesEntitle.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId);
-
-            if (entitelCurrentYear != null && leaveRequest.Type == LeaveType.ANNUAL)
+            var entitleCurrentYear = db.LeavesEntitle.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
+            if (entitleCurrentYear != null && leaveRequest.Type == LeaveType.ANNUAL)
             {
-                var workedDays = (leaveRequest.To - per.DateFrom.Date).Days;
+                var totalEntitle = entitleBal;
+                var exactDeserve = GetEmployeeDeserveLeaveDays(fiscalYear.DateFrom, leaveRequest.To, entitleCurrentYear.Amount, entitleCurrentYear.Balance, totalEntitle);
+                var currentYearDeserve = GetCurrentYearDeserve(fiscalYear.DateFrom, leaveRequest.To, entitleCurrentYear.Amount);
 
-                var totalEntitle = entitleBalan.Sum(x => x.Balance);
-
-                var exactDeserve = GetEmployeeDeserveLeaveDays(per.DateFrom, leaveRequest.To, entitelCurrentYear.Amount, entitelCurrentYear.Balance, totalEntitle);
-
-                var currentYearDeserve = GetCurrentYearDeserve(per.DateFrom, leaveRequest.To, entitelCurrentYear.Amount);
-                var currentYearBalance = entitelCurrentYear.Balance;
-                var currentYearEntitle = entitelCurrentYear.Amount;
-
-                var previousLeftBalance = GetPreviosYearLeftBalance(entitelCurrentYear.Balance, totalEntitle);
-
-                if (previousLeftBalance == 0 && leaveRequest.LeaveDays > currentYearDeserve && leaveRequest.Type == LeaveType.ANNUAL)
+                if (exactDeserve == 0 || leaveRequest.LeaveDays > exactDeserve)
                 {
-                    ModelState.AddModelError("", "you can't take this amount of leave  in this period ");
+                    ModelState.AddModelError("", "You can't take this amount of leave in this period");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
 
-                if (leaveRequest.LeaveDays > previousLeftBalance && leaveRequest.Type == LeaveType.ANNUAL)
+                var leaveRequests = db.LeaveRequest.Where(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == fiscalYear.GlFiscalYearId && x.Type == LeaveType.ANNUAL && !x.IsOnlineApproved);
+                if (leaveRequests.Any())
                 {
-                    var neededFromCurrentYear = leaveRequest.LeaveDays - previousLeftBalance;
-                    var takenFromCurrentYear = currentYearEntitle - currentYearBalance;
-                    var needed = takenFromCurrentYear + neededFromCurrentYear;
-                    if (neededFromCurrentYear > currentYearDeserve)
+                    var leaveRequestedDays = leaveRequests.Sum(x => x.LeaveDays);
+                    var totalNeeded = leaveRequestedDays + leaveRequest.LeaveDays;
+                    if (totalNeeded > exactDeserve)
                     {
-                        ModelState.AddModelError("", "you request exceed your deserve amount");
-                    }
-                    if (needed > currentYearDeserve)
-                    {
-                        ModelState.AddModelError("", "you request exceed your left deserve amount");
-                    }
-                    var leaveRequests = db.LeaveRequest.Where(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId && x.Type == LeaveType.ANNUAL && !x.IsOnlineApproved && x.LeaveRequestId != leaveRequest.LeaveRequestId);
-                    if (leaveRequests.Any())
-                    {
-                        var leaveRequestedDays = leaveRequests.Sum(x => x.LeaveDays);
-                        var sumofRequest = leaveRequestedDays + leaveRequest.LeaveDays;
-
-                        if (sumofRequest > previousLeftBalance)
-                        {
-                            var neededFromNow = sumofRequest - previousLeftBalance;
-                            var totalNeeded = neededFromNow + takenFromCurrentYear;
-                            if (neededFromNow > currentYearDeserve)
-                            {
-                                ModelState.AddModelError("", "you have other waiting requests so sum of days exceed your deserve amount");
-                            }
-                            if (totalNeeded > currentYearDeserve)
-                            {
-                                ModelState.AddModelError("", "you have other waiting requests so sum of days exceed your left deserve amount");
-                            }
-                        }
+                        ModelState.AddModelError("", "You have other waiting requests so the sum of days exceeds your deserved amount");
+                        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                     }
                 }
-
-                //}               
-
             }
             else if (leaveRequest.Type == LeaveType.ANNUAL)
             {
                 ModelState.AddModelError("", "You have no entitlement for this budget year");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
+
+            var placement = db.Placements.Where(x => x.EmployeeId == leaveRequest.EmployeeId && x.isCurrent == true).FirstOrDefault();
+
+            if (placement != null)
+            {
+                leaveRequest.BranchId = placement.BranchId;
+                leaveRequest.BusinessUnitId = placement.BusinessUnitId;
+            }
+            else
+            {
+                ModelState.AddModelError("placement", "Employee does not have a current placement");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+            }
+            #endregion
             if (ModelState.IsValid)
             {
-                var total = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == leaveRequest.EmployeeId);
-                if (total.Any())
-                {
-                    Total = total.Sum(x => x.Balance);
-                }
-                if (leaveRequest.Type != LeaveType.ANNUAL)
-                {
-                    leaveRequest.LeaveActionTypes = LeaveActionTypes.Without_Plan;
-                }
-
+                var totalBalance = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == leaveRequest.EmployeeId).Sum(x => x.Balance);
+                leaveRequest.LeaveActionTypes = leaveRequest.Type != LeaveType.ANNUAL ? LeaveActionTypes.Without_Plan : leaveRequest.LeaveActionTypes;
+                
                 var entity = new LeaveRequest
                 {
                     LeaveRequestId = leaveRequest.LeaveRequestId,
@@ -1004,7 +1240,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     GlFiscalYearId = leaveRequest.GlFiscalYearId,
                     Remark = leaveRequest.Remark,
                     RequestDate = DateTime.Now,
-                    LeaveBalance = Total,
+                    LeaveBalance = totalBalance,
                     Day = leaveRequest.Day,
                     MorningOrAfternoon = leaveRequest.MorningOrAfternoon,
                     Hours = leaveRequest.Hours,
@@ -1031,6 +1267,296 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
         }
+        // [AcceptVerbs(HttpVerbs.Post)]
+        //public ActionResult LeaveRequestPersonal_Update([DataSourceRequest]DataSourceRequest request, LeaveRequest leaveRequest)
+        //{
+        //    int count = 0;
+        //    double weekDays = 0;
+        //    int holidays = 0;
+        //    ModelState.Clear();
+        //    if (leaveRequest.IsOnlineApproved)
+        //    {
+        //        ModelState.AddModelError("", "you can't modify approved requestes");
+        //    }
+        //    if (leaveRequest.FromAmharic == null || leaveRequest.ToAmharic == null)
+        //    {
+        //        ModelState.AddModelError("", "Both From   and To Date fields are mandatory");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //    }
+
+        //    if (leaveRequest.From.Date < DateTime.Now.Date)
+        //    {
+        //        ModelState.AddModelError("", "From date must not be past date!!");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+
+        //    }
+        //    #region Pre Requestes 
+        //    if (leaveRequest.FromAmharic != null)
+        //    {
+        //        var splitDate = leaveRequest.FromAmharic.Split('/');
+        //        leaveRequest.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+        //    }
+           
+        //    if (leaveRequest.ToAmharic != null)
+        //    {
+        //        var splitDate = leaveRequest.ToAmharic.Split('/');
+        //        leaveRequest.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+        //    }
+          
+        //    var per = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom <= leaveRequest.From.Date && x.DateTo >= leaveRequest.From.Date);
+        //    if (per == null)
+        //    {
+        //        var messages = "Check your Period if it defined";
+        //        return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+        //    }
+
+        //    leaveRequest.LeaveDays = GetLeaveDays(leaveRequest.From, leaveRequest.To, per.GlFiscalYearId, leaveRequest.Day, leaveRequest.Type);
+
+        //    #endregion
+
+        //    decimal entitleBal = 0;
+        //    var entitleBalan = db.LeavesEntitle.Where(x => x.EmployeeId == leaveRequest.EmployeeId && !x.IsExpired);
+
+        //    if (entitleBalan.Any())
+        //    {
+        //        entitleBal = entitleBalan.Sum(x => x.Balance);
+        //    }
+        //    if (leaveRequest.LeaveDays > entitleBal && leaveRequest.Type == LeaveType.ANNUAL)
+        //    {
+        //        ModelState.AddModelError("", "you requested morethan your balance");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //    }
+        //    var leaveReqPrev = db.LeaveRequest.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.LeaveRequestId != leaveRequest.LeaveRequestId && ((x.From <= leaveRequest.From && x.To >= leaveRequest.From) || (x.From <= leaveRequest.To && x.To >= leaveRequest.To)));
+        //    if (leaveReqPrev != null)
+        //    {
+        //        ModelState.AddModelError("", "Your request is overlap with other request");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //    }
+        //    var emp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId);
+        //    if (emp != null && leaveRequest.Type == LeaveType.MATERNITY && emp.Gender == Gender.MALE)
+        //    {
+        //        ModelState.AddModelError("", "Male can't take Maternity Leave ");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //    }
+        //    if (leaveRequest.Type == LeaveType.MATERNITY)
+        //    {
+        //        var config = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == LeaveHrmSetting.Maternitiy.ToString());
+        //        if (config != null)
+        //        {
+        //            var allowedDays = Convert.ToDecimal(config.CurrentValue);
+        //            if (leaveRequest.LeaveDays > allowedDays)
+        //            {
+        //                ModelState.AddModelError("", "You are requesting maternity leave above the setting value");
+        //                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //            }
+        //            var maternityRequests = db.LeaveRequest.Where(x => x.Type == LeaveType.MATERNITY && x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId && x.LeaveRequestId != leaveRequest.LeaveRequestId).ToList();
+        //            if (maternityRequests.Any())
+        //            {
+        //                var totalAskedMaternity = maternityRequests.Sum(x => x.LeaveDays) + leaveRequest.LeaveDays;
+        //                if (totalAskedMaternity > allowedDays)
+        //                {
+        //                    ModelState.AddModelError("", "You can't take materinit leave more than " + allowedDays + " in one year, check your previous maternity leave request");
+        //                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //                }
+        //            }
+        //        }
+        //    }
+        //    if (emp != null && leaveRequest.Type == LeaveType.PATERNITY && emp.Gender == Gender.FEMALE)
+        //    {
+        //        ModelState.AddModelError("", "Female can't take Paternity Leave ");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //    }
+        //    if (leaveRequest.LeaveActionTypes == LeaveActionTypes.Forced)
+        //    {
+        //        if (leaveRequest.Type != LeaveType.ANNUAL && leaveRequest.Type != LeaveType.OTHER && leaveRequest.Type != LeaveType.Leave_With_Out_Pay)
+        //        {
+        //            ModelState.AddModelError("", "You can't take Forced Leave for " + leaveRequest.Type + " it's allowed for only Annual,Leave without pay and Other leave types");
+        //            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //        }
+        //    }
+
+
+        //    if (leaveRequest.Type == LeaveType.ANNUAL)
+        //    {
+
+        //        var leavePlans = db.LeavePlans.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId);
+        //        if (leavePlans != null && leaveRequest.LeaveActionTypes == LeaveActionTypes.With_Plan)
+        //        {
+        //            if (leaveRequest.From.Date >= leavePlans.From.Date && leaveRequest.To.Date <= leavePlans.To.Date)
+        //            {
+
+        //                if (leaveRequest.LeaveDays > leavePlans.LeaveAmount)
+        //                {
+        //                    ModelState.AddModelError("", "The requested amount is greater than your plan!!");
+        //                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //                }
+
+
+        //            }
+        //            else if (leaveRequest.From.Date < leavePlans.From.Date || leaveRequest.To.Date > leavePlans.To.Date)
+        //            {
+        //                ModelState.AddModelError("", "Date you select is out of your Plan date range!!");
+        //                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //            }
+
+        //        }
+        //        else if (leaveRequest.LeaveActionTypes == LeaveActionTypes.With_Plan)
+        //        {
+        //            ModelState.AddModelError("", "You should set leave plan for this period!!");
+        //            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //        }
+
+        //    }
+
+
+        //    if (leaveRequest.From.Date > leaveRequest.To.Date)
+        //    {
+        //        ModelState.AddModelError("", "Date from should less or equal to date to!!");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //    }
+        //    else if (leaveRequest.LeaveDays == 0)
+        //    {
+        //        ModelState.AddModelError("", "Leave Days must be greater than 0!!");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //    }
+
+
+        //    var leave = db.Leaves.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId);
+        //    if (leave != null)
+        //    {
+        //        if (leaveRequest.From.Date >= leave.From && leaveRequest.From.Date <= leave.To)
+        //        {
+        //            ModelState.AddModelError("", "Intial date overlap other leave taken date. please select other date range");
+        //            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //        }
+        //        if (leaveRequest.To.Date >= leave.From && leaveRequest.To.Date <= leave.To)
+        //        {
+        //            ModelState.AddModelError("", "End date over lapother leave taken date. please select other date range");
+        //            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //        }
+        //    }
+
+        //    var entitelCurrentYear = db.LeavesEntitle.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId);
+
+        //    if (entitelCurrentYear != null && leaveRequest.Type == LeaveType.ANNUAL)
+        //    {
+        //        var workedDays = (leaveRequest.To - per.DateFrom.Date).Days;
+
+        //        var totalEntitle = entitleBalan.Sum(x => x.Balance);
+
+        //        var exactDeserve = GetEmployeeDeserveLeaveDays(per.DateFrom, leaveRequest.To, entitelCurrentYear.Amount, entitelCurrentYear.Balance, totalEntitle);
+
+        //        var currentYearDeserve = GetCurrentYearDeserve(per.DateFrom, leaveRequest.To, entitelCurrentYear.Amount);
+        //        var currentYearBalance = entitelCurrentYear.Balance;
+        //        var currentYearEntitle = entitelCurrentYear.Amount;
+
+        //        var previousLeftBalance = GetPreviosYearLeftBalance(entitelCurrentYear.Balance, totalEntitle);
+
+        //        if (previousLeftBalance == 0 && leaveRequest.LeaveDays > currentYearDeserve && leaveRequest.Type == LeaveType.ANNUAL)
+        //        {
+        //            ModelState.AddModelError("", "you can't take this amount of leave  in this period ");
+        //            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //        }
+
+        //        if (leaveRequest.LeaveDays > previousLeftBalance && leaveRequest.Type == LeaveType.ANNUAL)
+        //        {
+        //            var neededFromCurrentYear = leaveRequest.LeaveDays - previousLeftBalance;
+        //            var takenFromCurrentYear = currentYearEntitle - currentYearBalance;
+        //            var needed = takenFromCurrentYear + neededFromCurrentYear;
+        //            if (neededFromCurrentYear > currentYearDeserve)
+        //            {
+        //                ModelState.AddModelError("", "you request exceed your deserve amount");
+        //                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //            }
+        //            if (needed > currentYearDeserve)
+        //            {
+        //                ModelState.AddModelError("", "you request exceed your left deserve amount");
+        //                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //            }
+        //            var leaveRequests = db.LeaveRequest.Where(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == per.GlFiscalYearId && x.Type == LeaveType.ANNUAL && !x.IsOnlineApproved && x.LeaveRequestId != leaveRequest.LeaveRequestId);
+        //            if (leaveRequests.Any())
+        //            {
+        //                var leaveRequestedDays = leaveRequests.Sum(x => x.LeaveDays);
+        //                var sumofRequest = leaveRequestedDays + leaveRequest.LeaveDays;
+
+        //                if (sumofRequest > previousLeftBalance)
+        //                {
+        //                    var neededFromNow = sumofRequest - previousLeftBalance;
+        //                    var totalNeeded = neededFromNow + takenFromCurrentYear;
+        //                    if (neededFromNow > currentYearDeserve)
+        //                    {
+        //                        ModelState.AddModelError("", "you have other waiting requests so sum of days exceed your deserve amount");
+        //                        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //                    }
+        //                    if (totalNeeded > currentYearDeserve)
+        //                    {
+        //                        ModelState.AddModelError("", "you have other waiting requests so sum of days exceed your left deserve amount");
+        //                        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //        //}               
+
+        //    }
+        //    else if (leaveRequest.Type == LeaveType.ANNUAL)
+        //    {
+        //        ModelState.AddModelError("", "You have no entitlement for this budget year");
+        //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //    }
+        //    if (ModelState.IsValid)
+        //    {
+        //        var total = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == leaveRequest.EmployeeId);
+        //        if (total.Any())
+        //        {
+        //            Total = total.Sum(x => x.Balance);
+        //        }
+        //        if (leaveRequest.Type != LeaveType.ANNUAL)
+        //        {
+        //            leaveRequest.LeaveActionTypes = LeaveActionTypes.Without_Plan;
+        //        }
+
+        //        var entity = new LeaveRequest
+        //        {
+        //            LeaveRequestId = leaveRequest.LeaveRequestId,
+        //            EmployeeId = leaveRequest.EmployeeId,
+        //            From = leaveRequest.From,
+        //            To = leaveRequest.To,
+        //            LeaveDays = leaveRequest.LeaveDays,
+        //            Type = leaveRequest.Type,
+        //            Reason = leaveRequest.Reason,
+        //            GlFiscalYearId = leaveRequest.GlFiscalYearId,
+        //            Remark = leaveRequest.Remark,
+        //            RequestDate = DateTime.Now,
+        //            LeaveBalance = Total,
+        //            Day = leaveRequest.Day,
+        //            MorningOrAfternoon = leaveRequest.MorningOrAfternoon,
+        //            Hours = leaveRequest.Hours,
+        //            FromAmharic = leaveRequest.FromAmharic,
+        //            ToAmharic = leaveRequest.ToAmharic,
+        //            IsForOther = leaveRequest.IsForOther,
+        //            LeaveActionTypes = leaveRequest.LeaveActionTypes,
+        //            EmployeeCode = inputs.GetEmployeeCode(leaveRequest.EmployeeId),
+        //            RequesterId = UserInformationHelper.GetEmployeeId(User.Identity.Name)
+        //        };
+
+
+        //        db.LeaveRequest.Attach(entity);
+        //        db.Entry(entity).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //        IsForOther = false;
+
+        //        #region operation log
+
+        //        UserHelper.OperationLog(Request.UserHostAddress, "LeaveRequestPersonal ", "Success", User.Identity.Name, User.Identity.Name + " update leave request of id" + entity.LeaveRequestId, Modules.HRM);
+
+        //        #endregion
+        //    }
+
+        //    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        //}
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeaveRequestPersonal_Destroy([DataSourceRequest]DataSourceRequest request, LeaveRequest leaveRequest)
         {
@@ -1038,6 +1564,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             if (leaveRequest.IsOnlineApproved)
             {
                 ModelState.AddModelError("", "you can't delete approved requestes");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
             else
             {
@@ -1075,6 +1602,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
 
             return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+        }
+        private DateTime ParseEthiopicDate(string ethiopicDate)
+        {
+            var parts = ethiopicDate.Split('/');
+            return XAPI.EthiopicDateTime.GetGregorianDate(int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]));
         }
         public double GetWeekDays(DateTime startDate, DateTime endDate)
         {

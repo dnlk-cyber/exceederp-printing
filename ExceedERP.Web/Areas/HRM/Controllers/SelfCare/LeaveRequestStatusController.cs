@@ -73,11 +73,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 {
                     return "approved";
                 }
-                //var deptApproval = db.RequestesStatus.Where(x => x.RequestId == masterId && x.ReferenceType == "Leave" && x.Status == RequestStatus.DEPARTMENT_APPROVAL).FirstOrDefault();
-                //if (deptApproval != null)
-                //{
-                //    return "Dapproved";
-                //}
+                var deptApproval = db.RequestesStatus.Where(x => x.RequestId == masterId && x.ReferenceType == "Leave" && x.Status == RequestStatus.DEPARTMENT_APPROVAL).FirstOrDefault();
+                if (deptApproval != null)
+                {
+                    return "Dapproved";
+                }
                 return "false";
             }
             return "false";
