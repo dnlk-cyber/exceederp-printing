@@ -9,55 +9,88 @@
           // columns.Bound(c => c.Code);
           //columns.Bound(c => c.Category).EditorTemplateName("LookUpCategories").Width(150);
           //columns.Bound(c => c.Index);
-          columns.Bound(c => c.LookupType).EditorTemplateName("LookUpTypes").Width(300);
+          columns.Bound(c => c.LookupType).EditorTemplateName("LookUpTypes").Filterable(f=>f.Multi(true).Search(true));
           //  .ClientGroupHeaderTemplate("");
+          columns.Bound(c => c.EvalutionType).Filterable(f => f.Multi(true).Search(true));
           columns.Bound(c => c.Description);
+          columns.Bound(c => c.DescriptionEng);
           // columns.Bound(c => c.IsDefault).ClientTemplate("<input type='checkbox' disabled = 'true' \\#=IsDefault ? checked='checked' :'' \\# />").Width(100);
           //columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' \\#=IsActive ? checked='checked' :'' \\# />").Width(100);
-          columns.Bound(c => c.Remark);
-          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          columns.Bound(c => c.TaxTresholdAmount);
+          columns.Bound(c => c.Percentage);
+          columns.Bound(c => c.MainFunction);
+          columns.Bound(c => c.InformationOne);
+          columns.Bound(c => c.InformationTwo);
+          // columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(200);
       })
       .ToolBar(toolbar =>
       {
           toolbar.Template(@<text>
-            <div class="toolbar" style="">
+
+    <div class="row">
+        <div class="col-sm-6">
+            <div style="display:inline;">
                 @if (HttpContext.Current.User.IsInRole("HR_Admin"))
                 {
-                    @item.CreateButton(Resources.ActionButton_AddNewRecord);
+                    @item.CreateButton(Resources.ActionButton_AddNewRecord)
                 }
                 @if (HttpContext.Current.User.IsInRole("HR_Admin"))
                 {
-                    @(Html.Kendo().Button()
-          .Name("btnDownLoad")
-          .HtmlAttributes(new { type = "button", @class = "k-primary" })
-          .Events(e => e.Click("DownLoadTemplate"))
-          .Content(Resources.DownloadTemplate))
+                 @(Html.Kendo().Button()
+                .Name("btnDownLoad")
+               
+                .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                .Events(e => e.Click("DownLoadTemplate"))
+                .Content(Resources.DownloadTemplate))
 
-                    @(Html.Kendo().Upload()
-          .Name("file")
-              .Async(a => a.Save("Lookup_Import", "Lookups"))
-          .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
-                        //.ShowFileList(false).
-                        // .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                  @(Html.Kendo().Upload()
+                 .Name("file")
+                 .Async(a => a.Save("Lookup_Import", "Lookups"))
+                 .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
+                  //.ShowFileList(false).
+                  // .HtmlAttributes(new { type = "button", @class = "k-primary" })
                     )
-
-
                 }
             </div>
+          
+        </div>
+        <div class="col-sm-4">
+            @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "Lookups", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" })
+            @*@item.CustomCommandToolBarButton("PDF", "<span class='k-icon k-i-pdf'></span>" + Resources.ActionButton_ExportPDF, "Pdf_Export_Save", "Lookups", "", new { @class = "k-button k-button-icontext k-grid-pdf  btn btn-primary btn-xs pull-right" });*@
+        </div>
+
+        
+    </div>
+   
+
+ </text>);
 
 
-
-
-
-        </text>);
       })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("Lookup").Window(window => { window.Title("Maintain Lookup"); window.Scrollable(false); }))
-         .Scrollable(h => h.Height(500))
-             .Groupable()
-                      .Sortable(sortable =>
-                      {
-                          sortable.SortMode(GridSortMode.SingleColumn);
-                      })
+
+      //Excel(excel => excel
+      //         .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".xlsx")
+      //         .Filterable(true)
+      //         .AllPages(true)
+      //     //.ProxyURL(Url.Action("Excel_Export_Save", "EmployeePlacmentWithJ"))
+      //     )
+
+      //.Pdf(pdf => pdf
+      //    .AllPages()
+      //    .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".pdf")
+      //   // .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePlacmentWithJ"))
+      //)
+          .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("Lookup").Window(window => { window.Title("Maintain Lookup"); window.Scrollable(false); }))
+          .Scrollable(h => h.Height(500))
+            .Sortable(sortable =>
+            {
+                sortable.SortMode(GridSortMode.SingleColumn);
+            })
           .Filterable()
              .Pageable(pageable => pageable
                                         .Input(true)
@@ -65,10 +98,10 @@
                                         .Refresh(true)
                                         .PageSizes(true)
                                         .ButtonCount(5))
-      .DataSource(dataSource => dataSource
+        .DataSource(dataSource => dataSource
           .Ajax()
                    .Events(events => events.Error("error_handler(\"Lookupgrid\")"))
-                               //.Group(groups => groups.Add(p => p.LookupType))
+          //.Group(groups => groups.Add(p => p.LookupType))
           .Model(model => model.Id(p => p.LookupId))
           .Read(read => read.Action("Lookups_Read", "Lookups"))
           .Create(create => create.Action("Lookups_Create", "Lookups"))
@@ -139,7 +172,7 @@
 </script>
 
 @(Html.Kendo().Window().Name("AttachmentWindow")
-        .Title(Resources.Templates)
+    .Title(Resources.Templates)
     .Visible(false)
     .Modal(true)
       .Content(@<text>
@@ -157,7 +190,7 @@
               .Selectable()
               .DataSource(dataSource => dataSource
                   .Ajax()
-                                           .Events(events => events.Error("error_handler(\"AttachmentGrid\")"))
+                       .Events(events => events.Error("error_handler(\"AttachmentGrid\")"))
 
                   .Model(model => model.Id(p => p.AttachmentId))
                                   .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "TEMPLATE", id = 0 }))
@@ -170,3 +203,4 @@
 .Width( 500)
 
 )
+

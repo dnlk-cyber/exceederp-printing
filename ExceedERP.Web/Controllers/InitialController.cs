@@ -361,16 +361,17 @@ namespace ExceedERP.Web.Controllers
 			new ApplicationRole("Archive_Report","View archive  reports","Archive "),
 			  #endregion
 
+				
 				#region Health
-			new ApplicationRole("Health_Admin","Manage settings and configurations","Health"),
-			new ApplicationRole("Health_User","Manage health and insurance functionalities","Health"),
-			new ApplicationRole("Health_Approver","Approve , pend or reject all health  requests","Health"),
-			#endregion
+				new ApplicationRole("Health_Admin","Manage settings and configurations","Health"),
+				new ApplicationRole("Health_User","Manage health and insurance functionalities","Health"),
+				new ApplicationRole("Health_Approver","Approve , pend or reject all health  requests","Health"),
+				#endregion
 
 				#region insurance
-			 new ApplicationRole("Insurance_Admin", "Manage settings and configurations", "Insurance"),
-			 new ApplicationRole("Insurance_User", "Manage Insurance functionalities", "Insurance"),
-			#endregion
+				 new ApplicationRole("Insurance_Admin", "Manage settings and configurations", "Insurance"),
+				 new ApplicationRole("Insurance_User", "Manage Insurance functionalities", "Insurance"),
+					#endregion
 			  
 				#region Budget
 			new ApplicationRole("Budget_Admin", "Budget Administrator", "Budget"),
@@ -454,25 +455,25 @@ namespace ExceedERP.Web.Controllers
   new ApplicationRole("Store_Good_Receiving_Approver", "Store Good Receiving Approver", "FLEET"),
   new ApplicationRole("Fleet_Registration_Report", "Fleet Registration Report", "FLEET"),
    new ApplicationRole("Fleet_TimeSheet","Timesheet data entry","FLEET"),
-    new ApplicationRole("Fleet_Requisition","Fleet Requisition","FLEET"),
+	new ApplicationRole("Fleet_Requisition","Fleet Requisition","FLEET"),
 	#endregion
 	#region Maintenance
 	new ApplicationRole("Maintenance_Void","users who can make void","Maintenance"),
-     new ApplicationRole(MaintenanceRoles.MaintenanceAdmin, "Maintenance Administrator", "Maintenance"),
-     new ApplicationRole(MaintenanceRoles.MaintenanceOrderUser, "Maintenance order user", "Maintenance"),
-     new ApplicationRole(MaintenanceRoles.ServiceUser, "Maintenance service user", "Maintenance"),
-     new ApplicationRole(MaintenanceRoles.MaintenanceRequestor, "Maintenance Request User", "Maintenance"),
-     new ApplicationRole(MaintenanceRoles.MaintenanceWorkShopUser, "Maintenance Work Shop User", "Maintenance"),
-     new ApplicationRole(MaintenanceRoles.MaintenanceRequestApprover, "Maintenance Request Approver", "Maintenance"),
-     new ApplicationRole(MaintenanceRoles.MaintenanceOrderUser, "Maintenance Job/Work Order user", "Maintenance"),
-     new ApplicationRole(MaintenanceRoles.MaintenanceServiceApprover, "Maintenance Service Approver", "Maintenance"),
-     new ApplicationRole(MaintenanceRoles.MaintenanceServiceRejecter, "Maintenance Service Rejecter", "Maintenance"),
-     new ApplicationRole(MaintenanceRoles.ServiceUser, "Service  User", "Maintenance"),
-     new ApplicationRole(MaintenanceRoles.MaintenanceReport, "Maintenance Report", "Maintenance"),
-     new ApplicationRole(MaintenanceRoles.MaintenanceEquipmentRegistrationUser, "Maintenance Equipment Registration User", "Maintenance"),
-     new ApplicationRole(MaintenanceRoles.MileageImportAndExport, "Mileage Import And Export", "Maintenance"),
-     new ApplicationRole(MaintenanceRoles.MaintenanceToolsStoreUser, "Maintenance Tools Store User", "Maintenance"),
-     new ApplicationRole(MaintenanceRoles.PeriodicEquipmentInspectionUser, "Periodic Equipment Inspection User", "Maintenance"),
+	 new ApplicationRole(MaintenanceRoles.MaintenanceAdmin, "Maintenance Administrator", "Maintenance"),
+	 new ApplicationRole(MaintenanceRoles.MaintenanceOrderUser, "Maintenance order user", "Maintenance"),
+	 new ApplicationRole(MaintenanceRoles.ServiceUser, "Maintenance service user", "Maintenance"),
+	 new ApplicationRole(MaintenanceRoles.MaintenanceRequestor, "Maintenance Request User", "Maintenance"),
+	 new ApplicationRole(MaintenanceRoles.MaintenanceWorkShopUser, "Maintenance Work Shop User", "Maintenance"),
+	 new ApplicationRole(MaintenanceRoles.MaintenanceRequestApprover, "Maintenance Request Approver", "Maintenance"),
+	 new ApplicationRole(MaintenanceRoles.MaintenanceOrderUser, "Maintenance Job/Work Order user", "Maintenance"),
+	 new ApplicationRole(MaintenanceRoles.MaintenanceServiceApprover, "Maintenance Service Approver", "Maintenance"),
+	 new ApplicationRole(MaintenanceRoles.MaintenanceServiceRejecter, "Maintenance Service Rejecter", "Maintenance"),
+	 new ApplicationRole(MaintenanceRoles.ServiceUser, "Service  User", "Maintenance"),
+	 new ApplicationRole(MaintenanceRoles.MaintenanceReport, "Maintenance Report", "Maintenance"),
+	 new ApplicationRole(MaintenanceRoles.MaintenanceEquipmentRegistrationUser, "Maintenance Equipment Registration User", "Maintenance"),
+	 new ApplicationRole(MaintenanceRoles.MileageImportAndExport, "Mileage Import And Export", "Maintenance"),
+	 new ApplicationRole(MaintenanceRoles.MaintenanceToolsStoreUser, "Maintenance Tools Store User", "Maintenance"),
+	 new ApplicationRole(MaintenanceRoles.PeriodicEquipmentInspectionUser, "Periodic Equipment Inspection User", "Maintenance"),
 	#endregion
 
 				#region PRODUCTION
@@ -537,7 +538,7 @@ namespace ExceedERP.Web.Controllers
 					 new ApplicationRole(ManufacturingJobCostingRoles.ManufacturingJobCostingDailyLaborRateUser, "JobCosting_DailyLaborRate_User", "Manufucturing"),
 				#endregion
 			 #endregion
-                      #region planning
+					  #region planning
  new ApplicationRole(PlanningRoles.Planning_Admin,"Create data, modify planning data","Planning"),
  new ApplicationRole(PlanningRoles.Planning_User,"See, update plan and actual","Planning"),
  new ApplicationRole(PlanningRoles.Planning_Risk_User,"See, update risk","Planning"),

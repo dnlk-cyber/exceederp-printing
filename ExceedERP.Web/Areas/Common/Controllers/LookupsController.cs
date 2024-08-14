@@ -1,26 +1,26 @@
-﻿﻿using System;
+using System;
 using System.Collections.Generic;
-﻿using System.Data.Entity;
-﻿using System.Data.OleDb;
-﻿using System.Linq;
+using System.Data.Entity;
+using System.Data.OleDb;
+using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Common;
-﻿using ExceedERP.Core.Domain.Common.HRM;
-﻿using ExceedERP.Core.Domain.HRM;
- using ExceedERP.Core.Domain.HRM.SalaryStructure;
- using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.HRM;
+using ExceedERP.Core.Domain.HRM.SalaryStructure;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
-﻿using ExceedERP.Web.Areas.HRM.Controllers;
-﻿using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Areas.HRM.Controllers;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.Common.Controllers
 {
-    [Authorize(Roles =  HR_Admin)]
+    [Authorize(Roles = HR_Admin)]
     public class LookupsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -40,16 +40,24 @@ namespace ExceedERP.Web.Areas.Common.Controllers
         }
         public ActionResult Lookups_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<Lookup> lookups = db.Lookups.OrderBy(l=> l.LookupType );
-            DataSourceResult result = lookups.ToDataSourceResult(request, lookup => new {
+            IQueryable<Lookup> lookups = db.Lookups.OrderBy(l => l.LookupType);
+            DataSourceResult result = lookups.ToDataSourceResult(request, lookup => new
+            {
                 LookupId = lookup.LookupId,
                 Code = lookup.Code,
                 Category = lookup.Category,
                 Index = lookup.Index,
                 LookupType = lookup.LookupType,
+                EvalutionType = lookup.EvalutionType,
+                Percentage = lookup.Percentage,
                 Description = lookup.Description,
                 IsDefault = lookup.IsDefault,
                 IsActive = lookup.IsActive,
+                DescriptionEng = lookup.DescriptionEng,
+                MainFunction = lookup.MainFunction,
+                InformationOne = lookup.InformationOne,
+                InformationTwo = lookup.InformationTwo,
+                TaxTresholdAmount = lookup.TaxTresholdAmount,
                 Remark = lookup.Remark
             });
 
@@ -62,7 +70,7 @@ namespace ExceedERP.Web.Areas.Common.Controllers
 
             if (ModelState.IsValid)
             {
-                var checkExstance = db.Lookups.Where( x=> x.LookupType == lookup.LookupType ).ToList();
+                var checkExstance = db.Lookups.Where(x => x.LookupType == lookup.LookupType).ToList();
                 var jobName = lookup.Description;
                 var mainCompanyStructures = checkExstance.FirstOrDefault(j => j.Description.ToUpper(XAPI.Common.exceedculture).Equals(jobName.ToUpper(XAPI.Common.exceedculture)) == jobName.ToUpper(XAPI.Common.exceedculture).Equals(jobName.ToUpper(XAPI.Common.exceedculture)));
                 if (mainCompanyStructures != null)
@@ -77,9 +85,16 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                         Category = lookup.Category,
                         Index = lookup.Index,
                         LookupType = lookup.LookupType,
+                        EvalutionType = lookup.EvalutionType,
                         Description = lookup.Description,
+                        Percentage = lookup.Percentage,
+                        DescriptionEng = lookup.DescriptionEng,
                         IsDefault = true,
                         IsActive = true,
+                        MainFunction = lookup.MainFunction,
+                        InformationOne = lookup.InformationOne,
+                        InformationTwo = lookup.InformationTwo,
+                        TaxTresholdAmount = lookup.TaxTresholdAmount,
                         Remark = lookup.Remark
                     };
 
@@ -103,10 +118,18 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                     Code = lookup.Code,
                     Category = lookup.Category,
                     Index = lookup.Index,
-                    LookupType  = lookup.LookupType ,
+                    LookupType = lookup.LookupType,
+                    EvalutionType = lookup.EvalutionType,
+                    Percentage = lookup.Percentage,
                     Description = lookup.Description,
+                    DescriptionEng = lookup.DescriptionEng,
                     IsDefault = lookup.IsDefault,
                     IsActive = lookup.IsActive,
+                    MainFunction = lookup.MainFunction,
+                    InformationOne = lookup.InformationOne,
+                    InformationTwo = lookup.InformationTwo,
+                    TaxTresholdAmount = lookup.TaxTresholdAmount,
+
                     Remark = lookup.Remark
                 };
 
@@ -121,17 +144,17 @@ namespace ExceedERP.Web.Areas.Common.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Lookups_Destroy([DataSourceRequest]DataSourceRequest request, Lookup lookup)
         {
-            var placement = db.Placements.FirstOrDefault(x=>x.LookupId == lookup.LookupId);
+            var placement = db.Placements.FirstOrDefault(x => x.LookupId == lookup.LookupId);
             var recruitmentPlan = db.RecruitmentPlans.FirstOrDefault(x => x.LookupId == lookup.LookupId);
-            var recruitmentRequest = db.RecruitmentRequest.FirstOrDefault(x=>x.LookupId == lookup.LookupId);
-            var manPower = db.JobTitleMapping.FirstOrDefault(x=>x.LookupId == lookup.LookupId);
-            var jobtitlesalary = db.SalariesJobTitles.FirstOrDefault(x=>x.LookupId == lookup.LookupId);
-            //var applicantRegistration = db.ApplicantRegistration.FirstOrDefault(x=>x.LookupId == lookup.LookupId);
-            var applicantResult = db.ApplicantionFormes.FirstOrDefault(x=>x.LookupId == lookup.LookupId);
+            var recruitmentRequest = db.RecruitmentRequest.FirstOrDefault(x => x.LookupId == lookup.LookupId);
+            var manPower = db.JobTitleMapping.FirstOrDefault(x => x.LookupId == lookup.LookupId);
+            var jobtitlesalary = db.SalariesJobTitles.FirstOrDefault(x => x.LookupId == lookup.LookupId);
+            //  var applicantRegistration = db.ApplicantRegistration.FirstOrDefault(x=>x.LookupId == lookup.LookupId);
+            var applicantResult = db.ApplicantionFormes.FirstOrDefault(x => x.LookupId == lookup.LookupId);
 
-            if(placement !=null || recruitmentPlan != null || recruitmentRequest != null || manPower != null || jobtitlesalary != null  || applicantResult != null)
+            if (placement != null || recruitmentPlan != null || recruitmentRequest != null || manPower != null || jobtitlesalary != null || applicantResult != null)
             {
-                ModelState.AddModelError("","You can't delete this data it is used in other forms");
+                ModelState.AddModelError("", "You can't delete this data it is used in other forms");
             }
 
             if (ModelState.IsValid)
@@ -142,14 +165,21 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                     Code = lookup.Code,
                     Category = lookup.Category,
                     Index = lookup.Index,
-                    LookupType  = lookup.LookupType ,
+                    LookupType = lookup.LookupType,
+                    EvalutionType = lookup.EvalutionType,
                     Description = lookup.Description,
+                    Percentage = lookup.Percentage,
+                    DescriptionEng = lookup.DescriptionEng,
                     IsDefault = lookup.IsDefault,
                     IsActive = lookup.IsActive,
+                    MainFunction = lookup.MainFunction,
+                    InformationOne = lookup.InformationOne,
+                    InformationTwo = lookup.InformationTwo,
+                    TaxTresholdAmount = lookup.TaxTresholdAmount,
                     Remark = lookup.Remark
                 };
                 #region delete log
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Lookup " + lookup.LookupType.ToString() + " " + lookup.Description );
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Lookup " + lookup.LookupType.ToString() + " " + lookup.Description);
                 #endregion
                 db.Lookups.Attach(entity);
                 db.Lookups.Remove(entity);
@@ -189,7 +219,24 @@ namespace ExceedERP.Web.Areas.Common.Controllers
             HRMInputs.SelectedFile = 0;
             return null;
         }
-
+        [HttpPost]
+        public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
+        {
+            var fileContents = Convert.FromBase64String(base64);
+            #region export log
+            UserHelper.ExportLog(Request.UserHostAddress, "Excel-Export", "Success", User.Identity.Name, "Exported Lookup");
+            #endregion
+            return File(fileContents, contentType, fileName);
+        }
+        [HttpPost]
+        public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)
+        {
+            var fileContents = Convert.FromBase64String(base64);
+            #region export log
+            UserHelper.ExportLog(Request.UserHostAddress, "PDF-Export", "Success", User.Identity.Name, "Exported Lookup");
+            #endregion
+            return File(fileContents, contentType, fileName);
+        }
         public ActionResult Lookup_Import([DataSourceRequest] DataSourceRequest request,
           IEnumerable<HttpPostedFileBase> file)
         {
@@ -294,7 +341,7 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                 {
                     ModelState.AddModelError("", "This Lookup Name is already exists in the database!!");
                 }
-                    else if (lookup .Description ==null|| lookup .Description=="" )
+                else if (lookup.Description == null || lookup.Description == "")
                 { }
                 else
                 {
