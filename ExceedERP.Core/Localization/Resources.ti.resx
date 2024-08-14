@@ -6639,4 +6639,10 @@
   <data name="ActionButton_submit" xml:space="preserve">
     <value>Submit</value>
   </data>
+  <data name="Enum_LookUpTypes_PROJECT_MANAGER" xml:space="preserve">
+    <value>ፕሮጀክት ማናጀር</value>
+  </data>
+  <data name="HRM_JobTitle_and_Rank_Mapping" xml:space="preserve">
+    <value>Job Title and Rank Mapping</value>
+  </data>
 </root>

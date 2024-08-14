@@ -6211,7 +6211,7 @@
     <value>Request Type</value>
   </data>
   <data name="Navigator_Employee_Inactive_Employee" xml:space="preserve">
-    <value>Terminated Employees</value>
+    <value>Inactive  Employees</value>
   </data>
   <data name="Navigator_Employee_Not_Placed_Employee" xml:space="preserve">
     <value>Not Placed Employees</value>
@@ -6991,7 +6991,7 @@
     <value> Case Appintment</value>
   </data>
   <data name="Legal_Case_Awareness" xml:space="preserve">
-    <value>Case Awareness</value>
+    <value>Legal Awareness</value>
   </data>
   <data name="Legal_Case_Awareness_Female" xml:space="preserve">
     <value>Female</value>
@@ -7024,7 +7024,7 @@
     <value>Is Seen</value>
   </data>
   <data name="Legal_Case_Case_Price" xml:space="preserve">
-    <value>Court Amount</value>
+    <value>Case Amount</value>
   </data>
   <data name="Legal_Case_Case_Status" xml:space="preserve">
     <value>Case Status</value>
@@ -7298,5 +7298,11 @@
   </data>
   <data name="Dashboard" xml:space="preserve">
     <value>Dashboard</value>
+  </data>
+  <data name="Enum_LookUpTypes_PROJECT_MANAGER" xml:space="preserve">
+    <value>Project Manager</value>
+  </data>
+  <data name="HRM_JobTitle_and_Rank_Mapping" xml:space="preserve">
+    <value>Job Title and Rank Mapping</value>
   </data>
 </root>

@@ -4435,6 +4435,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project Manager.
+        /// </summary>
+        public static string Enum_LookUpTypes_PROJECT_MANAGER {
+            get {
+                return ResourceManager.GetString("Enum_LookUpTypes_PROJECT_MANAGER", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PROJECT_TYPE.
         /// </summary>
         public static string Enum_LookUpTypes_PROJECT_TYPE {
@@ -14893,6 +14902,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Job Title and Rank Mapping.
+        /// </summary>
+        public static string HRM_JobTitle_and_Rank_Mapping {
+            get {
+                return ResourceManager.GetString("HRM_JobTitle_and_Rank_Mapping", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Is Include External Experience?.
         /// </summary>
         public static string IncludeExternalExperience {
@@ -15316,7 +15334,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Case Awareness.
+        ///   Looks up a localized string similar to Legal Awareness.
         /// </summary>
         public static string Legal_Case_Awareness {
             get {
@@ -15415,7 +15433,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Court Amount.
+        ///   Looks up a localized string similar to Case Amount.
         /// </summary>
         public static string Legal_Case_Case_Price {
             get {
@@ -16558,7 +16576,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Terminated Employees.
+        ///   Looks up a localized string similar to Inactive  Employees.
         /// </summary>
         public static string Navigator_Employee_Inactive_Employee {
             get {

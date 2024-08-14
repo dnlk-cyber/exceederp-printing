@@ -7287,4 +7287,7 @@
   <data name="ActionButton_submit" xml:space="preserve">
     <value>አስረክብ</value>
   </data>
+  <data name="Enum_LookUpTypes_PROJECT_MANAGER" xml:space="preserve">
+    <value>ፕሮጀክት ማናጀር</value>
+  </data>
 </root>
