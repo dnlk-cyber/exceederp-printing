@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -69,6 +69,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Report
         }
         public ActionResult LeaveRequestStatusReport()
         {
+            HRMIsoDocumentHelper.GetIsoDocumentInfo(Modules.HRM, HRMModuleReportType.Leave_Request_Status, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
             return View();
         }
 

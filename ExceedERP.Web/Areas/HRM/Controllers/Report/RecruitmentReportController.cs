@@ -10,7 +10,9 @@ using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Report
 {
-     [AuthorizeRoles(HrmConstants.HRRecruitmentReport, HrmConstants.HRReport, HrmConstants.HRAdmin)]
+     [AuthorizeRoles(HrmConstants.HRRecruitmentReport, 
+        HrmConstants.HRReport, 
+        HrmConstants.HRAdmin)]
     public class RecruitmentReportController : BaseController
     {
         // GET: HRM/EmployeeReport
