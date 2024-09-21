@@ -8921,6 +8921,7 @@
     <Content Include="Views\UserProfile\EditorTemplates\UserSignatureEditor.cshtml" />
     <Content Include="Views\Shared\_Health.cshtml" />
     <Content Include="Views\Shared\_Insurance.cshtml" />
+    <Content Include="Views\GlobalReports\UserInGroupsRoles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Bid Cancellation\" />

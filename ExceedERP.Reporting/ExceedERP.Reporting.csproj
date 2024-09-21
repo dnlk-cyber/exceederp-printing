@@ -71,12 +71,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Admin\DataSource\GroupOds.cs" />
+    <Compile Include="Admin\DataSource\RoleOds.cs" />
     <Compile Include="Admin\DataSource\UserGroupAndRoleOds.cs" />
+    <Compile Include="Admin\DataSource\UsersInGroupAndRoleOds.cs" />
     <Compile Include="Admin\Views\UserGroupsRoles.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Admin\Views\UserGroupsRoles.Designer.cs">
       <DependentUpon>UserGroupsRoles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\Views\UsersInGroupOrRole.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Admin\Views\UsersInGroupOrRole.Designer.cs">
+      <DependentUpon>UsersInGroupOrRole.cs</DependentUpon>
     </Compile>
     <Compile Include="APTS\DataSource\DespensaryStoreObjectDataSourceODS.cs" />
     <Compile Include="APTS\DataSource\DrugSaleObjectDatasource.cs" />
@@ -4629,6 +4638,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Admin\Views\UserGroupsRoles.resx">
       <DependentUpon>UserGroupsRoles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Admin\Views\UsersInGroupOrRole.resx">
+      <DependentUpon>UsersInGroupOrRole.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="APTS\rptByExpireDate.resx">
       <DependentUpon>rptByExpireDate.cs</DependentUpon>

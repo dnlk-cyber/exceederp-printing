@@ -63,9 +63,11 @@ namespace ExceedERP.Web.Controllers
 		public ActionResult AddRoles()
 		{
 			ApplicationUserManager userManager = System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
-			ApplicationRoleManager roleManager = System.Web.HttpContext.Current.GetOwinContext().Get<ApplicationRoleManager>();
+			//ApplicationRoleManager roleManager = System.Web.HttpContext.Current.GetOwinContext().Get<ApplicationRoleManager>();
 
-			AddRoles(roleManager);
+			//AddRoles(roleManager);
+
+			AddallRoles();
 
 
 
@@ -77,7 +79,7 @@ namespace ExceedERP.Web.Controllers
 			ApplicationUserManager userManager = System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
 			ApplicationRoleManager roleManager = System.Web.HttpContext.Current.GetOwinContext().Get<ApplicationRoleManager>();
 
-			AddRoles(roleManager);
+			//AddRoles(roleManager);
 
 			AddUsers(userManager);
 			var groupManager = new ApplicationGroupManager();
@@ -100,8 +102,9 @@ namespace ExceedERP.Web.Controllers
 			}
 		}
 
-		private static void AddRoles(ApplicationRoleManager roleManager)
+		public static void AddallRoles()
 		{
+			ApplicationRoleManager roleManager = System.Web.HttpContext.Current.GetOwinContext().Get<ApplicationRoleManager>();
 			List<ApplicationRole> applicationRoles = new List<ApplicationRole>
 			{
 				#region General

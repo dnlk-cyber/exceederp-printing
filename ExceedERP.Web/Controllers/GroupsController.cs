@@ -10,7 +10,7 @@ using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Controllers
 {
-    [Authorize(Roles = "Admin,Admin_Module")]
+    [Authorize(Roles = "Admin,Admin_Regional,Admin_Module")]
     public class GroupsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -50,6 +50,7 @@ namespace ExceedERP.Web.Controllers
 
         }
 
+        [Authorize(Roles = "Admin,Admin_Regional,Admin_Module")]
         public ActionResult ApplicationGroups_Read([DataSourceRequest]DataSourceRequest request)
         {
             account = new AccountController(ApplicationUserManager.Usermgr, ApplicationSignInManager.SignInManager);
@@ -86,7 +87,7 @@ namespace ExceedERP.Web.Controllers
 
             return Json(result);
         }
-
+        [Authorize(Roles = "Admin,Admin_Regional,Admin_Module")]
         public ActionResult ApplicationUserGroups([DataSourceRequest] DataSourceRequest request, string id)
         {
             var userGroups =   GroupManager.GetUserGroups(id).ToList();
@@ -126,7 +127,8 @@ namespace ExceedERP.Web.Controllers
             });
             return Json(result);          
         }
-        
+
+        [Authorize(Roles = "Admin,Admin_Module")]
         public ActionResult ApplicationGroups_Create([DataSourceRequest]DataSourceRequest request, GroupViewModel groupView)
         {
             account = new AccountController(ApplicationUserManager.Usermgr, ApplicationSignInManager.SignInManager);
@@ -154,6 +156,7 @@ namespace ExceedERP.Web.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
+        [Authorize(Roles = "Admin,Admin_Module")]
         public ActionResult ApplicationGroups_Update([DataSourceRequest]DataSourceRequest request, GroupViewModel groupView)
         {
             account = new AccountController(ApplicationUserManager.Usermgr, ApplicationSignInManager.SignInManager);
@@ -178,6 +181,7 @@ namespace ExceedERP.Web.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
+        [Authorize(Roles = "Admin,Admin_Module")]
         public ActionResult ApplicationGroups_Destroy([DataSourceRequest]DataSourceRequest request, GroupViewModel groupView)
         {
             if (ModelState.IsValid)
@@ -191,24 +195,29 @@ namespace ExceedERP.Web.Controllers
             return Json(new[] { groupView }.ToDataSourceResult(request, ModelState));
         }
 
-        [HttpPost]
-        public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
+        public JsonResult RefreshApplicationRoles()
         {
-            var fileContents = Convert.FromBase64String(base64);
-            #region export log
-            UserHelper.ExportLog(Request.UserHostAddress, "Excel-Export", "Success", User.Identity.Name, "Exported User groups");
-            #endregion
-            return File(fileContents, contentType, fileName);
-        }
-    
-        [HttpPost]
-        public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)
-        {
-            var fileContents = Convert.FromBase64String(base64);
-            #region export log
-            UserHelper.ExportLog(Request.UserHostAddress, "Pdf-Export", "Success", User.Identity.Name, "Exported User roles");
-            #endregion
-            return File(fileContents, contentType, fileName);
+
+            try
+            {
+                InitialController.AddallRoles();
+                var formattedData = new
+                {
+                    Message = "Refresh Successful.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            catch(Exception ex)
+            {
+                var formattedData = new
+                {
+                    Message = $"Error Occured in refreshing roles.\n {ex.Message}",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+        
         }
 
         protected override void Dispose(bool disposing)

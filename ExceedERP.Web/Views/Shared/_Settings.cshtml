@@ -43,18 +43,20 @@
                      HttpContext.Current.User.IsInRole("Admin_Module"))
                 {
                     <li id="link241" class="actionlinlk">@Html.ActionLink("Users", "Index", "ApplicationUser", new { area = "" }, null)<b class="arrow"></b></li>
-                    <li id="link2412323" class="actionlinlk">@Html.ActionLink("Business Unit Users", "Index", "UserBusinessUnitMap", new { area = "" }, null)<b class="arrow"></b></li>
+                    @*<li id="link2412323" class="actionlinlk">@Html.ActionLink("Business Unit Users", "Index", "UserBusinessUnitMap", new { area = "" }, null)<b class="arrow"></b></li>*@
                 }
                 @if (HttpContext.Current.User.IsInRole("Admin") ||
                      HttpContext.Current.User.IsInRole("Admin_Module"))
                 {
                     <li id="link242" class="actionlinlk">@Html.ActionLink("Groups", "Index", "Groups", new { area = "" }, null)<b class="arrow"></b></li>
                     <li id="link242re" class="actionlinlk">@Html.ActionLink("User Groups and Roles Report", "UserGroupsRoles", "GlobalReports", new { area = "" }, null)<b class="arrow"></b></li>
+                    <li id="link242r4e" class="actionlinlk">@Html.ActionLink("Users in Group or Role Report", "UserInGroupsRoles", "GlobalReports", new { area = "" }, null)<b class="arrow"></b></li>
                 }
 
             </ul>
         </li>
-        @if (HttpContext.Current.User.IsInRole("Admin"))
+        @if (HttpContext.Current.User.IsInRole("Admin") ||
+                     HttpContext.Current.User.IsInRole("Admin_Global_Setting"))
         {
             <li class="">
                 <a href="#" class="dropdown-toggle">
@@ -73,7 +75,6 @@
 
                 </ul>
             </li>
-
             <li class="">
                 <a href="#" class="dropdown-toggle">
                     <i class="menu-icon fa fa-caret-right"></i>
@@ -85,7 +86,6 @@
                     <li id="SET-ISO-01" class="actionlinlk">@Html.ActionLink("ISO Document Titles and Document No.", "Index", "IsoDocuments", new { area = "Common" }, null)<b class="arrow"></b></li>
                 </ul>
             </li>
-
             <li class="">
                 <a href="#" class="dropdown-toggle">
                     <i class="menu-icon fa fa-caret-right"></i>
@@ -99,7 +99,7 @@
                 <ul class="submenu">
                     <li id="link246" class="actionlinlk">@Html.ActionLink("Login Log", "Index", "GlobalUserAccessLogs", new { area = "" }, null)<b class="arrow"></b></li>
                     <li id="link247" class="actionlinlk">@Html.ActionLink("Delete", "Delete", "GlobalUserAccessLogs", new { area = "" }, null)<b class="arrow"></b></li>
-                    <li id="link247" class="actionlinlk">@Html.ActionLink("Operation Log", "OperationLog", "GlobalUserAccessLogs", new { area = "" }, null)<b class="arrow"></b></li>
+                    <li id="link2471" class="actionlinlk">@Html.ActionLink("Operation Log", "OperationLog", "GlobalUserAccessLogs", new { area = "" }, null)<b class="arrow"></b></li>
                     @*<li id="link249" class="actionlinlk">@Html.ActionLink("Export", "Export", "GlobalUserAccessLogs", new {area = ""}, null)<b class="arrow"></b></li>*@
                     <li id="link250" class="actionlinlk">@Html.ActionLink("Error", "Error", "GlobalUserAccessLogs", new { area = "" }, null)<b class="arrow"></b></li>
                 </ul>
@@ -107,37 +107,40 @@
             <li id="hrm007" class="actionlinlk">
 
             </li>
-            <li class="">
-                <a href="#" class="dropdown-toggle">
-                    <i class="menu-icon fa fa-caret-right"></i>
+            if (HttpContext.Current.User.IsInRole("Admin_Global_Setting"))
+            {
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
 
-                    Global setup
-                    <b class="arrow fa fa-angle-down"></b>
-                </a>
+                        Global setup
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
 
-                <b class="arrow"></b>
+                    <b class="arrow"></b>
 
-                <ul class="submenu">
-                    <li id="link2415" class="actionlinlk">@Html.ActionLink("Configurations", "Index", "GlobalSetting", new { area = "" }, null)<b class="arrow"></b></li>
-                    <li id="linka246" class="actionlinlk">@Html.ActionLink("Company Branches", "Index", "BranchAdmin", new { area = "HRM" }, null)<b class="arrow"></b></li>
-                </ul>
+                    <ul class="submenu">
+                        <li id="link2415" class="actionlinlk">@Html.ActionLink("Configurations", "Index", "GlobalSetting", new { area = "" }, null)<b class="arrow"></b></li>
+                        <li id="linka246" class="actionlinlk">@Html.ActionLink("Company Branches", "Index", "BranchAdmin", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                    </ul>
 
-            </li>
-            <li class="">
-                <a href="#" class="dropdown-toggle">
-                    <i class="menu-icon fa fa-caret-right"></i>
+                </li>
+             }
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
 
-                    Database
-                    <b class="arrow fa fa-angle-down"></b>
-                </a>
+                        Database
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
 
-                <b class="arrow"></b>
+                    <b class="arrow"></b>
 
-                <ul class="submenu">
-                    <li id="linka246" class="actionlinlk">@Html.ActionLink("Backup", "Index", "Database", new { area = "" }, null)<b class="arrow"></b></li>
-                </ul>
-            </li>
-        }
+                    <ul class="submenu">
+                        <li id="linka246" class="actionlinlk">@Html.ActionLink("Backup", "Index", "Database", new { area = "" }, null)<b class="arrow"></b></li>
+                    </ul>
+                </li>
+            }
 
-    </ul>
+        </ul>
 </li>

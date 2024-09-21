@@ -20,9 +20,217 @@ namespace ExceedERP.Helpers.Common
 
      public static class UserHelper
     {
-        
-       
 
+        public static List<UsersInGroupAndRoleVm> GetUsersInGroupAndRoles(string groupid, string roleId)
+        {
+            using (ExceedDbContext db = new ExceedDbContext())
+            {
+
+                List<UsersInGroupAndRoleVm> list = new List<UsersInGroupAndRoleVm>();
+
+                string strcon = ConfigurationManager.ConnectionStrings["ExceedERPUserManagment"].ConnectionString;
+                SqlConnection con = new SqlConnection(strcon);
+                SqlDataReader myReader = null;
+                int empId = 0;
+                if (!string.IsNullOrEmpty(roleId))
+                {
+                    #region get users
+                    try
+                    {
+
+                        con.Open();
+                        SqlCommand cmd = new SqlCommand("Select U.EmployeeId,U.UserName,U.PhoneNo from [User].AspNetUsers U JOIN [User].AspNetUserRoles UR ON U.Id=UR.Userid JOIN [User].AspNetRoles R ON UR.Roleid=R.Id where R.Name=@roleId", con);
+                        cmd.Parameters.AddWithValue("@roleId", roleId);
+                        myReader = cmd.ExecuteReader();
+
+                        while (myReader.Read())
+                        {
+                            empId = int.Parse(myReader[0].ToString());
+                            var u = new UsersInGroupAndRoleVm
+                            {
+                                UserName = myReader[1].ToString()
+                            };
+
+                            var currentPlacement = db.Placements.Where(x => x.isCurrent && x.EmployeeId == empId).FirstOrDefault();
+                            if (currentPlacement != null)
+                            {
+                                var lookUp = db.Lookups.Find(currentPlacement.LookupId);
+                                u.Title = lookUp.Description;
+                            }
+
+                            u.Phone = myReader[2].ToString();
+                            u.UserName = myReader[1].ToString();
+                            u.FullName = EmployeeHelper.GetEmployeeEnglishName(empId);
+                            u.WorkUnit = EmployeeHelper.GetEmployeeWorkUnit(empId);
+
+                            list.Add(u);
+                        }
+                    }
+                    catch (Exception exe)
+                    {
+                        //log
+                    }
+                    finally
+                    {
+                        if (myReader != null)
+                        {
+                            myReader.Close();
+                        }
+                        if (con != null)
+                        {
+                            con.Close();
+                        }
+                    }
+                    #endregion
+                }
+                else if (!string.IsNullOrEmpty(groupid))
+                {
+                    #region get users by group
+                    try
+                    {
+
+                        con.Open();
+                        SqlCommand cmd = new SqlCommand("Select U.EmployeeId,U.UserName,U.PhoneNo from [User].AspNetUsers U JOIN [User].ApplicationUserGroups UG ON U.Id=UG.ApplicationUserId JOIN [User].ApplicationGroups G ON UG.ApplicationGroupId=G.Id where G.Id=@groupid", con);
+                        cmd.Parameters.AddWithValue("@groupid", groupid);
+                        myReader = cmd.ExecuteReader();
+
+                        while (myReader.Read())
+                        {
+                            empId = int.Parse(myReader[0].ToString());
+                            var u = new UsersInGroupAndRoleVm
+                            {
+                                UserName = myReader[1].ToString()
+                            };
+
+                            var currentPlacement = db.Placements.Where(x => x.isCurrent && x.EmployeeId == empId).FirstOrDefault();
+                            if (currentPlacement != null)
+                            {
+                                var lookUp = db.Lookups.Find(currentPlacement.LookupId);
+                                u.Title = lookUp.Description;
+                            }
+
+                            u.Phone = myReader[2].ToString();
+                            u.UserName = myReader[1].ToString();
+                            u.FullName = EmployeeHelper.GetEmployeeEnglishName(int.Parse(myReader[0].ToString()));
+                            u.WorkUnit = EmployeeHelper.GetEmployeeWorkUnit(int.Parse(myReader[0].ToString()));
+
+                            list.Add(u);
+                        }
+                    }
+                    catch (Exception exe)
+                    {
+                        //log
+                    }
+                    finally
+                    {
+                        if (myReader != null)
+                        {
+                            myReader.Close();
+                        }
+                        if (con != null)
+                        {
+                            con.Close();
+                        }
+                    }
+                    #endregion
+                }
+
+                return list;
+            }
+        }
+
+        public static List<RoleVm> GetRoles()
+        {
+
+            List<RoleVm> list = new List<RoleVm>();
+
+            string strcon = ConfigurationManager.ConnectionStrings["ExceedERPUserManagment"].ConnectionString;
+            SqlConnection con = new SqlConnection(strcon);
+            SqlDataReader myReader = null;
+            #region get users
+            try
+            {
+                con.Open();
+                SqlCommand cmd = new SqlCommand("Select Name,Id from [User].AspNetRoles", con);
+
+                myReader = cmd.ExecuteReader();
+
+                while (myReader.Read())
+                {
+                    var u = new RoleVm
+                    {
+                        Name = myReader[0].ToString()
+                    };
+                    u.RoleId = myReader[1].ToString();
+                    list.Add(u);
+                }
+            }
+            catch (Exception exe)
+            {
+                //log
+            }
+            finally
+            {
+                if (myReader != null)
+                {
+                    myReader.Close();
+                }
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            #endregion
+
+
+            return list;
+        }
+        public static List<GroupVM> GetGroups()
+        {
+
+            List<GroupVM> list = new List<GroupVM>();
+
+            string strcon = ConfigurationManager.ConnectionStrings["ExceedERPUserManagment"].ConnectionString;
+            SqlConnection con = new SqlConnection(strcon);
+            SqlDataReader myReader = null;
+            #region get users
+            try
+            {
+                con.Open();
+                SqlCommand cmd = new SqlCommand("Select Id,Name from [User].ApplicationGroups", con);
+
+                myReader = cmd.ExecuteReader();
+
+                while (myReader.Read())
+                {
+                    var u = new GroupVM
+                    {
+                        Name = myReader[1].ToString()
+                    };
+                    u.Id = myReader[0].ToString();
+                    list.Add(u);
+                }
+            }
+            catch (Exception exe)
+            {
+                //log
+            }
+            finally
+            {
+                if (myReader != null)
+                {
+                    myReader.Close();
+                }
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            #endregion
+
+
+            return list;
+        }
         #region general
 
         public static List<string> GetUserBranchs(string user)

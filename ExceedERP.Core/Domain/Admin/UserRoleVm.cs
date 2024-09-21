@@ -26,4 +26,28 @@ namespace ExceedERP.Core.Domain.Admin
     {
         public string RoleName { get; set; }
     }
+
+    public class UsersInGroupAndRoleVm
+    {        
+        public string UserName { get; set; }
+        public string Phone { get; set; }
+        public string FullName { get; set; }
+        public string Title { get; set; }
+        public string WorkUnit { get; set; }
+    }
+
+    public class GroupVM
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+
+    }
+
+    public class RoleVm
+    {
+        public string GroupId { get; set; }
+        public string RoleId { get; set; }
+        public string Name { get; set; }
+
+    }
 }

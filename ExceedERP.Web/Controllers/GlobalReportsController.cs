@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 
 namespace ExceedERP.Web.Controllers
 {
@@ -10,6 +6,10 @@ namespace ExceedERP.Web.Controllers
     {
         // GET: GlobalRepors
         public ActionResult UserGroupsRoles()
+        {
+            return View();
+        }
+        public ActionResult UserInGroupsRoles()
         {
             return View();
         }

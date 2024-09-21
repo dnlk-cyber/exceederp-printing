@@ -14,7 +14,7 @@ namespace ExceedERP.Reporting.Admin.DataSource
     [DataObject]
     public class UserGroupAndRoleOds
     {
-        ExceedDbContext db = new ExceedDbContext();
+       
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<UserGroupNRoleVm> GetUserGroupsAndRoles(string userName)
         {
