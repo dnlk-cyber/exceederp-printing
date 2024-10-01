@@ -1,6 +1,6 @@
 ﻿ 
 @(Html.Kendo().DropDownListFor(m => m)
-                  .AutoBind(false)
+    .ValuePrimitive(true)
                       .OptionLabel("Select Purchaser")
                           .DataTextField("Name")
                           .DataValueField("Code")
@@ -10,6 +10,6 @@
                               dataSource.Read(read => read.Action("GetPurchasers", "ProcurementDataProvider", new { area = "Procurement" }))
                                             .ServerFiltering(false);
                           })
-                                   
+
 )
 @Html.ValidationMessageFor(m => m)

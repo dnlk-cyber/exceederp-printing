@@ -1,0 +1,25 @@
+﻿@model object
+@*SelectDynamicAccCode*@
+<div class="popupwrapper">
+    @Html.Kendo().TextBoxFor(model => model).HtmlAttributes(new { disabled = "disabled" }) <img src="~/Content/Images/search.png" onclick="SelectAccCodeNew(this)" />
+</div>
+
+<script>
+    function SelectAccCodeNew(e) {
+        var wnd = $("#AccWindow").data("kendoWindow");
+        wnd.center().open();
+    }
+</script>
+
+@(Html.Kendo().Window().Name("AccWindow")
+        .Title("Account")
+    .Visible(false)
+    .Modal(true)
+      .Content(@<text>
+
+hello
+
+                </text>)
+    .Draggable(true)
+    .Width(1500)
+)

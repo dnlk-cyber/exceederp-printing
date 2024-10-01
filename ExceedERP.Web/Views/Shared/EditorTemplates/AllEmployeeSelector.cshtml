@@ -1,0 +1,16 @@
+﻿@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+    .ValuePrimitive(true)
+    //.AutoBind(false)
+    .OptionLabel("Select Employee...")
+    .DataTextField("FullNameaEnglish")
+    .DataValueField("EmployeeId")
+    .Filter("contains")
+    .DataSource(dataSource =>
+    {
+    dataSource.Read(read => read.Action("GetAllEmployees", "GlobalDataProvider", new { area = "Common" }).Data("filterEmployees"))
+                .ServerFiltering(true);
+    })
+)
+@Html.ValidationMessageFor(m => m)

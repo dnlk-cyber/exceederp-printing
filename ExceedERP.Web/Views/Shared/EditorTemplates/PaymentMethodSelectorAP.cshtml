@@ -3,6 +3,7 @@
                   .OptionLabel("Select Method...")
       .DataTextField("Method")
       .DataValueField("Method")
+      .Filter("contains")
       .DataSource(dataSource =>
       {
           dataSource.Read(read => read.Action("GetApPaymentMethods", "FinanceDataProvider", new { area = "Finance" }))

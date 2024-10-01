@@ -23,7 +23,8 @@
                            .DataTextField("Name")
                                   .DataValueField("ItemCode")
                              .OptionLabel("Select Item...")
-                                .HtmlAttributes(new { @class = "width500" })
+                             .AutoWidth(true)
+                       .HtmlAttributes(new { style = "width:450px" })
                         .Filter("contains")
                             .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
                         .DataSource(source =>

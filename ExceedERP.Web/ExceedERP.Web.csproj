@@ -8922,6 +8922,11 @@
     <Content Include="Views\Shared\_Health.cshtml" />
     <Content Include="Views\Shared\_Insurance.cshtml" />
     <Content Include="Views\GlobalReports\UserInGroupsRoles.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\AllEmployeeSelector.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\AccountCodeNew.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\EnumWithoutApprove.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\EnumWithoutDepApprove.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\TimeEditor.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Bid Cancellation\" />
