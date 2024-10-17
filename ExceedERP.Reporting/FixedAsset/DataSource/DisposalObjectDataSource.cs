@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Data;
 using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Inventory;
@@ -13,6 +14,7 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Inventory.DataSource.Print;
 using ExceedERP.Reporting.Inventory.DataSource.Print.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
+using ExceedERP.Core.Domain.FixedAsset.Depreciation;
 
 namespace ExceedERP.Reporting.FixedAsset.DataSource
 {
@@ -85,11 +87,14 @@ namespace ExceedERP.Reporting.FixedAsset.DataSource
                 var perTo = _db.GLPeriods.FirstOrDefault(x => x.GLPeriodId.ToString() == periodTo)?.DateTo;
 
 
-                var catagories = _db.FixedAssetCategories.ToList();
-                var groups = _db.FixedAssetGroups.ToList();
-                var branches = _db.Branch.ToList();
+                var catagories = _db.FixedAssetCategories.AsNoTracking().ToList();
+                var groups = _db.FixedAssetGroups.AsNoTracking().ToList();
+                var branches = _db.Branch.AsNoTracking().ToList();
                 if (!String.IsNullOrWhiteSpace(branchid))
-                    branches = branches.Where(x => x.BranchId.ToString() == branchid).ToList();
+                {
+                    int brid = int.Parse(branchid);
+                    branches = branches.Where(x => x.BranchId == brid).ToList();
+                }
 
                 var disposals = _db.DisposalItems
                     .Where(x => x.AssetDisposal.Date >= perFrom && x.AssetDisposal.Date <= perTo).AsQueryable();
@@ -116,16 +121,17 @@ namespace ExceedERP.Reporting.FixedAsset.DataSource
 
                             foreach (var disposal in catdisposals)
                             {
-                                var register = _db.AssetRegistrations.Where(x=>x.BranchId==branch.BranchId).FirstOrDefault(x =>
+                                var register = _db.AssetRegistrations
+                                    .Where(x=>x.BranchId==branch.BranchId).FirstOrDefault(x =>
                                     x.AssetRegistrationId == disposal.AssetRegistrationId);
 
                                 if (register != null)
-                                {
-                                    accum = accum + _db.AnnualDepreciationItems
-                                                .Where(x => x.AssetRegistrationId == register.AssetRegistrationId)
-                                                .Sum(x => x.DepreciationAmount);
-                                    bookvalue = bookvalue+register.BookValue;
-                                }
+								{
+									accum += _db.AnnualDepreciationItems
+	                                .Where(x => x.AssetRegistrationId == register.AssetRegistrationId)
+	                                .Sum(x => (decimal?)x.DepreciationAmount) ?? 0;
+									bookvalue += register.BookValue;
+								}
                             }
 
                             dispos.AccumulatedDep = accum;

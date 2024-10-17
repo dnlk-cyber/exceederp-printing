@@ -2,8 +2,6 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.FixedAsset;
-using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.FixedAsset.UserCard;
 using ExceedERP.Core.Domain.Global;
@@ -16,7 +14,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
 {
-    
+
     public class UserCardItemsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -24,7 +22,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
         [AuthorizeRoles(FixedAssetConstants.FixedAssetUser, FixedAssetConstants.FixedAssetApprover)]
         public ActionResult Index()
         {
-            var employee = db.Person_Employee;
+            var employee = db.Person_Employee.AsQueryable();
             ViewData["userCard"] = employee;
 
             var selectedEmployee = employee.Select(
@@ -43,7 +41,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
         [AuthorizeRoles(FixedAssetConstants.FixedAssetUser, FixedAssetConstants.FixedAssetApprover)]
         public ActionResult UserCardItems_Read([DataSourceRequest]DataSourceRequest request,string subcategory, string searchkey)
         {
-            IQueryable<UserCardItems> usercarditems = db.UserCardItems;
+            IQueryable<UserCardItems> usercarditems = db.UserCardItems.Where(x=>x.Active);
             if (!String.IsNullOrEmpty(subcategory))
             {
                 int id = int.Parse(subcategory);
@@ -102,7 +100,17 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 }
                 var asset = db.AssetRegistrations.Find(userCardItems.AssetRegistrationId);
 
-                var exist = db.UserCardItems.Where(x => x.EmployeeId == userCardItems.EmployeeId)
+            var activeUserCard = db.UserCardItems
+                    .Where(x => x.Active)
+                    .Where(x => x.AssetRegistrationId == userCardItems.AssetRegistrationId).ToList();
+
+            if (activeUserCard.Any())
+            {
+                ModelState.AddModelError("exist", "The item is already registered in user card.");
+            }
+
+            var exist = db.UserCardItems
+                    .Where(x => x.EmployeeId == userCardItems.EmployeeId)
                     .Where(x => x.AssetRegistrationId == userCardItems.AssetRegistrationId).ToList();
 
                 if (exist.Any())
@@ -183,6 +191,16 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
 
             var asset = db.AssetRegistrations.Find(userCardItems.AssetRegistrationId);
 
+            var activeUserCard = db.UserCardItems
+                .Where(x => x.UserCardItemsID!=userCardItems.UserCardItemsID)
+                    .Where(x => x.Active)
+                    .Where(x => x.AssetRegistrationId == userCardItems.AssetRegistrationId).ToList();
+
+            if (activeUserCard.Any())
+            {
+                ModelState.AddModelError("exist", "The item is already registered in user card.");
+            }
+
             var exist = db.UserCardItems.Where(x => x.UserCardItemsID != userCardItems.UserCardItemsID)
                                         .Where(x => x.EmployeeId == userCardItems.EmployeeId)
                                         .Where(x => x.AssetRegistrationId == userCardItems.AssetRegistrationId).ToList();
@@ -213,7 +231,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                         GRNDate = asset.GRNDate,
                         GRN = asset.GRN,
                         Remark = userCardItems.Remark,
-                        Active=true,
+                        Active=userCardItems.Active,
 
                         OrgBranchName = userCardItems.OrgBranchName,
                         DateCreated = userCardItems.DateCreated,
@@ -303,6 +321,110 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
             var fileContents = Convert.FromBase64String(base64);
 
             return File(fileContents, contentType, fileName);
+        }
+
+        public JsonResult RefrshCards(string type)
+        {
+            #region fixe duplicate  ledger line
+            db.Database.CommandTimeout = 7200;
+            var registrations = db.AssetRegistrations
+                                .Where(x=> !string.IsNullOrEmpty(x.EmployeeId))
+                                .AsNoTracking()
+                                .ToList();
+
+            foreach (var asset in registrations)
+            {
+                try
+                {
+                    int empId = int.Parse(asset.EmployeeId);
+
+                    var cardExisit = db.UserCardItems
+                        .Where(x => x.EmployeeId == empId)
+                        .Where(x => x.AssetRegistrationId == asset.AssetRegistrationId)
+                        .Where(x => x.Active)
+                        .FirstOrDefault();
+                    if (cardExisit == null)
+                    {
+                        var entity = new UserCardItems
+                        {
+                            AssetRegistrationId = asset.AssetRegistrationId,
+                            Name = asset.Name,
+                            UOM = asset.Unit,
+                            Quanity = asset.Quanity,
+                            UnitPrice = asset.BookValue,
+                            Tag = asset.Tag,
+                            SerialNo = asset.SerialNo,
+                            IssueDate = (DateTime)asset.SIVDate,
+                            SIVNo = asset.SIV,
+                            GRNDate = asset.GRNDate,
+                            GRN = asset.GRN,
+                            Remark = asset.Remark,
+                            EmployeeId = empId,
+                            EmployeeFullName = "fullName",
+                            Active = true,
+
+
+                            DateCreated = DateTime.Now,
+                            CreatedBy = User.Identity.Name,
+                        };
+
+                        db.UserCardItems.Add(entity);
+                        db.SaveChanges();
+                    }
+                }
+                catch(Exception ex)
+                {
+
+                }
+
+            }
+
+            #endregion
+
+            var formattedData = new
+            {
+                Message = "Operation completed.",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+
+        }
+        public JsonResult RemoveDuplicates(string type)
+        {
+            #region fixe duplicate  ledger line
+            db.Database.CommandTimeout = 7200;
+            var duplicateLines = db.UserCardItems
+                 .GroupBy(x => new { x.EmployeeId, x.AssetRegistrationId })
+                .Where(g => g.Count() > 1)
+                .Select(y => new { Element = y.Key, Counter = y.Count() })
+                .AsNoTracking()
+                .ToList();
+
+            foreach (var duplicate in duplicateLines)
+            {
+                var duplicateCards = db.UserCardItems
+                    .Where(x => x.EmployeeId == duplicate.Element.EmployeeId)
+                    .Where(x => x.AssetRegistrationId == duplicate.Element.AssetRegistrationId)
+                    .ToList();
+                if (duplicateCards.Any())
+                {
+                    var minline = duplicateCards.Min(x => x.UserCardItemsID);
+                    var toberemoved = duplicateCards.Where(x => x.UserCardItemsID != minline).ToList();
+                    db.UserCardItems.RemoveRange(toberemoved);
+                    db.SaveChanges();
+                }
+
+            }
+
+            #endregion
+
+            var formattedData = new
+            {
+                Message = "Operation completed.",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+
         }
 
         protected override void Dispose(bool disposing)

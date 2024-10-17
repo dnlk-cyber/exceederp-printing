@@ -86,7 +86,7 @@ namespace ExceedERP.Reporting.FixedAsset.DataSource
 
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public IEnumerable<FixedAssetItemReport> GetFixedAssetItems(DateTime from, DateTime to, string category, string subcategory, string project, string workunit)
+        public IEnumerable<FixedAssetItemReport> GetFixedAssetItems(DateTime from, DateTime to, string category, string subcategory, string project, string workunit, string businessUnitId)
         {
             var assetRegistrations = _db.AssetRegistrations
                 .Where(x => x.GRNDate >= from)
@@ -107,11 +107,18 @@ namespace ExceedERP.Reporting.FixedAsset.DataSource
             }
             if (!String.IsNullOrEmpty(project))
             {
-                    
-                assetRegistrations = assetRegistrations.Where(x => x.BranchId.ToString() == project).AsQueryable();
+                int did = int.Parse(project);
+                assetRegistrations = assetRegistrations.Where(x => x.BranchId==did).AsQueryable();
             }
 
-          
+            if (!String.IsNullOrEmpty(businessUnitId))
+            {
+                int did = int.Parse(businessUnitId);
+                assetRegistrations = assetRegistrations
+                    .Where(x => x.BusinessUnitId == did).AsQueryable();
+            }
+
+
             if (!String.IsNullOrEmpty(workunit))
             {
                 int did = int.Parse(workunit);

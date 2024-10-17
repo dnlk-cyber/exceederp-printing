@@ -8,8 +8,14 @@
           .Name("grid")
           .Columns(columns =>
           {
-              columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Employee").Width(180);
-              //columns.Bound(c => c.EmployeeFullName).Width(180);
+              columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Employee").Width(180).Filterable(ftb => ftb.Multi(true).Search(true));
+              columns.Bound(c => c.Active).Width(90).Title("Active ?").ClientTemplate(
+                 "<input type='checkbox' disabled = 'true' value='#= Active #' " +
+                 "# if (Active) { #" +
+                 "checked='checked'" +
+                 "# } #" +
+                 "/>"
+                 );
               columns.Bound(c => c.Name).Width(200);
               columns.Bound(c => c.Quanity).Width(100);
               columns.Bound(c => c.UnitPrice).Width(120);
@@ -34,7 +40,7 @@
           .ToolBar(toolbar =>
           {
 
-              toolbar.Template(@<text>
+          toolbar.Template(@<text>
                 <div class="toolbar row">
                     <div class="col-md-1">
                         <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
@@ -72,7 +78,7 @@
                                       .CascadeFrom("CategoryCode")
                                       .Events(e =>
                                       {
-                                            e.Select("onSelectSubCategoryCode"); 
+                                            e.Select("onSelectSubCategoryCode");
                                       }))
 
                         @(Html.Kendo().TextBox()
@@ -83,12 +89,22 @@
                                       .HtmlAttributes(new { type = "search", @class = "k-primary" })
                                       .Events(e => e.Click("searchAsset"))
                                       .Content("Search"))
+                         @(Html.Kendo().Button()
+                                      .Name("btnRemoveduplicates")
+                                      .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                      .Events(e => e.Click("removeDuplicates"))
+                                      .Content("Remove Duplicate"))
+                        @(Html.Kendo().Button()
+                                      .Name("btnRefresh")
+                                      .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                      .Events(e => e.Click("refreshUsercard"))
+                                      .Content("Refresh Card"))
                     </div>
 
                 </div>
 
             </text>);
-                })
+          })
                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UserCardItems").Window(w => w.Title("User Card")))
                 .Pageable(pageable => pageable
                     .Input(true)
@@ -108,10 +124,10 @@
                 {
                     sortable.SortMode(GridSortMode.SingleColumn);
                 })
-                
+
                 .DataSource(dataSource => dataSource
                     .Ajax()
-                    // .Group(groups => groups.Add(p => p.EmployeeFullName))
+                    .Group(groups => groups.Add(p => p.EmployeeId))
                     .Events(ev => ev
                         .Error("error_handler(\"grid\")")
                         .RequestStart("onRequestStart(\"grid\")")
@@ -120,6 +136,7 @@
                         model =>
                         {
                             model.Id(p => p.UserCardItemsID);
+                            model.Field(p => p.Active).Editable(false);
                             model.Field(p => p.OrgBranchName).Editable(false);
                             model.Field(p => p.CreatedBy).Editable(false);
                             model.Field(p => p.ModifiedBy).Editable(false);
@@ -176,7 +193,7 @@
 
     function filterSubCategories() {
         var code_name = $("#CategoryCode").data("kendoDropDownList").text();
-       
+
         var code_name_arr = code_name.split("-");
         var categoryCode_only = code_name_arr[0];
         var name_only = code_name_arr[1];
@@ -206,6 +223,47 @@
         } else {
             alert("Please add search criteria.");
         }
+    }
+
+    function refreshUsercard() {
+
+        $('#loading-image').show();
+         $.ajax({
+            type: "GET",
+            url: '@Url.Action("RefrshCards", "UserCardItems")',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                $('#loading-image').hide();
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+        });
+    }
+
+    function removeDuplicates() {
+        $('#loading-image').show();
+         $.ajax({
+            type: "GET",
+            url: '@Url.Action("RemoveDuplicates", "UserCardItems")',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                $('#loading-image').hide();
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+        });
     }
     function passSearchData() {
         var searchObject = $("#txtSearch");

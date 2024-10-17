@@ -1,11 +1,11 @@
-﻿using ExceedERP.Core.Domain.FixedAsset;
-using ExceedERP.Web.Helpers;
+﻿using ExceedERP.Web.Helpers;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
+using ExceedERP.Core.Domain.Planning;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers
 {
-    [AuthorizeRoles(FixedAssetConstants.FixedAssetReport)]
+    [AuthorizeRoles(FixedAssetConstants.FixedAssetReport,PlanningRoles.Planning_User)]
 
     public class FixedAssetReportController : Controller
     {
@@ -14,6 +14,18 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers
         {
             return View();
         }
+
+        public ActionResult SupplyPlanVsExecutedReport()
+        {
+            return View();
+        }
+
+        public ActionResult AssetStatByBizUnitAndBranch()
+        {
+            return View();
+        }
+
+
 
         public ActionResult AssetMovement()
         {

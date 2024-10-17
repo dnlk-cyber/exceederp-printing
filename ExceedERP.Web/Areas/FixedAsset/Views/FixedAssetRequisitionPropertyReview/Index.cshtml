@@ -25,7 +25,7 @@
           columns.Bound(c => c.Status).Width(80);
           columns.Command(command =>
           {
-              //command.Edit();
+              command.Edit();
               //command.Destroy();
           }).Width(150);
 
@@ -80,6 +80,7 @@
               model.Field(p => p.FixedAssetRequisitionId).Editable(false);
               model.Field(p => p.BranchId).Editable(false);
               model.Field(p => p.OrgStructureId).Editable(false);
+              model.Field(p => p.CreatedAtOrgStructureId).Editable(false);
               model.Field(p => p.EmployeeId).Editable(false);
               model.Field(p => p.Status).Editable(false);
               model.Field(p => p.RequestDate).Editable(false);
@@ -167,6 +168,16 @@
                                 </dd>
                             </dl>
                         </div>
+                         <hr>
+
+                                # if (IsSecondOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
+                                {#
+                                @if (HttpContext.Current.User.IsInRole("FixedAsset_Void"))
+                                            {
+                                    <a onclick='return voidRecord("#=FixedAssetRequisitionId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                            }
+
+                                # } #
                     </text>
                             );
     //Items tab
@@ -180,6 +191,15 @@
                                       columns.ForeignKey(p => p.FixedAssetSubCategoryID, (IEnumerable)ViewData["SubCategory"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").EditorTemplateName("FixedAssetSubCategorySelector").Width(180);
                                       columns.Bound(c => c.Name).Width(110).EditorTemplateName("FixedAssetSubCategoryNameSelector");
                                       columns.Bound(c => c.UoM).Width(100).EditorTemplateName("UoMSelector");
+                                      columns.Bound(c => c.ItemSpecification).EditorTemplateName("SpecTextEditor").Width(100);
+
+                                      columns.ForeignKey(p => p.AssetRegistrationId, (IEnumerable)ViewData["FixedAsset"], "AssetRegistrationId", "Name").EditorTemplateName("FixedAssetIssueSelector").Width(130);
+                                      columns.Bound(c => c.ModelNo).Width(100);
+                                      columns.Bound(c => c.SerialNo).Width(100);
+                                      columns.Bound(c => c.ChasisNo).Width(100);
+                                      columns.Bound(c => c.EngineNo).Width(100);
+                                      columns.Bound(c => c.PlateNo).Width(100);
+                                      columns.Bound(c => c.Price).Width(100);
                                       columns.Bound(c => c.RequestedQuantity).Width(110);
                                       columns.Bound(c => c.ApprovedQuantity).Width(110);
                                       columns.Bound(c => c.IssuedQuantity).Width(110);
@@ -200,7 +220,7 @@
                                       {
                                           command.Edit();
                                           //command.Destroy();
-                                      });
+                                      }).Width(120);
 
                                   })
                                   .ToolBar(toolbar =>
@@ -223,6 +243,10 @@
                                           model.Field(p => p.FixedAssetCategoryID).Editable(false);
                                           model.Field(p => p.FixedAssetSubCategoryID).Editable(false);
                                           model.Field(p => p.Name).Editable(false);
+                                          model.Field(p => p.ChasisNo).Editable(false);
+                                          model.Field(p => p.EngineNo).Editable(false);
+                                          model.Field(p => p.PlateNo).Editable(false);
+                                          model.Field(p => p.Price).Editable(false);
                                           model.Field(p => p.RequestedQuantity).Editable(false);
                                           model.Field(p => p.ApprovedQuantity).Editable(false);
                                           model.Field(p => p.CreatedBy).Editable(false);
@@ -238,6 +262,11 @@
                                   ).ToClientTemplate())
                         </text>
                                   );
+     items.Add().Text("Attachment").Content(@<text>
+
+                        @FileUpload()
+
+                    </text>);
     //validation tab
                               items.Add().Text("Validation").Content(@<text>
                                 @(Html.Kendo().Grid<StoreRequisitionPropertyValidation>()
@@ -281,7 +310,62 @@
 
 
 
+     @helper FileUpload()
+    {
+        <text>
+            @(Html.Kendo().Grid<FixedAssetRequisitionAttachment>
+                                        ()
+                                        .Name("FixedAssetRequisitionAttachment#=FixedAssetRequisitionId#")
+                                        .Columns(columns =>
+                                            {
+                                                columns.Bound(x => x.FixedAssetRequisitionAttachmentId).Hidden(true);
+                                                columns.Bound(c => c.FileName).ClientTemplate("<a href='/FixedAssetRequisitionAttachment/FileDwonload?id=\\#=FixedAssetRequisitionAttachmentId \\#'>\\#=FileName \\#</a>").Width(200);
 
+                                                columns.Command(command =>
+                                                    {
+                                                        command.Edit();
+                                                        command.Destroy();
+                                                    }).Width(580);
+                                            })
+                                        .ToolBar(t => t.Template(
+                                            @<text>
+                                                @(Html.Kendo().Upload()
+                                                                                                                            .Name("attachments")
+                                                                                                                            .Async(a => a.Save("FixedAssetRequisitionAttachment_Create", "FixedAssetRequisitionAttachment", new { id = "#=FixedAssetRequisitionId #" }))
+                                                                                                                            .Events(e => e.Complete("onUploadSuccess"))
+                                                                                                                            .ShowFileList(false)
+                                                                                                                            .ToClientTemplate()
+                                                )
+                                            </text>
+                                                                                                                                                                                        ))
+                                                                                                                                                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                                            .HtmlAttributes(new { style = "height: 350px;" })
+                                                                                                                                            .Sortable(sortable =>
+                                                                                                                                            {
+                                                                                                                                                sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                                            })
+                                                                                                                                                                                        .Scrollable()
+                                                                                                                                                                                     .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                                                                                                                                            .Events(x => x.DataBound("onDataBoundLines"))
+                                                                                                                                                                                        .DataSource(dataSource => dataSource
+                                                                                                                                                                                            .Ajax()
+                                                                                                                                                                                            .Events(ev => ev
+                                                                                                                                                                                                .Error("error_handler(\"FixedAssetRequisitionAttachment#=FixedAssetRequisitionId#\")")
+                                                                                                                                                                                                .RequestStart("onRequestStart(\"FixedAssetRequisitionAttachment#=FixedAssetRequisitionId#\")")
+                                                                                                                                                                                                .RequestEnd("onRequestEnd(\"FixedAssetRequisitionAttachment#=FixedAssetRequisitionId#\")"))
+                                                                                                                                                                                                .Model(model => model.Id(p => p.FixedAssetRequisitionAttachmentId))
+                                                                                                                                                                                            .Read(read => read.Action("FixedAssetRequisitionAttachment_Read", "FixedAssetRequisitionAttachment", new { id = "#=FixedAssetRequisitionId #" }))
+                                                                                                                                                                                            .Create(create => create.Action("FixedAssetRequisitionAttachment_Create", "FixedAssetRequisitionAttachment", new { id = "#=FixedAssetRequisitionId #" }))
+                                                                                                                                                                                            .Update(update => update.Action("FixedAssetRequisitionAttachment_Update", "FixedAssetRequisitionAttachment"))
+                                                                                                                                                                                            .Destroy(destroy => destroy.Action("FixedAssetRequisitionAttachment_Destroy", "FixedAssetRequisitionAttachment"))
+                                                                                                                                                                                ).ToClientTemplate())
+        </text>
+    }
 </script>
 
 
@@ -309,10 +393,42 @@
 
 <script>
 
-   
+    var subCatId;
+
+    function filterAssetsForIssue() {
+
+        return {
+            subCategoryCode: $("#FixedAssetSubCategoryID").val(),
+            storeCode: storeCode,
+            text: $("#AssetRegistrationId").data("kendoDropDownList").filterInput.val()
+        };
+    }
+
     var storeCode;
     //var codeid;
     //var isapproved;
+
+     function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "FixedAssetRequisitionPropertyReview", new {area = "FixedAsset" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+       }
+    }
+
 
     function sendForApproval(id) {
         var recordStatus = "";
@@ -346,7 +462,7 @@
             $("#IssuedQuantity").attr("readonly", true);
         }
 
-       
+
 
       }
 
@@ -415,7 +531,7 @@
         //changing colors
         //var rows = e.sender.tbody.children();
         //for (var j = 0; j < rows.length; j++) {
-        //    var row = $(rows[j]); 
+        //    var row = $(rows[j]);
         //    var dataItem = e.sender.dataItem(row);
 
         //    if (dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
@@ -436,7 +552,7 @@
 
     }
     function onDataBoundPropertyLines(e) {
-       
+
         var detailGrid = "#" + e.sender.element[0].id;
         $(".k-grid-add", detailGrid).hide();
         $(".k-grid-delete", detailGrid).hide();
@@ -444,6 +560,7 @@
             $(".k-grid-edit", detailGrid).hide();
         }
     }
+
     function onDataBoundPropertyValidation(e) {
         var detailGrid = "#" + e.sender.element[0].id;
         $(".k-grid-delete", detailGrid).hide();
@@ -463,7 +580,7 @@
 
     }
 
-  
+
 
 </script>
 <script>

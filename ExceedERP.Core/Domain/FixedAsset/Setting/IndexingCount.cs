@@ -2,7 +2,7 @@
 
 namespace ExceedERP.Core.Domain.FixedAsset.Setting
 {
-    public class IndexingCount
+    public class IndexingCount 
     {
         [Key]
         public string IndexCode { get; set; }

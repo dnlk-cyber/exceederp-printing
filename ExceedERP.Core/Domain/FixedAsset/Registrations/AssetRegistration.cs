@@ -24,7 +24,7 @@ namespace ExceedERP.Core.Domain.FixedAsset.Registrations
         [DisplayName("Branch")]
         public int BranchId { get; set; }
         [DisplayName("Business Unit")]
-        public int? BusinessUnitId { get; set; }
+        public int BusinessUnitId { get; set; }
 
         [DisplayName("Work Unit")]
         public string OrgStructureId { get; set; }
@@ -69,7 +69,7 @@ namespace ExceedERP.Core.Domain.FixedAsset.Registrations
         [Display(Name = "Purchase Date"), DataType(DataType.Date), DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? PurchaseDate { get; set; }
 
-        [Display(Name = "Total Price")]
+        [Display(Name = "Purchase Price")]
         public decimal PurchasePrice { get; set; }
 
         [Display(Name = "GRN")]

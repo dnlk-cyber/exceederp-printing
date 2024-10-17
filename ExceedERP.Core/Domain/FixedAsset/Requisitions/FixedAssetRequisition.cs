@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Inventory;
 
 namespace ExceedERP.Core.Domain.FixedAsset.Requisitions
 {
@@ -48,9 +49,20 @@ namespace ExceedERP.Core.Domain.FixedAsset.Requisitions
         public int? ForBranchId { get; set; }
         [Display(Name = "Plate No")]
         public string PlateNo { get; set; }
+        public int CreatedAtOrgStructureId { get; set; }
         public virtual ICollection<FixedAssetRequisitionItem> FixedAssetRequisitionItem { get; set; }
         public virtual ICollection<FixedAssetRequisitionValidation> FixedAssetRequisitionValidation { get; set; }
         public virtual ICollection<FixedAssetRequisitionSecondValidation> FixedAssetRequisitionSecondValidation { get; set; }
         public virtual ICollection<FixedAssetRequisitionPropertyValidation> FixedAssetRequisitionPropertyValidation { get; set; }
+        public virtual ICollection<FixedAssetRequisitionAttachment> FixedAssetRequisitionAttachments { get; set; }
+    }
+
+    public class FixedAssetRequisitionAttachment
+    {
+        public int FixedAssetRequisitionAttachmentId { get; set; }
+        public int FixedAssetRequisitionId { get; set; }
+        public virtual FixedAssetRequisition FixedAssetRequisition { get; set; }
+        public string FileName { get; set; }
+        public string FilePath { get; set; }
     }
 }

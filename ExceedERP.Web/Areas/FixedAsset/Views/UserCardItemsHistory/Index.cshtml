@@ -1,0 +1,255 @@
+﻿@using System.Collections
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>User Card (History/Inactive)</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FixedAsset.UserCard.UserCardItems>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Employee").Width(180).Filterable(ftb => ftb.Multi(true).Search(true));
+              columns.Bound(c => c.Active).Width(90).Title("Active ?").ClientTemplate(
+                 "<input type='checkbox' disabled = 'true' value='#= Active #' " +
+                 "# if (Active) { #" +
+                 "checked='checked'" +
+                 "# } #" +
+                 "/>"
+                 );
+              columns.Bound(c => c.Name).Width(200);
+              columns.Bound(c => c.Quanity).Width(100);
+              columns.Bound(c => c.UnitPrice).Width(120);
+              columns.Bound(c => c.Tag).Width(130);
+              columns.Bound(c => c.SerialNo).Width(130);
+              columns.Bound(c => c.IssueDate).Width(130);
+              columns.Bound(c => c.SIVNo).Width(130);
+              columns.Bound(c => c.GRNDate).Width(130);
+              columns.Bound(c => c.GRN).Width(90);
+              columns.Bound(c => c.Remark).Width(100);
+
+              columns.Command(command =>
+              {
+                  command.Edit();
+              }).Width(180);
+          })
+          .HtmlAttributes(new { style = "height: 550px;" })
+          //.ToolBar(toolbar =>
+          //{
+          //    toolbar.Create();
+          //})
+          .ToolBar(toolbar =>
+          {
+
+          toolbar.Template(@<text>
+                <div class="toolbar row">
+                    <div class="col-md-1">
+                        <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
+                    </div>
+
+                    <div class="">
+                        <label><i>Search Asset:</i></label>
+                        @(Html.Kendo().DropDownList()
+                                      .ValuePrimitive(true)
+                                      .OptionLabel("Select Category...")
+                                      .Name("CategoryCode")
+                                      .DataTextField("Name")
+                                      .DataValueField("FixedAssetCategoryID")
+                                      .Filter("contains")
+                                      .HtmlAttributes(new { style = "width: 250px;" })
+                                      .DataSource(dataSource =>
+                                      {
+                                            dataSource.Read(read => read.Action("GetCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }))
+                                            .ServerFiltering(false);
+                                      }))
+
+                        @(Html.Kendo().DropDownList()
+                                      .ValuePrimitive(true)
+                                      .OptionLabel("Select Sub Category...")
+                                      .Name("SubCategoryCode")
+                                      .DataTextField("Name")
+                                      .DataValueField("FixedAssetSubCategoryID")
+                                      .Filter("contains")
+                                      .HtmlAttributes(new { style = "width: 250px;" })
+                                      .DataSource(dataSource =>
+                                      {
+                                            dataSource.Read(read => read.Action("GetSUbCategories", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterSubCategories"))
+                                            .ServerFiltering(true);
+                                      })
+                                      .CascadeFrom("CategoryCode")
+                                      .Events(e =>
+                                      {
+                                            e.Select("onSelectSubCategoryCode"); 
+                                      }))
+
+                        @(Html.Kendo().TextBox()
+                                      .Name("txtSearch")
+                                      .HtmlAttributes(new { placeholder = "tag,serial,employee ID" }))
+                        @(Html.Kendo().Button()
+                                      .Name("btnSearch")
+                                      .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                      .Events(e => e.Click("searchAsset"))
+                                      .Content("Search"))
+                    </div>
+
+                </div>
+
+            </text>);
+                })
+                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UserCardItems").Window(w => w.Title("User Card")))
+                .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+                .Filterable()
+                .Scrollable()
+                .Events(x => x.DataBound("userCardMasterGrid"))
+                .Selectable(selectable =>
+                {
+                    selectable.Mode(GridSelectionMode.Single);
+                    selectable.Type(GridSelectionType.Row);
+                })
+                .Sortable(sortable =>
+                {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
+                
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Group(groups => groups.Add(p => p.EmployeeId))
+                    .Events(ev => ev
+                        .Error("error_handler(\"grid\")")
+                        .RequestStart("onRequestStart(\"grid\")")
+                        .RequestEnd("onRequestEnd(\"grid\")"))
+                    .Model(
+                        model =>
+                        {
+                            model.Id(p => p.UserCardItemsID);
+                            model.Field(p => p.Active).Editable(false);
+                            model.Field(p => p.OrgBranchName).Editable(false);
+                            model.Field(p => p.CreatedBy).Editable(false);
+                            model.Field(p => p.ModifiedBy).Editable(false);
+                            model.Field(p => p.LastModified).Editable(false);
+                            model.Field(p => p.DateCreated).Editable(false);
+                        })
+                    .Read(read => read.Action("UserCardItems_Read", "UserCardItemsHistory"))
+                    .Create(create => create.Action("UserCardItems_Create", "UserCardItemsHistory"))
+                    .Update(update => update.Action("UserCardItems_Update", "UserCardItemsHistory"))
+                    .Destroy(destroy => destroy.Action("UserCardItems_Destroy", "UserCardItemsHistory"))
+                ))
+
+
+<script>
+
+
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    var Active;
+
+    function userCardMasterGrid(e) {
+
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+        // Hide Edit and Delete button if when sent for approval and is online approved
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (!gridData[i].Active) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.Active) {
+                row.css("background-color", "lightskyblue");
+            }
+            if (!dataItem.Active) {
+                row.css("background-color", "slategray");
+            }
+        }
+    }
+
+    function filterSubCategories() {
+        var code_name = $("#CategoryCode").data("kendoDropDownList").text();
+       
+        var code_name_arr = code_name.split("-");
+        var categoryCode_only = code_name_arr[0];
+        var name_only = code_name_arr[1];
+        return {
+            categoryCode: categoryCode_only,
+            text: name_only
+        };
+    }
+
+    function filterAssetsForCard() {
+        var ddl = $("#AssetRegistrationId").data("kendoDropDownList");
+        return {
+            text: ddl.filterInput.val()
+        }
+    }
+
+    function onSelectSubCategoryCode(e) {
+        //$("#grid").data("kendoGrid").dataSource.read();
+    }
+
+    function searchAsset() {
+        var searchObject = $("#txtSearch");
+        var searchValue = searchObject.val();
+
+        if (searchValue != null) {
+            $("#grid").data("kendoGrid").dataSource.read();
+        } else {
+            alert("Please add search criteria.");
+        }
+    }
+    function passSearchData() {
+        var searchObject = $("#txtSearch");
+        var searchValue = searchObject.val();
+        return {
+            searchkey: searchValue,
+            subcategory: $("#SubCategoryCode").data("kendoDropDownList").value()
+        };
+    }
+
+    function onSelectType(e) {
+        var assetid = $("#AssetRegistrationId").data("kendoDropDownList").value();
+
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetFixedAssetDataForUserCard", "FixedAssetDataProvider", new { area = "FixedAsset" })',
+            data: { id: assetid },
+            success: function (result) {
+                if (result.length > 0) {
+
+                    for (var i = 0; i < result.length; i++) {
+                        $("#Name").val(result[i].ItemName).trigger("change");
+                        $("#UOM").val(result[i].Unit).trigger("change");
+                        $("#Quanity").val(result[i].Quanity).trigger("change");
+                        $("#UnitPrice").val(result[i].UnitPrice).trigger("change");
+                        $("#Tag").val(result[i].Tag).trigger("change");
+                        $("#SerialNo").val(result[i].SerialNo).trigger("change");
+                        $("#GRNDate").val(result[i].GRNDate).trigger("change");
+                        $("#GRN").val(result[i].GRN).trigger("change");
+                    }
+                }
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+</script>

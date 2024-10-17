@@ -2,7 +2,6 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Receives;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
@@ -15,7 +14,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
 {
-   
+
     public class FixedAssetReceiveItemController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -36,6 +35,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
             {
                 FixedAssetReceiveItemID = fixedAssetReceiveItem.FixedAssetReceiveItemID,
                 FixedAssetReceiveId = fixedAssetReceiveItem.FixedAssetReceiveId,
+                FixedAssetNameID = fixedAssetReceiveItem.FixedAssetNameID,
                 Name = fixedAssetReceiveItem.Name,
                 TagNo = fixedAssetReceiveItem.TagNo,
                 FixedAssetCategoryID = fixedAssetReceiveItem.FixedAssetCategoryID,
@@ -113,6 +113,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                         var entity = new FixedAssetReceiveItem
                         {
                             FixedAssetReceiveId = id,
+                            FixedAssetNameID = fixedAssetReceiveItem.FixedAssetNameID,
                             Name = fixedAssetReceiveItem.Name,
                             TagNo = fixedAssetReceiveItem.TagNo,
                             FixedAssetCategoryID = fixedAssetReceiveItem.FixedAssetCategoryID,
@@ -178,6 +179,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                             {
                                 FixedAssetReceiveId = id,
                                 Name = fixedAssetReceiveItem.Name,
+                                FixedAssetNameID = fixedAssetReceiveItem.FixedAssetNameID,
                                 TagNo = fixedAssetReceiveItem.TagNo,
                                 FixedAssetCategoryID = fixedAssetReceiveItem.FixedAssetCategoryID,
                                 FixedAssetSubCategoryID = fixedAssetReceiveItem.FixedAssetSubCategoryID,
@@ -270,6 +272,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 {
                     FixedAssetReceiveId = fixedAssetReceiveItem.FixedAssetReceiveId,
                     FixedAssetReceiveItemID = fixedAssetReceiveItem.FixedAssetReceiveItemID,
+                    FixedAssetNameID = fixedAssetReceiveItem.FixedAssetNameID,
                     Name = fixedAssetReceiveItem.Name,
                     FixedAssetCategoryID = fixedAssetReceiveItem.FixedAssetCategoryID,
                     FixedAssetSubCategoryID = fixedAssetReceiveItem.FixedAssetSubCategoryID,
@@ -338,6 +341,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 var entity = new FixedAssetReceiveItem
                 {
                     FixedAssetReceiveItemID = fixedAssetReceiveItem.FixedAssetReceiveItemID,
+                    FixedAssetNameID = fixedAssetReceiveItem.FixedAssetNameID,
                     Name = fixedAssetReceiveItem.Name,
                     FixedAssetCategoryID = fixedAssetReceiveItem.FixedAssetCategoryID,
                     FixedAssetSubCategoryID = fixedAssetReceiveItem.FixedAssetSubCategoryID,

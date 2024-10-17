@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 
@@ -32,6 +33,17 @@ namespace ExceedERP.Core.Domain.FixedAsset.Counts
         public int? EmployeeId { get; set; }
         [DisplayName("Store")]
         public string StoreCode { get; set; }
+        public string PartNo { get; set; }
+        [Display(Name = "Model No.")]
+        public string ModelNo { get; set; }
+        [Display(Name = "Serial No.")]
+        public string SerialNo { get; set; }
+        [Display(Name = "Engine No.")]
+        public string EngineNo { get; set; }
+        [Display(Name = "Chasis No.")]
+        public string ChasisNo { get; set; }
+        [Display(Name = "Plate No.")]
+        public string PlateNo { get; set; }
 
     }
 }

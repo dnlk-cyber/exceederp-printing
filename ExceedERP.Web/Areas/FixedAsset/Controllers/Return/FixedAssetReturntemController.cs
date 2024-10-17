@@ -1,7 +1,6 @@
 ﻿using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Returns;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
@@ -13,7 +12,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
 {
-    
+
     public class FixedAssetReturnItemController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
@@ -53,6 +52,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetReturnItems_Create(int id,[DataSourceRequest]DataSourceRequest request, FixedAssetReturnItem fixedAssetReturnItem)
         {
+            if (fixedAssetReturnItem.Quantity == 0)
+                fixedAssetReturnItem.Quantity = 1;
 
             var asset = _db.AssetRegistrations.Find(fixedAssetReturnItem.AssetRegistrationId);
 
@@ -104,6 +105,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Return
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FixedAssetReturnItems_Update([DataSourceRequest]DataSourceRequest request, FixedAssetReturnItem fixedAssetReturnItem, int id)
         {
+            if (fixedAssetReturnItem.Quantity == 0)
+                fixedAssetReturnItem.Quantity = 1;
+
             var asset = _db.AssetRegistrations.Find(fixedAssetReturnItem.AssetRegistrationId);
             
 

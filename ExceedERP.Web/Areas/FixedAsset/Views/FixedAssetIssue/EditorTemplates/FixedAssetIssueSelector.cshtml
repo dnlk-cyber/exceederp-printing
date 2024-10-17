@@ -7,11 +7,11 @@
     .Filter("contains")
     .DataSource(dataSource =>
     {
-        dataSource.Read(read => read.Action("GetFixedAssetForIssue", "FixedAssetDataProvider", new { area = "FixedAsset" })
+        dataSource.Read(read => read.Action("GetFixedAssetForIssueItem", "FixedAssetDataProvider", new { area = "FixedAsset" })
         .Data("filterAssetsForIssue"))
         .ServerFiltering(true);
     })
-    .CascadeFrom("FixedAssetSubCategoryID")
+    .CascadeFrom("FixedAssetSubCategoryId")
                                    
 )
 @Html.ValidationMessageFor(m => m)

@@ -5,7 +5,6 @@ using System.Data.OleDb;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.FixedAsset.Receives;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
@@ -19,6 +18,7 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.FixedAsset;
 using ExceedERP.Helpers.Inventory;
+using ExceedERP.Web.Areas.FixedAsset.Models;
 using ExceedERP.Web.Areas.Inventory.Models;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -88,7 +88,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
         public ActionResult FixedAssetReceives_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
-            IQueryable<FixedAssetReceive> fixedAssetReceives = _db.FixedAssetReceives.Where(x => userStores.Contains(x.StoreCode));
+            IQueryable<FixedAssetReceive> fixedAssetReceives = _db.FixedAssetReceives.Where(x => x.IsManual == false).Where(x => userStores.Contains(x.StoreCode));
            ;
             DataSourceResult result = fixedAssetReceives.ToDataSourceResult(request, fixedAssetReceive => new
             {
@@ -179,6 +179,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
         public ActionResult FixedAssetReceives_Create([DataSourceRequest]DataSourceRequest request, FixedAssetReceive fixedAssetReceive)
         {
             #region validation
+
+            var defaultCondition = _db.FixedAssetConditions.FirstOrDefault();
+            if(defaultCondition==null)
+                ModelState.AddModelError("condition", "Please configure asset conditions");
+
 
             ReceiveType type = _db.ReceiveTypes.Find(fixedAssetReceive.ReceiveTypeId);
             if (type != null)
@@ -966,12 +971,72 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
                 #endregion
                 #region Purchase Order Items
                 int pid = int.Parse(record.ReceiveRef);
-                List<PurchaseOrderItem> purchaseOrderItems = _db.PurchaseOrderItems
+                List<FixedReceiveItemVm> list = new List<FixedReceiveItemVm>();
+                FixedReceiveItemVm itemVm = null;
+
+                var purchaseOrderItems = _db.PurchaseOrderItems
                     .Where(pi => pi.PurchaseOrderID == pid)
                     .Where(pi => pi.ItemType == PurchaseItemType.FixedAsset)
                     .ToList();
 
-                foreach (var orderItem in purchaseOrderItems)
+                foreach (var i in purchaseOrderItems)
+                {
+                    itemVm = new FixedReceiveItemVm
+                    {
+                        CatCode = i.CatCode,
+                        ItmCode = i.ItmCode,
+                        Quantity = i.Quantity,
+                        UnitPrice = i.UnitPrice,
+                        SubTotal = i.SubTotal,
+                        GLTaxRateID = i.GLTaxRateID,
+                        TaxAmount = i.TaxAmount,
+                        Total = i.Total,
+                        ItemSpecification = i.ItemSpecification,
+                        UOM = i.UoM,
+                        Name = i.Name,
+                    };
+
+                    list.Add(itemVm);
+                }
+
+                #region check po change order
+                var changeorder = _db.PoChangeOforders
+                    .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                    .Where(x => x.PurchaseOrderID == pid).ToList();
+                if (changeorder.Any())
+                {
+                    list = new List<FixedReceiveItemVm>();
+
+                    int latestChangeId = changeorder.Max(x => x.PoChangeOforderId);
+
+                    var latestChangeItems = _db.PoChangeOfOrderItems
+                    .Where(pi => pi.PoChangeOforderId == latestChangeId)
+                    .Where(pi => pi.ItemType == PurchaseItemType.Stock)
+                    .ToList();
+
+                    foreach (var i in latestChangeItems)
+                    {
+                        itemVm = new FixedReceiveItemVm
+                        {
+                            CatCode = i.CatCode,
+                            ItmCode = i.ItmCode,
+                            Quantity = i.Quantity,
+                            UnitPrice = i.UnitPrice,
+                            SubTotal = i.SubTotal,
+                            GLTaxRateID = i.GLTaxRateID,
+                            TaxAmount = i.TaxAmount,
+                            Total = i.Total,
+                            ItemSpecification = i.ItemSpecification,
+                            UOM = i.UoM,
+                            Name = i.Name,
+                        };
+
+                        list.Add(itemVm);
+                    }
+                }
+                #endregion
+
+                foreach (var orderItem in list)
                 {
                     var prevReceiveItem = prevReceiveItems
                         .Where(x => x.FixedAssetSubCategoryID.ToString() == orderItem.ItmCode)

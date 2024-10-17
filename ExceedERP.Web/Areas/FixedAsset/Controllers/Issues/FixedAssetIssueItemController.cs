@@ -1,7 +1,6 @@
 ﻿using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Issues;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
@@ -14,7 +13,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
 {
-    
+
     public class FixedAssetIssueItemController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -34,6 +33,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                 FixedAssetIssueID = fixedAssetIssueItem.FixedAssetIssueID,
                 FixedAssetCategoryId = fixedAssetIssueItem.FixedAssetCategoryId,
                 FixedAssetSubCategoryId = fixedAssetIssueItem.FixedAssetSubCategoryId,
+                FixedAssetNameID = fixedAssetIssueItem.FixedAssetNameID,
                 AssetRegistrationId = fixedAssetIssueItem.AssetRegistrationId,
                 SendToUserCard = fixedAssetIssueItem.SendToUserCard,
 
@@ -82,6 +82,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
             if(asset==null)
                 ModelState.AddModelError("doesnotexist", "Please select an asset.");
 
+            if (issueItem.IssuedQuantity==0)
+                ModelState.AddModelError("qty", "Quantity can't be 0");
+
+            if (issueItem.IssuedQuantity > 1 && !asset.IsGroup)
+                ModelState.AddModelError("qty", "Quantity can't be more than 1");
 
             string storeCode = "";
 
@@ -103,6 +108,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                     FixedAssetIssueID = id,
                     FixedAssetCategoryId = issueItem.FixedAssetCategoryId,
                     FixedAssetSubCategoryId = issueItem.FixedAssetSubCategoryId,
+                    FixedAssetNameID = issueItem.FixedAssetNameID,
                     AssetRegistrationId = issueItem.AssetRegistrationId,
                     SendToUserCard = issueItem.SendToUserCard,
 
@@ -125,7 +131,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                     //BatchNo = asset.b,
                     Model = asset.ModelNo,
                     SerialNo = asset.SerialNo,
-                    Condition = asset.Condition.Name,
+                    Condition = asset.Condition?.Name,
                     PlateNo = asset.PlateNo,
                     ChassisNo = asset.ChassisNo,
                     EngineNo = asset.EngineNo,
@@ -160,6 +166,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
             if (asset == null)
                 ModelState.AddModelError("doesnotexist", "Please select an asset.");
 
+            if (issueItem.IssuedQuantity == 0)
+                ModelState.AddModelError("qty", "Quantity can't be 0");
+
+            if (issueItem.IssuedQuantity >1 && ! asset.IsGroup)
+                ModelState.AddModelError("qty", "Quantity can't be more than 1");
+
             string storeCode = "";
             var fixedIssue = db.FixedAssetIssues.Find(id);
             storeCode = fixedIssue?.StoreCode;
@@ -178,6 +190,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                     FixedAssetIssueID = issueItem.FixedAssetIssueID,
                     FixedAssetCategoryId = issueItem.FixedAssetCategoryId,
                     FixedAssetSubCategoryId = issueItem.FixedAssetSubCategoryId,
+                    FixedAssetNameID = issueItem.FixedAssetNameID,
                     AssetRegistrationId = issueItem.AssetRegistrationId,
                     SendToUserCard = true,
 
@@ -201,7 +214,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                     //BatchNo = asset.b,
                     Model = asset.ModelNo,
                     SerialNo = asset.SerialNo,
-                    Condition = asset.Condition.Name,
+                    Condition = asset.Condition?.Name,
                     PlateNo = asset.PlateNo,
                     ChassisNo = asset.ChassisNo,
                     EngineNo = asset.EngineNo,
@@ -238,6 +251,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                     FixedAssetIssueItemID = issueItem.FixedAssetIssueItemID,
                     FixedAssetCategoryId = issueItem.FixedAssetCategoryId,
                     FixedAssetSubCategoryId = issueItem.FixedAssetSubCategoryId,
+                    FixedAssetNameID = issueItem.FixedAssetNameID,
                     AssetRegistrationId = issueItem.AssetRegistrationId,
                     SendToUserCard = issueItem.SendToUserCard,
 

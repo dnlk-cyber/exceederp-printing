@@ -20,12 +20,18 @@ namespace ExceedERP.Reporting.FixedAsset.DataSource
         private ExceedDbContext _db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<RegisterViewModel> GetRegister(string fiscalYear)
+        public List<RegisterViewModel> GetRegister(string fiscalYear,string businessUnitId)
         {
             List<RegisterViewModel> registerLists = new List<RegisterViewModel>();
             var assets = _db.AssetRegistrations.AsQueryable();
             var disposals = _db.DisposalItems.AsQueryable();
 
+            if (!String.IsNullOrEmpty(businessUnitId))
+            {
+                int did = int.Parse(businessUnitId);
+                assets = assets
+                    .Where(x => x.BusinessUnitId == did).AsQueryable();
+            }
 
             if (!String.IsNullOrWhiteSpace(fiscalYear))
             {

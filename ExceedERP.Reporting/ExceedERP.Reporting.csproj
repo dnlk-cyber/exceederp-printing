@@ -1357,6 +1357,13 @@
     <Compile Include="FixedAsset\AssetMovement.Designer.cs">
       <DependentUpon>AssetMovement.cs</DependentUpon>
     </Compile>
+    <Compile Include="FixedAsset\AssetStatsByBranchAndBizUnit.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FixedAsset\AssetStatsByBranchAndBizUnit.designer.cs">
+      <DependentUpon>AssetStatsByBranchAndBizUnit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FixedAsset\DataSource\AssetStatsByBranchAndBizUnitOds.cs" />
     <Compile Include="FixedAsset\DataSource\CategoryDataSource.cs" />
     <Compile Include="FixedAsset\DataSource\DepreciationExpenseAnnualOds.cs" />
     <Compile Include="FixedAsset\DataSource\DepreciationExpenseByDepartmentOds.cs" />
@@ -1639,6 +1646,7 @@
       <DependentUpon>rptScafoldingAndPanelCountSummary.cs</DependentUpon>
     </Compile>
     <Compile Include="FixedAsset\ViewModel\AssetMovementVm.cs" />
+    <Compile Include="FixedAsset\ViewModel\AssetStatsByBranchAndBizUnit.cs" />
     <Compile Include="FixedAsset\ViewModel\DepreciationExpenseByDepartmentVm.cs" />
     <Compile Include="FixedAsset\ViewModel\DepreciationExpenseVm.cs" />
     <Compile Include="FixedAsset\ViewModel\AnnualDepreciationVm.cs" />
@@ -5124,6 +5132,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FixedAsset\AssetMovement.resx">
       <DependentUpon>AssetMovement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FixedAsset\AssetStatsByBranchAndBizUnit.resx">
+      <DependentUpon>AssetStatsByBranchAndBizUnit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FixedAsset\FixedAssetCountSheet.resx">
       <DependentUpon>FixedAssetCountSheet.cs</DependentUpon>

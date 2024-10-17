@@ -380,10 +380,11 @@
           .Columns(columns =>
           {
 
-              columns.Bound(c => c.AccountCode);
-              columns.Bound(c => c.AccountDesc);
-              columns.Bound(c => c.Debit);
-              columns.Bound(c => c.Credit);
+              columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(80);
+              columns.Bound(c => c.AccountDesc).Title("Account Description").Width(180);
+              columns.Bound(c => c.AdditionalDescription).Title("Description").Width(80);
+              columns.Bound(c => c.Debit).Width(50).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+              columns.Bound(c => c.Credit).Width(50).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
               columns.Command(command =>
               {
                   command.Edit();
@@ -397,6 +398,11 @@
           .DataSource(dataSource => dataSource
               .Ajax()
               .Events(e => e .Error("error_handler_one").Sync("sync_handler"))
+                .Aggregates(aggregates =>
+                {
+                    aggregates.Add(p => p.Debit).Sum();
+                    aggregates.Add(p => p.Credit).Sum();
+                })
               .Model(model =>
               {
                   model.Id(p => p.FixedAssetReceiveDistributionID);

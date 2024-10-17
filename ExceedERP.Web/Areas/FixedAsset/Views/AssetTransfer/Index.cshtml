@@ -7,7 +7,7 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.AssetTransferId).Title("#").Width(120).ClientTemplate("#=appendZeros(AssetTransferId)#");
-          columns.Bound(c => c.RequestNumber).Title("Req. No.").Width(120);
+          columns.Bound(c => c.FixedAssetRequisitionId).Title("Req. No.").Width(120);
           columns.Bound(c => c.TransferDate).Width(130);
           columns.Bound(c => c.TransferDesc).Width(170);
           columns.ForeignKey(p => p.CustodianBeforeTransfer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(170).EditorTemplateName("EmployeeSelector");

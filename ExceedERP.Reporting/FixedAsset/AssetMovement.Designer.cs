@@ -35,6 +35,9 @@ namespace ExceedERP.Reporting.FixedAsset
             this.textBox6 = new Telerik.Reporting.TextBox();
             this.textBox7 = new Telerik.Reporting.TextBox();
             this.textBox8 = new Telerik.Reporting.TextBox();
+            this.categories = new Telerik.Reporting.ObjectDataSource();
+            this.subCategories = new Telerik.Reporting.ObjectDataSource();
+            this.AssetOds = new Telerik.Reporting.ObjectDataSource();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.table1 = new Telerik.Reporting.Table();
             this.textBox9 = new Telerik.Reporting.TextBox();
@@ -45,6 +48,7 @@ namespace ExceedERP.Reporting.FixedAsset
             this.textBox14 = new Telerik.Reporting.TextBox();
             this.textBox15 = new Telerik.Reporting.TextBox();
             this.textBox16 = new Telerik.Reporting.TextBox();
+            this.AssetMovementOds = new Telerik.Reporting.ObjectDataSource();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.textBox35 = new Telerik.Reporting.TextBox();
             this.txtOrgName = new Telerik.Reporting.TextBox();
@@ -55,10 +59,6 @@ namespace ExceedERP.Reporting.FixedAsset
             this.textBox33 = new Telerik.Reporting.TextBox();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
             this.textBox28 = new Telerik.Reporting.TextBox();
-            this.AssetMovementOds = new Telerik.Reporting.ObjectDataSource();
-            this.categories = new Telerik.Reporting.ObjectDataSource();
-            this.subCategories = new Telerik.Reporting.ObjectDataSource();
-            this.AssetOds = new Telerik.Reporting.ObjectDataSource();
             this.headerComp = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -66,6 +66,8 @@ namespace ExceedERP.Reporting.FixedAsset
             // 
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.94880956411361694D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox1.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox1.Style.Color = System.Drawing.Color.White;
             this.textBox1.StyleName = "Civic.TableHeader";
             this.textBox1.Value = "Location Type";
             // 
@@ -73,6 +75,8 @@ namespace ExceedERP.Reporting.FixedAsset
             // 
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.800000011920929D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox2.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox2.Style.Color = System.Drawing.Color.White;
             this.textBox2.StyleName = "Civic.TableHeader";
             this.textBox2.Value = "Description";
             // 
@@ -80,6 +84,8 @@ namespace ExceedERP.Reporting.FixedAsset
             // 
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.94880944490432739D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox3.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox3.Style.Color = System.Drawing.Color.White;
             this.textBox3.StyleName = "Civic.TableHeader";
             this.textBox3.Value = "From Date";
             // 
@@ -87,6 +93,8 @@ namespace ExceedERP.Reporting.FixedAsset
             // 
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.800000011920929D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox4.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox4.Style.Color = System.Drawing.Color.White;
             this.textBox4.StyleName = "Civic.TableHeader";
             this.textBox4.Value = "To Date";
             // 
@@ -94,6 +102,8 @@ namespace ExceedERP.Reporting.FixedAsset
             // 
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.800000011920929D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox5.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox5.Style.Color = System.Drawing.Color.White;
             this.textBox5.StyleName = "Civic.TableHeader";
             this.textBox5.Value = "Branch";
             // 
@@ -101,6 +111,8 @@ namespace ExceedERP.Reporting.FixedAsset
             // 
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.96071422100067139D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox6.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox6.Style.Color = System.Drawing.Color.White;
             this.textBox6.StyleName = "Civic.TableHeader";
             this.textBox6.Value = "Store";
             // 
@@ -108,6 +120,8 @@ namespace ExceedERP.Reporting.FixedAsset
             // 
             this.textBox7.Name = "textBox7";
             this.textBox7.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.9369046688079834D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox7.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox7.Style.Color = System.Drawing.Color.White;
             this.textBox7.StyleName = "Civic.TableHeader";
             this.textBox7.Value = "Employee";
             // 
@@ -115,8 +129,28 @@ namespace ExceedERP.Reporting.FixedAsset
             // 
             this.textBox8.Name = "textBox8";
             this.textBox8.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.0916666984558106D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox8.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox8.Style.Color = System.Drawing.Color.White;
             this.textBox8.StyleName = "Civic.TableHeader";
             this.textBox8.Value = "Is Current";
+            // 
+            // categories
+            // 
+            this.categories.DataMember = "GetAssetCategories";
+            this.categories.DataSource = typeof(ExceedERP.Reporting.FixedAsset.DataSource.CategoryDataSource);
+            this.categories.Name = "categories";
+            // 
+            // subCategories
+            // 
+            this.subCategories.DataMember = "GetSubCategory";
+            this.subCategories.DataSource = typeof(ExceedERP.Reporting.FixedAsset.DataSource.SubCategoryDataSource);
+            this.subCategories.Name = "subCategories";
+            // 
+            // AssetOds
+            // 
+            this.AssetOds.DataMember = "GetAssets";
+            this.AssetOds.DataSource = typeof(ExceedERP.Reporting.FixedAsset.DataSource.AssetDataSource);
+            this.AssetOds.Name = "AssetOds";
             // 
             // detailSection1
             // 
@@ -134,7 +168,7 @@ namespace ExceedERP.Reporting.FixedAsset
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.80000007152557373D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.96071410179138184D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.93690389394760132D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0916664600372315D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0916663408279419D)));
             this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
             this.table1.Body.SetCellContent(0, 0, this.textBox9);
             this.table1.Body.SetCellContent(0, 1, this.textBox10);
@@ -252,6 +286,14 @@ namespace ExceedERP.Reporting.FixedAsset
             this.textBox16.StyleName = "Civic.TableBody";
             this.textBox16.Value = "= Fields.IsCurrent";
             // 
+            // AssetMovementOds
+            // 
+            this.AssetMovementOds.DataMember = "AssetMovementDetail";
+            this.AssetMovementOds.DataSource = typeof(ExceedERP.Reporting.FixedAsset.DataSource.AssetMovementOds);
+            this.AssetMovementOds.Name = "AssetMovementOds";
+            this.AssetMovementOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("assetid", typeof(string), "= Parameters.assetid.Value")});
+            // 
             // pageHeaderSection1
             // 
             this.pageHeaderSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(1.1999999284744263D);
@@ -349,32 +391,6 @@ namespace ExceedERP.Reporting.FixedAsset
             this.textBox28.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.3864587545394898D), Telerik.Reporting.Drawing.Unit.Inch(0.19999960064888D));
             this.textBox28.Style.Font.Name = "Segoe UI";
             this.textBox28.Value = "Page: {PageNumber}";
-            // 
-            // AssetMovementOds
-            // 
-            this.AssetMovementOds.DataMember = "AssetMovementDetail";
-            this.AssetMovementOds.DataSource = typeof(ExceedERP.Reporting.FixedAsset.DataSource.AssetMovementOds);
-            this.AssetMovementOds.Name = "AssetMovementOds";
-            this.AssetMovementOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("assetid", typeof(string), "= Parameters.assetid.Value")});
-            // 
-            // categories
-            // 
-            this.categories.DataMember = "GetAssetCategories";
-            this.categories.DataSource = typeof(ExceedERP.Reporting.FixedAsset.DataSource.CategoryDataSource);
-            this.categories.Name = "categories";
-            // 
-            // subCategories
-            // 
-            this.subCategories.DataMember = "GetSubCategory";
-            this.subCategories.DataSource = typeof(ExceedERP.Reporting.FixedAsset.DataSource.SubCategoryDataSource);
-            this.subCategories.Name = "subCategories";
-            // 
-            // AssetOds
-            // 
-            this.AssetOds.DataMember = "GetAssets";
-            this.AssetOds.DataSource = typeof(ExceedERP.Reporting.FixedAsset.DataSource.AssetDataSource);
-            this.AssetOds.Name = "AssetOds";
             // 
             // headerComp
             // 

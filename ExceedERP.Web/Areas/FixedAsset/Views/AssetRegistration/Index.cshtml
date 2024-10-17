@@ -26,29 +26,36 @@
           columns.Bound(c => c.EngineNo).Width(90);
           columns.Bound(c => c.PlateNo).Width(90);
           columns.Bound(c => c.Supplier).Width(90);
-          columns.Bound(c => c.Manufacturer).Width(100);
+          columns.Bound(c => c.Manufacturer).Width(120);
           columns.Bound(c => c.ManufacturDate).Width(95).Title("Manuf. Date");
-          columns.Bound(c => c.IsGroup).Width(90).Title("Is Group?").ClientTemplate(
-              "<input type='checkbox' disabled = 'true' value='#= IsGroup #' " +
-              "# if (IsGroup) { #" +
-              "checked='checked'" +
-              "# } #" +
-              "/>"
-              );
-          columns.Bound(c => c.GroupCode).Width(95);
+          //columns.Bound(c => c.IsGroup).Width(90).Title("Is Group?").ClientTemplate(
+          //    "<input type='checkbox' disabled = 'true' value='#= IsGroup #' " +
+          //    "# if (IsGroup) { #" +
+          //    "checked='checked'" +
+          //    "# } #" +
+          //    "/>"
+          //    );
+          //columns.Bound(c => c.GroupCode).Width(95);
           columns.Bound(c => c.Quanity).Width(95);
           columns.Bound(p => p.PurchasePrice).Width(90);
+          columns.Bound(p => p.OriginalValue).Width(90);
           columns.Bound(p => p.BookValue).Width(90);
           columns.ForeignKey(p => p.StoreCode, (IEnumerable) ViewData["Stores"], "StoreCode", "Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+          if (GlobalHelper.IsMultipleBusinessUnit())
+          {
+              columns.ForeignKey(p => p.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+          }
           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(p => p.EmployeeId, (IEnumerable) ViewData["personEmployees"], "Code", "Name").Title("Employee").Filterable(f => f.Multi(true).Search(true)).Width(190);
           columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).Filterable(ftb => ftb.Multi(true).Search(true));
-          columns.Bound(c => c.Remark).Width(70);
+          columns.Bound(c => c.Remark).Width(90);
           columns.Bound(c => c.Status).Width(80);
+          columns.Bound(c => c.DateCreated).Width(100);
           columns.Command(command =>
           {
               command.Edit();
               //command.Destroy();
+              command.Custom("Disable").Click("ChangeStatus");
           }).Width(180);
       })
       //.ToolBar(toolbar => {
@@ -605,6 +612,28 @@
 
 
 <script>
+
+    function ChangeStatus(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+         $.ajax({
+            type: "POST",
+             data: dataItem.AssetRegistrationId,
+             url: '@Url.Action("ChangeStatus", "AssetRegistration")/' + dataItem.AssetRegistrationId,
+            success: function (result) {
+                toastr.error(result.Message);
+                //console.log(result);
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+        //$('#grid').data('kendoGrid').dataSource.read();
+        //$('#grid').data('kendoGrid').refresh();
+        //location.reload();
+    };
 
     function filterEmployees() {
         return {

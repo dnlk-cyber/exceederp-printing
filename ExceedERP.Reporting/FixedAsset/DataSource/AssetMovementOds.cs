@@ -83,11 +83,11 @@ namespace ExceedERP.Reporting.FixedAsset.DataSource
                     {
                         LocationType = item.LocationType,
                         FromDate = item.StartDate,
-                        ToDate = (DateTime) item.EndDateDate,
+                        ToDate = item.EndDateDate,
                         Description = item.Description,
                         Store = item.StoreCode,
-                        Employee = EmployeeHelper.GetEmployeeEnglishName(int.Parse(item.EmployeeId)),
-                        Branch = InventoryPrintHelper.BranchName(item.BranchId),
+                        Employee =string.IsNullOrEmpty(item.EmployeeId)? "": EmployeeHelper.GetEmployeeEnglishName(int.Parse(item.EmployeeId)),
+                        Branch = item.BranchId!=0? InventoryPrintHelper.BranchName(item.BranchId) : "",
                         IsCurrent = item.IsCurrent ? "Yes" : "No"
                     };
 

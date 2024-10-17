@@ -1,7 +1,6 @@
 ﻿using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
@@ -14,7 +13,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
 {
 
 
-     [AuthorizeRoles(FixedAssetConstants.FixedAssetAdmin)]
+    [AuthorizeRoles(FixedAssetConstants.FixedAssetAdmin)]
     public class FixedAssetClearingAccountSetupController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

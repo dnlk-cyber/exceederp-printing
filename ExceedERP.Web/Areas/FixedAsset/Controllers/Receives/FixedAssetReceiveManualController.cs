@@ -5,9 +5,7 @@ using System.Data.OleDb;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Receives;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
@@ -89,7 +87,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Receives
         public ActionResult FixedAssetReceives_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
-            IQueryable<FixedAssetReceive> fixedAssetReceives = db.FixedAssetReceives.Where(x=>x.IsManual).Where(x => userStores.Contains(x.StoreCode));
+            IQueryable<FixedAssetReceive> fixedAssetReceives = db.FixedAssetReceives.Where(x=>x.IsManual==true).Where(x => userStores.Contains(x.StoreCode));
            ;
             DataSourceResult result = fixedAssetReceives.ToDataSourceResult(request, fixedAssetReceive => new
             {

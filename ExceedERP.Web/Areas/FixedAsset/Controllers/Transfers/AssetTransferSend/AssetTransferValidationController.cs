@@ -10,7 +10,6 @@ using ExceedERP.Core.Domain.FixedAsset.UserCard;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.FixedAsset;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -18,7 +17,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
 {
-    
+
     public class AssetTransferValidationController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();

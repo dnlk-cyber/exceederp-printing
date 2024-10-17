@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Counts;
-using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -45,7 +41,14 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
             ViewData["Years"] = fiscalYears;
             ViewData["Periods"] = periods;
 
-            ViewData["Items"] = items;
+            var selectedassets = items.Select(
+              i => new
+              {
+                  Name = i.Tag + "_" + i.Name ,
+                  AssetRegistrationId = i.AssetRegistrationId
+              }).AsQueryable();
+
+            ViewData["Items"] = selectedassets;
             ViewData["Category"] = categories;
             ViewData["SubCategory"] = subCategories;
            
@@ -294,7 +297,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                             AssetStatus=item.Status,
                             EmployeeId= empId,
                             StoreCode=item.StoreCode,
-
+                            PartNo=item.PlateNo,
+                            ModelNo=item.ModelNo,
+                            SerialNo=item.SerialNo,
+                            ChasisNo=item.ChassisNo,
+                            EngineNo=item.EngineNo,
+                            PlateNo=item.PlateNo,
 
 
                             CreatedBy = User.Identity.Name,

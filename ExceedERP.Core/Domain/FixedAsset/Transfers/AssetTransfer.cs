@@ -10,9 +10,10 @@ namespace ExceedERP.Core.Domain.FixedAsset.Transfers
     public class AssetTransfer : Operations
     {
         public int AssetTransferId { get; set; }
-
-        [Display(Name = "Request Document No.")]
-        public string RequestNumber { get; set; }
+        
+        [Display(Name = "Request Ref No.")]
+        public int? FixedAssetRequisitionId { get; set; }
+        public string Reference { get; set; }
 
         public bool ConfirmReceive { get; set; }
 
@@ -59,6 +60,11 @@ namespace ExceedERP.Core.Domain.FixedAsset.Transfers
 
         [Display(Name = "Recipient Supplier")]
         public string RecipientSupplier { get; set; }//external
+        public bool WithOutRequest { get; set; }
+        [Display(Name = "From GRN ?")]
+        public bool FromGRN { get; set; }
+        [Display(Name = "GRN No.")]
+        public int ? GRNNo { get; set; }
 
         public virtual ICollection<AssetTransferItem> AssetTransferItems { get; set; }
 

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Issues;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
@@ -15,6 +13,7 @@ using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using EntityState = System.Data.Entity.EntityState;
+using FixedAssetIssue = ExceedERP.Core.Domain.FixedAsset.Issues.FixedAssetIssue;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
 {
@@ -61,6 +60,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                   Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
                   Code = i.EmployeeId
               }).AsQueryable();
+
+            var assetSubCategoryNames = _db.FixedAssetSubCategoryNames;
+
             ViewData["personEmployees"] = selectedEmployee;
 
             ViewData["costCenters"] = selectedcostCenter;
@@ -68,7 +70,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
             ViewData["SubCategory"] = assetSubCategories;
             ViewData["Category"] = assetCategories;
             ViewData["FixedAsset"] = selectedAsset;
-           
+            ViewData["SubCategoryName"] = assetSubCategoryNames;
+
             var fixedAssetPeriods = _db.FixedAssetPeriods;
             var selectedfixedAssetPeriods = fixedAssetPeriods.Select(
                 i => new
@@ -83,13 +86,15 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
         public ActionResult FixedAssetIssues_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
-            IQueryable<FixedAssetIssue> fixedAssetIssues = _db.FixedAssetIssues.Where(x => userStores.Contains(x.StoreCode));
+            IQueryable<FixedAssetIssue> fixedAssetIssues = _db.FixedAssetIssues.Where(x => x.IsManual==false).Where(x => userStores.Contains(x.StoreCode));
             
             DataSourceResult result = fixedAssetIssues.ToDataSourceResult(request, fixedAssetIssue => new
             {
                 FixedAssetIssueID = fixedAssetIssue.FixedAssetIssueID,
+                IsManual = fixedAssetIssue.IsManual,
                 OrgStructureId = fixedAssetIssue.OrgStructureId,
                 BranchId = fixedAssetIssue.BranchId,
+                BusinessUnitId = fixedAssetIssue.BusinessUnitId,
                 EmployeeId = fixedAssetIssue.EmployeeId,
                 RecipientId = fixedAssetIssue.RecipientId,
                 GLPeriodId = fixedAssetIssue.GLPeriodId,
@@ -160,8 +165,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
             {
                 var entity = new FixedAssetIssue
                 {
+                    IsManual = false,
                     OrgStructureId = issue.OrgStructureId,
                     BranchId = issue.BranchId,
+                    BusinessUnitId = issue.BusinessUnitId,
                     EmployeeId = issue.EmployeeId,
                     RecipientId = issue.RecipientId,
                     GLPeriodId = issue.GLPeriodId,
@@ -236,8 +243,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                 var entity = new FixedAssetIssue
                 {
                     FixedAssetIssueID = issue.FixedAssetIssueID,
+                    IsManual = issue.IsManual,
                     OrgStructureId = issue.OrgStructureId,
                     BranchId = issue.BranchId,
+                    BusinessUnitId = issue.BusinessUnitId,
                     EmployeeId = issue.EmployeeId,
                     RecipientId = issue.RecipientId,
                     GLPeriodId = issue.GLPeriodId,
@@ -287,12 +296,15 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
             {
                 var entity = new FixedAssetIssue
                 {
+                    FixedAssetIssueID = issue.FixedAssetIssueID,
+                    IsManual = issue.IsManual,
                     OrgStructureId = issue.OrgStructureId,
                     BranchId = issue.BranchId,
+                    BusinessUnitId = issue.BusinessUnitId,
                     EmployeeId = issue.EmployeeId,
                     RecipientId = issue.RecipientId,
                     GLPeriodId = issue.GLPeriodId,
-                    FixedAssetIssueID = issue.FixedAssetIssueID,
+                   
                     StoreCode = issue.StoreCode,
                     GatePass = issue.GatePass,
                     FixedAssetRequisitionId = issue.FixedAssetRequisitionId,
@@ -585,7 +597,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
             {
 
                 #region fixed asset
-                for (int i = 0; i < requestedItem.RequestedQuantity; i++)
+                for (int i = 0; i < requestedItem.IssuedQuantity; i++)
                 {
                     var issueItem = new FixedAssetIssueItem
                     {
@@ -601,8 +613,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Issues
                         RequestedQuantity = 1,
                         ApprovedQuantity = 1,
                         IssuedQuantity = 1,
-                        UnitPrice = 0,
-                        Total = 0,
+                        UnitPrice = requestedItem.Price,
+                        Total = requestedItem.Price,
                         CreatedBy = User.Identity.Name,
                         DateCreated = DateTime.Today,
                         ModifiedBy = User.Identity.Name,

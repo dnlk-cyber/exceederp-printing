@@ -31,7 +31,7 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
             {
                 var assetTransferSend = db.AssetTransfers.Find(assetTransferReceive.AssetTransferId);
 
-                headerDs.StoreRequistionNo = assetTransferSend.RequestNumber;
+                headerDs.StoreRequistionNo = assetTransferSend.FixedAssetRequisitionId.ToString();
                 headerDs.TransferDescription = assetTransferSend.TransferDesc;
                 headerDs.TransferReceiveNumber = InventoryPrintHelper.GetId(assetTransferReceive.AssetTransferReceiveId);
                 headerDs.TransferNumber = InventoryPrintHelper.GetId(assetTransferReceive.AssetTransferId);
@@ -138,7 +138,7 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
         {
             List<FixedAssetTransferItemVm> list = new List<FixedAssetTransferItemVm>();
 
-            var assetTransferItems = db.AssetTransferReceiveItems.Where(x => x.AssetTransferReceiveItemId == id).ToList();
+            var assetTransferItems = db.AssetTransferReceiveItems.Where(x => x.AssetTransferReceiveId == id).ToList();
             foreach (var item in assetTransferItems)
             {
                 var asset = db.AssetRegistrations.Find(item.AssetRegistrationId);

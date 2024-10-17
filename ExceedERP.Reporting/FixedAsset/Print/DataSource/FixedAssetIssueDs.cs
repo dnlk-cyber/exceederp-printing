@@ -4,6 +4,7 @@ using System.Linq;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.FixedAsset.Print.ViewModel;
 using ExceedERP.Reporting.Inventory.DataSource.Print;
@@ -36,8 +37,10 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
                
                 headerDs.Project = InventoryPrintHelper.BranchName(issue.BranchId);
                 headerDs.Department = InventoryPrintHelper.WorkUnitName(issue.OrgStructureId);
+
+                var fixedreq = db.FixedAssetRequisitions.Find(issue.FixedAssetRequisitionId);
                
-                headerDs.IssueTo = issue.FixedAssetRequisition.OrgStructureId.ToString();
+                headerDs.IssueTo = fixedreq.OrgStructureId.ToString();
                 headerDs.GatePass = issue.GatePass;
                 headerDs.StoreRequistionNo = InventoryPrintHelper.GetId(issue.FixedAssetRequisitionId);
 

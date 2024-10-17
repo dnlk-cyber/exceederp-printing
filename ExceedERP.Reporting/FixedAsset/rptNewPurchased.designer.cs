@@ -21,6 +21,7 @@ namespace ExceedERP.Reporting.FixedAsset
             Telerik.Reporting.ReportParameter reportParameter3 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter4 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter5 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter6 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.Drawing.StyleRule styleRule1 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule2 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule3 = new Telerik.Reporting.Drawing.StyleRule();
@@ -38,9 +39,6 @@ namespace ExceedERP.Reporting.FixedAsset
             this.textBox3 = new Telerik.Reporting.TextBox();
             this.textBox4 = new Telerik.Reporting.TextBox();
             this.textBox5 = new Telerik.Reporting.TextBox();
-            this.FiscalYearODS = new Telerik.Reporting.ObjectDataSource();
-            this.PeriodODS = new Telerik.Reporting.ObjectDataSource();
-            this.PeriodToODS = new Telerik.Reporting.ObjectDataSource();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.pbOrgLogo = new Telerik.Reporting.PictureBox();
             this.textBox32 = new Telerik.Reporting.TextBox();
@@ -61,8 +59,12 @@ namespace ExceedERP.Reporting.FixedAsset
             this.textBox11 = new Telerik.Reporting.TextBox();
             this.textBox12 = new Telerik.Reporting.TextBox();
             this.textBox6 = new Telerik.Reporting.TextBox();
-            this.NewPurchasedObjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
+            this.NewPurchasedObjectDataSource = new Telerik.Reporting.ObjectDataSource();
+            this.FiscalYearODS = new Telerik.Reporting.ObjectDataSource();
+            this.PeriodODS = new Telerik.Reporting.ObjectDataSource();
+            this.PeriodToODS = new Telerik.Reporting.ObjectDataSource();
+            this.BusinessUnitOds = new Telerik.Reporting.ObjectDataSource();
             this.Organization = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -109,24 +111,6 @@ namespace ExceedERP.Reporting.FixedAsset
             this.textBox5.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox5.StyleName = "Civic.GrandTotal";
             this.textBox5.Value = "Total";
-            // 
-            // FiscalYearODS
-            // 
-            this.FiscalYearODS.DataMember = "GetFiscalYearss";
-            this.FiscalYearODS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.FiscalYearDataSource);
-            this.FiscalYearODS.Name = "FiscalYearODS";
-            // 
-            // PeriodODS
-            // 
-            this.PeriodODS.DataMember = "GetPeriods";
-            this.PeriodODS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.PeriodDataSource);
-            this.PeriodODS.Name = "PeriodODS";
-            // 
-            // PeriodToODS
-            // 
-            this.PeriodToODS.DataMember = "GetPeriods";
-            this.PeriodToODS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.PeriodDataSource);
-            this.PeriodToODS.Name = "PeriodToODS";
             // 
             // pageHeaderSection1
             // 
@@ -369,6 +353,11 @@ namespace ExceedERP.Reporting.FixedAsset
             this.textBox6.StyleName = "Civic.TableHeader";
             this.textBox6.Value = "Category";
             // 
+            // pageFooterSection1
+            // 
+            this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.20000012218952179D);
+            this.pageFooterSection1.Name = "pageFooterSection1";
+            // 
             // NewPurchasedObjectDataSource
             // 
             this.NewPurchasedObjectDataSource.DataMember = "GetPurchased";
@@ -376,12 +365,32 @@ namespace ExceedERP.Reporting.FixedAsset
             this.NewPurchasedObjectDataSource.Name = "NewPurchasedObjectDataSource";
             this.NewPurchasedObjectDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("periodFrom", typeof(string), "= Parameters.periodFrom.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("periodTo", typeof(string), "= Parameters.periodTo.Value")});
+            new Telerik.Reporting.ObjectDataSourceParameter("periodTo", typeof(string), "= Parameters.periodTo.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("businessUnitId", typeof(string), "= Parameters.bizUnitId.Value")});
             // 
-            // pageFooterSection1
+            // FiscalYearODS
             // 
-            this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.20000012218952179D);
-            this.pageFooterSection1.Name = "pageFooterSection1";
+            this.FiscalYearODS.DataMember = "GetFiscalYearss";
+            this.FiscalYearODS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.FiscalYearDataSource);
+            this.FiscalYearODS.Name = "FiscalYearODS";
+            // 
+            // PeriodODS
+            // 
+            this.PeriodODS.DataMember = "GetPeriods";
+            this.PeriodODS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.PeriodDataSource);
+            this.PeriodODS.Name = "PeriodODS";
+            // 
+            // PeriodToODS
+            // 
+            this.PeriodToODS.DataMember = "GetPeriods";
+            this.PeriodToODS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.PeriodDataSource);
+            this.PeriodToODS.Name = "PeriodToODS";
+            // 
+            // BusinessUnitOds
+            // 
+            this.BusinessUnitOds.DataMember = "GetBusinessUnits";
+            this.BusinessUnitOds.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.BusinessUnitOds);
+            this.BusinessUnitOds.Name = "BusinessUnitOds";
             // 
             // Organization
             // 
@@ -438,11 +447,20 @@ namespace ExceedERP.Reporting.FixedAsset
             reportParameter5.Text = "To";
             reportParameter5.Type = Telerik.Reporting.ReportParameterType.DateTime;
             reportParameter5.Value = "= Today()";
+            reportParameter6.AllowBlank = false;
+            reportParameter6.AllowNull = true;
+            reportParameter6.AvailableValues.DataSource = this.BusinessUnitOds;
+            reportParameter6.AvailableValues.DisplayMember = "= Fields.Name";
+            reportParameter6.AvailableValues.ValueMember = "= Fields.BusinessUnitId";
+            reportParameter6.Name = "bizUnitId";
+            reportParameter6.Text = "Business Unit";
+            reportParameter6.Visible = true;
             this.ReportParameters.Add(reportParameter1);
             this.ReportParameters.Add(reportParameter2);
             this.ReportParameters.Add(reportParameter3);
             this.ReportParameters.Add(reportParameter4);
             this.ReportParameters.Add(reportParameter5);
+            this.ReportParameters.Add(reportParameter6);
             styleRule1.Selectors.AddRange(new Telerik.Reporting.Drawing.ISelector[] {
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.TextItemBase)),
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.HtmlTextBox))});
@@ -558,5 +576,6 @@ namespace ExceedERP.Reporting.FixedAsset
         private Telerik.Reporting.TextBox textBox15;
         private Telerik.Reporting.TextBox textBox14;
         private Telerik.Reporting.TextBox textBox13;
+        private Telerik.Reporting.ObjectDataSource BusinessUnitOds;
     }
 }

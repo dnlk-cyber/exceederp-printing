@@ -2,7 +2,6 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
@@ -26,6 +25,18 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             return View();
         }
 
+        private decimal GetPrice(int ? id)
+        {
+            decimal price = 0;
+            if (id != null)
+            {
+                var asset = _db.AssetRegistrations.Find(id);
+
+                if (asset != null)
+                    price = asset.BookValue;
+            }
+            return price;
+        }
 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetUser, FixedAssetConstants.FixedAssetApprover)]
         public ActionResult FixedAssetRequsitionItemPropertyReviews_Read([DataSourceRequest]DataSourceRequest request , int id )
@@ -43,7 +54,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 ModelNo = storeRequisitionItem.ModelNo,
                 SerialNo = storeRequisitionItem.SerialNo,
                 ChasisNo = storeRequisitionItem.ChasisNo,
-                //AssetRegistrationId = storeRequisitionItem.AssetRegistrationId,
+                EngineNo = storeRequisitionItem.EngineNo,
+                PlateNo = storeRequisitionItem.PlateNo,
+                TagNo = storeRequisitionItem.TagNo,
+                Price = storeRequisitionItem.Price,
+                AssetRegistrationId = storeRequisitionItem.AssetRegistrationId,
                 UoM = storeRequisitionItem.UoM,
                 RequestedQuantity = storeRequisitionItem.RequestedQuantity,
                 ApprovedQuantity = storeRequisitionItem.ApprovedQuantity,
@@ -75,6 +90,28 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             {
                 ModelState.AddModelError("below", "Purchase quantity is not set");
             }
+
+            if(storeRequisitionItem.AssetRegistrationId!=null)
+            {
+                var asset = _db.AssetRegistrations.Find(storeRequisitionItem.AssetRegistrationId);
+                if(asset!=null)
+                {
+                    if(asset.FixedAssetSubCategoryID!=storeRequisitionItem.FixedAssetSubCategoryID)
+                        ModelState.AddModelError("sub", "The selected asset is not under the requested sub category");
+                    else
+                    {
+                        storeRequisitionItem.EngineNo = asset.EngineNo;
+                        storeRequisitionItem.ChasisNo = asset.ChassisNo;
+                        storeRequisitionItem.PlateNo = asset.PlateNo;
+                        storeRequisitionItem.SerialNo = asset.SerialNo;
+                        storeRequisitionItem.Price = asset.BookValue;
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("sub", "The selected asset is not found");
+                }
+            }
             if (ModelState.IsValid)
             {
                 var entity = new FixedAssetRequisitionItem
@@ -88,7 +125,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     ModelNo = storeRequisitionItem.ModelNo,
                     SerialNo = storeRequisitionItem.SerialNo,
                     ChasisNo = storeRequisitionItem.ChasisNo,
-                    //AssetRegistrationId = storeRequisitionItem.AssetRegistrationId,
+                    EngineNo = storeRequisitionItem.EngineNo,
+                    TagNo = storeRequisitionItem.TagNo,
+                    PlateNo = storeRequisitionItem.PlateNo,
+                    Price = storeRequisitionItem.Price,
+                    AssetRegistrationId = storeRequisitionItem.AssetRegistrationId,
                     UoM = storeRequisitionItem.UoM,
                     RequestedQuantity = storeRequisitionItem.RequestedQuantity,
                     ApprovedQuantity = storeRequisitionItem.RequestedQuantity,
@@ -133,6 +174,29 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             {
                 ModelState.AddModelError("below", "Purchase quantity is not set");
             }
+
+            if (storeRequisitionItem.AssetRegistrationId != null)
+            {
+                var asset = _db.AssetRegistrations.Find(storeRequisitionItem.AssetRegistrationId);
+                if (asset != null)
+                {
+                    if (asset.FixedAssetSubCategoryID != storeRequisitionItem.FixedAssetSubCategoryID)
+                        ModelState.AddModelError("sub", "The selected asset is not under the requested sub category");
+                    else
+                    {
+                        storeRequisitionItem.EngineNo=asset.EngineNo;
+                        storeRequisitionItem.ChasisNo=asset.ChassisNo;
+                        storeRequisitionItem.PlateNo = asset.PlateNo;
+                        storeRequisitionItem.SerialNo = asset.SerialNo;
+                        storeRequisitionItem.Price = asset.BookValue;
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("sub", "The selected asset is not found");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 var entity = new FixedAssetRequisitionItem
@@ -148,8 +212,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     ModelNo = storeRequisitionItem.ModelNo,
                     SerialNo = storeRequisitionItem.SerialNo,
                     ChasisNo = storeRequisitionItem.ChasisNo,
-                    //AssetRegistrationId = storeRequisitionItem.AssetRegistrationId,
+                    EngineNo = storeRequisitionItem.EngineNo,
+                    PlateNo = storeRequisitionItem.PlateNo,
+                    TagNo = storeRequisitionItem.TagNo,
+                    AssetRegistrationId = storeRequisitionItem.AssetRegistrationId,
                     UoM = storeRequisitionItem.UoM,
+                    Price = storeRequisitionItem.Price,
                     RequestedQuantity = storeRequisitionItem.RequestedQuantity,
                     ApprovedQuantity = storeRequisitionItem.ApprovedQuantity,
                     IssuedQuantity = storeRequisitionItem.IssuedQuantity,
@@ -189,7 +257,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     FixedAssetCategoryID = storeRequisitionItem.FixedAssetCategoryID,
                     FixedAssetSubCategoryID = storeRequisitionItem.FixedAssetSubCategoryID,
                     Name = storeRequisitionItem.Name,
-                    //AssetRegistrationId = storeRequisitionItem.AssetRegistrationId,
+                    AssetRegistrationId = storeRequisitionItem.AssetRegistrationId,
                     RequestedQuantity = storeRequisitionItem.RequestedQuantity,
                     ApprovedQuantity = storeRequisitionItem.ApprovedQuantity,
                     IssuedQuantity = storeRequisitionItem.IssuedQuantity,

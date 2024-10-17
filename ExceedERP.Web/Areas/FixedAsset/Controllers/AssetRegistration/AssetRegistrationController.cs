@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
-using ExceedERP.Core.Domain.FixedAsset;
-using ExceedERP.Core.Domain.FixedAsset.Depreciation;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
@@ -19,7 +16,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
 {
-    
+
     public class AssetRegistrationController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
@@ -33,7 +30,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
 
         public void PopulateData()
         {
-           
+            var businessUnits = _db.BusinessUnits;
+            ViewData["BusinessUnits"] = businessUnits;
             var branches = _db.Branch;
             ViewData["Branches"] = branches;
             var fixedAssetCategories = _db.FixedAssetCategories;
@@ -85,7 +83,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
         {
             List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
 
-            IQueryable<AssetRegistration> registrations = _db.AssetRegistrations.Where(x => mybraches.Contains(x.BranchId));
+            IQueryable<AssetRegistration> registrations = _db.AssetRegistrations
+                .Where(x => x.Disable==false)
+                .Where(x => mybraches.Contains(x.BranchId));
+
             if (!String.IsNullOrEmpty(subcategory))
             {
                 int id = int.Parse(subcategory);
@@ -100,6 +101,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 AssetRegistrationId = registration.AssetRegistrationId,
                 StoreCode = registration.StoreCode,
                 BranchId = registration.BranchId,
+                BusinessUnitId = registration.BusinessUnitId,
                 OrgStructureId = registration.OrgStructureId,
                 EmployeeId = registration.EmployeeId,
                 Name = registration.Name,
@@ -189,6 +191,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
         public ActionResult Registrations_Create([DataSourceRequest]DataSourceRequest request, AssetRegistration assetRegistration)
         {
             ModelState.Clear();// problem with created date validation
+
+            if (!String.IsNullOrEmpty(assetRegistration.StoreCode) && assetRegistration.EmployeeId !=null)
+            {
+                ModelState.AddModelError("both", "You can't set both store and employee, choose either of them.");
+            }
+
             #region validation
             if (assetRegistration.FixedAssetCategoryID == 0)
                 ModelState.AddModelError("cat", "Category is required");
@@ -288,6 +296,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 {
                     StoreCode = assetRegistration.StoreCode,
                     BranchId = assetRegistration.BranchId,
+                    BusinessUnitId = assetRegistration.BusinessUnitId,
                     OrgStructureId = assetRegistration.OrgStructureId,
                     EmployeeId = assetRegistration.EmployeeId,
                     FixedAssetConditionId = assetRegistration.FixedAssetConditionId,
@@ -378,6 +387,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
             ModelState.Clear();
 
             #region validation
+
+            if (!String.IsNullOrEmpty(assetRegistration.StoreCode) && assetRegistration.EmployeeId != null)
+            {
+                ModelState.AddModelError("both", "You can't set both store and employee, choose either of them.");
+            }
 
             if (assetRegistration.FixedAssetCategoryID == 0)
                 ModelState.AddModelError("cat", "Category is required");
@@ -478,6 +492,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
                 {
                     StoreCode = assetRegistration.StoreCode,
                     BranchId = assetRegistration.BranchId,
+                    BusinessUnitId = assetRegistration.BusinessUnitId,
                     OrgStructureId = assetRegistration.OrgStructureId,
                     EmployeeId = assetRegistration.EmployeeId,
                     FixedAssetConditionId = assetRegistration.FixedAssetConditionId,
@@ -731,7 +746,37 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Assetregistration
 
             return Json(result);
         }
-        
+
+        public JsonResult ChangeStatus(string id)
+        {
+            if (id != null)
+            {
+                int did = int.Parse(id);
+                var item = _db.AssetRegistrations.Find(did);                
+              
+                if (item != null)
+                {
+                    item.Disable = true;
+                    _db.AssetRegistrations.Attach(item);
+                    _db.Entry(item).State = EntityState.Modified;
+                    _db.SaveChanges();
+
+                    #region disable log
+                    UserHelper.OperationLog(Request.UserHostAddress, "Disable", "Success", User.Identity.Name, "Disabled item  " + item.Tag, Modules.FixedAsset);
+                    #endregion
+                }
+
+                CacheHelper.ResetCache();
+            }
+
+            var formattedData = new
+            {
+                Message = "Operation Complete.",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+
+        }
         //Uncomment in production
         public void UpdateFleet(string tagNo, string plateNo, string chasisNo, string serialNo)
         {

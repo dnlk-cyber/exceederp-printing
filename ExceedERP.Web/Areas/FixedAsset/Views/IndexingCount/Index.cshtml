@@ -1,0 +1,153 @@
+﻿@using Kendo.Mvc.UI
+@using System.Collections
+@using ExceedERP.Core.Domain.FixedAsset.Setting
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Tag Indexing Count</legend>
+
+@(Html.Kendo().Grid<IndexingCount>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+
+            columns.Bound(c => c.IndexCode).Width(180);
+            columns.ForeignKey(p => p.SubCategoryCode, (IEnumerable)ViewData["SubCategory"], "Code", "Name").Title("Sub Category").Width(250).EditorTemplateName("AllSubCategorySelector");
+            columns.Bound(c => c.CurrentValue).Width(90);
+
+            columns.Command(command => { command.Edit(); /*command.Destroy();*/ }).Width(220);
+
+        })
+        .ToolBar(toolbar =>
+        {
+            toolbar.Create();
+            //toolbar.Excel();
+            //toolbar.Pdf();
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Pageable(pagable =>
+        {
+            pagable.Enabled(true);
+            pagable.PageSizes(true);
+            pagable.Refresh(true);
+            pagable.ButtonCount(10);
+            pagable.Input(true);
+            pagable.Numeric(false);
+        })
+        .Events(ev =>
+        {
+            ev.DataBound("onGridDataBound");
+        })
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+        })
+        .Filterable()
+
+        .Scrollable(s => s.Height(700))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Model(model => {
+                model.Id(p => p.IndexCode);
+               // model.Field(p => p.IndexCode).Editable(false);
+              //  model.Field(p => p.SubCategoryCode).Editable(false);
+
+            })
+            .Events(ev => ev
+                                        //.Error("error_handler(\"grid\")")
+                                        .Error("handleError(\"grid\")")
+                                        .RequestStart("onRequestStart(\"grid\")")
+                                        .RequestEnd("onRequestEnd(\"grid\")"))
+
+                      .Read(read => read.Action("IndexingCount_Read", "IndexingCount"))
+                      .Create(create => create.Action("IndexingCount_Create", "IndexingCount"))
+                      .Update(update => update.Action("IndexingCount_Update", "IndexingCount"))
+                      .Destroy(destroy => destroy.Action("IndexingCount_Destroy", "IndexingCount"))
+                  )
+)
+
+
+
+
+
+<style>
+    .full-width-custom-input-box {
+        width: 100%;
+    }
+
+    .image-container-box {
+        border: 1px solid #e6e6e6;
+        box-shadow: 0px 2px 3px #888888;
+    }
+
+    .rectuangular-large-img {
+        max-height: 400px;
+        width: auto;
+        border: 1px solid #e6e6e6;
+        box-shadow: 1px 2px 2px #888888;
+    }
+
+    .circular-profile-img {
+        z-index: 5;
+        height: 150px;
+        width: 150px;
+        border: 5px solid;
+        overflow: hidden;
+        border-color: transparent;
+        border-color: rgba(255, 255, 255, 0.2);
+        transition: transform .5s ease;
+        border-radius: 50%;
+        vertical-align: middle;
+    }
+
+    .circular-profile-img-small {
+        z-index: 5;
+        height: 70px;
+        width: 70px;
+        border: 3px solid;
+        overflow: hidden;
+        border-color: transparent;
+        border-color: rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+        vertical-align: middle;
+        transition: transform .5s ease;
+    }
+
+        .circular-profile-img-small:hover {
+            transform: scale(1.2);
+        }
+</style>
+
+<script>
+    function handleError(gridName) {
+        return function (args) {
+            if (args.errors) {
+                var grid = $("#" + gridName).data("kendoGrid");
+                grid.dataSource.read();
+                grid.one("dataBinding", function (e) {
+                    e.preventDefault();
+                    for (var error in args.errors) {
+                        alert(args.errors[error].errors[0]);
+                    }
+                });
+            }
+        }
+    }
+    function onGridDataBound(e) {
+        //var grid = this;
+        //var gridRows = grid.tbody.find("tr");
+        //for (var i = 0; i < gridRows.length; i++) {
+        //    var row = $(gridRows[i]);
+        //    var dataItem = grid.dataItem(row);
+        //    if (dataItem.HasLinkedCheckBook === true) {
+        //        row.find(".k-grid-edit").hide();
+        //        row.find(".k-grid-delete").hide();
+        //    }
+        //    else {
+        //        row.find(".k-grid-edit").show();
+        //        row.find(".k-grid-delete").show();
+        //    }
+        //}
+    }
+</script>

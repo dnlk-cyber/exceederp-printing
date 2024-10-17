@@ -31,7 +31,7 @@ namespace ExceedERP.Reporting.FixedAsset.Print.DataSource
 
             if (assetTransfer != null)
             {
-                headerDs.StoreRequistionNo = assetTransfer.RequestNumber;
+                headerDs.StoreRequistionNo = assetTransfer.FixedAssetRequisitionId.ToString();
                 headerDs.TransferDescription = assetTransfer.TransferDesc;
                 
                 headerDs.TransferNumber = InventoryPrintHelper.GetId(assetTransfer.AssetTransferId);

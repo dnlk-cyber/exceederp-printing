@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
@@ -37,10 +35,17 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             var costCenter = _db.BranchCostCenter;
             var branches = _db.Branch;
 
+            var selectedAsset = fixedAsset.Select(
+             i => new
+             {
+                 Name = i.Tag + "-" + i.Name,
+                 AssetRegistrationId = i.AssetRegistrationId
+             }).AsQueryable();
+
             ViewData["Branches"] = branches;
             ViewData["SubCategory"] = assetSubCategories;
             ViewData["Category"] = assetCategories;
-            ViewData["FixedAsset"] = fixedAsset;
+            ViewData["FixedAsset"] = selectedAsset;
 
             var store = _db.InventoryStores.AsQueryable();
             ViewData["storesInCompany"] = store;
@@ -75,7 +80,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     FixedAssetRequisitionId = storeRequisition.FixedAssetRequisitionId,
                     Reference = storeRequisition.Reference,
                     OrgStructureId = storeRequisition.OrgStructureId,
-                    BranchId = storeRequisition.BranchId,
+                CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
+                BranchId = storeRequisition.BranchId,
                     IsTransfer = storeRequisition.IsTransfer,
                     ToStoreCode = storeRequisition.ToStoreCode,
                     EmployeeId = storeRequisition.EmployeeId,
@@ -144,6 +150,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     {
                         Reference = storeRequisition.Reference,
                         OrgStructureId = UserInformationHelper.GetEmployeeCostCenterId(User.Identity.Name),
+                        CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
                         BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
                         EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name),
                         RequestDate = DateTime.Today,
@@ -216,6 +223,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                         Reference = storeRequisition.Reference,
                         BranchId = storeRequisition.BranchId,
                         OrgStructureId = UserInformationHelper.GetEmployeeCostCenterId(User.Identity.Name),
+                        CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
                         EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name),
                         RequestDate = storeRequisition.RequestDate,
                         StoreCode = storeRequisition.StoreCode,
@@ -266,7 +274,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                         Reference = storeRequisition.Reference,
                         BranchId = storeRequisition.BranchId,
                         OrgStructureId = storeRequisition.OrgStructureId,
-                        EmployeeId = storeRequisition.EmployeeId,
+                    CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
+                    EmployeeId = storeRequisition.EmployeeId,
                         RequestDate = storeRequisition.RequestDate,
                         StoreCode = storeRequisition.StoreCode,
                         Status = storeRequisition.Status,
@@ -363,6 +372,97 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             return null;
         }
 
+        [AuthorizeRoles(FixedAssetConstants.FixedAssetVoid)]
+        public JsonResult Void(int id)
+        {
+            var record = _db.FixedAssetRequisitions.Find(id);
+            #region check if purchase is started
+            #endregion
+            if (record != null && record.IsSecondOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred)
+            {
+                #region validate issue
+                var issues=_db.FixedAssetIssues.Where(x=>x.FixedAssetRequisitionId==id).ToList();
+                if (issues.Any())
+                {
+                    var approvedissue=issues.Where(x=>x.IsVoid==false && x.IsOnlineApproved).ToList();
+                    if (approvedissue.Any())
+                    {
+
+                        var formattedData3 = new
+                        {
+                            Message = "The Requsition is issued already, can't be void.",
+                            Status = "NOT_OK"
+                        };
+                        return Json(formattedData3, JsonRequestBehavior.AllowGet);
+
+                    }
+                    
+                }
+                #endregion
+
+                record.Status = Enum.GetName(typeof(OperationStatuses), 10);
+                record.IsSecondOnlineApproved = false;
+                record.VoidBy = User.Identity.Name;
+                record.VoidTime = DateTime.Now;
+                _db.FixedAssetRequisitions.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+
+
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Fixed SR Review", "Success", User.Identity.Name, $"void requisition {id} ", Modules.FixedAsset);
+                #endregion
+
+                var formattedData = new
+                {
+                    Message = "Void Successful.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+          
+            if (record.IsVoid)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already void.You can not void again.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record.IsOnlineTransferred)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is transferred to GL.You can not void .",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (!record.IsSecondOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not approved hence you can modify by editing.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            return null;
+        }
         protected override void Dispose(bool disposing)
         {
             _db.Dispose();

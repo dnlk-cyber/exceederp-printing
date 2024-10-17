@@ -70,9 +70,10 @@
           {
               model.Id(p => p.FixedAssetIssueID);
               model.Field(p => p.BranchId).Editable(false);
+              model.Field(p => p.BusinessUnitId).Editable(false);
               model.Field(p => p.OrgStructureId).Editable(false);
               model.Field(p => p.Status).Editable(false);
-              //model.Field(p => p.EmployeeId).Editable(false);
+              model.Field(p => p.IsManual).Editable(false);
               model.Field(p => p.FixedAssetIssueID).Editable(false);
 
           })
@@ -202,14 +203,18 @@
                   .Name("FixedAssetIssueItem_#=FixedAssetIssueID#")
                   .Columns(columns =>
                   {
-                      columns.ForeignKey(p => p.FixedAssetCategoryId, (IEnumerable)ViewData["Category"], "FixedAssetCategoryID", "CategoryName").Title("Category").Width(130);//.EditorTemplateName("FixedAssetCategorySelector");
-                      columns.ForeignKey(p => p.FixedAssetSubCategoryId, (IEnumerable)ViewData["SubCategory"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").Width(130);//.EditorTemplateName("FixedAssetSubCategorySelector");
-                      columns.Bound(p => p.ItemName).Title("Item Name");//.EditorTemplateName("FixedAssetIssueSelector").Width(130);
+                      columns.ForeignKey(p => p.FixedAssetCategoryId, (IEnumerable)ViewData["Category"], "FixedAssetCategoryID", "CategoryName").Title("Category").Width(130).EditorTemplateName("FixedAssetCategorySelector");
+                      columns.ForeignKey(p => p.FixedAssetSubCategoryId, (IEnumerable)ViewData["SubCategory"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").Width(130).EditorTemplateName("FixedAssetSubCategoryIdSelector");
+                      columns.ForeignKey(p => p.FixedAssetNameID, (IEnumerable)ViewData["SubCategoryName"], "FixedAssetSubCategoryNameID", "Name").Title("Name").EditorTemplateName("FixedAssetSubCategoryNameIdSelector").Width(180);
+                      columns.Bound(p => p.Name).Title("Item Name");//.EditorTemplateName("FixedAssetIssueSelector").Width(130);
                       columns.ForeignKey(p => p.AssetRegistrationId, (IEnumerable)ViewData["FixedAsset"], "AssetRegistrationId", "Name").Title("Asset").EditorTemplateName("FixedAssetIssueSelector").Width(130);
-                      columns.Bound(c => c.TagNo).Width(90);
+                      //columns.Bound(c => c.TagNo).Width(90);
                       columns.Bound(c => c.Size).Width(90);
                       columns.Bound(c => c.SerialNo).Width(90);
                       columns.Bound(c => c.Model).Width(90);
+                      columns.Bound(c => c.ChassisNo).Width(90);
+                      columns.Bound(c => c.EngineNo).Width(90);
+                      columns.Bound(c => c.PlateNo).Width(90);
                       columns.Bound(c => c.Unit).Width(90);
                       columns.Bound(c => c.SendToUserCard).Width(80).Title("User Card").ClientTemplate("<input type='checkbox' disabled = 'false' \\#= SendToUserCard ? checked='checked' :'' \\# />");
                       columns.Bound(c => c.RequestedQuantity).Hidden().Width(130);
@@ -218,15 +223,6 @@
                       columns.Bound(c => c.UnitPrice).Format("{0:n}").Width(80);
                       columns.Bound(c => c.Total).Format("{0:n}").Width(80);
                       columns.Bound(c => c.Remark).Width(110);
-
-
-                      columns.Bound(c => c.Condition).Width(110).Hidden();
-                      columns.Bound(c => c.PlateNo).Width(110).Hidden();
-                      columns.Bound(c => c.ChassisNo).Width(110).Hidden();
-                      columns.Bound(c => c.EngineNo).Width(110).Hidden();
-                      columns.Bound(c => c.EngineModelNo).Width(110).Hidden();
-                      columns.Bound(c => c.EngineElectricalNo).Width(110).Hidden();
-                      columns.Bound(c => c.EngineElectricalModelNo).Width(110).Hidden();
 
 
 
@@ -246,7 +242,7 @@
                   })
                   .Events(ev => ev.Edit("onItemEdit"))
                   .Events(x => x.DataBound("onDataBoundLines"))
-                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FixedAssetIssueItem").Window(w => w.Title("Fixed Asset Issue Item")))
+                  .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("FixedAssetIssueItem").Window(w => w.Title("Fixed Asset Issue Item")))
                   .Scrollable()
                   .Selectable()
                   .DataSource(dataSource => dataSource
@@ -262,26 +258,28 @@
                           //model.Field(p => p.FixedAssetCategoryId).Editable(false);
                           //model.Field(p => p.FixedAssetSubCategoryId).Editable(false);
                           //model.Field(p => p.IssuedQuantity).Editable(false);
-                          //model.Field(p => p.UnitPrice).Editable(false);
-                          //model.Field(p => p.Total).Editable(false);
-                          //model.Field(p => p.Unit).Editable(false);
+                          model.Field(p => p.UnitPrice).Editable(false);
+                          model.Field(p => p.Total).Editable(false);
+                          model.Field(p => p.Unit).Editable(false);
                           //model.Field(p => p.SerialNo).Editable(false);
                           //model.Field(p => p.Size).Editable(false);
-                          //model.Field(p => p.Name).Editable(false);
+                          model.Field(p => p.Name).Editable(false);
+                          model.Field(p => p.Size).Editable(false);
                           //model.Field(p => p.GrnNo).Editable(false);
                           //model.Field(p => p.ItemName).Editable(true);
 
                           //model.Field(p => p.TagNo).Editable(false);
                           //model.Field(p => p.BatchNo).Editable(false);
 
-                          //model.Field(p => p.Model).Editable(false);
-                          //model.Field(p => p.Condition).Editable(false);
-                          //model.Field(p => p.PlateNo).Editable(false);
-                          //model.Field(p => p.ChassisNo).Editable(false);
-                          //model.Field(p => p.EngineNo).Editable(false);
-                          //model.Field(p => p.EngineModelNo).Editable(false);
-                          //model.Field(p => p.EngineElectricalNo).Editable(false);
-                          //model.Field(p => p.EngineElectricalModelNo).Editable(false);
+                          model.Field(p => p.SerialNo).Editable(false);
+                          model.Field(p => p.Model).Editable(false);
+                          model.Field(p => p.Condition).Editable(false);
+                          model.Field(p => p.PlateNo).Editable(false);
+                          model.Field(p => p.ChassisNo).Editable(false);
+                          model.Field(p => p.EngineNo).Editable(false);
+                          model.Field(p => p.EngineModelNo).Editable(false);
+                          model.Field(p => p.EngineElectricalNo).Editable(false);
+                          model.Field(p => p.EngineElectricalModelNo).Editable(false);
 
                           //model.Field(p => p.CreatedBy).Editable(false);
                           //model.Field(p => p.DateCreated).Editable(false);
@@ -356,6 +354,35 @@
 
 
 <script type="text/javascript">
+
+    function filterSubCategories() {
+
+        return {
+            categoryCode: $("#FixedAssetCategoryId").data("kendoDropDownList").value(),
+            text: $("#FixedAssetSubCategoryId").data("kendoDropDownList").filterInput.val()
+        };
+    }
+
+    function filterSubCategoryNames() {
+
+        return {
+            subCategoryCode: $("#FixedAssetSubCategoryId").data("kendoDropDownList").value(),
+            text: $("#FixedAssetNameID").data("kendoDropDownList").filterInput.val()
+        };
+    }
+
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterRecipients() {
+        return {
+            text: $("#RecipientId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+
 
     function sendForApproval(id) {
         var recordStatus = "";
@@ -509,9 +536,9 @@
     }
 
     function filterAssetsForIssue() {
-       
+
         return {
-            subCategoryCode: $("#FixedAssetSubCategoryId").val(),
+            nameId: $("#FixedAssetNameID").val(),
             storeCode: storeCode,
             text: $("#AssetRegistrationId").data("kendoDropDownList").filterInput.val()
         };

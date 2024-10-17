@@ -1,7 +1,6 @@
 ﻿using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Depreciation;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
@@ -14,7 +13,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
 {
-   
+
 
     public class AnnualDepreciationDistributionController : Controller
     {
@@ -34,6 +33,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
             DataSourceResult result = annualDepreciationDistributions.ToDataSourceResult(request, annualDepreciationDistribution => new
             {
                 AnnualDepreciationDistributionId = annualDepreciationDistribution.AnnualDepreciationDistributionId,
+                AnnualDepreciationId = annualDepreciationDistribution.AnnualDepreciationId,
                 AccountCode = annualDepreciationDistribution.AccountCode,
                 AccountDesc = _accountHelper.GetAccountDesc(annualDepreciationDistribution.AccountCode),
                 Debit = annualDepreciationDistribution.Debit,
@@ -45,43 +45,44 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetStoreKeeper)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult AnnualDepreciationDistributions_Create([DataSourceRequest]DataSourceRequest request, AnnualDepreciationDistribution issueDistribution, int id)
+        public ActionResult AnnualDepreciationDistributions_Create([DataSourceRequest]DataSourceRequest request, AnnualDepreciationDistribution annualDist, int id)
         {
             if (ModelState.IsValid)
             {
                 var entity = new AnnualDepreciationDistribution
                 {
                     AnnualDepreciationId = id,
-                    AccountCode = issueDistribution.AccountCode,
-                    AccountDesc = issueDistribution.AccountDesc,
-                    Debit = issueDistribution.Debit,
-                    Credit = issueDistribution.Credit
+                    AccountCode = annualDist.AccountCode,
+                    AccountDesc = annualDist.AccountDesc,
+                    Debit = annualDist.Debit,
+                    Credit = annualDist.Credit
                 };
 
                 _db.AnnualDepreciationDistributions.Add(entity);
                 _db.SaveChanges();
-                issueDistribution.AnnualDepreciationDistributionId = entity.AnnualDepreciationDistributionId;
+                annualDist.AnnualDepreciationDistributionId = entity.AnnualDepreciationDistributionId;
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, " Annual Depreciations", "Success", User.Identity.Name, $"created annual depreciations {entity.AnnualDepreciationId} Tag {entity.AccountCode}", Modules.FixedAsset);
                 #endregion
             }
 
-            return Json(new[] { issueDistribution }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { annualDist }.ToDataSourceResult(request, ModelState));
         }
 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetStoreKeeper)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult AnnualDepreciationDistributions_Update([DataSourceRequest]DataSourceRequest request, AnnualDepreciationDistribution issueDistribution)
+        public ActionResult AnnualDepreciationDistributions_Update([DataSourceRequest]DataSourceRequest request, AnnualDepreciationDistribution annualDist)
         {
             if (ModelState.IsValid)
             {
                 var entity = new AnnualDepreciationDistribution
                 {
-                    AnnualDepreciationDistributionId = issueDistribution.AnnualDepreciationDistributionId,
-                    AccountCode = issueDistribution.AccountCode,
-                    AccountDesc = issueDistribution.AccountDesc,
-                    Debit = issueDistribution.Debit,
-                    Credit = issueDistribution.Credit
+                    AnnualDepreciationDistributionId = annualDist.AnnualDepreciationDistributionId,
+                    AnnualDepreciationId = annualDist.AnnualDepreciationId,                    
+                    AccountCode = annualDist.AccountCode,
+                    AccountDesc = annualDist.AccountDesc,
+                    Debit = annualDist.Debit,
+                    Credit = annualDist.Credit
                 };
 
                 _db.AnnualDepreciationDistributions.Attach(entity);
@@ -92,33 +93,34 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
                 #endregion
             }
 
-            return Json(new[] { issueDistribution }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { annualDist }.ToDataSourceResult(request, ModelState));
         }
 
         [AuthorizeRoles(FixedAssetConstants.FixedAssetStoreKeeper)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult AnnualDepreciationDistributions_Destroy([DataSourceRequest]DataSourceRequest request, AnnualDepreciationDistribution issueDistribution)
+        public ActionResult AnnualDepreciationDistributions_Destroy([DataSourceRequest]DataSourceRequest request, AnnualDepreciationDistribution annualDist)
         {
             if (ModelState.IsValid)
             {
                 var entity = new AnnualDepreciationDistribution
                 {
-                    AnnualDepreciationDistributionId = issueDistribution.AnnualDepreciationDistributionId,
-                    AccountCode = issueDistribution.AccountCode,
-                    AccountDesc = issueDistribution.AccountDesc,
-                    Debit = issueDistribution.Debit,
-                    Credit = issueDistribution.Credit
+                    AnnualDepreciationDistributionId = annualDist.AnnualDepreciationDistributionId,
+                    AnnualDepreciationId = annualDist.AnnualDepreciationId,
+                    AccountCode = annualDist.AccountCode,
+                    AccountDesc = annualDist.AccountDesc,
+                    Debit = annualDist.Debit,
+                    Credit = annualDist.Credit
                 };
 
                 _db.AnnualDepreciationDistributions.Attach(entity);
                 _db.AnnualDepreciationDistributions.Remove(entity);
                 _db.SaveChanges();
                 #region delete log
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted Annual Depreciation Distributions {issueDistribution.AnnualDepreciationDistributionId } and Tag {issueDistribution.AccountCode}");
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted Annual Depreciation Distributions {annualDist.AnnualDepreciationDistributionId } and Tag {annualDist.AccountCode}");
                 #endregion
             }
 
-            return Json(new[] { issueDistribution }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { annualDist }.ToDataSourceResult(request, ModelState));
         }
 
         protected override void Dispose(bool disposing)

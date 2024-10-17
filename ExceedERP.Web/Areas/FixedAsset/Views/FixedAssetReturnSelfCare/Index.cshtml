@@ -327,15 +327,18 @@
 
     var isDeptapproved;
     var isDeptSendForApproval;
+    var empId;
 
     function detailExpandMasterDepartment(e) {
 
         masterRow = e.masterRow;
         masterGrid = $("#grid").data("kendoGrid");
         masterDataItem = masterGrid.dataItem(masterRow);
+        empId = masterDataItem.EmployeeId; 
         // codeid = masterDataItem.PurchaseOrderID;
         isDeptapproved = masterDataItem.IsDepartmentOnlineApproved;
         isDeptSendForApproval = masterDataItem.IsDepartmentSendForApproval;
+       
     }
     function onDataBoundMasterDepartment(e) {
         //this.expandRow(this.tbody.find("tr.k-master-row").first());
@@ -463,7 +466,7 @@
     var recordStatus;
     var validationGrid;
     var storeCode;
-    var empId;
+    
     
   
     var issecondapproved;
@@ -481,7 +484,7 @@
         recordStatus = masterDataItem.Status;
         storeCode = masterDataItem.StoreCode;
 
-        empId = masterDataItem.EmployeeId; //added
+       
 
         isapproved = masterDataItem.IsOnlineApproved;
         isSendForApproval = masterDataItem.IsSendForApproval;
@@ -497,7 +500,7 @@
     }
 
     function filterAssetsForReturn() {
-
+       
         return {
             subCategoryCode: $("#FixedAssetSubCategoryId").val(),
             text: $("#AssetRegistrationId").data("kendoDropDownList").filterInput.val(),

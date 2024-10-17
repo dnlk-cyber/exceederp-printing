@@ -16,11 +16,12 @@ namespace ExceedERP.Core.Domain.FixedAsset.Issues
         public int FixedAssetIssueID { get; set; }
         [Display(Name = "Store Requisition Number")]
         public int FixedAssetRequisitionId { get; set; }
-        public virtual FixedAssetRequisition FixedAssetRequisition { get; set; }
+        //public virtual FixedAssetRequisition FixedAssetRequisition { get; set; }
         [DisplayName("Branch or Project")]
         public int BranchId { get; set; }
         [DisplayName("Work Unit")]
         public int OrgStructureId { get; set; }
+        public int BusinessUnitId { get; set; }
         [Required]
         [Display(Name = "Store")]
         public string StoreCode { get; set; }
@@ -38,6 +39,7 @@ namespace ExceedERP.Core.Domain.FixedAsset.Issues
         public int EmployeeId { get; set; }
         [Display(Name = "Recipient Name")]
         public int RecipientId { get; set; }
+        public bool IsManual { get; set; }
         public virtual ICollection<FixedAssetIssueItem> FixedAssetIssueItems { get; set; }
         public virtual ICollection<FixedAssetIssueValidation> FixedAssetIssueValidation { get; set; }
         //public virtual ICollection<FixedAssetIssueDistribution> FixedAssetIssueDistribution { get; set; }

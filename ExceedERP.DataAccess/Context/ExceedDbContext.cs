@@ -3520,6 +3520,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<FixedAssetPeriod> FixedAssetPeriods { get; set; }
         public DbSet<FixedAssetRequisition> FixedAssetRequisitions { get; set; }
         public DbSet<FixedAssetRequisitionItem> FixedAssetRequisitionItems { get; set; }
+        public DbSet<FixedAssetRequisitionAttachment> FixedAssetRequisitionAttachments { get; set; }
         public DbSet<FixedAssetRequisitionValidation> FixedAssetRequisitionValidations { get; set; }
         public DbSet<FixedAssetRequisitionSecondValidation> FixedAssetRequisitionSecondValidations { get; set; }
         public DbSet<FixedAssetRequisitionPropertyValidation> FixedAssetRequisitionPropertyValidations { get; set; }

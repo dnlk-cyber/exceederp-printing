@@ -84,11 +84,16 @@
                                       {
                                           columns.ForeignKey(p => p.FixedAssetCategoryId, (IEnumerable)ViewData["Category"], "FixedAssetCategoryID", "CategoryName").Title("Category").EditorTemplateName("FixedAssetCategorySelector").Width(110).Editable("isEditable");
                                           columns.ForeignKey(p => p.FixedAssetSubCategoryId, (IEnumerable)ViewData["SubCategory"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").EditorTemplateName("FixedAssetSubCategorySelector").Width(110).Editable("isEditable");
-                                          columns.ForeignKey(p => p.AssetRegistrationId, (IEnumerable)ViewData["Items"], "AssetRegistrationId", "Name").Title("Asset").EditorTemplateName("ItemCategorySelector").Width(110).Editable("isEditable");                                                                       
+                                          columns.ForeignKey(p => p.AssetRegistrationId, (IEnumerable)ViewData["Items"], "AssetRegistrationId", "Name").Title("Asset").EditorTemplateName("ItemCategorySelector").Width(130).Editable("isEditable");                                                                       
+                                          columns.Bound(c => c.SerialNo).Width(100);
+                                          columns.Bound(c => c.ModelNo).Width(100);
+                                          columns.Bound(c => c.EngineNo).Width(100);
+                                          columns.Bound(c => c.ChasisNo).Width(100);
+                                          columns.Bound(c => c.PlateNo).Width(100);
                                           columns.Bound(c => c.Value).Width(100);
                                           columns.Bound(c => c.PreviousBalance).Width(80);
-                                          columns.Bound(c => c.Count).Width(50);
-                                          columns.Bound(c => c.AssetStatus).Width(100);
+                                          columns.Bound(c => c.Count).Width(60);
+                                          columns.Bound(c => c.AssetStatus).Title("Status").Width(100);
                                           columns.Bound(c => c.EmployeeId).Width(100);
                                           columns.Bound(c => c.StoreCode).Width(100);
                                           columns.Bound(c => c.Status).Width(80).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />");
@@ -150,6 +155,11 @@
                                                                       model.Field(p => p.PreviousBalance).Editable(false);
                                                                       model.Field(p => p.EmployeeId).Editable(false);
                                                                       model.Field(p => p.StoreCode).Editable(false);
+                                                                      model.Field(p => p.SerialNo).Editable(false);
+                                                                      model.Field(p => p.ModelNo).Editable(false);
+                                                                      model.Field(p => p.ChasisNo).Editable(false);
+                                                                      model.Field(p => p.EngineNo).Editable(false);
+                                                                      model.Field(p => p.PlateNo).Editable(false);
                                                           //model.Field(p => p.Uom).Editable(false);
                                                       })
                                                                     .Read(read => read.Action("FixedAssetCountItems_Read", "FixedAssetCountItem", new { id = "#= FixedAssetCountId #" }))

@@ -498,6 +498,10 @@
     <Compile Include="Migrations\202408131355265_healthandinsuranceupg.Designer.cs">
       <DependentUpon>202408131355265_healthandinsuranceupg.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202410151331094_fixedassetupgrade.cs" />
+    <Compile Include="Migrations\202410151331094_fixedassetupgrade.Designer.cs">
+      <DependentUpon>202410151331094_fixedassetupgrade.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -825,6 +829,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202408131355265_healthandinsuranceupg.resx">
       <DependentUpon>202408131355265_healthandinsuranceupg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202410151331094_fixedassetupgrade.resx">
+      <DependentUpon>202410151331094_fixedassetupgrade.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

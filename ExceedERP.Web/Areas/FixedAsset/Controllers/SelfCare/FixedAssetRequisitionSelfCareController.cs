@@ -6,10 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
-using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
@@ -101,13 +98,17 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
            && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService))
             {
                 storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId)
-                                                                    || x.CreatedBy == User.Identity.Name).ToList();
+                                                                     || userworkunit.Contains(x.CreatedAtOrgStructureId)
+                                                                     || x.NextApprover == User.Identity.Name 
+                                                                     || x.CreatedBy == User.Identity.Name).ToList();
             }
 
             else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
             {
                 storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) && userworkunit != null
-                                                                     || x.CreatedBy == User.Identity.Name).ToList();
+                                                                      || userworkunit.Contains(x.CreatedAtOrgStructureId) 
+                                                                      || x.NextApprover == User.Identity.Name 
+                                                                      || x.CreatedBy == User.Identity.Name).ToList();
             }
             else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService))
             {
@@ -177,6 +178,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                     FixedAssetRequisitionId = storeRequisition.FixedAssetRequisitionId,
                     Reference = storeRequisition.Reference,
                     OrgStructureId = storeRequisition.OrgStructureId,
+                CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
                     BranchId = storeRequisition.BranchId,
                     IsForOther = storeRequisition.IsForOther,
                     ForBranchId = storeRequisition.ForBranchId,
@@ -270,7 +272,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                     {
                         Reference = storeRequisition.Reference,
                         OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(storeRequisition.EmployeeId),
-                        BranchId = InventoryHelper.GetStoreBranch(storeRequisition.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
+                    CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name),
+                    BranchId = InventoryHelper.GetStoreBranch(storeRequisition.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                         IsForOther = storeRequisition.IsForOther,
                         ForBranchId = storeRequisition.ForBranchId,
                         EmployeeId = storeRequisition.EmployeeId, // UserInformationHelper.GetEmployeeId(User.Identity.Name),
@@ -364,6 +367,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                         FixedAssetRequisitionId = storeRequisition.FixedAssetRequisitionId,
                         Reference = storeRequisition.Reference,
                         OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(storeRequisition.EmployeeId),
+                        CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
                         BranchId = InventoryHelper.GetStoreBranch(storeRequisition.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                         IsForOther = storeRequisition.IsForOther,
                         ForBranchId = storeRequisition.ForBranchId,
@@ -425,7 +429,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                         Reference = storeRequisition.Reference,
                         BranchId = storeRequisition.BranchId,
                         OrgStructureId = storeRequisition.OrgStructureId,
-                        EmployeeId = storeRequisition.EmployeeId,
+                    CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
+                    EmployeeId = storeRequisition.EmployeeId,
                         RequestDate = storeRequisition.RequestDate,
                         GLPeriodId = storeRequisition.GLPeriodId,
                         StoreCode = storeRequisition.StoreCode,

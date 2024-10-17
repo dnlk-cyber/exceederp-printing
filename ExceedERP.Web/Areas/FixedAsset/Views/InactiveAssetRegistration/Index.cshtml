@@ -1,0 +1,803 @@
+@using System.Collections
+@using ExceedERP.Core.Domain.FixedAsset.Depreciation
+@using ExceedERP.Core.Domain.FixedAsset.Registrations
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Disabled Asset List</legend>
+@(Html.Kendo().Grid<AssetRegistration>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.FixedAssetCategoryID, (IEnumerable)ViewData["fixedAssetCategories"], "FixedAssetCategoryID", "CategoryName").Title("Category").EditorTemplateName("FixedAssetCategorySelector").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.FixedAssetSubCategoryID, (IEnumerable)ViewData["fixedAssetSubCategories"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").EditorTemplateName("FixedAssetSubCategorySelector").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
+          //columns.ForeignKey(p => p.FixedAssetNameID, (IEnumerable)ViewData["fixedAssetSubCategoryNames"], "FixedAssetSubCategoryNameId", "Name").Title("Asset Name").EditorTemplateName("FixedAssetSubCategorySelector").Width(130);
+          columns.Bound(c => c.Name).Title("Name").Width(150);
+          columns.ForeignKey(p => p.FixedAssetConditionId, (IEnumerable)ViewData["conditions"], "FixedAssetConditionId", "Name").Title("Condition").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Bound(c => c.GRN).Width(90);
+          columns.Bound(c => c.GRNDate).Width(90);
+          columns.Bound(c => c.Tag).Width(90);
+          columns.Bound(c => c.Unit).Width(70);
+          columns.Bound(c => c.Size).Width(90);
+          columns.Bound(c => c.ModelNo).Width(90);
+          columns.Bound(c => c.SerialNo).Width(90);
+          columns.Bound(c => c.ChassisNo).Width(90);
+          columns.Bound(c => c.EngineNo).Width(90);
+          columns.Bound(c => c.PlateNo).Width(90);
+          columns.Bound(c => c.Supplier).Width(90);
+          columns.Bound(c => c.Manufacturer).Width(100);
+          columns.Bound(c => c.ManufacturDate).Width(95).Title("Manuf. Date");
+          columns.Bound(c => c.IsGroup).Width(90).Title("Is Group?").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= IsGroup #' " +
+              "# if (IsGroup) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.GroupCode).Width(95);
+          columns.Bound(c => c.Quanity).Width(95);
+          columns.Bound(p => p.PurchasePrice).Width(90);
+          columns.Bound(p => p.BookValue).Width(90);
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable) ViewData["Stores"], "StoreCode", "Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable) ViewData["personEmployees"], "Code", "Name").Title("Employee").Filterable(f => f.Multi(true).Search(true)).Width(190);
+          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Bound(c => c.Remark).Width(70);
+          columns.Bound(c => c.Status).Width(80);
+          columns.Command(command =>
+          {
+              //command.Edit();
+              //command.Destroy();
+              command.Custom("Enable").Click("ChangeStatus");
+          }).Width(180);
+      })
+      //.ToolBar(toolbar => {
+      //                    toolbar.Create();
+      //                    //toolbar.Excel();
+      //                   //toolbar.Excel();
+      //})
+      .ToolBar(toolbar =>
+      {
+
+      toolbar.Template(@<text>
+                               <div class="toolbar row">
+                                   <div class="col-md-3">
+                                       @*<a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>*@
+                                       <button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>
+                                   </div>
+
+                                   <div class="">
+                                       @*<label><i>Search Asset:</i></label>*@
+                                       @(Html.Kendo().DropDownList()
+                                             .ValuePrimitive(true)
+                                             .OptionLabel("Select Category...")
+                                             .Name("CategoryCodeSelector")
+                                             .DataTextField("Name")
+                                             .DataValueField("FixedAssetCategoryID")
+                                             .Filter("contains")
+                                             .HtmlAttributes(new { style = "width: 150px;" })
+                                             .DataSource(dataSource =>
+                                             {
+                                                 dataSource.Read(read => read.Action("GetCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }))
+                                                     .ServerFiltering(false);
+                                             }))
+
+                                       @(Html.Kendo().DropDownList()
+                                             .ValuePrimitive(true)
+                                             .OptionLabel("Select Sub Category...")
+                                             .Name("SubCategoryCodeSelector")
+                                             .DataTextField("Name")
+                                             .DataValueField("FixedAssetSubCategoryID")
+                                             .Filter("contains")
+                                             .HtmlAttributes(new { style = "width: 150px;" })
+                                             .DataSource(dataSource =>
+                                             {
+                                                 dataSource.Read(read => read.Action("GetSubCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterSubCategories"))
+                                                     .ServerFiltering(true);
+                                             })
+                                             .CascadeFrom("CategoryCodeSelector")
+                                             .Events(e =>
+                                             {
+                                                 e.Select("onSelectSubCategoryCode");
+                                             }))
+
+                                       @(Html.Kendo().TextBox()
+                                             .Name("txtSearch")
+                                             .HtmlAttributes(new { placeholder = "name,tag,serial" }))
+                                       
+                                       @(Html.Kendo().Button()
+                                             .Name("btnSearch")
+                                             .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                             .Events(e => e.Click("searchAsset"))
+                                             .Content("Search"))
+
+                                   </div>
+                                 
+                               </div>
+
+                            </text>);
+      })
+      .Excel(excel => excel
+          .FileName("Asset List.xlsx")
+          .Filterable(true)
+          .AllPages(true)
+      )
+      .Editable(editable => editable.Mode(GridEditMode.PopUp)
+      .TemplateName("Registration")
+      .Window(w => w.Title("Asset Registration")
+      .Events(ev=>ev.Open("onOpenPopUp"))))
+
+
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable(h => h.Height(500))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      
+      .ClientDetailTemplateId("template")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .PageSize(20)
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.AssetRegistrationId);
+                  model.Field(p => p.OrgBranchName).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+              })
+          .Read(read => read.Action("Registrations_Read", "InactiveAssetRegistration").Data("passSearchData"))
+          .Create(create => create.Action("Registrations_Create", "InactiveAssetRegistration"))
+          .Update(update => update.Action("Registrations_Update", "InactiveAssetRegistration"))
+          .Destroy(destroy => destroy.Action("Registrations_Destroy", "InactiveAssetRegistration"))
+      ))
+
+@* Tabstrip start *@
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+            .Name("tabStrip_#=AssetRegistrationId#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+//Asset Detail
+                items.Add().Text("Asset Detail").Content(@<text>     
+                    <table class="table table-borderless"  cellpadding="0">
+                        <tbody>
+                            <tr>
+                                <th align="right">GRN :</th>
+                                <td>#= GRN #</td>
+                                <th>Plate No. :</th>
+                                <td>#= PlateNo #</td>
+                                <th>Total Weight :</th>
+                                <td>#= TotalWeight #</td>
+                            </tr>
+                            <tr>
+                                <th>GRNDate :</th>
+                                <td> #=kendo.toString(kendo.parseDate(GRNDate), 'dd/MM/yyyy') #</td>
+                                <th>Plate Type :</th>
+                                <td>#= PlateType #</td>
+                                <th>Battery :</th>
+                                <td>#= Battery #</td>
+                            </tr>
+                            <tr>
+                                <th>Original Value :</th>
+                                <td>#= OriginalValue #</td>
+                                <th>Chasis No. :</th>
+                                <td>#= ChassisNo #</td>
+                                <th>Tyre :</th>
+                                <td>#= Tyre #</td>
+                            </tr>
+                            <tr>
+                                <th>Book Value :</th>
+                                <td>#= BookValue #</td>
+                                <th>Motor No. :</th>
+                                <td>#= MotorNo #</td>
+                                <th>IsBuilding :</th>
+                                <td>#= IsBuilding #</td>
+                            </tr>
+                            <tr>
+                                <th>Status :</th>
+                                <td>#= Status #</td>
+                                <th>Model No. :</th>
+                                <td>#= ModelNo #</td>
+                                <th>Location :</th>
+                                <td>#= Location #</td>
+                            </tr>
+                            <tr>
+                                <th>Is Machinery :</th>
+                                <td>#= IsMachinery #</td>
+                                <th>Load Capacity :</th>
+                                <td>#= LoadCapacity #</td>
+                                <th>Contractor :</th>
+                                <td>#= Contractor #</td>
+                            </tr>
+                            <tr>
+                                <th>Supplier :</th>
+                                <td>#= Supplier #</td>
+                                <th>Fuel Type :</th>
+                                <td>#= FuelType #</td>
+                                <th>Construction Start Date:</th>
+                                <td> #=kendo.toString(kendo.parseDate(ConstructionStartDate), 'dd/MM/yyyy') #</td>
+                            </tr>
+                            <tr>
+                                <th>Manufacturer :</th>
+                                <td>#= Manufacturer #</td>
+                                <th>Manufacture Date:</th>
+                                <td>#= ManufacturDate #</td>
+                                <th>Construction End Date :</th>
+                                <td> #=kendo.toString(kendo.parseDate(ConstructionEndDate), 'dd/MM/yyyy') #</td>
+                            </tr>
+                            <tr>
+                                <th>Serial No. :</th>
+                                <td>#= SerialNo #</td>
+                                <th>Net Weight :</th>
+                                <td>#= NetWeight #</td>
+
+                            </tr>
+                            <tr>
+                                <th>Created By. :</th>
+                                <td>#= CreatedBy #</td>
+                                <th>Created At :</th>
+                                <td> #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</td>
+
+                            </tr>
+                            <tr>
+                                <th>Modified By. :</th>
+                                <td>#= ModifiedBy #</td>
+                                <th>Modified At :</th>
+                                <td> #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #</td>
+
+                            </tr>
+                        </tbody>
+                    </table>    
+                </text>
+                );
+
+//Depreciation
+               items.Add().Text("Depreciation").Content(@<text>
+
+                    @(Html.Kendo().Grid<DepreciationViewModel>()
+                          .Name("annualDepreciation_#=AssetRegistrationId#") 
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(p => p.GlFiscalYearId, (System.Collections.IEnumerable)ViewData["fiscalYears"], "GlFiscalYearId", "Name").Width(170).Title("Year");
+                              columns.Bound(c => c.DepreciationAmount).Width(150);
+                              columns.Bound(c => c.BookValue).Width(120);
+                            
+                          })
+                          .HtmlAttributes(new { style = "height: 550px;" })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+
+                          .Scrollable()
+                          .Sortable()
+                          .Filterable()
+                            
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(ev => ev .Error("error_handler_one")
+                                  .Sync("sync_handler"))
+                              .PageSize(5)
+                              .Model(
+                                  model =>
+                                  {
+                                      model.Id(p => p.GlFiscalYearId);
+                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                      model.Field(p => p.CreatedBy).Editable(false);
+                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                      model.Field(p => p.LastModified).Editable(false);
+                                      model.Field(p => p.DateCreated).Editable(false);
+                                  })
+                              .Read(read => read.Action("Depreciations_Read", "AssetRegistration", new { id = "#=AssetRegistrationId#" }))
+                    
+                          )
+                          .Pageable()
+                          .Sortable()
+                          .ToClientTemplate())
+                </text>
+                );
+//Revaluation
+                items.Add().Text("Revaluation").Content(@<text>
+
+                    @(Html.Kendo().Grid<FixedAssetRevaluation>()
+                        .Name("revaluation_#=AssetRegistrationId#") 
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.RevaluationDate).Width(150);
+                            columns.Bound(c => c.AddedValue).Width(150);
+                            columns.Bound(c => c.Description).Width(200);
+                            
+                            columns.Command(command =>
+                            {
+                                command.Edit();
+                                command.Destroy();
+                            }).Width(480);
+                        })
+                        .ToolBar(toolbar =>
+                        {
+                            toolbar.Create();
+                        })
+                               .HtmlAttributes(new { style = "height: 550px;" })
+                                          .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(5))
+
+                                                .Scrollable()
+                                                .Sortable()
+                                                .Filterable()
+                                                
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                                    .Events(ev => ev .Error("error_handler_one")
+                                .Sync("sync_handler"))
+                            .PageSize(5)
+                            .Model(
+                            model =>
+                            {
+                                model.Id(p => p.FixedAssetRevaluationID);
+                                model.Field(p => p.OrgBranchName).Editable(false);
+                                model.Field(p => p.CreatedBy).Editable(false);
+                                model.Field(p => p.ModifiedBy).Editable(false);
+                                model.Field(p => p.LastModified).Editable(false);
+                                model.Field(p => p.DateCreated).Editable(false);
+                            })
+                                    .Read(read => read.Action("Revaluations_Read", "Revaluation", new { id = "#=AssetRegistrationId#" }))
+                            .Create(create => create.Action("Revaluations_Create", "Revaluation", new { id = "#=AssetRegistrationId#" }))
+                            .Update(update => update.Action("Revaluations_Update", "Revaluation"))
+                            .Destroy(destroy => destroy.Action("Revaluations_Destroy", "Revaluation"))
+                        )
+                        .Pageable()
+                        .Sortable()
+                        .ToClientTemplate())
+                </text>
+                );
+
+//Appreciation
+            items.Add().Text("Appreciation").Content(@<text>
+
+    @(Html.Kendo().Grid<Appreciation>()
+          .Name("appreciation_#=AssetRegistrationId#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.AppreciationDate).Width(150);   
+              columns.Bound(c => c.Amount).Width(120);         
+              columns.Bound(c => c.Description).Width(200);
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .HtmlAttributes(new { style = "height: 550px;" })
+          .Pageable(pageable => pageable
+              .Input(true)
+              .Numeric(false)
+              .Refresh(true)
+              .PageSizes(true)
+              .ButtonCount(5))
+
+          .Scrollable()
+          .Sortable()
+          .Filterable()
+                   
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(ev => ev .Error("error_handler_one")
+                  .Sync("sync_handler"))
+              .Model(model => model.Id(p => p.AppreciationID))
+              .Read(read => read.Action("Appreciations_Read", "Appreciatation" , new { id = "#=AssetRegistrationId#" }))
+              .Create(create => create.Action("Appreciations_Create", "Appreciatation", new { id = "#=AssetRegistrationId#" }))
+              .Update(update => update.Action("Appreciations_Update", "Appreciatation", new { id = "#=AssetRegistrationId#" }))
+              .Destroy(destroy => destroy.Action("Appreciations_Destroy", "Appreciatation"))
+          ).ToClientTemplate())
+
+</text>);
+
+                @*items.Add().Text("Disposal").Content(@<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FixedAsset.FixedAsset.Disposal>()
+                        .Name("disposal_#=AssetRegistrationId#") // template expression, to be evaluated in the master context
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.Description).Width(200);
+                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                        })
+                        .ToolBar(toolbar =>
+                        {
+                            toolbar.Create();
+                        })
+                               .HtmlAttributes(new { style = "height: 550px;" })
+                                          .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(5))
+
+                                                .Scrollable()
+                                                .Sortable()
+                                                .Filterable()
+                                                
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                                    .Events(ev => ev .Error("error_handler_one")
+                        .Sync("sync_handler"))
+                            .PageSize(5)
+                            .Model(
+                            model =>
+                            {
+                                model.Id(p => p.DisposalID);
+                                model.Field(p => p.OrgBranchName).Editable(false);
+                                model.Field(p => p.CreatedBy).Editable(false);
+                                model.Field(p => p.ModifiedBy).Editable(false);
+                                model.Field(p => p.LastModified).Editable(false);
+                                model.Field(p => p.DateCreated).Editable(false);
+                            })
+                                    .Read(read => read.Action("Disposals_Read", "Disposal", new { id = "#=AssetRegistrationId#" }))
+                            .Create(create => create.Action("Disposals_Create", "Disposal", new { id = "#=AssetRegistrationId#" }))
+                            .Update(update => update.Action("Disposals_Update", "Disposal"))
+                            .Destroy(destroy => destroy.Action("Disposals_Destroy", "Disposal"))
+                        )
+                        .Pageable()
+                        .Sortable()
+                        .ToClientTemplate())
+                </text>
+                );*@
+
+//Sales
+                items.Add().Text("Sales").Content(@<text>
+
+                    @(Html.Kendo().Grid<Sales>()
+                          .Name("sales_#=AssetRegistrationId#") 
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.Amount).Width(150);
+                              columns.ForeignKey(p => p.GLTaxRateID, (System.Collections.IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Width(170).EditorTemplateName("TaxSelectorAR");
+                              columns.Bound(c => c.TaxAmount).Width(150);
+                              columns.Bound(c => c.TotalAmount).Width(150);
+                              columns.Bound(c => c.Description).Width(150);
+                              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                          .HtmlAttributes(new { style = "height: 400px;" })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+
+                          .Scrollable()
+                          .Sortable()
+                          .Filterable()
+                                                
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(ev => ev .Error("error_handler_one")
+                                  .Sync("sync_handler"))
+                              .PageSize(5)
+                              .Model(
+                                  model =>
+                                  {
+                                      model.Id(p => p.SalesID);
+                                      model.Field(p => p.TaxAmount).Editable(false);
+                                      model.Field(p => p.TotalAmount).Editable(false);
+                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                      model.Field(p => p.CreatedBy).Editable(false);
+                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                      model.Field(p => p.LastModified).Editable(false);
+                                      model.Field(p => p.DateCreated).Editable(false);
+                                  })
+                              .Read(read => read.Action("Sales_Read", "Sales", new { id = "#=AssetRegistrationId#" }))
+                              .Create(create => create.Action("Sales_Create", "Sales", new { id = "#=AssetRegistrationId#" }))
+                              .Update(update => update.Action("Sales_Update", "Sales"))
+                              .Destroy(destroy => destroy.Action("Sales_Destroy", "Sales"))
+                          )
+                          .Pageable()
+                          .Sortable()
+                          .ToClientTemplate())
+                </text>
+                );
+//Movement
+                items.Add().Text("Movement").Content(@<text>
+
+                    @(Html.Kendo().Grid<LocationTracking>()
+                          .Name("tracking_#=AssetRegistrationId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.StartDate).Width(100);
+                              columns.Bound(c => c.LocationType).Width(130);
+                              columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+                              columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["Stores"], "StoreCode", "Name").Title("Store").EditorTemplateName("StoresSelector").Width(130);
+                              columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Employee").Width(130).EditorTemplateName("EmployeeSelector");
+                              columns.Bound(c => c.Description).Width(150);
+                              columns.Bound(c => c.TransactionType).Width(90);
+                              columns.Bound(c => c.TransactionNo).Width(80);
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  //command.Destroy();
+                              }).Width(680);
+
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+
+                          .HtmlAttributes(new { style = "height: 550px;" })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+
+                          .Scrollable()
+                          .Sortable()
+                          .Filterable()
+
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Sort(sort => sort.Add("LocationTrackingId").Descending())
+                              .Events(ev => ev
+                                  .Error("error_handler(\"tracking_#=AssetRegistrationId#\")")
+                                  .RequestStart("onRequestStart(\"tracking_#=AssetRegistrationId#\")")
+                                  .RequestEnd("onRequestEnd(\"tracking_#=AssetRegistrationId#\")"))
+                              .PageSize(5)
+                              .Model(
+                                  model =>
+                                  {
+                                      model.Id(p => p.LocationTrackingId);
+                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                      model.Field(p => p.CreatedBy).Editable(false);
+                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                      model.Field(p => p.LastModified).Editable(false);
+                                      model.Field(p => p.DateCreated).Editable(false);
+                                  })
+                              .Read(read => read.Action("LocationTrackings_Read", "LocationTracking", new { id = "#=AssetRegistrationId#" }))
+                              .Create(create => create.Action("LocationTrackings_Create", "LocationTracking", new { id = "#=AssetRegistrationId#" }))
+                              .Update(update => update.Action("LocationTrackings_Create", "LocationTracking", new { id = "#=AssetRegistrationId#" }))
+
+                          )
+                          .Pageable()
+                          .Sortable()
+                          .ToClientTemplate())
+                </text>
+                );
+                })
+               .ToClientTemplate()
+)
+</script>
+
+@* End of tabstrips *@
+
+
+<script>
+
+    function ChangeStatus(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+         $.ajax({
+            type: "POST",
+             data: dataItem.AssetRegistrationId,
+             url: '@Url.Action("ChangeStatus", "InactiveAssetRegistration")/' + dataItem.AssetRegistrationId,
+            success: function (result) {
+                toastr.error(result.Message);
+                //console.log(result);
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+        //$('#grid').data('kendoGrid').dataSource.read();
+        //$('#grid').data('kendoGrid').refresh();
+        //location.reload();
+    };
+
+
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    function isGroup(obj) {
+        if ($(obj).is(":checked")) {
+            $("#groupQtyDiv").show();
+            $("#groupCodeDiv").show();
+
+        } else {
+            $("#groupQtyDiv").hide();
+            $("#groupCodeDiv").hide();
+
+        }
+
+    }
+</script>
+
+<style>
+    .k-detail-cell .k-tabstrip .k-content {
+        padding: 0.2em;
+    }
+
+    .registration-details ul {
+        list-style: none;
+        font-style: italic;
+        margin: 15px;
+        padding: 0;
+    }
+
+    .registration-details ul li {
+        margin: 0;
+        line-height: 1.7em;
+    }
+
+    .registration-details label {
+        display: inline-block;
+        width: 90px;
+        padding-right: 10px;
+        text-align: right;
+        font-style: normal;
+        font-weight: bold;
+    }
+
+    .table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
+        border: none;
+
+    }
+
+    .table-borderless th {
+        text-align: right;
+    }
+
+    
+
+      div.k-edit-form-container {
+        width: 800px;
+        height: auto;
+    }
+
+    div.k-content {
+        overflow: hidden;
+        height: auto;
+    }
+</style>
+
+
+<script type="text/javascript">
+    
+    function filterSubCategories() {
+
+        return {
+            categoryCode: $("#CategoryCodeSelector").data("kendoDropDownList").value()
+        };
+    }
+
+    function filterSubCategoriesForRegistration() {
+
+        return {
+            categoryCode: $("#FixedAssetCategoryID").data("kendoDropDownList").value()
+        };
+    }
+
+    function onSelectSubCategoryCode(e) {
+        // $("#grid").data("kendoGrid").dataSource.read();
+    }
+
+    function filterStoreByBranch() {
+
+        return {
+            BranchId: $("#BranchId").data("kendoDropDownList").value()
+        };
+    }
+
+    function searchAsset() {
+        var searchObject = $("#txtSearch");
+        var searchValue = searchObject.val();
+
+        if (searchValue != null) {
+            $("#grid").data("kendoGrid").dataSource.read();
+        } else {
+            alert("Please add search criteria.");
+        }
+    }
+    function passSearchData() {
+        var searchObject = $("#txtSearch");
+        var searchValue = searchObject.val();
+        return {
+            searchkey: searchValue,
+            subcategory: $("#SubCategoryCodeSelector").data("kendoDropDownList").value()
+        };
+    }
+
+    //$(".chb").change(function () {
+    //    $(".chb").prop('checked', false);
+    //    $(this).prop('checked', true);
+    //});
+    var popup;
+    var aCode;
+    function SelectClrCode() {
+        popup = window.open('/Inventory/DataProvider/ClAccount', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    
+    function setLangc(accCode) {
+        aCode = accCode;
+        $("#CostCenter").val(aCode).trigger("change");
+    }
+   
+  
+
+    $(document).ready(function () {
+        $("#IsMachinery").click(function () {
+            alert("setCompleteStatus called");
+        });
+    });
+    
+    function filterSubCategoryNames() {
+
+        return {
+            subCategoryCode: $("#FixedAssetSubCategoryID").data("kendoDropDownList").value(),
+            text: $("#FixedAssetNameID").data("kendoDropDownList").filterInput.val()
+        };
+    }
+
+    function SelectItemCode() {
+
+        // codeid = masterDataInventoryItem.GoodSellingAndLendingID;
+        popup = window.open('/Inventory/DataProvider/ItemFilterCat', 'WindowPopup', 'top=100, left=400, width=400, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    function setLang(itemCode) {
+        aCode = itemCode;
+        $("#Name").val(aCode).trigger("change");
+    }
+
+    function onOpenPopUp() {
+        //$("#FixedAssetConditionId").data("kendoDropDownList").value(4);
+
+
+    }
+
+</script>
+
+

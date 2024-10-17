@@ -5,8 +5,6 @@ using System.Data.OleDb;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
@@ -157,7 +155,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     FixedAssetRequisitionId = storeRequisition.FixedAssetRequisitionId,
                     Reference = storeRequisition.Reference,
                     OrgStructureId = storeRequisition.OrgStructureId,
-                    BranchId = storeRequisition.BranchId,
+                CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
+                BranchId = storeRequisition.BranchId,
                     IsForOther = storeRequisition.IsForOther,
                     ForBranchId = storeRequisition.ForBranchId,
                     IsTransfer = storeRequisition.IsTransfer,
@@ -250,7 +249,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     {
                         Reference = storeRequisition.Reference,
                         OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(storeRequisition.EmployeeId),
-                        BranchId = InventoryHelper.GetStoreBranch(storeRequisition.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
+                    CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name),
+                    BranchId = InventoryHelper.GetStoreBranch(storeRequisition.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                         IsForOther = storeRequisition.IsForOther,
                         ForBranchId = storeRequisition.ForBranchId,
                         EmployeeId = storeRequisition.EmployeeId, // UserInformationHelper.GetEmployeeId(User.Identity.Name),
@@ -343,6 +343,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                         FixedAssetRequisitionId = storeRequisition.FixedAssetRequisitionId,
                         Reference = storeRequisition.Reference,
                         OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(storeRequisition.EmployeeId),
+                        CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
                         BranchId = InventoryHelper.GetStoreBranch(storeRequisition.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                         IsForOther = storeRequisition.IsForOther,
                         ForBranchId = storeRequisition.ForBranchId,
@@ -403,7 +404,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                         Reference = storeRequisition.Reference,
                         BranchId = storeRequisition.BranchId,
                         OrgStructureId = storeRequisition.OrgStructureId,
-                        EmployeeId = storeRequisition.EmployeeId,
+                    CreatedAtOrgStructureId = storeRequisition.CreatedAtOrgStructureId,
+                    EmployeeId = storeRequisition.EmployeeId,
                         RequestDate = storeRequisition.RequestDate,
                         GLPeriodId = storeRequisition.GLPeriodId,
                         StoreCode = storeRequisition.StoreCode,
@@ -727,21 +729,25 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred && record.FixedAssetRequisitionItem.Count > 0)
             {
                 #region validate issue
-
-                var issue = _db.FixedAssetIssues
-                    .Where(x => x.IsVoid == false).FirstOrDefault(x => x.FixedAssetRequisitionId == record.FixedAssetRequisitionId);
-
-                if (issue != null)
+                var issues = _db.FixedAssetIssues.Where(x => x.FixedAssetRequisitionId == id).ToList();
+                if (issues.Any())
                 {
-                    var formattedData2 = new
+                    var approvedissue = issues.Where(x => x.IsVoid == false && x.IsOnlineApproved).ToList();
+                    if (approvedissue.Any())
                     {
-                        Message = $"This store requisition can not be void since it is referred in issue number {issue.FixedAssetIssueID}.",
-                        Status = "NOT_OK"
-                    };
-                    return Json(formattedData2, JsonRequestBehavior.AllowGet);
+
+                        var formattedData3 = new
+                        {
+                            Message = "The Requsition is issued already, can't be void.",
+                            Status = "NOT_OK"
+                        };
+                        return Json(formattedData3, JsonRequestBehavior.AllowGet);
+
+                    }
+
                 }
                 #endregion
-            
+
 
                 record.Status = Enum.GetName(typeof(OperationStatuses), 10);
                 record.IsVoid = true;

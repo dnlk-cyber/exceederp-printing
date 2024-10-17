@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
@@ -13,7 +12,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Settings
 {
-     [AuthorizeRoles(FixedAssetConstants.FixedAssetAdmin)]
+    [AuthorizeRoles(FixedAssetConstants.FixedAssetAdmin)]
     public class FixedAssetPeriodController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();

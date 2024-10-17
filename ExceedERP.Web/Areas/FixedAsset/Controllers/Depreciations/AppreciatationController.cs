@@ -2,7 +2,6 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Depreciation;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
@@ -15,7 +14,7 @@ using Kendo.Mvc.UI;
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Depreciations
 {
 
-   
+
     public class AppreciatationController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

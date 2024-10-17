@@ -40,9 +40,9 @@
       })
       .Filterable()
       
-      .Events(ev => ev.DetailExpand("detailExpand"))
+      //.Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
-      .Events(x => x.DataBound("onDataBoundMaster"))
+      //.Events(x => x.DataBound("onDataBoundMaster"))
       .DataSource(dataSource => dataSource
           .Ajax()
           .Events(ev => ev

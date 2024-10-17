@@ -12,7 +12,7 @@ namespace ExceedERP.Reporting.FixedAsset.ViewModel
     {
         public LocationType LocationType { get; set; }
         public DateTime FromDate { get; set; }
-        public DateTime ToDate { get; set; }
+        public DateTime? ToDate { get; set; }
         public string Description { get; set; }
         public string Store { get; set; }
         public string Employee { get; set; }

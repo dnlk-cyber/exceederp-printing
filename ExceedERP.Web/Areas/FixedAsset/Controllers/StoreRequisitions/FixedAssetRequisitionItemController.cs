@@ -2,7 +2,6 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
@@ -42,6 +41,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                 ModelNo = storeRequisitionItem.ModelNo,
                 SerialNo = storeRequisitionItem.SerialNo,
                 ChasisNo = storeRequisitionItem.ChasisNo,
+                EngineNo = storeRequisitionItem.EngineNo,
+                TagNo = storeRequisitionItem.TagNo,
                 UoM = storeRequisitionItem.UoM,
                 RequestedQuantity = storeRequisitionItem.RequestedQuantity,
                 ApprovedQuantity = storeRequisitionItem.ApprovedQuantity,
@@ -91,6 +92,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     ModelNo = storeRequisitionItem.ModelNo,
                     SerialNo = storeRequisitionItem.SerialNo,
                     ChasisNo = storeRequisitionItem.ChasisNo,
+                    EngineNo = storeRequisitionItem.EngineNo,
+                    TagNo = storeRequisitionItem.TagNo,
                     UoM = storeRequisitionItem.UoM,
                     RequestedQuantity = storeRequisitionItem.RequestedQuantity,
                     ApprovedQuantity = storeRequisitionItem.RequestedQuantity,
@@ -153,6 +156,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
                     ModelNo = storeRequisitionItem.ModelNo,
                     SerialNo = storeRequisitionItem.SerialNo,
                     ChasisNo = storeRequisitionItem.ChasisNo,
+                    EngineNo = storeRequisitionItem.EngineNo,
+                    TagNo = storeRequisitionItem.TagNo,
                     UoM = storeRequisitionItem.UoM,
                     RequestedQuantity = storeRequisitionItem.RequestedQuantity,
                     ApprovedQuantity = storeRequisitionItem.RequestedQuantity,

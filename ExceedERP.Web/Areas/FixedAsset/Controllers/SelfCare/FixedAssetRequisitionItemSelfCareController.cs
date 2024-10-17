@@ -3,9 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
-using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
@@ -43,7 +41,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                 ModelNo = storeRequisitionItem.ModelNo,
                 SerialNo = storeRequisitionItem.SerialNo,
                 ChasisNo = storeRequisitionItem.ChasisNo,
+                EngineNo = storeRequisitionItem.EngineNo,
+                TagNo = storeRequisitionItem.TagNo,
                 UoM = storeRequisitionItem.UoM,
+                Price = storeRequisitionItem.Price,
                 RequestedQuantity = storeRequisitionItem.RequestedQuantity,
                 ApprovedQuantity = storeRequisitionItem.ApprovedQuantity,
                 IssuedQuantity = storeRequisitionItem.IssuedQuantity,
@@ -92,6 +93,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                     ModelNo = storeRequisitionItem.ModelNo,
                     SerialNo = storeRequisitionItem.SerialNo,
                     ChasisNo = storeRequisitionItem.ChasisNo,
+                    EngineNo = storeRequisitionItem.EngineNo,
+                    TagNo = storeRequisitionItem.TagNo,
                     UoM = storeRequisitionItem.UoM,
                     RequestedQuantity = storeRequisitionItem.RequestedQuantity,
                     ApprovedQuantity = storeRequisitionItem.RequestedQuantity,
@@ -154,6 +157,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.SelfCare
                     ModelNo = storeRequisitionItem.ModelNo,
                     SerialNo = storeRequisitionItem.SerialNo,
                     ChasisNo = storeRequisitionItem.ChasisNo,
+                    EngineNo = storeRequisitionItem.EngineNo,
+                    TagNo = storeRequisitionItem.TagNo,
                     UoM = storeRequisitionItem.UoM,
                     RequestedQuantity = storeRequisitionItem.RequestedQuantity,
                     ApprovedQuantity = storeRequisitionItem.RequestedQuantity,

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Web.Helpers;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
@@ -14,7 +12,32 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers
     {
         ExceedDbContext db = new ExceedDbContext();
 
-        
+        public JsonResult GetGRNIdTransfer()
+        {
+            var storeReq = db.FixedAssetReceives
+                .Where(x => x.IsVoid == false)
+                .Where(sto => sto.IsOnlineApproved)
+                .OrderByDescending(x => x.FixedAssetReceiveId).AsQueryable();
+            return Json(storeReq.Select(i => new
+            {
+                FixedAssetReceiveId = i.FixedAssetReceiveId,
+                Remark = i.FixedAssetReceiveId + "-" + i.Reference + "-" + i.Remark
+            }),
+                JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetStoreRequisitionIdTransfer()
+        {
+            var storeReq = db.FixedAssetRequisitions
+                .Where(x => x.IsVoid == false)
+                .Where(sto => sto.IsSecondOnlineApproved && sto.IsTransfer)
+                .OrderByDescending(x => x.FixedAssetRequisitionId).AsQueryable();
+            return Json(storeReq.Select(i => new
+            {
+                FixedAssetRequisitionId = i.FixedAssetRequisitionId,
+                Remark = i.FixedAssetRequisitionId + "-" + i.Reference + "-" + i.Remark
+            }),
+                JsonRequestBehavior.AllowGet);
+        }
 
         public ActionResult SupplierShortListSelector()
         {
@@ -78,7 +101,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers
         public JsonResult GetFixedAssetRequisitionId()
         {
             var fixedAssetRequisitions = db.FixedAssetRequisitions
-                .Where(sto => sto.IsMiddleOnlineApproved)
+                .Where(sto => sto.IsSecondOnlineApproved)
                 .Where(sto => sto.IsVoid==false)
                 .OrderByDescending(x=>x.FixedAssetRequisitionId).AsQueryable();
             return Json(fixedAssetRequisitions.Select(i => new
@@ -215,39 +238,86 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers
         /// <param name="subCategoryCode"></param>
         /// <param name="text"></param>
         /// <returns></returns>
-        public JsonResult GetFixedAssetForIssueItem(string subCategoryCode, string text)
+        /// 
+        public JsonResult GetFixedAssetForRequisition(string subCategoryCode, string storeCode, string text)
         {
-            var assetsBySubCategories = db.AssetRegistrations
-                .Where(x => x.FixedAssetSubCategoryID.ToString() == subCategoryCode).ToList();
+            var assetList = db.AssetRegistrations.AsQueryable();
+
+            if (!string.IsNullOrEmpty(text))
+            {
+                assetList = assetList.Where(x => x.Tag.ToLower().Contains(text.ToLower())).AsQueryable();
+            }
+
+            //var assetsBySubCategories = db.AssetRegistrations
+            //    .Where(x => x.FixedAssetSubCategoryID.ToString() == subCategoryCode).ToList();
+
+            //// filters and returns if the 'TransactionType' is 'Store' or 'Return' and 'IsCurrent' is 'true' 
+            //var locationTrackingList = db.LocationTrackings
+            //    .Where(x => x.LocationType == LocationType.Store && x.IsCurrent).ToList();
+
+            //List<AssetRegistration> assetList = new List<AssetRegistration>();
+
+            //if (locationTrackingList.Any() && assetsBySubCategories.Any())
+            //{
+
+            //    foreach (var locationTracking in locationTrackingList)
+            //    {
+            //        foreach (var assetByCategory in assetsBySubCategories)
+            //        {
+            //            if (locationTracking.AssetRegistrationId == assetByCategory.AssetRegistrationId)
+            //            {
+            //                assetList.Add(assetByCategory);
+            //            }
+            //        }
+            //    }
+
+            //    // if filter is applied in the search box filter and return matching a
+
+            //}
+
+            return Json(assetList.Select(s => new
+            {
+                Name = s.Name + "-" + s.Tag,
+                AssetRegistrationId = s.AssetRegistrationId
+            }), JsonRequestBehavior.AllowGet);
+
+
+        }
+        public JsonResult GetFixedAssetForIssueItem(string nameId,string storeCode, string text)
+        {
+            var assets = db.AssetRegistrations
+                .Where(x => x.FixedAssetNameID.ToString() == nameId).ToList();
 
             // filters and returns if the 'TransactionType' is 'Store' or 'Return' and 'IsCurrent' is 'true' 
             var locationTrackingList = db.LocationTrackings
                 .Where(x => x.LocationType == LocationType.Store && x.IsCurrent).ToList();
 
-            List<AssetRegistration> assetList = new List<AssetRegistration>();
+            //List<AssetRegistration> assetList = new List<AssetRegistration>();
 
-            if (locationTrackingList.Any() && assetsBySubCategories.Any())
+            //if (locationTrackingList.Any() && assetByName.Any())
+            //{
+
+            //    foreach (var locationTracking in locationTrackingList)
+            //    {
+            //        foreach (var assetByCategory in assetByName)
+            //        {
+            //            if (locationTracking.AssetRegistrationId == assetByCategory.AssetRegistrationId)
+            //            {
+            //                assetList.Add(assetByCategory);
+            //            }
+            //        }
+            //    }
+
+            //}
+
+
+            // if filter is applied in the search box filter and return matching a
+            if (!string.IsNullOrEmpty(text))
             {
-
-                foreach (var locationTracking in locationTrackingList)
-                {
-                    foreach (var assetByCategory in assetsBySubCategories)
-                    {
-                        if (locationTracking.AssetRegistrationId == assetByCategory.AssetRegistrationId)
-                        {
-                            assetList.Add(assetByCategory);
-                        }
-                    }
-                }
-
-                // if filter is applied in the search box filter and return matching a
-                if (!string.IsNullOrEmpty(text))
-                {
-                    assetList = assetList.Where(x => x.Tag.ToLower().Contains(text.ToLower())).ToList();
-                }
+                assets = assets.Where(x => x.Tag.ToLower().Contains(text.ToLower())).ToList();
             }
 
-            return Json(assetList.Select(s => new
+            return Json(assets.Select(s => new
             {
                 Name = s.Name + "-" + s.Tag,
                 AssetRegistrationId = s.AssetRegistrationId
@@ -259,15 +329,18 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers
         {
             int id = int.Parse(subCategoryCode);
 
-            var assets = db.LocationTrackings
-                    .Where(x => x.TransactionType == FixedAssetTransactionType.UserCard|| x.TransactionType == FixedAssetTransactionType.Issue /*|| x.TransactionType == "User Card"*/)
-                    .ToList();
+            //var assets = db.LocationTrackings
+            //        .Where(x => x.TransactionType == FixedAssetTransactionType.UserCard|| x.TransactionType == FixedAssetTransactionType.Issue /*|| x.TransactionType == "User Card"*/)
+            //        .ToList();
 
-            var assetIds = assets.Select(s => s.AssetRegistrationId);
+            //var assetIds = assets.Select(s => s.AssetRegistrationId);
+            List<AssetRegistration> list=new List<AssetRegistration> ();
+            var assetRegistrations = db.AssetRegistrations                
+                            .Where(i => i.StoreCode == storeCode)
+                            .Where(i => i.FixedAssetSubCategoryID == id)
+                            .AsQueryable();
 
-            var assetRegistrations = db.AssetRegistrations.AsNoTracking().Where(i => i.FixedAssetSubCategoryID == id).AsQueryable();
-
-            assetRegistrations = assetRegistrations.Where(q => !assetIds.Contains(q.AssetRegistrationId));
+            //assetRegistrations = assetRegistrations.Where(q => !assetIds.Contains(q.AssetRegistrationId));
 
             if (!String.IsNullOrEmpty(text))
                 assetRegistrations = assetRegistrations.Where(x => x.Tag.ToUpper().Contains(text.ToUpper())
@@ -287,7 +360,10 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers
             //            continue;
             //    }
             //}
-            return Json(assetRegistrations.Select(i => new
+
+            list = assetRegistrations.ToList();
+
+            return Json(list.Select(i => new
             {
                 Name = i.Tag + "-" + i.Name,
                 AssetRegistrationId = i.AssetRegistrationId
@@ -414,6 +490,18 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers
 
             }), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetAllSubCategory()
+        {
+           
+            var items = db.FixedAssetSubCategories.AsQueryable();
+           
+            return Json(items.Select(i => new
+            {
+                Name = i.SubCategoryCode + "-" + i.SubCategoryName,
+                SubCategoryCode = i.SubCategoryCode
+
+            }), JsonRequestBehavior.AllowGet);
+        }
 
         //new Added as a replacacement for above "GetSubCategory" for __
         public JsonResult GetSUbCategories(string categoryCode, string text)
@@ -506,14 +594,14 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers
                 .Select(x=> new
                 {
                     x.AssetTransferId,
-                    x.RequestNumber
+                    x.FixedAssetRequisitionId
                 }).ToList();
 
 
             return Json(suppliers.Select(c => new
             {
                 Code = c.AssetTransferId,
-                Name = c.AssetTransferId + "_" + c.RequestNumber
+                Name = c.AssetTransferId + "_" + c.FixedAssetRequisitionId
             }), JsonRequestBehavior.AllowGet);
         }
 

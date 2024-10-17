@@ -3,12 +3,10 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Issues;
 using ExceedERP.Core.Domain.FixedAsset.Requisitions;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
@@ -55,6 +53,8 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             {
                 ModelState.AddModelError(String.Empty, "You Can Not Manipulate this Record: It is Already Approved");
             }
+          
+
 
             if (ModelState.IsValid)
             {
@@ -280,69 +280,205 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.StoreRequisitions
             if (transferrable)
             {
                 #region transfer to issue
-                #region create issue
-                var fixedAssetIssue = new FixedAssetIssue
+                var fixedAssetIssue = _db.FixedAssetIssues.Where(x => x.FixedAssetRequisitionId == fixedAssetRequisition.FixedAssetRequisitionId).FirstOrDefault();
+                if (fixedAssetIssue == null)
                 {
-                    OrgStructureId = fixedAssetRequisition.OrgStructureId,
-                    BranchId = fixedAssetRequisition.BranchId,
-                    StoreCode = fixedAssetRequisition.StoreCode,
-                    FixedAssetRequisitionId = fixedAssetRequisition.FixedAssetRequisitionId,
-                    Reference = fixedAssetRequisition.Reference,
-                    RecipientId = fixedAssetRequisition.EmployeeId,
-                    EmployeeId = fixedAssetRequisition.EmployeeId,
-                    GLPeriodId = fixedAssetRequisition.GLPeriodId,
-                    IssueDate = DateTime.Now,
-                    Status = "Editing",
-                    Remark = fixedAssetRequisition.Remark,
-                    DateCreated = DateTime.Now,
-                    CreatedBy = User.Identity.Name,
-                    LastModified = fixedAssetRequisition.LastModified,
-                    ModifiedBy = fixedAssetRequisition.ModifiedBy,
-                };
-
-                _db.FixedAssetIssues.Add(fixedAssetIssue);
-                _db.SaveChanges();
-                #endregion
-
-                
-                foreach (var requestedItem in fixedAssetRequisition.FixedAssetRequisitionItem)
-                {
-
-                    for (int i = 0; i < requestedItem.IssuedQuantity; i++)
+                    #region create issue
+                    fixedAssetIssue = new FixedAssetIssue
                     {
-                        #region issueitem
+                        OrgStructureId = fixedAssetRequisition.OrgStructureId,
+                        BranchId = fixedAssetRequisition.BranchId,
+                        StoreCode = fixedAssetRequisition.StoreCode,
+                        FixedAssetRequisitionId = fixedAssetRequisition.FixedAssetRequisitionId,
+                        Reference = fixedAssetRequisition.Reference,
+                        RecipientId = fixedAssetRequisition.EmployeeId,
+                        EmployeeId = fixedAssetRequisition.EmployeeId,
+                        GLPeriodId = fixedAssetRequisition.GLPeriodId,
+                        IssueDate = DateTime.Now,
+                        Status = "Editing",
+                        Remark = fixedAssetRequisition.Remark,
+                        DateCreated = DateTime.Now,
+                        CreatedBy = User.Identity.Name,
+                        LastModified = fixedAssetRequisition.LastModified,
+                        ModifiedBy = fixedAssetRequisition.ModifiedBy,
+                    };
 
-                        var issueItem = new FixedAssetIssueItem
+                    _db.FixedAssetIssues.Add(fixedAssetIssue);
+                    _db.SaveChanges();
+                    #endregion
+
+                    var items = _db.FixedAssetRequisitionItems.Where(x => x.FixedAssetRequisitionId == fixedAssetRequisition.FixedAssetRequisitionId).ToList();
+                    if (items.Any())
+                    {
+                        foreach (var requestedItem in items)
                         {
+                            if (requestedItem.IssuedQuantity > 1)
+                            {
 
-                            FixedAssetIssueID = fixedAssetIssue.FixedAssetIssueID,
-                            FixedAssetCategoryId = requestedItem.FixedAssetCategoryID,
-                            FixedAssetSubCategoryId = requestedItem.FixedAssetSubCategoryID,
-                            Unit = requestedItem.UoM, //added
-                            AssetRegistrationId = requestedItem.FixedAssetNameID,
-                            Name = requestedItem.Name,
-                            Size = requestedItem.Size,
-                            Model = requestedItem.ModelNo,
-                            SerialNo = requestedItem.SerialNo,
-                            SendToUserCard = true,
-                            ChassisNo = requestedItem.ChasisNo,
-                            RequestedQuantity = requestedItem.RequestedQuantity,
-                            ApprovedQuantity = requestedItem.ApprovedQuantity,
-                            IssuedQuantity = requestedItem.IssuedQuantity,
-                            UnitPrice = 0,
-                            Total = 0,
-                            CreatedBy = User.Identity.Name,
-                            DateCreated = DateTime.Now,
-                          
-                        };
-                        _db.FixedAssetIssueItems.Add(issueItem);
-                        _db.SaveChanges();
+                                for (int i = 0; i < requestedItem.IssuedQuantity; i++)
+                                {
+                                    #region issueitem
 
-                        #endregion
+                                    var issueItem = new FixedAssetIssueItem
+                                    {
+
+                                        FixedAssetIssueID = fixedAssetIssue.FixedAssetIssueID,
+                                        FixedAssetCategoryId = requestedItem.FixedAssetCategoryID,
+                                        FixedAssetSubCategoryId = requestedItem.FixedAssetSubCategoryID,
+                                        FixedAssetNameID = requestedItem.FixedAssetNameID,
+                                        AssetRegistrationId = requestedItem.AssetRegistrationId==null? 0:(int)requestedItem.AssetRegistrationId,
+                                        Unit = requestedItem.UoM,
+                                        Name = requestedItem.Name,
+                                        Size = requestedItem.Size,
+                                        Model = requestedItem.ModelNo,
+                                        EngineNo = requestedItem.EngineNo,
+                                        SerialNo = requestedItem.SerialNo,
+                                        PlateNo = requestedItem.PlateNo,
+                                        SendToUserCard = true,
+                                        ChassisNo = requestedItem.ChasisNo,
+                                        RequestedQuantity = 1,
+                                        ApprovedQuantity = 1,
+                                        IssuedQuantity = 1,
+                                        UnitPrice = requestedItem.Price,
+                                        Total = requestedItem.Price,
+                                        CreatedBy = User.Identity.Name,
+                                        DateCreated = DateTime.Now,
+
+                                    };
+                                    _db.FixedAssetIssueItems.Add(issueItem);
+                                    _db.SaveChanges();
+
+                                    #endregion
+                                }
+                            }
+                            else
+                            {
+                                #region issueitem
+
+                                var issueItem = new FixedAssetIssueItem
+                                {
+
+                                    FixedAssetIssueID = fixedAssetIssue.FixedAssetIssueID,
+                                    FixedAssetCategoryId = requestedItem.FixedAssetCategoryID,
+                                    FixedAssetSubCategoryId = requestedItem.FixedAssetSubCategoryID,
+                                    FixedAssetNameID = requestedItem.FixedAssetNameID,
+                                    AssetRegistrationId = requestedItem.AssetRegistrationId == null ? 0 : (int)requestedItem.AssetRegistrationId,
+                                    Unit = requestedItem.UoM,
+                                    Name = requestedItem.Name,
+                                    Size = requestedItem.Size,
+                                    Model = requestedItem.ModelNo,
+                                    EngineNo = requestedItem.EngineNo,
+                                    SerialNo = requestedItem.SerialNo,
+                                    PlateNo = requestedItem.PlateNo,
+                                    SendToUserCard = true,
+                                    ChassisNo = requestedItem.ChasisNo,
+                                    RequestedQuantity = requestedItem.RequestedQuantity,
+                                    ApprovedQuantity = requestedItem.ApprovedQuantity,
+                                    IssuedQuantity = requestedItem.IssuedQuantity,
+                                    UnitPrice = requestedItem.Price,
+                                    Total = requestedItem.Price,
+                                    CreatedBy = User.Identity.Name,
+                                    DateCreated = DateTime.Now,
+
+                                };
+                                _db.FixedAssetIssueItems.Add(issueItem);
+                                _db.SaveChanges();
+
+                                #endregion
+                            }
+
+                        }
                     }
-
                 }
 
+                else
+                {
+                    var issueitems=_db.FixedAssetIssueItems.Where(x=>x.FixedAssetIssueID== fixedAssetIssue.FixedAssetIssueID).ToList();
+                    _db.FixedAssetIssueItems.RemoveRange(issueitems);
+
+                    var items = _db.FixedAssetRequisitionItems.Where(x => x.FixedAssetRequisitionId == fixedAssetRequisition.FixedAssetRequisitionId).ToList();
+                    if (items.Any())
+                    {
+                        foreach (var requestedItem in items)
+                        {
+                            if (requestedItem.IssuedQuantity > 1)
+                            {
+
+                                for (int i = 0; i < requestedItem.IssuedQuantity; i++)
+                                {
+                                    #region issueitem
+
+                                    var issueItem = new FixedAssetIssueItem
+                                    {
+
+                                        FixedAssetIssueID = fixedAssetIssue.FixedAssetIssueID,
+                                        FixedAssetCategoryId = requestedItem.FixedAssetCategoryID,
+                                        FixedAssetSubCategoryId = requestedItem.FixedAssetSubCategoryID,
+                                        FixedAssetNameID = requestedItem.FixedAssetNameID,
+                                        AssetRegistrationId = requestedItem.AssetRegistrationId == null ? 0 : (int)requestedItem.AssetRegistrationId,
+                                        Unit = requestedItem.UoM,
+                                        Name = requestedItem.Name,
+                                        Size = requestedItem.Size,
+                                        Model = requestedItem.ModelNo,
+                                        EngineNo = requestedItem.EngineNo,
+                                        SerialNo = requestedItem.SerialNo,
+                                        PlateNo = requestedItem.PlateNo,
+                                        SendToUserCard = true,
+                                        ChassisNo = requestedItem.ChasisNo,
+                                        RequestedQuantity = 1,
+                                        ApprovedQuantity = 1,
+                                        IssuedQuantity = 1,
+                                        UnitPrice = requestedItem.Price,
+                                        Total = requestedItem.Price,
+                                        CreatedBy = User.Identity.Name,
+                                        DateCreated = DateTime.Now,
+
+                                    };
+                                    _db.FixedAssetIssueItems.Add(issueItem);
+                                    _db.SaveChanges();
+
+                                    #endregion
+                                }
+                            }
+                            else
+                            {
+                                #region issueitem
+
+                                var issueItem = new FixedAssetIssueItem
+                                {
+
+                                    FixedAssetIssueID = fixedAssetIssue.FixedAssetIssueID,
+                                    FixedAssetCategoryId = requestedItem.FixedAssetCategoryID,
+                                    FixedAssetSubCategoryId = requestedItem.FixedAssetSubCategoryID,
+                                    FixedAssetNameID = requestedItem.FixedAssetNameID,
+                                    AssetRegistrationId = requestedItem.AssetRegistrationId == null ? 0 : (int)requestedItem.AssetRegistrationId,
+                                    Unit = requestedItem.UoM,
+                                    Name = requestedItem.Name,
+                                    Size = requestedItem.Size,
+                                    Model = requestedItem.ModelNo,
+                                    EngineNo = requestedItem.EngineNo,
+                                    SerialNo = requestedItem.SerialNo,
+                                    PlateNo = requestedItem.PlateNo,
+                                    SendToUserCard = true,
+                                    ChassisNo = requestedItem.ChasisNo,
+                                    RequestedQuantity = requestedItem.RequestedQuantity,
+                                    ApprovedQuantity = requestedItem.ApprovedQuantity,
+                                    IssuedQuantity = requestedItem.IssuedQuantity,
+                                    UnitPrice = requestedItem.Price,
+                                    Total = requestedItem.Price,
+                                    CreatedBy = User.Identity.Name,
+                                    DateCreated = DateTime.Now,
+
+                                };
+                                _db.FixedAssetIssueItems.Add(issueItem);
+                                _db.SaveChanges();
+
+                                #endregion
+                            }
+
+                        }
+                    }
+                }
                 #endregion
 
                

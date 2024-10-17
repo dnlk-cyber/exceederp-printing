@@ -11,10 +11,25 @@
             <div class="row"></div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.RequestNumber, htmlAttributes: new { @class = "control-label col-md-8" })
+                @Html.LabelFor(model => model.FixedAssetRequisitionId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
-                    @Html.Kendo().TextBoxFor(model => model.RequestNumber)
-                    @Html.ValidationMessageFor(model => model.RequestNumber, "", new { @class = "text-danger" })
+                    @(Html.Kendo().DropDownListFor(model => model.FixedAssetRequisitionId)
+                         .ValuePrimitive(true)
+                         .Filter("contains")
+                          .OptionLabel("Select SR No...")
+                          .DataTextField("Remark")
+                          .DataValueField("FixedAssetRequisitionId")
+                          .Events(e =>
+                          {
+                              //e.Change("onSelectStoreRequisitionID");
+                          })
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetStoreRequisitionIdTransfer", "FixedAssetDataProvider"))
+                                  .ServerFiltering(false);
+                          })
+                    )
+                    @Html.ValidationMessageFor(model => model.FixedAssetRequisitionId, "", new { @class = "text-danger" })
                 </div>
             </div>
 
@@ -93,6 +108,44 @@
         </div>
 
         <div class="col-md-3 ro1">
+            
+
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.FromGRN, htmlAttributes: new { @class = "control-label col-md-8" })*@
+                <div class="col-md-6">
+                    @Html.Kendo().CheckBoxFor(model => model.FromGRN)
+                    @Html.ValidationMessageFor(model => model.FromGRN, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row"></div>
+            <br/>
+            <div class="form-group">
+                @Html.LabelFor(model => model.GRNNo, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.GRNNo)
+                         .ValuePrimitive(true)
+                         .Filter("contains")
+                          .OptionLabel("Select GRN No...")
+                          .DataTextField("Remark")
+                          .DataValueField("FixedAssetReceiveId")
+                          .Events(e =>
+                          {
+                              //e.Change("onSelectStoreRequisitionID");
+                          })
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetGRNIdTransfer", "FixedAssetDataProvider"))
+                                  .ServerFiltering(false);
+                          })
+                    )
+                    @Html.ValidationMessageFor(model => model.GRNNo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+
             @* custodian Before *@
             <div class="form-group personperson" style="display: none">
                 @Html.LabelFor(model => model.CustodianBeforeTransfer, htmlAttributes: new { @class = "control-label col-md-8" })
@@ -175,7 +228,7 @@
                 </div>
             </div>
             <div class="row"></div>
-           
+
 
             @* External Supplier *@
             <div class="form-group externalSup" @*id="supplierDiv"*@ style="display: none">
@@ -204,9 +257,9 @@
                     @Html.ValidationMessageFor(model => model.SupplierName, "", new { @class = "text-danger" })
                 </div>
             </div>
-            
+
             <div class="row"></div>
-            
+
             @* Internal Delivered By *@
             <div class="form-group internalDel" @*id="employeeDiv"*@ style="display: none">
                 @Html.LabelFor(model => model.DeliveredBy, htmlAttributes: new { @class = "control-label col-md-8" })
@@ -227,7 +280,7 @@
                 </div>
             </div>
             <div class="row"></div>
-            
+
             @* External Recipient supplier*@
             <div class="form-group externalSup" @*id="supplierRecipientDiv"*@ style="display: none">
                 @Html.LabelFor(model => model.RecipientSupplier, htmlAttributes: new { @class = "control-label col-md-8" })
@@ -248,7 +301,7 @@
                 </div>
             </div>
             <div class="row"></div>
-            
+
             @* Internal Recipient employee *@
             <div class="form-group internalDel" @*id="employeeRecipientDiv"*@ style="display: none">
                 @Html.LabelFor(model => model.RecipientEmployee, htmlAttributes: new { @class = "control-label col-md-8" })

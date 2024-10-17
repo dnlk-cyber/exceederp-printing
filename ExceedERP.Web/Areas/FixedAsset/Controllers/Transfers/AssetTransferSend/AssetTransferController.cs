@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.FixedAsset.Transfers;
 using ExceedERP.Core.Domain.Global;
@@ -81,9 +80,13 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
             DataSourceResult result = assetTransfers.ToDataSourceResult(request, assetTransfer => new
             {
                 AssetTransferId = assetTransfer.AssetTransferId,
-                RequestNumber = assetTransfer.RequestNumber,
+                FixedAssetRequisitionId = assetTransfer.FixedAssetRequisitionId,
                 TransferDate = assetTransfer.TransferDate,
                 TransferDesc = assetTransfer.TransferDesc,
+                Reference = assetTransfer.Reference,
+                WithOutRequest = assetTransfer.WithOutRequest,
+                FromGRN = assetTransfer.FromGRN,
+                GRNNo = assetTransfer.GRNNo,
 
                 Type = assetTransfer.Type,
 
@@ -136,9 +139,14 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
         {
             #region validation
 
-            var fixedAssetRequisition = _db.FixedAssetRequisitions.FirstOrDefault(sr => sr.FixedAssetRequisitionId.ToString() == assetTransfer.RequestNumber);
+            var fixedAssetRequisition = _db.FixedAssetRequisitions.FirstOrDefault(sr => sr.FixedAssetRequisitionId== assetTransfer.FixedAssetRequisitionId);
             if (fixedAssetRequisition != null && fixedAssetRequisition.FixedAssetRequisitionItem.Count == 0)
                 ModelState.AddModelError("requestedItem", "The requisition does not have line items.");
+
+            if (assetTransfer.Type == TransferType.None)
+            {
+                ModelState.AddModelError("type", "Please choose transfer type.");
+            }
 
             if (assetTransfer.Type == TransferType.PersonToPerson)
             {
@@ -157,6 +165,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 }
             }
 
+            if (assetTransfer.FromGRN && assetTransfer.GRNNo==null)
+                ModelState.AddModelError("grn", "Please choose GRN NO.");
+
             #endregion
 
 
@@ -164,10 +175,14 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
             {
                 var entity = new AssetTransfer
                 {
-                    RequestNumber = assetTransfer.RequestNumber,
+                    FixedAssetRequisitionId = assetTransfer.FixedAssetRequisitionId,
                     TransferDate = assetTransfer.TransferDate,
                     TransferDesc = assetTransfer.TransferDesc,
                     Type = assetTransfer.Type,
+                    Reference = assetTransfer.Reference,
+                    WithOutRequest = assetTransfer.WithOutRequest,
+                    FromGRN = assetTransfer.FromGRN,
+                    GRNNo = assetTransfer.GRNNo,
 
                     CustodianBeforeTransfer = assetTransfer.CustodianBeforeTransfer,
                     TransferTo = assetTransfer.TransferTo,
@@ -226,9 +241,14 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
         {
             #region validation
 
-            var fixedAssetRequisition = _db.FixedAssetRequisitions.FirstOrDefault(sr => sr.FixedAssetRequisitionId.ToString() == assetTransfer.RequestNumber);
+            var fixedAssetRequisition = _db.FixedAssetRequisitions.FirstOrDefault(sr => sr.FixedAssetRequisitionId== assetTransfer.FixedAssetRequisitionId);
             if (fixedAssetRequisition != null && fixedAssetRequisition.FixedAssetRequisitionItem.Count == 0)
                 ModelState.AddModelError("requestedItem", "The requisition does not have line items.");
+
+            if (assetTransfer.Type == TransferType.None)
+            {
+                ModelState.AddModelError("type", "Please choose transfer type.");
+            }
 
             if (assetTransfer.Type == TransferType.PersonToPerson)
             {
@@ -247,6 +267,9 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 }
             }
 
+            if (assetTransfer.FromGRN && assetTransfer.GRNNo == null)
+                ModelState.AddModelError("grn", "Please choose GRN NO.");
+
             #endregion
 
             if (ModelState.IsValid)
@@ -254,9 +277,13 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 var entity = new AssetTransfer
                 {
                     AssetTransferId = assetTransfer.AssetTransferId,
-                    RequestNumber = assetTransfer.RequestNumber,
+                    FixedAssetRequisitionId = assetTransfer.FixedAssetRequisitionId,
                     TransferDate = assetTransfer.TransferDate,
                     TransferDesc = assetTransfer.TransferDesc,
+                    Reference = assetTransfer.Reference,
+                    WithOutRequest = assetTransfer.WithOutRequest,
+                    FromGRN = assetTransfer.FromGRN,
+                    GRNNo = assetTransfer.GRNNo,
 
                     Type = assetTransfer.Type,
 
@@ -318,11 +345,15 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
             {
                 var entity = new AssetTransfer
                 {
-                    RequestNumber = assetTransfer.RequestNumber,
+                    FixedAssetRequisitionId = assetTransfer.FixedAssetRequisitionId,
                     TransferDate = assetTransfer.TransferDate,
                     TransferDesc = assetTransfer.TransferDesc,
                     AssetTransferId = assetTransfer.AssetTransferId,
                     Type = assetTransfer.Type,
+                    Reference = assetTransfer.Reference,
+                    WithOutRequest = assetTransfer.WithOutRequest,
+                    FromGRN = assetTransfer.FromGRN,
+                    GRNNo = assetTransfer.GRNNo,
 
                     CustodianBeforeTransfer = assetTransfer.CustodianBeforeTransfer,
                     TransferTo = assetTransfer.TransferTo,
@@ -532,7 +563,7 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
                 #region header
                 var entity = new AssetTransfer
                 {
-                    RequestNumber = assetTransfer.RequestNumber,
+                    FixedAssetRequisitionId = assetTransfer.FixedAssetRequisitionId,
                     TransferDate = assetTransfer.TransferDate,
                     TransferDesc = assetTransfer.TransferDesc,
                     Type = assetTransfer.Type,
@@ -603,32 +634,77 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Transfers.AssetTransferSend
 
         private void GetStoreRequisitionItems(AssetTransfer assetTransfer)
         {
-            var storeRequisitionItem = _db.FixedAssetRequisitionItems.Where(sr => sr.FixedAssetRequisitionId.ToString() == assetTransfer.RequestNumber).ToList();
-
-            foreach (var requestedItem in storeRequisitionItem)
+            if (assetTransfer.FromGRN && assetTransfer.GRNNo != null)
             {
-                #region fixed asset
-                for (int i = 0; i < requestedItem.RequestedQuantity; i++)
+                var assets = _db.AssetRegistrations
+                        .Where(sr => sr.GRN == assetTransfer.GRNNo.ToString()).ToList();
+
+                foreach (var grnItem in assets)
                 {
-                    var assetTransferItem = new AssetTransferItem
+                    #region fixed asset
+                    var transferItem = new AssetTransferItem
                     {
                         AssetTransferId = assetTransfer.AssetTransferId,
-                        FixedAssetCategoryId = requestedItem.FixedAssetCategoryID,
-                        FixedAssetSubCategoryId = requestedItem.FixedAssetSubCategoryID,
-                        
+                        FixedAssetCategoryId = grnItem.FixedAssetCategoryID,
+                        FixedAssetSubCategoryId = grnItem.FixedAssetSubCategoryID,
+                        AssetRegistrationId = grnItem.AssetRegistrationId,
+                        ItemName = grnItem.Name,
+                        Unit = grnItem.Unit,
+                        UnitPrice = grnItem.Quanity>0 ? grnItem.BookValue/ grnItem.Quanity:grnItem.BookValue,
+                        Total = grnItem.BookValue,
+                        Name = grnItem.Name,
+                        Size = grnItem.Size,
+                        GrnNo = grnItem.GRN,
+                        ModelNo = grnItem.ModelNo,
+                        SerialNo = grnItem.SerialNo,
+                        TagNo = grnItem.Tag,
+                        Quantity = grnItem.Quanity,
+                        Remark = grnItem.Remark,
+
                         CreatedBy = User.Identity.Name,
                         DateCreated = DateTime.Today,
                         ModifiedBy = User.Identity.Name,
                         LastModified = DateTime.Today
                     };
 
-                    _db.AssetTransferItems.Add(assetTransferItem);
+                    _db.AssetTransferItems.Add(transferItem);
                     _db.SaveChanges();
+                    #endregion
+
                 }
-                #endregion
-
             }
+            else
+            {
+                if (assetTransfer.FixedAssetRequisitionId != null)
+                {
+                    var storeRequisitionItem = _db.FixedAssetRequisitionItems
+                        .Where(sr => sr.FixedAssetRequisitionId == assetTransfer.FixedAssetRequisitionId).ToList();
 
+                    foreach (var requestedItem in storeRequisitionItem)
+                    {
+                        #region fixed asset
+                        for (int i = 0; i < requestedItem.RequestedQuantity; i++)
+                        {
+                            var assetTransferItem = new AssetTransferItem
+                            {
+                                AssetTransferId = assetTransfer.AssetTransferId,
+                                FixedAssetCategoryId = requestedItem.FixedAssetCategoryID,
+                                FixedAssetSubCategoryId = requestedItem.FixedAssetSubCategoryID,
+
+                                CreatedBy = User.Identity.Name,
+                                DateCreated = DateTime.Today,
+                                ModifiedBy = User.Identity.Name,
+                                LastModified = DateTime.Today
+                            };
+
+                            _db.AssetTransferItems.Add(assetTransferItem);
+                            _db.SaveChanges();
+                        }
+                        #endregion
+
+                    }
+                }
+            }
 
         }
 

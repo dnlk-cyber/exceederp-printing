@@ -15,6 +15,8 @@ namespace ExceedERP.Core.Domain.FixedAsset.Issues
         [Required]
         [DisplayName("Sub Category")]
         public int FixedAssetSubCategoryId { get; set; }
+        [DisplayName("Name")]
+        public int FixedAssetNameID { get; set; }
 
         [DisplayName("Asset")]
         public int AssetRegistrationId { get; set; }

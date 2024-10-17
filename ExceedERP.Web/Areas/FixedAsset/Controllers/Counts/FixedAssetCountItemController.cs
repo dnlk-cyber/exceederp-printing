@@ -3,7 +3,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.FixedAsset;
 using ExceedERP.Core.Domain.FixedAsset.Counts;
 using ExceedERP.Core.Domain.FixedAsset.Setting;
 using ExceedERP.Core.Domain.Global;
@@ -15,7 +14,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
 {
-    
+
     public class FixedAssetCountItemController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
@@ -44,7 +43,12 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                     PreviousBalance = fixedAssetCountItem.PreviousBalance,
                     Value = fixedAssetCountItem.Value,
                     AssetStatus = fixedAssetCountItem.AssetStatus,
-                    Status = fixedAssetCountItem.Status
+                    Status = fixedAssetCountItem.Status,
+                    PlateNo = fixedAssetCountItem.PlateNo,
+                    EngineNo = fixedAssetCountItem.EngineNo,
+                    ChasisNo = fixedAssetCountItem.ChasisNo,
+                    ModelNo = fixedAssetCountItem.ModelNo,
+                    SerialNo = fixedAssetCountItem.SerialNo,
                 });
 
                 return Json(result);
@@ -79,6 +83,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                         Count = fixedAssetCountItem.Count,
                         Value = fixedAssetCountItem.Value,
                         AssetStatus = fixedAssetCountItem.AssetStatus,
+                        PlateNo = fixedAssetCountItem.PlateNo,
+                        EngineNo = fixedAssetCountItem.EngineNo,
+                        ChasisNo = fixedAssetCountItem.ChasisNo,
+                        ModelNo = fixedAssetCountItem.ModelNo,
+                        SerialNo = fixedAssetCountItem.SerialNo,
                         CreatedBy = User.Identity.Name,
                         Status = true,
                      
@@ -114,6 +123,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                     PreviousBalance = fixedAssetCountItem.PreviousBalance,
                     Count = fixedAssetCountItem.Count,
                     FixedAssetCountId = fixedAssetCountItem.FixedAssetCountId,
+                    PlateNo = fixedAssetCountItem.PlateNo,
+                    EngineNo = fixedAssetCountItem.EngineNo,
+                    ChasisNo = fixedAssetCountItem.ChasisNo,
+                    ModelNo = fixedAssetCountItem.ModelNo,
+                    SerialNo = fixedAssetCountItem.SerialNo,
                     Status = true,
                     AssetStatus = fixedAssetCountItem.AssetStatus,
 
@@ -145,6 +159,11 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers.Counts
                     FixedAssetSubCategoryId = fixedAssetCountItem.FixedAssetSubCategoryId,
                     Count = fixedAssetCountItem.Count,
                     Status = fixedAssetCountItem.Status,
+                    PlateNo = fixedAssetCountItem.PlateNo,
+                    EngineNo = fixedAssetCountItem.EngineNo,
+                    ChasisNo = fixedAssetCountItem.ChasisNo,
+                    ModelNo = fixedAssetCountItem.ModelNo,
+                    SerialNo = fixedAssetCountItem.SerialNo,
                     AssetStatus = fixedAssetCountItem.AssetStatus,
                 };
 

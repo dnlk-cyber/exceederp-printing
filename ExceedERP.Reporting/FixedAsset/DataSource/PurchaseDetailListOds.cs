@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Inventory;
 using ExceedERP.Reporting.FixedAsset.ViewModel;
 using ExceedERP.Reporting.Inventory.ViewModel;
 
@@ -14,31 +15,39 @@ namespace ExceedERP.Reporting.FixedAsset.DataSource
     {
         private ExceedDbContext _db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<FixedAssetPurchaseItemVm> GoodsReceiveByDateInterval(DateTime from, DateTime to, string store, string category)
+        public List<FixedAssetPurchaseItemVm> GoodsReceiveByDateInterval(DateTime from, DateTime to, string store, string category, string businessUnitId)
         {
             List<FixedAssetPurchaseItemVm> goodReceiveItemList = new List<FixedAssetPurchaseItemVm> { };
             try
             {
 
-               var reportData = _db.FixedAssetReceiveItems
-                    .Where(x => x.FixedAssetReceive.IsOnlineApproved)
-                    .Where(x => x.FixedAssetReceive.IsVoid == false)
-                    .Where(x => x.FixedAssetReceive.ReceiveDate >= from.Date)
-                    .Where(x => x.FixedAssetReceive.ReceiveDate <= to.Date).ToList();
+                var reportData = _db.FixedAssetReceiveItems
+                     .Where(x => x.FixedAssetReceive.IsOnlineApproved)
+                     .Where(x => x.FixedAssetReceive.IsVoid == false)
+                     .Where(x => x.FixedAssetReceive.ReceiveDate >= from.Date)
+                     .Where(x => x.FixedAssetReceive.ReceiveDate <= to.Date).AsQueryable();
 
                 if (!String.IsNullOrEmpty(store))
                 {
                     reportData = reportData
-                        .Where(x => x.FixedAssetReceive.StoreCode == store).ToList();
+                        .Where(x => x.FixedAssetReceive.StoreCode == store).AsQueryable();
                 }
 
                 if (!String.IsNullOrEmpty(category))
                 {
-                    reportData = reportData.Where(x => x.FixedAssetCategory.CategoryCode == category).ToList();
+                    reportData = reportData.Where(x => x.FixedAssetCategory.CategoryCode == category).AsQueryable();
                 }
-                   
 
-                foreach (var item in reportData)
+				if (!String.IsNullOrEmpty(businessUnitId))
+				{
+					int did = int.Parse(businessUnitId);
+					List<string> stores=InventoryHelper.GetStoreByBusinessUnit(did);
+                        
+					reportData = reportData.Where(x => stores.Contains(x.FixedAssetReceive.StoreCode));
+				}
+
+
+				foreach (var item in reportData)
                 {
                     var goodReceiveItemRecord = new FixedAssetPurchaseItemVm
                     {
