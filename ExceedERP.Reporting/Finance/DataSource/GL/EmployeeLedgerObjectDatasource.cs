@@ -11,13 +11,17 @@ using ExceedERP.Reporting.Finance.ViewModel;
 namespace ExceedERP.Reporting.Finance.DataSource.GL
 {
     [DataObject]
-    public class EmployeeLedgerObjectDatasource : List<EmployeeLedgerVm>
+    public class EmployeeLedgerObjectDatasource : List<EmployeeLedgerVm>, IDisposable
     {
-        
-            private readonly ExceedDbContext _db = new ExceedDbContext();
-            private readonly AccountHelper _accountHelper = new AccountHelper();
+        private readonly ExceedDbContext _db;
+        private readonly AccountHelper _accountHelper;
+        public EmployeeLedgerObjectDatasource()
+        {
+            _db = new ExceedDbContext();
+            _accountHelper = new AccountHelper();
+        }
 
-            [DataObjectMethod(DataObjectMethodType.Select)]
+        [DataObjectMethod(DataObjectMethodType.Select)]
         public List<EmployeeLedgerVm> GetEmployeeLedger(DateTime from, DateTime to, string employeeid, string acct)
         {
             List<EmployeeLedgerVm> employeeLedgerList = new List<EmployeeLedgerVm> { };
@@ -29,7 +33,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                 .Select(x => new { x.GLRecordJournal, x.GlRecordJournalId, x.AccountCode, x.SubAccountSegment, x.AccountSegment, x.AdditionalDescription, x.Debit, x.Credit })
                             .AsQueryable();
 
-           // List<GLPeriod> periods = new List<GLPeriod>();
+            // List<GLPeriod> periods = new List<GLPeriod>();
 
             if (!String.IsNullOrEmpty(acct))
             {
@@ -49,7 +53,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 
 
 
-               
+
                 var journalDetailRange = journalDetails.AsEnumerable().DistinctByField(x => x.AccountCode)
                        .ToList();
                 foreach (var detail in journalDetailRange)
@@ -85,7 +89,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                                 Debit = journalDetail.Debit,
                                 Credit = journalDetail.Credit,
                                 Balance = 0,
-                                Remark= journalDetail.GLRecordJournal.Remark
+                                Remark = journalDetail.GLRecordJournal.Remark
                                 //TransactionType = journalDetail.SourcesName //to be updated
                             };
 
@@ -115,134 +119,11 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 
             return employeeLedgerList;
         }
-        //public List<EmployeeLedgerVm> GetEmployeeLedger1(DateTime from, DateTime to, string employeeid,string acct)
-        //    {
-        //        List<EmployeeLedgerVm> employeeLedgerList = new List<EmployeeLedgerVm> { };
-        //        var ledgerposts = _db.GlSecondayLedgers.AsQueryable();
-        //        List<GlSecondayLedger> ledgers = new List<GlSecondayLedger>();
-        //        List<GLPeriod> periods = new List<GLPeriod>();
-        //        if (!String.IsNullOrEmpty(acct))
-        //        {
-        //            ledgerposts = ledgerposts.Where(x => x.AccountSegment == acct).AsQueryable();
-        //        }
 
-        //        if (!String.IsNullOrEmpty(employeeid))
-        //        {
-        //            #region get sub account employee
-        //            var employeeSubAccount = _db.EmployeeSubAccounts.FirstOrDefault(x => x.EmployeeId.ToString() == employeeid);
-        //            #endregion
+        public void Dispose()
+        {
+            _db?.Dispose();
+        }
+    }
 
-        //            ledgerposts = ledgerposts
-        //                .Where(x => x.SubAccountSegment == employeeSubAccount.SubAccountCode).AsQueryable();
-        //    }
-
-        //        var ledgerPostingLines = _db.GlSecondayLedgerLines.Where(b => b.EffectiveDate >= from && b.EffectiveDate <= to).ToList();
-        //        #region get covered periods for sorting data
-
-        //        var periodList = ledgerPostingLines.Select(x => x.GLPeriodId).Distinct();
-        //        foreach (var p in periodList)
-        //        {
-        //            periods.Add(_db.GLPeriods.Find(p));
-        //        }
-
-        //        #endregion
-        //        var sortedPeriods = periods.OrderBy(x => x.DateTo);
-
-        //        foreach (var ledgerPosting in ledgerposts)
-        //        {
-        //            var selectedledgerPostingLines = ledgerPostingLines.Where(x => x.GlSecondayLedger.AccountCode == ledgerPosting.AccountCode).ToList();
-
-        //            var employeeLedgerVm = new EmployeeLedgerVm
-        //            {
-        //                EmployeeId = ledgerPosting.AccountCode,//to be updated
-        //                EmployeeName = _accountHelper.GetAccountDesc(ledgerPosting.AccountCode),//to be updated
-        //                EmployeeLedgerVmLines = new List<TransactionVm>()
-        //            };
-
-        //            if (selectedledgerPostingLines.Any())
-        //            {
-        //                #region current transaction
-        //                foreach (var period in sortedPeriods)
-        //                {
-        //                    #region beginning
-
-        //                    var begginningRecords = selectedledgerPostingLines
-        //                        .Where(x => x.GLPeriodId == period.GLPeriodId)
-        //                        .Where(x => x.Type == LedgerPostTypes.Begining).ToList();
-        //                    foreach (var balance in begginningRecords)
-        //                    {
-        //                        var lines = new TransactionVm
-        //                        {
-        //                            TranssactionId = balance.JournalNumber,
-        //                            TransactionDate = balance.EffectiveDate,
-        //                            TransReference = balance.JournalReference,
-        //                            Debit = balance.Debit,
-        //                            Credit = balance.Credit,
-        //                            Balance = balance.Balance,
-        //                            TransactionType = balance.SourcesName//to be updated
-        //                        };
-
-        //                        employeeLedgerVm.EmployeeLedgerVmLines.Add(lines);
-        //                    }
-
-        //                    #endregion
-        //                    #region standard
-
-        //                    var standardRecords = selectedledgerPostingLines
-        //                        .Where(x => x.GLPeriodId == period.GLPeriodId)
-        //                        .Where(x => x.Type == LedgerPostTypes.Standard)
-        //                        .ToList().OrderBy(x => x.EffectiveDate);
-        //                    foreach (var balance in standardRecords)
-        //                    {
-        //                        var lines = new TransactionVm
-        //                        {
-        //                            TranssactionId = balance.JournalNumber,
-        //                            TransactionDate = balance.EffectiveDate,
-        //                            TransReference = balance.JournalReference,
-        //                            Debit = balance.Debit,
-        //                            Credit = balance.Credit,
-        //                            Balance = balance.Balance,
-        //                            TransactionType = balance.SourcesName//to be updated
-        //                        };
-
-        //                        employeeLedgerVm.EmployeeLedgerVmLines.Add(lines);
-        //                    }
-
-        //                    #endregion
-        //                    #region ending
-
-        //                    var endingRecords = selectedledgerPostingLines
-        //                        .Where(x => x.GLPeriodId == period.GLPeriodId)
-        //                        .Where(x => x.Type == LedgerPostTypes.Ending).ToList();
-        //                    foreach (var balance in begginningRecords)
-        //                    {
-        //                        var lines = new TransactionVm
-        //                        {
-        //                            TranssactionId = balance.JournalNumber,
-        //                            TransactionDate = balance.EffectiveDate,
-        //                            TransReference = balance.JournalReference,
-        //                            Debit = balance.Debit,
-        //                            Credit = balance.Credit,
-        //                            Balance = balance.Balance,
-        //                            TransactionType = balance.SourcesName//to be updated
-        //                        };
-
-        //                        employeeLedgerVm.EmployeeLedgerVmLines.Add(lines);
-        //                    }
-
-        //                    #endregion
-        //                }
-
-        //                #endregion
-        //            }
-
-
-
-        //            employeeLedgerList.Add(employeeLedgerVm);
-        //        }
-
-        //        return employeeLedgerList;
-        //    }
-   }
-    
 }

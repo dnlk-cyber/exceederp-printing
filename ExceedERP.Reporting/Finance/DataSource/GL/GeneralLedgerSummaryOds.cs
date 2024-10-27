@@ -16,15 +16,20 @@ using ExceedERP.Reporting.SharedDataSources;
 namespace ExceedERP.Reporting.Finance.DataSource.GL
 {
     [DataObject]
-    public class GeneralLedgerSummaryOds : List<StockBalanceOds>
+    public class GeneralLedgerSummaryOds : List<StockBalanceOds>, IDisposable
     {
         /**
         * v2 algorithm faster by 10 times... reduced from 7 minutes to 26 seconds
         * optimization using include and selecting only required properties
         */
-        readonly ExceedDbContext _db = new ExceedDbContext();
-        readonly AccountHelper _accountHelper = new AccountHelper();
-       
+        private readonly ExceedDbContext _db;
+        private readonly AccountHelper _accountHelper;
+        public GeneralLedgerSummaryOds()
+        {
+            _db = new ExceedDbContext();
+            _accountHelper = new AccountHelper();
+        }
+
         [DataObjectMethod(DataObjectMethodType.Select)]
         public GeneralLedgerHeaderVm GetGeneralLedgerHeader(string periodFrom, string periodTo, string acctFrom, string acctTo)
         {
@@ -167,59 +172,39 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 
                     if (!String.IsNullOrEmpty(segmentType) && !String.IsNullOrEmpty(segmentValue))
                     {
-                        if (_accountHelper.IsDynamicCoA())
+                        var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segmentType);
+                        int index = setup?.Sequence ?? 0;
+                        switch (index)
                         {
-                            var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segmentType);
-                            int index = setup?.Sequence ?? 0;
-                            switch (index)
-                            {
-                                case 1:
-                                    ledgers = ledgers.Where(x => x.Segment1 == segmentValue).AsQueryable();
-                                    break;
+                            case 1:
+                                ledgers = ledgers.Where(x => x.Segment1 == segmentValue).AsQueryable();
+                                break;
 
-                                case 2:
-                                    ledgers = ledgers.Where(x => x.Segment2 == segmentValue).AsQueryable();
-                                    break;
+                            case 2:
+                                ledgers = ledgers.Where(x => x.Segment2 == segmentValue).AsQueryable();
+                                break;
 
-                                case 3:
-                                    ledgers = ledgers.Where(x => x.Segment3 == segmentValue).AsQueryable();
-                                    break;
+                            case 3:
+                                ledgers = ledgers.Where(x => x.Segment3 == segmentValue).AsQueryable();
+                                break;
 
-                                case 4:
-                                    ledgers = ledgers.Where(x => x.Segment4 == segmentValue).AsQueryable();
-                                    break;
+                            case 4:
+                                ledgers = ledgers.Where(x => x.Segment4 == segmentValue).AsQueryable();
+                                break;
 
-                                case 5:
-                                    ledgers = ledgers.Where(x => x.Segment5 == segmentValue).AsQueryable();
-                                    break;
+                            case 5:
+                                ledgers = ledgers.Where(x => x.Segment5 == segmentValue).AsQueryable();
+                                break;
 
-                                case 6:
-                                    ledgers = ledgers.Where(x => x.Segment6 == segmentValue).AsQueryable();
-                                    break;
-                                case 7:
-                                    ledgers = ledgers.Where(x => x.Segment7 == segmentValue).AsQueryable();
-                                    break;
-                                case 8:
-                                    ledgers = ledgers.Where(x => x.Segment8 == segmentValue).AsQueryable();
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            switch (segmentType)
-                            {
-                                case "Branch":
-                                    ledgers = ledgers.Where(x => x.BranchSegment == segmentValue).AsQueryable();
-                                    break;
-
-                                case "Cost Center":
-                                    ledgers = ledgers.Where(x => x.CostCenterSegment == segmentValue).AsQueryable();
-                                    break;
-
-                                case "Sub Account":
-                                    ledgers = ledgers.Where(x => x.SubAccountSegment == segmentValue).AsQueryable();
-                                    break;
-                            }
+                            case 6:
+                                ledgers = ledgers.Where(x => x.Segment6 == segmentValue).AsQueryable();
+                                break;
+                            case 7:
+                                ledgers = ledgers.Where(x => x.Segment7 == segmentValue).AsQueryable();
+                                break;
+                            case 8:
+                                ledgers = ledgers.Where(x => x.Segment8 == segmentValue).AsQueryable();
+                                break;
                         }
                     }
 
@@ -246,17 +231,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                                     decimal netChange = 0;
 
                                     string subAccDesc = "";
-                                    if (_accountHelper.IsDynamicCoA())
-                                    {
-                                        var type = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
-                                        var subAcc = _db.GlChartOfAccountSegments.Where(x => x.Values == subAccount).FirstOrDefault(x => x.GLSegmentSetupId == type.GLSegmentSetupId);
-                                        subAccDesc = subAcc?.Description;
-                                    }
-                                    else
-                                    {
-                                        //var subAcc = _db.GLChartOfAccountSubAccounts.FirstOrDefault(x => x.Values == subAccount);
-                                        //subAccDesc = subAcc?.Description;
-                                    }
+                                    var type = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
+                                    var subAcc = _db.GlChartOfAccountSegments.Where(x => x.Values == subAccount).FirstOrDefault(x => x.GLSegmentSetupId == type.GLSegmentSetupId);
+                                    subAccDesc = subAcc?.Description;
                                     var lineData = new GeneralLedgerAccountVm
                                     {
                                         AccountCode = acc.Values + "-" + subAccount,
@@ -553,5 +530,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
         //    return balances.OrderBy(x => x.Description);
         //}
 
+        public void Dispose()
+        {
+            _db?.Dispose();
+        }
     }
 }

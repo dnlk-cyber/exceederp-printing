@@ -11,14 +11,11 @@ namespace ExceedERP.Reporting.Finance.ViewModel
     }
 
     public class TrialBalalnceLines
-    {
-        [Display(Name = "Account No.")]
+    {     
+        public string NaturalAccount { get; set; }
         public string AccountCode { get; set; }
-        [Display(Name = "Account Name")]
         public string AccountDescription { get; set; }
-        [Display(Name = "Debit")]
         public decimal Debit { get; set; }
-        [Display(Name = "Credit")]
         public decimal Credit { get; set; }
     }
 }

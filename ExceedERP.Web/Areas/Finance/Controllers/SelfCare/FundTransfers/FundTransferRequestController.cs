@@ -1,9 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Areas.HRM.Controllers;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -11,14 +8,13 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
+using ExceedERP.DataAccess.Migrations;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
 {
@@ -30,7 +26,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
         {
             
             PopulateViewData();
-            UpdateData();
+          
 
             return View();
         }
@@ -63,20 +59,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
 
         }
 
-        private void UpdateData()
-        {
-            var list = _db.FundTransfers.Where(x => x.CreatedAtOrgStructureId == 0).ToList();
-
-            foreach (var record in list)
-            {
-                record.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(record.CreatedBy);
-                _db.FundTransfers.Attach(record);
-                _db.Entry(record).State = EntityState.Modified;
-                _db.SaveChanges();
-
-            }
-        }
-
+       
         public ActionResult FundTransfer_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
@@ -439,8 +422,32 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-           
-            if (record != null && !record.IsDepartmentOnlineApproved && !record.IsDepartmentSendForApproval)
+            foreach (var line in lines)
+            {
+				if (line.Requested <= 0)
+                {
+					var formattedData = new
+					{
+						Message = "Please fill requested amount",
+						Status = "NOT_OK"
+					};
+					return Json(formattedData, JsonRequestBehavior.AllowGet);
+				}
+
+				if (line.Approved <= 0)
+				{
+					var formattedData = new
+					{
+						Message = "Please fill approved amount",
+						Status = "NOT_OK"
+					};
+					return Json(formattedData, JsonRequestBehavior.AllowGet);
+				}
+
+			}
+
+
+			if (record != null && !record.IsDepartmentOnlineApproved && !record.IsDepartmentSendForApproval)
             {
                 record.Status = Enum.GetName(typeof(OperationStatuses), 16);
                 record.IsDepartmentSendForApproval = true;

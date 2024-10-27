@@ -114,22 +114,20 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Settings
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ServiceItems_Update([DataSourceRequest]DataSourceRequest request, ServiceItem serviceItem)
         {
-            #region validation
+			#region validation
 
-            bool valid = true;
 
-            var nameexists = db.ServiceItems.Where(x => x.ServiceItemCode != serviceItem.ServiceItemCode)
+			var nameexists = db.ServiceItems.Where(x => x.ServiceItemCode != serviceItem.ServiceItemCode)
                 .Where(x => x.Name == serviceItem.Name).ToList();
 
             if (nameexists.Any())
             {
                 ModelState.AddModelError("Item Name", serviceItem.Name + " already exists in the system.");
-                valid = false;
-            }
+			}
 
 
-            #endregion
-            if (ModelState.IsValid)
+			#endregion
+			if (ModelState.IsValid)
             {
                 var entity = new ServiceItem
                 {

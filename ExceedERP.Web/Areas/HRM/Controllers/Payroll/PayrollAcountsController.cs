@@ -1,21 +1,17 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
-﻿using ExceedERP.Core.Domain.Common;
- using ExceedERP.Core.Domain.Finance.GL.Dynamic;
- using Kendo.Mvc.Extensions;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
+using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM.Payroll;
- using ExceedERP.Core.Domain.HRM.Payroll.Setting;
- using ExceedERP.DataAccess.Context;
-﻿using ExceedERP.Web.Areas.HRM.Controllers.Profile;
+using ExceedERP.Core.Domain.HRM.Payroll.Setting;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
-﻿using ExceedERP.Helpers.Finance;
+using ExceedERP.Helpers.Finance;
 using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
@@ -29,8 +25,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         AccountHelper accountHelper = new AccountHelper();
         public ActionResult Index()
         {
-         
-           var list = inputs.GetPayrollPlacmentEmployees(User.Identity.Name);
+
+            var list = inputs.GetPayrollPlacmentEmployees(User.Identity.Name);
             ViewData["EmployeeList"] = list.Where(x => x.IsActive);
             SetPayRollAcounts();
             return View();
@@ -45,23 +41,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 PayrollAccounts payrollAccounts = new PayrollAccounts();
                 List<PayrollAccounts> payrollAccountses = new List<PayrollAccounts>();
 
-                var payrollAccountTypes = Enum.GetValues(typeof (PayrollAccountType))
+                var payrollAccountTypes = Enum.GetValues(typeof(PayrollAccountType))
                     .Cast<PayrollAccountType>()
 
                     .ToList();
                 foreach (var p in payrollAccountTypes)
                 {
-                    payrollAccounts = new PayrollAccounts
-                    {
-                        Description = p.ToString(),
-                        ReferenceType = "Normal",
-                        IsPerEmployee = false,
-                        IsPerBranch = false,
-                        DateCreated = DateTime.Now,
-                        LastModified = null,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = null
-                    };
+                    payrollAccounts = new PayrollAccounts();
+                    payrollAccounts.Description = p.ToString();
+                    payrollAccounts.ReferenceType = "Normal";
+                    payrollAccounts.IsPerEmployee = false;
+                    payrollAccounts.IsPerBranch = false;
+                    payrollAccounts.DateCreated = DateTime.Now;
+                    payrollAccounts.LastModified = null;
+                    payrollAccounts.CreatedBy = User.Identity.Name;
+                    payrollAccounts.ModifiedBy = null;
                     payrollAccountses.Add(payrollAccounts);
                 }
                 #region Contributions
@@ -74,18 +68,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         payrollAccounts = new PayrollAccounts();
                         payrollAccounts.Description = p.Description;
                         payrollAccounts.ReferenceType = "Cont";
-                        payrollAccounts.DateCreated = DateTime .Now ;
-                       payrollAccounts. LastModified = null;
-                       payrollAccounts. CreatedBy = User.Identity .Name ;
-                       payrollAccounts. ModifiedBy = null;
-               var checkTwo = payrollAccountses.Where(x => x.Description == payrollAccounts.Description).FirstOrDefault();
-               if (checkTwo == null)
-               {
-                   payrollAccountses.Add(payrollAccounts);
-               }
+                        payrollAccounts.DateCreated = DateTime.Now;
+                        payrollAccounts.LastModified = null;
+                        payrollAccounts.CreatedBy = User.Identity.Name;
+                        payrollAccounts.ModifiedBy = null;
+                        var checkTwo = payrollAccountses.Where(x => x.Description == payrollAccounts.Description).FirstOrDefault();
+                        if (checkTwo == null)
+                        {
+                            payrollAccountses.Add(payrollAccounts);
+                        }
                     }
                 }
-            #endregion
+                #endregion
                 #region allowances
                 var allowances = Enum.GetValues(typeof(AllowanceType))
                     .Cast<AllowanceType>()
@@ -121,7 +115,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             {
                 PayrollAccounts payrollAccounts = new PayrollAccounts();
                 List<PayrollAccounts> payrollAccountses = new List<PayrollAccounts>();
-              
+
                 var payrollAccountTypes = Enum.GetValues(typeof(PayrollAccountType))
                     .Cast<PayrollAccountType>()
                     .ToList();
@@ -134,15 +128,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         payrollAccounts.Description = p.ToString();
                         payrollAccounts.IsPerEmployee = false;
                         payrollAccounts.IsPerBranch = false;
-                        payrollAccounts.DateCreated = DateTime .Now ;
-               payrollAccounts. LastModified = null;
-               payrollAccounts. CreatedBy = User.Identity .Name;
-               payrollAccounts. ModifiedBy = null;
-               var checkTwo = payrollAccountses.Where(x => x.Description == payrollAccounts.Description).FirstOrDefault();
-               if (checkTwo == null)
-               {
-                   payrollAccountses.Add(payrollAccounts);
-               }
+                        payrollAccounts.DateCreated = DateTime.Now;
+                        payrollAccounts.LastModified = null;
+                        payrollAccounts.CreatedBy = User.Identity.Name;
+                        payrollAccounts.ModifiedBy = null;
+                        var checkTwo = payrollAccountses.Where(x => x.Description == payrollAccounts.Description).FirstOrDefault();
+                        if (checkTwo == null)
+                        {
+                            payrollAccountses.Add(payrollAccounts);
+                        }
                     }
                 }
                 #region Contribution
@@ -156,15 +150,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         {
                             payrollAccounts = new PayrollAccounts();
                             payrollAccounts.Description = p.Description;
-                            payrollAccounts.DateCreated = DateTime .Now ;
-               payrollAccounts. LastModified = null;
-               payrollAccounts. CreatedBy = User.Identity .Name ;
-               payrollAccounts. ModifiedBy = null;
-               var checkTwo = payrollAccountses.Where(x => x.Description == payrollAccounts.Description).FirstOrDefault();
-               if (checkTwo==null)
-               {
-                   payrollAccountses.Add(payrollAccounts);
-               }
+                            payrollAccounts.DateCreated = DateTime.Now;
+                            payrollAccounts.LastModified = null;
+                            payrollAccounts.CreatedBy = User.Identity.Name;
+                            payrollAccounts.ModifiedBy = null;
+                            var checkTwo = payrollAccountses.Where(x => x.Description == payrollAccounts.Description).FirstOrDefault();
+                            if (checkTwo == null)
+                            {
+                                payrollAccountses.Add(payrollAccounts);
+                            }
                         }
                     }
                 }
@@ -183,15 +177,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                             payrollAccounts = new PayrollAccounts();
                             payrollAccounts.Description = p.ToString();
                             payrollAccounts.ReferenceType = "Allw";
-                            payrollAccounts.DateCreated = DateTime .Now ;
-               payrollAccounts. LastModified = null;
-               payrollAccounts. CreatedBy = User.Identity .Name ;
-               payrollAccounts.ModifiedBy = null;
-               var checkTwo = payrollAccountses.Where(x => x.Description == payrollAccounts.Description).FirstOrDefault();
-               if (checkTwo == null)
-               {
-                   payrollAccountses.Add(payrollAccounts);
-               }
+                            payrollAccounts.DateCreated = DateTime.Now;
+                            payrollAccounts.LastModified = null;
+                            payrollAccounts.CreatedBy = User.Identity.Name;
+                            payrollAccounts.ModifiedBy = null;
+                            var checkTwo = payrollAccountses.Where(x => x.Description == payrollAccounts.Description).FirstOrDefault();
+                            if (checkTwo == null)
+                            {
+                                payrollAccountses.Add(payrollAccounts);
+                            }
                         }
                     }
                 }
@@ -202,7 +196,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 db.PayrollAccounts.AddRange(payrollAccountses);
                 db.SaveChanges();
                 #region Penality
-                var penalities = Enum.GetValues(typeof(PenalityType ))
+                var penalities = Enum.GetValues(typeof(PenalityType))
                    .Cast<PenalityType>()
                    .ToList();
                 if (penalities.Any())
@@ -229,10 +223,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     }
                 }
 
-               
+
                 #endregion
                 #region Addition
-                var additionTypes = db.Lookups .Where (x=> x.LookupType == LookUpTypes.ADDITION_TYPE ).ToList();
+                var additionTypes = db.Lookups.Where(x => x.LookupType == LookUpTypes.ADDITION_TYPE).ToList();
                 if (additionTypes.Any())
                 {
                     foreach (var p in additionTypes)
@@ -264,40 +258,25 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         public JsonResult GetCompany()
         {
             var locationSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.Location);
-            var locations = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId);
-
-            return Json(locations.Select(i => new { Name = i.Values + "_" + i.Description, Value = i.Values }),
+            var locations =
+                db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId);
+            var glCompany = locations.AsQueryable();
+            return Json(glCompany.Select(i => new { Name = i.Values + "_" + i.Description, Value = i.Values }),
                  JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetCostCenter()
         {
-            if (accountHelper.IsDynamicCoA())
+            var glsegment = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
+            var glchartofaccountaccount = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == glsegment.GLSegmentSetupId).AsQueryable();
+            ViewData["CostAcc"] = glchartofaccountaccount;
+
+            return Json(glchartofaccountaccount.Select(i => new
             {
-                var glsegment = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
-                var glchartofaccountaccount = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == glsegment.GLSegmentSetupId).AsQueryable();
-                ViewData["CostAcc"] = glchartofaccountaccount;
+                GlchartAccunt = i.Values + "_" + i.Description,
+                GlValue = i.Values
 
-                return Json(glchartofaccountaccount.Select(i => new
-                {
-                    GlchartAccunt = i.Values + "_" + i.Description,
-                    GlValue = i.Values
+            }), JsonRequestBehavior.AllowGet);
 
-                }), JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                //var glchartofaccountaccount = db.GLChartOfAccountCostCenters.AsQueryable();
-                //ViewData["CostAcc"] = glchartofaccountaccount;
-
-                //return Json(glchartofaccountaccount.Select(i => new
-                //{
-                //    GlchartAccunt = i.Values + "_" + i.Description,
-                //    GlValue = i.Values
-
-                //}), JsonRequestBehavior.AllowGet);
-                return null;
-            }
-            
         }
         public JsonResult GetAccountCode()
         {
@@ -309,39 +288,24 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
         public JsonResult GetSubAccountCode()
         {
-            if (accountHelper.IsDynamicCoA())
+            var glsegment = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
+            var glchartofaccountaccount = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == glsegment.GLSegmentSetupId).AsQueryable();
+            ViewData["SubAccCode"] = glchartofaccountaccount;
+            return Json(glchartofaccountaccount.Select(i => new
             {
-                var glsegment = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
-                var glchartofaccountaccount = db.GlChartOfAccountSegments.Where(x=>x.GLSegmentSetupId==glsegment.GLSegmentSetupId).AsQueryable();
-                ViewData["SubAccCode"] = glchartofaccountaccount;
-                return Json(glchartofaccountaccount.Select(i => new
-                {
-                    GlchartSubAccunt = i.Values + "_" + i.Description,
-                    GlValue = i.Values
-                }), JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                //var glchartofaccountaccount = db.GLChartOfAccountSubAccounts.AsQueryable();
-                //ViewData["SubAccCode"] = glchartofaccountaccount;
-                //return Json(glchartofaccountaccount.Select(i => new
-                //{
-                //    GlchartSubAccunt = i.Values + "_" + i.Description,
-                //    GlValue = i.Values
-                //}), JsonRequestBehavior.AllowGet);
-                return null;
-            }
-
-           
+                GlchartSubAccunt = i.Values + "_" + i.Description,
+                GlValue = i.Values
+            }), JsonRequestBehavior.AllowGet);
 
         }
-        public ActionResult PayrollAccounts_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult PayrollAccounts_Read([DataSourceRequest] DataSourceRequest request)
         {
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            //List<int> employees = inputs.GetUserBranchAndBusinessUnitEmployees(User.Identity.Name); //inputs.GetUserBranchEmployees(User.Identity.Name);
             IQueryable<PayrollAccounts> payrollaccounts = db.PayrollAccounts;
-            // payrollaccounts=   SetAccountTypesValue(payrollaccounts);
-            //.Where(x => employees.Contains(x.EmployeeId.ToString()));
-            DataSourceResult result = payrollaccounts.ToDataSourceResult(request, payrollAccounts => new {
+            payrollaccounts = SetAccountTypesValue(payrollaccounts);
+            //.Where(x => employees.Contains(x.EmployeeId));
+            DataSourceResult result = payrollaccounts.ToDataSourceResult(request, payrollAccounts => new
+            {
                 PayrollAccountsId = payrollAccounts.PayrollAccountsId,
                 Description = payrollAccounts.Description,
                 IsPerCostCenter = payrollAccounts.IsPerCostCenter,
@@ -360,7 +324,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 CreatedBy = payrollAccounts.CreatedBy,
                 ModifiedBy = payrollAccounts.ModifiedBy
             });
-            
+
             return Json(result);
         }
 
@@ -398,7 +362,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             return db.PayrollAccounts;
         }
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PayrollAccounts_Create([DataSourceRequest]DataSourceRequest request, PayrollAccounts payrollAccounts)
+        public ActionResult PayrollAccounts_Create([DataSourceRequest] DataSourceRequest request, PayrollAccounts payrollAccounts)
         {
             AccountHelper myAccountHelper = new AccountHelper();
             ModelState.Clear();
@@ -406,33 +370,33 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             {
                 if (payrollAccounts.Account == null)
                 {
-                    ModelState.AddModelError("","Please set a value for account.");
+                    ModelState.AddModelError("", "Please set a value for account.");
                 }
                 else
                 {
-                var entity = new PayrollAccounts
-                {
-                    Description = payrollAccounts.Description,
-                    IsPerEmployee = payrollAccounts.IsPerEmployee,
-                    IsPerCostCenter = payrollAccounts.IsPerCostCenter,
-                    IsPerBranch = payrollAccounts.IsPerBranch,
-                    EmployeeId = payrollAccounts.EmployeeId,
-                    Account = payrollAccounts.Account,
-                    ReferenceType = payrollAccounts.ReferenceType,
-                    Remark = payrollAccounts.Remark,
-                    DateCreated = DateTime .Now ,
-                    LastModified = payrollAccounts.LastModified,
-                    CreatedBy = User.Identity .Name ,
-                    ModifiedBy = payrollAccounts.ModifiedBy,
-                    MainAccount = accountHelper.GetNaturalAccountSegment(payrollAccounts.Account),
-                    SubAccount = accountHelper.GetSubAccountSegment(payrollAccounts.Account),
-                    BranchAccount = accountHelper.GetBranchSegment(payrollAccounts.Account),
-                    CostCenter = accountHelper.GetCostCenterSegment(payrollAccounts.Account),
-                };
+                    var entity = new PayrollAccounts
+                    {
+                        Description = payrollAccounts.Description,
+                        IsPerEmployee = payrollAccounts.IsPerEmployee,
+                        IsPerCostCenter = payrollAccounts.IsPerCostCenter,
+                        IsPerBranch = payrollAccounts.IsPerBranch,
+                        EmployeeId = payrollAccounts.EmployeeId,
+                        Account = payrollAccounts.Account,
+                        ReferenceType = payrollAccounts.ReferenceType,
+                        Remark = payrollAccounts.Remark,
+                        DateCreated = DateTime.Now,
+                        LastModified = payrollAccounts.LastModified,
+                        CreatedBy = User.Identity.Name,
+                        ModifiedBy = payrollAccounts.ModifiedBy,
+                        MainAccount = accountHelper.GetNaturalAccountSegment(payrollAccounts.Account),
+                        SubAccount = accountHelper.GetSubAccountSegment(payrollAccounts.Account),
+                        BranchAccount = accountHelper.GetBranchSegment(payrollAccounts.Account),
+                        CostCenter = accountHelper.GetCostCenterSegment(payrollAccounts.Account),
+                    };
                     entity.Account = payrollAccounts.Account;
-                db.PayrollAccounts.Add(entity);
-                db.SaveChanges();
-                payrollAccounts.PayrollAccountsId = entity.PayrollAccountsId;
+                    db.PayrollAccounts.Add(entity);
+                    db.SaveChanges();
+                    payrollAccounts.PayrollAccountsId = entity.PayrollAccountsId;
                     #region operation log
                     UserHelper.OperationLog(Request.UserHostAddress, "payroll accounts", "Success", User.Identity.Name, $"added payroll account for employee  {entity.EmployeeId} description {entity.Description} account {entity.Account}", Modules.Payroll);
                     #endregion
@@ -443,7 +407,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PayrollAccounts_Update([DataSourceRequest]DataSourceRequest request, PayrollAccounts payrollAccounts)
+        public ActionResult PayrollAccounts_Update([DataSourceRequest] DataSourceRequest request, PayrollAccounts payrollAccounts)
         {
             ModelState.Clear();
             AccountHelper myAccountHelper = new AccountHelper();
@@ -451,7 +415,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             {
                 if (payrollAccounts.Account == null)
                 {
-                    ModelState.AddModelError("","Please set a value for account.");
+                    ModelState.AddModelError("", "Please set a value for account.");
                 }
                 else
                 {
@@ -470,7 +434,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         LastModified = DateTime.Now,
                         CreatedBy = payrollAccounts.CreatedBy,
                         ModifiedBy = User.Identity.Name,
-                        MainAccount =accountHelper.GetNaturalAccountSegment(payrollAccounts.Account),
+                        MainAccount = accountHelper.GetNaturalAccountSegment(payrollAccounts.Account),
                         SubAccount = accountHelper.GetSubAccountSegment(payrollAccounts.Account),
                         BranchAccount = accountHelper.GetBranchSegment(payrollAccounts.Account),
                         CostCenter = accountHelper.GetCostCenterSegment(payrollAccounts.Account),
@@ -489,7 +453,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PayrollAccounts_Destroy([DataSourceRequest]DataSourceRequest request, PayrollAccounts payrollAccounts)
+        public ActionResult PayrollAccounts_Destroy([DataSourceRequest] DataSourceRequest request, PayrollAccounts payrollAccounts)
         {
             ModelState.Clear();
             if (ModelState.IsValid)
@@ -515,7 +479,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     CostCenter = payrollAccounts.CostCenter,
                 };
                 #region delete log
-                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted payroll accounts information of account " + payrollAccounts.Account,Modules.Payroll);
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted payroll accounts information of account " + payrollAccounts.Account, Modules.Payroll);
                 #endregion
                 db.PayrollAccounts.Attach(entity);
                 db.PayrollAccounts.Remove(entity);

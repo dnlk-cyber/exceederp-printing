@@ -117,7 +117,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                                     bidPurchasingSuppliers.ReceiptNo + " is not found in the system.");
                         }
                     }
-                    else
+                    if (string.IsNullOrWhiteSpace(bidPurchasingSuppliers.ReceiptNo) && ! bidPurchasingSuppliers.ReceiptNotRequired)
                     {
                         ModelState.AddModelError("Receipt","Please fill Receipt No or letter reference.");
                     }
@@ -243,7 +243,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                                     bidPurchasingSuppliers.ReceiptNo + " is not found in the system.");
                         }
                     }
-                    else
+                    if (string.IsNullOrWhiteSpace(bidPurchasingSuppliers.ReceiptNo) && !bidPurchasingSuppliers.ReceiptNotRequired)
                     {
                         ModelState.AddModelError("Receipt", "Please fill Receipt No or letter reference.");
                     }

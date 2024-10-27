@@ -39,6 +39,10 @@ namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
         [Display(Name = "Employee")]
         public int EmployeeId { get; set; }
         public bool Paid { get; set; }
+        [Display(Name = "Payment Amount")]
+        public decimal PaymentAmount { get; set; }
+        [Display(Name = "Remaining")]
+        public decimal AmountDue { get; set; }
         [Display(Name = "From Branch/Project")]
         public int FromBranchId { get; set; }
         [Display(Name = "From Business Unit")]

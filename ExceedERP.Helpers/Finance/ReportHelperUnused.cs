@@ -110,7 +110,7 @@ namespace ExceedERP.Helpers.Finance
         }
         public  decimal GetAccountDebitBalancesWithBranch(List<GLLedgerPostingLines> yearBalance, string account, string branchAccount)
         {
-            _accountHelper = new AccountHelper();
+            
             decimal accountyearEndBalances = 0;
             if (yearBalance.Any())
             {

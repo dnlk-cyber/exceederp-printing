@@ -107,6 +107,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                 IsOnlineTransferred = itemTransfer.IsOnlineTransferred,
                 IsOnlineTransferredBy = itemTransfer.IsOnlineTransferredBy,
                 OnlineTransferredTime = itemTransfer.OnlineTransferredTime,
+
+                DateCreated = itemTransfer.DateCreated,
+                LastModified = itemTransfer.LastModified,
+                CreatedBy = itemTransfer.CreatedBy,
+                ModifiedBy = itemTransfer.ModifiedBy
             });
 
             return Json(result);
@@ -117,7 +122,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
         public ActionResult ItemTransfers_Create([DataSourceRequest]DataSourceRequest request, ItemTransfer itemTransfer)
         {
             var storeRequisition = db.StoreRequisitions.Find(itemTransfer.StoreRequisitionID);
-            itemTransfer.BusinessUnitId = storeRequisition.BusinessUnitId;
+           // itemTransfer.BusinessUnitId = storeRequisition.BusinessUnitId;
             ModelState.Remove("FromStore");
             ModelState.Remove("ToStore");
             ModelState.Remove("BranchId");
@@ -148,7 +153,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
             }
             else
             {
-                ModelState.AddModelError("", "Please select period.");
+                ModelState.AddModelError("period", "Please select period.");
             }
             if (itemTransfer.TransferDate > DateTime.Now)
             {
@@ -173,8 +178,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                     {
                         StoreRequisitionID = itemTransfer.StoreRequisitionID,
                         EmployeeId = (int)storeRequisition.EmployeeId,
-                        BranchId =ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storeRequisition.StoreCode),
-                        BusinessUnitId=itemTransfer.BusinessUnitId,
+                        BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(itemTransfer.FromStore),
+                        BusinessUnitId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBusinessUnit(itemTransfer.FromStore),
                         TransferDate = itemTransfer.TransferDate.Date,
                         FromStore = storeRequisition.StoreCode,
                         ToStore = storeRequisition.ToStoreCode,
@@ -221,7 +226,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
         {
 
             var storeRequisition = db.StoreRequisitions.Find(itemTransfer.StoreRequisitionID);
-            itemTransfer.BusinessUnitId = storeRequisition.BusinessUnitId;
+            //itemTransfer.BusinessUnitId = storeRequisition.BusinessUnitId;
 
             ModelState.Remove("FromStore");
             ModelState.Remove("ToStore");
@@ -253,7 +258,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
             }
             else
             {
-                ModelState.AddModelError("", "Please select period.");
+                ModelState.AddModelError("period", "Please select period.");
             }
             if (itemTransfer.TransferDate > DateTime.Now)
             {
@@ -278,8 +283,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                     {
                         ItemTransferID = itemTransfer.ItemTransferID,
                         EmployeeId = (int)storeRequisition.EmployeeId,
-                        BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storeRequisition.StoreCode),
-                        BusinessUnitId=itemTransfer.BusinessUnitId,
+                        BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(itemTransfer.FromStore),
+                        BusinessUnitId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBusinessUnit(itemTransfer.FromStore),
                         StoreRequisitionID = itemTransfer.StoreRequisitionID,
                         TransferDate = itemTransfer.TransferDate,
                         FromStore = storeRequisition.StoreCode,

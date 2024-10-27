@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using DocumentFormat.OpenXml.Drawing;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Finance.ViewModels;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Finance;
-using ExceedERP.Repository;
-using ExceedERP.Web.Areas.Inventory.Controllers;
 using ExceedERP.Web.Helpers;
 using Hangfire;
 using Kendo.Mvc.Extensions;
@@ -212,7 +209,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
                     var duplicateBegLines = _db.GLLedgerPostingLines
                         .Where(x => x.Type == LedgerPostTypes.Begining)
-                        .GroupBy(x => new { x.JournalNumber, x.GLLedgerPostingID})
+                        .GroupBy(x => new { x.GLPeriodId, x.GLLedgerPostingID})
                         .Where(g => g.Count() > 1)
                         .Select(y => new { Element = y.Key, Counter = y.Count() })
                         .ToList();
@@ -221,7 +218,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                         var cheker = new AccountChekerVm
                         {
                             Type = ErrorType.Duplicate_Beginning_Ledger_Line,
-                            Description = $"Duplicate Ledger ID {duplicate.Element.GLLedgerPostingID} {duplicate.Element.JournalNumber}",
+                            Description = $"Duplicate Ledger ID {duplicate.Element.GLLedgerPostingID} in period {duplicate.Element.GLPeriodId}",
                             Details = duplicate.Counter.ToString(),
                             Id = duplicate.Element.GLLedgerPostingID.ToString()
                         };
@@ -235,7 +232,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
                     var duplicateEndLines = _db.GLLedgerPostingLines
                         .Where(x => x.Type == LedgerPostTypes.Ending)
-                        .GroupBy(x => new { x.JournalNumber, x.GLLedgerPostingID })
+                        .GroupBy(x => new { x.GLPeriodId, x.GLLedgerPostingID })
                         .Where(g => g.Count() > 1)
                         .Select(y => new { Element = y.Key, Counter = y.Count() })
                         .ToList();
@@ -244,7 +241,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                         var cheker = new AccountChekerVm
                         {
                             Type = ErrorType.Duplicate_Ending_Ledger_Line,
-                            Description = $"Duplicate Ledger ID {duplicate.Element.GLLedgerPostingID} {duplicate.Element.JournalNumber}",
+                            Description = $"Duplicate Ledger ID {duplicate.Element.GLLedgerPostingID} in period {duplicate.Element.GLPeriodId}",
                             Details = duplicate.Counter.ToString(),
                             Id = duplicate.Element.GLLedgerPostingID.ToString()
                         };
@@ -252,28 +249,25 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                     }
 
                     #endregion
-                    break;
-
-               
+                    break;               
                 case "Unposted_Journal_Line":
                 #region unposted journal line
 
-                var unpostedlines = _db.GLRecordJournalDetails
-                .Where(x => x.GLRecordJournal.isPosted).AsQueryable();
+                var unpostedlines = _db.GLLedgerPostingLines
+                                    .Where(x => x.Type == LedgerPostTypes.Standard)
+                                    .GroupBy(x => x.JournalId )
+                                    .Where(group => group.Sum(line => line.Debit) != group.Sum(line => line.Credit))
+                        .Select(y => new { Element = y.Key, Counter = y.Count() })
+                        .ToList();
+               
 
                 foreach (var journalDetail in unpostedlines)
-                {
-                    string journalNumber = journalDetail.GlRecordJournalId + "-" +
-                                            journalDetail.GlRecordJournalDetailId;
-                    var exist = _db.GLLedgerPostingLines.FirstOrDefault(x => x.JournalNumber == journalNumber);
-                    if (exist != null)
-                        continue;
-
+                {                   
                     var cheker = new AccountChekerVm
                     {
                         Type = ErrorType.Unposted_Journal_Line,
                         Description =
-                            $"Unposted journal line {journalDetail.GlRecordJournalDetailId} of Journal {journalDetail.GlRecordJournalId}",
+                            $"Unbalanced post of journal no. {journalDetail.Element} ",
                         Details = ""
                     };
                     chekerVms.Add(cheker);
@@ -302,28 +296,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                     }
 
                     #endregion
-                    break;
-                case "Journal_Unbalanced_debit_credit":
-                    #region Having_both_debit_credit
-
-                    //var bothDebitAndCredit = _db.GLRecordJournalDetails
-                    //    .Where(x => x.GLRecordJournal.IsOnlineApproved && !x.GLRecordJournal.isVoid)
-                    //    .Where(x => x.Debit != 0 && x.Credit != 0).AsQueryable();
-
-                    //foreach (var journalDetail in bothDebitAndCredit)
-                    //{
-                    //    var cheker = new AccountChekerVm
-                    //    {
-                    //        Type = ErrorType.Journal_Unbalanced_debit_credit,
-                    //        Description =
-                    //            $"Has both debit and credit on journla number {journalDetail.GlRecordJournalId} and line {journalDetail.GlRecordJournalDetailId} debit value {journalDetail.Debit} and credit value {journalDetail.Credit}",
-                    //        Details = ""
-                    //    };
-                    //    chekerVms.Add(cheker);
-                    //}
-
-                    #endregion
-                    break;
+                    break;                
             }
 
             return chekerVms;
@@ -442,13 +415,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
                     #endregion
                     break;
-                case "Journal_Unbalanced_debit_credit":
-                    #region Having_both_debit_credit
-
-                  
-
-                    #endregion
-                    break;
             }
 
             var formattedData = new
@@ -539,7 +505,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                     _db.Database.CommandTimeout = 7200;
                     var duplicateBegLines = _db.GLLedgerPostingLines
                         .Where(x => x.Type == LedgerPostTypes.Begining)
-                        .GroupBy(x => new { x.JournalNumber, x.GLLedgerPostingID })
+                        .GroupBy(x => new { x.GLPeriodId, x.GLLedgerPostingID })
                         .Where(g => g.Count() > 1)
                         .Select(y => new { Element = y.Key, Counter = y.Count() })   
                         .AsNoTracking()
@@ -548,7 +514,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                     foreach (var duplicate in duplicateBegLines)
                     {
                         var duplicateledgerlines = _db.GLLedgerPostingLines
-                            .Where(x => x.JournalNumber == duplicate.Element.JournalNumber)
+                            .Where(x => x.GLPeriodId == duplicate.Element.GLPeriodId)
                             .Where(x => x.GLLedgerPostingID == duplicate.Element.GLLedgerPostingID).ToList();
                         if (duplicateledgerlines.Any())
                         {
@@ -567,7 +533,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                     _db.Database.CommandTimeout = 7200;
                     var duplicateEndLines = _db.GLLedgerPostingLines
                         .Where(x => x.Type == LedgerPostTypes.Ending)
-                        .GroupBy(x => new { x.JournalNumber, x.GLLedgerPostingID })
+                        .GroupBy(x => new { x.GLPeriodId, x.GLLedgerPostingID })
                         .Where(g => g.Count() > 1)
                         .Select(y => new { Element = y.Key, Counter = y.Count() })
                         .AsNoTracking()
@@ -576,7 +542,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                     foreach (var duplicate in duplicateEndLines)
                     {
                         var duplicateledgerlines = _db.GLLedgerPostingLines
-                            .Where(x => x.JournalNumber == duplicate.Element.JournalNumber)
+                            .Where(x => x.GLPeriodId == duplicate.Element.GLPeriodId)
                             .Where(x => x.GLLedgerPostingID == duplicate.Element.GLLedgerPostingID).ToList();
                         if (duplicateledgerlines.Any())
                         {
@@ -594,8 +560,75 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                 case "Unposted_Journal_Line":
                     #region unposted journal line
 
+                    var unpostedlines = _db.GLLedgerPostingLines
+                                    .Where(x => x.Type == LedgerPostTypes.Standard)
+                                    .GroupBy(x => x.JournalId)
+                                    .Where(group => group.Sum(line => line.Debit) != group.Sum(line => line.Credit))
+                        .Select(y => new { Element = y.Key, Counter = y.Count() })
+                        .ToList();                   
 
 
+                    foreach (var journalDetail in unpostedlines)
+                    {
+                        var ledgerLine = _db.GLLedgerPostingLines.Where(x=>x.JournalId== journalDetail.Element).FirstOrDefault();
+                        if (ledgerLine != null)
+                        {
+                            var journalLines = _db.GLRecordJournalDetails.Where(x => x.GlRecordJournalId == journalDetail.Element).ToList();
+                            foreach (var journalline in journalLines)
+                            {
+                                string journalNumber = journalDetail.Element + "-" + journalline.GlRecordJournalDetailId;
+                                var exisit = _db.GLLedgerPostingLines.Where(x => x.JournalNumber == journalNumber).FirstOrDefault();
+                                if (exisit == null)
+                                {
+                                    var gLRecordJournal = _db.GLRecordJournals.Find(journalDetail.Element);
+
+                                    #region post ledger line
+                                    var newledgerpostline = new GLLedgerPostingLines
+                                    {
+                                        GLLedgerPostingID = ledgerLine.GLLedgerPostingID,
+                                        JournalNumber = journalNumber,
+                                        JournalId = journalline.GlRecordJournalId,
+                                        JournalReference = gLRecordJournal.JournalNumber,
+                                        EffectiveDate = gLRecordJournal.EffectiveDate,
+                                        JournalName = gLRecordJournal.JournalName,
+                                        CategoryName = gLRecordJournal.CategoryName,
+                                        SourcesName = gLRecordJournal.SourcesName,
+                                        Remark = gLRecordJournal.Remark,
+                                        AdditionalDescription = journalline.AdditionalDescription,
+                                        ReferenceDoc = gLRecordJournal.ReferenceDoc,
+                                        PaymentReference = gLRecordJournal.PaymentReference,
+                                        InvoiceReferenceDoc = gLRecordJournal.InvoiceReferenceDoc,
+
+                                        GLPeriodId = ledgerLine.GLPeriodId,
+                                        GlFiscalYearId = ledgerLine.GlFiscalYearId,
+
+                                        Debit=journalline.Debit,
+                                        Credit=journalline.Credit,
+
+                                        CreatedBy = User.Identity.Name,
+                                        DateCreated = DateTime.Now
+                                    };                                   
+                                    
+
+                                    _db.GLLedgerPostingLines.Add(newledgerpostline);
+                                    _db.SaveChanges();
+
+                                    #endregion
+
+                                    #region split ledger account
+                                    var newledgerpost = _db.GLLedgerPostings.Find(ledgerLine.GLLedgerPostingID);
+                                    new AccountHelper().SplitLedgerAccount(newledgerpost);
+
+                                    #endregion
+                                  
+                                }
+
+                            }
+                        }
+                    }
+                    #region check and remove duplicate lines
+                    var jobId = BackgroundJob.Enqueue(() => _financeHelper.DetectAndRemoveDuplicateLedgerLines());
+                    #endregion
                     #endregion
                     break;
 
@@ -606,13 +639,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
                     #endregion
                     break;
-                case "Journal_Unbalanced_debit_credit":
-                    #region Having_both_debit_credit
-
-
-
-                    #endregion
-                    break;
+               
             }
 
             var formattedData = new

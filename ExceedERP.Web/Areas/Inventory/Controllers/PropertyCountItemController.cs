@@ -1,23 +1,18 @@
-﻿﻿using System;
-﻿using System.Collections.Generic;
-﻿using System.Data.Entity;
-﻿using System.Linq;
- using System.Net;
- using System.Web.Mvc;
- using ExceedERP.Core.Domain.Finance.Bank;
- using ExceedERP.Core.Domain.Inventory;
-﻿using ExceedERP.DataAccess.Context;
- using ExceedERP.DataAccess.Migrations;
- using ExceedERP.Helpers.Common;
- using ExceedERP.Helpers.Inventory;
- using ExceedERP.Web.Areas.Inventory.Models;
- using ExceedERP.Web.Helpers;
- using Kendo.Mvc.Extensions;
-﻿using Kendo.Mvc.UI;
+﻿using System;
+using System.Data.Entity;
+using System.Linq;
+using System.Net;
+using System.Web.Mvc;
+using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Web.Helpers;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers
 {
-    
+
     public class PropertyCountItemController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -50,6 +45,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                     PreviousBalance = propertyCountItem.PreviousBalance,
                     Price = propertyCountItem.Price,
                     Location = propertyCountItem.Location,
+					Unit = propertyCountItem.Unit,
                     Status = propertyCountItem.Status
                 });
 
@@ -88,7 +84,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                         CreatedBy = User.Identity.Name,
                         Status = true,
                         Location = propertyCountItem.Location,
-                        DateCreated = DateTime.Now
+                        Unit = propertyCountItem.Unit,
+						DateCreated = DateTime.Now
                     };
 
                     db.PropertyCountItems.Add(entity);
@@ -121,17 +118,17 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                     #endregion
                     #region add to branch
 
-                    if (record != null)
-                    {
-                        var branchItem = new BranchItemAssignment();
-                        branchItem.BranchId = record.BranchId;
-                        branchItem.ItemCategoryCode = propertyCountItem.ItemCategoryCode;
-                        branchItem.ItemCode = propertyCountItem.ItemCode;
-                        branchItem.Balance = propertyCountItem.Count;
-                        branchItem.AvgPrice = propertyCountItem.Price;
-                        db.BranchItemAssignments.Add(branchItem);
-                        db.SaveChanges();
-                    }
+                    //if (record != null)
+                    //{
+                    //    var branchItem = new BranchItemAssignment();
+                    //    branchItem.BranchId = record.BranchId;
+                    //    branchItem.ItemCategoryCode = propertyCountItem.ItemCategoryCode;
+                    //    branchItem.ItemCode = propertyCountItem.ItemCode;
+                    //    branchItem.Balance = propertyCountItem.Count;
+                    //    branchItem.AvgPrice = propertyCountItem.Price;
+                    //    db.BranchItemAssignments.Add(branchItem);
+                    //    db.SaveChanges();
+                    //}
 
                     #endregion
                 }
@@ -160,7 +157,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                     Status = true,
                     Price= propertyCountItem.Price,
                     Location = propertyCountItem.Location,
-                    ModifiedBy = User.Identity.Name,
+					Unit = propertyCountItem.Unit,
+					ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Now,
                 };
               

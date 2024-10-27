@@ -1,25 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using System.Data.OleDb;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
 using ExceedERP.Core.Domain.Procurement.Settings;
-using ExceedERP.Core.Domain.Procurement.Tender;
 using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
-using ExceedERP.Web.Areas.Inventory.Models;
+using ExceedERP.Web.Areas.Procurement.Models;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -718,12 +712,77 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                 #endregion
                 #region Purchase Order Items
                 int pid = int.Parse(record.ReceiveRef);
-                List<PurchaseOrderItem> purchaseOrderItems = _db.PurchaseOrderItems
+
+                List<ServiceReceiveItemVm> list = new List<ServiceReceiveItemVm>();
+                ServiceReceiveItemVm itemVm = null;
+
+               var purchaseOrderItems = _db.PurchaseOrderItems
                     .Where(pi => pi.PurchaseOrderID == pid)
                     .Where(pi => pi.ItemType == PurchaseItemType.Service)
                     .ToList();
 
-                foreach (var orderItem in purchaseOrderItems)
+                foreach (var i in purchaseOrderItems)
+                {
+                    itemVm = new ServiceReceiveItemVm
+                    {
+                        CatCode = i.CatCode,
+                        ItmCode = i.ItmCode,
+                        Quantity = i.Quantity,
+                        UnitPrice = i.UnitPrice,
+                        SubTotal = i.SubTotal,
+                        GLTaxRateID = i.GLTaxRateID,
+                        TaxAmount = i.TaxAmount,
+                        Total = i.Total,
+                        ItemSpecification = i.ItemSpecification,
+                        UOM = i.UoM,
+                        Name = i.Name,
+                        ItemName = i.ItemName,
+                        CategoryName = i.CategoryName,
+                    };
+
+                    list.Add(itemVm);
+                }
+
+                #region check po change order
+                var changeorder = _db.PoChangeOforders
+                    .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                    .Where(x => x.PurchaseOrderID == pid).ToList();
+                if (changeorder.Any())
+                {
+                    list = new List<ServiceReceiveItemVm>();
+
+                    int latestChangeId = changeorder.Max(x => x.PoChangeOforderId);
+
+                    var latestChangeItems = _db.PoChangeOfOrderItems
+                    .Where(pi => pi.PoChangeOforderId == latestChangeId)
+                    .Where(pi => pi.ItemType == PurchaseItemType.Stock)
+                    .ToList();
+
+                    foreach (var i in latestChangeItems)
+                    {
+                        itemVm = new ServiceReceiveItemVm
+                        {
+                            CatCode = i.CatCode,
+                            ItmCode = i.ItmCode,
+                            Quantity = i.Quantity,
+                            UnitPrice = i.UnitPrice,
+                            SubTotal = i.SubTotal,
+                            GLTaxRateID = i.GLTaxRateID,
+                            TaxAmount = i.TaxAmount,
+                            Total = i.Total,
+                            ItemSpecification = i.ItemSpecification,
+                            UOM = i.UoM,
+                            Name = i.Name,
+                            ItemName = i.ItemName,
+                            CategoryName = i.CategoryName,
+                        };
+
+                        list.Add(itemVm);
+                    }
+                }
+                #endregion
+
+                foreach (var orderItem in list)
                 {
                     var prevReceiveItem = prevReceiveItems.Where(x => x.ServiceItemCode == orderItem.ItmCode).ToList();
                     if (prevReceiveItem.Any())

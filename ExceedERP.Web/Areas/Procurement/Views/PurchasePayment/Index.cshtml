@@ -169,7 +169,7 @@
                                                                                                                                                                                     Created On
                                                                                                                                                                                 </dt>
                                                                                                                                                                                 <dd>
-                                                                                                                                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                                                                                                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
 
                                                                                                                                                                                 </dd>
@@ -185,7 +185,7 @@
                                                                                                                                                                                     Approved On
                                                                                                                                                                                 </dt>
                                                                                                                                                                                 <dd>
-                                                                                                                                                                                    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                                                                                                                                                                                    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
 
 
                                                                                                                                                                                 </dd>
@@ -201,7 +201,7 @@
                                                                                                                                                                                     Budget Approved On
                                                                                                                                                                                 </dt>
                                                                                                                                                                                 <dd>
-                                                                                                                                                                                    #=kendo.toString(kendo.parseDate(BudgetApprovedTime), 'dd/MM/yyyy') #
+                                                                                                                                                                                    #=kendo.toString(kendo.parseDate(BudgetApprovedTime), 'dd/MM/yyyy hh:mm tt') #
 
 
                                                                                                                                                                                 </dd>
@@ -252,20 +252,8 @@
                                                                                                                                                                       {
                                                                                                                                                                           columns.Bound(c => c.PurchasePaymentGrnId).Hidden(true);
                                                                                                                                                                           columns.Bound(c => c.ItemType).Width(70).EditorTemplateName("PurchaseType");
-                                                                                                                                                                          //columns.Bound(o => o.GrnNo).Width(70).EditorTemplateName("GrnSelector").Template(x);    
-                                                                                                                                                                          //columns.Bound(o => o.GrnNo).Width(70).EditorTemplateName("GrnSelector").ClientTemplate("\\#if('#=ItemType#'!='Y') {\\<input type='button' value='OK' />\\}\\#");
-                                                                                
+                                                                                                                                                                          columns.Bound(o => o.GrnNo).Width(70).Title("GRN").EditorTemplateName("GrnSelector").ClientTemplate("\\#=generatePritLink(ItemType,GrnNo)\\#");
 
-                                                                                                                                                                          columns.Bound(o => o.GrnNo).Width(70).Title("Stock").EditorTemplateName("GrnSelector").ClientTemplate(
-
-                                                                                                                                                                                    @Html.ActionLink("\\#=GrnNo\\#", "Goodreceive", "InventoryPrint", new { area = "Inventory", Id = "\\#=GrnNo\\#" }, new { @class = "detail-link", @target = "_blank" }).ToHtmlString()
-
-                                                                                                                                                                                    );
-                                                                                                                                                                          columns.Bound(o => o.GrnNo).Width(70).Title("PPE").EditorTemplateName("GrnSelector").ClientTemplate(
-
-                                                                                                                                                                                   @Html.ActionLink("\\#=GrnNo\\#", "FixedAssetReceive", "FixedAssetPrint", new { area = "FixedAsset", Id = "\\#=GrnNo\\#" }, new { @class = "detail-link", @target = "_blank" }).ToHtmlString()
-
-                                                                                                                                                                                   );
 
                                                                                                                                                                           columns.Command(command =>
                                                                                                                                                                           {
@@ -442,7 +430,7 @@
 
     function grnData(grn) {
         console.log(grn);
-        
+
            var action = '@Url.Action("Goodreceive", "InventoryPrint", new { area = "Inventory"})';
 
                 var html = kendo.format("<a href='{0}/{1}'>Show Product Details</a>",
@@ -451,8 +439,8 @@
                 );
 
             return html;
-        
-           
+
+
 
     }
 
@@ -614,7 +602,22 @@
 
 
 
+    function generatePritLink(type, grn) {
+    if (type == 0) {
+        var url = '@Url.Action("Goodreceive", "InventoryPrint", new { area = "Inventory" })/' + grn
+        return '<a href="' + url + '" target="_blank">'+grn+'</a>';
+    }
 
+    else if (type == 1) {
+        var url = '@Url.Action("FixedAssetReceive", "FixedAssetPrint", new { area = "FixedAsset" })/' + grn
+        return '<a href="' + url + '" target="_blank">'+grn+'</a>';
+    }
+     else if (type == 2) {
+         var url = '@Url.Action("ServiceReceivePrint", "ProcurementPrint", new { area = "Procurement" })/' + grn
+         return '<a href="' + url + '" target="_blank">'+grn+'</a>';
+     }
+
+}
 
     function filterInventoryItems() {
 
@@ -661,7 +664,8 @@
         //alert(codeid);
         return {
             id: codeid,
-            type:$("#ItemType").data("kendoDropDownList").value()
+            type: $("#ItemType").data("kendoDropDownList").value(),
+            text: $("#GrnNo").data("kendoDropDownList").filterInput.val()
         }
 
     }

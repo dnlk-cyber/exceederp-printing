@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Global;
@@ -12,7 +11,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.Settings
 {
-   
+
     [AuthorizeRoles(ProcurementRoles.ProcurementAdmin )]
     public class ReportTemplateController : Controller
     {

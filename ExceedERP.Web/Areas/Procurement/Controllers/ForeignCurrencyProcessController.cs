@@ -1,15 +1,10 @@
-﻿﻿using System;
-using System.Collections.Generic;
-
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Procurement.ForeignPurchase;
- using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers
 {

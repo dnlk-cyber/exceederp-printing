@@ -109,42 +109,39 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
             #region filter by segment
             if (!String.IsNullOrEmpty(segmentType) && !String.IsNullOrEmpty(segmentValue))
             {
-                if (_accountHelper.IsDynamicCoA())
+                var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segmentType);
+                int index = setup?.Sequence ?? 0;
+                switch (index)
                 {
-                    var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segmentType);
-                    int index = setup?.Sequence ?? 0;
-                    switch (index)
-                    {
-                        case 1:
-                            journalLines = journalLines.Where(x => x.Segment1 == segmentValue).AsQueryable();
-                            break;
+                    case 1:
+                        journalLines = journalLines.Where(x => x.Segment1 == segmentValue).AsQueryable();
+                        break;
 
-                        case 2:
-                            journalLines = journalLines.Where(x => x.Segment2 == segmentValue).AsQueryable();
-                            break;
+                    case 2:
+                        journalLines = journalLines.Where(x => x.Segment2 == segmentValue).AsQueryable();
+                        break;
 
-                        case 3:
-                            journalLines = journalLines.Where(x => x.Segment3 == segmentValue).AsQueryable();
-                            break;
+                    case 3:
+                        journalLines = journalLines.Where(x => x.Segment3 == segmentValue).AsQueryable();
+                        break;
 
-                        case 4:
-                            journalLines = journalLines.Where(x => x.Segment4 == segmentValue).AsQueryable();
-                            break;
+                    case 4:
+                        journalLines = journalLines.Where(x => x.Segment4 == segmentValue).AsQueryable();
+                        break;
 
-                        case 5:
-                            journalLines = journalLines.Where(x => x.Segment5 == segmentValue).AsQueryable();
-                            break;
+                    case 5:
+                        journalLines = journalLines.Where(x => x.Segment5 == segmentValue).AsQueryable();
+                        break;
 
-                        case 6:
-                            journalLines = journalLines.Where(x => x.Segment6 == segmentValue).AsQueryable();
-                            break;
-                        case 7:
-                            journalLines = journalLines.Where(x => x.Segment7 == segmentValue).AsQueryable();
-                            break;
-                        case 8:
-                            journalLines = journalLines.Where(x => x.Segment8 == segmentValue).AsQueryable();
-                            break;
-                    }
+                    case 6:
+                        journalLines = journalLines.Where(x => x.Segment6 == segmentValue).AsQueryable();
+                        break;
+                    case 7:
+                        journalLines = journalLines.Where(x => x.Segment7 == segmentValue).AsQueryable();
+                        break;
+                    case 8:
+                        journalLines = journalLines.Where(x => x.Segment8 == segmentValue).AsQueryable();
+                        break;
                 }
             }
             #endregion

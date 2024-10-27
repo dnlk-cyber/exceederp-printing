@@ -46,7 +46,8 @@
              "/>"
              );
           columns.Bound(c => c.ExternalRequesterName).Width(120);
-          columns.Bound(c => c.Remark).Title("Issue Reference").Width(120);
+          columns.Bound(c => c.Reference).Width(100);
+          columns.Bound(c => c.Remark).Width(100);
           columns.Bound(c => c.Status).Width(100);
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
@@ -174,7 +175,7 @@
                                 </dt>
                                 <dd>
 
-                                    #=kendo.toString(kendo.parseDate(IssueDate), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(IssueDate), 'dd/MM/yyyy hh:mm tt') #
 
                                 </dd>
                                 <dt>
@@ -187,7 +188,7 @@
                                     CreatedOn
                                 </dt>
                                 <dd>
-                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                 </dd>
                                 <dt>
@@ -206,7 +207,7 @@
                                     Modified Date
                                 </dt>
                                 <dd>
-                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                 </dd>
                             </dl>
                         </div>

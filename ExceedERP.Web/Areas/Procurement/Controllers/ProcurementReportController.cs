@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using ExceedERP.Core.Domain.Procurement;
+﻿using System.Web.Mvc;
+using ExceedERP.Core.Domain.Planning;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.Web.Helpers;
-using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers
 {
-    [AuthorizeRoles(ProcurementRoles.ProcurementAdmin, ProcurementRoles.ProcurementReport )]
+    [AuthorizeRoles(ProcurementRoles.ProcurementAdmin, ProcurementRoles.ProcurementReport,PlanningRoles.Planning_User )]
 
     public class ProcurementReportController : Controller
     {
@@ -41,6 +36,16 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
         }
 
         public ActionResult ProcurementNeedReport()
+        {
+            return View();
+        }
+
+        public ActionResult ProcurementPlanVsExecutedReport()
+        {
+            return View();
+        }
+
+        public ActionResult SupplyPlanVsExecutedReport()
         {
             return View();
         }

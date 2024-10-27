@@ -43,6 +43,18 @@ namespace ExceedERP.Web.Helpers
     {
          ExceedDbContext db = new ExceedDbContext();
          ApplicationDbContext _dbApplication = new ApplicationDbContext();
+        public static List<string> GetUserBanks(string user)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            ApplicationDbContext _dbApplication = new ApplicationDbContext();
+            var userInfo = _dbApplication.Users.FirstOrDefault(x => x.UserName == user);
+            if (userInfo != null)
+            {
+                var banksUserBelongsTo = db.BankUserAssignments.Where(x => x.User == userInfo.Id).Select(x => x.BankAccount).ToList();
+                return banksUserBelongsTo;
+            }
+            return new List<string>();
+        }
         #region User Infromation
         public static int GetEmployeeWorkUnitById(int employeeid)
         {

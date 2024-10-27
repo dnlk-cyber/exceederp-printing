@@ -245,6 +245,7 @@ namespace ExceedERP.Reporting.Finance
             this.table1.RowGroups.Add(tableGroup6);
             this.table1.RowHeadersPrintOnEveryPage = true;
             this.table1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(9.6999216079711914D), Telerik.Reporting.Drawing.Unit.Inch(0.60416692495346069D));
+            this.table1.Sortings.Add(new Telerik.Reporting.Sorting("= Fields.AccountCode", Telerik.Reporting.SortDirection.Asc));
             this.table1.StyleName = "";
             // 
             // textBox5

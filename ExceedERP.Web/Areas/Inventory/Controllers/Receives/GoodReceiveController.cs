@@ -30,9 +30,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
 
     public class GoodReceiveController : Controller
     {
-        private ExceedDbContext _db = new ExceedDbContext();
+        private readonly ExceedDbContext _db = new ExceedDbContext();
         private readonly DistributionHelper _distributionHelper = new DistributionHelper();
-        private InventoryTransferHelper _transferHelper;
+        private readonly InventoryTransferHelper _transferHelper=new InventoryTransferHelper ();
 
         [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover, InventoryConstants.PropertyInspector)]
         public ActionResult Index()
@@ -245,7 +245,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                 var entity = new GoodReceive
                     {
                         BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(goodReceive.StoreCode),
-                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
+                       BusinessUnitId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBusinessUnit(goodReceive.StoreCode),
                     IsManual = false,
                         ReceiveRef = goodReceive.ReceiveRef,
                         ReceiveTypeId = goodReceive.ReceiveTypeId,
@@ -389,7 +389,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                 var entity = new GoodReceive
                 {
                     BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(goodReceive.StoreCode),
-                    BusinessUnitId = goodReceive.BusinessUnitId,
+                    BusinessUnitId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBusinessUnit(goodReceive.StoreCode),
                     IsManual = goodReceive.IsManual,
                     GoodReceiveId = goodReceive.GoodReceiveId,
                     ReceiveRef = goodReceive.ReceiveRef,
@@ -506,15 +506,73 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                 #endregion
                 #region Purchase Order Items
                 int pid = int.Parse(record.ReceiveRef);
-                List<PurchaseOrderItem> purchaseOrderItems = _db.PurchaseOrderItems
+
+                List<ReceiveItemVm> list=new List<ReceiveItemVm>();
+                ReceiveItemVm itemVm =null;
+                var purchaseOrderItems = _db.PurchaseOrderItems
                     .Where(pi => pi.PurchaseOrderID == pid)
                     .Where(pi => pi.ItemType == PurchaseItemType.Stock)
                     .ToList();
 
-                foreach (var orderItem in purchaseOrderItems)
+                foreach(var i in purchaseOrderItems)
+                {
+                     itemVm = new ReceiveItemVm
+                    {
+                        ItemCategoryCode = i.CatCode,
+                        ItemCode = i.ItmCode,
+                        Quantity = i.Quantity,
+                        UnitPrice = i.UnitPrice,
+                        SubTotal = i.SubTotal,
+                        GLTaxRateID = i.GLTaxRateID,
+                        TaxAmount = i.TaxAmount,
+                        Total =i.Total,
+                        ItemSpecification = i.ItemSpecification,
+                        UOM = i.UoM
+                    };
+
+                    list.Add(itemVm);
+                }
+
+                #region check po change order
+                var changeorder=_db.PoChangeOforders
+                    .Where(x=>x.IsOnlineApproved && x.IsVoid==false)
+                    .Where(x=>x.PurchaseOrderID==pid).ToList();
+                if (changeorder.Any())
+                {
+                    list=new List<ReceiveItemVm>();
+
+                    int latestChangeId=changeorder.Max(x=>x.PoChangeOforderId);
+
+                    var latestChangeItems= _db.PoChangeOfOrderItems
+                    .Where(pi => pi.PoChangeOforderId == latestChangeId)
+                    .Where(pi => pi.ItemType == PurchaseItemType.Stock)
+                    .ToList();
+
+                    foreach (var i in latestChangeItems)
+                    {
+                        itemVm = new ReceiveItemVm
+                        {
+                            ItemCategoryCode = i.CatCode,
+                            ItemCode = i.ItmCode,
+                            Quantity = i.Quantity,
+                            UnitPrice = i.UnitPrice,
+                            SubTotal = i.SubTotal,
+                            GLTaxRateID = i.GLTaxRateID,
+                            TaxAmount = i.TaxAmount,
+                            Total = i.Total,
+                            ItemSpecification = i.ItemSpecification,
+                            UOM = i.UoM
+                        };
+
+                        list.Add(itemVm);
+                    }
+                }
+                #endregion
+
+                foreach (var orderItem in list)
                 {
                     var prevReceiveItem = prevReceiveItems
-                        .Where(x => x.ItemCode == orderItem.ItmCode)
+                        .Where(x => x.ItemCode == orderItem.ItemCode)
                          .Where(x => x.Specification == orderItem.ItemSpecification)//added
                         .ToList();
                     if(prevReceiveItem.Any())
@@ -529,12 +587,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                         var receiveItem = new GoodReceiveItem
                         {
                             GoodReceiveId = record.GoodReceiveId,
-                            ItemCategoryCode = orderItem.CatCode,
-                            ItemCode = orderItem.ItmCode,
+                            ItemCategoryCode = orderItem.ItemCategoryCode,
+                            ItemCode = orderItem.ItemCode,
                             Quantity = unReceivedQty,
                             UnitPrice = orderItem.UnitPrice,
                             Balance = unReceivedQty,
-                            UOM=orderItem.UoM,
+                            UOM=orderItem.UOM,
                             GLTaxRateID = orderItem.GLTaxRateID
                         };
 
@@ -987,7 +1045,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
             {
                 var formattedData = new
                 {
-                    Message = "The record is already sent for approval you cannot send again.",
+                    Message = "The record is already sent for approval you can not send again.",
                     Status = "NOT_OK"
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
@@ -1302,7 +1360,6 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
 
             if (record != null && record.IsOnlineApproved && !record.IsOnlineTransferred)
             {
-                _transferHelper = new InventoryTransferHelper();
                 string response= _transferHelper.GoodReceive(myid, description, User?.Identity?.Name ?? "");
                 if (response != "SUCCESS")
                 {

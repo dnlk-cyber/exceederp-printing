@@ -1,14 +1,10 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Finance;
- using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Helpers.Common;
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace ExceedERP.Core.Domain.Common.DocumentApproval
 {
@@ -39,7 +34,8 @@ namespace ExceedERP.Core.Domain.Common.DocumentApproval
         ApTravelExpenseClaimSelfCare,
         RentalPaymentRequestSelfCare,
         ApFundTransferSelfCare,
-        POChangeOrder
+        POChangeOrder,
+        ProformaPurchase
     }
     public enum ApprovalWorkflow
     {

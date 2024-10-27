@@ -5,17 +5,20 @@ using System.Data.OleDb;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.Bank;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
+using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using EntityState = System.Data.Entity.EntityState;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 {
+    [AuthorizeRoles(FinanceConstants.BankReconciliationUser, FinanceConstants.BankReconciliationApprover)]
     public class ReconciliationBankAccountController : Controller
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
@@ -28,7 +31,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 
         public ActionResult ReconcilationBankAccounts_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<ReconciliationBankAccount> reconcilationbankaccounts = _db.ReconcilationBankAccounts;
+            List<string> userBankAccounts = UserInformationHelper.GetUserBanks(User.Identity.Name);
+            IQueryable<ReconciliationBankAccount> reconcilationbankaccounts = _db.ReconcilationBankAccounts.Where(x => userBankAccounts.Contains(x.BankAccount));
             DataSourceResult result = reconcilationbankaccounts.ToDataSourceResult(request, reconciliationBankAccount => new {
                
                 ReconciliationBankAccountId = reconciliationBankAccount.ReconciliationBankAccountId,

@@ -7,7 +7,6 @@ using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
@@ -17,6 +16,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 {
+    [Authorize]
     public class GlPostJournalController : Controller
     {
 
@@ -89,6 +89,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
         [AuthorizeRoles(FinanceConstants.GeneralLedgerPostUser,FinanceConstants.GeneralLedgerAdmin)]
         public JsonResult BatchPost(string id,string category,string user)
         {
+            var undefineds = _db.GLChartOfAccountAccounts.Where(x => x.AccountType == GlAccountTypes.Undefined).ToList();
+            if (undefineds.Any())
+            {
+                var formattedData = new
+                {
+                    Message = "There are undefined account types in natural account, please fix before posting",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
             if (String.IsNullOrEmpty(id))
             {
                 var formattedData = new
@@ -214,6 +225,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
         [AuthorizeRoles(FinanceConstants.GeneralLedgerPostUser, FinanceConstants.GeneralLedgerAdmin)]
         public JsonResult PostLedger(string id)
         {
+
+            var undefineds = _db.GLChartOfAccountAccounts.Where(x => x.AccountType == GlAccountTypes.Undefined).ToList();
+            if (undefineds.Any())
+            {
+                var formattedData = new
+                {
+                    Message = "There are undefined account types in natural account, please fix before posting",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
             int myid = int.Parse(id);
             var gLRecordJournal = _db.GLRecordJournals.Find(myid);
 
@@ -313,16 +335,18 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
         public JsonResult UnPostLedger(string id)
         {
             int myid = int.Parse(id);
-            var gLRecordJournal = _db.GLRecordJournals.Find(myid);
+            var journal = _db.GLRecordJournals.Find(myid);
 
-            if (gLRecordJournal != null && gLRecordJournal.isPosted)
+            if (journal != null && journal.isPosted)
             {
-                bool result = _financeHelper.Unpost(gLRecordJournal.GlRecordJournalId, User.Identity.Name);
-                if (result)
+                string result = _financeHelper.Unpost(journal.GlRecordJournalId, User.Identity.Name);
+                if (string.IsNullOrEmpty(result))
                 {
+                    UpdateRelatedtransactionOnUnpost(journal.Source,journal.SourceId);
+
                     #region update daily balance joob
 
-                    var glperiod = _db.GLPeriods.FirstOrDefault(x => x.Name == gLRecordJournal.PeriodName);
+                    var glperiod = _db.GLPeriods.FirstOrDefault(x => x.Name == journal.PeriodName);
                     // var jobUpdateStandard = BackgroundJob.Enqueue(() => );
 
                     RecurringJob.AddOrUpdate(() => _financeHelper.UpdateAllStandardBalancesMonthlyFastP(glperiod.GLPeriodId, User.Identity.Name), "0 19 * * *");//7pm
@@ -344,7 +368,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 {
                     var formattedData = new
                     {
-                        Message = "Try Again.",
+                        Message = result,
                         Status = "NOT_OK"
                     };
                     return Json(formattedData, JsonRequestBehavior.AllowGet);
@@ -371,6 +395,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 journals = journals.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
             }
 
+            List<string> openPeriods = _db.GLPeriods.Where(x => x.Status == FiscalYearStatus.Open).Select(x => x.Name).ToList();
+            if(openPeriods.Any())
+                journals = journals.Where(x => openPeriods.Contains(x.PeriodName));
+
             var journalList= journals.AsNoTracking().ToList();
             string userName = User.Identity.Name;
 
@@ -380,9 +408,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                 if (journal != null && journal.isPosted)
                 {
-                    bool result = _financeHelper.Unpost(journal.GlRecordJournalId, userName);
-                    if (result)
-                    {
+                    string result = _financeHelper.Unpost(journal.GlRecordJournalId, userName);
+					if (string.IsNullOrEmpty(result))
+					{
+                        UpdateRelatedtransactionOnUnpost(journal.Source, journal.SourceId);
                         #region update daily balance joob
 
                         var glperiod = _db.GLPeriods.FirstOrDefault(x => x.Name == journal.PeriodName);
@@ -415,21 +444,21 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
         [AuthorizeRoles(FinanceConstants.GeneralLedgerUser, FinanceConstants.GeneralLedgerApprover, FinanceConstants.GeneralLedgerView, FinanceConstants.GeneralLedgerPostUser, FinanceConstants.GeneralLedgerAdmin)]
         public ActionResult GlPostJournals_Read([DataSourceRequest]DataSourceRequest request)
        {
-           List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+           List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
            IQueryable<GlRecordJournal> glRecordJournals = _db.GLRecordJournals.Where(x => x.IsOnlineApproved)
                .Where(x => x.isPosted == false && x.IsVoidDoc == false);
 
             if (!((System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerApprover))
                   || (System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerView))))
             {
-                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName));
+                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.BranchId));
             }
 
             //new
             if (System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerAdmin))
-                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName) || x.OrgBranchName == null || x.OrgBranchName == "");
+                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.BranchId) || x.BranchId == 0 || x.OrgBranchName == "");
             else
-                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName));
+                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.BranchId));
 
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
@@ -519,6 +548,59 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
            return Json(new[] { gLRecordJournalDetail }.ToDataSourceResult(request, ModelState));
        }
 
+        void UpdateRelatedtransactionOnUnpost(string source,string sourceid)
+        {
+            int id = int.Parse(sourceid);
+            switch (source)
+            {
+                case "AP_Direct_Payment":                   
+                    var record= _db.ApDirectPayments.Find(id);
+                    record.IsOnlineTransferred = false;
+                    _db.Entry(record).State = EntityState.Modified;
+                    _db.SaveChanges();
+                    break;
+                case "AP_PrePayment":                
+                    var prerecord = _db.APPayments.Find(id);
+                    prerecord.IsOnlineTransferred = false;
+                    _db.Entry(prerecord).State = EntityState.Modified;
+                    _db.SaveChanges();
+                    break;
+                case "AP_Payment":
+                    var payrecord = _db.APPayments.Find(id);
+                    payrecord.IsOnlineTransferred = false;
+                    _db.Entry(payrecord).State = EntityState.Modified;
+                    _db.SaveChanges();
+                    break;
+                case "AP_Invoice":
+                    var invoiceRecord = _db.APPaybleInvoices.Find(id);
+                    invoiceRecord.IsOnlineTransferred = false;
+                    _db.Entry(invoiceRecord).State = EntityState.Modified;
+                    _db.SaveChanges();
+                    break;
+                case "AP_MiscPayment":
+                    var apMiscRecord = _db.APMiscellaneousPayments.Find(id);
+                    apMiscRecord.IsOnlineTransferred = false;
+                    _db.Entry(apMiscRecord).State = EntityState.Modified;
+                    _db.SaveChanges();
+                    break;
+                case "DirectPaymentSettlement":
+                    var settleRecord = _db.ApPaymentSettlements.Find(id);
+                    settleRecord.IsOnlineTransferred = false;
+                    _db.Entry(settleRecord).State = EntityState.Modified;
+                    _db.SaveChanges();
+                    break;
+                case "AP_TravelExpenseClaim":
+                    var claimRecord = _db.ApTravelExpenseClaims.Find(id);
+                    claimRecord.IsOnlineTransferred = false;
+                    _db.Entry(claimRecord).State = EntityState.Modified;
+                    _db.SaveChanges();
+                    break;
+
+
+                default:
+                    break;
+            }
+        }
         protected override void Dispose(bool disposing)
         {
             _db.Dispose();

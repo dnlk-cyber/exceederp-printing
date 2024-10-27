@@ -1,4 +1,5 @@
-﻿@using ExceedERP.Core.Domain.Finance.AP
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Finance.AP
 <legend>Direct Payment</legend>
 @(Html.Kendo().Grid<ApDirectPayment>()
       .Name("grid")
@@ -22,12 +23,15 @@
               "/>"
               );
           columns.Bound(c => c.SupplierName).Width(130);
+          columns.ForeignKey(p => p.Purchaser, (IEnumerable)ViewData["employees"], "Code", "Name").Width(130).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.PaymentDate).Width(130).Format("{0:dd/MM/yyyy}");
-          columns.Bound(c => c.Grn).Width(130);
-          columns.Bound(c => c.Po).Width(120);
+
           columns.Bound(c => c.PaymentMethod).EditorTemplateName("PaymentMethods").Width(150);
           columns.Bound(c => c.PaymentReference).Width(160);
           columns.Bound(c => c.Remark).Width(120);
+          columns.Bound(c => c.Grn).Width(130);
+          columns.Bound(c => c.Po).Width(120);
+          columns.Bound(c => c.CreatedBy).Width(120);
           columns.Bound(c => c.Status).Width(130);
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
@@ -44,6 +48,41 @@
                                     .Label("Show Transferrable Only")
                                     .HtmlAttributes(new { onchange = "isNotTransferredCheck(this)" })
                     )
+                                    @(Html.Kendo().DropDownList()
+                                              .OptionLabel("Select Year")
+                                              .Name("yearSelector")
+                                              .AutoBind(false)
+                                              .DataValueField("GlFiscalYearId")
+                                              .DataTextField("Name")
+                                              .HtmlAttributes(new { style = "width: 200px;" })
+                                              .DataSource(dataSource =>
+                                              {
+                                                            dataSource.Read(read => read.Action("GetOpenYears", "GlobalDataProvider", new { area = "Common" }))
+                                                    .ServerFiltering(false);
+                                                        }))
+
+
+                        @(Html.Kendo().DropDownList()
+                                              .Name("PeriodList")
+                                              .AutoBind(false)
+                                              .DataValueField("GLPeriodId")
+                                              .DataTextField("Name")
+                                              .HtmlAttributes(new { style = "width: 200px;" })
+                                              .ValuePrimitive(true)
+                                              .DataSource(dataSource =>
+                                              {
+                                                            dataSource.Read(read => read.Action("GetOpenPeriods", "GlobalDataProvider", new { area = "Common" }).Data("getFiscalYear"))
+                                                    .ServerFiltering(true);
+                                                        })
+                                              .CascadeFrom("yearSelector")
+                        )
+
+                                     @(Html.Kendo().Button()
+                                                         .Name("btnPost")
+                                                         .HtmlAttributes(new {type = "search", @class = "k-primary"})
+                                                         .Events(e => e.Click("BatchTransfer"))
+                                                         .Content("Batch Transfer"))
+
 
 
 
@@ -86,6 +125,7 @@
               {
                   model.Id(p => p.ApDirectPaymentId);
                   model.Field(p => p.ApDirectPaymentId).Editable(false);
+                  model.Field(p => p.Purchaser).Editable(false);
                   model.Field(p => p.BranchId).Editable(false);
                   model.Field(p => p.BusinessUnitId).Editable(false);
                   model.Field(p => p.CreatedAtBranchId).Editable(false);
@@ -148,12 +188,13 @@
         # if (IsOnlineApproved)
         {#
         <a target="new" href='@Url.Action("ApDirectPayment", "FinancePrint")/#=ApDirectPaymentId#'><i class="fa fa-print fa-2x"></i></a>
-        <br />
+
         # } #
 
 
         # if (IsOnlineApproved && !IsOnlineTransferred )
         {#
+         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
         <a onclick='return transferToGl("#=ApDirectPaymentId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
         # } #
 
@@ -169,7 +210,7 @@
                                     Created On
                                 </dt>
                                 <dd>
-                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                 </dd>
                                 <dt>
@@ -188,8 +229,36 @@
                                     Modified Date
                                 </dt>
                                 <dd>
-                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                 </dd>
+     <dt>
+     Checked On
+ </dt>
+ <dd>
+     #=kendo.toString(kendo.parseDate(SendForApprovalTime), 'dd/MM/yyyy hh:mm tt') #
+ </dd>
+ <dt>
+     Checked By
+ </dt>
+ <dd>
+     #=SendForApprovalBy #
+ </dd>
+
+ <dt>
+     Approved On
+ </dt>
+ <dd>
+     #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
+
+
+ </dd>
+ <dt>
+     Approved By
+ </dt>
+ <dd>
+     #=OnlineApprovedBy #
+
+ </dd>
                             </dl>
 
 
@@ -259,7 +328,7 @@
                                                       model =>
                                                       {
                                                           model.Id(p => p.ApDirectPaymentLineId);
-                                                          model.Field(p => p.Purpose).Editable(false);
+                                                          //model.Field(p => p.Purpose).Editable(false);
                                                           //model.Field(p => p.Amount).Editable(false);
                                                           model.Field(p => p.ForexAmount).Editable(false);
                                                           model.Field(p => p.ExchangeRate).Editable(false);
@@ -336,7 +405,7 @@
                                                           .Model(
                                                               model =>
                                                               {
-                                                                          model.Id(p => p.ApDirectPaymentId);
+                                                                          model.Id(p => p.ApDirectPaymentDistributionId);
                                                                           model.Field(p => p.AccountDesc).Editable(false);
                                                                           model.Field(p => p.OrgBranchName).Editable(false);
                                                                           model.Field(p => p.CreatedBy).Editable(false);
@@ -423,6 +492,10 @@
 
 <script>
 
+    function getFiscalYear() {
+        return { year: $("#yearSelector").data("kendoDropDownList").value() }
+    }
+
     function voidRecord(id) {
         var recordStatus = "";
         var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
@@ -483,6 +556,42 @@
                 alert(result);
             }
         });
+    }
+
+    function BatchTransfer() {
+        var periodObject = $("#PeriodList").data("kendoDropDownList");
+        var periodid = periodObject.value();
+
+        if (periodid != null) {
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Batchtransfer", "ApDirectPayments", new {area = "Finance"})',
+                data: { id: periodid },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    location.reload(true);
+                }, //end succ
+                beforeSend: function(){
+                    // Show image container
+                    $("#loading-image").show();
+                },
+                complete:function(data){
+                    // Hide image container
+                    $("#loading-image").hide();
+                },
+                error: function (result) {
+                    alert(result);
+                }
+            });
+
+
+            $("#grid").data("kendoGrid").dataSource.read();
+        } else {
+            alert("Please select period.");
+        }
+
     }
 
 

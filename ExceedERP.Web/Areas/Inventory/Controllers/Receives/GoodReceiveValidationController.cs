@@ -123,221 +123,228 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                         record.OnlineApprovedBy = User.Identity.Name;
                         record.OnlineApprovedTime = DateTime.Now;
                         db.Entry(record).State = EntityState.Modified;
-                       // db.SaveChanges();
-                      
-                        var store = db.InventoryStores.Find(record.StoreCode);
-                        foreach (var i in record.GoodReceiveItem)
+                        // db.SaveChanges();
+
+                        if (!record.IsFreshBazaar)
                         {
-                            if (i.Quantity > 0)
+                            var store = db.InventoryStores.Find(record.StoreCode);
+                            foreach (var i in record.GoodReceiveItem)
                             {
-                                #region update stock avg price and total
-                                
-                               
-                                var inventoryItem = db.InventoryItems.Find(i.ItemCode);
-
-                                //var branchItem =
-                                //    db.BranchItemAssignments.Where(x => x.ItemCode == inventoryItem.ItemCode)
-                                //        .FirstOrDefault(x => x.BranchId == store.BranchId);
-                                var storeItem =
-                                    db.StoreItemAssignments.Where(x => x.ItemCode == inventoryItem.ItemCode)
-                                        .FirstOrDefault(x => x.StoreCode == store.StoreCode);
-                                var priceIndex =
-                                    db.ItemPriceIndexes.Where(x => x.SourceType == SourceType.GRN)
-                                        .FirstOrDefault(x => x.ItemCode == i.ItemCode);
-
-                                if (inventoryItem != null)
+                                if (i.Quantity > 0)
                                 {
-                                    if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerCompany)
+                                    #region update stock avg price and total
+
+
+                                    var inventoryItem = db.InventoryItems.Find(i.ItemCode);
+
+                                    //var branchItem =
+                                    //    db.BranchItemAssignments.Where(x => x.ItemCode == inventoryItem.ItemCode)
+                                    //        .FirstOrDefault(x => x.BranchId == store.BranchId);
+                                    var storeItem =
+                                        db.StoreItemAssignments.Where(x => x.ItemCode == inventoryItem.ItemCode)
+                                            .FirstOrDefault(x => x.StoreCode == store.StoreCode);
+                                    var priceIndex =
+                                        db.ItemPriceIndexes.Where(x => x.SourceType == SourceType.GRN)
+                                            .FirstOrDefault(x => x.ItemCode == i.ItemCode);
+
+                                    if (inventoryItem != null)
                                     {
-                                        inventoryItem.AvgPrice = ((inventoryItem.Balance * inventoryItem.AvgPrice) +
-                                                                  (i.Quantity * i.UnitPrice))
-                                                                 / (inventoryItem.Balance + i.Quantity);
-                                    }
-
-                                    inventoryItem.Balance = inventoryItem.Balance + i.Quantity;
-                                    db.Entry(inventoryItem).State = EntityState.Modified;
-                                    //db.SaveChanges();
-
-                                    if (priceIndex != null)
-                                    {
-                                        priceIndex.PriceBeforeVAT = i.UnitPrice;
-                                        priceIndex.SupplierName = record.SupplierName;
-                                        db.Entry(priceIndex).State = EntityState.Modified;
-                                       // db.SaveChanges();
-                                    }
-
-                                    if (priceIndex == null)
-                                    {
-                                        var priceindex = new ItemPriceIndex
-                                        {
-                                            BranchId=ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(record.StoreCode),
-                                            ItemCategoryCode = inventoryItem.ItemCategoryCode,
-                                            ItemCode = inventoryItem.ItemCode,
-                                            ItemName= inventoryItem.Name,
-                                            PriceBeforeVAT = i.UnitPrice,
-                                            SourceOfData = "GRN",
-                                            GLPeriodId=record.GLPeriodId,
-                                            SupplierName = record.SupplierName,
-                                            DateOfInformation = i.GoodReceive.ReceiveDate,
-                                            SourceType = SourceType.GRN
-                                        };
-                                        db.ItemPriceIndexes.Add(priceindex);
-                                       // db.SaveChanges();
-                                    }
-
-                                    //if (branchItem != null)
-                                    //{
-                                    //    if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerBranch)
-                                    //    {
-                                    //        branchItem.AvgPrice = ((branchItem.Balance * branchItem.AvgPrice) +
-                                    //                               (i.Quantity * i.UnitPrice))
-                                    //                              / (branchItem.Balance + i.Quantity);
-                                    //    }
-
-                                    //    branchItem.Balance = branchItem.Balance + i.Quantity;
-                                    //    db.Entry(branchItem).State = EntityState.Modified;
-                                    //   // db.SaveChanges();
-                                    //}
-                                    //else
-                                    //{
-                                    //    branchItem = new BranchItemAssignment();
-                                    //    if (store != null) branchItem.BranchId = store.BranchId;
-                                    //    branchItem.ItemCategoryCode = inventoryItem.ItemCategoryCode;
-                                    //    branchItem.ItemCode = inventoryItem.ItemCode;
-                                    //    branchItem.Balance = i.Quantity;
-                                    //    branchItem.AvgPrice = i.UnitPrice;
-                                    //    db.BranchItemAssignments.Add(branchItem);
-                                    //   // db.SaveChanges();
-                                    //}
-
-                                    if (storeItem != null)
-                                    {
-                                        if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerStore)
-                                        {
-                                            storeItem.AvgPrice = ((storeItem.Balance * storeItem.AvgPrice) +
-                                                                  (i.Quantity * i.UnitPrice))
-                                                                 / (storeItem.Balance + i.Quantity);
-                                        }
-
-                                        storeItem.Balance = storeItem.Balance + i.Quantity;
-                                        db.Entry(storeItem).State = EntityState.Modified;
-                                        //db.SaveChanges();
-
-                                        #region bin card line
-
-                                        BinCardLine binCardLine = new BinCardLine
-                                        {
-                                            StoreItemAssignment = storeItem,
-                                            ReferenceDoc = "Receive_" + record.GoodReceiveId.ToString(),
-                                            Reference = !String.IsNullOrEmpty(record.ReceiveRef) ? record.ReceiveRef +" "+record.Reference:record.Reference,
-                                            Date = record.ReceiveDate,
-                                            ReceivedQTY = i.Quantity,
-                                            ReceivedUPrice = i.UnitPrice,
-                                            ReceivedTPrice = i.Quantity* i.UnitPrice,//i.Total,
-                                            BalanceQTY = storeItem.Balance,
-                                            SupplierName=record.SupplierName,
-                                            //new    
-                                            StoreCode = record.StoreCode,
-                                            GLPeriodId = record.GLPeriodId,
-                                            TransactionType = BinCardTransactionTypes.Receive,
-                                            StatusType = BinCardTransactionStatus.Regular,
-                                            TransactionOrder = BinCardTransactionOrder.Receive
-                                        };
-
-                                        #region bin card average price
-
                                         if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerCompany)
                                         {
-                                            binCardLine.BalanceUPrice = inventoryItem.AvgPrice;
-                                            binCardLine.BalanceTPrice = inventoryItem.AvgPrice * storeItem.Balance;
+                                            inventoryItem.AvgPrice = ((inventoryItem.Balance * inventoryItem.AvgPrice) +
+                                                                      (i.Quantity * i.UnitPrice))
+                                                                     / (inventoryItem.Balance + i.Quantity);
                                         }
 
-                                        //else if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerBranch)
-                                        //{
-                                        //    binCardLine.BalanceUPrice = branchItem.AvgPrice;
-                                        //    binCardLine.BalanceTPrice = branchItem.AvgPrice * storeItem.Balance;
-                                        //}
-                                        else if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerStore)
-                                        {
-                                            binCardLine.BalanceUPrice = storeItem.AvgPrice;
-                                            binCardLine.BalanceTPrice = storeItem.AvgPrice * storeItem.Balance;
-                                        }
-
-
-                                        #endregion
-
-                                        db.BinCardLines.Add(binCardLine);
-                                        // db.SaveChanges();
-
-                                        #endregion
-                                        var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.ReceiveDate));
-                                    }
-                                    else
-                                    {
-                                        storeItem = new StoreItemAssignment
-                                        {
-                                            StoreCode = record.StoreCode,
-                                            ItemCategoryCode = inventoryItem.ItemCategoryCode,
-                                            ItemCode = inventoryItem.ItemCode,
-                                            Balance = i.Quantity,
-                                            AvgPrice = i.UnitPrice,
-                                        };
-                                        db.StoreItemAssignments.Add(storeItem);
+                                        inventoryItem.Balance = inventoryItem.Balance + i.Quantity;
+                                        db.Entry(inventoryItem).State = EntityState.Modified;
                                         //db.SaveChanges();
 
-                                        #region bin card line
-
-                                        BinCardLine binCardLine = new BinCardLine
+                                        if (priceIndex != null)
                                         {
-                                            StoreItemAssignment = storeItem,
-                                            ReferenceDoc = "Receive_" + record.GoodReceiveId.ToString(),
-                                            Reference = !String.IsNullOrEmpty(record.ReceiveRef) ? record.ReceiveRef : record.Reference,
-                                            Date = record.ReceiveDate,
-                                            ReceivedQTY = i.Quantity,
-                                            ReceivedUPrice = i.UnitPrice,
-                                            ReceivedTPrice = i.Quantity * i.UnitPrice,//i.Total,
-                                            BalanceQTY = storeItem.Balance,
-                                            SupplierName = record.SupplierName,
-
-                                            //new    
-                                            StoreCode = record.StoreCode,
-                                            GLPeriodId = record.GLPeriodId,
-                                            TransactionType = BinCardTransactionTypes.Receive,
-                                            StatusType = BinCardTransactionStatus.Regular,
-
-                                        };
-
-                                        #region bin card average price
-
-                                        if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerCompany)
-                                        {
-                                            binCardLine.BalanceUPrice = inventoryItem.AvgPrice;
-                                            binCardLine.BalanceTPrice = inventoryItem.AvgPrice * storeItem.Balance;
+                                            priceIndex.PriceBeforeVAT = i.UnitPrice;
+                                            priceIndex.SupplierName = record.SupplierName;
+                                            db.Entry(priceIndex).State = EntityState.Modified;
+                                            // db.SaveChanges();
                                         }
 
-                                        //else if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerBranch)
+                                        if (priceIndex == null)
+                                        {
+                                            var priceindex = new ItemPriceIndex
+                                            {
+                                                BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(record.StoreCode),
+                                                ItemCategoryCode = inventoryItem.ItemCategoryCode,
+                                                ItemCode = inventoryItem.ItemCode,
+                                                ItemName = inventoryItem.Name,
+                                                PriceBeforeVAT = i.UnitPrice,
+                                                SourceOfData = "GRN",
+                                                GLPeriodId = record.GLPeriodId,
+                                                SupplierName = record.SupplierName,
+                                                DateOfInformation = i.GoodReceive.ReceiveDate,
+                                                SourceType = SourceType.GRN,
+                                                IsOnlineApproved = true,
+                                                OnlineApprovedBy = User.Identity.Name,
+                                                OnlineApprovedTime = DateTime.Now,
+
+                                            };
+                                            db.ItemPriceIndexes.Add(priceindex);
+                                            // db.SaveChanges();
+                                        }
+
+                                        //if (branchItem != null)
                                         //{
-                                        //    binCardLine.BalanceUPrice = branchItem.AvgPrice;
-                                        //    binCardLine.BalanceTPrice = branchItem.AvgPrice * storeItem.Balance;
+                                        //    if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerBranch)
+                                        //    {
+                                        //        branchItem.AvgPrice = ((branchItem.Balance * branchItem.AvgPrice) +
+                                        //                               (i.Quantity * i.UnitPrice))
+                                        //                              / (branchItem.Balance + i.Quantity);
+                                        //    }
+
+                                        //    branchItem.Balance = branchItem.Balance + i.Quantity;
+                                        //    db.Entry(branchItem).State = EntityState.Modified;
+                                        //   // db.SaveChanges();
                                         //}
-                                        else if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerStore)
+                                        //else
+                                        //{
+                                        //    branchItem = new BranchItemAssignment();
+                                        //    if (store != null) branchItem.BranchId = store.BranchId;
+                                        //    branchItem.ItemCategoryCode = inventoryItem.ItemCategoryCode;
+                                        //    branchItem.ItemCode = inventoryItem.ItemCode;
+                                        //    branchItem.Balance = i.Quantity;
+                                        //    branchItem.AvgPrice = i.UnitPrice;
+                                        //    db.BranchItemAssignments.Add(branchItem);
+                                        //   // db.SaveChanges();
+                                        //}
+
+                                        if (storeItem != null)
                                         {
-                                            binCardLine.BalanceUPrice = storeItem.AvgPrice;
-                                            binCardLine.BalanceTPrice = storeItem.AvgPrice * storeItem.Balance;
+                                            if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerStore)
+                                            {
+                                                storeItem.AvgPrice = ((storeItem.Balance * storeItem.AvgPrice) +
+                                                                      (i.Quantity * i.UnitPrice))
+                                                                     / (storeItem.Balance + i.Quantity);
+                                            }
+
+                                            storeItem.Balance = storeItem.Balance + i.Quantity;
+                                            db.Entry(storeItem).State = EntityState.Modified;
+                                            //db.SaveChanges();
+
+                                            #region bin card line
+
+                                            BinCardLine binCardLine = new BinCardLine
+                                            {
+                                                StoreItemAssignment = storeItem,
+                                                ReferenceDoc = "Receive_" + record.GoodReceiveId.ToString(),
+                                                Reference = !String.IsNullOrEmpty(record.ReceiveRef) ? record.ReceiveRef + " " + record.Reference : record.Reference,
+                                                Date = record.ReceiveDate,
+                                                ReceivedQTY = i.Quantity,
+                                                ReceivedUPrice = i.UnitPrice,
+                                                ReceivedTPrice = i.Quantity * i.UnitPrice,//i.Total,
+                                                BalanceQTY = storeItem.Balance,
+                                                SupplierName = record.SupplierName,
+                                                //new    
+                                                StoreCode = record.StoreCode,
+                                                GLPeriodId = record.GLPeriodId,
+                                                TransactionType = BinCardTransactionTypes.Receive,
+                                                StatusType = BinCardTransactionStatus.Regular,
+                                                TransactionOrder = BinCardTransactionOrder.Receive
+                                            };
+
+                                            #region bin card average price
+
+                                            if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerCompany)
+                                            {
+                                                binCardLine.BalanceUPrice = inventoryItem.AvgPrice;
+                                                binCardLine.BalanceTPrice = inventoryItem.AvgPrice * storeItem.Balance;
+                                            }
+
+                                            //else if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerBranch)
+                                            //{
+                                            //    binCardLine.BalanceUPrice = branchItem.AvgPrice;
+                                            //    binCardLine.BalanceTPrice = branchItem.AvgPrice * storeItem.Balance;
+                                            //}
+                                            else if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerStore)
+                                            {
+                                                binCardLine.BalanceUPrice = storeItem.AvgPrice;
+                                                binCardLine.BalanceTPrice = storeItem.AvgPrice * storeItem.Balance;
+                                            }
+
+
+                                            #endregion
+
+                                            db.BinCardLines.Add(binCardLine);
+                                            // db.SaveChanges();
+
+                                            #endregion
+                                            var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.ReceiveDate));
                                         }
+                                        else
+                                        {
+                                            storeItem = new StoreItemAssignment
+                                            {
+                                                StoreCode = record.StoreCode,
+                                                ItemCategoryCode = inventoryItem.ItemCategoryCode,
+                                                ItemCode = inventoryItem.ItemCode,
+                                                Balance = i.Quantity,
+                                                AvgPrice = i.UnitPrice,
+                                            };
+                                            db.StoreItemAssignments.Add(storeItem);
+                                            //db.SaveChanges();
+
+                                            #region bin card line
+
+                                            BinCardLine binCardLine = new BinCardLine
+                                            {
+                                                StoreItemAssignment = storeItem,
+                                                ReferenceDoc = "Receive_" + record.GoodReceiveId.ToString(),
+                                                Reference = !String.IsNullOrEmpty(record.ReceiveRef) ? record.ReceiveRef : record.Reference,
+                                                Date = record.ReceiveDate,
+                                                ReceivedQTY = i.Quantity,
+                                                ReceivedUPrice = i.UnitPrice,
+                                                ReceivedTPrice = i.Quantity * i.UnitPrice,//i.Total,
+                                                BalanceQTY = storeItem.Balance,
+                                                SupplierName = record.SupplierName,
+
+                                                //new    
+                                                StoreCode = record.StoreCode,
+                                                GLPeriodId = record.GLPeriodId,
+                                                TransactionType = BinCardTransactionTypes.Receive,
+                                                StatusType = BinCardTransactionStatus.Regular,
+
+                                            };
+
+                                            #region bin card average price
+
+                                            if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerCompany)
+                                            {
+                                                binCardLine.BalanceUPrice = inventoryItem.AvgPrice;
+                                                binCardLine.BalanceTPrice = inventoryItem.AvgPrice * storeItem.Balance;
+                                            }
+
+                                            //else if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerBranch)
+                                            //{
+                                            //    binCardLine.BalanceUPrice = branchItem.AvgPrice;
+                                            //    binCardLine.BalanceTPrice = branchItem.AvgPrice * storeItem.Balance;
+                                            //}
+                                            else if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerStore)
+                                            {
+                                                binCardLine.BalanceUPrice = storeItem.AvgPrice;
+                                                binCardLine.BalanceTPrice = storeItem.AvgPrice * storeItem.Balance;
+                                            }
 
 
-                                        #endregion
+                                            #endregion
 
-                                        db.BinCardLines.Add(binCardLine);
-                                        // db.SaveChanges();
+                                            db.BinCardLines.Add(binCardLine);
+                                            // db.SaveChanges();
 
-                                        #endregion
-                                        var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.ReceiveDate));
+                                            #endregion
+                                            var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID, record.ReceiveDate));
+                                        }
                                     }
+
+                                    #endregion
                                 }
-
-                                #endregion
                             }
                         }
                        

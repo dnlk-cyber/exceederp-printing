@@ -32,7 +32,7 @@
               columns.Bound(c => c.LineAmount).Format("{0:n2}").Width(140);
               columns.Bound(c => c.TaxAmount).Format("{0:n2}").Width(140);
               columns.Bound(c => c.WithholdingAmount).Format("{0:n2}").Width(140);
-              columns.Bound(c => c.WithholdTaxAmount).Format("{0:n2}").Width(140);              
+              columns.Bound(c => c.WithholdTaxAmount).Format("{0:n2}").Width(140);
               columns.Bound(c => c.TotalAmount).Format("{0:n2}").Width(140);
               columns.Bound(c => c.DeductAmount).Format("{0:n2}").Width(140);
               columns.Bound(c => c.NetPayable).Format("{0:n2}").Width(140);
@@ -49,13 +49,48 @@
                 @<text>
 
                     <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
-                    <button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>
+                    @*<button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>*@
 
                     @(Html.Kendo().CheckBox()
                                     .Name("checktransfferable")
                                     .Label("Show Transferrable Only")
                                     .HtmlAttributes(new { onchange = "isNotTransferredCheck(this)" })
                     )
+
+                                @(Html.Kendo().DropDownList()
+                      .OptionLabel("Select Year")
+                      .Name("yearSelector")
+                      .AutoBind(false)
+                      .DataValueField("GlFiscalYearId")
+                      .DataTextField("Name")
+                      .HtmlAttributes(new { style = "width: 200px;" })
+                      .DataSource(dataSource =>
+                      {
+                                    dataSource.Read(read => read.Action("GetOpenYears", "GlobalDataProvider", new { area = "Common" }))
+                            .ServerFiltering(false);
+                                }))
+
+
+@(Html.Kendo().DropDownList()
+                      .Name("PeriodList")
+                      .AutoBind(false)
+                      .DataValueField("GLPeriodId")
+                      .DataTextField("Name")
+                      .HtmlAttributes(new { style = "width: 200px;" })
+                      .ValuePrimitive(true)
+                      .DataSource(dataSource =>
+                      {
+                                    dataSource.Read(read => read.Action("GetOpenPeriods", "GlobalDataProvider", new { area = "Common" }).Data("getFiscalYear"))
+                            .ServerFiltering(true);
+                                })
+                      .CascadeFrom("yearSelector")
+)
+
+             @(Html.Kendo().Button()
+                                 .Name("btnPost")
+                                 .HtmlAttributes(new {type = "search", @class = "k-primary"})
+                                 .Events(e => e.Click("BatchTransfer"))
+                                 .Content("Batch Transfer"))
 
 
 
@@ -112,6 +147,9 @@
                             model.Field(p => p.BranchId).Editable(false);
                             model.Field(p => p.BusinessUnitId).Editable(false);
 
+                            model.Field(p => p.CreatedAtBranchId).Editable(false);
+                            model.Field(p => p.CreatedAtBusinessUnitId).Editable(false);
+
 
                             model.Field(p => p.VoidTime).Editable(false);
                             model.Field(p => p.VoidBy).Editable(false);
@@ -166,15 +204,16 @@
         # } #
 
         <a target="new" href='@Url.Action("ApMiscPayment", "FinancePrint")/#=ApMiscellaneousPaymentId#'><i class="fa fa-print fa-2x"></i></a>
-        <br />
+
         # if (IsOnlineApproved)
         {#
-       
+
         # } #
 
 
         # if (IsOnlineApproved && !IsOnlineTransferred )
         {#
+         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
         <a onclick='return transferToGl("#=ApMiscellaneousPaymentId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
         # } #
 
@@ -190,7 +229,7 @@
                                             Created On
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                         </dd>
                                         <dt>
@@ -209,8 +248,36 @@
                                             Modified Date
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                         </dd>
+        <dt>
+    Checked On
+</dt>
+<dd>
+    #=kendo.toString(kendo.parseDate(SendForApprovalTime), 'dd/MM/yyyy hh:mm tt') #
+</dd>
+<dt>
+    Checked By
+</dt>
+<dd>
+    #=SendForApprovalBy #
+</dd>
+
+<dt>
+    Approved On
+</dt>
+<dd>
+    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
+
+
+</dd>
+<dt>
+    Approved By
+</dt>
+<dd>
+    #=OnlineApprovedBy #
+
+</dd>
                                     </dl>
 
 
@@ -438,6 +505,45 @@
 
 <script>
 
+    function getFiscalYear() {
+        return { year: $("#yearSelector").data("kendoDropDownList").value() }
+    }
+
+function BatchTransfer() {
+    var periodObject = $("#PeriodList").data("kendoDropDownList");
+    var periodid = periodObject.value();
+
+    if (periodid != null) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("Batchtransfer", "ApMiscPayments", new {area = "Finance"})',
+            data: { id: periodid },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            beforeSend: function(){
+                // Show image container
+                $("#loading-image").show();
+            },
+            complete:function(data){
+                // Hide image container
+                $("#loading-image").hide();
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+
+        $("#grid").data("kendoGrid").dataSource.read();
+    } else {
+        alert("Please select period.");
+    }
+
+}
     function voidRecord(id) {
         var recordStatus = "";
         var conf = confirm("Are you sure you want to void this record number: " + id + " ?");

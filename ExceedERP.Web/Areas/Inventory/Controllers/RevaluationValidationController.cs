@@ -1,17 +1,16 @@
-﻿﻿using System;
- using System.Data.Entity;
-﻿using System.Linq;
-﻿using System.Web.Mvc;
-﻿using ExceedERP.Core.Domain.Inventory;
-﻿using ExceedERP.DataAccess.Context;
- using ExceedERP.Web.Areas.Inventory.Models;
- using ExceedERP.Web.Helpers;
- using Kendo.Mvc.Extensions;
-﻿using Kendo.Mvc.UI;
+﻿using System;
+using System.Data.Entity;
+using System.Linq;
+using System.Web.Mvc;
+using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Helpers;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers
 {
-    
+
     public class RevaluationValidationController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

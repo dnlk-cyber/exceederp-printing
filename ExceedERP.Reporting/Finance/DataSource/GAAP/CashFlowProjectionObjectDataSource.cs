@@ -24,14 +24,15 @@ namespace ExceedERP.Reporting.Finance.DataSource.GAAP
             public List<CashFlowProjectionViewModel> GetCashFlowProjection(string fiscalYear)
             {
                 List<CashFlowProjectionViewModel> cashFlowList = new List<CashFlowProjectionViewModel>();
-                var cashFlow = _db.GaapCashFlows.FirstOrDefault();
+                var cashFlow = _db.GaapCashFlows.AsNoTracking().FirstOrDefault();
               
                
 
             if (cashFlow != null && !String.IsNullOrEmpty(fiscalYear))
                 {
-                    var fyearObj = _db.GLFiscalYears.Find(int.Parse(fiscalYear));
-                    var glPeriods = _db.GLPeriods.Where(x => x.GlFiscalYearId.ToString() == fiscalYear)
+                    int  fYearId = int.Parse(fiscalYear);
+                    var fyearObj = _db.GLFiscalYears.Find(fYearId);
+                    var glPeriods = _db.GLPeriods.AsNoTracking().Where(x => x.GlFiscalYearId== fYearId)
                         .OrderBy(x => x.Index).ToList();
 
                     CashFlowProjectionViewModel cashflowRecord =new CashFlowProjectionViewModel

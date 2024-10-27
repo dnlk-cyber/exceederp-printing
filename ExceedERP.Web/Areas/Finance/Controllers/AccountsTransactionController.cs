@@ -1,18 +1,15 @@
-﻿﻿using System;
- using System.Collections.Generic;
- using System.Data.Entity;
-﻿using System.Linq;
-﻿using System.Web.Mvc;
- using ExceedERP.Core.Domain.Finance;
- using ExceedERP.Core.Domain.Finance.Common;
-﻿using ExceedERP.Core.Domain.Finance.GL;
- using ExceedERP.Core.Domain.Inventory;
- using ExceedERP.DataAccess.Context;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Web.Mvc;
+using ExceedERP.Core.Domain.Finance;
+using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.Inventory;
- using ExceedERP.Web.Helpers;
- using Kendo.Mvc.Extensions;
-﻿using Kendo.Mvc.UI;
+using ExceedERP.Web.Helpers;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers
 {
@@ -65,21 +62,21 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
         [AuthorizeRoles(FinanceConstants.GeneralLedgerUser, FinanceConstants.GeneralLedgerApprover, FinanceConstants.GeneralLedgerView, FinanceConstants.GeneralLedgerAdmin)]
         public ActionResult AccountsTransactions_Read([DataSourceRequest]DataSourceRequest request)
        {
-           List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+           List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
 
            IQueryable<GlRecordJournal> glRecordJournals = _db.GLRecordJournals.Where(x => x.isPosted);
 
             if (!((System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerApprover))
                   || (System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerView))))
             {
-                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName));
+                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.BranchId));
             }
 
             //new
             if (System.Web.HttpContext.Current.User.IsInRole(FinanceConstants.GeneralLedgerAdmin))
-                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName) || x.OrgBranchName == null || x.OrgBranchName == "");
+                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.BranchId) || x.BranchId == 0 || x.OrgBranchName == "");
             else
-                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.OrgBranchName));
+                glRecordJournals = glRecordJournals.Where(x => mybraches.Contains(x.BranchId));
 
             if (GlobalHelper.IsMultipleBusinessUnit())
             {

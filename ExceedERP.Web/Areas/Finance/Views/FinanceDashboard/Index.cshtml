@@ -4,12 +4,12 @@
       .Name("grid")
       .Columns(columns =>
       {
-        columns.Bound(c => c.Category);
-        columns.Bound(c => c.Name);
-        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          columns.Bound(c => c.Category);
+          columns.Bound(c => c.Name);
+          columns.Command(command => { command.Edit(); /*command.Destroy();*/ }).Width(180);
       })
       .ToolBar(toolbar => {
-            toolbar.Create();
+          //toolbar.Create();
       })
          .Editable(editable => editable.Mode(GridEditMode.InLine))
            .HtmlAttributes(new { style = "height: 550px;" })

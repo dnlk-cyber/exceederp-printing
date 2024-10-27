@@ -113,6 +113,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     _db.SaveChanges();
                     gLChartOfAccountAccount.Values = entity.Values;
 
+                CacheHelper.InvalidateNaturalAccountCache();
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "GL chart of account", "Success", User.Identity.Name, $"created chart of account natural account {entity.Values} {entity.Description}", Modules.Finance);
                 #endregion
@@ -166,6 +167,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
                 accountHelper.UpdateLedgerAccountType(gLChartOfAccountAccount.Values, gLChartOfAccountAccount.AccountType);
+                CacheHelper.InvalidateNaturalAccountCache();
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "GL chart of account", "Success", User.Identity.Name, $"updated chart of account natural account {entity.Values} {entity.Description}", Modules.Finance);
                 #endregion
@@ -200,6 +202,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 _db.GLChartOfAccountAccounts.Attach(entity);
                 _db.GLChartOfAccountAccounts.Remove(entity);
                 _db.SaveChanges();
+                CacheHelper.InvalidateNaturalAccountCache();
             }
 
             return Json(new[] { gLChartOfAccountAccount }.ToDataSourceResult(request, ModelState));

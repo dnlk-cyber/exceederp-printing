@@ -1,26 +1,18 @@
 ﻿using System;
 using System.Data.Entity;
-using System.Net;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
-using XAPI;
 using System.Linq;
-using PagedList;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
-using ExceedERP.Web.Helpers;
-using ExceedERP.Core.Domain.Finance;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Common.HRM;
 using Kendo.Mvc.Extensions;
-using System.Web;
-using System.Collections.Generic;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 {
-   // [AuthorizeRoles(FinanceConstants.GeneralLedgerAdmin)]
+    // [AuthorizeRoles(FinanceConstants.GeneralLedgerAdmin)]
     public class GLBranchAccountMapController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

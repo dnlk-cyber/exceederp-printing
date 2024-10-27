@@ -146,7 +146,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
             }
             else
             {
-                ModelState.AddModelError("", "Please select period.");
+                ModelState.AddModelError("period", "Please select period.");
             }
             if (itemTransferReceive.ReceiveDate > DateTime.Now)
             {
@@ -171,8 +171,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                 {
                     var entity = new ItemTransferReceive
                     {
-                        BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(transfer.ToStore),
-                        BusinessUnitId=itemTransferReceive.BusinessUnitId,
+                        BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(itemTransferReceive.ToStore),
+                        BusinessUnitId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBusinessUnit(itemTransferReceive.ToStore),
                         ItemTransferID = itemTransferReceive.ItemTransferID,
                         ReceiveDate = itemTransferReceive.ReceiveDate.Date,
                         FromStore = transfer.FromStore,
@@ -249,7 +249,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
             }
             else
             {
-                ModelState.AddModelError("", "Please select period.");
+                ModelState.AddModelError("period", "Please select period.");
             }
             if (itemTransferReceive.ReceiveDate > DateTime.Now)
             {
@@ -274,8 +274,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                 {
                     var entity = new ItemTransferReceive
                     {
-                        BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(transfer.ToStore),
-                        BusinessUnitId=itemTransferReceive.BusinessUnitId,
+                        BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(itemTransferReceive.ToStore),
+                        BusinessUnitId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBusinessUnit(itemTransferReceive.ToStore),
                         ItemTransferReceiveId = itemTransferReceive.ItemTransferReceiveId,
                         ItemTransferID = itemTransferReceive.ItemTransferID,
                         DocumentRef = itemTransferReceive.DocumentRef,

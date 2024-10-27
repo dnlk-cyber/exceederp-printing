@@ -23,13 +23,14 @@ namespace ExceedERP.Reporting.Finance.DataSource.GAAP
         public List<GaapNoteVeiwModel> IncomestatementByProjectReportNotes(string fiscalyear, string periodFrom, string periodTo, string branchid, string segmentType, string segmentValue)
         {
             List<GaapNoteVeiwModel> list = new List<GaapNoteVeiwModel>();
-            var notes = _db.GaapIncomeStatements.FirstOrDefault(x => x.ReportType == GaapReportType.GAAPOne);
-            var operationRevenueRanges = _db.GaapIncomeStatementOperationRevenueRanges.ToList();
-            var operationExpenseRanges = _db.GaapIncomeStatementOperationExpenseRanges.ToList();
+            var notes = _db.GaapIncomeStatements.AsNoTracking().FirstOrDefault(x => x.ReportType == GaapReportType.GAAPOne);
+            var operationRevenueRanges = _db.GaapIncomeStatementOperationRevenueRanges.AsNoTracking().ToList();
+            var operationExpenseRanges = _db.GaapIncomeStatementOperationExpenseRanges.AsNoTracking().ToList();
 
             if (notes != null && !String.IsNullOrEmpty(fiscalyear) && !string.IsNullOrWhiteSpace(branchid))
             {
-                var fyearObj = _db.GLFiscalYears.Find(int.Parse(fiscalyear));
+                int fYearId = int.Parse(fiscalyear);
+                var fyearObj = _db.GLFiscalYears.Find(fYearId);
                 var prevYearBalance = new List<GLLedgerPostingLines>();
                 var prevYearBegBalance = new List<GLLedgerPostingLines>();
                 var currentYearBalance = new List<GLLedgerPostingLines>();
@@ -154,15 +155,16 @@ namespace ExceedERP.Reporting.Finance.DataSource.GAAP
 
             if (!String.IsNullOrEmpty(fiscalyear) && !string.IsNullOrWhiteSpace(branchid))
             {
-                var fyearObj = _db.GLFiscalYears.Find(int.Parse(fiscalyear));
-                var gaapIncomeStatement = _db.GaapIncomeStatements.FirstOrDefault(x => x.ReportType == GaapReportType.GAAPOne);
+                int fYearId = int.Parse(fiscalyear);
+                var fyearObj = _db.GLFiscalYears.Find(fYearId);
+                var gaapIncomeStatement = _db.GaapIncomeStatements.AsNoTracking().FirstOrDefault(x => x.ReportType == GaapReportType.GAAPOne);
                 var prevYearBalance = new List<GLLedgerPostingLines>();
                 var prevYearBegBalance = new List<GLLedgerPostingLines>();
                 var currentYearBalance = new List<GLLedgerPostingLines>();
                 var currentYearBegBalance = new List<GLLedgerPostingLines>();
                 
 
-                var branch = _db.Branch.FirstOrDefault(x => x.BranchId.ToString() == branchid);
+                var branch = _db.Branch.AsNoTracking().FirstOrDefault(x => x.BranchId.ToString() == branchid);
 
                 //new
                

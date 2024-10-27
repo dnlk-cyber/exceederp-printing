@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.Core.Domain.Finance.AP.Travel;
-using ExceedERP.Core.Domain.Finance.Bank;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
-using ExceedERP.Web.Hubs;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -71,7 +66,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 						record.OnlineApprovedBy = User.Identity.Name;
 						record.OnlineApprovedTime = DateTime.Now;
 						_db.Entry(record).State = EntityState.Modified;
-						_db.SaveChanges();
+						//_db.SaveChanges();
 
 					}
 
@@ -80,7 +75,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 						record.IsSendForApproval = false;
 						record.Status = "Finance Rejected";
 						_db.Entry(record).State = EntityState.Modified;
-						_db.SaveChanges();
+						//_db.SaveChanges();
 					}
 
 					var entity = new ApTravelOrderValidation

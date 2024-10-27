@@ -499,7 +499,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.SalesOrder
             }
             catch (Exception e)
             {
-               Logger.Error("Messsage: "+e.Message+ "\n StackTrace: " + e.StackTrace + "\n TargetSite: " + e.TargetSite);
+               //Logger.Error("Messsage: "+e.Message+ "\n StackTrace: " + e.StackTrace + "\n TargetSite: " + e.TargetSite);
                 var formattedData = new
                 {
                     Message = "Please add sales lines and try again",
@@ -1004,7 +1004,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.SalesOrder
                 }
                 catch (Exception e)
                 {
-                   Logger.Error("Messsage: "+e.Message+ "\n StackTrace: " + e.StackTrace + "\n TargetSite: " + e.TargetSite);
+                   //Logger.Error("Messsage: "+e.Message+ "\n StackTrace: " + e.StackTrace + "\n TargetSite: " + e.TargetSite);
                     var formattedData = new
                     {
                         Message = "The operation failed,try again.",
@@ -1200,7 +1200,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.SalesOrder
                 }
                 catch (Exception e)
                 {
-                   Logger.Error("Messsage: "+e.Message+ "\n StackTrace: " + e.StackTrace + "\n TargetSite: " + e.TargetSite);
+                   //Logger.Error("Messsage: "+e.Message+ "\n StackTrace: " + e.StackTrace + "\n TargetSite: " + e.TargetSite);
                     var formattedData = new
                     {
                         Message = "The operation failed,try again.",

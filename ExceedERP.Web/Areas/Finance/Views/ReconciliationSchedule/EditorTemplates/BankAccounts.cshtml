@@ -1,11 +1,17 @@
 ﻿@using System.Collections
+
+
+
 @(Html.Kendo().DropDownListFor(m => m)
-      .OptionLabel("Select")
-      .Filter("contains")
                   .ValuePrimitive(true)
-                  .OptionLabel("Select Account...")
-                      .DataTextField("AccountName")
-                       .DataValueField("AccountNumber")
-                      .BindTo((IEnumerable)ViewData["accounts"])
+                   .OptionLabel("Select Account...")
+     .DataTextField("AccountName")
+      .DataValueField("AccountNumber")
+                          .Filter("contains")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetBankAccountsByUser", "FinanceDataProvider", new { area = "Finance" }))
+                                    .ServerFiltering(false);
+                                })
 )
 @Html.ValidationMessageFor(m => m)

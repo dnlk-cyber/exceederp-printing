@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -7,7 +6,6 @@ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.AR;
 using ExceedERP.Core.Domain.Finance.AR.SalesOrder;
-using ExceedERP.Core.Domain.Finance.Bank;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;

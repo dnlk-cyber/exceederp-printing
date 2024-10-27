@@ -1,15 +1,11 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Finance.AP;
- using ExceedERP.DataAccess.Context;
- using ExceedERP.Helpers.Finance;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Finance;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Helpers.Common;
 
@@ -114,7 +110,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 {
                     ApDirectPaymentId = id,
                     Purpose = apDirectPaymentLine.Purpose,
-                    Amount = apDirectPaymentLine.ForexAmount * apDirectPaymentLine.ExchangeRate,
+                    Amount = apDirectPaymentLine.Amount, // apDirectPaymentLine.ForexAmount * apDirectPaymentLine.ExchangeRate,
                     ForexAmount = apDirectPaymentLine.ForexAmount,
                     ExchangeRate = apDirectPaymentLine.ExchangeRate,
                     Currency = apDirectPaymentLine.Currency,
@@ -210,7 +206,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     ApDirectPaymentId = apDirectPaymentLine.ApDirectPaymentId,
                     ApDirectPaymentLineId = apDirectPaymentLine.ApDirectPaymentLineId,
                     Purpose = apDirectPaymentLine.Purpose,
-                    Amount = apDirectPaymentLine.ForexAmount * apDirectPaymentLine.ExchangeRate,
+                    Amount = apDirectPaymentLine.Amount,// apDirectPaymentLine.ForexAmount * apDirectPaymentLine.ExchangeRate,
                     ForexAmount = apDirectPaymentLine.ForexAmount,
                     ExchangeRate = apDirectPaymentLine.ExchangeRate,
                     Currency = apDirectPaymentLine.Currency,

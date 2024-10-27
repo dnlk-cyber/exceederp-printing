@@ -10,6 +10,7 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
         public virtual ApTravelOrder TravelOrder { get; set; }
         [Required]
         public TravelPaymentType Type { get; set; }
+        [Required]
         public string ItemName { get; set; }// from AP Setup
         [Display(Name = "Description")]
         public string Description { get; set; }

@@ -1,4 +1,4 @@
-﻿﻿
+﻿
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
@@ -6,7 +6,6 @@ using Kendo.Mvc.UI;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Procurement;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.Web.Helpers;
 

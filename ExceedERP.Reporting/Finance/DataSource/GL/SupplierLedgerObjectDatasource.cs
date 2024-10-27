@@ -11,11 +11,16 @@ using ExceedERP.Reporting.Finance.ViewModel;
 namespace ExceedERP.Reporting.Finance.DataSource.GL
 {
     [DataObject]
-    public class SupplierLedgerObjectDatasource : List<SupplierLedgerVm>
+    public class SupplierLedgerObjectDatasource : List<SupplierLedgerVm>, IDisposable
     {
-        
-            private readonly ExceedDbContext _db = new ExceedDbContext();
-        private readonly AccountHelper _accountHelper = new AccountHelper();
+
+        private readonly ExceedDbContext _db;
+        private readonly AccountHelper _accountHelper;
+        public SupplierLedgerObjectDatasource()
+        {
+            _db = new ExceedDbContext();
+            _accountHelper = new AccountHelper();
+        }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
 
@@ -130,270 +135,12 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 
             return supplierLedgerList;
         }
-        //public List<SupplierLedgerVm> GetSupplierLedger1(DateTime from, DateTime to, string supplierid, string transactionType, string acct)
-        //    {
-        //        List<SupplierLedgerVm> supplierLedgerList = new List<SupplierLedgerVm> { };
-        //    var ledgerposts = _db.GlSecondayLedgers.AsQueryable();
-        //    List<GlSecondayLedger> ledgers = new List<GlSecondayLedger>();
-        //    List<GLPeriod> periods = new List<GLPeriod>();
 
-
-        //        if (!String.IsNullOrEmpty(acct))
-        //        {
-        //            ledgerposts = ledgerposts.Where(x => x.AccountSegment == acct).AsQueryable();
-
-                   
-        //            //if (AccountHelper.IsDynamicCoA())
-        //            //{
-        //            //    AccountHelper accountHelper = new AccountHelper();
-        //            //     string[] account = acct.Split('-');
-        //            //    string acccountSeG = account[AccountHelper.GetAccountSequenceIndex(GlSegmentTypes.Account)];
-        //            //    string locationSeG = account[AccountHelper.GetAccountSequenceIndex(GlSegmentTypes.Location)];
-        //            //    string costCenterSeG = account[AccountHelper.GetAccountSequenceIndex(GlSegmentTypes.CostCenter)];
-        //            //    string subAccountSeG = supplierid;
-        //            //    string newacc = accountHelper.RearrangeAccountSequence(acccountSeG, locationSeG,costCenterSeG, subAccountSeG);
-        //            //    acct = newacc;
-        //            //}
-        //            //else
-        //            //{
-        //            //    int subaccountindex = DynamicAccountHelper.GetSubAccountSequenceIndex();
-        //            //    string subAccountSeG = supplierid;
-        //            //    string newacc = DynamicAccountHelper.ReplaceSegment(acct, subaccountindex, subAccountSeG);
-        //            //    acct = newacc;
-        //            //}
-
-                    
-                   
-
-        //         }
-
-        //        if (!String.IsNullOrEmpty(supplierid))
-        //            {
-        //                ledgerposts = ledgerposts.Where(x => x.SubAccountSegment == supplierid).AsQueryable();
-        //            }
-
-        //     var ledgerPostingLines = _db.GlSecondayLedgerLines.Where(b => b.EffectiveDate >= from && b.EffectiveDate <= to).ToList();
-        //    #region get covered periods for sorting data
-
-        //    var periodList = ledgerPostingLines.Select(x => x.GLPeriodId).Distinct();
-        //    foreach (var p in periodList)
-        //    {
-        //        periods.Add(_db.GLPeriods.Find(p));
-        //    }
-
-        //    #endregion
-        //    var sortedPeriods = periods.OrderBy(x => x.DateTo);
-
-        //    foreach (var ledgerPosting in ledgerposts)
-        //    {
-        //        var selectedledgerPostingLines = ledgerPostingLines.Where(x => x.GlSecondayLedger.Description == ledgerPosting.Description).ToList();
-
-        //        var supplierLedgerVm = new SupplierLedgerVm
-        //        {
-        //            SupplierId = ledgerPosting.Description,//to be updated
-        //            SupplierName = _accountHelper.GetAccountDesc(ledgerPosting.Description),//to be updated
-        //            SupplierLedgerVmLines = new List<TransactionVm>()
-        //        };
-
-        //        if (selectedledgerPostingLines.Any())
-        //        {
-        //            #region current transaction
-        //            foreach (var period in sortedPeriods)
-        //            {
-        //                #region beginning
-
-        //                var begginningRecords = selectedledgerPostingLines
-        //                    .Where(x => x.GLPeriodId == period.GLPeriodId)
-        //                    .Where(x => x.Type == LedgerPostTypes.Begining).ToList();
-        //                foreach (var balance in begginningRecords)
-        //                {
-        //                    var lines = new TransactionVm
-        //                    {
-        //                        TranssactionId = balance.JournalNumber,
-        //                        TransactionDate = balance.EffectiveDate,
-        //                        TransReference = balance.JournalReference,
-        //                        Debit = balance.Debit,
-        //                        Credit = balance.Credit,
-        //                        Balance = balance.Balance,
-        //                        TransactionType = balance.SourcesName//to be updated
-        //                    };
-
-        //                    supplierLedgerVm.SupplierLedgerVmLines.Add(lines);
-        //                }
-
-        //                #endregion
-        //                #region standard
-
-        //                var standardRecords = selectedledgerPostingLines
-        //                    .Where(x => x.GLPeriodId == period.GLPeriodId)
-        //                    .Where(x => x.Type == LedgerPostTypes.Standard)
-        //                    .ToList().OrderBy(x => x.EffectiveDate);
-        //                foreach (var balance in standardRecords)
-        //                {
-        //                    var lines = new TransactionVm
-        //                    {
-        //                        TranssactionId = balance.JournalNumber,
-        //                        TransactionDate = balance.EffectiveDate,
-        //                        TransReference = balance.JournalReference,
-        //                        Debit = balance.Debit,
-        //                        Credit = balance.Credit,
-        //                        Balance = balance.Balance,
-        //                        TransactionType = balance.SourcesName//to be updated
-        //                    };
-
-        //                    supplierLedgerVm.SupplierLedgerVmLines.Add(lines);
-        //                }
-
-        //                #endregion
-        //                #region ending
-
-        //                var endingRecords = selectedledgerPostingLines
-        //                    .Where(x => x.GLPeriodId == period.GLPeriodId)
-        //                    .Where(x => x.Type == LedgerPostTypes.Ending).ToList();
-        //                foreach (var balance in begginningRecords)
-        //                {
-        //                    var lines = new TransactionVm
-        //                    {
-        //                        TranssactionId = balance.JournalNumber,
-        //                        TransactionDate = balance.EffectiveDate,
-        //                        TransReference = balance.JournalReference,
-        //                        Debit = balance.Debit,
-        //                        Credit = balance.Credit,
-        //                        Balance = balance.Balance,
-        //                        TransactionType = balance.SourcesName//to be updated
-        //                    };
-
-        //                    supplierLedgerVm.SupplierLedgerVmLines.Add(lines);
-        //                }
-
-        //                #endregion
-        //            }
-
-        //            #endregion
-        //        }
-
-
-
-        //        supplierLedgerList.Add(supplierLedgerVm);
-        //    }
-
-        //    return supplierLedgerList;
-        //    }
-        //public List<SupplierLedgerVm> GetSupplierLedger(DateTime from, DateTime to, string supplierid, string transactionType)
-        //{
-        //    List<SupplierLedgerVm> supplierLedgerList = new List<SupplierLedgerVm> { };
-        //    var invoice = db.APPaybleInvoices.Where(x => x.IsOnlineApproved & x.IsVoid == false).AsQueryable();
-        //    var standardCollections = db.APPayments.Where(x => x.IsOnlineApproved & x.IsVoid == false).AsQueryable();
-        //    var miscelaneousCollections = db.APMiscellaneousPayments.Where(x => x.IsOnlineApproved & x.IsVoid == false).AsQueryable();
-
-
-
-        //    if (!String.IsNullOrWhiteSpace(supplierid))
-        //    {
-
-        //        invoice = invoice.Where(x => x.SupplierName == supplierid).AsQueryable();
-        //        standardCollections = standardCollections.Where(x => x.SupplierName == supplierid).AsQueryable();
-        //        miscelaneousCollections = miscelaneousCollections.Where(x => x.SupplierName == supplierid).AsQueryable();
-        //    }
-
-        //    if (String.IsNullOrWhiteSpace(transactionType) || transactionType == "Invoice")
-        //    {
-        //        #region invoice
-
-        //        invoice = invoice
-        //           .Where(x => x.InvoiceDate >= from)
-        //           .Where(x => x.InvoiceDate <= to).AsQueryable();
-        //        foreach (var i in invoice)
-        //        {
-        //            var distribution = i.APPaybleInvoiceDistribution;
-        //            foreach (var d in distribution)
-        //            {
-        //                var transact = new SupplierLedgerVm
-        //                {
-        //                    SupplierId = i.SupplierId,
-        //                    SupplierName = i.SupplierName,
-        //                    TranssactionId = i.ApPaybleInvoicesId,
-        //                    TransactionDate = i.InvoiceDate,
-        //                    TransReference = i.Remark,
-        //                    TransactionType = "Invoice",
-        //                    Debit = d.Debit,
-        //                    Credit = d.Credit
-        //                };
-        //                supplierLedgerList.Add(transact);
-        //            }
-        //        }
-
-
-
-        //        #endregion
-        //    }
-
-        //    if (String.IsNullOrWhiteSpace(transactionType) || transactionType == "Payment")
-        //    {
-        //        #region collection
-
-        //        standardCollections = standardCollections
-        //           .Where(x => x.PaymentDate >= from)
-        //           .Where(x => x.PaymentDate <= to).AsQueryable();
-        //        foreach (var i in standardCollections)
-        //        {
-        //            var distribution = i.ApPaymentDistribution;
-        //            foreach (var d in distribution)
-        //            {
-        //                var transact = new SupplierLedgerVm
-        //                {
-        //                    SupplierId = i.SupplierId,
-        //                    SupplierName = i.SupplierName,
-        //                    TranssactionId = i.ApPaymentId,
-        //                    TransactionDate = i.PaymentDate,
-        //                    TransReference = i.Remark,
-        //                    TransactionType = "Payment",
-        //                    Debit = d.Debit,
-        //                    Credit = d.Credit
-        //                };
-        //                supplierLedgerList.Add(transact);
-        //            }
-        //        }
-
-
-
-        //        #endregion
-        //    }
-
-        //    if (String.IsNullOrWhiteSpace(transactionType) || transactionType == "Misc Payment")
-        //    {
-        //        #region misc collection
-
-        //        miscelaneousCollections = miscelaneousCollections
-        //           .Where(x => x.PaymentDate >= from)
-        //           .Where(x => x.PaymentDate <= to).AsQueryable();
-        //        foreach (var i in miscelaneousCollections)
-        //        {
-        //            var distribution = i.ApMiscellaneousPaymentDistribution;
-        //            foreach (var d in distribution)
-        //            {
-        //                var transact = new SupplierLedgerVm
-        //                {
-        //                    SupplierId = i.SupplierId,
-        //                    SupplierName = i.SupplierName,
-        //                    TranssactionId = i.ApMiscellaneousPaymentId,
-        //                    TransactionDate = i.PaymentDate,
-        //                    TransReference = i.Remark,
-        //                    TransactionType = "Misc. Payment",
-        //                    Debit = d.Debit,
-        //                    Credit = d.Credit
-        //                };
-        //                supplierLedgerList.Add(transact);
-        //            }
-        //        }
-
-
-
-        //        #endregion
-        //    }
-
-        //    return supplierLedgerList;
-        //}
+        public void Dispose()
+        {
+            _db?.Dispose();
+        }
+       
     }
     
 }

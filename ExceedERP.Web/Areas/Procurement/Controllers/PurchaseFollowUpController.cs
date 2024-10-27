@@ -1,20 +1,16 @@
-﻿﻿using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.DataAccess.Context;
+﻿using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using System;
-using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
- using ExceedERP.Core.Domain.Procurement;
- using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
- using ExceedERP.Core.Domain.Procurement.Settings;
+using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
+using ExceedERP.Core.Domain.Procurement.Settings;
 
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers
 {
-    
+
     public class PurchaseFollowUpController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

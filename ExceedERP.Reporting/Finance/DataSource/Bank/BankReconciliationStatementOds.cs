@@ -88,6 +88,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.Bank
         [DataObjectMethod(DataObjectMethodType.Select)]
         public BankReconciliationStatementVm GetReconciliationStatement(int id)
         {
+            bool isAccountOverdraft=false;
             var bankReconciliationStatementVms = new BankReconciliationStatementVm();
 
             var reconciliationSchedule = _db.ReconciliationSchedules.Find(id);
@@ -107,22 +108,29 @@ namespace ExceedERP.Reporting.Finance.DataSource.Bank
                 string account = _accountHelper.GetNaturalAccountSegment(bankaccountobj.AccountCode);
                 string subaccount = _accountHelper.GetSubAccountSegment(bankaccountobj.AccountCode);
 
+                var naturalAccount = _db.GLChartOfAccountAccounts.Where(x => x.Values == account).FirstOrDefault(); ;
+                if (naturalAccount != null)
+                {
+                    if (naturalAccount.AccountType == GlAccountTypes.Liability)
+                        isAccountOverdraft = true;
+                }
+
                 var bookData = _db.ReconcilationBookAccounts
                     //.Where(x => x.AccountCode == bankaccountobj.AccountCode) //old
                     .Where(x => x.AccountSegment == account && x.SubAccountSegment == subaccount)
                     .Where(x => x.Reconciled == false || x.Reconciled && x.ReconciledDate >= dt22)//from || new code
-                                                                                                 //.Where(x => x.RecordType != RecordType.Exception)
-                    .Where(x => x.RecordType != RecordType.Beginning)
-                    // .Where(x => x.Date >= dt1)
+                                                                                                  //.Where(x => x.RecordType != RecordType.Exception)
+                                                                                                  //.Where(x => x.RecordType != RecordType.Beginning) //was ON//commented
+                                                                                                  // .Where(x => x.Date >= dt1)
                     .Where(x => x.Date < dt22).ToList();
                 //filter book
-               
+
 
 
                 var bankData = _db.ReconcilationBankAccounts
                     .Where(x => x.BankAccount == bankaccountobj.AccountNumber)
                     .Where(x => x.Reconciled == false || x.Reconciled && x.ReconciledDate >= dt22)//from || new code
-                    // .Where(x => x.Date >= dt1)
+                                                                                                  // .Where(x => x.Date >= dt1)
                     .Where(x => x.Date < dt22).ToList();//< less than cuz it is +1 above
 
 
@@ -140,7 +148,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.Bank
                     {
                         Date = deposit.Date,
                         Reference = deposit.Reference,
-                        ReferenceDoc=deposit.ReferenceDoc,
+                        ReferenceDoc = deposit.ReferenceDoc,
                         Source = deposit.Source,
                         ActivityBalance = deposit.Debit
                     };
@@ -156,7 +164,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.Bank
                     {
                         Date = withdrwal.Date,
                         Reference = withdrwal.Reference,
-                        ReferenceDoc="",
+                        ReferenceDoc = "",
                         Source = "",
                         ActivityBalance = withdrwal.Credit
                     };
@@ -172,7 +180,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.Bank
                     {
                         Date = payment.Date,
                         Reference = payment.Reference,
-                        ReferenceDoc=payment.ReferenceDoc,
+                        ReferenceDoc = payment.ReferenceDoc,
                         Source = payment.Source,
                         ActivityBalance = payment.Credit
                     };
@@ -188,7 +196,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.Bank
                     {
                         Date = deposit.Date,
                         Reference = deposit.Reference,
-                        ReferenceDoc="",
+                        ReferenceDoc = "",
                         Source = "",
                         ActivityBalance = deposit.Debit
                     };
@@ -199,14 +207,28 @@ namespace ExceedERP.Reporting.Finance.DataSource.Bank
 
                 bankReconciliationStatementVms.EndingBalanceOfBankStatement = reconciliationSchedule.BankEndingBalance;
 
-                bankReconciliationStatementVms.TotalBalance =
-                    bankReconciliationStatementVms.EndingBalanceOfBankStatement 
-                    +bankReconciliationStatementVms.Deposits.Sum(x => x.ActivityBalance) 
-                    +bankReconciliationStatementVms.WithdrawByBanks.Sum(x => x.ActivityBalance);
+                if (isAccountOverdraft)
+                {
+                    bankReconciliationStatementVms.TotalBalance =
+                                           bankReconciliationStatementVms.EndingBalanceOfBankStatement
+                                           - bankReconciliationStatementVms.Deposits.Sum(x => x.ActivityBalance)
+                                           - bankReconciliationStatementVms.WithdrawByBanks.Sum(x => x.ActivityBalance);
 
-                bankReconciliationStatementVms.AdjustedBankBalance =
-                    bankReconciliationStatementVms.TotalBalance 
-                    -bankReconciliationStatementVms.OutstandingPayments.Sum(x => x.ActivityBalance);
+                    bankReconciliationStatementVms.AdjustedBankBalance =
+                   bankReconciliationStatementVms.TotalBalance
+                   + bankReconciliationStatementVms.OutstandingPayments.Sum(x => x.ActivityBalance);
+                }
+                else
+                { 
+                    bankReconciliationStatementVms.TotalBalance =
+                        bankReconciliationStatementVms.EndingBalanceOfBankStatement
+                        + bankReconciliationStatementVms.Deposits.Sum(x => x.ActivityBalance)
+                        + bankReconciliationStatementVms.WithdrawByBanks.Sum(x => x.ActivityBalance);
+
+                     bankReconciliationStatementVms.AdjustedBankBalance =
+                    bankReconciliationStatementVms.TotalBalance
+                    - bankReconciliationStatementVms.OutstandingPayments.Sum(x => x.ActivityBalance);
+                }
 
                 int periodid = _fiscalYearHelper.GetPeriodOfDate(reconciliationSchedule.Date.Date);
                 if (periodid != 0)
@@ -236,10 +258,20 @@ namespace ExceedERP.Reporting.Finance.DataSource.Bank
                
                 bankReconciliationStatementVms.BankServiceCharge = reconciliationSchedule.ServiceCharges.Sum(x=>x.Amount);//get from statment
 
-                bankReconciliationStatementVms.AdjustedLedgerBalance =
-                    bankReconciliationStatementVms.BalanceAsPerLedger 
-                    +bankReconciliationStatementVms.DepositKnownByBanks.Sum(x => x.ActivityBalance)
-                    -bankReconciliationStatementVms.BankServiceCharge;
+                if (isAccountOverdraft)
+                {
+                    bankReconciliationStatementVms.AdjustedLedgerBalance =
+                    bankReconciliationStatementVms.BalanceAsPerLedger
+                    - bankReconciliationStatementVms.DepositKnownByBanks.Sum(x => x.ActivityBalance)
+                    + bankReconciliationStatementVms.BankServiceCharge;
+                }
+                else
+                {
+                    bankReconciliationStatementVms.AdjustedLedgerBalance =
+                    bankReconciliationStatementVms.BalanceAsPerLedger
+                    + bankReconciliationStatementVms.DepositKnownByBanks.Sum(x => x.ActivityBalance)
+                    - bankReconciliationStatementVms.BankServiceCharge;
+                }
 
                 bankReconciliationStatementVms.UnreconciledDifference =
                     bankReconciliationStatementVms.AdjustedBankBalance -

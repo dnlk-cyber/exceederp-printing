@@ -128,6 +128,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
 
             var exists = db.AnnualNeedAssesments.Where(x => x.OrgStructureId == annualNeedAssesment.OrgStructureId)
                 .Where(x => x.BranchId == annualNeedAssesment.BranchId)
+                .Where(x => x.BusinessUnitId == annualNeedAssesment.BusinessUnitId)
                 .Where(x => x.GlFiscalYearId == annualNeedAssesment.GlFiscalYearId).ToList();
             if (exists.Any())
             {
@@ -182,6 +183,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
             var exists = db.AnnualNeedAssesments.Where(x => x.AnnualNeedAssesmentID != annualNeedAssesment.AnnualNeedAssesmentID)
                                                 .Where(x => x.OrgStructureId == annualNeedAssesment.OrgStructureId)
                                                 .Where(x => x.BranchId == annualNeedAssesment.BranchId)
+                                                .Where(x => x.BusinessUnitId == annualNeedAssesment.BusinessUnitId)
                                                 .Where(x => x.GlFiscalYearId == annualNeedAssesment.GlFiscalYearId).ToList();
             if (exists.Any())
             {

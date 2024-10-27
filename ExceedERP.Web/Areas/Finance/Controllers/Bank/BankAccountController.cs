@@ -1,7 +1,9 @@
-﻿﻿using ExceedERP.Core.Domain.Finance.Common;
+﻿using ExceedERP.Core.Domain.Finance;
+using ExceedERP.Core.Domain.Finance.Common;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -11,6 +13,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers
 {
+    [AuthorizeRoles(FinanceConstants.BankReconciliationAdmin)]
     public class BankAccountController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
@@ -84,6 +87,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult BankAccounts_Update([DataSourceRequest]DataSourceRequest request, BankAccount bankAccount)
         {
+            var previousData = _db.BankAccounts
+                .Where(x=>x.BankAccountId == bankAccount.BankAccountId)
+                .AsNoTracking()
+                .FirstOrDefault();
+
             if (ModelState.IsValid)
             {
                 var entity = new BankAccount
@@ -110,6 +118,25 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
                 bankAccount.BankAccountId = entity.BankAccountId;
+                #region update related
+                var bank=_db.ReconcilationBankAccounts.Where(x => x.BankAccount== previousData.AccountNumber).ToList();
+                var schedule=_db.ReconciliationSchedules.Where(x => x.BankAccount== previousData.AccountNumber).ToList();
+                foreach(var b in bank)
+                {
+                    b.BankAccount = entity.AccountNumber;
+                    _db.ReconcilationBankAccounts.Attach(b);
+                    _db.Entry(b).State = EntityState.Modified;
+                    _db.SaveChanges();
+                }
+                foreach(var b in schedule)
+                {
+                    b.BankAccount = entity.AccountNumber;
+                    _db.ReconciliationSchedules.Attach(b);
+                    _db.Entry(b).State = EntityState.Modified;
+                    _db.SaveChanges();
+                }
+                #endregion
+
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "Bank Account", "Success", User.Identity.Name, $"modified account {entity.AccountCode}  {entity.AccountNumber}", Modules.Finance);
                 #endregion
@@ -121,6 +148,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult BankAccounts_Destroy([DataSourceRequest]DataSourceRequest request, BankAccount bankAccount)
         {
+            ModelState.AddModelError("no","You can't delete bank account");
             if (ModelState.IsValid)
             {
                 var entity = new BankAccount

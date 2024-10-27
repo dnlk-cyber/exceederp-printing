@@ -19,6 +19,7 @@
               "# } #" +
               "/>"
               );
+          columns.Bound(c => c.ReconciledDate).Width(120);
           //columns.Bound(c => c.Check).Width(120).ClientTemplate(
           //      "<input type='checkbox' disabled = 'true' value='#= Check #' " +
           //          "# if (Check) { #" +
@@ -28,14 +29,9 @@
           //  );
           columns.Bound(c => c.Source).Width(100);
           columns.Bound(c => c.SourceID).Width(100);
-          columns.Bound(c => c.OrgBranchName).Hidden(true);
-          columns.Bound(c => c.DateCreated).Hidden(true);
-          columns.Bound(c => c.LastModified).Hidden(true);
-          columns.Bound(c => c.CreatedBy).Hidden(true);
-          columns.Bound(c => c.ModifiedBy).Hidden(true);
           columns.Command(command =>
           {
-              command.Custom("✅").Click("ChangeStatus");
+             // command.Custom("✅").Click("ChangeStatus");
           });
       })
       .ToolBar(toolbar =>

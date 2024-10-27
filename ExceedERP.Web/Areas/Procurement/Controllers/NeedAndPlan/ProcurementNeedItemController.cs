@@ -3,7 +3,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.Need;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.Settings;

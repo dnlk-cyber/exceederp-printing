@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.Core.Domain.Procurement.Proforma;
-using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
@@ -14,11 +12,7 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Helpers.Procurement;
 using System;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using ExceedERP.Core.Domain.CRM;
-using ExceedERP.DataAccess.Migrations;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
 {
@@ -402,6 +396,133 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             return null;
         }
 
+        //[AuthorizeRoles(ProcurementRoles.ProcurementVoid)]
+        //public JsonResult Void(int id)
+        //{
+        //    var record = _db.PoChangeOforders.Find(id);
+        //    var po = _db.PurchaseOrders.Find(record.PurchaseOrderID);
+        //    if (record != null && record.IsOnlineApproved && !record.IsVoid)
+        //    {
+        //        var poreceivetypes = _db.ReceiveTypes.Where(x => x.Type == GoodReceiveType.PurchaseOrder)
+        //            .Select(x => x.ReceiveTypeId).ToList();
+
+        //        #region validate payment
+
+        //        var payment = _db.PurchasePayments
+        //            .Where(x => x.IsVoid == false)
+        //            .Where(x => x.Type == "Purchase Order")
+        //            .FirstOrDefault(x => x.PoOrContractNumber == record.PurchaseOrderID.ToString());
+
+        //        if (payment != null)
+        //        {
+        //            var formattedData2 = new
+        //            {
+        //                Message = $"This purchase order can not be void since it is referred in payment {payment.PurchasePaymentId}.",
+        //                Status = "NOT_OK"
+        //            };
+        //            return Json(formattedData2, JsonRequestBehavior.AllowGet);
+        //        }
+        //        #endregion
+        //        #region validate grn
+
+        //        var goodReceive = _db.GoodReceives
+        //            .Where(x => x.IsVoid == false)
+        //            .Where(x => poreceivetypes.Contains(x.ReceiveTypeId))
+        //            .FirstOrDefault(x => x.ReceiveRef == record.PurchaseOrderID.ToString());
+
+        //        if (goodReceive != null)
+        //        {
+        //            var formattedData2 = new
+        //            {
+        //                Message = $"This purchase order can not be void since it is referred in good receive {goodReceive.GoodReceiveId}.",
+        //                Status = "NOT_OK"
+        //            };
+        //            return Json(formattedData2, JsonRequestBehavior.AllowGet);
+        //        }
+        //        #endregion
+        //        #region validate service grn
+
+        //        var serviceReceive = _db.ServiceReceives
+        //            .Where(x => x.IsVoid == false)
+        //            .Where(x => poreceivetypes.Contains(x.ReceiveTypeId))
+        //            .FirstOrDefault(x => x.ReceiveRef == record.PurchaseOrderID.ToString());
+
+        //        if (serviceReceive != null)
+        //        {
+        //            var formattedData2 = new
+        //            {
+        //                Message = $"This purchase order can not be void since it is referred in service receive {serviceReceive.ServiceReceiveId}.",
+        //                Status = "NOT_OK"
+        //            };
+        //            return Json(formattedData2, JsonRequestBehavior.AllowGet);
+        //        }
+        //        #endregion
+        //        #region validate fixed grn
+
+        //        var fixedAssetReceive = _db.FixedAssetReceives
+        //            .Where(x => x.IsVoid == false)
+        //            .Where(x => poreceivetypes.Contains(x.ReceiveTypeId))
+        //            .FirstOrDefault(x => x.ReceiveRef == record.PurchaseOrderID.ToString());
+
+        //        if (fixedAssetReceive != null)
+        //        {
+        //            var formattedData2 = new
+        //            {
+        //                Message = $"This purchase order can not be void since it is referred in fixed asset receive {fixedAssetReceive.FixedAssetReceiveId}.",
+        //                Status = "NOT_OK"
+        //            };
+        //            return Json(formattedData2, JsonRequestBehavior.AllowGet);
+        //        }
+        //        #endregion
+        //        #region remove related validations
+
+        //        _db.PurchaseOrderValidations.RemoveRange(record.PurchaseOrderValidation);
+        //        _db.SaveChanges();
+
+        //        #endregion
+        //        record.Status = Enum.GetName(typeof(OperationStatuses), 10);
+        //        record.IsOnlineApproved = false;
+        //        record.IsSendForApproval = false;
+        //        record.IsVoid = true;
+        //        record.VoidBy = User.Identity.Name;
+        //        record.VoidTime = DateTime.Now;
+        //        record.ForwardedFrom = UserInformationHelper.GetEmployeeUserId(record.ProcurementOfficer);
+        //        record.ForwardedTo = UserInformationHelper.GetEmployeeUserId(record.ProcurementOfficer);
+        //        _db.PurchaseOrders.Attach(record);
+        //        _db.Entry(record).State = EntityState.Modified;
+        //        _db.SaveChanges();
+
+        //        var formattedData = new
+        //        {
+        //            Message = "Void Successful.",
+        //            Status = "OK"
+        //        };
+        //        return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //    }
+        //    if (record == null)
+        //    {
+        //        var formattedData = new
+        //        {
+        //            Message = "The record is not found.",
+        //            Status = "NOT_OK"
+        //        };
+        //        return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //    }
+
+
+        //    if (!record.IsOnlineApproved)
+        //    {
+        //        var formattedData = new
+        //        {
+        //            Message = "The record is not approved hence you can modify by editing.",
+        //            Status = "NOT_OK"
+        //        };
+        //        return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //    }
+
+
+        //    return null;
+        //}
         protected override void Dispose(bool disposing)
         {
             _db.Dispose();

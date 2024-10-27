@@ -141,7 +141,7 @@
                                                                                                             </dt>
                                                                                                             <dd>
 
-                                                                                                                #=kendo.toString(kendo.parseDate(FloatDate), 'dd/MM/yyyy') #
+                                                                                                                #=kendo.toString(kendo.parseDate(FloatDate), 'dd/MM/yyyy hh:mm tt') #
 
                                                                                                             </dd>
                                                                                                             <dt>
@@ -149,7 +149,7 @@
                                                                                                             </dt>
                                                                                                             <dd>
 
-                                                                                                                #=kendo.toString(kendo.parseDate(ClosingDate), 'dd/MM/yyyy') #
+                                                                                                                #=kendo.toString(kendo.parseDate(ClosingDate), 'dd/MM/yyyy hh:mm tt') #
 
                                                                                                             </dd>
                                                                                                             <dt>
@@ -157,7 +157,7 @@
                                                                                                             </dt>
                                                                                                             <dd>
 
-                                                                                                                #=kendo.toString(kendo.parseDate(OpenigDate), 'dd/MM/yyyy') #
+                                                                                                                #=kendo.toString(kendo.parseDate(OpenigDate), 'dd/MM/yyyy hh:mm tt') #
 
                                                                                                             </dd>
                                                                                                             <dt>
@@ -170,7 +170,7 @@
                                                                                                                 CreatedOn
                                                                                                             </dt>
                                                                                                             <dd>
-                                                                                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                                                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                                                                                             </dd>
                                                                                                             <dt>
@@ -652,20 +652,25 @@
                                                                                                                                                                                                                 .Columns(columns =>
                                                                                                                                                                                                                 {
                                                                                                                                                                                                                     columns.Bound(c => c.PurchaseRequisitionAssignmentId).Width(200).Title("Assignment").EditorTemplateName("PurchaseRequistionForTender");
-                                                                                                                                                                                                                    columns.Bound(c => c.PurchaseRequisitionID).Title("PR").Width(200);//.EditorTemplateName("PurchaseRequistionForTender");
+                                                                                                                                                                                                                   // columns.Bound(c => c.PurchaseRequisitionID).Title("PR").Width(200);//.EditorTemplateName("PurchaseRequistionForTender");
+                                                                                                                                                                                                                    columns.Bound(o => o.PurchaseRequisitionID).Width(120).ClientTemplate(
+
+                                                                                                                                                                                                                       @Html.ActionLink("\\#=PurchaseRequisitionID\\#", "PurchaseRequistionReviewPrint", "ProcurementPrint", new { area = "Procurement", Id = "\\#=PurchaseRequisitionID\\#" }, new { @class = "detail-link", @target = "_blank" }).ToHtmlString()
+
+                                                                                                                                                                                                                       );
                                                                                                                                                                                                                     columns.Bound(c => c.StoreRequisitionID).Width(120).Title("SR");
                                                                                                                                                                                                                     columns.Command(command =>
                                                                                                                                                                                                                     {
-                                                                                                                                                                                                                    command.Custom("Reload Items").Click("ReloadPRItems");
-                                                                                                                                                                                                                    command.Edit();
-                                                                                                                                                                                                                    command.Destroy();
-                                                                                                                                                                                                                }).Width(780);
-                                                                                                                        })
+                                                                                                                                                                                                                        command.Custom("Reload Items").Click("ReloadPRItems");
+                                                                                                                                                                                                                        command.Edit();
+                                                                                                                                                                                                                        command.Destroy();
+                                                                                                                                                                                                                    }).Width(780);
+                                                                                                                                                                                                                })
                                                                                                                                                                                                                                           .ToolBar(toolbar =>
                                                                                                                                                                                                                                           {
-                                                                                                                                                                                                                                                            toolbar.Create();
+                                                                                                                                                                                                                                              toolbar.Create();
 
-                                                                                                                                                                                                                                                        })
+                                                                                                                                                                                                                                          })
 
                                                                                                                                                                                                                                           .Editable(editable => editable.Mode(GridEditMode.InLine))
                                                                                                                                                                                                                                           .Pageable()
@@ -673,8 +678,8 @@
 
                                                                                                                                                                                                                                           .Sortable(sortable =>
                                                                                                                                                                                                                                           {
-                                                                                                                                                                                                                                                            sortable.SortMode(GridSortMode.SingleColumn);
-                                                                                                                                                                                                                                                        })
+                                                                                                                                                                                                                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                                                                                                                                          })
 
                                                                                                                                                                                                                                           .Scrollable()
                                                                                                                                                                                                                                           .Events(x => x.DataBound("onDataBoundTenderLines"))
@@ -686,10 +691,10 @@
                                                                                                                                                                                                                                                   .RequestEnd("onRequestEnd(\"lotpr_#=LotID#\")"))
                                                                                                                                                                                                                                               .Model(model =>
                                                                                                                                                                                                                                               {
-                                                                                                                                                                                                                                                                model.Id(p => p.LotPurchaseRequisitionId);
-                                                                                                                                                                                                                                                                model.Field(p => p.PurchaseRequisitionID).Editable(false);
-                                                                                                                                                                                                                                                                model.Field(p => p.StoreRequisitionID).Editable(false);
-                                                                                                                                                                                                                                                            })
+                                                                                                                                                                                                                                                  model.Id(p => p.LotPurchaseRequisitionId);
+                                                                                                                                                                                                                                                  model.Field(p => p.PurchaseRequisitionID).Editable(false);
+                                                                                                                                                                                                                                                  model.Field(p => p.StoreRequisitionID).Editable(false);
+                                                                                                                                                                                                                                              })
                                                                                                                                                                                                                                               .Read(read => read.Action("LotPurchaseRequisitions_Read", "LotPurchaseRequisition", new { id = "#= LotID #" }))
                                                                                                                                                                                                                                               .Create(create => create.Action("LotPurchaseRequisitions_Create", "LotPurchaseRequisition", new { id = "#= LotID #" }))
                                                                                                                                                                                                                                               .Update(update => update.Action("LotPurchaseRequisitions_Update", "LotPurchaseRequisition"))
@@ -843,11 +848,6 @@
 
 
                                                                                                                                                 </text>);
-                                                                                                                                                                          itemm.Add().Text("Price").Content(@<text>
-
-                                                                                                                                                                                            @BidPrice()
-
-                                                                                                                                                                                        </text>);
 
                                                                                                                                                 @*itemm.Add().Text("Bid Price").Content(@<text>
                                                                                                                                                     @(Html.Kendo().Grid<BidPParticipatingSuppliers>()
@@ -1162,6 +1162,12 @@
                                                                                                                                                                                             @ParticipantItems()
 
                                                                                                                                                                                         </text>);*@
+    itemm.Add().Text("Price").Content(@<text>
+
+                  @BidPrice()
+
+              </text>);
+
 
                                                                                                                                                                                     @*======================================================================== Lots Tender Evaluation Result ========================================================*@
 
@@ -1170,6 +1176,7 @@
                                                                                                                                                                                                     @EvaluationResult()
 
                                                                                                                                                                                                 </text>);
+
                                                                                                                                                                                             @*======================================================================== Lots Bid Awarded Supplier ========================================================*@
 
                                                                                                                                                                                                         itemm.Add().Text("Award").Content(@<text>
@@ -2391,7 +2398,7 @@
     }
 
     function GetSuppliersClicked(e) {
-        alert(lotid)
+      //  alert(lotid)
         $.ajax({
             url: '@Url.Action("GetParticipantItems", "Tender")',
             type: 'POST',

@@ -76,7 +76,9 @@
                       model.Field(p => p.ProcurementOfficer).Editable(false);
                       model.Field(p => p.PurchaseOrderID).Editable(false);
                       model.Field(p => p.IsTransferredToPayment).Editable(false);
-                      //model.Field(p => p.PurchaseRequisitionID).Editable(false);
+                      model.Field(p => p.ForwardedFrom).Editable(false);
+                      model.Field(p => p.ForwardedTo).Editable(false);
+                      model.Field(p => p.IsFinalApproval).Editable(false);
                       model.Field(p => p.CurrentApprovalStep).Editable(false);
                       model.Field(p => p.IsManual).Editable(false);
                       model.Field(p => p.IsPaid).Editable(false);
@@ -153,7 +155,7 @@
                                             </dt>
                                             <dd>
 
-                                                #=kendo.toString(kendo.parseDate(DeliveryDate), 'dd/MM/yyyy') #
+                                                #=kendo.toString(kendo.parseDate(DeliveryDate), 'dd/MM/yyyy hh:mm tt') #
 
                                             </dd>
                                             <dt>
@@ -166,7 +168,7 @@
                                                 CreatedOn
                                             </dt>
                                             <dd>
-                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                             </dd>
                                             <dt>
@@ -185,7 +187,7 @@
                                                 Modified Date
                                             </dt>
                                             <dd>
-                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                             </dd>
                                         </dl>
                                         # if (!IsOnlineApproved)
@@ -817,7 +819,7 @@
                                                 CreatedOn
                                             </dt>
                                             <dd>
-                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                             </dd>
                                             <dt>
@@ -836,7 +838,7 @@
                                                 Modified Date
                                             </dt>
                                             <dd>
-                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                             </dd>
                                         </dl>
                                         @*# if (!IsOnlineApproved)

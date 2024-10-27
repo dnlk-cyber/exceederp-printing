@@ -4,7 +4,6 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -76,7 +75,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 _db.GlSegmentSetups.Add(entity);
                 _db.SaveChanges();
                 gLSegmentSetup.GLSegmentSetupId = entity.GLSegmentSetupId;
-
+                CacheHelper.InvalidateGlSegmentSetupsCache();
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "GL dynamic chart of account segment type", "Success", User.Identity.Name, $"created segment {entity.Name} ", Modules.Finance);
                 #endregion
@@ -122,6 +121,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 _db.GlSegmentSetups.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
+                CacheHelper.InvalidateGlSegmentSetupsCache();
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "GL dynamic chart of account segment type", "Success", User.Identity.Name, $"updated segment {entity.Name}", Modules.Finance);
                 #endregion
@@ -154,6 +154,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 _db.GlSegmentSetups.Attach(entity);
                 _db.GlSegmentSetups.Remove(entity);
                 _db.SaveChanges();
+                CacheHelper.InvalidateGlSegmentSetupsCache();
             }
 
             return Json(new[] { gLSegmentSetup }.ToDataSourceResult(request, ModelState));

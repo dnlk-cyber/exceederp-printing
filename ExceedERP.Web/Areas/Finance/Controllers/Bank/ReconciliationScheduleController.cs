@@ -4,7 +4,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
-using DocumentFormat.OpenXml.Drawing.Diagrams;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.Bank;
 using ExceedERP.Core.Domain.Finance.Common;
@@ -20,6 +19,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 {
+    [AuthorizeRoles(FinanceConstants.BankReconciliationUser,FinanceConstants.BankReconciliationApprover)]
     public class ReconciliationScheduleController : Controller
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
@@ -30,9 +30,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 
         public ActionResult Index()
         {
-            var tax = _db.BankAccounts.ToList();
+            
+            List<string> userBankAccounts = UserInformationHelper.GetUserBanks(User.Identity.Name);
+            var acounts = _db.BankAccounts.Where(x => userBankAccounts.Contains(x.AccountNumber));
 
-            ViewData["accounts"] = tax
+            ViewData["accounts"] = acounts
                    .Select(e => new BankAccount
                    {
                        AccountNumber = e.AccountNumber,
@@ -45,7 +47,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 
         public ActionResult ReconciliationSchedules_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<ReconciliationSchedule> reconciliationschedules = _db.ReconciliationSchedules;
+            List<string> userBankAccounts = UserInformationHelper.GetUserBanks(User.Identity.Name);
+            IQueryable<ReconciliationSchedule> reconciliationschedules = _db.ReconciliationSchedules.Where(x => userBankAccounts.Contains(x.BankAccount));
             DataSourceResult result = reconciliationschedules.ToDataSourceResult(request, reconciliationSchedule => new
             {
                 ReconciliationScheduleId = reconciliationSchedule.ReconciliationScheduleId,
@@ -206,8 +209,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             return Json(new[] { reconciliationSchedule }.ToDataSourceResult(request, ModelState));
         }
 
-        
-        // [Authorize(Roles = Bank + "," + Bank_Admin)]
         public ActionResult Reconcile(int? id)
         {
             string naturalAccount = "";
@@ -354,17 +355,38 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             {
                 naturalAccount = _accountHelper.GetNaturalAccountSegment(bankaccountobj.AccountCode);
                 subAccount = _accountHelper.GetSubAccountSegment(bankaccountobj.AccountCode);
-                GetBookDataFromLedger(naturalAccount, subAccount);
-            }
+                bool status = GetBookDataFromLedger(naturalAccount, subAccount);
 
-            var formattedData = new
+                if (status)
+                {
+                    var formattedData1 = new
+                    {
+                        Message = "Operation complete",
+                        Status = "OK"
+                    };
+                    return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    var formattedData1 = new
+                    {
+                        Message = "Operation didn't succeed.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
             {
-                Message = "Operation complete",
-                Status = "OK"
-            };
-            return Json(formattedData, JsonRequestBehavior.AllowGet);
+                var formattedData = new
+                {
+                    Message = "Account not found",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
         }
-        private void GetBookDataFromLedger(string naturalAcc,string subAcc)
+        private void GetBookDataFromLedger_1(string naturalAcc,string subAcc)
         {
             object refreshLock = naturalAcc + subAcc;
             lock (refreshLock)
@@ -384,7 +406,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                         if (book == null)
                         {
                             #region create book record
-                            string reference = l.ReferenceDoc+" "+l.PaymentReference + " " +l.AdditionalDescription;
+                            string reference = l.JournalReference + " " + l.ReferenceDoc+" "+l.PaymentReference + " " +l.AdditionalDescription;
                             var bookRecord = new ReconciliationBookAccount
                             {
                                 CreatedBy = User.Identity.Name,
@@ -409,8 +431,76 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                 }
             }
         }
+        private bool GetBookDataFromLedger(string naturalAcc, string subAcc)
+        {
+            object refreshLock = naturalAcc + subAcc;
+            lock (refreshLock)
+            {
+                var ledgers = _db.GLLedgerPostings.Where(x => x.AccountSegment == naturalAcc)
+                                                  .Where(x => x.SubAccountSegment == subAcc)
+                                                  .AsNoTracking()
+                                                  .ToList();
 
-        // [Authorize(Roles = Bank + "," + Bank_Admin)]
+                foreach (var ledger in ledgers)
+                {
+                    var lines = _db.GLLedgerPostingLines
+                                   .Where(x => x.GLLedgerPostingID == ledger.GLLedgerPostingID)
+                                   .Where(x => x.Type == LedgerPostTypes.Standard)
+                                   .AsNoTracking()
+                                   .ToList();
+
+                    foreach (var l in lines)
+                    {
+                        using (var transaction = _db.Database.BeginTransaction())
+                        {
+                            try
+                            {
+                                var book = _db.ReconcilationBookAccounts
+                                              .Where(x => x.SourceID == l.JournalNumber)
+                                              .FirstOrDefault();
+
+                                if (book == null)
+                                {
+                                    string reference = l.JournalReference + " " + l.ReferenceDoc + " " + l.PaymentReference + " " + l.AdditionalDescription;
+
+                                    var bookRecord = new ReconciliationBookAccount
+                                    {
+                                        CreatedBy = User.Identity.Name,
+                                        DateCreated = DateTime.Now,
+                                        AccountCode = ledger.AccountCode,
+                                        Debit = l.Debit,
+                                        Credit = l.Credit,
+                                        Date = l.EffectiveDate,
+                                        Type = "From Ledger",
+                                        ReferenceDoc = !string.IsNullOrWhiteSpace(l.JournalNumber) ? l.JournalNumber : "NA",
+                                        Reference = !string.IsNullOrWhiteSpace(reference) ? reference : "NA",
+                                        AdditionalDescription = l.Description + "-" + l.AdditionalDescription,
+                                        Source = l.SourcesName,
+                                        SourceID = l.JournalNumber,
+                                        AccountSegment = _accountHelper.GetNaturalAccountSegment(ledger.AccountCode),
+                                        SubAccountSegment = _accountHelper.GetSubAccountSegment(ledger.AccountCode)
+                                    };
+
+                                    _db.ReconcilationBookAccounts.Add(bookRecord);
+                                    _db.SaveChanges();
+                                    transaction.Commit();
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                transaction.Rollback();
+                                // throw;
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+                return true;
+            }
+        }
+
+
         public ActionResult GetUnReconciledbook(int? id, decimal? amount)
         {
             ReconciliationSchedule reconciliationSchedule = _db.ReconciliationSchedules.Find(id);
@@ -434,7 +524,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             return PartialView(data.ToList().OrderByDescending(x => x.Date));
         }
 
-        // [Authorize(Roles = Bank + "," + Bank_Admin)]
         public ActionResult GetUnReconciledbank(int? id, decimal? amount)
         {
             ReconciliationSchedule reconciliationSchedule = _db.ReconciliationSchedules.Find(id);
@@ -458,7 +547,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             return PartialView(data.ToList().OrderByDescending(x => x.Date));
         }
 
-        // [Authorize(Roles = Bank + "," + Bank_Admin)]
         [HttpPost]
         public ActionResult DeleteUnReconciledbank(int? id)
         {
@@ -475,7 +563,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             }
         }
 
-        // [Authorize(Roles = Bank + "," + Bank_Admin)]
+
         [HttpPost]
         public JsonResult QuickSaveUnreconciledbank(ReconciliationBankAccount reconcilationBankAccount)
         {
@@ -500,7 +588,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             return Json(reconcilationBankAccount, "json");
         }
 
-        [AuthorizeRoles(FinanceConstants.BankReconciliationUser)]
+       
         public ActionResult ReconcileBook(int? id)
         {
             try
@@ -517,15 +605,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             }
         }
 
-       // [AuthorizeRoles(FinanceConstants.BankReconciliationUser)]
+  
         public JsonResult ReconcileBank(int id, int reconid)
         {
             var schedule = _db.ReconciliationSchedules.Find(reconid);
             var reconciliationBankAccount = _db.ReconcilationBankAccounts.Find(id);
             if (schedule != null && reconciliationBankAccount != null)
             {
+                DateTime reconcileDate = _fiscalYearHelper.GetEndOfPeriod(schedule.Date).Date;
                 reconciliationBankAccount.Reconciled = true;
-                reconciliationBankAccount.ReconciledDate = schedule.Date;
+                reconciliationBankAccount.ReconciledDate = reconcileDate;
                 _db.Entry(reconciliationBankAccount).State = EntityState.Modified;
                 _db.SaveChanges();
             }
@@ -559,6 +648,47 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 
         }
 
+        public JsonResult ReconcileBegin(int id, int reconid)
+        {
+            var schedule = _db.ReconciliationSchedules.Find(reconid);
+            var reconciliationBookAccount = _db.ReconcilationBookAccounts.Find(id);
+            if (schedule != null && reconciliationBookAccount != null)
+            {
+                DateTime reconcileDate = _fiscalYearHelper.GetEndOfPeriod(schedule.Date).Date;
+                reconciliationBookAccount.Reconciled = true;
+                reconciliationBookAccount.ReconciledDate = reconcileDate;
+                _db.Entry(reconciliationBookAccount).State = EntityState.Modified;
+                _db.SaveChanges();
+            }
+
+            if (schedule == null)
+            {
+                var formattedData = new
+                {
+                    Message = "Schedule not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (reconciliationBookAccount == null)
+            {
+                var formattedData = new
+                {
+                    Message = "Record not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            var formattedData1 = new
+            {
+                Message = "Status Updated.",
+                Status = "OK"
+            };
+            return Json(formattedData1, JsonRequestBehavior.AllowGet);
+
+        }
         public ActionResult DrillDownBookSource(string id)
         {
             var header = new BookDrillDownVm();
@@ -1083,7 +1213,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
         }
 
 
-        [AuthorizeRoles(FinanceConstants.BankReconciliationUser)]
+       
         public JsonResult SendForApproval(int id)
         {
             var record = _db.ReconciliationSchedules.Find(id);
@@ -1235,7 +1365,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             return null;
         }
 
-        [AuthorizeRoles(FinanceConstants.BankReconciliationUser)]
+        
         public JsonResult TransferDistribution(string id, string description)
         {
             int myid = int.Parse(id);

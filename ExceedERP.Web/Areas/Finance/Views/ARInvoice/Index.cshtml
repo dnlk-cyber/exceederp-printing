@@ -139,11 +139,12 @@
                             # if (IsOnlineApproved)
                             {#
                             <a target="new" href='@Url.Action("ArInvoice", "FinancePrint")/#=ArInvoiceId#'><i class="fa fa-print fa-2x"></i></a>
-                            <br />
+
                             # } #
 
                             # if (IsOnlineApproved && !IsOnlineTransferred )
                             {#
+                            &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                             <a onclick='return transferToGl("#=ArInvoiceId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
                             # } #
                         </div>
@@ -156,7 +157,7 @@
                                     Created On
                                 </dt>
                                 <dd>
-                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                 </dd>
                                 <dt>
@@ -175,8 +176,36 @@
                                     Modified Date
                                 </dt>
                                 <dd>
-                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                 </dd>
+        <dt>
+    Checked On
+</dt>
+<dd>
+    #=kendo.toString(kendo.parseDate(SendForApprovalTime), 'dd/MM/yyyy hh:mm tt') #
+</dd>
+<dt>
+    Checked By
+</dt>
+<dd>
+    #=SendForApprovalBy #
+</dd>
+
+<dt>
+    Approved On
+</dt>
+<dd>
+    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
+
+
+</dd>
+<dt>
+    Approved By
+</dt>
+<dd>
+    #=OnlineApprovedBy #
+
+</dd>
                             </dl>
                         </div>
                         <hr>
@@ -397,7 +426,7 @@
                                                                       .Update(update => update.Action("ARInvoiceDistributions_Update", "ARInvoiceDistribution", new { id = "#=ArInvoiceId#" }))
                                                                       .Destroy(destroy => destroy.Action("ARInvoiceDistributions_Destroy", "ARInvoiceDistribution"))
                                                                   )
-                                                                         
+
                                                                   .ToClientTemplate()
                                                     )
 

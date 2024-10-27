@@ -15,16 +15,23 @@ using ExceedERP.Reporting.Finance.ViewModel;
 namespace ExceedERP.Reporting.Finance.DataSource
 {
     [DataObject]
-    public class RecordStatusOds : List<string>
+    public class RecordStatusOds : List<string>, IDisposable
     {
-        private readonly ExceedDbContext _db = new ExceedDbContext();
+        private readonly ExceedDbContext _db;
+        public RecordStatusOds()
+        {
+            _db = new ExceedDbContext();
+        }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<string> GetRecordStatusList()
         {
-           return   Enum.GetNames(typeof(OperationStatuses)).ToList();;
+            return Enum.GetNames(typeof(OperationStatuses)).ToList(); ;
         }
 
-       
+        public void Dispose()
+        {
+            _db?.Dispose();
+        }
     }
 }

@@ -37,6 +37,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                 ProcurementMethod = purchaseRequisitionAssignment.ProcurementMethod,
                 PurchaseCategory = purchaseRequisitionAssignment.PurchaseCategory,
                 TenderType = purchaseRequisitionAssignment.TenderType,
+                Status = purchaseRequisitionAssignment.Status,
 
                 DateCreated = purchaseRequisitionAssignment.DateCreated,
                 CreatedBy = purchaseRequisitionAssignment.CreatedBy,
@@ -141,7 +142,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                     TenderType = purchaseRequisitionAssignment.TenderType,
                     CreatedBy = purchaseRequisitionAssignment.CreatedBy,
                     DateCreated = purchaseRequisitionAssignment.DateCreated,
-
+                    IsVoid = purchaseRequisitionAssignment.IsVoid,
+                    VoidBy = purchaseRequisitionAssignment.VoidBy,
+                    VoidTime = purchaseRequisitionAssignment.VoidTime,
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Today,
                 };
@@ -227,6 +230,58 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                     _db.SaveChanges();
                 }
             }
+
+        [AuthorizeRoles(ProcurementRoles.ProcurementVoid)]
+        public JsonResult Void(int id)
+        {
+            var record = _db.PurchaseRequisitionAssignments.Find(id);
+            if (record != null && record.IsOnlineApproved && !record.IsVoid && record.PurchaseRequisitionReassignmentItems.Count > 0)
+            {
+                record.Status = Enum.GetName(typeof(OperationStatuses), 10);
+                record.IsOnlineApproved = false;
+                record.IsSendForApproval = false;
+                record.IsVoid = true;
+                record.VoidBy = User.Identity.Name;
+                record.VoidTime = DateTime.Now;
+                _db.PurchaseRequisitionAssignments.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+                
+                _db.SaveChanges();
+
+               
+                var formattedData = new
+                {
+                    Message = "Void Successful.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (!record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not approved hence you can modify by editing.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            return null;
+        }
+
+
         protected override void Dispose(bool disposing)
             {
             _db.Dispose();

@@ -1,0 +1,266 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav class="navbar navbar-default">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".js-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Procurement</a>
+        </div>
+
+
+        <div class="collapse navbar-collapse js-navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown mega-dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i> Actions </a>
+
+                    <ul class="dropdown-menu mega-dropdown-menu row">
+                        @if (HttpContext.Current.User.IsInRole("Procurement_Bond_User")
+                        || HttpContext.Current.User.IsInRole("Procurement_Bond_Approver")
+                        || HttpContext.Current.User.IsInRole("Procurement_AdvanceBond_User")
+                        || HttpContext.Current.User.IsInRole("Procurement_AdvanceBond_Approver")
+                        || HttpContext.Current.User.IsInRole("Procurement_Contract_User")
+                        || HttpContext.Current.User.IsInRole("Procurement_Contract_Approver")
+                        || HttpContext.Current.User.IsInRole("Procurement_Supplier_User")
+                        || HttpContext.Current.User.IsInRole("Procurement_Supplier_Approver")
+                        || HttpContext.Current.User.IsInRole("Procurement_UserDepartment_User")
+                        || HttpContext.Current.User.IsInRole("Procurement_UserDepartment_Approver")
+                        || HttpContext.Current.User.IsInRole("Procurement_Plan_User")
+                        || HttpContext.Current.User.IsInRole("Procurement_Plan_Approver")
+                        || HttpContext.Current.User.IsInRole("Procurement_Payment_User")
+                        || HttpContext.Current.User.IsInRole("Procurement_Payment_Approver"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    @if (HttpContext.Current.User.IsInRole("Procurement_Payment_User")
+                                    || HttpContext.Current.User.IsInRole("Procurement_Payment_Approver"))
+                                    {
+                                        <li class="dropdown-top-header">Payment</li>
+                                        <li class="divider"></li>
+                                        <li id="prc0042332" class="actionlinlk">
+                                            @Html.ActionLink("Payment", "Index", "PurchasePayment", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                        <li id="prc00423562" class="actionlinlk">
+                                            @Html.ActionLink("Settlement", "Index", "PaymentSettlementRequest", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                    }
+                                    @if (HttpContext.Current.User.IsInRole("Procurement_Bond_User")
+                                        || HttpContext.Current.User.IsInRole("Procurement_Bond_Approver"))
+                                    {
+                                        <li class="dropdown-top-header">Guarantee</li>
+                                        <li class="divider"></li>
+                                        <li id="prc004" class="actionlinlk">
+                                            @Html.ActionLink("Guarantee", "Index", "Guarantee", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                    }
+
+                                    @if (HttpContext.Current.User.IsInRole("Procurement_AdvanceBond_User")
+                                        || HttpContext.Current.User.IsInRole("Procurement_AdvanceBond_Approver"))
+                                    {
+                                        <li id="prc00478" class="actionlinlk">
+                                            @Html.ActionLink("Advance Guarantee", "Index", "GuaranteeAdvance", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                    }
+
+                                    @if (HttpContext.Current.User.IsInRole("Procurement_Contract_User")
+                                        || HttpContext.Current.User.IsInRole("Procurement_Contract_Approver"))
+                                    {
+                                        <li class="dropdown-top-header">Contract</li>
+                                        <li class="divider"></li>
+                                        <li id="prc007" class="actionlinlk">
+                                            @Html.ActionLink("Contract Management", "Index", "ContractManagement", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                    }
+
+                                    @if (HttpContext.Current.User.IsInRole("Procurement_Supplier_User")
+                                    || HttpContext.Current.User.IsInRole("Procurement_Supplier_Approver"))
+                                    {
+                                        <li class="dropdown-top-header">Supplier</li>
+                                        <li class="divider"></li>
+                                        <li id="prc001" class="actionlinlk">
+                                            @Html.ActionLink("Supplier", "Index", "Supplier", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                        <li id="prc001mom" class="actionlinlk">
+                                            @Html.ActionLink("Supplier List MoM", "Index", "SupplierListMinuteFile", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                    }
+                                    @if (HttpContext.Current.User.IsInRole("Procurement_UserDepartment_User")
+                                         || HttpContext.Current.User.IsInRole("Procurement_UserDepartment_Approver")
+                                         || HttpContext.Current.User.IsInRole("Procurement_Plan_User")
+                                         || HttpContext.Current.User.IsInRole("Procurement_Plan_Approver"))
+                                    {
+                                        <li class="dropdown-top-header">Need & Plan</li>
+                                        <li class="divider"></li>
+                                        <li id="prc002" class="actionlinlk">
+                                            @Html.ActionLink("Procurement Need", "Index", "ProcurementNeed", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                        <li id="prc003" class="actionlinlk">
+                                            @Html.ActionLink("Procurement Plan", "Index", "ProcurementPlan", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                    }
+
+                                </ul>
+                            </li>
+                        }
+
+                        @if (HttpContext.Current.User.IsInRole("Admin")
+                            || HttpContext.Current.User.IsInRole("Procurement_UserDepartment_User")
+                            || HttpContext.Current.User.IsInRole("Procurement_UserDepartment_Approver")
+                            || HttpContext.Current.User.IsInRole("Service_Requisition_Second_Approver")
+                            || HttpContext.Current.User.IsInRole("Procurement_User")
+                            || HttpContext.Current.User.IsInRole("Procurement_Approver")
+                            || HttpContext.Current.User.IsInRole("Procurement_Tender_User")
+                            || HttpContext.Current.User.IsInRole("Procurement_Tender_Approver"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">Transactions</li>
+                                    @if (HttpContext.Current.User.IsInRole("Procurement_User")
+                                    || HttpContext.Current.User.IsInRole("Procurement_Approver"))
+                                    {
+                                        <li class="divider"></li>
+                                        <li class="dropdown-header">PR</li>
+                                        <li id="prc000re" class="actionlinlk">
+                                            @Html.ActionLink("Review PR", "Index", "PurchaseRequisitionReview", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                        @*<li id="prc000st" class="actionlinlk">@Html.ActionLink("Local Purchase", "Index", "PurchaseFollowUp", new {area = "Procurement"}, new { target = "_blank" })</li>*@
+                                        <li id="prc000for" class="actionlinlk">
+                                            @Html.ActionLink("Foreign Purchase", "Index", "ForeignPurchase", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                        <li id="prc000" class="actionlinlk">@Html.ActionLink("Price Index", "Index", "ItemPriceIndex", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                    }
+                                    @if (HttpContext.Current.User.IsInRole("Procurement_User")
+                                        || HttpContext.Current.User.IsInRole("Procurement_Approver")
+                                        || HttpContext.Current.User.IsInRole("Procurement_UserDepartment_User")
+                                        || HttpContext.Current.User.IsInRole("Procurement_UserDepartment_Approver")
+                                        || HttpContext.Current.User.IsInRole("Service_Requisition_Second_Approver"))
+                                    {
+                                        <li class="dropdown-header">Service</li>
+                                        @*<li id="prc000ser" class="actionlinlk">
+                @Html.ActionLink("Service Requistion", "Index", "PurchaseRequisitionService", new { area = "Procurement" }, new { target = "_blank" })
+            </li>*@
+                                        <li id="prc000serrec" class="actionlinlk">@Html.ActionLink("Service Receive", "Index", "ServiceReceive", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                    }
+                                    @if (HttpContext.Current.User.IsInRole("Procurement_Tender_User")
+                                    || HttpContext.Current.User.IsInRole("Procurement_Tender_Approver"))
+                                    {
+                                        <li class="divider"></li>
+                                        <li class="dropdown-header">Sourcing</li>
+                                        <li id="prc008" class="actionlinlk">
+                                            @Html.ActionLink("Tender", "Index", "Tender", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                        <li id="prc009" class="actionlinlk">
+                                            @Html.ActionLink("Proforma Purchase", "Index", "ProformaPurchase", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                        <li id="prc010" class="actionlinlk">
+                                            @Html.ActionLink("Purchase Order", "Index", "PurchaseOrder", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                        <li id="prc010d" class="actionlinlk">
+                                            @Html.ActionLink("Direct Purchase Order", "Index", "PurchaseOrderDirect", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                        <li id="prc0104d" class="actionlinlk">
+                                            @Html.ActionLink("Change Order", "Index", "PoChangeOforder", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                        <li id="prc011" class="actionlinlk">
+                                            @Html.ActionLink("Templates", "Index", "TenderTemplate", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+                                    }
+
+                                    @if (HttpContext.Current.User.IsInRole("Admin"))
+                                    {
+                                        <li id="prc008doc" class="actionlinlk">
+                                            @Html.ActionLink("Bid Document", "Index", "TenderBidDocument", new { area = "Procurement" }, new { target = "_blank" })
+                                        </li>
+
+                                    }
+
+
+
+                                </ul>
+                            </li>
+                        }
+                        @if (HttpContext.Current.User.IsInRole("Procurement_Report"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">Report</li>
+                                    <li class="divider"></li>
+                                    <li id="prc021" class="actionlinlk">@Html.ActionLink("Procurement Need", "ProcurementNeedReport", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                    @*<li id="prc012" class="actionlinlk">@Html.ActionLink("Procurement Plan", "ProcurementPlanReport", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>*@
+                                    <li id="prc012" class="actionlinlk">@Html.ActionLink("Monthly Material Requirement", "MonthlyMaterialRequirement", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                    <li id="prc020" class="actionlinlk">@Html.ActionLink("Gurarantee List", "GuaranteeListReport", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                    <li id="prc013" class="actionlinlk">@Html.ActionLink("Contract List", "ContractListReport", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                    <li id="prc0132" class="actionlinlk">@Html.ActionLink("Contract By Category", "ContractByCategoryReport", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                    <li id="prc02011" class="actionlinlk">@Html.ActionLink("Purchase Report", "PurchaseReport", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                    <li id="prc0201" class="actionlinlk">@Html.ActionLink("Purchase Followup", "PurchaseFollowUpReport", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                    <li id="prc0131" class="actionlinlk">@Html.ActionLink("Purchase By Category and Amount", "MonthlyPurchaseByCategoryAndAmountReport", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                    @*<li id="prc0132" class="actionlinlk">@Html.ActionLink("Summary By Purchase Method", "PurchaseSummaryReportByPurchaseMethod", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>
+                    <li id="prc0132" class="actionlinlk">@Html.ActionLink("Purchase Followup By Supplier", "PurchaseFollowingForm", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>*@
+                                    <li id="prc01321" class="actionlinlk">@Html.ActionLink("Purchase Requisitions", "PurchaseRequisition", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                    @*<li id="prc01321p" class="actionlinlk">@Html.ActionLink("Purchase by Status", "PurchaseRequisitionByStatus", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>*@
+                                    <li id="prc01321pu" class="actionlinlk">@Html.ActionLink("Purchased Requisitions", "PurchaseRequisitionPurchased", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                    <li id="prc01321c" class="actionlinlk">@Html.ActionLink("Requisitions Transffered to Contract", "PurchaseRequisitionCompleted", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                    <li id="prc01321c3" class="actionlinlk">@Html.ActionLink("Purchased Items", "PurchasedItemReport", "ProcurementReport", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                </ul>
+                            </li>
+                        }
+                        @if (HttpContext.Current.User.IsInRole("Procurement_Admin"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">Setup</li>
+                                    <li class="divider"></li>
+                                    <li id="prc014" class="actionlinlk">@Html.ActionLink("Procurement", "Index", "ProcurementPoType", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                    <li id="prc015" class="actionlinlk">
+                                        @Html.ActionLink("Supplier Category", "Index", "SupplierCategory", new { area = "Procurement" }, new { target = "_blank" })
+                                    </li>
+                                    <li id="prc015" class="actionlinlk">
+                                        @Html.ActionLink("Letter Template", "Index", "ReportTemplate", new { area = "Procurement" }, new { target = "_blank" })
+                                    </li>
+                                    @*<li id="prc015" class="actionlinlk">@Html.ActionLink("Supplier Rank", "Index", "SupplierRank", new { area = "Procurement" }, new { target = "_blank" })</li>*@
+                                    <li id="prc0151" class="actionlinlk">
+                                        @Html.ActionLink("Guarantee Rule", "Index", "GuaranteeRule", new { area = "Procurement" }, new { target = "_blank" })
+                                    </li>
+                                    <li id="prc015w1" class="actionlinlk">
+                                        @Html.ActionLink("Guarantee Mode", "Index", "GuaranteeMode", new { area = "Procurement" }, new { target = "_blank" })
+                                    </li>
+                                    <li id="prc015co" class="actionlinlk">
+                                        @Html.ActionLink("Purchasers", "Index", "Purchasers", new { area = "Procurement" }, new { target = "_blank" })
+                                    </li>
+                                    <li id="prc015co" class="actionlinlk">
+                                        @Html.ActionLink("Cost Type", "Index", "ForeignPurchaseCostType", new { area = "Procurement" }, new { target = "_blank" })
+                                    </li>
+                                    <li id="prc015co" class="actionlinlk">@Html.ActionLink("Foreign Currency Process", "Index", "ForeignCurrencyProcess", new { area = "Procurement" }, new { target = "_blank" })</li>
+                                    <li id="prc015" class="actionlinlk">
+                                        @Html.ActionLink("Business Rule Value", "Index", "ProcurementRuleValue", new { area = "Procurement" }, new { target = "_blank" })
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+
+
+                    </ul>
+
+                </li>
+            </ul>
+
+        </div>
+        <!-- /.nav-collapse -->
+    </nav>
+</div>
+
+
+<script>
+    jQuery(document).on('click', '.mega-dropdown', function (e) {
+        e.stopPropagation()
+    })
+</script>
+

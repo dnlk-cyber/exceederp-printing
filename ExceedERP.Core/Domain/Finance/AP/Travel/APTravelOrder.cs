@@ -43,11 +43,14 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
         public string TransportReference { get; set; }
         public bool IsForOther { get; set; }
         public bool Paid { get; set; }
+        public bool Claimed { get; set; }
         //budget controll
         public bool IsBudgetApproved { get; set; }
         public string BudgetApprovedBy { get; set; }
-        public DateTime? BudgetApprovedTime { get; set; }       
+        public DateTime? BudgetApprovedTime { get; set; }
+        [Display(Name = "Branch/Project")]
         public int BranchId { get; set; }
+        [Display(Name = "Business Unit")]
         public int BusinessUnitId { get; set; }
 
         [Display(Name = "From Branch/Project")]

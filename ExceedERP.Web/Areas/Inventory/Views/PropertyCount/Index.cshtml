@@ -80,24 +80,25 @@
                                       .Columns(columns =>
                                       {
                                           columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(110).Editable("isEditable");
-                                          columns.Bound(c => c.ItemCode).Width(600).Title("Items").EditorTemplateName("ItemSelector").Width(400).Editable("isEditable");
-                                          columns.Bound(c => c.ItemCodeReadOnly).Width(100);
+                                          columns.Bound(c => c.ItemCode).Width(200).Title("Items").EditorTemplateName("ItemSelector").Width(400).Editable("isEditable");
+                                          columns.Bound(c => c.ItemCodeReadOnly).Width(120);
                                           columns.Bound(c => c.ItemName).Width(200);
-                                          columns.Bound(c => c.Count).Width(80);
-                                          columns.Bound(c => c.Location).Width(50);
+                                          columns.Bound(c => c.Location).Width(90);
+                                          columns.Bound(c => c.Unit).Width(80);
                                           columns.Bound(c => c.Price).Width(100);
-                                          columns.Bound(c => c.Status).Width(50).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />");
+                                          columns.Bound(c => c.Count).Width(80);
+                                          columns.Bound(c => c.Status).Width(80).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />");
 
                                           columns.Command(command =>
                                           {
                                               command.Edit();
-                                  //command.Destroy();
-                                  command.Custom("✅").Click("ChangeStatus");
+                                              //command.Destroy();
+                                              command.Custom("✅").Click("ChangeStatus");
                                           }).Width(180);
                                       })
                                       .ToolBar(toolbar =>
                                       {
-                                          toolbar.Template(@<text>
+                                      toolbar.Template(@<text>
                                             # if (!IsClosed)
                                             {#
                                             <a class="k-button k-button-icontext k-grid-add" href='\#'> <span class="k-icon k-i-add"></span> Add new record </a>
@@ -143,7 +144,7 @@
                                                                   .Model(model =>
                                                                   {
                                                                       model.Id(p => p.PropertyCountItemId);
-                                                          //model.Field(p => p.ItemCategoryCode).Editable(false);
+                                                          model.Field(p => p.Unit).Editable(false);
                                                           //model.Field(p => p.ItemName).Editable(false);
                                                           // model.Field(p => p.ItemCode).Editable(false);
                                                           model.Field(p => p.ItemCodeReadOnly).Editable(false);

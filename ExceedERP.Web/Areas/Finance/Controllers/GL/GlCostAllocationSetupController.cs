@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;

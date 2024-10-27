@@ -75,6 +75,14 @@
               model.Field(p => p.LastModified).Editable(false);
               model.Field(p => p.CreatedBy).Editable(false);
               model.Field(p => p.DateCreated).Editable(false);
+
+              model.Field(p => p.IsSecondOnlineApproved).Editable(false);
+              model.Field(p => p.SecondOnlineApprovedBy).Editable(false);
+              model.Field(p => p.SecondOnlineApprovedTime).Editable(false);
+
+              model.Field(p => p.VoidBy).Editable(false);
+              model.Field(p => p.VoidTime).Editable(false);
+              model.Field(p => p.IsVoid).Editable(false);
           })
           .Read(read => read.Action("PurchaseRequisitionReviews_Read", "PurchaseRequisitionReview"))
           .Create(create => create.Action("PurchaseRequisitionReviews_Create", "PurchaseRequisitionReview"))
@@ -130,7 +138,7 @@
                                                                 </dt>
                                                                 <dd>
 
-                                                                    #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                                                                    #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy hh:mm tt') #
 
 
                                                                 </dd>
@@ -145,7 +153,7 @@
                                                                     CreatedOn
                                                                 </dt>
                                                                 <dd>
-                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
                                                                 </dd>
                                                                 <dt>
                                                                     CreatedBy
@@ -164,7 +172,7 @@
                                                                     Modified Date
                                                                 </dt>
                                                                 <dd>
-                                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                                                 </dd>
                                                                 <dt>
                                                                    Approved By
@@ -176,7 +184,7 @@
                                                                     Approval Time
                                                                 </dt>
                                                                 <dd>
-                                                                    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                                                                    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
                                                                 </dd>
                                                                 <dt>
                                                                    Second Approved By
@@ -188,7 +196,7 @@
                                                                     Approval Time
                                                                 </dt>
                                                                 <dd>
-                                                                    #=kendo.toString(kendo.parseDate(MiddleOnlineApprovedTime), 'dd/MM/yyyy') #
+                                                                    #=kendo.toString(kendo.parseDate(MiddleOnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
                                                                 </dd>
                                                                  <dt>
                                                                    Approved By -Procurement
@@ -200,7 +208,7 @@
                                                                     Approval Time
                                                                 </dt>
                                                                 <dd>
-                                                                    #=kendo.toString(kendo.parseDate(SecondOnlineApprovedTime), 'dd/MM/yyyy') #
+                                                                    #=kendo.toString(kendo.parseDate(SecondOnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
                                                                 </dd>
                                                             </dl>
 
@@ -383,6 +391,16 @@
                                                                                                                           model.Field(p => p.ModifiedBy).Editable(false);
                                                                                                                           model.Field(p => p.LastModified).Editable(false);
 
+                                                                                                                          model.Field(p => p.Status).Editable(false);
+
+                                                                                                                          model.Field(p => p.IsOnlineApproved).Editable(false);
+                                                                                                                          model.Field(p => p.OnlineApprovedBy).Editable(false);
+                                                                                                                          model.Field(p => p.OnlineApprovedTime).Editable(false);
+
+                                                                                                                          model.Field(p => p.VoidBy).Editable(false);
+                                                                                                                          model.Field(p => p.VoidTime).Editable(false);
+                                                                                                                          model.Field(p => p.IsVoid).Editable(false);
+
 
                                                                                                                       })
                                                                                                                       .Read(read => read.Action("PurchaseRequisitionAssignments_Read", "PurchaseRequsitionReassignment", new { id = "#=PurchaseRequisitionID#" }))
@@ -399,6 +417,75 @@
 <script id="asseignmentDetail" type="text/Kendo-tmpl">
     @(Html.Kendo().TabStrip().Name("tabStrip_reassignment#=PurchaseRequisitionAssignmentId#").SelectedIndex(0).Items(itemn =>
       {
+
+          itemn.Add().Text("Detail").Content(
+    @<text>
+                                              <hr />
+
+                                              <div>
+                                                  <hr>
+                                                  <dl class="dl-horizontal">
+
+                                                      <dt>
+                                                          Status
+                                                      </dt>
+                                                      <dd>
+                                                          #= Status #
+
+                                                      </dd>
+                                                      <dt>
+                                                          CreatedOn
+                                                      </dt>
+                                                      <dd>
+                                                          #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
+                                                      </dd>
+                                                      <dt>
+                                                          CreatedBy
+                                                      </dt>
+                                                      <dd>
+                                                          #= CreatedBy #
+
+                                                      </dd>
+                                                      <dt>
+                                                          Modified By
+                                                      </dt>
+                                                      <dd>
+                                                          #= ModifiedBy #s
+                                                      </dd>
+                                                      <dt>
+                                                          Modified Date
+                                                      </dt>
+                                                      <dd>
+                                                          #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
+                                                      </dd>
+                                                      <dt>
+                                                         Approved By
+                                                      </dt>
+                                                      <dd>
+                                                          #= OnlineApprovedBy #s
+                                                      </dd>
+                                                      <dt>
+                                                          Approval Time
+                                                      </dt>
+                                                      <dd>
+                                                          #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
+                                                      </dd>
+
+                                                  </dl>
+
+                                              </div>
+
+                                              <hr>
+
+                                              # if (IsOnlineApproved && !IsVoid)
+                                              {#
+                                              @if (HttpContext.Current.User.IsInRole("Procurement_Void"))
+                                              {
+                                                  <a onclick='return voidAssingmentRecord("#=PurchaseRequisitionAssignmentId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                              }
+                                              # } #
+
+                                          </text>);
           itemn.Add().Text("Reassignment Items").Content(
               @<text>
                             @(Html.Kendo().Grid<PurchaseRequisitionReassignmentItem>()
@@ -649,7 +736,28 @@
         }
     }
 
+    
 
+    function voidAssingmentRecord(id) {
+     var recordStatus = "";
+     var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+     if (conf === true) {
+         $.ajax({
+             type: "POST",
+             url: '@Url.Action("Void", "PurchaseRequsitionReassignment", new {area = "Procurement"})',
+             data: { id: id },
+             success: function (result) {
+                 // toastr.warnning(result.Message);
+                 alert(result.Message);
+                 recordStatus = result.Status;
+                 location.reload(true);
+             }, //end succ
+             error: function (result) {
+                 alert(result);
+             }
+         });
+     }
+ }
     var masterDataItem;
     var masterRow;
     var masterGrid;
@@ -691,7 +799,7 @@
         //changing colors
         var rows = e.sender.tbody.children();
         for (var j = 0; j < rows.length; j++) {
-            var row = $(rows[j]); 
+            var row = $(rows[j]);
             var dataItem = e.sender.dataItem(row);
             if (dataItem.IsSecondSendForApproval && !dataItem.IsSecondOnlineApproved) {
                 row.css("background-color", "lightgreen");
@@ -711,10 +819,10 @@
             $(".k-grid-delete", detailGrid).hide();
             $(".k-grid-edit", detailGrid).hide();
         }
-       
+
     }
 
-   
+
     function onDataBoundPurchaseValidation(e) {
         var detailGrid = "#" + e.sender.element[0].id;
         $(".k-grid-delete", detailGrid).hide();
@@ -743,7 +851,7 @@
         assignmentMasterDataItem = assignmentMasterGrid.dataItem(assignmentMasterRow);
         assignmentcodeid = assignmentMasterDataItem.PurchaseRequisitionAssignmentId;
         assignmentisapproved = assignmentMasterDataItem.IsOnlineApproved;
-       
+
 
     }
     function onDataBoundMasterPurchaseAssignment(e) {
@@ -791,11 +899,11 @@
             var dropdownlistCat = $("#ItemCategoryCode").data("kendoDropDownList");
             dropdownlistCat.enable(false);
 
-           
+
         }
     }
 
-    
+
     function OnIndexCall(elem) {
 
         var a = codeid;

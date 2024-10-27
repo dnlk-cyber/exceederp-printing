@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,28 +14,31 @@ using ExceedERP.Reporting.Finance.ViewModel;
 namespace ExceedERP.Reporting.Finance.DataSource
 {
     [DataObject]
-    public class TaxRateOds : List<TaxRateVm>
+    public class TaxRateOds : List<TaxRateVm>, IDisposable
     {
-        private readonly ExceedDbContext _db = new ExceedDbContext();
+        private readonly ExceedDbContext _db;
+        public TaxRateOds()
+        {
+            _db = new ExceedDbContext();
+        }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<TaxRateVm> GetTaxRate()
         {
-            List<TaxRateVm> list = new List<TaxRateVm> { };
-            var taxRateVmlist = _db.GLTaxRates.Select(x=>new{x.GLTaxRateID,x.TaxName}).ToList();
-            foreach (var item in taxRateVmlist)
-            {
-                var record = new TaxRateVm
-                {
-
-                    GLTaxRateID = item.GLTaxRateID,
-                    TaxName = item.TaxName,
-                    
-                };
-                list.Add(record);
-            }
-            return list;
+            return _db.GLTaxRates
+                                 .Select(x => new TaxRateVm
+                                 {
+                                     GLTaxRateID = x.GLTaxRateID,
+                                     TaxName = x.TaxName
+                                 })
+                                 .AsNoTracking() 
+                                 .ToList(); 
         }
-        
+
+        public void Dispose()
+        {
+            _db?.Dispose();
+        }
+
     }
 }

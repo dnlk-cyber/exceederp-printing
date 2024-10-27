@@ -178,14 +178,7 @@ namespace ExceedERP.Helpers.Finance
 
                         #region split ledger account
 
-                        if (accountHelper.IsDynamicCoA())
-                        {
-                            _dynamicAccountHelper.SplitLedgerAccount(newledgerpost);
-                        }
-                        else
-                        {
-                            accountHelper.SplitLedgerAccount(newledgerpost);
-                        }
+                        _accountHelper.SplitLedgerAccount(newledgerpost);
 
                         #endregion
                     }

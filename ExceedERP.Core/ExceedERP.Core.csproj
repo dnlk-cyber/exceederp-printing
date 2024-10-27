@@ -431,6 +431,7 @@
     <Compile Include="Domain\Finance\AP\DirectPayment\APDirectPaymentDistribution.cs" />
     <Compile Include="Domain\Finance\AP\DirectPayment\ApDirectPaymentValidation.cs" />
     <Compile Include="Domain\Finance\AP\Disbursement\APTPayment.cs" />
+    <Compile Include="Domain\Finance\AP\FundTransfer\FundReceive.cs" />
     <Compile Include="Domain\Finance\AP\FundTransfer\FundTransfer.cs" />
     <Compile Include="Domain\Finance\AP\FundTransfer\FundTransferLine.cs" />
     <Compile Include="Domain\Finance\AP\FundTransfer\FundTransferValidation.cs" />
@@ -458,6 +459,7 @@
     <Compile Include="Domain\Finance\AP\PettyCash\ApPettyCashPayment.cs" />
     <Compile Include="Domain\Finance\AP\PettyCash\ApPettyCashUtilization.cs" />
     <Compile Include="Domain\Finance\AP\PettyCash\ApPettyCashValidation.cs" />
+    <Compile Include="Domain\Finance\AP\Travel\APTravelClaimDeparture.cs" />
     <Compile Include="Domain\Finance\AP\Travel\APTravelExpenseClaim.cs" />
     <Compile Include="Domain\Finance\AP\Travel\APTravelExpenseDistribution.cs" />
     <Compile Include="Domain\Finance\AP\Travel\ApTravelExpenseExpense.cs" />
@@ -503,6 +505,7 @@
     <Compile Include="Domain\Finance\AR\SalesOrder\ARSalesPartialPrintValidation.cs" />
     <Compile Include="Domain\Finance\AR\SalesOrder\Partner.cs" />
     <Compile Include="Domain\Finance\AR\SalesOrder\PartnerType.cs" />
+    <Compile Include="Domain\Finance\Bank\BankUserAssignment.cs" />
     <Compile Include="Domain\Finance\Bank\BookDrillDownDetailVM.cs" />
     <Compile Include="Domain\Finance\Bank\ReconciliationBankAccount.cs" />
     <Compile Include="Domain\Finance\Bank\ReconciliationBookAccount.cs" />
@@ -558,6 +561,7 @@
     <Compile Include="Domain\Finance\Setting.cs" />
     <Compile Include="Domain\Finance\StockClearingAccount.cs" />
     <Compile Include="Domain\Finance\ViewModels\AccountChekerVm.cs" />
+    <Compile Include="Domain\Finance\ViewModels\JournalTransactionVM.cs" />
     <Compile Include="Domain\FixedAsset\Counts\FixedAssetCountItem.cs" />
     <Compile Include="Domain\FixedAsset\Counts\FixedAssetCountValidation.cs" />
     <Compile Include="Domain\FixedAsset\Counts\FixedAssetCountVm.cs" />

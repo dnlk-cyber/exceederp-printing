@@ -8,16 +8,17 @@ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain.Common.ViewModel;
 using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
+using ExceedERP.Reporting.Procurements.DataSource;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Models;
 
 namespace ExceedERP.Web.Areas.Common.Controllers
 {
+    [Authorize]
     public class GlobalDataProviderController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
@@ -35,6 +36,18 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                 , JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetAllUsers()
+        {
+            ApplicationDbContext appdb = new ApplicationDbContext();
+            var unitOfm = appdb.Users.AsQueryable();
+            return Json(unitOfm.Select(i => new
+            {
+                Name = i.UserName + "_" + i.FirstName + " " + i.MiddleName + " " + i.LastName,
+                UserName=i.UserName,
+                Code = i.Id
+            }),
+                JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetUserFullName(string id)
         {
             ApplicationDbContext appdb = new ApplicationDbContext();
@@ -80,6 +93,26 @@ namespace ExceedERP.Web.Areas.Common.Controllers
             {
                 Code = p.LookupId,
                 Name=p.Description
+            }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetPlacedJobTitles()
+        {
+            var list = from l in db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE)
+                       join p in db.Placements
+                               on l.LookupId equals p.LookupId
+                       where p.isCurrent
+                       select new
+                       {
+                           l.LookupId,
+                           l.Description
+                       };
+            var uniquelist = list.DistinctByField(x => x.LookupId);
+
+            return Json(uniquelist.Select(p => new
+            {
+                Code = p.LookupId,
+                Name = p.Description
             }), JsonRequestBehavior.AllowGet);
         }
 
@@ -153,6 +186,12 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                 case "PO":
                     list = UserInformationHelper.GetUsersInRole(ProcurementRoles.ProcurementTenderApprover);
                     break;
+                case "Proforma":
+                    list = UserInformationHelper.GetUsersInRole(ProcurementRoles.ProcurementTenderApprover);
+                    break;
+                case "POChange":
+                    list = UserInformationHelper.GetUsersInRole(ProcurementRoles.ProcurementTenderApprover);
+                    break;
                 case "PaymentRequestSelfCare":
                     list = UserInformationHelper.GetUsersInRole(HrmConstants.HRDepartmentHead);
                     break;
@@ -196,12 +235,34 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                     db.Entry(po).State = EntityState.Modified;
                     db.SaveChanges();
                     break;
+                case "Proforma":
+                    var proforma = db.ProformaPurchases.Find(id);
+                    var awardIds = db.WinningSuppliers.Where(x => x.AwardGiven).Where(x => x.ProformaPurchaseID == id).Select(x => x.WinningSupplierID).ToList();
+                    var awardItems = db.WinningSupplierItems.Where(x => awardIds.Contains(x.WinningSupplierID)).ToList();
+             
+                    docamount = awardItems.Any() ? awardItems.Sum(x => x.TPrice) : 0;
+                    proforma.ForwardedTo = user;
+                    proforma.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user, ApprovalDocumentType.ProformaPurchase, docamount, branchId);
+                    db.ProformaPurchases.Attach(proforma);
+                    db.Entry(proforma).State = EntityState.Modified;
+                    db.SaveChanges();
+                    break;
+                case "POChange":
+                    var pochange = db.PoChangeOforders.Find(id);
+                    var pochangelines = db.PoChangeOfOrderItems.Where(x => x.PoChangeOforderId == id);
+                    docamount = pochangelines.Any() ? pochangelines.Sum(x => x.Total) : 0;
+                    pochange.ForwardedTo = user;
+                    pochange.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user, ApprovalDocumentType.POChangeOrder, docamount, branchId);
+                    db.PoChangeOforders.Attach(pochange);
+                    db.Entry(pochange).State = EntityState.Modified;
+                    db.SaveChanges();
+                    break;
                 case "PaymentRequestSelfCare":
                     var paymentRequest = db.PaymentRequests.Find(id);
                     var prlines = db.PaymentRequestLines.Where(x => x.PaymentRequestId == id);
                     docamount = prlines.Any() ? prlines.Sum(x => x.TotalAmount):0;
                     paymentRequest.ForwardedTo = user;
-                    paymentRequest.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user, ApprovalDocumentType.PurchaseOrder, docamount, branchId);
+                    paymentRequest.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user, ApprovalDocumentType.ApPaymentRequestSelfCare, docamount, branchId);
                     db.PaymentRequests.Attach(paymentRequest);
                     db.Entry(paymentRequest).State = EntityState.Modified;
                     db.SaveChanges();
@@ -226,8 +287,8 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                     break;
                 case "TravelExpenseClaimSelfCare":
                     var claim = db.ApTravelExpenseClaims.Find(id);
-                    var exclines = db.ApTravelExpensePayments.Where(x => x.ApTravelExpenseClaimId == id);
-                    docamount = exclines.Any() ? exclines.Sum(x => x.Amount) : 0;
+                    var exclines = db.ApTravelExpenseExpenses.Where(x => x.ApTravelExpenseClaimId == id);
+                    docamount = exclines.Any() ? exclines.Sum(x => x.Total) : 0;
                     claim.ForwardedTo = user;
                     claim.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user, ApprovalDocumentType.ApTravelExpenseClaimSelfCare, docamount, branchId);
                     db.ApTravelExpenseClaims.Attach(claim);
@@ -412,6 +473,16 @@ namespace ExceedERP.Web.Areas.Common.Controllers
             }), JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetYears()
+        {
+            var years = db.GLFiscalYears.OrderByDescending(x => x.DateTo);
+            return Json(years.Select(x => new
+            {
+                Name = x.Name,
+                GlFiscalYearId = x.GlFiscalYearId
+            }), JsonRequestBehavior.AllowGet);
+        }
+
         public JsonResult GetPeriods(string year)
         {
             int did = int.Parse(year);
@@ -479,8 +550,8 @@ namespace ExceedERP.Web.Areas.Common.Controllers
         }
         public JsonResult GetBranches()
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            var branches = db.Branch.Where(x => mybraches.Contains(x.BranchId.ToString())).ToList();
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var branches = db.Branch.Where(x => mybraches.Contains(x.BranchId)).AsNoTracking().ToList();
             return Json(branches.Select(x => new
             {
                 Name = x.Name,

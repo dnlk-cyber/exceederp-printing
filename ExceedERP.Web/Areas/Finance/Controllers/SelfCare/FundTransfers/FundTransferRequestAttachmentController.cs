@@ -5,19 +5,15 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
-using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Core.Domain.Procurement.Settings;
-using ExceedERP.Core.Domain.Procurement.Tender;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
 {
-   
+
     public class FundTransferRequestAttachmentController : Controller
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();

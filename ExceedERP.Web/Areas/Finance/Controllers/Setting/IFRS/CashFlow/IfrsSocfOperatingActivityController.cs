@@ -61,6 +61,19 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting.IFRS
                 ModelState.AddModelError("exist", "The note number already exists under investing activities.");
             }
 
+            //if(ifrsSocfOperatingActivity.Category==IfrsCashFlowTypes.Increase_Decrease)
+            //{
+            //    if(ifrsSocfOperatingActivity.Rule==IfrsCashFlowRule.ADD || ifrsSocfOperatingActivity.Rule==IfrsCashFlowRule.DEDUCT)
+            //        ModelState.AddModelError("change", "Increase or decrease type can't have ADD or DEDUCT rule.");
+            //}
+
+            //if (ifrsSocfOperatingActivity.Category != IfrsCashFlowTypes.Increase_Decrease)
+            //{
+            //    if (ifrsSocfOperatingActivity.Rule != IfrsCashFlowRule.ADD && ifrsSocfOperatingActivity.Rule != IfrsCashFlowRule.DEDUCT)
+            //        ModelState.AddModelError("change", "The rule shall be either ADD or DEDUCT rule.");
+            //}
+
+
             #endregion
             if (ModelState.IsValid)
             {
@@ -107,6 +120,19 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting.IFRS
             {
                 ModelState.AddModelError("exist", "The note number already exists under investing activities.");
             }
+
+            //if (ifrsSocfOperatingActivity.Category == IfrsCashFlowTypes.Increase_Decrease)
+            //{
+            //    if (ifrsSocfOperatingActivity.Rule == IfrsCashFlowRule.ADD || ifrsSocfOperatingActivity.Rule == IfrsCashFlowRule.DEDUCT)
+            //        ModelState.AddModelError("change", "Increase or decrease type can't have ADD or DEDUCT rule.");
+            //}
+
+            //if (ifrsSocfOperatingActivity.Category != IfrsCashFlowTypes.Increase_Decrease)
+            //{
+            //    if (ifrsSocfOperatingActivity.Rule != IfrsCashFlowRule.ADD && ifrsSocfOperatingActivity.Rule != IfrsCashFlowRule.DEDUCT)
+            //        ModelState.AddModelError("change", "The rule shall be either ADD or DEDUCT rule.");
+            //}
+
 
             #endregion
             if (ModelState.IsValid)

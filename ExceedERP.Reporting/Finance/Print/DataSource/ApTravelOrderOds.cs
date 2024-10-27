@@ -52,11 +52,11 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                 headerDs.AccountantCheckerSignature = SignatureHelper.GetUserSignature(apTravelOrder.SendForApprovalBy);
 
                 headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.OnlineApprovedBy));
-                headerDs.ApprovedDate = apTravelOrder.OnlineApprovedTime;
+                headerDs.ApprovedDate = apTravelOrder.OnlineApprovedTime != null ? apTravelOrder.OnlineApprovedTime : null;
                 headerDs.ApproverSignature = SignatureHelper.GetUserSignature(apTravelOrder.OnlineApprovedBy);
                 //budget
                 headerDs.BudgetApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(apTravelOrder.BudgetApprovedBy));
-                headerDs.BudgetApprovedDate = apTravelOrder.BudgetApprovedTime;
+                headerDs.BudgetApprovedDate = apTravelOrder.BudgetApprovedTime != null ? apTravelOrder.BudgetApprovedTime : null;
                 headerDs.BudgetSignature = SignatureHelper.GetUserSignature(apTravelOrder.BudgetApprovedBy);
 
                 #region prepared checker approver               

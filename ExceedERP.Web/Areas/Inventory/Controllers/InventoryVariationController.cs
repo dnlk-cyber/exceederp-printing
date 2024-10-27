@@ -1,21 +1,16 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
-
-using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Inventory;
-﻿using ExceedERP.DataAccess.Context;
- using ExceedERP.Web.Areas.Inventory.Models;
- using ExceedERP.Web.Helpers;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers
 {
-  
+
 
     public class InventoryVariationController : Controller
     {

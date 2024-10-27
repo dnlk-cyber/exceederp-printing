@@ -106,6 +106,11 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                 IsOnlineTransferred = itemTransfer.IsOnlineTransferred,
                 IsOnlineTransferredBy = itemTransfer.IsOnlineTransferredBy,
                 OnlineTransferredTime = itemTransfer.OnlineTransferredTime,
+
+                DateCreated = itemTransfer.DateCreated,
+                LastModified = itemTransfer.LastModified,
+                CreatedBy = itemTransfer.CreatedBy,
+                ModifiedBy = itemTransfer.ModifiedBy
             });
 
             return Json(result);
@@ -131,12 +136,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                 }
                 else
                 {
-                    ModelState.AddModelError("", "The selected Period is not defined.");
+                    ModelState.AddModelError("period", "The selected Period is not defined.");
                 }
             }
             else
             {
-                ModelState.AddModelError("", "Please select period.");
+                ModelState.AddModelError("period", "Please select period.");
             }
 
             if (itemTransfer.TransferDate > DateTime.Now)
@@ -167,7 +172,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                     EmployeeId = itemTransfer.EmployeeId,
                     TransferDate = itemTransfer.TransferDate.Date,
                     BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(itemTransfer.FromStore),
-                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
+                    BusinessUnitId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBusinessUnit(itemTransfer.FromStore),
                     FromStore = itemTransfer.FromStore,
                     ToStore = itemTransfer.ToStore,
                     DeliveredBy = itemTransfer.DeliveredBy,
@@ -225,12 +230,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                 }
                 else
                 {
-                    ModelState.AddModelError("", "The selected Period is not defined.");
+                    ModelState.AddModelError("period", "The selected Period is not defined.");
                 }
             }
             else
             {
-                ModelState.AddModelError("", "Please select period.");
+                ModelState.AddModelError("period", "Please select period.");
             }
 
             if (itemTransfer.TransferDate > DateTime.Now)
@@ -262,7 +267,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                     EmployeeId = itemTransfer.EmployeeId,
                     StoreRequisitionID = itemTransfer.StoreRequisitionID,
                     BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(itemTransfer.FromStore),
-                    BusinessUnitId=itemTransfer.BusinessUnitId,
+                    BusinessUnitId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBusinessUnit(itemTransfer.FromStore),
                     TransferDate = itemTransfer.TransferDate,
                     FromStore = itemTransfer.FromStore,
                     ToStore = itemTransfer.ToStore,

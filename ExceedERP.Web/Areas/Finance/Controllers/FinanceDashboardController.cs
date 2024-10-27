@@ -1,21 +1,20 @@
-﻿﻿using System;
-using System.Collections.Generic;
-
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Dashboard;
- using ExceedERP.Core.Domain.Finance;
- using ExceedERP.DataAccess.Context;
- using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.Finance;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.HRM.Payroll.Setting;
+using System;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers
 {
-     [AuthorizeRoles(FinanceConstants.FinanceAdmin)]
+    [AuthorizeRoles(FinanceConstants.FinanceAdmin)]
     public class FinanceDashboardController : Controller
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
@@ -27,7 +26,26 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
         public ActionResult FinanceDashboards_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<FinanceDashboard> financedashboards = _db.FinanceDashboards;
+			#region initial data
+			var categores = Enum.GetValues(typeof(FinanceDashboradCategory))
+			.Cast<FinanceDashboradCategory>().ToList();
+			foreach (var p in categores)
+			{
+				var check = _db.FinanceDashboards.Where(x => x.Category == p).FirstOrDefault();
+				if (check == null)
+				{
+					var entity = new FinanceDashboard
+					{
+						Category = p,
+						Name = p.ToString()
+					};
+
+					_db.FinanceDashboards.Add(entity);
+					_db.SaveChanges();
+				}
+			}
+			#endregion
+			IQueryable<FinanceDashboard> financedashboards = _db.FinanceDashboards;
             DataSourceResult result = financedashboards.ToDataSourceResult(request, financeDashboard => new {
                 FinanceDashboardId = financeDashboard.FinanceDashboardId,
                 Category = financeDashboard.Category,

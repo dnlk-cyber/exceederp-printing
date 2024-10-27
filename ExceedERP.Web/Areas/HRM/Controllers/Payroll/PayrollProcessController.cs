@@ -3042,7 +3042,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
                             foreach (var item in payrollAccounts)
                             {
-                                if (accountHelper.IsDynamicCoA() && !string.IsNullOrEmpty(item.Account))
+                                if (!string.IsNullOrEmpty(item.Account))
                                 {
                                     item.Account = dynamicAccount.ReplaceSegment(item.Account, dynamicAccount.GetBizUnitAccountSequenceIndex(), bizUnitCode);
                                 }
@@ -3076,14 +3076,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                 distribution.GLPeriodId = id;
                                 distribution.BranchId = branchId;
 
-                                if (accountHelper.IsDynamicCoA())
-                                {
-                                    distribution.AccountCode = accounts.Account;
-                                }
-                                else
-                                {
-                                    distribution.AccountCode = accountHelper.RearrangeAccountSequence(accountMain, branch, costCneter, SubAccCode);
-                                }
+                                distribution.AccountCode = accounts.Account;
                                 distribution.AccountDesc = accounts.Description;
                                 var payrolldatass = new List<PayrollProcessViewModel>();
                                 if (!accounts.IsPerCostCenter && !accounts.IsPerEmployee)
@@ -3121,16 +3114,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
 
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        if (!string.IsNullOrEmpty(accounts.Account))
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter, emp.SubAccCode);
+                                                    if (!string.IsNullOrEmpty(accounts.Account))
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
 
-                                                    }
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.BasicSalary - p.AbsentDeduction - p.UnpaidLeaveDeduction;//-added
@@ -3186,16 +3172,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
 
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                                SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c.ToString();
                                                         distribution.LocationCode = b;
                                                         distribution.Debit = p.Sum(x => x.BasicSalary) - (p.Sum(x => x.AbsentDeduction) + p.Sum(x => x.UnpaidLeaveDeduction));//-added
@@ -3244,15 +3223,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c.ToString(),
-                                                            SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.Sum(x => x.BasicSalary) - (p.Sum(x => x.AbsentDeduction) + p.Sum(x => x.UnpaidLeaveDeduction));//-added
@@ -3300,15 +3271,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                                                                        SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c.ToString();
                                                     distribution.Debit = p.Sum(x => x.BasicSalary) - (p.Sum(x => x.AbsentDeduction) + p.Sum(x => x.UnpaidLeaveDeduction));//-added
@@ -3373,15 +3336,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                           emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.BasicSalary - p.AbsentDeduction - p.UnpaidLeaveDeduction;//-added
@@ -3434,16 +3389,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
 
                                                         distribution.CostCenterCode = c.ToString();
                                                         distribution.LocationCode = b;
@@ -3494,15 +3442,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c.ToString(),
-                                                         SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
 
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = branch;
@@ -3551,15 +3492,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
 
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c.ToString();
@@ -3622,14 +3556,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter, emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
 
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
@@ -3681,16 +3609,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
 
                                                         distribution.CostCenterCode = c.ToString();
                                                         distribution.LocationCode = b;
@@ -3738,14 +3659,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c, SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
 
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = branch;
@@ -3791,14 +3706,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter, SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c.ToString();
                                                     distribution.Debit = p.Sum(x => x.TotalOvertime);
@@ -3856,15 +3765,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.IncomeTax;
@@ -3915,16 +3817,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c.ToString();
                                                         distribution.LocationCode = b;
                                                         distribution.Credit = p.Sum(x => x.IncomeTax);
@@ -3971,15 +3866,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.Sum(x => x.IncomeTax);
@@ -4023,15 +3911,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c.ToString();
                                                     distribution.Credit = p.Sum(x => x.IncomeTax);
@@ -4089,15 +3970,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = 0;
@@ -4148,16 +4022,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c.ToString();
                                                         distribution.LocationCode = b;
                                                         distribution.Debit = 0;
@@ -4204,14 +4071,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c, SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = 0;
@@ -4255,15 +4116,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                                                                          SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c.ToString();
                                                     distribution.Debit = 0;
@@ -4321,15 +4175,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = 0;
@@ -4380,16 +4227,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c.ToString();
                                                         distribution.LocationCode = b;
                                                         distribution.Debit = 0;
@@ -4436,15 +4276,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
 
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = branch;
@@ -4489,15 +4322,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c.ToString();
                                                     distribution.Debit = 0;
@@ -4555,15 +4381,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.TotalLoan;
@@ -4614,16 +4433,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c.ToString();
                                                         distribution.LocationCode = branch;
                                                         distribution.Credit = p.Sum(x => x.TotalLoan);
@@ -4669,15 +4481,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
 
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = branch;
@@ -4722,15 +4527,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c.ToString();
                                                     distribution.Credit = p.Sum(x => x.TotalLoan);
@@ -4787,15 +4585,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.TotalAdvance;
@@ -4846,16 +4637,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c.ToString();
                                                         distribution.LocationCode = b;
                                                         distribution.Credit = p.Sum(x => x.TotalAdvance);
@@ -4901,14 +4685,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c, SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.Sum(x => x.TotalAdvance);
@@ -4952,15 +4730,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter, SubAccCode);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
 
-                                                    }
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c.ToString();
                                                     distribution.Credit = p.Sum(x => x.TotalAdvance);
@@ -5018,15 +4789,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.NetEarning;
@@ -5077,16 +4841,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c.ToString();
                                                         distribution.LocationCode = b;
                                                         distribution.Credit = p.Sum(x => x.NetEarning);
@@ -5133,15 +4890,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.Sum(x => x.NetEarning);
@@ -5185,15 +4935,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c.ToString();
                                                     distribution.Credit = p.Sum(x => x.NetEarning);
@@ -5251,15 +4994,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.PensionFromEmployee;
@@ -5310,16 +5046,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c.ToString();
                                                         distribution.LocationCode = b;
                                                         distribution.Credit = p.Sum(x => x.PensionFromEmployee);
@@ -5365,14 +5094,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c, SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.Sum(x => x.PensionFromEmployee);
@@ -5416,15 +5139,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c.ToString();
                                                     distribution.Credit = p.Sum(x => x.PensionFromEmployee);
@@ -5484,15 +5200,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.ProvidentFromEmployee;
@@ -5543,16 +5252,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c.ToString();
                                                         distribution.LocationCode = b;
                                                         distribution.Credit = p.Sum(x => x.ProvidentFromEmployee);
@@ -5598,15 +5300,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.Sum(x => x.ProvidentFromEmployee);
@@ -5650,15 +5345,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c.ToString();
                                                     distribution.Credit = p.Sum(x => x.ProvidentFromEmployee);
@@ -5716,15 +5404,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.AssocationContribution;
@@ -5775,16 +5456,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c.ToString();
                                                         distribution.LocationCode = b;
                                                         distribution.Credit = p.Sum(x => x.AssocationContribution);
@@ -5831,15 +5505,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.Sum(x => x.AssocationContribution);
@@ -5883,15 +5550,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c.ToString();
                                                     distribution.Credit = p.Sum(x => x.AssocationContribution);
@@ -5949,15 +5609,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.LabourUnionContribution;
@@ -6008,16 +5661,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Credit = p.Sum(x => x.LabourUnionContribution);
@@ -6063,15 +5709,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.Sum(x => x.LabourUnionContribution);
@@ -6115,15 +5754,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Credit = p.Sum(x => x.LabourUnionContribution);
@@ -6181,15 +5813,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.TotalTransportAllowance;
@@ -6240,16 +5865,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Debit = p.Sum(x => x.TotalTransportAllowance);
@@ -6295,15 +5913,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.Sum(x => x.TotalTransportAllowance);
@@ -6347,15 +5958,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Debit = p.Sum(x => x.TotalTransportAllowance);
@@ -6413,15 +6017,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.TotalProjectAllowance;
@@ -6472,16 +6069,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Debit = p.Sum(x => x.TotalProjectAllowance);
@@ -6527,15 +6117,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.Sum(x => x.TotalProjectAllowance);
@@ -6579,15 +6162,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Debit = p.Sum(x => x.TotalProjectAllowance);
@@ -6646,15 +6222,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.TotalTelephoneAllowance;
@@ -6705,16 +6274,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Debit = p.Sum(x => x.TotalTelephoneAllowance);
@@ -6761,15 +6323,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.Sum(x => x.TotalTelephoneAllowance);
@@ -6813,15 +6368,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Debit = p.Sum(x => x.TotalTelephoneAllowance);
@@ -6879,15 +6427,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                                                                          emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.TotalHouseAllowance;
@@ -6938,16 +6479,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Debit = p.Sum(x => x.TotalHouseAllowance);
@@ -6993,15 +6527,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.Sum(x => x.TotalHouseAllowance);
@@ -7045,15 +6572,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Debit = p.Sum(x => x.TotalHouseAllowance);
@@ -7112,15 +6632,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.TotalResponsiblityAllowance;
@@ -7171,16 +6684,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Debit = p.Sum(x => x.TotalResponsiblityAllowance);
@@ -7226,15 +6732,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.Sum(x => x.TotalResponsiblityAllowance);
@@ -7278,15 +6777,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Debit = p.Sum(x => x.TotalResponsiblityAllowance);
@@ -7344,15 +6836,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.TotalPositionAllowance;
@@ -7403,16 +6888,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Debit = p.Sum(x => x.TotalPositionAllowance);
@@ -7458,15 +6936,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.Sum(x => x.TotalPositionAllowance);
@@ -7510,15 +6981,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Debit = p.Sum(x => x.TotalPositionAllowance);
@@ -7576,15 +7040,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.TotalProfessionalAllowance;
@@ -7635,16 +7092,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Debit = p.Sum(x => x.TotalProfessionalAllowance);
@@ -7690,15 +7140,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.Sum(x => x.TotalProfessionalAllowance);
@@ -7742,15 +7185,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Debit = p.Sum(x => x.TotalProfessionalAllowance);
@@ -7808,16 +7244,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
 
-                                                    }
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.TotalTopUpAllowance;
@@ -7868,16 +7296,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Debit = p.Sum(x => x.TotalTopUpAllowance);
@@ -7923,16 +7344,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
 
-                                                    }
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.Sum(x => x.TotalTopUpAllowance);
@@ -7977,16 +7390,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
 
-                                                    }
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Debit = p.Sum(x => x.TotalTopUpAllowance);
@@ -8043,15 +7448,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.TotalDesertAllowance;
@@ -8102,17 +7500,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
 
-                                                        }
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Debit = p.Sum(x => x.TotalDesertAllowance);
@@ -8158,16 +7548,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
 
-                                                    }
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Debit = p.Sum(x => x.TotalDesertAllowance);
@@ -8212,16 +7594,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
 
-                                                    }
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Debit = p.Sum(x => x.TotalDesertAllowance);
@@ -8278,16 +7652,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
 
-                                                    }
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = 0;
@@ -8338,17 +7704,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
 
-                                                        }
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Credit = 0;
@@ -8394,16 +7752,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
 
-                                                    }
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = 0;
@@ -8447,16 +7797,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
 
-                                                    }
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Credit = 0;
@@ -8514,16 +7856,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
 
-                                                    }
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = 0;
@@ -8574,16 +7908,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Credit = 0;
@@ -8629,15 +7956,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = 0;
@@ -8681,15 +8001,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Credit = 0;
@@ -8747,15 +8060,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.TotalPenality;
@@ -8807,16 +8113,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Credit = p.Sum(x => x.TotalPenality);
@@ -8862,15 +8161,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.Sum(x => x.TotalPenality);
@@ -8914,16 +8206,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
 
-                                                    }
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Credit = p.Sum(x => x.TotalPenality);
@@ -8981,16 +8265,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
 
-                                                    }
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.SportFee;
@@ -9041,16 +8317,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Credit = p.Sum(x => x.SportFee);
@@ -9096,15 +8365,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.Sum(x => x.SportFee);
@@ -9148,15 +8410,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Credit = p.Sum(x => x.SportFee);
@@ -9463,15 +8718,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                        }
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                         distribution.CostCenterCode = costCneter;
                                                         distribution.LocationCode = branch;
                                                         distribution.Credit = regular.Sum(x => x.Amount);
@@ -9514,16 +8762,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
 
-                                                        }
                                                         distribution.CostCenterCode = costCneter;
                                                         distribution.LocationCode = branch;
                                                         distribution.Credit = fixeds.Sum(x => x.Amount);
@@ -9564,15 +8804,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                              emp.SubAccCode);
-                                                        }
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                         distribution.CostCenterCode = costCneter;
                                                         distribution.LocationCode = branch;
                                                         distribution.Credit = 0;
@@ -9643,16 +8876,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = branch;
                                                         distribution.Credit = regulars.Sum(x => x.Amount);
@@ -9697,16 +8923,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Credit = fixedss.Sum(x => x.Amount);
@@ -9751,16 +8970,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                         distribution.GLPeriodId = id;
                                                         distribution.BranchId = branchId;
                                                         distribution.AccountDesc = accounts.Description;
-                                                        if (accountHelper.IsDynamicCoA())
-                                                        {
-                                                            string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                            distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                        }
-                                                        else
-                                                        {
-                                                            distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                              SubAccCode);
-                                                        }
+                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                         distribution.CostCenterCode = c;
                                                         distribution.LocationCode = b;
                                                         distribution.Credit = 0;
@@ -9823,15 +9035,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = regulars.Sum(x => x.Amount);
@@ -9873,15 +9078,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = fixedss.Sum(x => x.Amount);
@@ -9923,16 +9121,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                              SubAccCode);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
 
-                                                    }
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = 0;
@@ -9988,16 +9178,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                              SubAccCode);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
 
-                                                    }
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Credit = regulars.Sum(x => x.Amount);
@@ -10039,15 +9221,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c, costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Credit = fixedss.Sum(x => x.Amount);
@@ -10091,15 +9266,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c, costCneter,
-                                                              SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = c;
                                                     distribution.Credit = 0;
@@ -10237,14 +9405,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                             distribution.GLPeriodId = id;
                             distribution.BranchId = branchId;
 
-                            if (accountHelper.IsDynamicCoA())
-                            {
-                                distribution.AccountCode = accounts.Account;
-                            }
-                            else
-                            {
-                                distribution.AccountCode = accountHelper.RearrangeAccountSequence(accountMain, branch, costCneter, SubAccCode);
-                            }
+                            distribution.AccountCode = accounts.Account;
+
                             distribution.AccountDesc = accounts.Description;
                             var payrolldatass = new List<PayrollProcessViewModel>();
                             if (!accounts.IsPerCostCenter && !accounts.IsPerEmployee)
@@ -10282,16 +9444,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
 
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    if (!string.IsNullOrEmpty(accounts.Account))
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter, emp.SubAccCode);
+                                                if (!string.IsNullOrEmpty(accounts.Account))
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
 
-                                                }
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.BasicSalary - p.AbsentDeduction - p.UnpaidLeaveDeduction;//-added
@@ -10347,16 +9502,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
 
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                            SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = b;
                                                     distribution.Debit = p.Sum(x => x.BasicSalary) - (p.Sum(x => x.AbsentDeduction) + p.Sum(x => x.UnpaidLeaveDeduction));//-added
@@ -10405,15 +9553,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c.ToString(),
-                                                        SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c.ToString();
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.Sum(x => x.BasicSalary) - (p.Sum(x => x.AbsentDeduction) + p.Sum(x => x.UnpaidLeaveDeduction));//-added
@@ -10461,15 +9602,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                                                                    SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c.ToString();
                                                 distribution.Debit = p.Sum(x => x.BasicSalary) - (p.Sum(x => x.AbsentDeduction) + p.Sum(x => x.UnpaidLeaveDeduction));//-added
@@ -10534,15 +9668,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                       emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.BasicSalary - p.AbsentDeduction - p.UnpaidLeaveDeduction;//-added
@@ -10595,16 +9722,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                      SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
 
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = b;
@@ -10655,15 +9775,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c.ToString(),
-                                                     SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
 
                                                 distribution.CostCenterCode = c.ToString();
                                                 distribution.LocationCode = branch;
@@ -10712,15 +9825,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
 
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c.ToString();
@@ -10783,14 +9889,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter, emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
 
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
@@ -10842,16 +9941,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
 
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = b;
@@ -10899,14 +9991,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c, SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
 
                                                 distribution.CostCenterCode = c.ToString();
                                                 distribution.LocationCode = branch;
@@ -10952,14 +10038,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter, SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c.ToString();
                                                 distribution.Debit = p.Sum(x => x.TotalOvertime);
@@ -11017,15 +10097,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.IncomeTax;
@@ -11076,16 +10149,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = b;
                                                     distribution.Credit = p.Sum(x => x.IncomeTax);
@@ -11132,15 +10198,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c.ToString();
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.Sum(x => x.IncomeTax);
@@ -11184,15 +10243,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c.ToString();
                                                 distribution.Credit = p.Sum(x => x.IncomeTax);
@@ -11250,15 +10302,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = 0;
@@ -11309,16 +10354,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = b;
                                                     distribution.Debit = 0;
@@ -11365,14 +10403,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c, SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c.ToString();
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = 0;
@@ -11416,15 +10448,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                                                                      SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c.ToString();
                                                 distribution.Debit = 0;
@@ -11482,15 +10507,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                      emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = 0;
@@ -11541,16 +10559,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = b;
                                                     distribution.Debit = 0;
@@ -11597,15 +10608,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
 
                                                 distribution.CostCenterCode = c.ToString();
                                                 distribution.LocationCode = branch;
@@ -11650,15 +10654,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                      SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c.ToString();
                                                 distribution.Debit = 0;
@@ -11716,15 +10713,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.TotalLoan;
@@ -11775,16 +10765,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = p.Sum(x => x.TotalLoan);
@@ -11830,15 +10813,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
 
                                                 distribution.CostCenterCode = c.ToString();
                                                 distribution.LocationCode = branch;
@@ -11883,15 +10859,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c.ToString();
                                                 distribution.Credit = p.Sum(x => x.TotalLoan);
@@ -11948,15 +10917,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.TotalAdvance;
@@ -12007,16 +10969,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = b;
                                                     distribution.Credit = p.Sum(x => x.TotalAdvance);
@@ -12062,14 +11017,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c, SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c.ToString();
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.Sum(x => x.TotalAdvance);
@@ -12113,15 +11062,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter, SubAccCode);
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
 
-                                                }
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c.ToString();
                                                 distribution.Credit = p.Sum(x => x.TotalAdvance);
@@ -12179,15 +11121,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.NetEarning;
@@ -12238,16 +11173,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = b;
                                                     distribution.Credit = p.Sum(x => x.NetEarning);
@@ -12294,15 +11222,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c.ToString();
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.Sum(x => x.NetEarning);
@@ -12346,15 +11267,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c.ToString();
                                                 distribution.Credit = p.Sum(x => x.NetEarning);
@@ -12412,15 +11326,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.PensionFromEmployee;
@@ -12471,16 +11378,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = b;
                                                     distribution.Credit = p.Sum(x => x.PensionFromEmployee);
@@ -12526,14 +11426,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c, SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c.ToString();
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.Sum(x => x.PensionFromEmployee);
@@ -12577,15 +11471,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c.ToString();
                                                 distribution.Credit = p.Sum(x => x.PensionFromEmployee);
@@ -12645,15 +11532,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.ProvidentFromEmployee;
@@ -12704,16 +11584,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = b;
                                                     distribution.Credit = p.Sum(x => x.ProvidentFromEmployee);
@@ -12759,15 +11632,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c.ToString();
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.Sum(x => x.ProvidentFromEmployee);
@@ -12811,15 +11677,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c.ToString();
                                                 distribution.Credit = p.Sum(x => x.ProvidentFromEmployee);
@@ -12877,15 +11736,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.AssocationContribution;
@@ -12936,16 +11788,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c.ToString();
                                                     distribution.LocationCode = b;
                                                     distribution.Credit = p.Sum(x => x.AssocationContribution);
@@ -12992,15 +11837,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c.ToString();
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.Sum(x => x.AssocationContribution);
@@ -13044,15 +11882,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c.ToString();
                                                 distribution.Credit = p.Sum(x => x.AssocationContribution);
@@ -13110,15 +11941,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.LabourUnionContribution;
@@ -13169,16 +11993,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Credit = p.Sum(x => x.LabourUnionContribution);
@@ -13224,15 +12041,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.Sum(x => x.LabourUnionContribution);
@@ -13276,15 +12086,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Credit = p.Sum(x => x.LabourUnionContribution);
@@ -13342,15 +12145,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.TotalTransportAllowance;
@@ -13401,16 +12197,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Debit = p.Sum(x => x.TotalTransportAllowance);
@@ -13456,15 +12245,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.Sum(x => x.TotalTransportAllowance);
@@ -13508,15 +12290,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Debit = p.Sum(x => x.TotalTransportAllowance);
@@ -13575,15 +12350,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.TotalProjectAllowance;
@@ -13634,16 +12402,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Debit = p.Sum(x => x.TotalProjectAllowance);
@@ -13689,15 +12450,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.Sum(x => x.TotalProjectAllowance);
@@ -13741,15 +12495,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Debit = p.Sum(x => x.TotalProjectAllowance);
@@ -13808,15 +12555,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.TotalTelephoneAllowance;
@@ -13867,16 +12607,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Debit = p.Sum(x => x.TotalTelephoneAllowance);
@@ -13923,15 +12656,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.Sum(x => x.TotalTelephoneAllowance);
@@ -13975,15 +12701,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Debit = p.Sum(x => x.TotalTelephoneAllowance);
@@ -14041,15 +12760,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                                                                      emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.TotalHouseAllowance;
@@ -14100,16 +12812,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Debit = p.Sum(x => x.TotalHouseAllowance);
@@ -14155,15 +12860,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.Sum(x => x.TotalHouseAllowance);
@@ -14207,15 +12905,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Debit = p.Sum(x => x.TotalHouseAllowance);
@@ -14274,15 +12965,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.TotalResponsiblityAllowance;
@@ -14333,16 +13017,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Debit = p.Sum(x => x.TotalResponsiblityAllowance);
@@ -14388,15 +13065,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.Sum(x => x.TotalResponsiblityAllowance);
@@ -14440,15 +13110,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Debit = p.Sum(x => x.TotalResponsiblityAllowance);
@@ -14506,15 +13169,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.TotalPositionAllowance;
@@ -14565,16 +13221,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Debit = p.Sum(x => x.TotalPositionAllowance);
@@ -14620,15 +13269,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.Sum(x => x.TotalPositionAllowance);
@@ -14672,15 +13314,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Debit = p.Sum(x => x.TotalPositionAllowance);
@@ -14738,15 +13373,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.TotalProfessionalAllowance;
@@ -14797,16 +13425,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Debit = p.Sum(x => x.TotalProfessionalAllowance);
@@ -14852,15 +13473,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.Sum(x => x.TotalProfessionalAllowance);
@@ -14904,15 +13518,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Debit = p.Sum(x => x.TotalProfessionalAllowance);
@@ -14970,16 +13577,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
 
-                                                }
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.TotalTopUpAllowance;
@@ -15030,16 +13629,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Debit = p.Sum(x => x.TotalTopUpAllowance);
@@ -15085,16 +13677,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
 
-                                                }
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.Sum(x => x.TotalTopUpAllowance);
@@ -15139,16 +13723,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
 
-                                                }
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Debit = p.Sum(x => x.TotalTopUpAllowance);
@@ -15205,15 +13781,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.TotalDesertAllowance;
@@ -15264,17 +13833,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
 
-                                                    }
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Debit = p.Sum(x => x.TotalDesertAllowance);
@@ -15320,16 +13881,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
 
-                                                }
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Debit = p.Sum(x => x.TotalDesertAllowance);
@@ -15374,16 +13927,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
 
-                                                }
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Debit = p.Sum(x => x.TotalDesertAllowance);
@@ -15440,16 +13985,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
 
-                                                }
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = 0;
@@ -15500,17 +14037,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
 
-                                                    }
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Credit = 0;
@@ -15556,16 +14085,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
 
-                                                }
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = 0;
@@ -15609,16 +14130,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
 
-                                                }
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Credit = 0;
@@ -15676,16 +14189,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
 
-                                                }
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = 0;
@@ -15736,16 +14241,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                     string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
                                                         distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                  
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Credit = 0;
@@ -15791,15 +14289,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = 0;
@@ -15843,15 +14334,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Credit = 0;
@@ -15909,15 +14393,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.TotalPenality;
@@ -15969,16 +14446,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Credit = p.Sum(x => x.TotalPenality);
@@ -16024,15 +14494,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.Sum(x => x.TotalPenality);
@@ -16076,16 +14539,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
 
-                                                }
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Credit = p.Sum(x => x.TotalPenality);
@@ -16143,16 +14598,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
 
-                                                }
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.SportFee;
@@ -16203,16 +14650,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Credit = p.Sum(x => x.SportFee);
@@ -16258,15 +14698,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = p.Sum(x => x.SportFee);
@@ -16310,15 +14743,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Credit = p.Sum(x => x.SportFee);
@@ -16625,15 +15051,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = regular.Sum(x => x.Amount);
@@ -16676,16 +15095,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
 
-                                                    }
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = fixeds.Sum(x => x.Amount);
@@ -16726,15 +15137,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, costCneter,
-                                                          emp.SubAccCode);
-                                                    }
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetSubAccountSequenceIndex(), emp.SubAccCode);
+
                                                     distribution.CostCenterCode = costCneter;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = 0;
@@ -16805,16 +15209,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = branch;
                                                     distribution.Credit = regulars.Sum(x => x.Amount);
@@ -16859,16 +15256,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Credit = fixedss.Sum(x => x.Amount);
@@ -16913,16 +15303,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                     distribution.GLPeriodId = id;
                                                     distribution.BranchId = branchId;
                                                     distribution.AccountDesc = accounts.Description;
-                                                    if (accountHelper.IsDynamicCoA())
-                                                    {
-                                                        string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
-                                                        distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                    }
-                                                    else
-                                                    {
-                                                        distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, b, c.ToString(),
-                                                          SubAccCode);
-                                                    }
+                                                    string branchreplaced = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), b);
+                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(branchreplaced, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                     distribution.CostCenterCode = c;
                                                     distribution.LocationCode = b;
                                                     distribution.Credit = 0;
@@ -16985,15 +15368,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = regulars.Sum(x => x.Amount);
@@ -17035,15 +15411,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = fixedss.Sum(x => x.Amount);
@@ -17085,16 +15454,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, branch, c,
-                                                          SubAccCode);
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetCostCenterAccountSequenceIndex(), c);
 
-                                                }
                                                 distribution.CostCenterCode = c;
                                                 distribution.LocationCode = branch;
                                                 distribution.Credit = 0;
@@ -17150,16 +15511,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c.ToString(), costCneter,
-                                                          SubAccCode);
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
 
-                                                }
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Credit = regulars.Sum(x => x.Amount);
@@ -17201,15 +15554,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c, costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Credit = fixedss.Sum(x => x.Amount);
@@ -17253,15 +15599,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                                 distribution.GLPeriodId = id;
                                                 distribution.BranchId = branchId;
                                                 distribution.AccountDesc = accounts.Description;
-                                                if (accountHelper.IsDynamicCoA())
-                                                {
-                                                    distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
-                                                }
-                                                else
-                                                {
-                                                    distribution.AccountCode = myAccountHelper.RearrangeAccountSequence(accountMain, c, costCneter,
-                                                          SubAccCode);
-                                                }
+                                                distribution.AccountCode = dynamicAccount.ReplaceSegment(accounts.Account, dynamicAccount.GetBranchAccountSequenceIndex(), c);
+
                                                 distribution.CostCenterCode = costCneter;
                                                 distribution.LocationCode = c;
                                                 distribution.Credit = 0;
@@ -17369,8 +15708,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         }
                     }
                     //split cost
-                    if (accountHelper.IsDynamicCoA())
-                    {
+                  
                         foreach (var dist in payrollDistributions)
                         {
                             string costcenter = dist.AccountCode.Split('-')[dynamicAccount.GetCostCenterAccountSequenceIndex()];
@@ -17404,12 +15742,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                 splittedDistributions.Add(dist);
                             }
                         }
-                    }
-                    else
-                    {
-                        splittedDistributions.AddRange(payrollDistributions);
-                    }
-
+                   
                     db.PayrollDistributions.AddRange(splittedDistributions);
                     db.SaveChanges();
 

@@ -223,8 +223,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
 
                 var entity = new GoodReceive
                     {
-                     BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(goodReceive.StoreCode),
-                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
+                    BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(goodReceive.StoreCode),
+                    BusinessUnitId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBusinessUnit(goodReceive.StoreCode),
                     IsManual = true,
                         ReceiveRef = goodReceive.ReceiveRef,
                         ReceiveTypeId = goodReceive.ReceiveTypeId,
@@ -351,7 +351,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                 var entity = new GoodReceive
                 {
                     BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(goodReceive.StoreCode),
-                    BusinessUnitId = goodReceive.BusinessUnitId,
+                    BusinessUnitId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBusinessUnit(goodReceive.StoreCode),
                     IsManual = goodReceive.IsManual,
                     GoodReceiveId = goodReceive.GoodReceiveId,
                     ReceiveRef = goodReceive.ReceiveRef,

@@ -29,7 +29,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
         {
             var periods = db.GLFiscalYears;
             var categories = db.ItemCategorys;
-          
+            var businessUnits = db.BusinessUnits;
             var branches = db.Branch;
             var costCenter = db.MainCompanyStructures;
             var employee = db.Person_Employee;
@@ -52,6 +52,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
 
             ViewData["Periods"] = periods;
             ViewData["Branches"] = branches;
+            ViewData["BusinessUnits"] = businessUnits;
 
             var items = db.AnnualNeedAssesmentItems;
             var selecteditems = items.Select(
@@ -106,6 +107,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                 AnnualNeedAssesmentID = annualNeedAssesment.AnnualNeedAssesmentID,
                 OrgStructureId = annualNeedAssesment.OrgStructureId,
                 BranchId = annualNeedAssesment.BranchId,
+                BusinessUnitId = annualNeedAssesment.BusinessUnitId,
                 EmployeeId = annualNeedAssesment.EmployeeId,
                 Remark = annualNeedAssesment.Remark,
                 GlFiscalYearId = annualNeedAssesment.GlFiscalYearId,
@@ -135,24 +137,47 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AnnualNeedAssesments_Create([DataSourceRequest]DataSourceRequest request, AnnualNeedAssesment annualNeedAssesment)
         {
-            #region validation
+            #region validation and data
+
+            if (annualNeedAssesment.EmployeeId == 0)
+            {
+                ModelState.AddModelError("requester", "Please select requestor");
+            }
+            if (annualNeedAssesment.EmployeeId != 0)
+            {
+                var placemnt = db.Placements.Where(x => x.EmployeeId == annualNeedAssesment.EmployeeId).Where(x => x.isCurrent == true).FirstOrDefault();
+                if (placemnt != null)
+                {
+                    annualNeedAssesment.BranchId = placemnt.BranchId;
+                    annualNeedAssesment.BusinessUnitId = placemnt.BusinessUnitId;
+                    annualNeedAssesment.OrgStructureId = placemnt.OrgStructureId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
+                }
+            }
 
             var exists = db.AnnualNeedAssesments
                 .Where(x => x.OrgStructureId == annualNeedAssesment.OrgStructureId)
                 .Where(x => x.BranchId == annualNeedAssesment.BranchId)
+                .Where(x => x.BusinessUnitId == annualNeedAssesment.BusinessUnitId)
                 .Where(x => x.GlFiscalYearId == annualNeedAssesment.GlFiscalYearId).ToList();
             if (exists.Any())
             {
                 ModelState.AddModelError("exists", "The need for this branch/project,work unit and work unit is already available.");
             }
 
+
+
             #endregion
             if (ModelState.IsValid)
             {
                 var entity = new AnnualNeedAssesment
                 {
-                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(annualNeedAssesment.EmployeeId),
-                    BranchId =EmployeeHelper.GetEmployeePlacementBranch(annualNeedAssesment.EmployeeId),
+                    OrgStructureId = annualNeedAssesment.OrgStructureId,
+                    BranchId = annualNeedAssesment.BranchId,
+                    BusinessUnitId = annualNeedAssesment.BusinessUnitId,
                     EmployeeId = annualNeedAssesment.EmployeeId,
                     GlFiscalYearId = annualNeedAssesment.GlFiscalYearId,
                     Remark = annualNeedAssesment.Remark,
@@ -187,11 +212,31 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AnnualNeedAssesments_Update([DataSourceRequest]DataSourceRequest request, AnnualNeedAssesment annualNeedAssesment)
         {
-            #region validation
+            #region validation and data
+
+            if (annualNeedAssesment.EmployeeId == 0)
+            {
+                ModelState.AddModelError("requester", "Please select requestor");
+            }
+            if (annualNeedAssesment.EmployeeId != 0)
+            {
+                var placemnt = db.Placements.Where(x => x.EmployeeId == annualNeedAssesment.EmployeeId).Where(x => x.isCurrent == true).FirstOrDefault();
+                if (placemnt != null)
+                {
+                    annualNeedAssesment.BranchId = placemnt.BranchId;
+                    annualNeedAssesment.BusinessUnitId = placemnt.BusinessUnitId;
+                    annualNeedAssesment.OrgStructureId = placemnt.OrgStructureId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
+                }
+            }
 
             var exists = db.AnnualNeedAssesments.Where(x => x.AnnualNeedAssesmentID != annualNeedAssesment.AnnualNeedAssesmentID)
                                                 .Where(x => x.OrgStructureId == annualNeedAssesment.OrgStructureId)
                                                 .Where(x => x.BranchId == annualNeedAssesment.BranchId)
+                                                .Where(x => x.BusinessUnitId == annualNeedAssesment.BusinessUnitId)
                                                 .Where(x => x.GlFiscalYearId == annualNeedAssesment.GlFiscalYearId).ToList();
             if (exists.Any())
             {
@@ -204,8 +249,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                 var entity = new AnnualNeedAssesment
                 {
                     AnnualNeedAssesmentID = annualNeedAssesment.AnnualNeedAssesmentID,
-                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(annualNeedAssesment.EmployeeId),
-                    BranchId = EmployeeHelper.GetEmployeePlacementBranch(annualNeedAssesment.EmployeeId),
+                    OrgStructureId = annualNeedAssesment.OrgStructureId,
+                    BranchId = annualNeedAssesment.BranchId,
+                    BusinessUnitId = annualNeedAssesment.BusinessUnitId,
                     EmployeeId = annualNeedAssesment.EmployeeId,
                     GlFiscalYearId = annualNeedAssesment.GlFiscalYearId,
                     Remark = annualNeedAssesment.Remark,
@@ -248,6 +294,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                     AnnualNeedAssesmentID = annualNeedAssesment.AnnualNeedAssesmentID,
                     OrgStructureId = annualNeedAssesment.OrgStructureId,
                     BranchId = annualNeedAssesment.BranchId,
+                    BusinessUnitId = annualNeedAssesment.BusinessUnitId,
                     EmployeeId = annualNeedAssesment.EmployeeId,
                     GlFiscalYearId = annualNeedAssesment.GlFiscalYearId,
                     Remark = annualNeedAssesment.Remark,

@@ -92,9 +92,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                  ModelState.AddModelError("nobalance", "There is no enough balance in store for item: "+storeRequisitionItem.InventoryItem.Name+" current balance is: "+currentBalance);
              }
 
-            if (storeRequisitionItem.PurchaseQuantity + storeRequisitionItem.IssuedQuantity >storeRequisitionItem.ApprovedQuantity)
+            if (storeRequisitionItem.PurchaseQuantity + storeRequisitionItem.IssuedQuantity > storeRequisitionItem.ApprovedQuantity)
             {
-                ModelState.AddModelError("above","The sum of issue and purchase quantity cannot be more than the approved quantity");
+                ModelState.AddModelError("above", "The sum of issue and purchase quantity cannot be more than the approved quantity");
             }
 
             if (storeRequisitionItem.PurchaseQuantity + storeRequisitionItem.IssuedQuantity <storeRequisitionItem.ApprovedQuantity)

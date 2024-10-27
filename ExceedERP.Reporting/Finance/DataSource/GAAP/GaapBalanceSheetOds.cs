@@ -23,14 +23,15 @@ namespace ExceedERP.Reporting.Finance.DataSource.GAAP
         public List<GaapNoteVeiwModel> GaapBalanceSheetReportNotes(string fiscalyear, string period)
         {
             List<GaapNoteVeiwModel> list = new List<GaapNoteVeiwModel>();
-            var notes = _db.GapBalanceSheets.FirstOrDefault(x => x.ReportType == GaapReportType.GAAPOne);
-            var assetRanges = _db.GaapBalanceSheetAssetRanges.ToList();
-            var liabilityRanges = _db.GaapBalanceSheetLiabilityRanges.ToList();
-            var capitalRanges = _db.GaapBalanceSheetCapitalRanges.ToList();
+            var notes = _db.GapBalanceSheets.AsNoTracking().FirstOrDefault(x => x.ReportType == GaapReportType.GAAPOne);
+            var assetRanges = _db.GaapBalanceSheetAssetRanges.AsNoTracking().ToList();
+            var liabilityRanges = _db.GaapBalanceSheetLiabilityRanges.AsNoTracking().ToList();
+            var capitalRanges = _db.GaapBalanceSheetCapitalRanges.AsNoTracking().ToList();
            
             if (notes != null && !String.IsNullOrEmpty(fiscalyear))
             {
-                var fyearObj = _db.GLFiscalYears.Find(int.Parse(fiscalyear));
+                int fYearId = int.Parse(fiscalyear);
+                var fyearObj = _db.GLFiscalYears.Find(fYearId);
                 var prevYearBalance = new List<GLLedgerPostingLines>();
                 var currnetYearBalance = new List<GLLedgerPostingLines>();
 
@@ -178,9 +179,10 @@ namespace ExceedERP.Reporting.Finance.DataSource.GAAP
 
             if (!String.IsNullOrEmpty(fiscalyear))
             {
-                var fyearObj = _db.GLFiscalYears.Find(int.Parse(fiscalyear));
+                int fYearId = int.Parse(fiscalyear);
+                var fyearObj = _db.GLFiscalYears.Find(fYearId);
 
-                var gaapBalanceSheetRules = _db.GapBalanceSheets.FirstOrDefault(x => x.ReportType == GaapReportType.GAAPOne);
+                var gaapBalanceSheetRules = _db.GapBalanceSheets.AsNoTracking().FirstOrDefault(x => x.ReportType == GaapReportType.GAAPOne);
 
                 var prevYearBalance = new List<GLLedgerPostingLines>();
                 var currnetYearBalance = new List<GLLedgerPostingLines>();
@@ -252,7 +254,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GAAP
 
                     decimal currentYearCurrentAssetTotal = 0;
                     decimal prevYearCurrentAssetTotal = 0;
-
+                    List<string> accountValues;
                     #region asset header
 
                     var reportitem = new BalanceSheetReportItemVeiwModel
@@ -266,99 +268,6 @@ namespace ExceedERP.Reporting.Finance.DataSource.GAAP
 
                     #endregion
 
-                    #region non current asset header
-
-                    reportitem = new BalanceSheetReportItemVeiwModel
-                    {
-                        CategoryDescription = "Non Current Assets ",
-                        CurrentYearBalance = 0,
-                        PreviousYearBalance = 0,
-                        IsHeader = true
-                    };
-                     sofpReport.BalanceSheetReportItems.Add(reportitem);
-
-                    #endregion
-
-                    #region non current asset
-
-                    var nonCurrentAssets = gaapBalanceSheetRules.Assets
-                        .Where(x => x.Category == GaapAssetTypes.NonCurrentAsset).ToList();
-
-
-                    List<string> accountValues;
-                    foreach (var nonCurrentAsset in nonCurrentAssets)
-                    {
-                        currentYearNonCurrentAssetTotal = 0;
-                        prevYearNonCurrentAssetTotal = 0;
-
-
-                        accountValues = new List<string>();
-
-                        #region  account range
-
-                        var accountRange = nonCurrentAsset.GaapBalanceSheetAssetRanges.ToList();
-                        foreach (var range in accountRange)
-                        {
-                            var accountValuesRange = _accountHelper.GeAccountRange(range.AccountFrom, range.AccountTo,
-                                GlSegmentTypes.Account);
-                            if (accountValuesRange != null)
-                                accountValues.AddRange(accountValuesRange);
-                        }
-
-                        #endregion
-
-                        foreach (var account in accountValues)
-                        {
-                            #region current year
-
-                            currentYearNonCurrentAssetTotal =
-                                currentYearNonCurrentAssetTotal +
-                                _reportHelper.GetAccountEndBalances(currnetYearBalance, account);
-
-                            #endregion
-
-                            if (prevfyearObj != null)
-                            {
-                                #region previos year
-
-                                prevYearNonCurrentAssetTotal =
-                                    prevYearNonCurrentAssetTotal +
-                                    _reportHelper.GetAccountEndBalances(prevYearBalance, account);
-
-                                #endregion
-                            }
-
-
-                        }
-                        currentYearSumNonCurrentAsset = currentYearSumNonCurrentAsset + currentYearNonCurrentAssetTotal;
-                        previosYearSumNonCurrentAsset = previosYearSumNonCurrentAsset + prevYearNonCurrentAssetTotal;
-
-                        reportitem = new BalanceSheetReportItemVeiwModel
-                        {
-                            Notes = nonCurrentAsset.NoteNumber,
-                            CategoryDescription = nonCurrentAsset.Description,
-                            CurrentYearBalance = currentYearNonCurrentAssetTotal,
-                            PreviousYearBalance = prevYearNonCurrentAssetTotal,
-                            IsHeader = false
-                        };
-                        sofpReport.BalanceSheetReportItems.Add(reportitem);
-                    }
-
-                    #region sum non currrent asset
-
-                    reportitem = new BalanceSheetReportItemVeiwModel
-                    {
-                        CategoryDescription = "Total Non Current Assets ",
-                        CurrentYearBalance = currentYearSumNonCurrentAsset,
-                        PreviousYearBalance = previosYearSumNonCurrentAsset,
-                        IsHeader = true
-                    };
-                    sofpReport.BalanceSheetReportItems.Add(reportitem);
-
-                    #endregion
-
-                    #endregion
-
                     #region current asset header
 
                     reportitem = new BalanceSheetReportItemVeiwModel
@@ -368,7 +277,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GAAP
                         PreviousYearBalance = 0,
                         IsHeader = true
                     };
-                     sofpReport.BalanceSheetReportItems.Add(reportitem);
+                    sofpReport.BalanceSheetReportItems.Add(reportitem);
 
                     #endregion
 
@@ -442,11 +351,105 @@ namespace ExceedERP.Reporting.Finance.DataSource.GAAP
                     reportitem.CurrentYearBalance = currentYearSumCurrentAsset;
                     reportitem.PreviousYearBalance = previosYearSumCurrentAsset;
                     reportitem.IsHeader = true;
+                    sofpReport.BalanceSheetReportItems.Add(reportitem);
+
+                    #endregion
+
+                    #endregion
+
+                    #region non current asset header
+
+                    reportitem = new BalanceSheetReportItemVeiwModel
+                    {
+                        CategoryDescription = "Non Current Assets ",
+                        CurrentYearBalance = 0,
+                        PreviousYearBalance = 0,
+                        IsHeader = true
+                    };
                      sofpReport.BalanceSheetReportItems.Add(reportitem);
 
                     #endregion
 
+                    #region non current asset
+
+                    var nonCurrentAssets = gaapBalanceSheetRules.Assets
+                        .Where(x => x.Category == GaapAssetTypes.NonCurrentAsset).ToList();
+
+
+                   
+                    foreach (var nonCurrentAsset in nonCurrentAssets)
+                    {
+                        currentYearNonCurrentAssetTotal = 0;
+                        prevYearNonCurrentAssetTotal = 0;
+
+
+                        accountValues = new List<string>();
+
+                        #region  account range
+
+                        var accountRange = nonCurrentAsset.GaapBalanceSheetAssetRanges.ToList();
+                        foreach (var range in accountRange)
+                        {
+                            var accountValuesRange = _accountHelper.GeAccountRange(range.AccountFrom, range.AccountTo,
+                                GlSegmentTypes.Account);
+                            if (accountValuesRange != null)
+                                accountValues.AddRange(accountValuesRange);
+                        }
+
+                        #endregion
+
+                        foreach (var account in accountValues)
+                        {
+                            #region current year
+
+                            currentYearNonCurrentAssetTotal =
+                                currentYearNonCurrentAssetTotal +
+                                _reportHelper.GetAccountEndBalances(currnetYearBalance, account);
+
+                            #endregion
+
+                            if (prevfyearObj != null)
+                            {
+                                #region previos year
+
+                                prevYearNonCurrentAssetTotal =
+                                    prevYearNonCurrentAssetTotal +
+                                    _reportHelper.GetAccountEndBalances(prevYearBalance, account);
+
+                                #endregion
+                            }
+
+
+                        }
+                        currentYearSumNonCurrentAsset = currentYearSumNonCurrentAsset + currentYearNonCurrentAssetTotal;
+                        previosYearSumNonCurrentAsset = previosYearSumNonCurrentAsset + prevYearNonCurrentAssetTotal;
+
+                        reportitem = new BalanceSheetReportItemVeiwModel
+                        {
+                            Notes = nonCurrentAsset.NoteNumber,
+                            CategoryDescription = nonCurrentAsset.Description,
+                            CurrentYearBalance = currentYearNonCurrentAssetTotal,
+                            PreviousYearBalance = prevYearNonCurrentAssetTotal,
+                            IsHeader = false
+                        };
+                        sofpReport.BalanceSheetReportItems.Add(reportitem);
+                    }
+
+                    #region sum non currrent asset
+
+                    reportitem = new BalanceSheetReportItemVeiwModel
+                    {
+                        CategoryDescription = "Total Non Current Assets ",
+                        CurrentYearBalance = currentYearSumNonCurrentAsset,
+                        PreviousYearBalance = previosYearSumNonCurrentAsset,
+                        IsHeader = true
+                    };
+                    sofpReport.BalanceSheetReportItems.Add(reportitem);
+
                     #endregion
+
+                    #endregion
+                                        
 
                     #region total asstet
 
@@ -602,101 +605,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GAAP
 
                     decimal currentYearCurrentLiabilityTotal = 0;
                     decimal prevYearCurrentLiabilityTotal = 0;
-
-
-                    #region non current Liability header
-
-                    reportitem = new BalanceSheetReportItemVeiwModel
-                    {
-                        CategoryDescription = "Non Current Liabilities ",
-                        CurrentYearBalance = 0,
-                        PreviousYearBalance = 0,
-                        IsHeader = true
-                    };
-                     sofpReport.BalanceSheetReportItems.Add(reportitem);
-
-                    #endregion
-
-                    #region non current Liability
-
-                    var nonCurrentLiabilities = gaapBalanceSheetRules.Liabilities
-                        .Where(x => x.Category == GaapLiablityTypes.NonCurrentLiability).ToList();
-
-                    foreach (var nonCurrentLiability in nonCurrentLiabilities)
-                    {
-                        currentYearNonCurrentLiabilityTotal = 0;
-                        prevYearNonCurrentLiabilityTotal = 0;
-
-
-                        accountValues = new List<string>();
-
-                        #region  account range
-
-                        var accountRange = nonCurrentLiability.GaapBalanceSheetLiabilityRanges.ToList();
-                        foreach (var range in accountRange)
-                        {
-                            var accountValuesRange = _accountHelper.GeAccountRange(range.AccountFrom, range.AccountTo,
-                                GlSegmentTypes.Account);
-                            if (accountValuesRange != null)
-                                accountValues.AddRange(accountValuesRange);
-                        }
-
-                        #endregion
-
-                        foreach (var account in accountValues)
-                        {
-                            #region current year
-
-                            currentYearNonCurrentLiabilityTotal =
-                                currentYearNonCurrentLiabilityTotal +
-                                _reportHelper.GetAccountEndBalances(currnetYearBalance, account);
-
-                            #endregion
-
-                            if (prevfyearObj != null)
-                            {
-                                #region previos year
-
-                                prevYearNonCurrentLiabilityTotal =
-                                    prevYearNonCurrentLiabilityTotal +
-                                    _reportHelper.GetAccountEndBalances(prevYearBalance, account);
-
-                                #endregion
-                            }
-
-
-                        }
-                        currentYearSumNonCurrentLiability =
-                            currentYearSumNonCurrentLiability + currentYearNonCurrentLiabilityTotal;
-                        previosYearSumNonCurrentLiability =
-                            previosYearSumNonCurrentLiability + prevYearNonCurrentLiabilityTotal;
-
-                        reportitem =
-                            new BalanceSheetReportItemVeiwModel
-                            {
-                                Notes = nonCurrentLiability.NoteNumber,
-                                CategoryDescription = nonCurrentLiability.Description,
-                                CurrentYearBalance = currentYearNonCurrentLiabilityTotal,
-                                PreviousYearBalance = prevYearNonCurrentLiabilityTotal,
-                                IsHeader = false
-                            };
-                        sofpReport.BalanceSheetReportItems.Add(reportitem);
-                    }
-
-                    #region sum non currrent liability
-
-                    reportitem =new BalanceSheetReportItemVeiwModel
-                        {
-                            CategoryDescription = "Total Non Current Liablities ",
-                            CurrentYearBalance = currentYearSumNonCurrentLiability,
-                            PreviousYearBalance = previosYearSumNonCurrentLiability,
-                            IsHeader = true
-                        };
-                    sofpReport.BalanceSheetReportItems.Add(reportitem);
-
-                    #endregion
-
-                    #endregion
+                                       
 
                     #region current liability header
 
@@ -812,6 +721,100 @@ namespace ExceedERP.Reporting.Finance.DataSource.GAAP
                             PreviousYearBalance = previosYearSumCurrentLiability,
                             IsHeader = true
                         };
+                    sofpReport.BalanceSheetReportItems.Add(reportitem);
+
+                    #endregion
+
+                    #endregion
+
+                    #region non current Liability header
+
+                    reportitem = new BalanceSheetReportItemVeiwModel
+                    {
+                        CategoryDescription = "Non Current Liabilities ",
+                        CurrentYearBalance = 0,
+                        PreviousYearBalance = 0,
+                        IsHeader = true
+                    };
+                    sofpReport.BalanceSheetReportItems.Add(reportitem);
+
+                    #endregion
+
+                    #region non current Liability
+
+                    var nonCurrentLiabilities = gaapBalanceSheetRules.Liabilities
+                        .Where(x => x.Category == GaapLiablityTypes.NonCurrentLiability).ToList();
+
+                    foreach (var nonCurrentLiability in nonCurrentLiabilities)
+                    {
+                        currentYearNonCurrentLiabilityTotal = 0;
+                        prevYearNonCurrentLiabilityTotal = 0;
+
+
+                        accountValues = new List<string>();
+
+                        #region  account range
+
+                        var accountRange = nonCurrentLiability.GaapBalanceSheetLiabilityRanges.ToList();
+                        foreach (var range in accountRange)
+                        {
+                            var accountValuesRange = _accountHelper.GeAccountRange(range.AccountFrom, range.AccountTo,
+                                GlSegmentTypes.Account);
+                            if (accountValuesRange != null)
+                                accountValues.AddRange(accountValuesRange);
+                        }
+
+                        #endregion
+
+                        foreach (var account in accountValues)
+                        {
+                            #region current year
+
+                            currentYearNonCurrentLiabilityTotal =
+                                currentYearNonCurrentLiabilityTotal +
+                                _reportHelper.GetAccountEndBalances(currnetYearBalance, account);
+
+                            #endregion
+
+                            if (prevfyearObj != null)
+                            {
+                                #region previos year
+
+                                prevYearNonCurrentLiabilityTotal =
+                                    prevYearNonCurrentLiabilityTotal +
+                                    _reportHelper.GetAccountEndBalances(prevYearBalance, account);
+
+                                #endregion
+                            }
+
+
+                        }
+                        currentYearSumNonCurrentLiability =
+                            currentYearSumNonCurrentLiability + currentYearNonCurrentLiabilityTotal;
+                        previosYearSumNonCurrentLiability =
+                            previosYearSumNonCurrentLiability + prevYearNonCurrentLiabilityTotal;
+
+                        reportitem =
+                            new BalanceSheetReportItemVeiwModel
+                            {
+                                Notes = nonCurrentLiability.NoteNumber,
+                                CategoryDescription = nonCurrentLiability.Description,
+                                CurrentYearBalance = currentYearNonCurrentLiabilityTotal,
+                                PreviousYearBalance = prevYearNonCurrentLiabilityTotal,
+                                IsHeader = false
+                            };
+                        sofpReport.BalanceSheetReportItems.Add(reportitem);
+                    }
+
+                    #region sum non currrent liability
+
+                    reportitem = new BalanceSheetReportItemVeiwModel
+                    {
+                        CategoryDescription = "Total Non Current Liablities ",
+                        CurrentYearBalance = currentYearSumNonCurrentLiability,
+                        PreviousYearBalance = previosYearSumNonCurrentLiability,
+                        IsHeader = true
+                    };
                     sofpReport.BalanceSheetReportItems.Add(reportitem);
 
                     #endregion

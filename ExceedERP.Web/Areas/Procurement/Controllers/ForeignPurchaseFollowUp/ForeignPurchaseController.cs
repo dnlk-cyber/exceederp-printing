@@ -2,9 +2,6 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.DocumentApproval;
-using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.Settings;

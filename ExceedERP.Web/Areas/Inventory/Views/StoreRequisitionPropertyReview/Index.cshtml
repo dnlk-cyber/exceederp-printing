@@ -11,7 +11,7 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.StoreRequisitionID).Title("Request No.").Width(120).Width(120).ClientTemplate("#=appendZeros(StoreRequisitionID)#");
-          columns.Bound(c => c.IsForMaintenance).ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsForMaintenance #' " + " # if (IsForMaintenance) { #" + "checked='checked'" + "# } #" + " />").Width(110); 
+          columns.Bound(c => c.IsForMaintenance).ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsForMaintenance #' " + " # if (IsForMaintenance) { #" + "checked='checked'" + "# } #" + " />").Width(110);
           columns.Bound(c => c.Reference).Title("Reference").Width(120);
           columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector");
           columns.Bound(c => c.RequestDate).Width(110);
@@ -91,8 +91,8 @@
               model.Field(p => p.BusinessUnitId).Editable(false);
               model.Field(p => p.IsForOther).Editable(false);
               model.Field(p => p.IsTransfer).Editable(false);
+              model.Field(p => p.IsForProduction).Editable(false);
               model.Field(p => p.IsForMaintenance).Editable(false);
-              //model.Field(p => p.StoreCode).Editable(false);
               model.Field(p => p.ToStoreCode).Editable(false);
               model.Field(p => p.ModelNo).Editable(false);
               model.Field(p => p.Reference).Editable(false);
@@ -151,7 +151,7 @@
                                             Request Date
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy hh:mm tt') #
                                         </dd>
                                         <dt>
                                             Status
@@ -175,7 +175,7 @@
                                             CreatedOn
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                         </dd>
                                         <dt>
@@ -194,7 +194,7 @@
                                             Modified Date
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                         </dd>
                                         <dt>
                                             Approved By
@@ -206,7 +206,7 @@
                                             Approval Time
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
                                         </dd>
                                         <dt>
                                             Approved By -Property
@@ -218,7 +218,7 @@
                                             Approval Time
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(SecondOnlineApprovedTime), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(SecondOnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
                                         </dd>
                                     </dl>
                                 </div>
@@ -256,6 +256,7 @@
                                                   columns.Bound(c => c.CurrentAPrice).Width(80);
                                                   columns.Bound(c => c.IssuedQuantity).Width(80);
                                                   columns.Bound(c => c.PurchaseQuantity).Width(80);
+                                                 
                                                   columns.Bound(c => c.GeneratePurchaseReq).Width(100).ClientTemplate(
                                           "<input type='checkbox' disabled = 'true' value='\\#= GeneratePurchaseReq \\#' " +
                                           "\\# if (GeneratePurchaseReq) { \\#" +

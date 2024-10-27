@@ -1,25 +1,19 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
- using ExceedERP.Core.Domain.Finance;
- using Kendo.Mvc.Extensions;
+using ExceedERP.Core.Domain.Finance;
+using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Finance.Bank;
- using ExceedERP.Core.Domain.Finance.GL;
- using ExceedERP.Core.Domain.Inventory;
- using ExceedERP.DataAccess.Context;
- using ExceedERP.Helpers.Finance;
- using ExceedERP.Web.Areas.FleetManagement.Controllers;
- using ExceedERP.Web.Helpers;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Finance;
+using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 {
+    [AuthorizeRoles(FinanceConstants.BankReconciliationUser, FinanceConstants.BankReconciliationApprover)]
     public class ReconciliationBankServiceChargeController : Controller
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();

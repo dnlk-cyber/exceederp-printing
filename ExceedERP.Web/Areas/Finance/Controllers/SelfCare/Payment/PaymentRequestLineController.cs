@@ -1,14 +1,8 @@
-﻿using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.HRM.SelfCare;
-using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.HRM.Controllers;
+﻿using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
 using ExceedERP.Helpers.Common;

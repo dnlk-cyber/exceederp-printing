@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
-using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.ForeignPurchase;
@@ -16,7 +15,6 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Helpers.Procurement;
-using ExceedERP.Web.Areas.Finance.Models;
 using ExceedERP.Web.Areas.Procurement.Models;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -24,7 +22,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
 {
-    
+
     public class PurchaseOrderController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();

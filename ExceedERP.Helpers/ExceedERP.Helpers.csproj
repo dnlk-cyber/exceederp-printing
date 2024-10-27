@@ -106,6 +106,7 @@
     <Compile Include="BugetGAAP\BudgetPlanHelper.cs" />
     <Compile Include="BugetGAAP\BugetGAAPGenericHelper.cs" />
     <Compile Include="CMS\CMSGenericHelper.cs" />
+    <Compile Include="Common\CacheData.cs" />
     <Compile Include="Common\DocApprovalHelper.cs" />
     <Compile Include="Common\EmployeeHelper.cs" />
     <Compile Include="Common\EnumExtension.cs">
@@ -162,8 +163,8 @@
     <Compile Include="Finance\FinanceTransactionHelper.cs" />
     <Compile Include="Finance\FinanceTransferHelper.cs" />
     <Compile Include="Finance\FiscalYearHelper.cs" />
+    <Compile Include="Finance\PayrollHelper.cs" />
     <Compile Include="Finance\ReportHelper.cs" />
-    <Compile Include="Finance\ReportHelperUnused.cs" />
     <Compile Include="Finance\ReportHelperWithAllSegment.cs" />
     <Compile Include="FixedAsset\FixedAssetConfigurationHelper.cs" />
     <Compile Include="FixedAsset\FixedAssetDistributionHelper.cs" />
@@ -204,7 +205,6 @@
     <Compile Include="Production\CostTrackingHelper.cs" />
     <Compile Include="Production\ProcessingOrderHelper.cs" />
     <Compile Include="Production\ProductionBudgetAndCashFlowHelper.cs" />
-    <Compile Include="Production\ProductionDistributionHelper.cs" />
     <Compile Include="Production\ProductionDynamicDistributionHelper.cs" />
     <Compile Include="Production\ProductionOrderHelper.cs" />
     <Compile Include="Production\ProductionReportsHelper.cs" />

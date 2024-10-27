@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.Core.Domain.Procurement.Need;
 using ExceedERP.Core.Domain.Procurement.Plan;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
@@ -16,7 +15,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
 {
-    
+
     public class ProcurementPlanController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -32,6 +31,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
         {
             var periods = db.GLPeriods;
             var branches = db.Branch;
+            var businessUnits = db.BusinessUnits;
             var costCenter = db.BranchCostCenter;
             var employee = db.Person_Employee;
             var selectedEmployee = employee.Select(
@@ -53,6 +53,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.NeedAndPlan
 
             ViewData["Periods"] = periods;
             ViewData["Branches"] = branches;
+            ViewData["BusinessUnits"] = businessUnits;
 
             var items = db.AnnualNeedAssesmentItems;
             var selecteditems = items.Select(

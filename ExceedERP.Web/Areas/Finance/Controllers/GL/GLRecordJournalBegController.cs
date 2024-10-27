@@ -14,6 +14,7 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
+using Hangfire;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -462,6 +463,23 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
             int myid = int.Parse(id);
             var record = _db.GlRecordJournalBegs.Find(myid);
 
+            if (record != null)
+            {
+                var fiscalYear = _db.GLFiscalYears.Where(x => x.Name == record.FiscalYear).FirstOrDefault();
+                if (fiscalYear != null)
+                {
+                    if (fiscalYear.Status == FiscalYearStatus.Close || fiscalYear.Status == FiscalYearStatus.PermanetlyClosed)
+                    {
+                        errMsg = "The fiscal is closed, you can't update a closed period.";
+                        var formattedData = new
+                        {
+                            Message = errMsg,
+                            Status = "NOT_OK"
+                        };
+                        return Json(formattedData, JsonRequestBehavior.AllowGet);
+                    }
+                }
+            }
 
             if (record != null && record.IsOnlineApproved)
             {
@@ -542,6 +560,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     }
                    
                 }
+
+                var jobId = BackgroundJob.Enqueue(() => new AccountHelper().SplitBegJournalAccountCombination());
 
                 var formattedData = new
                 {
@@ -1046,14 +1066,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                                     #region split ledger account
 
-                                    if (accountHelper.IsDynamicCoA())
-                                    {
-                                        dynamicAccountHelper.SplitLedgerAccount(newledgerpost);
-                                    }
-                                    else
-                                    {
-                                        accountHelper.SplitLedgerAccount(newledgerpost);
-                                    }
+                                    accountHelper.SplitLedgerAccount(newledgerpost);
 
                                     #endregion
                                 }

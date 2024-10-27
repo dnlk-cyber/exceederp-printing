@@ -2547,7 +2547,7 @@ namespace ExceedERP.DataAccess.Context
         ///
         /// <value> The over time. </value>
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-
+       
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.BonusSetting> BonusSettings { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.OverTime> OverTimes { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.OverTimePerDay> OverTimePerDays { get; set; }
@@ -3776,6 +3776,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ProcurementPOType> ProcurementPOTypes { get; set; }
 
         public DbSet<ItemPriceIndex> ItemPriceIndexes { get; set; }
+        public DbSet<PriceIndexValidation> PriceIndexValidations { get; set; }
 
         public DbSet<ContractManagementItem> ContractManagementItems { get; set; }
 
@@ -3973,6 +3974,10 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<FundTransferDepartmentValidation> FundTransferDepartmentValidations { get; set; }
         public DbSet<FundTransferBudgetValidation> FundTransferBudgetValidations { get; set; }
         public DbSet<FundTransferValidation> FundTransferValidations { get; set; }
+        //fund receive confirmation
+        public DbSet<FundReceive> FundReceives { get; set; }
+        public DbSet<FundReceiveDistribution> FundReceiveDistributions { get; set; }
+        public DbSet<FundReceiveValidation> FundReceiveValidations { get; set; }
         #endregion
         #region payment request
         public DbSet<PaymentRequest> PaymentRequests { get; set; }
@@ -4002,7 +4007,10 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ApTravelExpenseValidation> ApTravelExpenseValidations { get; set; }
         public DbSet<ApTravelExpenseDepartmentValidation> ApTravelExpenseDepartmentValidations { get; set; }
         public DbSet<ApTravelExpenseBudgetValidation> ApTravelExpenseBudgetValidations { get; set; }
-        //public DbSet<ApTravelExpenseDistribution> ApTravelExpenseDistributions { get; set; }
+        public DbSet<ApTravelExpenseDistribution> ApTravelExpenseDistributions { get; set; }
+        public DbSet<APTravelClaimDeparture> APTravelClaimDepartures { get; set; }
+        public DbSet<ApTravelFuelExpenseClaim> ApTravelFuelExpenseClaims { get; set; }
+
         #endregion
         public DbSet<ApCashierSetup> CashierSetups { get; set; }
         public DbSet<ApPettyCash> ApPettyCash { get; set; }
@@ -4068,6 +4076,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ReconciliationBankServiceChargeDistribution> ReconciliationBankServiceChargeDistributions { get; set; }
 
         public DbSet<Core.Domain.Finance.Common.BankAccount> BankAccounts { get; set; }
+        public DbSet<BankUserAssignment> BankUserAssignments { get; set; }
 
         public DbSet<Core.Domain.Finance.Common.FinInStatementRecord> FinInStatementRecords { get; set; }
 

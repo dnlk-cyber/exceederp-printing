@@ -1,7 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Controllers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;

@@ -129,7 +129,7 @@
                                         </dt>
                                         <dd>
 
-                                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy hh:mm tt') #
 
 
                                         </dd>
@@ -144,7 +144,7 @@
                                             CreatedOn
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
                                         </dd>
                                         <dt>
                                             CreatedBy
@@ -163,7 +163,7 @@
                                             Modified Date
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                         </dd>
                                         <dt>
                                             Approved By
@@ -175,7 +175,7 @@
                                             Approval Time
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
                                         </dd>
                                         <dt>
                                             Second Approved By
@@ -187,7 +187,7 @@
                                             Approval Time
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(MiddleOnlineApprovedTime), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(MiddleOnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
                                         </dd>
                                         <dt>
                                             Approved By -Procurement
@@ -199,7 +199,7 @@
                                             Approval Time
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(SecondOnlineApprovedTime), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(SecondOnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
                                         </dd>
                                     </dl>
 
@@ -219,12 +219,12 @@
                                                   {
                                                               columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category").EditorTemplateName("ServiceCategorySelector").Width(200);
                                                               columns.Bound(c => c.ItmCode).Width(150).Title("Item");//.EditorTemplateName("PurchaseServiceItemSelector").Width(150);
-                                                  columns.Bound(c => c.RequestedQuantity).Width(110);
+                                                              columns.Bound(c => c.UoM).Width(110);
+                                                              columns.Bound(c => c.RequestedQuantity).Width(110);
                                                               columns.Bound(c => c.Quantity).Width(110);
                                                               columns.Bound(c => c.ItemSpecification).Title("Description").Width(150);
                                                               columns.Command(command =>
-                                                  {
-                                                                                                                    command.Edit();
+                                                        {                                                                                                     command.Edit();
                                                                                                                     command.Destroy();
                                                                                                                 }).Width(300);
                                                           })

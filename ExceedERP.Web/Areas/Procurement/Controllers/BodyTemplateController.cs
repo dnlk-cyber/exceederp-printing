@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.Core.Domain.Procurement.Tender;
 using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Areas.Procurement.Models;

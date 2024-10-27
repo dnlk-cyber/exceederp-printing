@@ -56,9 +56,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
             if (file != null)
                 {
 
-                    string subPath = "~/App_Data/Tender Template/" ;
+                string subPath = "~/App_Data/Tender Template/" ;
+                bool exists = Directory.Exists(Server.MapPath(subPath));
 
-                       string fileName = "";
+                if (!exists)
+                    Directory.CreateDirectory(Server.MapPath(subPath));
+                string fileName = "";
 
                     foreach (var temp in file)
                         {

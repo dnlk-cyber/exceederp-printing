@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.AP;
-using ExceedERP.Core.Domain.Finance.Bank;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
@@ -76,9 +74,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 if (amountdue < 0)
                     ModelState.AddModelError("error",
                         $"You are paying more than purchase payment due amount by {Math.Abs((decimal)amountdue)} for {record.PurchaseReference}");
-                if (amountdue > 0)
-                    ModelState.AddModelError("error",
-                        $"You are paying less than purchase payment due amount by {Math.Abs((decimal)amountdue)} for {record.PurchaseReference}");
+                //if (amountdue > 0)
+                //    ModelState.AddModelError("error",
+                //        $"You are paying less than purchase payment due amount by {Math.Abs((decimal)amountdue)} for {record.PurchaseReference}");
                 #endregion
 
             }
@@ -112,7 +110,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
                 if (record != null && !record.IsOnlineApproved)
                 {
-                    //validate 
+                    
                     if (aPPaymentValidation.Status == ApprovalStatuses.Approve)
                     {
                         if (record.PoType == "Purchase Payment")
@@ -121,17 +119,18 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                             var purchasePament = _db.PurchasePayments.Find(did);
                             if (purchasePament != null)
                             {
-                                //decimal invoiceamountdue = purchasePament.NetPayable - record.PrepaymentAmount;
-                                
-                                //if (invoiceamountdue <= 0)
-                                //{
+                                decimal paymentAmount = record.IsPrepayment ? record.PrepaymentAmount : record.PaymentAmount;
+                                decimal invoiceamountdue = purchasePament.AmountDue - paymentAmount;
+                                purchasePament.AmountDue = invoiceamountdue >= 0 ? invoiceamountdue : 0;
+                                if (invoiceamountdue <= 0)
+                                {
                                     purchasePament.Paid = true;
                                     purchasePament.Status = "Paid";
-                                //}
-                                //else
-                                //{
-                                //    ;
-                                //}
+                                }
+                                else
+                                {
+                                    ;
+                                }
 
                                 _db.Entry(purchasePament).State = EntityState.Modified;
                                 //_db.SaveChanges();
@@ -143,17 +142,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                             var paybleInvoice = _db.APPaybleInvoices.Find(did);
                             if (paybleInvoice != null)
                             {
-                                //decimal invoiceamountdue = paybleInvoice.AmountDue - record.PaymentAmount;
-                                //paybleInvoice.AmountDue = invoiceamountdue >= 0 ? invoiceamountdue : 0;
-                                //if (paybleInvoice.AmountDue <= 0)
-                                //{
+                                decimal invoiceamountdue = paybleInvoice.AmountDue - record.PaymentAmount;
+                                paybleInvoice.AmountDue = invoiceamountdue >= 0 ? invoiceamountdue : 0;
+                                if (paybleInvoice.AmountDue <= 0)
+                                {
                                     paybleInvoice.InvoiceStatus = InvoiceStatus.Close;
                                     paybleInvoice.Status = "Paid";
-                                //}
-                                //else
-                                //{
-                                //    ;
-                                //}
+                                }
+                                else
+                                {
+                                    ;
+                                }
 
                                 _db.Entry(paybleInvoice).State = EntityState.Modified;
                                 //_db.SaveChanges();

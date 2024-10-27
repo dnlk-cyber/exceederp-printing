@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Areas.Procurement.Models;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -745,13 +742,19 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.p
                 record.IsFinanceApproved = false;
                 record.IsFinanceSendForApproval = false;
                 record.IsBudgetApproved = false;
-                //record.isVoid = true;
+                record.IsVoid = true;
                 record.VoidBy = User.Identity.Name;
                 record.VoidTime = DateTime.Now;
                 record.ForwardedFrom = User.Identity.Name;
                 record.ForwardedTo = User.Identity.Name;
                 _db.PurchasePayments.Attach(record);
                 _db.Entry(record).State = EntityState.Modified;
+
+                var approvals = _db.PurchasePaymentValidations
+                   .Where(x => x.PurchasePaymentId == id).ToList();
+
+                //remove to allow approval again
+                _db.PurchasePaymentValidations.RemoveRange(approvals);
                 _db.SaveChanges();
 
                 var formattedData = new

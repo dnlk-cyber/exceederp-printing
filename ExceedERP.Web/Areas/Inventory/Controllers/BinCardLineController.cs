@@ -1,18 +1,17 @@
-﻿﻿using System.Data.Entity;
-﻿using System.Linq;
-﻿using System.Web.Mvc;
-﻿using ExceedERP.Core.Domain.Inventory;
-﻿using ExceedERP.DataAccess.Context;
- using ExceedERP.Helpers.Common;
+﻿using System.Data.Entity;
+using System.Linq;
+using System.Web.Mvc;
+using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
-using ExceedERP.Web.Areas.Inventory.Models;
- using ExceedERP.Web.Helpers;
- using Kendo.Mvc.Extensions;
-﻿using Kendo.Mvc.UI;
+using ExceedERP.Web.Helpers;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers
 {
-   
+
     public class BinCardLineController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

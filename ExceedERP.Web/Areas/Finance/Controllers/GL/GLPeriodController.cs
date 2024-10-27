@@ -49,33 +49,29 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult GLPeriods_Create(int id, [DataSourceRequest]DataSourceRequest request, GLPeriod gLPeriod)
         {
-            #region validation
+			#region validation
 
-            bool valid = true;
-            var exists = _db.GLPeriods.Where(x => x.GLPeriodId != gLPeriod.GLPeriodId).Where(x => x.Name.ToUpper().Equals(gLPeriod.Name.ToUpper())).ToList();
+			var exists = _db.GLPeriods.Where(x => x.GLPeriodId != gLPeriod.GLPeriodId).Where(x => x.Name.ToUpper().Equals(gLPeriod.Name.ToUpper())).ToList();
 
             if (exists.Any())
             {
                 ModelState.AddModelError("", gLPeriod.Name + " already exists in the system.");
-                valid = false;
-            }
+			}
 
-            if (gLPeriod.DateFrom > gLPeriod.DateTo)
+			if (gLPeriod.DateFrom > gLPeriod.DateTo)
             {
                 ModelState.AddModelError("", "Start Date should be before End Date.");
-                valid = false;
-            }
+			}
 
-            var overlaps = _db.GLPeriods.Where(x => x.Name != gLPeriod.Name)
+			var overlaps = _db.GLPeriods.Where(x => x.Name != gLPeriod.Name)
                                                 .Where(x => x.DateFrom <= gLPeriod.DateTo)
                                                 .Where(x => x.DateTo >= gLPeriod.DateFrom).ToList();
             if (overlaps.Any())
             {
                 ModelState.AddModelError("", "The Period's range overlaps with one or more previous Periods.");
-                valid = false;
-            }
-            #endregion
-            if (ModelState.IsValid)
+			}
+			#endregion
+			if (ModelState.IsValid)
             {               
                 var entity = new GLPeriod
                 {

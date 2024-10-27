@@ -1,29 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using DocumentFormat.OpenXml.Drawing;
-using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.Finance.ViewModels;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Inventory.ArchiveModel;
 using ExceedERP.Core.Domain.Inventory.ViewModels;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Finance;
-using ExceedERP.Repository;
-using ExceedERP.Web.Areas.Inventory.Controllers;
-using ExceedERP.Web.Helpers;
-using Hangfire;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers
 {
-   
+
     //[AuthorizeRoles(FinanceConstants.FinanceCheker)]
-   
+
     public class InventoryDataArchiveController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();

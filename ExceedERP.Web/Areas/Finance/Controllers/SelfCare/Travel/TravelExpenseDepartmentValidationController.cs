@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
-using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.AP;
-using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
 using ExceedERP.Core.Domain.Finance.AP.Travel;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
@@ -88,6 +84,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                         {
                             record.Status = "Approved";
                             record.IsDepartmentOnlineApproved = true;
+                            record.IsVoid = false;
                             record.DepartmentOnlineApprovedBy = User.Identity.Name;
                             record.DepartmentOnlineApprovedTime = DateTime.Now;
                             _db.Entry(record).State = EntityState.Modified;
@@ -111,8 +108,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                             record.Status = "Partially Approved";
                             record.IsDepartmentOnlineApproved = false;
                             record.IsVoid = false;
-                            record.OnlineApprovedBy = User.Identity.Name;
-                            record.OnlineApprovedTime = DateTime.Now;
+                            record.DepartmentOnlineApprovedBy = User.Identity.Name;
+                            record.DepartmentOnlineApprovedTime = DateTime.Now;
                             _db.Entry(record).State = EntityState.Modified;
                             _db.SaveChanges();
 

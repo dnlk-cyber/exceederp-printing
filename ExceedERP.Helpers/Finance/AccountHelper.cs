@@ -5,110 +5,78 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
-using ExceedERP.Core.Domain.Global;
 using ExceedERP.Helpers.Common;
+using System.Runtime.Caching;
 
 namespace ExceedERP.Helpers.Finance
 {
     public class AccountHelper
     {
-        private readonly ExceedDbContext _db = new ExceedDbContext();
-        private readonly DynamicAccountHelper _dynamicAccount = new DynamicAccountHelper();
-        //AccountHelper accountHelper = new AccountHelper();
+        private readonly ExceedDbContext _db ;
+        private readonly DynamicAccountHelper _dynamicAccount;
+        private readonly CacheData _cache;
 
         public AccountHelper()
         {
-            _firstSegment = "";
-            _secondSegment = "";
-            _thirdSegment = "";
-            _fourthSegment = "";
-
-            _companyGlobal = "";
-            _accountGlobal = "";
-            _costcenterGlobal = "";
-            _subaccountGlobal = "";
+            _db = new ExceedDbContext();
+            _dynamicAccount = new DynamicAccountHelper();
+            _cache = new CacheData();
         }
-
-        //delegated
         public GlAccountTypes GetAccountType(string accountAcode)
         {
-            AccountHelper accountHelper = new AccountHelper();
             GlAccountTypes type = GlAccountTypes.Undefined;
-            if (IsDynamicCoA())
+            try
             {
-                type = _dynamicAccount.GetAccountType(accountAcode);
+                string[] segments = accountAcode.Split('-');
+                int index = _dynamicAccount.GetNaturalAccountSequenceIndex();
+                string acccountSeG = segments[index];
+                var accountObj = _db.GLChartOfAccountAccounts.FirstOrDefault(x => x.Values.ToUpper() == acccountSeG.ToUpper());
+                if (accountObj != null) type = accountObj.AccountType;
             }
-            else
+            catch (Exception x)
             {
-
-                try
-                {
-                    string[] account = accountAcode.Split('-');
-                    string acccountSeG = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Account)];
-                    var accountObj = _db.GLChartOfAccountAccounts.FirstOrDefault(x => x.Values == acccountSeG);
-                    if (accountObj != null)
-                        type = accountObj.AccountType;
-                }
-                catch (Exception x)
-                {
-                    //
-                }
+                //
             }
-
             return type;
         }
 
         public int GetAccountCombLength()
         {
-            return IsDynamicCoA() ? _db.GlSegmentSetups.Count(x => x.Enabled) : 4;
+            return _db.GlSegmentSetups.Count(x => x.Enabled);
         }
 
-        //delegated
         public string GetAccountDesc(string accountAcode)
         {
-            string desc = "";
-            if (IsDynamicCoA())
-            {
-                desc = _dynamicAccount.GetAccountDesc(accountAcode);
-            }
+            var sequence = _cache.GetSegmentSetupCaches();// _db.GlSegmentSetups.Where(x => x.Enabled).AsNoTracking().ToList();
 
-
-            return desc;
-        }
-        //only here
-        private string GetSequenceDesc(GlSegmentTypes segment, string segmentvalue)
-        {
-            string segmentdesc = "";
-            switch (segment)
+            if (sequence.Any() && !string.IsNullOrEmpty(accountAcode))
             {
-                case GlSegmentTypes.Account:
-                    segmentdesc = _db.GLChartOfAccountAccounts.Where(x => x.Values.ToUpper() == segmentvalue.ToUpper()).Select(x => x.Description).FirstOrDefault();
-                    break;
-                case GlSegmentTypes.Location:
-                    var locationSeg = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.Location);
-                    segmentdesc = _db.GlChartOfAccountSegments
-                        .Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId)
-                        .Where(x => x.Values.ToUpper() == segmentvalue.ToUpper()).Select(x => x.Description).FirstOrDefault();
-                    break;
-                case GlSegmentTypes.CostCenter:
-                    var costCenterSeg = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
-                    segmentdesc = _db.GlChartOfAccountSegments
-                        .Where(x => x.GLSegmentSetupId == costCenterSeg.GLSegmentSetupId)
-                        .Where(x => x.Values.ToUpper() == segmentvalue.ToUpper()).Select(x => x.Description).FirstOrDefault();
-                    break;
-                case GlSegmentTypes.SubAccount:
-                    var subAccountSeg = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
-                    segmentdesc = _db.GlChartOfAccountSegments
-                        .Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId)
-                        .Where(x => x.Values.ToUpper() == segmentvalue.ToUpper()).Select(x => x.Description).FirstOrDefault();
-                    break;
-                default:
-                    segmentdesc = "";
-                    break;
+                var otherSegments =_cache.GetChartOfAccountSegmentCaches();// _db.GlChartOfAccountSegments.Select(x => new { x.GLSegmentSetupId, x.Values, x.Description }).AsNoTracking().ToList();
+                var accountSegments =_cache.GetOfAccountAccountCaches();// _db.GLChartOfAccountAccounts.Select(x => new { x.Values, x.Description }).AsNoTracking().ToList();
+
+                string desc = "";
+                string[] segments = accountAcode.Split('-');
+
+                for (int i = 0; i < segments.Length; i++)
+                {
+                    var specificSegment = sequence.FirstOrDefault(x => x.Sequence == i + 1);
+                    if (specificSegment != null && specificSegment.SegmentType == DynamicSegmentTypes.NaturalAccount)
+                    {
+                        var value = accountSegments.FirstOrDefault(x => x.Values == segments[i]);
+                        if (value != null) desc = desc + "-" + value.Description;
+                    }
+                    else if (specificSegment != null && specificSegment.SegmentType != DynamicSegmentTypes.NaturalAccount)
+                    {
+                        var value = otherSegments.Where(x => x.GLSegmentSetupId == specificSegment.GLSegmentSetupId).FirstOrDefault(x => x.Values == segments[i]);
+                        if (value != null) desc = desc + "-" + value.Description;
+
+                    }
+                }
+
+                return desc.Remove(0, 1);
             }
-            return segmentdesc;
+            return "";
         }
-        //same 
 
         public bool IsBankAccount(string accountcode)
         {
@@ -132,64 +100,36 @@ namespace ExceedERP.Helpers.Finance
             return false;
         }
 
-        public bool IsSameBankAccount_1(string accountcode, string bankAccountCode)
-        {
-            string account = GetNaturalAccountSegment(accountcode);
-            string subAccount = GetSubAccountSegment(accountcode);
+        //public bool IsSameBankAccount_1(string accountcode, string bankAccountCode)
+        //{
+        //    string account = GetNaturalAccountSegment(accountcode);
+        //    string subAccount = GetSubAccountSegment(accountcode);
 
-            string baccount = GetNaturalAccountSegment(bankAccountCode);
-            string bsubAccount = GetSubAccountSegment(bankAccountCode);
+        //    string baccount = GetNaturalAccountSegment(bankAccountCode);
+        //    string bsubAccount = GetSubAccountSegment(bankAccountCode);
 
-            if (account == baccount && subAccount == bsubAccount)
-                return true;
+        //    if (account == baccount && subAccount == bsubAccount)
+        //        return true;
 
-            return false;
-        }
-        public bool IsBankAccount2(string accountcode)
-        {
+        //    return false;
+        //}
+        //public bool IsBankAccount2(string accountcode)
+        //{
 
-            using (var context = new ExceedDbContext())
-            {
-                var banckaccounts = context.BankAccounts.Where(x => x.AccountCode == accountcode).ToList();
-                if (banckaccounts.Any())
-                    return true;
-            }
+        //    using (var context = new ExceedDbContext())
+        //    {
+        //        var banckaccounts = context.BankAccounts.Where(x => x.AccountCode == accountcode).ToList();
+        //        if (banckaccounts.Any())
+        //            return true;
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
         //delegated
-        public bool IsBankAccount1(string accountcode)
-        {
-            if (IsDynamicCoA())
-            {
-                return _dynamicAccount.IsBankAccount1(accountcode);
-            }
-            else
-            {
-
-                bool bankaccount = false;
-                string[] account = accountcode.Split('-');
-                string subAccount = account[GetAccountSequenceIndex(GlSegmentTypes.SubAccount)];
-                using (var context = new ExceedDbContext())
-                {
-                    var banckaccounts = context.BankAccounts.Select(x => x.AccountCode).ToList();
-                    foreach (var acc in banckaccounts)
-                    {
-
-                        string[] myaccouts = acc.Split('-');
-                        if (subAccount.ToUpper() ==
-                            myaccouts[GetAccountSequenceIndex(GlSegmentTypes.SubAccount)].ToUpper())
-                        {
-                            bankaccount = true;
-                            break;
-                        }
-
-                    }
-                }
-
-                return bankaccount;
-            }
-        }
+        //public bool IsBankAccount1(string accountcode)
+        //{
+        //    return _dynamicAccount.IsBankAccount1(accountcode);
+        //}
         //different implementation
         //public static int GetSegmentLength(GlSegmentTypes segment)
         //{
@@ -219,43 +159,29 @@ namespace ExceedERP.Helpers.Finance
         {
             int index = 12;//out of range
 
-            if (IsDynamicCoA())
+            switch (segment)
             {
-                switch (segment)
-                {
-                    case GlSegmentTypes.Account:
-                        index = _dynamicAccount.GetNaturalAccountSequenceIndex();
-                        break;
-                    case GlSegmentTypes.Location:
-                        index = _dynamicAccount.GetBranchAccountSequenceIndex();
-                        break;
-                    case GlSegmentTypes.CostCenter:
-                        index = _dynamicAccount.GetCostCenterAccountSequenceIndex();
-                        break;
-                    case GlSegmentTypes.SubAccount:
-                        index = _dynamicAccount.GetSubAccountSequenceIndex();
-                        break;
-                }
+                case GlSegmentTypes.Account:
+                    index = _dynamicAccount.GetNaturalAccountSequenceIndex();
+                    break;
+                case GlSegmentTypes.Location:
+                    index = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    break;
+                case GlSegmentTypes.CostCenter:
+                    index = _dynamicAccount.GetCostCenterAccountSequenceIndex();
+                    break;
+                case GlSegmentTypes.SubAccount:
+                    index = _dynamicAccount.GetSubAccountSequenceIndex();
+                    break;
             }
 
 
             return index;
         }
-        //same
+
         public static string GetAccountSegment(string accountCombination, int index)
         {
-            string account = "";
-            try
-            {
-                account = accountCombination.Split('-')[index];
-            }
-            catch (Exception)
-            {
-
-                //log if index is out of range;
-            }
-
-            return account;
+            return accountCombination.Split('-')[index]; ;
         }
         //same
         //public static decimal GeAccountLastBalance(List<GLLedgerPostingLines> records, string accountCode)
@@ -276,7 +202,7 @@ namespace ExceedERP.Helpers.Finance
 
         //    return balance;
         //}
-        //different impl
+
         public List<string> GeAccountRange(string fromAccountCombination, string toAccountCombination, GlSegmentTypes segment)
         {
             AccountHelper accountHelper = new AccountHelper();
@@ -288,105 +214,45 @@ namespace ExceedERP.Helpers.Finance
 
             if (segment == GlSegmentTypes.Account)
             {
-                if (accountHelper.IsDynamicCoA())
-                {
-                    accountRange = _dynamicAccount.GetAccountRange(fromAccountCombination, toAccountCombination,
-                        _dynamicAccount.GetNaturalAccountSequenceIndex());
-                }
-                else
-                {
-                    using (var context = new ExceedDbContext())
-                    {
-                        accountRange = context.GLChartOfAccountAccounts
-                            .Where(x => x.Values.ToUpper().CompareTo(fromSegment) >= 0)
-                            .Where(x => x.Values.ToUpper().CompareTo(toSegment) <= 0)
-                            .Select(x => x.Values)
-                            .ToList();
-                    }
-                }
+                accountRange = _dynamicAccount.GetAccountRange(fromAccountCombination, toAccountCombination,
+                       _dynamicAccount.GetNaturalAccountSequenceIndex());
             }
 
             else if (segment == GlSegmentTypes.Location)
             {
-                using (var context = new ExceedDbContext())
-                {
-                    var locationSeg = context.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == Core.Domain.Finance.GL.Dynamic.DynamicSegmentTypes.Location);
-                    accountRange = context.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == locationSeg.GLSegmentSetupId)
-                          .Where(x => x.Values.ToUpper().CompareTo(fromSegment) >= 0)
-                          .Where(x => x.Values.ToUpper().CompareTo(toSegment) <= 0)
-                          .Select(x => x.Values)
-                          .ToList();
-                }
+                accountRange = _dynamicAccount.GetAccountRange(fromAccountCombination, toAccountCombination,
+                     _dynamicAccount.GetBranchAccountSequenceIndex());
             }
 
             else if (segment == GlSegmentTypes.CostCenter)
             {
-                if (accountHelper.IsDynamicCoA())
-                {
-                    accountRange = _dynamicAccount.GetAccountRange(fromAccountCombination, toAccountCombination,
-                        _dynamicAccount.GetCostCenterAccountSequenceIndex());
-                }
-                else
-                {
-                    using (var context = new ExceedDbContext())
-                    {
-                        var costCenterSeg = context.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
-                        accountRange = context.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == costCenterSeg.GLSegmentSetupId)
-                          .Where(x => x.Values.ToUpper().CompareTo(fromSegment) >= 0)
-                        .Where(x => x.Values.ToUpper().CompareTo(toSegment) <= 0)
-                        .Select(x => x.Values)
-                        .ToList();
-                    }
-                }
+                accountRange = _dynamicAccount.GetAccountRange(fromAccountCombination, toAccountCombination,
+                       _dynamicAccount.GetCostCenterAccountSequenceIndex());
             }
 
             else if (segment == GlSegmentTypes.SubAccount)
             {
-                if (accountHelper.IsDynamicCoA())
-                {
-                    accountRange = _dynamicAccount.GetAccountRange(fromAccountCombination, toAccountCombination,
-                        _dynamicAccount.GetSubAccountSequenceIndex());
-                }
-                else
-                {
-                    using (var context = new ExceedDbContext())
-                    {
-
-                        var subAccountSeg = context.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
-                        accountRange = context.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId)
-                    .Where(x => x.Values.ToUpper().CompareTo(fromSegment) >= 0)
-                            .Where(x => x.Values.ToUpper().CompareTo(toSegment) <= 0)
-                            .Select(x => x.Values)
-                            .ToList();
-                    }
-                }
+                accountRange = _dynamicAccount.GetAccountRange(fromAccountCombination, toAccountCombination,
+                       _dynamicAccount.GetSubAccountSequenceIndex());
             }
+
+
 
 
             return accountRange;
         }
 
-        //for the below function
-        //new sequence
-        static string _firstSegment = "";
-        static string _secondSegment = "";
-        static string _thirdSegment = "";
-        static string _fourthSegment = "";
 
-        static string _companyGlobal = "";
-        static string _accountGlobal = "";
-        static string _costcenterGlobal = "";
-        static string _subaccountGlobal = "";
 
         //needed here only
         public string RearrangeAccountSequence(string account, string location, string costcenter, string subaccount)
         {
 
 
-            _companyGlobal = location;
-            _accountGlobal = account;
-            _costcenterGlobal = costcenter;
-            _subaccountGlobal = subaccount;
+            //_companyGlobal = location;
+            //_accountGlobal = account;
+            //_costcenterGlobal = costcenter;
+            //_subaccountGlobal = subaccount;
 
             string accountCombination = "";
             //using (var context = new ExceedDbContext())
@@ -413,89 +279,110 @@ namespace ExceedERP.Helpers.Finance
 
             return accountCombination;
         }
-        //needed here only
-        private static string GetSequenceValue(GlSegmentTypes segment)
-        {
-            string segmentValue = "";
-            switch (segment)
-            {
-                case GlSegmentTypes.Account:
-                    segmentValue = _accountGlobal;
-                    break;
-                case GlSegmentTypes.Location:
-                    segmentValue = _companyGlobal;
-                    break;
-                case GlSegmentTypes.CostCenter:
-                    segmentValue = _costcenterGlobal;
-                    break;
-                case GlSegmentTypes.SubAccount:
-                    segmentValue = _subaccountGlobal;
-                    break;
-                default:
-                    segmentValue = "";
-                    break;
-            }
-            return segmentValue;
-        }
-        //delegated
+
+
         public void SplitLedgerAccountCombination()
         {
-            if (IsDynamicCoA())
+            var ledgers = _db.GLLedgerPostings
+                .Where(x => x.AccountSegment == null || x.SubAccountSegment == null)
+                .ToList();
+            foreach (var ledger in ledgers)
             {
-                _dynamicAccount.SplitLedgerAccountCombination();
-            }
+                SplitLedgerAccount(ledger);
 
-            else
-            {
-                var ledgers = _db.GLLedgerPostings
-                    //.Where(x => x.AccountSegment == null)
-                    .ToList();
-                foreach (var ledger in ledgers)
-                {
-                    SplitLedgerAccount(ledger);
-                }
             }
-
 
         }
 
-
-
-        //local
         public void SplitLedgerAccount(GLLedgerPosting ledger)
         {
-            AccountHelper accountHelper = new AccountHelper();
             string[] account = ledger.AccountCode.Split('-');
 
-            ledger.AccountSegment = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Account)];
-            ledger.BranchSegment = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Location)];
-            ledger.CostCenterSegment = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.CostCenter)];
-            ledger.SubAccountSegment = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.SubAccount)];
+            if (_dynamicAccount.GetNaturalAccountSequenceIndex() != -1)
+                ledger.AccountSegment = account[_dynamicAccount.GetNaturalAccountSequenceIndex()];
+            if (_dynamicAccount.GetCostCenterAccountSequenceIndex() != -1)
+                ledger.CostCenterSegment = account[_dynamicAccount.GetCostCenterAccountSequenceIndex()];
+            if (_dynamicAccount.GetSubAccountSequenceIndex() != -1)
+                ledger.SubAccountSegment = account[_dynamicAccount.GetSubAccountSequenceIndex()];
+            if (_dynamicAccount.GetBizUnitAccountSequenceIndex() != -1)
+                ledger.BusinessUnit = account[_dynamicAccount.GetBizUnitAccountSequenceIndex()];
+            if (_dynamicAccount.GetBranchAccountSequenceIndex() != -1)
+                ledger.BranchSegment = account[_dynamicAccount.GetBranchAccountSequenceIndex()];
 
-            ledger.Segment1 = account[0];
-            ledger.Segment2 = account[1];
-            ledger.Segment3 = account[2];
-            ledger.Segment4 = account[3];
+            #region dynamic segments
 
+            if (account.Length == 8)
+            {
+                ledger.Segment1 = account[0];
+                ledger.Segment2 = account[1];
+                ledger.Segment3 = account[2];
+                ledger.Segment4 = account[3];
+                ledger.Segment5 = account[4];
+                ledger.Segment6 = account[5];
+                ledger.Segment7 = account[6];
+                ledger.Segment8 = account[7];
+            }
+            else if (account.Length == 7)
+            {
+                ledger.Segment1 = account[0];
+                ledger.Segment2 = account[1];
+                ledger.Segment3 = account[2];
+                ledger.Segment4 = account[3];
+                ledger.Segment5 = account[4];
+                ledger.Segment6 = account[5];
+                ledger.Segment7 = account[6];
+            }
+            else if (account.Length == 6)
+            {
+                ledger.Segment1 = account[0];
+                ledger.Segment2 = account[1];
+                ledger.Segment3 = account[2];
+                ledger.Segment4 = account[3];
+                ledger.Segment5 = account[4];
+                ledger.Segment6 = account[5];
+            }
+            else if (account.Length == 5)
+            {
+                ledger.Segment1 = account[0];
+                ledger.Segment2 = account[1];
+                ledger.Segment3 = account[2];
+                ledger.Segment4 = account[3];
+                ledger.Segment5 = account[4];
+            }
+            else if (account.Length == 4)
+            {
+                ledger.Segment1 = account[0];
+                ledger.Segment2 = account[1];
+                ledger.Segment3 = account[2];
+                ledger.Segment4 = account[3];
+            }
+            else if (account.Length == 3)
+            {
+                ledger.Segment1 = account[0];
+                ledger.Segment2 = account[1];
+                ledger.Segment3 = account[2];
+            }
+            else if (account.Length == 2)
+            {
+                ledger.Segment1 = account[0];
+                ledger.Segment2 = account[1];
+            }
+            else if (account.Length == 1)
+            {
+                ledger.Segment1 = account[0];
+            }
+
+            #endregion
             _db.Entry(ledger).State = EntityState.Modified;
             _db.SaveChanges();
         }
 
-
-        //delegated
         public void SplitJournalAccountCombination()
         {
-            if (IsDynamicCoA())
+            var journalDetails = _db.GLRecordJournalDetails.Where(x => x.AccountSegment == null || x.BranchSegment == null).ToList();
+            foreach (var journalDetail in journalDetails)
             {
-                _dynamicAccount.SplitJournalAccountCombination();
-            }
-            else
-            {
-                var journalDetails = _db.GLRecordJournalDetails.Where(x => x.AccountSegment == null || x.BranchSegment == null).ToList();
-                foreach (var journalDetail in journalDetails)
-                {
-                    SplitJournal(journalDetail.GlRecordJournalDetailId);
-                }
+                SplitJournal(journalDetail.GlRecordJournalDetailId);
             }
 
 
@@ -505,145 +392,315 @@ namespace ExceedERP.Helpers.Finance
         {
             using (var context = new ExceedDbContext())
             {
-                var journalDetail = context.GLRecordJournalDetails.Find(id);
-                if (IsDynamicCoA())
-                {
-                    _dynamicAccount.SplitJournal(id);
-                }
-                else
-                {
-                    if (journalDetail != null)
-                    {
-                        string[] account = journalDetail.AccountCode.Split('-');
 
-                        journalDetail.AccountSegment = account[GetAccountSequenceIndex(GlSegmentTypes.Account)];
-                        journalDetail.BranchSegment = account[GetAccountSequenceIndex(GlSegmentTypes.Location)];
-                        journalDetail.CostCenterSegment = account[GetAccountSequenceIndex(GlSegmentTypes.CostCenter)];
-                        journalDetail.SubAccountSegment = account[GetAccountSequenceIndex(GlSegmentTypes.SubAccount)];
+                var journalDetail = context.GLRecordJournalDetails.Find(id);
+
+                if (journalDetail != null)
+                {
+                    string[] account = journalDetail.AccountCode.Split('-');
+                    journalDetail.AccountSegment = account[_dynamicAccount.GetNaturalAccountSequenceIndex()];
+                    if (_dynamicAccount.GetCostCenterAccountSequenceIndex() != -1)
+                        journalDetail.CostCenterSegment = account[_dynamicAccount.GetCostCenterAccountSequenceIndex()];
+                    if (_dynamicAccount.GetSubAccountSequenceIndex() != -1)
+                        journalDetail.SubAccountSegment = account[_dynamicAccount.GetSubAccountSequenceIndex()];
+                    if (_dynamicAccount.GetBizUnitAccountSequenceIndex() != -1)
+                        journalDetail.BusinessUnit = account[_dynamicAccount.GetBizUnitAccountSequenceIndex()];
+                    if (_dynamicAccount.GetBranchAccountSequenceIndex() != -1)
+                        journalDetail.BranchSegment = account[_dynamicAccount.GetBranchAccountSequenceIndex()];
+
+                    #region dynamic segments
+
+                    if (account.Length == 8)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                        journalDetail.Segment4 = account[3];
+                        journalDetail.Segment5 = account[4];
+                        journalDetail.Segment6 = account[5];
+                        journalDetail.Segment7 = account[6];
+                        journalDetail.Segment8 = account[7];
                     }
+                    else if (account.Length == 7)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                        journalDetail.Segment4 = account[3];
+                        journalDetail.Segment5 = account[4];
+                        journalDetail.Segment6 = account[5];
+                        journalDetail.Segment7 = account[6];
+                    }
+                    else if (account.Length == 6)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                        journalDetail.Segment4 = account[3];
+                        journalDetail.Segment5 = account[4];
+                        journalDetail.Segment6 = account[5];
+                    }
+                    else if (account.Length == 5)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                        journalDetail.Segment4 = account[3];
+                        journalDetail.Segment5 = account[4];
+                    }
+                    else if (account.Length == 4)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                        journalDetail.Segment4 = account[3];
+                    }
+                    else if (account.Length == 3)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                    }
+                    else if (account.Length == 2)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                    }
+                    else if (account.Length == 1)
+                    {
+                        journalDetail.Segment1 = account[0];
+                    }
+
+                    #endregion
 
                     context.Entry(journalDetail).State = EntityState.Modified;
                     context.SaveChanges();
                 }
+
+
             }
         }
 
         public void SplitBegJournalAccountCombination()
         {
-            if (IsDynamicCoA())
+            var journalDetails = _db.GLRecordJournalBegDistributions.Where(x => x.AccountSegment == null || x.BranchSegment == null).ToList();
+            foreach (var journalDetail in journalDetails)
             {
-                _dynamicAccount.SplitBegJournalAccountCombination();
+                SplitBegJournal(journalDetail.GLRecordJournalBegDistributionId);
             }
-            else
-            {
-                var lines = _db.GLRecordJournalBegDistributions.Where(x => x.AccountSegment == null || x.BranchSegment == null).ToList();
-                foreach (var line in lines)
-                {
-                    SplitBegJournal(line.GLRecordJournalBegDistributionId);
-                }
-            }
-
-
         }
 
         public void SplitBegJournal(int id)
         {
             using (var context = new ExceedDbContext())
             {
-                var journalDetail = context.GLRecordJournalBegDistributions.Find(id);
-                if (IsDynamicCoA())
-                {
-                    _dynamicAccount.SplitJournal(id);
-                }
-                else
-                {
-                    if (journalDetail != null)
-                    {
-                        string[] account = journalDetail.AccountCode.Split('-');
 
-                        journalDetail.AccountSegment = account[GetAccountSequenceIndex(GlSegmentTypes.Account)];
-                        journalDetail.BranchSegment = account[GetAccountSequenceIndex(GlSegmentTypes.Location)];
-                        journalDetail.CostCenterSegment = account[GetAccountSequenceIndex(GlSegmentTypes.CostCenter)];
-                        journalDetail.SubAccountSegment = account[GetAccountSequenceIndex(GlSegmentTypes.SubAccount)];
+                var journalDetail = context.GLRecordJournalBegDistributions.Find(id);
+
+                if (journalDetail != null)
+                {
+                    string[] account = journalDetail.AccountCode.Split('-');
+                    journalDetail.AccountSegment = account[_dynamicAccount.GetNaturalAccountSequenceIndex()];
+                    if (_dynamicAccount.GetCostCenterAccountSequenceIndex() != -1)
+                        journalDetail.CostCenterSegment = account[_dynamicAccount.GetCostCenterAccountSequenceIndex()];
+                    if (_dynamicAccount.GetSubAccountSequenceIndex() != -1)
+                        journalDetail.SubAccountSegment = account[_dynamicAccount.GetSubAccountSequenceIndex()];
+                    if (_dynamicAccount.GetBizUnitAccountSequenceIndex() != -1)
+                        journalDetail.BusinessUnit = account[_dynamicAccount.GetBizUnitAccountSequenceIndex()];
+                    if (_dynamicAccount.GetBranchAccountSequenceIndex() != -1)
+                        journalDetail.BranchSegment = account[_dynamicAccount.GetBranchAccountSequenceIndex()];
+
+                    #region dynamic segments
+
+                    if (account.Length == 8)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                        journalDetail.Segment4 = account[3];
+                        journalDetail.Segment5 = account[4];
+                        journalDetail.Segment6 = account[5];
+                        journalDetail.Segment7 = account[6];
+                        journalDetail.Segment8 = account[7];
+                    }
+                    else if (account.Length == 7)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                        journalDetail.Segment4 = account[3];
+                        journalDetail.Segment5 = account[4];
+                        journalDetail.Segment6 = account[5];
+                        journalDetail.Segment7 = account[6];
+                    }
+                    else if (account.Length == 6)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                        journalDetail.Segment4 = account[3];
+                        journalDetail.Segment5 = account[4];
+                        journalDetail.Segment6 = account[5];
+                    }
+                    else if (account.Length == 5)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                        journalDetail.Segment4 = account[3];
+                        journalDetail.Segment5 = account[4];
+                    }
+                    else if (account.Length == 4)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                        journalDetail.Segment4 = account[3];
+                    }
+                    else if (account.Length == 3)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                    }
+                    else if (account.Length == 2)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                    }
+                    else if (account.Length == 1)
+                    {
+                        journalDetail.Segment1 = account[0];
                     }
 
-                    context.Entry(journalDetail).State = EntityState.Modified;
-                    context.SaveChanges();
+                    #endregion
                 }
+
+                context.Entry(journalDetail).State = EntityState.Modified;
+                context.SaveChanges();
             }
         }
 
         public void SplitBookAccountCombination()
         {
-            if (IsDynamicCoA())
+            var bookRecords = _db.ReconcilationBookAccounts.Where(x => x.AccountSegment == null).ToList();
+            foreach (var record in bookRecords)
             {
-                _dynamicAccount.SplitBookAccountCombination();
+                SplitBookRecord(record.ReconciliationBookAccountId);
             }
-            else
-            {
-                var bookRecords = _db.ReconcilationBookAccounts.Where(x => x.AccountSegment == null).ToList();
-                foreach (var record in bookRecords)
-                {
-                    SplitBookRecord(record.ReconciliationBookAccountId);
-                }
-            }
-
-
         }
 
         public void SplitBookRecord(int id)
         {
             using (var context = new ExceedDbContext())
             {
-                var bookRecord = context.ReconcilationBookAccounts.Find(id);
-                if (IsDynamicCoA())
-                {
-                    _dynamicAccount.SplitBookRecord(id);
-                }
-                else
-                {
-                    if (bookRecord != null)
-                    {
-                        string[] account = bookRecord.AccountCode.Split('-');
 
-                        bookRecord.AccountSegment = account[GetAccountSequenceIndex(GlSegmentTypes.Account)];
-                        bookRecord.BranchSegment = account[GetAccountSequenceIndex(GlSegmentTypes.Location)];
-                        bookRecord.CostCenterSegment = account[GetAccountSequenceIndex(GlSegmentTypes.CostCenter)];
-                        bookRecord.SubAccountSegment = account[GetAccountSequenceIndex(GlSegmentTypes.SubAccount)];
+                var bookRecord = context.ReconcilationBookAccounts.Find(id);
+
+                if (bookRecord != null)
+                {
+                    string[] account = bookRecord.AccountCode.Split('-');
+                    bookRecord.AccountSegment = account[_dynamicAccount.GetNaturalAccountSequenceIndex()];
+                    if (_dynamicAccount.GetCostCenterAccountSequenceIndex() != -1)
+                        bookRecord.CostCenterSegment = account[_dynamicAccount.GetCostCenterAccountSequenceIndex()];
+                    if (_dynamicAccount.GetSubAccountSequenceIndex() != -1)
+                        bookRecord.SubAccountSegment = account[_dynamicAccount.GetSubAccountSequenceIndex()];
+                    if (_dynamicAccount.GetBizUnitAccountSequenceIndex() != -1)
+                        bookRecord.BusinessUnitSegment = account[_dynamicAccount.GetBizUnitAccountSequenceIndex()];
+                    if (_dynamicAccount.GetBranchAccountSequenceIndex() != -1)
+                        bookRecord.BranchSegment = account[_dynamicAccount.GetBranchAccountSequenceIndex()];
+
+                    #region dynamic segments
+
+                    if (account.Length == 8)
+                    {
+                        bookRecord.Segment1 = account[0];
+                        bookRecord.Segment2 = account[1];
+                        bookRecord.Segment3 = account[2];
+                        bookRecord.Segment4 = account[3];
+                        bookRecord.Segment5 = account[4];
+                        bookRecord.Segment6 = account[5];
+                        bookRecord.Segment7 = account[6];
+                        bookRecord.Segment8 = account[7];
+                    }
+                    else if (account.Length == 7)
+                    {
+                        bookRecord.Segment1 = account[0];
+                        bookRecord.Segment2 = account[1];
+                        bookRecord.Segment3 = account[2];
+                        bookRecord.Segment4 = account[3];
+                        bookRecord.Segment5 = account[4];
+                        bookRecord.Segment6 = account[5];
+                        bookRecord.Segment7 = account[6];
+                    }
+                    else if (account.Length == 6)
+                    {
+                        bookRecord.Segment1 = account[0];
+                        bookRecord.Segment2 = account[1];
+                        bookRecord.Segment3 = account[2];
+                        bookRecord.Segment4 = account[3];
+                        bookRecord.Segment5 = account[4];
+                        bookRecord.Segment6 = account[5];
+                    }
+                    else if (account.Length == 5)
+                    {
+                        bookRecord.Segment1 = account[0];
+                        bookRecord.Segment2 = account[1];
+                        bookRecord.Segment3 = account[2];
+                        bookRecord.Segment4 = account[3];
+                        bookRecord.Segment5 = account[4];
+                    }
+                    else if (account.Length == 4)
+                    {
+                        bookRecord.Segment1 = account[0];
+                        bookRecord.Segment2 = account[1];
+                        bookRecord.Segment3 = account[2];
+                        bookRecord.Segment4 = account[3];
+                    }
+                    else if (account.Length == 3)
+                    {
+                        bookRecord.Segment1 = account[0];
+                        bookRecord.Segment2 = account[1];
+                        bookRecord.Segment3 = account[2];
+                    }
+                    else if (account.Length == 2)
+                    {
+                        bookRecord.Segment1 = account[0];
+                        bookRecord.Segment2 = account[1];
+                    }
+                    else if (account.Length == 1)
+                    {
+                        bookRecord.Segment1 = account[0];
                     }
 
-                    context.Entry(bookRecord).State = EntityState.Modified;
-                    context.SaveChanges();
+                    #endregion
                 }
+
+                context.Entry(bookRecord).State = EntityState.Modified;
+                context.SaveChanges();
             }
         }
 
-        public bool IsDynamicCoA()
-        {
-            var ruleValues = _db.GlRuleValues.Where(x => x.DynamicCoA).ToList();
-            if (ruleValues.Any())
-                return true;
-            else
-            {
-                return false;
-            }
-        }
-
-        //new 
-        //delegated
         public void UpdateLedgerAccountType(string GLValue, GlAccountTypes type)
         {
-            _dynamicAccount.UpdateLedgerAccountType(GLValue, type);
+            var ledgers = _db.GLLedgerPostings.Where(x => x.AccountSegment == GLValue).ToList();
+            foreach (var l in ledgers)
+            {
+                l.AccountType = type;
+                _db.GLLedgerPostings.Attach(l);
+                _db.Entry(l).State = EntityState.Modified;
+                _db.SaveChanges();
+            }
         }
 
 
-        public string ValidateAccountType(GlAccountTypes type,string value)
+        public string ValidateAccountType(GlAccountTypes type, string value)
         {
             string errror = "";
             if (type == GlAccountTypes.Undefined)
                 errror = "You can't define undefined account type";
-            if (type==GlAccountTypes.Asset && !value.StartsWith("1"))
-                errror= "Asset account should start with 1.";
+            if (type == GlAccountTypes.Asset && !value.StartsWith("1"))
+                errror = "Asset account should start with 1.";
             else if (type == GlAccountTypes.Liability && !value.StartsWith("2"))
                 errror = "Liability account should start with 2.";
             else if (type == GlAccountTypes.Capital && !value.StartsWith("3"))
@@ -658,40 +715,13 @@ namespace ExceedERP.Helpers.Finance
         public string ValidateSegmentCombinationLength(string accountComb)
         {
             string errror = "";
-            if (String.IsNullOrEmpty(accountComb))
+            if (string.IsNullOrEmpty(accountComb))
                 return "Account code is null.";
-            int combLength = accountComb.Length;
-            if (IsDynamicCoA())
-            {
-                errror=_dynamicAccount.ValidateSegmentCombinationLength(accountComb);
-
-            }
-            
+            errror = _dynamicAccount.ValidateSegmentCombinationLength(accountComb);
 
             return errror;
         }
-
-        //public string IsValidForPost(IEnumerable<GLRecordJournalDetail> list)
-        //{
-        //    string errorMsg = "";
-
-        //    var glRecordJournalDetails = list as IList<GLRecordJournalDetail> ?? list.ToList();
-        //    foreach (var detail in glRecordJournalDetails)
-        //    {
-        //        if (detail.Debit != 0 && detail.Credit != 0)
-        //        {
-        //            errorMsg = $"{detail.AccountCode} Account has both debit and credit value.";
-        //            return errorMsg;
-        //        }
-        //    }
-
-        //    if (glRecordJournalDetails.Sum(x => x.Debit) != glRecordJournalDetails.Sum(x => x.Credit))
-        //    {
-        //        errorMsg = $"Journal id {glRecordJournalDetails.FirstOrDefault()?.GlRecordJournalId} does not have balanced debit and credit.";
-        //        return errorMsg;
-        //    }
-        //    return errorMsg;
-        //}
+      
 
         public string IsValidJournal(IEnumerable<GLRecordJournalDetail> list)
         {
@@ -729,7 +759,7 @@ namespace ExceedERP.Helpers.Finance
                 }
             }
 
-            decimal sumDebit =Math.Round(glRecordJournalDetails.Sum(x => x.Debit),4);
+            decimal sumDebit = Math.Round(glRecordJournalDetails.Sum(x => x.Debit), 4);
             decimal sumCredit = Math.Round(glRecordJournalDetails.Sum(x => x.Credit), 4);
             if (sumDebit != sumCredit)
             {
@@ -738,7 +768,7 @@ namespace ExceedERP.Helpers.Finance
             }
 
 
-            if (sumDebit== 0)
+            if (sumDebit == 0)
             {
                 errorMsg = $"Journal {glRecordJournalDetails.FirstOrDefault()?.GlRecordJournalId} should not have total debit and credit as zero.";
                 return errorMsg;
@@ -802,63 +832,56 @@ namespace ExceedERP.Helpers.Finance
             return errorMsg;
         }
 
-     
+        
 
-        //both
-        public  string GetNaturalAccountSegment(string acct)
+       
+        public string GetNaturalAccountSegment(string acct)
         {
-            AccountHelper accountHelper = new AccountHelper();
-            int accountindex = 0;
-            accountindex = accountHelper.IsDynamicCoA() ? _dynamicAccount.GetNaturalAccountSequenceIndex() : accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Account);
-            string naturalAccountSegment = acct.Split('-')[accountindex];
+            int accountindex = _dynamicAccount.GetNaturalAccountSequenceIndex();
+            if (accountindex != -1)
+                return acct.Split('-')[accountindex];
+            else
+                return "";
+        }
 
-            return naturalAccountSegment;
-        }       
-
-        public  string GetSubAccountSegment(string acct)
+        public string GetSubAccountSegment(string acct)
         {
-            AccountHelper accountHelper = new AccountHelper();
-            int accountindex = 0;
-            accountindex = accountHelper.IsDynamicCoA() ? _dynamicAccount.GetSubAccountSequenceIndex() : accountHelper.GetAccountSequenceIndex(GlSegmentTypes.SubAccount);
-            string subAccountSegment = acct.Split('-')[accountindex];
-
-            return subAccountSegment;
+            int accountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+            if (accountindex != -1)
+                return acct.Split('-')[accountindex];
+            else
+                return "";
         }
         //
         public string GetCostCenterSegment(string acct)
         {
-            AccountHelper accountHelper = new AccountHelper();
-            int accountindex = 0;
-            accountindex = IsDynamicCoA() ? _dynamicAccount.GetCostCenterAccountSequenceIndex(): accountHelper.GetAccountSequenceIndex(GlSegmentTypes.CostCenter);
-            string centerSegment = acct.Split('-')[accountindex];
-
-            return centerSegment;
+            int accountindex = _dynamicAccount.GetCostCenterAccountSequenceIndex();
+            if (accountindex != -1)
+                return acct.Split('-')[accountindex];
+            else
+                return "";
         }
         public string GetBranchSegment(string acct)
         {
-            AccountHelper accountHelper = new AccountHelper();
-            int accountindex = 0;
-            accountindex = IsDynamicCoA() ? _dynamicAccount.GetBranchAccountSequenceIndex() : accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Location);
-            string centerSegment = acct.Split('-')[accountindex];
-
-            return centerSegment;
+            int accountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
+            if(accountindex!=-1)
+                return acct.Split('-')[accountindex];
+            else 
+                return "";
         }
 
         public string GetBusinessUnitSegment(string acct)
         {
             int accountindex = 0;
             string bizunitSegment = "";//for non dynamic no biz unit
-            if (IsDynamicCoA())
-            {
-                accountindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
-                if (accountindex != -1)
-                    bizunitSegment = acct.Split('-')[accountindex];
-            }
+            accountindex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+            if (accountindex != -1)
+                bizunitSegment = acct.Split('-')[accountindex];
 
             return bizunitSegment;
         }
 
-        public  List<string> GetBankSubAccounts()
+        public List<string> GetBankSubAccounts()
         {
             var banks = _db.BankAccounts.ToList();
             List<string> banckaccounts = banks.Select(x => x.AccountCode).ToList();
@@ -866,25 +889,15 @@ namespace ExceedERP.Helpers.Finance
 
             foreach (var banckaccount in banckaccounts)
             {
-                if (IsDynamicCoA())
-                {
-                    string[] account = banckaccount.Split('-');
-                    string subacc = account[_dynamicAccount.GetSubAccountSequenceIndex()];
-                    subaccounts.Add(subacc);
-                }
-                else
-                {
-                    AccountHelper accountHelper = new AccountHelper();
-                    string[] account = banckaccount.Split('-');
-                    string subacc = account[accountHelper.GetAccountSequenceIndex(GlSegmentTypes.SubAccount)];
-                    subaccounts.Add(subacc);
-                }
+                string[] account = banckaccount.Split('-');
+                string subacc = account[_dynamicAccount.GetSubAccountSequenceIndex()];
+                subaccounts.Add(subacc);
             }
 
             return subaccounts;
         }
 
-        
+
     }
 
 }

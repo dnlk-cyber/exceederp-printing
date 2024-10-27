@@ -1,22 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.Core.Domain.Procurement.PR;
-using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Areas.Procurement.Models;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Procurement.PaymentRequest;
 using ExceedERP.Core.Domain.Procurement.Supplier;
-using ExceedERP.Core.Domain.Budget;
 using ExceedERP.Helpers.Finance;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.AP.ProcurementPaymentRequest
@@ -114,6 +109,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.ProcurementPaymentRequest
                 IsBudgetApproved = purchasePayment.IsBudgetApproved,
                 BudgetApprovedBy = purchasePayment.BudgetApprovedBy,
                 BudgetApprovedTime = purchasePayment.BudgetApprovedTime,
+
+                IsAuthorized = purchasePayment.IsAuthorized,
+                AuthorizedBy = purchasePayment.AuthorizedBy,
+                AuthorizedTime = purchasePayment.AuthorizedTime,
 
                 IsFinanceSendForApproval = purchasePayment.IsFinanceSendForApproval,
                 FinanceSendForApprovalBy = purchasePayment.FinanceSendForApprovalBy,

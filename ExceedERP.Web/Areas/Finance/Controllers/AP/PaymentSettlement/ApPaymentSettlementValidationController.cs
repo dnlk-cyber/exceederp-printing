@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.AP;
-using ExceedERP.Core.Domain.Finance.Bank;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
@@ -15,7 +13,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 {
-   
+
     public class ApPaymentSettlementValidationController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();

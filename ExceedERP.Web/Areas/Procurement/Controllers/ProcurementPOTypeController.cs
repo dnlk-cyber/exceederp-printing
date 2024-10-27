@@ -1,17 +1,13 @@
-﻿﻿using System;
-using System.Collections.Generic;
+﻿using System;
 
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
-﻿using Kendo.Mvc.Extensions;
+using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.Procurement;
- using ExceedERP.Core.Domain.Procurement.Settings;
- using ExceedERP.DataAccess.Context;
- using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.Procurement.Settings;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Helpers;
 
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers

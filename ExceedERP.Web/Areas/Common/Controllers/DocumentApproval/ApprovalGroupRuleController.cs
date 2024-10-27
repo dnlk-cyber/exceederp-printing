@@ -1,14 +1,12 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
- using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
 {
@@ -55,6 +53,9 @@ namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
                 db.ApprovalGroupRules.Add(entity);
                 db.SaveChanges();
                 approvalGroupRule.ApprovalGroupRuleId = entity.ApprovalGroupRuleId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Approval group rule limits", "Success", User.Identity.Name, $"created approval group rule for approval group {entity.ApprovalGroupId} type {entity.Type} {entity.RuleObject} amount {entity.AmountLimit} from {entity.LowValue} to  {entity.HighValue}  ", Modules.Administration);
+                #endregion
             }
 
             return Json(new[] { approvalGroupRule }.ToDataSourceResult(request, ModelState));
@@ -79,6 +80,9 @@ namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
                 db.ApprovalGroupRules.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Approval group rule limits", "Success", User.Identity.Name, $"updated approval group rule for approval group {entity.ApprovalGroupId} type {entity.Type} {entity.RuleObject} amount {entity.AmountLimit} from {entity.LowValue} to  {entity.HighValue}  ", Modules.Administration);
+                #endregion
             }
 
             return Json(new[] { approvalGroupRule }.ToDataSourceResult(request, ModelState));
@@ -103,6 +107,10 @@ namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
                 db.ApprovalGroupRules.Attach(entity);
                 db.ApprovalGroupRules.Remove(entity);
                 db.SaveChanges();
+
+                #region operation log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Deleted group rule limits", "Success", User.Identity.Name, $"created approval group rule for approval group {approvalGroupRule.ApprovalGroupId} type {approvalGroupRule.Type} {approvalGroupRule.RuleObject} amount {approvalGroupRule.AmountLimit} from {approvalGroupRule.LowValue} to  {approvalGroupRule.HighValue} ", Modules.Administration);
+                #endregion
             }
 
             return Json(new[] { approvalGroupRule }.ToDataSourceResult(request, ModelState));

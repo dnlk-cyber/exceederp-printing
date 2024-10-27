@@ -103,6 +103,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
                 if (!paymentSchedule.Any())
                     ModelState.AddModelError("nopayment", "Please add payment schedule first.");
 
+                //if (record.IsManual)
+                //{
+                //    var poPRs = db.PoPurchaseRequisitions.Where(x => x.PurchaseOrderID == id);
+                //    if (!poPRs.Any())
+                //        ModelState.AddModelError("noPR", "Please add PR first.");
+                //}
+
                 string error = PaymentHelper.ValidatePurchaseOrder(record.PurchaseOrderID);
                 if (!string.IsNullOrEmpty(error))
                     ModelState.AddModelError("invalid", error);

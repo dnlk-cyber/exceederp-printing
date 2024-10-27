@@ -10,22 +10,28 @@ namespace ExceedERP.Reporting.Finance.DataSource
 {
    
     [DataObject]
-    public class OrderTypeOds
+    public class OrderTypeOds: IDisposable
     {
-        private ExceedDbContext _db = new ExceedDbContext();
+        private readonly ExceedDbContext _db;
+        public OrderTypeOds()
+        {
+            _db = new ExceedDbContext();
+        }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<string> GetOrderType()
         {
-            List<string> sourceList = new List<string>
+            return new List<string>
             {
                 "Cash",
                 "Credit"
             };
-
-            return sourceList;
         }
 
-       
+        public void Dispose()
+        {
+            _db?.Dispose();
+        }
+
     }
 }

@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
-using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain.Finance.AP;
-using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
 using ExceedERP.Core.Domain.Finance.AP.Travel;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
@@ -62,9 +57,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             if (record != null && record.IsDepartmentOnlineApproved)
                 ModelState.AddModelError("approved","cannot manipulate this record,it is already approved");
 
-            var lines = _db.ApTravelOrderDepartures.Where(x => x.ApTravelOrderId == id);
-            if (!lines.Any())
-                ModelState.AddModelError("lines", "Please add line items");
+            if (!FinanceConfigurationHelper.IgnoreTravelDeparture())
+            {
+                var lines = _db.ApTravelOrderDepartures.Where(x => x.ApTravelOrderId == id);
+                if (!lines.Any())
+                    ModelState.AddModelError("lines", "Please add line items");
+            }
 
             if (record != null && record.IsDepartmentOnlineApproved)
                 ModelState.AddModelError("approved", "You cannot manipulate this record,it is already approved");
@@ -87,6 +85,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         if (record.IsFinalApproval)
                         {
                             record.Status = "Department Approved";
+                            record.IsVoid = false;
                             record.IsDepartmentOnlineApproved = true;
                             record.DepartmentOnlineApprovedBy = User.Identity.Name;
                             record.DepartmentOnlineApprovedTime = DateTime.Now;
@@ -177,56 +176,25 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TravelOrderDepartmentValidations_Update(int id,[DataSourceRequest]DataSourceRequest request, ApTravelOrderDepartmentValidation ApTravelOrderDepartmentValidation)
         {
-            bool isvalid = true;
+            
             if (ModelState.IsValid)
             {
-                #region ger parent record status
-                var record = _db.ApTravelOrders.Find(id);
-
-                if (record != null && record.IsOnlineApproved)
+                var entity = new ApTravelOrderDepartmentValidation
                 {
-                    isvalid = false;
-                    //ViewBag.Note = "You cannot manipulate this record,it is already approved";
-                    //return View("Error");
-                }
-                else if (record != null && !record.IsOnlineApproved)
-                {
-                    //validate 
-                    if (ApTravelOrderDepartmentValidation.Status ==ApprovalStatuses.Approve)
-                    {
-                       
-                        record.Status = "Approved";
-                        record.IsOnlineApproved = true;
-                        record.OnlineApprovedBy = User.Identity.Name;
-                        record.OnlineApprovedTime = DateTime.Now;
-                    }
-                    if (ApTravelOrderDepartmentValidation.Status ==ApprovalStatuses.Reject)
-                    {
-                        record.IsSendForApproval = false;
-                        record.Status = "Rejected";
-                    }
-                }
-                #endregion
+                    ApTravelOrderId = id,
+                    ApTravelOrderDepartmentValidationId = ApTravelOrderDepartmentValidation.ApTravelOrderDepartmentValidationId,
+                    Status = ApTravelOrderDepartmentValidation.Status,
+                    Remark = ApTravelOrderDepartmentValidation.Remark,
+                    OrgBranchName = ApTravelOrderDepartmentValidation.OrgBranchName,
+                    DateCreated = ApTravelOrderDepartmentValidation.DateCreated,
+                    LastModified = DateTime.Now,
+                    CreatedBy = ApTravelOrderDepartmentValidation.CreatedBy,
+                    ModifiedBy = User.Identity.Name
+                };
 
-                if (isvalid)
-                {
-                    var entity = new ApTravelOrderDepartmentValidation
-                    {
-                        ApTravelOrderId = id,
-                        ApTravelOrderDepartmentValidationId = ApTravelOrderDepartmentValidation.ApTravelOrderDepartmentValidationId,
-                        Status = ApTravelOrderDepartmentValidation.Status,
-                        Remark = ApTravelOrderDepartmentValidation.Remark,
-                        OrgBranchName = ApTravelOrderDepartmentValidation.OrgBranchName,
-                        DateCreated = ApTravelOrderDepartmentValidation.DateCreated,
-                        LastModified = DateTime.Now,
-                        CreatedBy = ApTravelOrderDepartmentValidation.CreatedBy,
-                        ModifiedBy = User.Identity.Name
-                    };
-
-                    _db.ApTravelOrderDepartmentValidations.Attach(entity);
-                    _db.Entry(entity).State = EntityState.Modified;
-                    _db.SaveChanges();
-                }
+                _db.ApTravelOrderDepartmentValidations.Attach(entity);
+                _db.Entry(entity).State = EntityState.Modified;
+                _db.SaveChanges();
             }
 
             return Json(new[] { ApTravelOrderDepartmentValidation }.ToDataSourceResult(request, ModelState));

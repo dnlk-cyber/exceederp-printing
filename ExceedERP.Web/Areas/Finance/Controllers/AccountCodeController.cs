@@ -4,9 +4,6 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Repository;
-using ExceedERP.Web.Areas.Inventory.Controllers;
-using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 

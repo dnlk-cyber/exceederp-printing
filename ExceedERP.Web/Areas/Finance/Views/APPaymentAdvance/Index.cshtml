@@ -25,7 +25,7 @@
           columns.Bound(c => c.PaymentMethod).EditorTemplateName("PaymentMethods").Width(130);
           columns.Bound(c => c.PaymentReference).Width(130);
           columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(130);
-          //columns.Bound(c => c.PoType).Width(110);         
+          //columns.Bound(c => c.PoType).Width(110);
           columns.Bound(c => c.Remark).Width(120);
           columns.Bound(c => c.Status).Width(80);
 
@@ -43,6 +43,41 @@
                                     .Label("Show Transferrable Only")
                                     .HtmlAttributes(new { onchange = "isNotTransferredCheck(this)" })
                     )
+
+                    @(Html.Kendo().DropDownList()
+          .OptionLabel("Select Year")
+          .Name("yearSelector")
+          .AutoBind(false)
+          .DataValueField("GlFiscalYearId")
+          .DataTextField("Name")
+          .HtmlAttributes(new { style = "width: 200px;" })
+          .DataSource(dataSource =>
+          {
+                        dataSource.Read(read => read.Action("GetOpenYears", "GlobalDataProvider", new { area = "Common" }))
+                .ServerFiltering(false);
+                    }))
+
+
+                @(Html.Kendo().DropDownList()
+                                      .Name("PeriodList")
+                                      .AutoBind(false)
+                                      .DataValueField("GLPeriodId")
+                                      .DataTextField("Name")
+                                      .HtmlAttributes(new { style = "width: 200px;" })
+                                      .ValuePrimitive(true)
+                                      .DataSource(dataSource =>
+                                      {
+                                                    dataSource.Read(read => read.Action("GetOpenPeriods", "GlobalDataProvider", new { area = "Common" }).Data("getFiscalYear"))
+                                            .ServerFiltering(true);
+                                                })
+                                      .CascadeFrom("yearSelector")
+                )
+
+             @(Html.Kendo().Button()
+                     .Name("btnPost")
+                     .HtmlAttributes(new {type = "search", @class = "k-primary"})
+                     .Events(e => e.Click("BatchTransfer"))
+                     .Content("Batch Transfer"))
 
 
 
@@ -130,7 +165,7 @@
 )
 
 
-                    <script id="templates" type="text/kendo-tmpl">
+<script id="templates" type="text/kendo-tmpl">
                         @(Html.Kendo().TabStrip()
                                               .Name("tabStrip#=ApPaymentId#")
                                               .SelectedIndex(0)
@@ -145,7 +180,7 @@
                                                         # if (!IsOnlineApproved&&!IsSendForApproval)
                                                         {#
                                                         <a onclick='return sendForApproval("#=ApPaymentId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                                        <br />
+
                                                         # } #
 
                                                         # if (IsOnlineApproved)
@@ -156,7 +191,8 @@
 
                                                         # if (IsOnlineApproved && !IsVoid&& !IsOnlineTransferred)
                                                         {#
-                                                        &nbsp;  &nbsp;   &nbsp;   <a onclick='return transferToGl("#=ApPaymentId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                                                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                                        <a onclick='return transferToGl("#=ApPaymentId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
                                                         # } #
 
 
@@ -170,7 +206,7 @@
                                                                 Created On
                                                             </dt>
                                                             <dd>
-                                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                                             </dd>
                                                             <dt>
@@ -189,8 +225,36 @@
                                                                 Modified Date
                                                             </dt>
                                                             <dd>
-                                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                                             </dd>
+                            <dt>
+    Checked On
+</dt>
+<dd>
+    #=kendo.toString(kendo.parseDate(SendForApprovalTime), 'dd/MM/yyyy hh:mm tt') #
+</dd>
+<dt>
+    Checked By
+</dt>
+<dd>
+    #=SendForApprovalBy #
+</dd>
+
+<dt>
+    Approved On
+</dt>
+<dd>
+    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
+
+
+</dd>
+<dt>
+    Approved By
+</dt>
+<dd>
+    #=OnlineApprovedBy #
+
+</dd>
                                                         </dl>
                                                     </div>
                                                     <hr>
@@ -201,7 +265,7 @@
                                                                 {
                                                         <a onclick='return voidRecord("#=ApPaymentId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
                                                            }
-                                                    
+
                                                     # } #
 
                                                 </text>);
@@ -345,11 +409,51 @@
                                                       .ToClientTemplate()
                         )
 
-                    </script>
+</script>
 
 
 
 <script>
+
+        function getFiscalYear() {
+        return { year: $("#yearSelector").data("kendoDropDownList").value() }
+    }
+
+     function BatchTransfer() {
+     var periodObject = $("#PeriodList").data("kendoDropDownList");
+     var periodid = periodObject.value();
+
+     if (periodid != null) {
+
+         $.ajax({
+             type: "POST",
+             url: '@Url.Action("Batchtransfer", "APPaymentAdvance", new {area = "Finance"})',
+             data: { id: periodid },
+             success: function (result) {
+                 // toastr.warnning(result.Message);
+                 alert(result.Message);
+                 location.reload(true);
+             }, //end succ
+             beforeSend: function(){
+                 // Show image container
+                 $("#loading-image").show();
+             },
+             complete:function(data){
+                 // Hide image container
+                 $("#loading-image").hide();
+             },
+             error: function (result) {
+                 alert(result);
+             }
+         });
+
+
+         $("#grid").data("kendoGrid").dataSource.read();
+     } else {
+         alert("Please select period.");
+     }
+
+ }
 
     function voidRecord(id) {
         var recordStatus = "";
@@ -357,7 +461,7 @@
         if (conf === true) {
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("Void", "ApPayment", new {area = "Finance"})',
+                url: '@Url.Action("Void", "APPaymentAdvance", new {area = "Finance"})',
                 data: { id: id },
                 success: function (result) {
                     // toastr.warnning(result.Message);
@@ -377,7 +481,7 @@
 
         $.ajax({
             type: "POST",
-            url: '@Url.Action("SendforApproval", "ApPayment", new { area = "Finance" })',
+            url: '@Url.Action("SendforApproval", "APPaymentAdvance", new { area = "Finance" })',
             data: { id: id },
             success: function (result) {
                 //toastr.success(result.Message);
@@ -415,10 +519,10 @@
     }
 
 
-   
-    
 
-    
+
+
+
     function filterPurchaseReferences() {
 
         return {
@@ -430,7 +534,7 @@
 
 
 
-  
+
 
     function onSelectReferenceNumber(e) {
         //alert("change");

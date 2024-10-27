@@ -1,9 +1,7 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Areas.HRM.Controllers;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -11,17 +9,11 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain;
-using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
-using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
-using ExceedERP.Core.Domain.Finance.AP.Travel;
-using ExceedERP.Web.Areas.Inventory.Controllers.Settings;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
 {
@@ -34,14 +26,20 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
 
 
             PopulateViewData();
-            UpdateData();
+            
 
             return View();
         }
         private void PopulateViewData()
         {
-            var employeName = _db.Person_Employee.ToList();
-            ViewData["EmployeeName"] = employeName;
+            var employee = _db.Person_Employee;
+            var selectedEmployee = employee.Select(
+                i => new
+                {
+                    Name = i.EmployeeCode + " " + i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+                    Code = i.EmployeeId
+                }).AsQueryable();
+            ViewData["personEmployees"] = selectedEmployee;
 
             var tax = _db.GLTaxRates.ToList();
             ViewData["GLTaxRate"] = tax;
@@ -69,23 +67,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
             return Json((periodList ?? throw new InvalidOperationException()).Select(p => new { GlFiscalYearId = p.GlFiscalYearId, Name = p.Name }), JsonRequestBehavior.AllowGet);
         }
      
-        private void UpdateData()
-        {
-            var list = _db.PaymentRequests.Where(x => x.CreatedAtOrgStructureId == 0).ToList();
-
-            foreach (var record in list)
-            {
-                record.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(record.CreatedBy);
-                _db.PaymentRequests.Attach(record);
-                _db.Entry(record).State = EntityState.Modified;
-                _db.SaveChanges();
-
-            }
-        }
+       
         public ActionResult PaymentRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
             IQueryable<Core.Domain.Finance.AP.PaymentRequest.PaymentRequest> paymentRequests = _db.PaymentRequests;
+            
             if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService)
                  && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
             {
@@ -126,7 +113,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 InvoiceNo = paymentRequest.InvoiceNo,
                 PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                 PONo = paymentRequest.PONo,
-                
+
+                Paid = paymentRequest.Paid,
+                PaymentAmount = paymentRequest.PaymentAmount,
+                AmountDue = paymentRequest.AmountDue,
+
                 GRN = paymentRequest.GRN,
                 Status =paymentRequest.Status,
                 Remark =paymentRequest.Remark,
@@ -237,7 +228,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     RequestDate = paymentRequest.RequestDate,
                     PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                     PONo = paymentRequest.PONo,
-                    
+
+                    Paid = paymentRequest.Paid,
+                    PaymentAmount = paymentRequest.PaymentAmount,
+                    AmountDue = paymentRequest.AmountDue,
+
                     GRN = paymentRequest.GRN,
                     Remark = paymentRequest.Remark,
                     IsVoid = paymentRequest.IsVoid,
@@ -350,7 +345,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                     PONo = paymentRequest.PONo,
                     GRN = paymentRequest.GRN,
-                   
+
+                    Paid = paymentRequest.Paid,
+                    PaymentAmount = paymentRequest.PaymentAmount,
+                    AmountDue = paymentRequest.AmountDue,
+
 
                     IsBudgetApproved = paymentRequest.IsBudgetApproved,
                     BudgetApprovedBy = paymentRequest.BudgetApprovedBy,
@@ -432,6 +431,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                     InvoiceNo = paymentRequest.InvoiceNo,
                     RequestDate = paymentRequest.RequestDate,
                     PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
+
+                    Paid = paymentRequest.Paid,
+                    PaymentAmount = paymentRequest.PaymentAmount,
+                    AmountDue = paymentRequest.AmountDue,
+
                     PONo = paymentRequest.PONo,
                     GRN = paymentRequest.GRN,
                     Remark = paymentRequest.Remark
@@ -517,6 +521,99 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
 
             }
+            return null;
+        }
+        
+        [AuthorizeRoles(HrmConstants.HRDepartmentHead)]
+        public JsonResult Void(int id)
+        {
+            var record = _db.PaymentRequests.Find(id);
+            if (record != null && record.IsDepartmentOnlineApproved && !record.IsBudgetApproved && !record.IsOnlineApproved && !record.IsVoid)
+            {
+
+                #region validate payment
+
+                var payment = _db.ApDirectPayments
+                    .Where(x => x.IsVoid == false)
+                    .Where(x => x.SourceId == "PAYMENT-REQUEST_"+record.PaymentRequestId.ToString())
+                    .FirstOrDefault();
+
+                if (payment != null)
+                {
+                    var formattedData2 = new
+                    {
+                        Message = $"This payment request can not be void since it is referred in payment {payment.ApDirectPaymentId}.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData2, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
+               
+
+                record.Status = Enum.GetName(typeof(OperationStatuses), 10);
+                record.IsAuthorized = false;
+                record.IsOnlineApproved = false;
+                record.IsSendForApproval = false;
+                record.IsDepartmentOnlineApproved = false;
+                record.IsDepartmentSendForApproval = false;
+                record.IsBudgetApproved = false;
+                record.IsVoid = true;
+                record.VoidBy = User.Identity.Name;
+                record.VoidTime = DateTime.Now;
+                record.ForwardedFrom = User.Identity.Name;
+                record.ForwardedTo = User.Identity.Name;
+                _db.PaymentRequests.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+
+                var formattedData = new
+                {
+                    Message = "Void Successful.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            if (!record.IsDepartmentOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not approved hence you can modify by editing.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record.IsBudgetApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is approved at budget hence you can't void here.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is approved at finance hence you can't void here.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
             return null;
         }
         protected override void Dispose(bool disposing)

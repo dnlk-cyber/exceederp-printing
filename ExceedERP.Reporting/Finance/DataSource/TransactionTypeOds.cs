@@ -8,36 +8,43 @@ using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Reporting.Finance.DataSource
 {
-   
+
     [DataObject]
-    public class TransactionTypeOds
+    public class TransactionTypeOds : IDisposable
     {
-        private ExceedDbContext _db = new ExceedDbContext();
+        private readonly ExceedDbContext _db;
+        public TransactionTypeOds()
+        {
+            _db = new ExceedDbContext();
+        }
+
+       
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<string> GetApTransactionType()
         {
-            List<string> sourceList = new List<string>
+           return new List<string>
             {
                 "Invoice",
                 "Payment",
                 "Misc Payment"
             };
-
-            return sourceList;
         }
 
         public List<string> GetArTransactionType()
         {
-            List<string> sourceList = new List<string>
+            return new List<string>
             {
                 "Invoice",
                 "Collection",
                 "Misc Collection"
 
             };
+        }
 
-            return sourceList;
+        public void Dispose()
+        {
+            _db?.Dispose();
         }
     }
 }

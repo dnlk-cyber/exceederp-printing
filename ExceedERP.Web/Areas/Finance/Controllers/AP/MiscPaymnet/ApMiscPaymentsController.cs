@@ -9,7 +9,6 @@ using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
@@ -52,11 +51,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         public ActionResult APMiscellaneousPayments_Read([DataSourceRequest]DataSourceRequest request, bool isNotTransffered)
         {
             List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
-            List<string> mybrachesStr = UserInformationHelper.GetUserBranchs(User.Identity.Name);
 
             //cuz it was not having branchid
             IQueryable<ApMiscellaneousPayment> miscPayments = _db.APMiscellaneousPayments
-                  .Where(x => mybraches.Contains(x.BranchId) || mybrachesStr.Contains(x.OrgBranchName));
+                  .Where(x => mybraches.Contains(x.BranchId));
 
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
@@ -74,6 +72,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 ApMiscellaneousPaymentId = miscPayment.ApMiscellaneousPaymentId,
                 BranchId = miscPayment.BranchId,
                 BusinessUnitId = miscPayment.BusinessUnitId,
+                CreatedAtBranchId = miscPayment.CreatedAtBranchId,
+                CreatedAtBusinessUnitId = miscPayment.CreatedAtBusinessUnitId,
                 IsDirectPayment = miscPayment.IsDirectPayment,
                 SupplierId = miscPayment.SupplierId,
                 IsNewSupplier = miscPayment.IsNewSupplier,
@@ -156,6 +156,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
             miscPayments.BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
             miscPayments.BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+            miscPayments.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
+            miscPayments.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
             #endregion
             if (ModelState.IsValid)
             {
@@ -163,6 +165,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 {
                     BranchId = miscPayments.BranchId,
                     BusinessUnitId = miscPayments.BusinessUnitId,
+                    CreatedAtBranchId = miscPayments.CreatedAtBranchId,
+                    CreatedAtBusinessUnitId = miscPayments.CreatedAtBusinessUnitId,
                     IsDirectPayment = miscPayments.IsDirectPayment,
                     SupplierId = miscPayments.SupplierId,
                     IsNewSupplier = miscPayments.IsNewSupplier,
@@ -283,6 +287,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     {
                         BranchId = miscPayment.BranchId,
                         BusinessUnitId = miscPayment.BusinessUnitId,
+                        CreatedAtBranchId = miscPayment.CreatedAtBranchId,
+                        CreatedAtBusinessUnitId = miscPayment.CreatedAtBusinessUnitId,
                         IsDirectPayment = miscPayment.IsDirectPayment,
                         ApMiscellaneousPaymentId = miscPayment.ApMiscellaneousPaymentId,
                         SupplierId = miscPayment.SupplierId,
@@ -343,6 +349,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     {
                         BranchId = miscPayment.BranchId,
                         BusinessUnitId = miscPayment.BusinessUnitId,
+                        CreatedAtBranchId = miscPayment.CreatedAtBranchId,
+                        CreatedAtBusinessUnitId = miscPayment.CreatedAtBusinessUnitId,
                         IsDirectPayment = miscPayment.IsDirectPayment,
                         ApMiscellaneousPaymentId = miscPayment.ApMiscellaneousPaymentId,
                         SupplierId = miscPayment.SupplierId,
@@ -847,6 +855,63 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
              return null;
          }
+        [AuthorizeRoles(FinanceConstants.AccountPayablePayment)]
+        public JsonResult Batchtransfer(string id)
+        {
+
+            string _response = "SUCCESS";
+            int did = int.Parse(id);
+            var period = _db.GLPeriods.Find(did);
+
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+            var untransffered = _db.APMiscellaneousPayments
+                .Where(x => x.PaymentDate >= period.DateFrom && x.PaymentDate <= period.DateTo)
+                .Where(x => x.IsOnlineApproved && x.IsVoid == false && x.IsOnlineTransferred == false)
+                 //.Where(x => mybraches.Contains(x.CreatedAtBranchId))
+                 .Where(x => x.CreatedBy == User.Identity.Name)
+                .AsQueryable();
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                untransffered = untransffered.Where(x => myBusinessUnits.Contains(x.CreatedAtBusinessUnitId));
+            }
+
+            if (!untransffered.Any())
+            {
+                var formattedData1 = new
+                {
+                    Message = "Data not found for transffer.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData1, JsonRequestBehavior.AllowGet);
+            }
+
+            foreach (var record in untransffered)
+            {
+                _response = FinanceTransferHelper.ApMiscPayment(record.ApMiscellaneousPaymentId, "Batch Transfer", User.Identity.Name);
+                if (_response != "SUCCESS")
+                    ;// Logger.Debug("AP Misc payment transfer ID:" + record.ApMiscellaneousPaymentId + _response);
+            }
+
+            #region auto job
+
+
+
+            #endregion
+
+            #region operation log
+            UserHelper.OperationLog(Request.UserHostAddress, "AP misc payment", "Success", User.Identity.Name, $"batch transfer for period {id} ", Modules.Finance);
+            #endregion
+
+            var formattedData = new
+            {
+                Message = $"Operation Completed. {untransffered.Count()} records transffred.",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
 
         [AuthorizeRoles(FinanceConstants.AccountPayableVoid)]
         public JsonResult Void(int id)

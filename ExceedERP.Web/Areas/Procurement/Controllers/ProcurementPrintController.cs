@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Core.Domain.Procurement;
-using ExceedERP.Core.Domain.Procurement.Settings;
-using ExceedERP.Helpers.HR;
 using ExceedERP.Helpers.Procurement;
-using ExceedERP.Web.Helpers;
-using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers
 {
@@ -38,7 +29,11 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
             ViewBag.Id = id;
             return View();
         }
-
+        public ActionResult ServiceReceivePrint(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
         public ActionResult ProcurementPlanPrint(int id)
         {
             ViewBag.Id = id;

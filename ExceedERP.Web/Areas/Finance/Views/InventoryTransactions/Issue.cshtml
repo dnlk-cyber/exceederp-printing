@@ -19,7 +19,15 @@
           columns.Bound(c => c.Reference).Title("Issue Reference").Width(90);
           columns.Bound(c => c.Remark).Width(150);
           columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector").Filterable(ftb => ftb.Multi(true).Search(true));
-          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.SupplierId, (IEnumerable)ViewData["Suppliers"], "Code", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Bound(c => c.IsLoan).Width(90).Title("Is Loan?").ClientTemplate(
+             "<input type='checkbox' disabled = 'true' value='#= IsLoan #' " +
+             "# if (IsLoan) { #" +
+             "checked='checked'" +
+             "# } #" +
+             "/>"
+             );
           columns.Bound(c => c.Status).Width(110);
 
       })
@@ -157,7 +165,7 @@
                                                         </dt>
                                                         <dd>
 
-                                                            #=kendo.toString(kendo.parseDate(IssueDate), 'dd/MM/yyyy') #
+                                                            #=kendo.toString(kendo.parseDate(IssueDate), 'dd/MM/yyyy hh:mm tt') #
 
                                                         </dd>
                                                         <dt>
@@ -170,7 +178,7 @@
                                                             CreatedOn
                                                         </dt>
                                                         <dd>
-                                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                                         </dd>
                                                         <dt>
@@ -189,7 +197,7 @@
                                                             Modified Date
                                                         </dt>
                                                         <dd>
-                                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                                         </dd>
                                                     </dl>
                                                 </div>

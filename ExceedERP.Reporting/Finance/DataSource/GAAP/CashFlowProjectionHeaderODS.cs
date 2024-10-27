@@ -17,33 +17,29 @@ namespace ExceedERP.Reporting.Finance.DataSource.GAAP
         public List<CashFlowProjectionViewModel> GetCashFlowProjectionHeaders(string fiscalYear)
         {
             List<CashFlowProjectionViewModel> cashFlowList = new List<CashFlowProjectionViewModel>();
-            var year = _db.GLFiscalYears.Where(x=>x.GlFiscalYearId.ToString() == fiscalYear).ToList();
 
-
-
-            CashFlowProjectionViewModel per = new CashFlowProjectionViewModel();
-            if (year.Any())
+            if (!string.IsNullOrEmpty(fiscalYear))
             {
-                try
+                int fYearId=int.Parse(fiscalYear);
+                var year = _db.GLFiscalYears.Find(fYearId);               
+                if (year!=null)
                 {
-                    per.Month1 = year[0].Name;
-                    per.Month2 = year[1].Name;
-                    per.Month3 = year[2].Name;
-                    per.Month4 = year[3].Name;
-                    per.Month5 = year[4].Name;
-                    per.Month6 = year[5].Name;
-                    per.Month7 = year[6].Name;
-                    per.Month8 = year[7].Name;
-                    per.Month9 = year[8].Name;
-                    per.Month10 = year[9].Name;
-                    per.Month11 = year[10].Name;
-                    per.Month12 = year[11].Name;
+                    var periods=_db.GLPeriods.AsNoTracking().Where(x=>x.GlFiscalYearId==fYearId).Select(x=> new { x.Index,x.Name});
+                    CashFlowProjectionViewModel per = new CashFlowProjectionViewModel();
+                    per.Month1 = periods.Where(x => x.Index == 1).FirstOrDefault()?.Name;
+                    per.Month2 = periods.Where(x => x.Index == 2).FirstOrDefault()?.Name;
+                    per.Month3 = periods.Where(x => x.Index == 3).FirstOrDefault()?.Name;
+                    per.Month4 = periods.Where(x => x.Index == 4).FirstOrDefault()?.Name;
+                    per.Month5 = periods.Where(x => x.Index == 5).FirstOrDefault()?.Name;
+                    per.Month6 = periods.Where(x => x.Index == 6).FirstOrDefault()?.Name;
+                    per.Month7 = periods.Where(x => x.Index == 7).FirstOrDefault()?.Name;
+                    per.Month8 = periods.Where(x => x.Index == 8).FirstOrDefault()?.Name;
+                    per.Month9 = periods.Where(x => x.Index == 9).FirstOrDefault()?.Name;
+                    per.Month10 = periods.Where(x => x.Index == 10).FirstOrDefault()?.Name;
+                    per.Month11 = periods.Where(x => x.Index == 11).FirstOrDefault()?.Name;
+                    per.Month12 = periods.Where(x => x.Index == 12).FirstOrDefault()?.Name;
 
                     cashFlowList.Add(per);
-                }
-                catch(Exception e)
-                {
-                    
                 }
             }
                 

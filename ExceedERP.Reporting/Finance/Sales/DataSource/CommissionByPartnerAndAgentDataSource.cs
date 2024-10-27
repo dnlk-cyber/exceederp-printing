@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Finance.AR.SalesOrder;
+using ExceedERP.Reporting.Finance.Receivable.ViewModel;
 
 namespace ExceedERP.Reporting.Finance.Sales.DataSource
 {

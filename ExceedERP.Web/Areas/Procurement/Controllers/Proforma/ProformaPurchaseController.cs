@@ -14,7 +14,8 @@ using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.DataAccess.Migrations;
+using ExceedERP.Core.Domain.Common.DocumentApproval;
+using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
 {
@@ -135,6 +136,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 ForwardedFrom = proformaPurchase.ForwardedFrom,
                 ForwardedTo = proformaPurchase.ForwardedTo,
                 IsFinalApproval = proformaPurchase.IsFinalApproval,
+                CurrentApprovalStep = proformaPurchase.CurrentApprovalStep,
 
                 IsOnlineApproved = proformaPurchase.IsOnlineApproved,
                 OnlineApprovedBy = proformaPurchase.OnlineApprovedBy,
@@ -229,6 +231,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                     ForwardedFrom = User.Identity.Name,
                     ForwardedTo = User.Identity.Name,
                     IsFinalApproval = proformaPurchase.IsFinalApproval,
+                    CurrentApprovalStep = proformaPurchase.CurrentApprovalStep,
 
                     PurchaseCategory = proformaPurchase.PurchaseCategory,
                     IsOnlineApproved = proformaPurchase.IsOnlineApproved,
@@ -332,6 +335,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                     ForwardedFrom = proformaPurchase.ForwardedFrom,
                     ForwardedTo = proformaPurchase.ForwardedTo,
                     IsFinalApproval = proformaPurchase.IsFinalApproval,
+                    CurrentApprovalStep = proformaPurchase.CurrentApprovalStep,
 
                     Status = proformaPurchase.Status,
                     IsOnlineApproved = proformaPurchase.IsOnlineApproved,
@@ -477,6 +481,21 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 _db.ProformaPurchases.Attach(record);
                 _db.Entry(record).State = EntityState.Modified;
                 _db.SaveChanges();
+
+                #region approval workflow
+
+                bool isNewRecord = true;
+                var validations = record.PurchaseValidation.Where(x => x.Status == ApprovalStatuses.Approve).AsQueryable();
+                if (validations.Any())
+                    isNewRecord = false;
+
+                var awardIds=_db.WinningSuppliers.Where(x=>x.AwardGiven).Where(x=>x.ProformaPurchaseID==id).Select(x=>x.WinningSupplierID).ToList();
+                var awardItems=_db.WinningSupplierItems.Where(x=>awardIds.Contains(x.WinningSupplierID)).ToList();
+                decimal docamount = awardItems.Sum(x => x.TPrice);
+                int docid = record.ProformaPurchaseID;
+                int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
+                DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", record.ForwardedTo, ApprovalDocumentType.ProformaPurchase, isNewRecord, step);
+                #endregion
                 var formattedData = new
                 {
                     Message = "Successfully Sent.",
@@ -908,6 +927,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                         {
                             #region header
 
+                            var participant = _db.ParticipatingSuppliers
+                                   .Where(x => x.ProformaPurchaseID == proformaid)
+                                   .FirstOrDefault(x => x.SupplierName == topResult.SupplierName);
+
                             var winningSupplier = new WinningSupplier
                             {
                                 ProformaPurchaseID = proformaPurchase.ProformaPurchaseID,
@@ -916,6 +939,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                                 SupplierId = topResult.SupplierId,
                                 IsNewSupplier = topResult.IsNewSupplier,
                                 SupplierName = topResult.SupplierName,
+                                AdditionalChargePercent = participant!=null? participant.AdditionalChargePercent :0,
                                 AwardGiven = true
                             };
                             _db.WinningSuppliers.Add(winningSupplier);
@@ -928,7 +952,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                                 #region line
 
 
-                                var participantitem = _db.ParticipatingSupplierItems.Where(x => x.ParticipatingSupplier.ProformaPurchaseID == proformaid)
+                                var participantitem = _db.ParticipatingSupplierItems
+                                    .Where(x => x.ParticipatingSupplier.ProformaPurchaseID == proformaid)
                                     .Where(x => x.ProformaItemID == item.ProformaItemID)
                                     .FirstOrDefault(x => x.ParticipatingSupplier.SupplierName == topResult.SupplierName);
                                 if (participantitem != null)

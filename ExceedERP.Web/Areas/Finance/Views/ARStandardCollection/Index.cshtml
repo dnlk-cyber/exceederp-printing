@@ -33,7 +33,7 @@
               @<text>
 
                     <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
-                    <button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>
+                    @*<button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>*@
 
                     @(Html.Kendo().CheckBox()
                                     .Name("checktransfferable")
@@ -143,19 +143,20 @@
                     {#
                     <a onclick='return sendForApproval("#=ArStandardCollectionId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
                     # } #
-                    
+
                     # if (IsOnlineApproved)
                     {#
                     <a target="new" href='@Url.Action("ArCollection", "FinancePrint")/#=ArStandardCollectionId#'><i class="fa fa-print fa-2x"></i></a>
-                    <br />
+
                     # } #
 
-                   # if (IsOnlineApproved && !IsOnlineTransferred )
+                   #if (IsOnlineApproved && !IsOnlineTransferred)
                    {#
-                   <a onclick='return transferToGl("#=ArStandardCollectionId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
-                   # } #
+                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    <a onclick='return transferToGl("#=ArStandardCollectionId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                # } #
 
-                   
+
                 </div>
     <div>
         <hr>
@@ -166,39 +167,67 @@
                 Created On
             </dt>
             <dd>
-                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
             </dd>
             <dt>
                 Created By
             </dt>
             <dd>
-                #= CreatedBy #
+#= CreatedBy #
             </dd>
             <dt>
                 Modified By
             </dt>
             <dd>
-                #= ModifiedBy #
+#= ModifiedBy #
             </dd>
             <dt>
                 Modified Date
             </dt>
             <dd>
-                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
             </dd>
+        <dt>
+    Checked On
+</dt>
+<dd>
+    #=kendo.toString(kendo.parseDate(SendForApprovalTime), 'dd/MM/yyyy hh:mm tt') #
+</dd>
+<dt>
+    Checked By
+</dt>
+<dd>
+    #=SendForApprovalBy #
+</dd>
+
+<dt>
+    Approved On
+</dt>
+<dd>
+    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
+
+
+</dd>
+<dt>
+    Approved By
+</dt>
+<dd>
+    #=OnlineApprovedBy #
+
+</dd>
         </dl>
     </div>
-    
+
       <hr>
 
-        # if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
+#if (IsOnlineApproved && !IsVoid && !IsOnlineTransferred)
         {#
         @if (HttpContext.Current.User.IsInRole("Account_Receivable_Void"))
         {
             <a onclick='return voidRecord("#=ArStandardCollectionId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
         }
-        # } #
+# } #
 
             </text>
                   );
@@ -323,7 +352,7 @@
                           {
                               sortable.SortMode(GridSortMode.SingleColumn);
                           })
-                          
+
                           .Scrollable()
                           .DataSource(dataSource => dataSource
                               .Ajax()
@@ -381,12 +410,12 @@
                               toolbar.Create();
                           })
                           .Editable(editable => editable.Mode(GridEditMode.InLine))
-                          
+
                           .Sortable(sortable =>
                           {
                               sortable.SortMode(GridSortMode.SingleColumn);
                           })
-                         
+
                           .Scrollable()
                           .HtmlAttributes(new { style = "height: 400px;" })
                           .Events(x => x.DataBound("onDataBoundDistributionCollection"))
@@ -541,18 +570,7 @@
 </script>
 
 <script>
-    var popup;
-    var aCode;
-    function SelectAccCode() {
-        popup = window.open('/Finance/AccountCode/GLAccountSelector', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
-        popup.focus();
-        return false;
-    }
-
-    function setLang(accCode) {
-        aCode = accCode;
-        $("#AccountCode").val(aCode).trigger("change");
-    }
+    
 
 
     var masterDataItem;

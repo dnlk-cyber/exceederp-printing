@@ -14,21 +14,28 @@ using ExceedERP.Reporting.Finance.ViewModel;
 namespace ExceedERP.Reporting.Finance.DataSource
 {
     [DataObject]
-    public class JournalCategoryOds : List<GLJournalCategoriers>
+    public class JournalCategoryOds : List<GLJournalCategoriers>, IDisposable
     {
-        private readonly ExceedDbContext _db = new ExceedDbContext();
+        private readonly ExceedDbContext _db;
+        public JournalCategoryOds()
+        {
+            _db = new ExceedDbContext();
+        }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<GLJournalCategoriers> GetJournalCategoryList()
         {
-            List<GLJournalCategoriers> list = new List<GLJournalCategoriers> { };
 
-           var glJournalCategorierses = _db.GLJournalCategoriers.ToList();
-
-
-           return glJournalCategorierses;
+            return _db.GLJournalCategoriers
+                                  .AsNoTracking()
+                                  .ToList();
         }
 
-       
+        public void Dispose()
+        {
+            _db?.Dispose();
+        }
+
+
     }
 }

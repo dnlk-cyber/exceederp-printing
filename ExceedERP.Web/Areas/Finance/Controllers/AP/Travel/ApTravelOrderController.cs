@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.AP.Travel;
-using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
@@ -19,7 +17,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 {
-	public class ApTravelOrderController : Controller
+    public class ApTravelOrderController : Controller
 	{
 		private ExceedDbContext _db = new ExceedDbContext();
 
@@ -61,8 +59,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 		{
 			List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
 
+			//IQueryable<ApTravelOrder> aptravelorders = _db.ApTravelOrders
+			//	.Where(x => (mybraches.Contains(x.BranchId) && x.FromBranchId == 0) || (mybraches.Contains(x.FromBranchId) && x.FromBranchId!=0))
+			//	.Where(x => x.IsDepartmentOnlineApproved);
+			
 			IQueryable<ApTravelOrder> aptravelorders = _db.ApTravelOrders
-				.Where(x => mybraches.Contains(x.BranchId))
+				.Where(x => mybraches.Contains(x.FromBranchId))
 				.Where(x => x.IsDepartmentOnlineApproved);
 
 			if (FinanceConfigurationHelper.IsPaymentBudgetControlEnabled())
@@ -72,7 +74,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 			if (GlobalHelper.IsMultipleBusinessUnit())
 			{
 				List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
-				aptravelorders = aptravelorders.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+				//aptravelorders = aptravelorders
+				//	.Where(x => myBusinessUnits.Contains(x.BusinessUnitId) || (myBusinessUnits.Contains(x.FromBusinessUnitId) && x.FromBusinessUnitId != 0));
+
+				aptravelorders = aptravelorders
+					.Where(x => myBusinessUnits.Contains(x.FromBusinessUnitId));
 			}
 
 			DataSourceResult result = aptravelorders.ToDataSourceResult(request, apTravelOrder => new {
@@ -89,8 +95,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 				RequestDate = apTravelOrder.RequestDate,
 				AdvanceAmount = apTravelOrder.AdvanceAmount,
 				TotalDuration = apTravelOrder.TotalDuration,
+                Claimed = apTravelOrder.Claimed,
+                Paid = apTravelOrder.Paid,
 
-				TransportReference = apTravelOrder.TransportReference,
+                TransportReference = apTravelOrder.TransportReference,
 				Reference = apTravelOrder.Reference,
 				EmployeeId = apTravelOrder.EmployeeId,
 				IsForOther = apTravelOrder.IsForOther,
@@ -191,8 +199,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 					RequestDate = apTravelOrder.RequestDate.Date,
 					AdvanceAmount = apTravelOrder.AdvanceAmount,
 					TotalDuration = apTravelOrder.TotalDuration,
+                    Claimed = apTravelOrder.Claimed,
+                    Paid = apTravelOrder.Paid,
 
-					TransportReference = apTravelOrder.TransportReference,
+                    TransportReference = apTravelOrder.TransportReference,
 					Reference = apTravelOrder.Reference,
 					IsOnlineTransferred = apTravelOrder.IsOnlineTransferred,
 					IsOnlineTransferredBy = apTravelOrder.IsOnlineTransferredBy,
@@ -282,8 +292,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 					RequestDate = apTravelOrder.RequestDate,
 					AdvanceAmount = apTravelOrder.AdvanceAmount,
 					TotalDuration = apTravelOrder.TotalDuration,
+                    Claimed = apTravelOrder.Claimed,
+                    Paid = apTravelOrder.Paid,
 
-					TransportReference = apTravelOrder.TransportReference,
+                    TransportReference = apTravelOrder.TransportReference,
 					Reference = apTravelOrder.Reference,
 					EmployeeId = apTravelOrder.EmployeeId,
 					IsForOther = apTravelOrder.IsForOther,
@@ -465,15 +477,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 			var record = _db.ApTravelOrders.Find(id);
 			if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred && record.ApTravelOrderDepartures.Count > 0)
 			{
-				#region validate claim
+				#region validate travel order
 
-				var payments = _db.ApTravelOrders.Where(x => x.ApTravelOrderId == record.ApTravelOrderId)
+				var payments = _db.ApDirectPayments
+					.Where(x => x.SourceId == "TRAVEL-ORDER_" + record.ApTravelOrderId.ToString())
 					.ToList();
 				if (payments.Any())
 				{
 					var formattedData1 = new
 					{
-						Message = $"The travel order number {record.ApTravelOrderId} is already applied in Travel Order \n hence cannot be void.",
+						Message = $"The travel order {record.ApTravelOrderId} is already applied in direct payment \n hence cannot be void.",
 						Status = "NOT_OK"
 					};
 					return Json(formattedData1, JsonRequestBehavior.AllowGet);

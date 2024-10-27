@@ -11,11 +11,16 @@ using ExceedERP.Reporting.Finance.ViewModel;
 namespace ExceedERP.Reporting.Finance.DataSource.GL
 {
     [DataObject]
-    public class PurchaserLedgerObjectDatasource : List<PurchaserLedgerVm>
+    public class PurchaserLedgerObjectDatasource : List<PurchaserLedgerVm>, IDisposable
     {
-        
-            private readonly ExceedDbContext _db = new ExceedDbContext();
-        private readonly AccountHelper _accountHelper = new AccountHelper();
+
+        private readonly ExceedDbContext _db;
+        private readonly AccountHelper _accountHelper;
+        public PurchaserLedgerObjectDatasource()
+        {
+            _db = new ExceedDbContext();
+            _accountHelper = new AccountHelper();
+        }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<PurchaserLedgerVm> GetPurchaserLedger(DateTime from, DateTime to, string purchaserid, string acct)
@@ -52,7 +57,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                 var periodList = _db.GLRecordJournals.Where(x => journalids.Contains(x.GlRecordJournalId)).Select(x => x.PeriodName).Distinct();
                 foreach (var p in periodList)
                 {
-                    periods.Add(_db.GLPeriods.FirstOrDefault(x => x.Name == p));
+                    var period = _db.GLPeriods.FirstOrDefault(x => x.Name == p);
+                    if(period!=null)
+					    periods.Add(period);
                 }
 
                 #endregion
@@ -276,6 +283,11 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 
         //    return purchaserLedgerList;
         //}
-   }
+
+        public void Dispose()
+        {
+            _db?.Dispose();
+        }
+    }
     
 }

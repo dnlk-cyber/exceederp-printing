@@ -132,6 +132,67 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
             return list;
         }
 
-      
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<ApprovalVm> ApprovalLines(int id)
+        {
+            List<ApprovalVm> list = new List<ApprovalVm>();
+            var paymentRequest = _db.PaymentRequests.Find(id);
+            var entity = new ApprovalVm
+            {
+                Description = "Prepared by",
+                ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.CreatedBy)),
+                Date = paymentRequest.DateCreated != null ? paymentRequest.DateCreated : null,
+            };
+            list.Add(entity);
+
+             entity = new ApprovalVm
+            {
+                Description = "Checked by",
+                ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.SendForApprovalBy)),
+                Date = paymentRequest.SendForApprovalTime != null ? paymentRequest.SendForApprovalTime : null,
+            };
+            list.Add(entity);
+
+            entity = new ApprovalVm
+            {
+                Description = "Approved by",
+                ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.DepartmentOnlineApprovedBy)),
+                Date = paymentRequest.DepartmentOnlineApprovedTime != null ? paymentRequest.DepartmentOnlineApprovedTime : null,
+            };
+            list.Add(entity);
+
+            entity = new ApprovalVm
+            {
+                Description = "Audit Approved by",
+                ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.BudgetApprovedBy)),
+                Date = paymentRequest.BudgetApprovedTime != null ? paymentRequest.BudgetApprovedTime : null,
+            };
+            list.Add(entity);
+
+            entity = new ApprovalVm
+            {
+                Description = "Authorized by",
+                ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.AuthorizedBy)),
+                Date = paymentRequest.AuthorizedTime != null ? paymentRequest.AuthorizedTime : null,
+            };
+            list.Add(entity);
+
+            entity = new ApprovalVm
+            {
+                Description = "Finance Checked by",
+                ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.SendForApprovalBy)),
+                Date = paymentRequest.SendForApprovalTime != null ? paymentRequest.SendForApprovalTime : null,
+            };
+            list.Add(entity);
+            entity = new ApprovalVm
+            {
+                Description = "Finance Approved by",
+                ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.OnlineApprovedBy)),
+                Date = paymentRequest.OnlineApprovedTime != null ? paymentRequest.OnlineApprovedTime : null,
+            };
+            list.Add(entity);
+
+            return list;
+        }
     }
 }

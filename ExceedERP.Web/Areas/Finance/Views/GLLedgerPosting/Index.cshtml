@@ -55,7 +55,12 @@
                               .Name("GLLedgerPostingLines#=GLLedgerPostingID#")
                               .Columns(columns =>
                               {
-                                  columns.Bound(c => c.GLLedgerPostingLinesID).Title("Line No.").Width(50);
+                                  columns.Bound(c => c.GLLedgerPostingLinesID).Title("Line No.").Width(50)
+                                  .ClientTemplate(
+                                      
+                                        @Html.ActionLink("\\#=GLLedgerPostingLinesID\\#", "Index", "AccountDetails", new { area = "Finance", Id = "\\#=GLLedgerPostingLinesID\\#" }, new { @class = "detail-link", @target = "_blank" }).ToHtmlString()
+                                       
+                                        );
                                   columns.Bound(c => c.JournalNumber).EditorTemplateName("Journal Number").Width(120);
                                   columns.Bound(c => c.EffectiveDate).Width(90);
                                   columns.ForeignKey(p => p.GlFiscalYearId, (IEnumerable)ViewData["Years"], "GlFiscalYearId", "Name").Width(100);

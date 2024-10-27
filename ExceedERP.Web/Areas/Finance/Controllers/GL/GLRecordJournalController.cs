@@ -390,6 +390,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
         public ActionResult GlRecordJournals_Destroy([DataSourceRequest]DataSourceRequest request, GlRecordJournal glRecordJournal)
         {
             bool isvalid = true;
+
+            if (glRecordJournal.IsUnPosted)
+                ModelState.AddModelError("biz","Can't delete unposted transaction");
+
             if (ModelState.IsValid)
             {
                 #region validated record

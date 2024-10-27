@@ -72,6 +72,11 @@
                   model.Field(p => p.ProcurementOfficer).Editable(false);
                   model.Field(p => p.Status).Editable(false);
 
+                  model.Field(p => p.ForwardedFrom).Editable(false);
+                  model.Field(p => p.ForwardedTo).Editable(false);
+                  model.Field(p => p.IsFinalApproval).Editable(false);
+                  model.Field(p => p.CurrentApprovalStep).Editable(false);
+
                   model.Field(p => p.CreatedBy).Editable(false);
                   model.Field(p => p.DateCreated).Editable(false);
                   model.Field(p => p.ModifiedBy).Editable(false);
@@ -92,7 +97,7 @@
 
                                     # if (!IsOnlineApproved&&!IsSendForApproval)
                                     {#
-                                    <br />
+                                    @*<br />
                                     <div class="popupwrapper">
                                         <label>Send to checker</label> <input type="text" disabled="disabled" id="NextApprover" />
                                         <img src="~/Content/Images/search.png" onclick="SelectChecker(this)" />
@@ -100,7 +105,7 @@
                                         <a onclick='return sendToChecker("#=ProformaPurchaseID#")' href=' \#' title="Send to Checker "><i class="fa fa-share-square fa-2x"></i></a>
                                     </div>
                                     <br />
-                                    <br />
+                                    <br />*@
                                     <a onclick='return sendForApproval("#=ProformaPurchaseID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
                                     # } #
 
@@ -124,7 +129,7 @@
                                             </dt>
                                             <dd>
 
-                                                #=kendo.toString(kendo.parseDate(FloatDate), 'dd/MM/yyyy') #
+                                                #=kendo.toString(kendo.parseDate(FloatDate), 'dd/MM/yyyy hh:mm tt') #
 
                                             </dd>
                                             <dt>
@@ -132,7 +137,7 @@
                                             </dt>
                                             <dd>
 
-                                                #=kendo.toString(kendo.parseDate(ClosingDate), 'dd/MM/yyyy') #
+                                                #=kendo.toString(kendo.parseDate(ClosingDate), 'dd/MM/yyyy hh:mm tt') #
 
                                             </dd>
                                             <dt>
@@ -140,7 +145,7 @@
                                             </dt>
                                             <dd>
 
-                                                #=kendo.toString(kendo.parseDate(EvaluationDate), 'dd/MM/yyyy') #
+                                                #=kendo.toString(kendo.parseDate(EvaluationDate), 'dd/MM/yyyy hh:mm tt') #
 
                                             </dd>
                                             <dt>
@@ -153,7 +158,7 @@
                                                 CreatedOn
                                             </dt>
                                             <dd>
-                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                             </dd>
                                             <dt>
@@ -164,6 +169,21 @@
                                             </dd>
 
                                         </dl>
+
+                                     # if (!IsOnlineApproved)
+                                     {#
+                                     <dl class="h6">
+                                         <dt>
+                                             Next Approver
+                                         </dt>
+                                         <dd>
+                                             #= ForwardedTo # <snap id="user_name_display"></snap>
+                                             <a onclick='displayUserName("#=ForwardedTo#")' href=' \#' title="Show Name">Show Name<i class="fa fa-user fa-1x"></i></a> |
+                                             <a onclick='SelectNextApprover(this,"#=ProformaPurchaseID#","Proforma")' href=' \#' title="Change next approver">Change next approver<i class="fa fa-undo fa-1x"></i></a>
+                                             <snap id="new_user_name_display"></snap>
+                                         </dd>
+                                     </dl>
+                                     # } #
 
                                     </div>
                                     <hr>
@@ -195,20 +215,25 @@
                                                                                   .Name("ProformaPurchaseRequisition#=ProformaPurchaseID#")
                                                                                   .Columns(columns =>
                                                                                   {
-                                                                                                            columns.Bound(c => c.PurchaseRequisitionAssignmentId).Title("Assignment ID").Width(200).EditorTemplateName("PurchaseRequistionForProforma");
-                                                                                                            columns.Bound(c => c.PurchaseRequisitionID).Width(120);//.EditorTemplateName("PurchaseRequistionForProforma");
-                                                                                                columns.Bound(c => c.StoreRequisitionID).Width(120).Title("SR");
-                                                                                                            columns.Command(command =>
-                                                                                    {
-                                                                                                                          command.Edit();
-                                                                                                                          command.Destroy();
-                                                                                                                      }).Width(580);
-                                                                                                        })
+                                                                                      columns.Bound(c => c.PurchaseRequisitionAssignmentId).Title("Assignment ID").Width(200).EditorTemplateName("PurchaseRequistionForProforma");
+                                                                                      //columns.Bound(c => c.PurchaseRequisitionID).Width(120);//.EditorTemplateName("PurchaseRequistionForProforma");
+                                                                                      columns.Bound(o => o.PurchaseRequisitionID).Width(120).ClientTemplate(
+
+                                                                                                           @Html.ActionLink("\\#=PurchaseRequisitionID\\#", "PurchaseRequistionReviewPrint", "ProcurementPrint", new { area = "Procurement", Id = "\\#=PurchaseRequisitionID\\#" }, new { @class = "detail-link", @target = "_blank" }).ToHtmlString()
+
+                                                                                                           );
+                                                                                      columns.Bound(c => c.StoreRequisitionID).Width(120).Title("SR");
+                                                                                      columns.Command(command =>
+                                                                                      {
+                                                                                          command.Edit();
+                                                                                          command.Destroy();
+                                                                                      }).Width(580);
+                                                                                  })
                                                                                   .ToolBar(toolbar =>
                                                                                   {
-                                                                                                            toolbar.Create();
+                                                                                      toolbar.Create();
 
-                                                                                                        })
+                                                                                  })
 
                                                                                   .Editable(editable => editable.Mode(GridEditMode.InLine))
                                                                                   .Pageable()
@@ -216,8 +241,8 @@
 
                                                                                   .Sortable(sortable =>
                                                                                   {
-                                                                                                            sortable.SortMode(GridSortMode.SingleColumn);
-                                                                                                        })
+                                                                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                  })
                                                                                   .Filterable()
                                                                                   .Scrollable()
                                                                                   .DataSource(dataSource => dataSource
@@ -228,10 +253,10 @@
                                                                                           .RequestEnd("onRequestEnd(\"ProformaPurchaseRequisition#=ProformaPurchaseID#\")"))
                                                                                       .Model(model =>
                                                                                       {
-                                                                                                                model.Id(p => p.ProformaPurchaseRequisitionId);
-                                                                                                                model.Field(p => p.PurchaseRequisitionID).Editable(false);
-                                                                                                                model.Field(p => p.StoreRequisitionID).Editable(false);
-                                                                                                            })
+                                                                                          model.Id(p => p.ProformaPurchaseRequisitionId);
+                                                                                          model.Field(p => p.PurchaseRequisitionID).Editable(false);
+                                                                                          model.Field(p => p.StoreRequisitionID).Editable(false);
+                                                                                      })
                                                                                       .Read(read => read.Action("ProformaPurchaseRequisitions_Read", "ProformaPurchaseRequisition", new { id = "#= ProformaPurchaseID #" }))
                                                                                       .Create(create => create.Action("ProformaPurchaseRequisitions_Create", "ProformaPurchaseRequisition", new { id = "#= ProformaPurchaseID #" }))
                                                                                       .Update(update => update.Action("ProformaPurchaseRequisitions_Update", "ProformaPurchaseRequisition"))
@@ -342,6 +367,7 @@
                                                                                                                                             columns.Bound(c => c.Telephone).Width(90);
                                                                                                                                             columns.Bound(c => c.ProformaSubmitionDate).Width(100);
                                                                                                                                             columns.Bound(c => c.ProformaSubmitionTime).Width(100);
+                                                                                                                                            columns.Bound(c => c.AdditionalChargePercent).Width(100);
                                                                                                                                 //columns.Bound(c => c.IsOutOfStock).Width(80).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= IsOutOfStock ? checked='checked' :'' \\# />");
                                                                                                                                 columns.Bound(c => c.Remark).Width(80);
 
@@ -551,7 +577,7 @@
                                                                                                 </text>);
                                                                                             @*============================================================== Proforma Winning Supplier ================================================================*@
 
-                                                                                                        items.Add().Text("Winning Supplier").Content(@<text>
+                                                                                                        items.Add().Text("Award").Content(@<text>
 
                                                                                                             @WinningSupplier()
 
@@ -678,19 +704,21 @@
                                           columns.Bound(c => c.SupplierName).EditorTemplateName("ProformaParticipant").Width(150);
                                           columns.Bound(c => c.AwardDate).Width(100);
                                           columns.Bound(c => c.DeliveryDate).Width(100);
+                                          columns.Bound(c => c.AdditionalChargePercent).Width(100);
                                           columns.Bound(c => c.AwardGiven).Width(90).ClientTemplate("<input type='checkbox' disabled = 'false' \\#= AwardGiven ? checked='checked' :'' \\# />");
+
                                           columns.Bound(c => c.Remark).Width(100);
 
 
                                           columns.Command(command =>
                                           {
                                               command.Edit();
-                                  //command.Destroy();
-                              }).Width(380);
+                                              //command.Destroy();
+                                          }).Width(380);
                                       })
                                       .ToolBar(toolbar =>
                                       {
-                                          toolbar.Template(@<text>
+                                      toolbar.Template(@<text>
                                             @Html.Kendo().Button().Content("Calculate Winner").Name("GetWinner").Events(events => events.Click("GetWinnerClicked")).ToClientTemplate()
                                         </text>);
                                             })
@@ -711,7 +739,7 @@
                                                             .Model(model =>
                                                             {
                                                                 model.Id(p => p.WinningSupplierID);
-                                                    //model.Field(p => p.SupplierName).Editable(false);
+                                                            model.Field(p => p.AdditionalChargePercent).Editable(false);
 
                                                 })
                                                             .Read(read => read.Action("WinningSuppliers_Read", "ProformaWinningSuppliers", new { id = "#= ProformaPurchaseID #" }))
@@ -727,7 +755,7 @@
                                       .Name("ProformaTeam#=ProformaPurchaseID#")
                                       .Columns(columns =>
                                       {
-                                         
+
                                           columns.Bound(c => c.Description).Width(200);
 
                                           columns.Command(command =>

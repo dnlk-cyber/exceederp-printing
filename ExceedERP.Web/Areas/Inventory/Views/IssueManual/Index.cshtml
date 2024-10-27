@@ -12,7 +12,7 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.IssueID).Title("Issue No.").Width(120).ClientTemplate("#=appendZeros(IssueID)#");
-          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreReadOnly");
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreReadOnly").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector");
           columns.Bound(c => c.IssueDate).Title("Issue Date").Width(100);
           columns.Bound(c => c.PlateNo).Title("Plate No.").Width(100);
@@ -21,7 +21,7 @@
           columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
           columns.ForeignKey(p => p.RecipientId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Recipient").Width(130).EditorTemplateName("EmployeeSelector");
 
-          columns.Bound(c => c.Reference).Title("Issue Reference").Width(120);
+        
           columns.ForeignKey(p => p.SupplierId, (IEnumerable)ViewData["Suppliers"], "Code", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.IsLoan).Width(90).Title("Is Loan?").ClientTemplate(
              "<input type='checkbox' disabled = 'true' value='#= IsLoan #' " +
@@ -30,7 +30,8 @@
              "# } #" +
              "/>"
              );
-          columns.Bound(c => c.Remark).Width(90);
+          columns.Bound(c => c.Reference).Width(100);
+          columns.Bound(c => c.Remark).Width(100);
           columns.Bound(c => c.Status).Width(90);
           columns.Command(command =>
           {
@@ -182,7 +183,7 @@
                                         </dt>
                                         <dd>
 
-                                            #=kendo.toString(kendo.parseDate(IssueDate), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(IssueDate), 'dd/MM/yyyy hh:mm tt') #
 
                                         </dd>
                                         <dt>
@@ -195,7 +196,7 @@
                                             CreatedOn
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                         </dd>
                                         <dt>
@@ -214,7 +215,7 @@
                                             Modified Date
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                         </dd>
                                     </dl>
                                 </div>
@@ -244,12 +245,11 @@
                                           columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(180);
                                           columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(600);
                                           //columns.ForeignKey(p => p.WorkItemCode, (IEnumerable)ViewData["WorkItem"], "Code", "Name").EditorTemplateName("ConsWorkItemSelector").Width(130);
-                                          columns.Bound(c => c.ProductionJobNo).Width(90);
                                           columns.Bound(c => c.RequestedQuantity).Width(150);
                                           columns.Bound(c => c.ApprovedQuantity).Width(80);
                                           columns.Bound(c => c.IssuedQuantity).Width(70);
                                           columns.Bound(c => c.UnitPrice).Width(70);
-                                          //columns.Bound(c => c.AgreementPrice).Width(70);
+                                          columns.Bound(c => c.AgreementPrice).Width(70);
                                           columns.Bound(c => c.Total).Width(70);
                                           columns.Bound(c => c.AdditionalCost).Hidden();
 

@@ -10,11 +10,15 @@ namespace ExceedERP.Helpers.Finance
 {
     public  class FiscalYearHelper
     {
-
+        ExceedDbContext Db;
+        public FiscalYearHelper()
+        {
+             Db = new ExceedDbContext();
+        }
 
         public void UpdatePeriodIndex(int id)
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             var periods = Db.GLPeriods.Where(x => x.GlFiscalYearId == id).OrderBy(x => x.DateFrom).ToArray();
             for (int i = 0; i < periods.Length; i++)
             {
@@ -27,9 +31,7 @@ namespace ExceedERP.Helpers.Finance
 
         public  string GetCurrentFYearName()
         { 
-           ExceedDbContext Db = new ExceedDbContext();
-
-        string currentYear = "";
+            string currentYear = "";
             DateTime today = DateTime.Today;
             var fyear = Db.GLFiscalYears.Where(x => x.DateFrom <= today)
                                         .Where(x => x.DateTo >= today).ToList();
@@ -43,7 +45,6 @@ namespace ExceedERP.Helpers.Finance
         }
         public int GetCurrentFYearId()
         {
-            ExceedDbContext Db = new ExceedDbContext();
             int currentYear = 0;
             DateTime today = DateTime.Today;
             var fyear = Db.GLFiscalYears.Where(x => x.DateFrom <= today)
@@ -59,7 +60,6 @@ namespace ExceedERP.Helpers.Finance
 
         public  List<GLPeriod> GetRecentNPeriodsInYear(int n)
         {
-            ExceedDbContext Db = new ExceedDbContext();
             List<GLPeriod> listOfNPeriod = new List<GLPeriod>();
             DateTime today = DateTime.Today;
             var glPeriods = Db.GLPeriods.Where(x => x.DateFrom <= today).OrderByDescending(x=>x.DateTo).Take(n).ToList();
@@ -70,31 +70,14 @@ namespace ExceedERP.Helpers.Finance
             }
 
             return listOfNPeriod;
-        }
-
-        public  async Task<List<GLPeriod>> GetRecentNPeriodsInYearAsync1(int n)
-        {
-
-            ExceedDbContext db = new ExceedDbContext();
-
-            List<GLPeriod> listOfNPeriod = new List<GLPeriod>();
-            DateTime today = DateTime.Today;
-            var glPeriods = await db.GLPeriods.Where(x => x.DateFrom <= today).OrderBy(x => x.DateFrom).Take(n).ToListAsync();
-
-            if (glPeriods.Any())
-            {
-                listOfNPeriod.AddRange(glPeriods);
-            }
-            return listOfNPeriod;
-        }
+        }        
 
         public async Task<List<GLPeriod>> GetRecentNPeriodsInYearAsync(int n)
         {
-            ExceedDbContext db = new ExceedDbContext();
             int currentYearId = GetCurrentFYearId();
 
             List<GLPeriod> listOfNPeriod = new List<GLPeriod>();
-            var glPeriods = await db.GLPeriods.Where(x => x.GlFiscalYearId ==currentYearId).OrderBy(x => x.DateFrom).ToListAsync();
+            var glPeriods = await Db.GLPeriods.Where(x => x.GlFiscalYearId ==currentYearId).OrderBy(x => x.DateFrom).ToListAsync();
 
             if (glPeriods.Any())
             {
@@ -105,7 +88,6 @@ namespace ExceedERP.Helpers.Finance
 
         public  string GetParentFiscalYear(string period)
         {
-            ExceedDbContext Db = new ExceedDbContext();
             string fyear = string.Empty;
             var periods = Db.GLPeriods.FirstOrDefault(x => x.Name == period);
             if (periods != null)
@@ -118,7 +100,7 @@ namespace ExceedERP.Helpers.Finance
 
         public DateTime GetQuarterStart(int yearid, int quarter)
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             DateTime date = new DateTime();
             var periods = Db.GLPeriods.Where(x => x.GlFiscalYearId == yearid).ToList();
             switch (quarter)
@@ -149,7 +131,7 @@ namespace ExceedERP.Helpers.Finance
         }
         public DateTime GetQuarterEnd(int yearid,int quarter)
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             DateTime date=new DateTime();
             var periods = Db.GLPeriods.Where(x => x.GlFiscalYearId == yearid).ToList();
             switch (quarter)
@@ -212,7 +194,7 @@ namespace ExceedERP.Helpers.Finance
         }
         public  int GetPreviousFYearId(int currentYear)
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             int previousYear = 0;
             var currYearObj = Db.GLFiscalYears.Find(currentYear);
             if (currYearObj != null)
@@ -232,7 +214,7 @@ namespace ExceedERP.Helpers.Finance
 
         public  int GetNextFYearName(string currentYear)
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             int nextYear = 0;
             var currYearObj = Db.GLFiscalYears.Where(x => x.Name == currentYear).FirstOrDefault();
             if (currYearObj != null)
@@ -250,7 +232,7 @@ namespace ExceedERP.Helpers.Finance
 
         public int GetNextFYearId(int currentYear)
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             int nextYear = 0;
             var currYearObj = Db.GLFiscalYears.Find(currentYear);
             if (currYearObj != null)
@@ -281,7 +263,7 @@ namespace ExceedERP.Helpers.Finance
 
         public  DateTime GetFiscalYearBeginningDate(DateTime date)
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             DateTime beginningDate = DateTime.Today;
             var fyear = Db.GLFiscalYears.Where(x => x.DateFrom <= date)
                                         .Where(x => x.DateTo >= date).ToList();
@@ -306,7 +288,7 @@ namespace ExceedERP.Helpers.Finance
 
         public  DateTime GetFiscalYearEndDate(string year)
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             DateTime endDate = DateTime.Today;
             var fyear = Db.GLFiscalYears.Where(x => x.Name == year).ToList();
             if (fyear != null)
@@ -321,7 +303,7 @@ namespace ExceedERP.Helpers.Finance
 
         public  int GetFiscalYearOfDate(DateTime date)
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             int year = 0;
             var fyear = Db.GLFiscalYears.Where(x => x.DateFrom <= date).FirstOrDefault(x => x.DateTo >= date);
             if (fyear != null)
@@ -336,7 +318,7 @@ namespace ExceedERP.Helpers.Finance
 
         public  int GetPeriodOfDate(DateTime date)
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             int glPeriodId = 0;
             var glPeriod = Db.GLPeriods.Where(x => x.DateFrom <= date.Date && x.DateTo >= date.Date).FirstOrDefault();
             if (glPeriod != null)
@@ -347,7 +329,7 @@ namespace ExceedERP.Helpers.Finance
 
         public GLPeriod GetPeriodObjOfDate(DateTime date)
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             
             var glPeriod = Db.GLPeriods.Where(x => x.DateFrom <= date.Date).FirstOrDefault(x => x.DateTo >= date.Date);
             if (glPeriod != null)
@@ -358,7 +340,7 @@ namespace ExceedERP.Helpers.Finance
 
         public  string GetPeriodName(int id)
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             string periodName = "";
             var glPeriod = Db.GLPeriods.Find(id);
             if (glPeriod != null)
@@ -367,7 +349,7 @@ namespace ExceedERP.Helpers.Finance
         }
         public  int GetParallelPeriodInYear(int glperiod,int year)
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             int periodId = 0;
           
             var periodobj = Db.GLPeriods.Find(glperiod);
@@ -380,7 +362,7 @@ namespace ExceedERP.Helpers.Finance
 
         public  void UpdatePeriodIndex()
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             var years = Db.GLFiscalYears.ToList();
             foreach (var year in years)
             {
@@ -398,7 +380,7 @@ namespace ExceedERP.Helpers.Finance
         }
         public int GetFiscalYearLastPeriod(int fiscalYear)
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             int period = 0;
             var months = Db.GLPeriods.Where(x => x.GlFiscalYearId == fiscalYear).ToList();
 
@@ -418,7 +400,7 @@ namespace ExceedERP.Helpers.Finance
 
         public int GetFiscalYearFirstPeriod(int fiscalYear)
         {
-            ExceedDbContext Db = new ExceedDbContext();
+            
             int period = 0;
             var months = Db.GLPeriods.Where(x => x.GlFiscalYearId == fiscalYear).ToList();
 

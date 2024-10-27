@@ -27,6 +27,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 ApTravelExpenseClaimId = apTravelExpenseExpense.ApTravelExpenseClaimId,
                 ApTravelExpenseExpenseId = apTravelExpenseExpense.ApTravelExpenseExpenseId,
                 Type = apTravelExpenseExpense.Type,
+                ItemName = apTravelExpenseExpense.ItemName,
                 Description = apTravelExpenseExpense.Description,
                 UoM = apTravelExpenseExpense.UoM,
                 UnitPrice = apTravelExpenseExpense.UnitPrice,
@@ -52,6 +53,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 {
                     ApTravelExpenseClaimId=id,
                     Type = apTravelExpenseExpense.Type,
+                    ItemName = apTravelExpenseExpense.ItemName,
                     Description = apTravelExpenseExpense.Description,
                     UoM = apTravelExpenseExpense.UoM,
                     UnitPrice = apTravelExpenseExpense.UnitPrice,
@@ -89,6 +91,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                     ApTravelExpenseClaimId = apTravelExpenseExpense.ApTravelExpenseClaimId,
                     ApTravelExpenseExpenseId = apTravelExpenseExpense.ApTravelExpenseExpenseId,
                     Type = apTravelExpenseExpense.Type,
+                    ItemName = apTravelExpenseExpense.ItemName,
                     Description = apTravelExpenseExpense.Description,
                     UoM = apTravelExpenseExpense.UoM,
                     UnitPrice = apTravelExpenseExpense.UnitPrice,
@@ -123,6 +126,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 {
                     ApTravelExpenseExpenseId = apTravelExpenseExpense.ApTravelExpenseExpenseId,
                     Type = apTravelExpenseExpense.Type,
+                    ItemName = apTravelExpenseExpense.ItemName,
                     Description = apTravelExpenseExpense.Description,
                     UoM = apTravelExpenseExpense.UoM,
                     UnitPrice = apTravelExpenseExpense.UnitPrice,
@@ -151,14 +155,32 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 
         private void UpdateTravelExpenseBalance(int id)
         {
+            decimal advanceAmount = 0;
+            decimal expenseAmount= 0;
             var record = _db.ApTravelExpenseClaims.Find(id);
             var travelorder = _db.ApTravelOrders.FirstOrDefault(x=>x.ApTravelOrderId==record.ApTravelOrderId);
-            decimal advanceAmount = travelorder?.AdvanceAmount ?? 0;
-            decimal totalExpense = _db.ApTravelExpenseExpenses.Where(x => x.ApTravelExpenseClaimId == id).Sum(x => x.Total);
-            if (advanceAmount > totalExpense)
+            var advancesTaken = _db.ApTravelOrderAdvancePayments.Where(x=>x.ApTravelOrderId==record.ApTravelOrderId);
+            if (FinanceConfigurationHelper.IgnorePerdiemInClaim())
+            {
+                advancesTaken = advancesTaken.Where(x => x.Type != TravelPaymentType.PerDiem);
+            }
+            if (advancesTaken.Any())
+                advanceAmount = advancesTaken.Sum(x => x.Quantity * x.UnitPrice);
+
+            var expenses = _db.ApTravelExpenseExpenses.Where(x => x.ApTravelExpenseClaimId == id);
+
+            if (expenses.Any())
+                expenseAmount = expenses.Sum(x => x.Total);
+
+            record.Difference = advanceAmount - expenseAmount;
+            _db.ApTravelExpenseClaims.Attach(record);
+            _db.Entry(record).State = EntityState.Modified;
+            _db.SaveChanges();
+
+            if (advanceAmount > expenseAmount)
             {
                 //refund company
-                decimal amount = advanceAmount - totalExpense;
+                decimal amount = advanceAmount - expenseAmount;
                 var payment = _db.ApTravelExpensePayments.Where(x => x.ApTravelExpenseClaimId == id).ToList();
                 _db.ApTravelExpensePayments.RemoveRange(payment);
                 var refunds = _db.ApTravelExpenseRefunds.Where(x => x.ApTravelExpenseClaimId == id).ToList();
@@ -182,7 +204,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
             else
             {
                 //pay employee
-                decimal amount = totalExpense - advanceAmount;
+                decimal amount = expenseAmount - advanceAmount;
                 var payment = _db.ApTravelExpensePayments.Where(x => x.ApTravelExpenseClaimId == id).ToList();
                 _db.ApTravelExpensePayments.RemoveRange(payment);
                 var refunds = _db.ApTravelExpenseRefunds.Where(x => x.ApTravelExpenseClaimId == id).ToList();

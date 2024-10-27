@@ -1,13 +1,14 @@
 ﻿@using System.Collections
+@using ExceedERP.Core.Domain.Procurement
 <legend>Item Price Index</legend>
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.ItemPriceIndex>()
+@(Html.Kendo().Grid<ItemPriceIndex>()
       .Name("grid")
       .Columns(columns =>
       {
           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
           columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(180);
-          //columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(180);
-          columns.Bound(c => c.ItemCode).Width(100);
+          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(180);
+          //columns.Bound(c => c.ItemCode).Width(100);
           columns.Bound(c => c.ItemName).Width(120);
           columns.Bound(c => c.PriceBeforeVAT).Width(150);
           columns.Bound(c => c.DateOfInformation).Width(150).Title("Date");
@@ -50,9 +51,10 @@
                 {
                     sortable.SortMode(GridSortMode.SingleColumn);
                 })
-                
+
                      .Events(events => events.Edit("edit"))
-                .Events(x => x.DataBound("onDataBoundMasterlPrice"))
+               .Events(ev => ev.DetailExpand("detailExpand"))
+               .Events(x => x.DataBound("onDataBoundMaster"))
       .DataSource(dataSource => dataSource
           .Ajax()
                   .Sort(sort => sort.Add("ItemPriceIndexID").Descending())
@@ -77,9 +79,119 @@
           .Update(update => update.Action("ItemPriceIndexes_Update", "ItemPriceIndex"))
           .Destroy(destroy => destroy.Action("ItemPriceIndexes_Destroy", "ItemPriceIndex"))
       )
-      )
+      .ClientDetailTemplateId("template"))
+
+<script id="template" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=ItemPriceIndexID#").SelectedIndex(0).Items(items =>
+                      {
+                          items.Add().Text("Detail").Content(
+                            @<text>
+
+                                # if (!IsOnlineApproved&&!IsSendForApproval)
+                                {#
+                                <a onclick='return sendForApproval("#=ItemPriceIndexID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                <br />
+                                # } #                               
+
+                                <div>
+                                    <hr>
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            Status
+                                        </dt>
+                                        <dd>
+                                            #= Status #
+                                        </dd>
+                                        <dt>
+                                            CreatedOn
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
+
+                                        </dd>
+                                        <dt>
+                                            CreatedBy
+                                        </dt>
+                                        <dd>
+                                            #= CreatedBy #
+                                        </dd>
+                                        <dt>
+                                            Modified By
+                                        </dt>
+                                        <dd>
+                                            #= ModifiedBy #
+                                        </dd>
+                                        <dt>
+                                            Modified Date
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <hr>
+
+                              
 
 
+                            </text>
+                                            );
+
+                                 
+
+                      items.Add().Text("Validation").Content(
+            @<text>
+                @(Html.Kendo().Grid<PriceIndexValidation>()
+                              .Name("PriceIndexValidation_#=ItemPriceIndexID#")
+                              .Columns(columns =>
+                              {
+                                          columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                          columns.Bound(c => c.Remark).Width(170);
+                                          columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                          columns.Bound(c => c.LastModified).Hidden(true);
+                                          columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                          columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                          columns.Command(command =>
+                                          {
+                                              command.Edit();
+                                  //command.Destroy();
+                              });
+                                      })
+                              .ToolBar(toolbar =>
+                              {
+                                          toolbar.Create();
+                                      })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Scrollable()
+                              .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Events(ev => ev
+                                      .Error("error_handler(\"PriceIndexValidation_#=ItemPriceIndexID#\")")
+                                      .RequestStart("onRequestStart(\"PriceIndexValidation_#=ItemPriceIndexID#\")")
+                                      .RequestEnd("onRequestEnd(\"PriceIndexValidation_#=ItemPriceIndexID#\")"))
+
+                                  .Model(model =>
+                                  {
+                                              model.Id(p => p.ItemPriceIndexID);
+                                              model.Field(p => p.CreatedBy).Editable(false);
+                                              model.Field(p => p.DateCreated).Editable(false);
+                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                              model.Field(p => p.LastModified).Editable(false);
+                                          }
+                                  )
+                                  .Read(read => read.Action("PriceIndexValidations_Read", "PriceIndexValidation", new { id = "#=ItemPriceIndexID#" }))
+                                  .Create(create => create.Action("PriceIndexValidations_Create", "PriceIndexValidation", new { id = "#=ItemPriceIndexID#" }))
+                                  .Update(update => update.Action("PriceIndexValidations_Update", "PriceIndexValidation"))
+                                  .Destroy(destroy => destroy.Action("PriceIndexValidations_Destroy", "PriceIndexValidation"))
+                              ).ToClientTemplate())
+
+
+            </text> );
+
+  }).ToClientTemplate())
+
+</script>
 <style>
     div.k-edit-form-container {
         width: 800px;
@@ -95,9 +207,28 @@
 
 
 <script>
-    
+
+    function sendForApproval(id) {
+    var recordStatus = "";
+
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("SendForApproval", "ItemPriceIndex", new { area = "Procurement" })',
+        data: { id: id },
+        success: function(result) {
+            // toastr.warnning(result.Message);
+            alert(result.Message);
+            recordStatus = result.Status;
+            location.reload(true);
+        }, //end succ
+        error: function(result) {
+            alert(result);
+        }
+    });
+}
+
     function onDataBoundMasterlPrice(e) {
-      
+
         //this.expandRow(this.tbody.find("tr.k-master-row").first());
         var gridid = "#" + e.sender.element[0].id;
         //approved
@@ -107,7 +238,7 @@
         for (var i = 0; i < gridData.length; i++) {
             var currentUid = gridData[i].uid;
             if (gridData[i].SourceType === 0) {
-               
+
                 var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
                 var editButton = $(currenRow).find(".k-grid-edit");
                 var deleteButton = $(currenRow).find(".k-grid-delete");
@@ -116,7 +247,7 @@
             }
         }
     }
-    
+
     function edit(e) {
         //if (e.model.isNew() === false) {
         //    $("#PriceBeforeVAT").attr("readonly", true);
@@ -138,7 +269,7 @@
 </script>
 
 <script type="text/javascript">
-    
+
     function filterItems() {
         return {
             ItemCategoryCode: $("#ItemCategory").data("kendoDropDownList").value()

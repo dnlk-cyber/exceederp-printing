@@ -20,405 +20,185 @@ namespace ExceedERP.Reporting.Finance.DataSource
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<PaymentMethod> PaymentMethods()
         {
-
             return _db.PaymentMethods.ToList();
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<string> JournalCreateByUsers()
         {
-
-            List<string> list = new List<string>();
-            var users = _db.GLRecordJournals
-               // .Where(x => x.IsOnlineApproved && x.isPosted && !x.isVoid)
-                .OrderBy(x => x.CreatedBy).Select(x => x.CreatedBy).Distinct().ToList();
-            list.AddRange(users);
-            return list;
+            return _db.GLRecordJournals
+                    .OrderBy(x => x.CreatedBy)
+                    .Select(x => x.CreatedBy)
+                    .Distinct()
+                    .ToList();
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<string> PostedByUsers()
         {
-
-            List<string> list = new List<string>();
-            var users = _db.GLRecordJournals
-                .Where(x => x.IsOnlineApproved && x.isPosted && !x.isVoid).OrderBy(x => x.PostedBy).Select(x => x.PostedBy).Distinct().ToList();
-            list.AddRange(users);
-            return list;
+            return _db.GLRecordJournals
+            .Where(x => x.IsOnlineApproved && x.isPosted && !x.isVoid)
+            .OrderBy(x => x.PostedBy)
+            .Select(x => x.PostedBy)
+            .Distinct()
+            .ToList();
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<string> JournalCategory()
         {
-
-            List<string> list = new List<string>();
-            //list.AddRange(_db.GLJournalCategoriers.Select(x => x.Category).ToList());
-            var categories = _db.GLRecordJournals.OrderBy(x => x.CategoryName).Select(x => x.CategoryName).Distinct().ToList();
-            list.AddRange(categories);
-            return list;
+            return _db.GLRecordJournals
+            .OrderBy(x => x.CategoryName)
+            .Select(x => x.CategoryName)
+            .Distinct()
+            .ToList();
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<string> JournalSources()
         {
-
-            List<string> list = new List<string>();
-            list.AddRange(_db.GLJournalSources.Select(x => x.Sources).ToList());
-            return list;
+            return _db.GLJournalSources
+                    .Select(x => x.Sources)
+                    .ToList();
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<AccountSegmentVm> GetAccountList()
         {
-            return _db.GLChartOfAccountAccounts.Select(x=> new AccountSegmentVm
+            return _db.GLChartOfAccountAccounts.Select(x => new AccountSegmentVm
             {
-                Values=x.Values,
-                Description=x.Description
+                Values = x.Values,
+                Description = x.Description
             }).ToList();
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<SegmentValueVm> GetSubAccountList()
         {
-            List<SegmentValueVm> list = new List<SegmentValueVm>();
-
-            if (_accountHelper.IsDynamicCoA())
-            {
-                var dynamicsub = _db.GlChartOfAccountSegments
-                    .Where(x=>x.GlSegmentSetup.SegmentType==DynamicSegmentTypes.SubAccount)
-                    .Select(x => new {x.Values, x.Description, x.AllowBudgeting,x.HasParent, x.Parent, x.AllowPosting,x.Enable }).OrderBy(x => x.Values).ToList();
-                foreach (var value in dynamicsub)
+            return _db.GlChartOfAccountSegments
+                .Where(x => x.GlSegmentSetup.SegmentType == DynamicSegmentTypes.SubAccount)
+                .OrderBy(x => x.Values)
+                .Select(x => new SegmentValueVm
                 {
-                    var v = new SegmentValueVm
-                    {
-                        Values = value.Values,
-                        Description = value.Description,
-                        HasParent = value.HasParent,
-                        Parent = value.Parent,
-                        Enable = value.Enable,
-                        AllowBudgeting = value.AllowBudgeting,
-                        AllowPosting = value.AllowPosting
-                    };
-
-                    list.Add(v);
-                }
-            }
-            else
-            {
-                //var staticsub = _db.GLChartOfAccountSubAccounts
-                //    .Select(x => new { x.Values, x.Description, x.AllowBudgeting, x.HasParent, x.Parent, x.AllowPosting, x.Enable }).OrderBy(x=>x.Values).ToList();
-                //foreach (var value in staticsub)
-                //{
-                //    var v = new SegmentValueVm
-                //    {
-                //        Values = value.Values,
-                //        Description = value.Description,
-                //        HasParent = value.HasParent,
-                //        Parent = value.Parent,
-                //        Enable = value.Enable,
-                //        AllowBudgeting = value.AllowBudgeting,
-                //        AllowPosting = value.AllowPosting
-                //    };
-
-                //    list.Add(v);
-                //}
-            }
-           
-            return list;
+                    Values = x.Values,
+                    Description = x.Description,
+                    HasParent = x.HasParent,
+                    Parent = x.Parent,
+                    Enable = x.Enable,
+                    AllowBudgeting = x.AllowBudgeting,
+                    AllowPosting = x.AllowPosting
+                })
+                .ToList();
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<SegmentValueVm> GetCostCenterList()
         {
-            List<SegmentValueVm> list = new List<SegmentValueVm>();
-
-            if (_accountHelper.IsDynamicCoA())
-            {
-                var dynamicsub = _db.GlChartOfAccountSegments
-                    .Where(x => x.GlSegmentSetup.SegmentType == DynamicSegmentTypes.CostCenter)
-                    .Select(x => new { x.Values, x.Description, x.AllowBudgeting, x.HasParent,x.Parent, x.AllowPosting,x.Enable }).ToList();
-                foreach (var value in dynamicsub)
-                {
-                    var v = new SegmentValueVm
-                    {
-                        Values = value.Values,
-                        Description = value.Description,
-                        HasParent = value.HasParent,
-                        Parent = value.Parent,
-                        Enable = value.Enable,
-                        AllowBudgeting = value.AllowBudgeting,
-                        AllowPosting = value.AllowPosting
-                    };
-
-                    list.Add(v);
-                }
-            }
-            else
-            {
-                //var staticsub = _db.GLChartOfAccountCostCenters.ToList();
-                //foreach (var value in staticsub)
-                //{
-                //    var v = new SegmentValueVm
-                //    {
-                //        Values = value.Values,
-                //        Description = value.Description,
-                //        HasParent = value.HasParent,
-                //        Parent = value.Parent,
-                //        Enable = value.Enable,
-                //        AllowBudgeting = value.AllowBudgeting,
-                //        AllowPosting = value.AllowPosting
-                //    };
-
-                //    list.Add(v);
-                //}
-            }
-
-            return list;
+            return _db.GlChartOfAccountSegments
+             .Where(x => x.GlSegmentSetup.SegmentType == DynamicSegmentTypes.CostCenter)
+             .Select(x => new SegmentValueVm
+             {
+                 Values = x.Values,
+                 Description = x.Description,
+                 HasParent = x.HasParent,
+                 Parent = x.Parent,
+                 Enable = x.Enable,
+                 AllowBudgeting = x.AllowBudgeting,
+                 AllowPosting = x.AllowPosting
+             })
+             .ToList();
         }
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<SegmentValueVm> GetBizUnitAccountList()
         {
-            List<SegmentValueVm> list = new List<SegmentValueVm>();
-
-            if (_accountHelper.IsDynamicCoA())
+            return _db.GlChartOfAccountSegments
+            .Where(x => x.GlSegmentSetup.SegmentType == DynamicSegmentTypes.BusinessUnit)
+            .Select(x => new SegmentValueVm
             {
-                var dynamicsub = _db.GlChartOfAccountSegments
-                    .Where(x => x.GlSegmentSetup.SegmentType == DynamicSegmentTypes.BusinessUnit)
-                    .Select(x => new { x.Values, x.Description, x.AllowBudgeting, x.HasParent, x.Parent, x.AllowPosting, x.Enable }).ToList();
-                foreach (var value in dynamicsub)
-                {
-                    var v = new SegmentValueVm
-                    {
-                        Values = value.Values,
-                        Description = value.Description,
-                        HasParent = value.HasParent,
-                        Parent = value.Parent,
-                        Enable = value.Enable,
-                        AllowBudgeting = value.AllowBudgeting,
-                        AllowPosting = value.AllowPosting
-                    };
-
-                    list.Add(v);
-                }
-            }
-            //else
-            //{
-            //    var staticsub = _db.GLChartOfAccountSubAccounts.ToList();
-            //    foreach (var value in staticsub)
-            //    {
-            //        var v = new SegmentValueVm
-            //        {
-            //            Values = value.Values,
-            //            Description = value.Description,
-            //            HasParent = value.HasParent,
-            //            Parent = value.Parent,
-            //            Enable = value.Enable,
-            //            AllowBudgeting = value.AllowBudgeting,
-            //            AllowPosting = value.AllowPosting
-            //        };
-
-            //        list.Add(v);
-            //    }
-            //}
-
-            return list;
+                Values = x.Values,
+                Description = x.Description,
+                HasParent = x.HasParent,
+                Parent = x.Parent,
+                Enable = x.Enable,
+                AllowBudgeting = x.AllowBudgeting,
+                AllowPosting = x.AllowPosting
+            })
+            .ToList();
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<SegmentTypeVm> GeSegmentTypeList()
+        public List<NameDescVm> GeSegmentTypeList()
         {
-            List<SegmentTypeVm> list = new List<SegmentTypeVm>();
-            if (_accountHelper.IsDynamicCoA())
-            {
-                var segment = _db.GlSegmentSetups
-				//.Where(x=>x.SegmentType!= DynamicSegmentTypes.NaturalAccount)
-				.ToList();
-                foreach (var segmentSetup in segment)
-                {
-                    var type = new SegmentTypeVm
-                    {
-                        Name = segmentSetup.Name,
-                        Description = segmentSetup.Description
-                    };
-                    list.Add(type);
-                }
-
-            }
-            else
-            {
-                //var type = new SegmentTypeVm
-                //{
-                //    Name = "Branch"
-                //};
-                //list.Add(type);
-                // type = new SegmentTypeVm
-                //{
-                //    Name = "Cost Center"
-                //};
-                //list.Add(type);
-                // type = new SegmentTypeVm
-                //{
-                //    Name = "Sub Account"
-                //};
-                //list.Add(type);
-            }
-
-            return list;
+            return _db.GlSegmentSetups
+               //.Where(x => x.SegmentType != DynamicSegmentTypes.NaturalAccount)
+               .Select(segmentSetup => new NameDescVm
+               {
+                   Name = segmentSetup.Name,
+                   Description = segmentSetup.Description
+               })
+               .ToList();
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<SegmentValueVm> GeSegmentValueList(string type)
         {
-            List<SegmentValueVm> list = new List<SegmentValueVm>();
-            if (_accountHelper.IsDynamicCoA())
+            if (string.IsNullOrWhiteSpace(type))
             {
-                if (!String.IsNullOrWhiteSpace(type))
+                return new List<SegmentValueVm>(); 
+            }
+
+            var segmentType = _db.GlSegmentSetups
+                .Where(x => x.Name == type)
+                .Select(x => x.GLSegmentSetupId)
+                .FirstOrDefault();
+
+            if (segmentType == 0) 
+            {
+                return new List<SegmentValueVm>(); 
+            }
+
+            return _db.GlChartOfAccountSegments
+                .Where(x => x.GLSegmentSetupId == segmentType)
+                .Select(x => new SegmentValueVm
                 {
-                    var segmentType = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == type);
-                    var values = _db.GlChartOfAccountSegments
-                        .Where(x => x.GLSegmentSetupId == segmentType.GLSegmentSetupId)
-                        .Select(x => new { x.Values, x.Description, x.AllowBudgeting, x.HasParent, x.Parent, x.AllowPosting, x.Enable })
-                        .ToList();
-
-                    foreach (var value in values)
-                    {
-                        var v = new SegmentValueVm
-                        {
-                            Values = value.Values,
-                            Description = value.Description,
-                            HasParent = value.HasParent,
-                            Parent = value.Parent,
-                            Enable = value.Enable,
-                            AllowBudgeting = value.AllowBudgeting,
-                            AllowPosting = value.AllowPosting
-                        };
-
-                        list.Add(v);
-                    }
-                }
-            }
-
-            else
-            {
-                //switch (type)
-                //{
-                //    case "Branch":
-                //        var accountLocations = _db.GLChartOfAccountLocations
-                //            .Select(x => new { x.Values, x.Description, x.AllowBudgeting, x.HasParent, x.Parent, x.AllowPosting, x.Enable }).ToList();
-                //        foreach (var value in accountLocations)
-                //        {
-                //            var v = new SegmentValueVm
-                //            {
-                //                Values = value.Values,
-                //                Description = value.Description,
-                //                HasParent = value.HasParent,
-                //                Parent = value.Parent,
-                //                Enable = value.Enable,
-                //                AllowBudgeting = value.AllowBudgeting,
-                //                AllowPosting = value.AllowPosting
-                //            };
-
-                //            list.Add(v);
-                //        }
-
-                //        break;
-
-                //    case "Cost Center":
-                //        var accountCostCenters = _db.GLChartOfAccountCostCenters
-                //            .Select(x => new { x.Values, x.Description, x.AllowBudgeting, x.HasParent, x.Parent, x.AllowPosting, x.Enable }).ToList();
-                //        foreach (var value in accountCostCenters)
-                //        {
-                //            var v = new SegmentValueVm
-                //            {
-                //                Values = value.Values,
-                //                Description = value.Description,
-                //                HasParent = value.HasParent,
-                //                Parent = value.Parent,
-                //                Enable = value.Enable,
-                //                AllowBudgeting = value.AllowBudgeting,
-                //                AllowPosting = value.AllowPosting
-                //            };
-
-                //            list.Add(v);
-                //        }
-
-                //        break;
-
-                //    case "Sub Account":
-                //        var accountSubAccounts = _db.GLChartOfAccountSubAccounts.Select(x => new { x.Values, x.Description, x.AllowBudgeting, x.HasParent, x.Parent, x.AllowPosting, x.Enable }).ToList();
-                //        foreach (var value in accountSubAccounts)
-                //        {
-                //            var v = new SegmentValueVm
-                //            {
-                //                Values = value.Values,
-                //                Description = value.Description,
-                //                HasParent = value.HasParent,
-                //                Parent = value.Parent,
-                //                Enable = value.Enable,
-                //                AllowBudgeting = value.AllowBudgeting,
-                //                AllowPosting = value.AllowPosting
-                //            };
-
-                //            list.Add(v);
-                //        }
-
-                //        break;
-                //}
-
-
-
-            }
-
-            return list;
+                    Values = x.Values,
+                    Description = x.Description,
+                    HasParent = x.HasParent,
+                    Parent = x.Parent,
+                    Enable = x.Enable,
+                    AllowBudgeting = x.AllowBudgeting,
+                    AllowPosting = x.AllowPosting
+                })
+                .ToList(); 
         }
+
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<string> BankReconciliationStatus()
         {
-
-            List<string> list = new List<string> {"All", "Reconciled", "Unreconciled"};
-            return list;
+            return new List<string> { "All", "Reconciled", "Unreconciled" };
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<SegmentTypeVm> GetJournalPostStatus()
+        public List<NameDescVm> GetJournalPostStatus()
         {
-            List<SegmentTypeVm> list = new List<SegmentTypeVm>();
-
-            var type = new SegmentTypeVm
+            return new List<NameDescVm>
             {
-                Name = "POSTED"
+                new NameDescVm { Name = "POSTED" },
+                new NameDescVm { Name = "NOT POSTED" }
             };
-            list.Add(type);
-            type = new SegmentTypeVm
-            {
-                Name = "NOT POSTED"
-            };
-            list.Add(type);
-           
-            list.Add(type);
-
-            return list;
         }
+
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<SegmentTypeVm> GetJournalApprovalStatus()
+        public List<NameDescVm> GetJournalApprovalStatus()
         {
-            List<SegmentTypeVm> list = new List<SegmentTypeVm>();
 
-            var type = new SegmentTypeVm
+            return new List<NameDescVm>
             {
-                Name = "APPROVED"
+                new NameDescVm { Name = "APPROVED" },
+                new NameDescVm { Name = "NOT APPROVED" }
             };
-            list.Add(type);
-            type = new SegmentTypeVm
-            {
-                Name = "NOT APPROVED"
-            };
-            list.Add(type);
 
-            list.Add(type);
-
-            return list;
         }
     }
 

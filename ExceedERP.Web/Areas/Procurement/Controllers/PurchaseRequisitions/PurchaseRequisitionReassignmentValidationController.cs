@@ -3,7 +3,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.Proforma;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
@@ -77,15 +76,15 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                         {
                             TransferPrevPurchaseToDirectPurchase(purchaseRequisitionAssignment);
                         }
-                        else if (purchaseRequisitionAssignment.ProcurementMethod == ProcurementMethod.DirectPurchase)
+                        else if (purchaseReq != null && purchaseRequisitionAssignment.ProcurementMethod == ProcurementMethod.DirectPurchase)
                         {
                             TransferPurchaseToDirectPurchase(purchaseRequisitionAssignment);
                         }
-                        else if (purchaseRequisitionAssignment.ProcurementMethod == ProcurementMethod.Proforma)
+                        else if (purchaseReq != null && purchaseRequisitionAssignment.ProcurementMethod == ProcurementMethod.Proforma)
                         {
                             TransferPurchaseToProforma(purchaseRequisitionAssignment);
                         }
-                        else if (purchaseRequisitionAssignment.ProcurementMethod == ProcurementMethod.Tender)
+                        else if (purchaseReq != null && purchaseRequisitionAssignment.ProcurementMethod == ProcurementMethod.Tender)
                         {
                             TransferPurchaseToTender(purchaseRequisitionAssignment);
                         }
@@ -544,157 +543,162 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
 
                         #region transfer to purchase order
 
-                        #region create po
-
-                        var purchaseOrder = new PurchaseOrder
+                       
+                        var exisit = db.PurchaseOrders.Where(x => x.PurchaseRequisitionID == purchaseReq.PurchaseRequisitionID).FirstOrDefault();
+                        if (exisit == null)
                         {
-                            PurchaseRequisitionID = purchaseReq.PurchaseRequisitionID,
-                            BusinessUnitId = purchaseReq.BusinessUnitId,
-                            SroreRequisition = sr,
-                            ProcurementOfficer = assignment.ProcurementOfficer,
-                            BranchId = EmployeeHelper.GetEmployeePlacementBranch(assignment.ProcurementOfficer),
-                            IsManual = true,
-                            SupplierName = "",
-                            SupplierId = "",
-                            POType = POType.CashBase,
-                            ProcurementMethod = ProcurementMethod.DirectPurchase,
-                            ProformaPurchaseID = 0,
-                            OrderDate = DateTime.Today,
-                            DeliveryPlace = "",
-                            DeliveryDate = DateTime.Today,
-                            OrgStructureId = purchaseReq.OrgStructureId,
-
-                            ForwardedFrom = UserInformationHelper.GetEmployeeUserId(assignment.ProcurementOfficer),
-                            ForwardedTo = UserInformationHelper.GetEmployeeUserId(assignment.ProcurementOfficer),
-                            IsFinalApproval = false,
-
-                            Status = "Editing",
-                            Remark = purchaseReq.Remark,
-
-                            DateCreated = DateTime.Now,
-                            CreatedBy = UserInformationHelper.GetEmployeeUserId(assignment.ProcurementOfficer),
-                        };
-                        db.PurchaseOrders.Add(purchaseOrder);
-                        db.SaveChanges();
-
-                        #endregion
-
-                        foreach (var requisitionItem in assignment.PurchaseRequisitionReassignmentItems)
-                        {
-                            if (requisitionItem.Quantity > 0)
+                            #region create po
+                            var purchaseOrder = new PurchaseOrder
                             {
-                                #region item
+                                PurchaseRequisitionID = purchaseReq.PurchaseRequisitionID,
+                                BusinessUnitId = purchaseReq.BusinessUnitId,
+                                SroreRequisition = sr,
+                                ProcurementOfficer = assignment.ProcurementOfficer,
+                                BranchId = EmployeeHelper.GetEmployeePlacementBranch(assignment.ProcurementOfficer),
+                                IsManual = true,
+                                SupplierName = "",
+                                SupplierId = "",
+                                POType = POType.CashBase,
+                                ProcurementMethod = ProcurementMethod.DirectPurchase,
+                                ProformaPurchaseID = 0,
+                                OrderDate = DateTime.Today,
+                                DeliveryPlace = "",
+                                DeliveryDate = DateTime.Today,
+                                OrgStructureId = purchaseReq.OrgStructureId,
 
-                                var orderItem = new PurchaseOrderItem
+                                ForwardedFrom = UserInformationHelper.GetEmployeeUserId(assignment.ProcurementOfficer),
+                                ForwardedTo = UserInformationHelper.GetEmployeeUserId(assignment.ProcurementOfficer),
+                                IsFinalApproval = false,
+
+                                Status = "Editing",
+                                Remark = purchaseReq.Remark,
+
+                                DateCreated = DateTime.Now,
+                                CreatedBy = UserInformationHelper.GetEmployeeUserId(assignment.ProcurementOfficer),
+                            };
+                            db.PurchaseOrders.Add(purchaseOrder);
+                            db.SaveChanges();
+
+                            #endregion
+
+                            foreach (var item in assignment.PurchaseRequisitionReassignmentItems)
+                            {
+                                if (item.Quantity > 0)
                                 {
-                                    FromPreviousPurchase = true,
-                                    PurchaseOrder = purchaseOrder,
-                                    CatCode = requisitionItem.CatCode,
-                                    CategoryName = requisitionItem.CategoryName,
-                                    ItmCode = requisitionItem.ItmCode,
-                                    ItemName = requisitionItem.ItemName,
-                                    Name = requisitionItem.Name,
-                                    ModelNo = requisitionItem.ModelNo,
-                                    PartNo = requisitionItem.PartNo,
-                                    Quantity = requisitionItem.Quantity,
-                                    UnitPrice = 0,
-                                    SubTotal = 0,
-                                    TaxAmount = 0,
-                                    Total = 0,
+                                    #region item
 
-                                    ItemSpecification = requisitionItem.ItemSpecification,
-                                    UoM = requisitionItem.UoM,
-                                    ItemType = requisitionItem.ItemType,
-
-                                    CreatedBy = UserInformationHelper.GetEmployeeUserId(assignment.ProcurementOfficer),
-                                    DateCreated = DateTime.Today,
-                                    ModifiedBy = User.Identity.Name,
-                                    LastModified = DateTime.Today
-                                };
-                                if (pr.FromPreviousPurchase)
-                                {
-                                    #region get price from previous
-                                    int did = int.Parse(pr.PreviousPurchaseReference);
-                                    if (pr.PreviousProcurementMethod == ProcurementMethod.Tender)
+                                    var orderItem = new PurchaseOrderItem
                                     {
-                                        var awardItem = db.BidAwardedSupplierItems
-                                            .Where(x => x.ItmCode == requisitionItem.ItmCode)
-                                            .Where(x => x.ItemType == requisitionItem.ItemType);
+                                        FromPreviousPurchase = true,
+                                        PurchaseOrder = purchaseOrder,
+                                        CatCode = item.CatCode,
+                                        CategoryName = item.CategoryName,
+                                        ItmCode = item.ItmCode,
+                                        ItemName = item.ItemName,
+                                        Name = item.Name,
+                                        ModelNo = item.ModelNo,
+                                        PartNo = item.PartNo,
+                                        Quantity = item.Quantity,
+                                        UnitPrice = 0,
+                                        SubTotal = 0,
+                                        TaxAmount = 0,
+                                        Total = 0,
 
-                                        if (requisitionItem.ItemType == PurchaseItemType.FixedAsset)
-                                            awardItem = awardItem.Where(x => x.Name == requisitionItem.Name);
+                                        ItemSpecification = item.ItemSpecification,
+                                        UoM = item.UoM,
+                                        ItemType = item.ItemType,
 
-                                        var previtem = awardItem.FirstOrDefault();
-                                        if (previtem != null)
-                                        {
-                                            orderItem.UnitPrice = previtem.UPrice;
-                                            orderItem.SubTotal = orderItem.Quantity * previtem.UPrice;
-                                            var tax = db.GLTaxRates.Find(previtem.GLTaxRateID);
-                                            if (tax != null)
-                                                orderItem.TaxAmount = orderItem.SubTotal * tax.CalculatedRate/100;
-
-                                            orderItem.Total = orderItem.SubTotal + orderItem.TaxAmount;
-                                        }
-                                    }
-                                    else if (pr.PreviousProcurementMethod == ProcurementMethod.Proforma)
+                                        CreatedBy = UserInformationHelper.GetEmployeeUserId(assignment.ProcurementOfficer),
+                                        DateCreated = DateTime.Today,
+                                        ModifiedBy = User.Identity.Name,
+                                        LastModified = DateTime.Today
+                                    };
+                                    if (pr.FromPreviousPurchase)
                                     {
-                                        var awardItem = db.WinningSupplierItems
-                                            .Where(x => x.ItmCode == requisitionItem.ItmCode)
-                                            .Where(x => x.ItemType == requisitionItem.ItemType);
-
-                                        if (requisitionItem.ItemType == PurchaseItemType.FixedAsset)
-                                            awardItem = awardItem.Where(x => x.Name == requisitionItem.Name);
-
-                                        var previtem = awardItem.FirstOrDefault();
-                                        if (previtem != null)
+                                        #region get price from previous
+                                        int did = int.Parse(pr.PreviousPurchaseReference);
+                                        if (pr.PreviousProcurementMethod == ProcurementMethod.Tender)
                                         {
-                                            orderItem.UnitPrice = previtem.UPrice;
-                                            orderItem.SubTotal = orderItem.Quantity * previtem.UPrice;
-                                            var tax = db.GLTaxRates.Find(previtem.GLTaxRateID);
-                                            if (tax != null)
-                                                orderItem.TaxAmount = orderItem.SubTotal * tax.CalculatedRate / 100;
+                                            var awardItem = db.BidAwardedSupplierItems
+                                                .Where(x => x.ItmCode == item.ItmCode)
+                                                .Where(x => x.ItemType == item.ItemType);
 
-                                            orderItem.Total = orderItem.SubTotal + orderItem.TaxAmount;
+                                            if (item.ItemType == PurchaseItemType.FixedAsset)
+                                                awardItem = awardItem.Where(x => x.Name == item.Name);
+
+                                            var previtem = awardItem.FirstOrDefault();
+                                            if (previtem != null)
+                                            {
+                                                orderItem.UnitPrice = previtem.UPrice;
+                                                orderItem.SubTotal = orderItem.Quantity * previtem.UPrice;
+                                                var tax = db.GLTaxRates.Find(previtem.GLTaxRateID);
+                                                if (tax != null)
+                                                    orderItem.TaxAmount = orderItem.SubTotal * tax.CalculatedRate / 100;
+
+                                                orderItem.Total = orderItem.SubTotal + orderItem.TaxAmount;
+                                            }
                                         }
+                                        else if (pr.PreviousProcurementMethod == ProcurementMethod.Proforma)
+                                        {
+                                            var awardItem = db.WinningSupplierItems
+                                                .Where(x => x.ItmCode == item.ItmCode)
+                                                .Where(x => x.ItemType == item.ItemType);
+
+                                            if (item.ItemType == PurchaseItemType.FixedAsset)
+                                                awardItem = awardItem.Where(x => x.Name == item.Name);
+
+                                            var previtem = awardItem.FirstOrDefault();
+                                            if (previtem != null)
+                                            {
+                                                orderItem.UnitPrice = previtem.UPrice;
+                                                orderItem.SubTotal = orderItem.Quantity * previtem.UPrice;
+                                                var tax = db.GLTaxRates.Find(previtem.GLTaxRateID);
+                                                if (tax != null)
+                                                    orderItem.TaxAmount = orderItem.SubTotal * tax.CalculatedRate / 100;
+
+                                                orderItem.Total = orderItem.SubTotal + orderItem.TaxAmount;
+                                            }
+                                        }
+
+                                        else if (pr.PreviousProcurementMethod == ProcurementMethod.DirectPurchase)
+                                        {
+                                            var awardItem = db.PurchaseOrderItems
+                                                .Where(x => x.ItmCode == item.ItmCode)
+                                                .Where(x => x.ItemType == item.ItemType);
+
+                                            if (item.ItemType == PurchaseItemType.FixedAsset)
+                                                awardItem = awardItem.Where(x => x.Name == item.Name);
+
+                                            var previtem = awardItem.FirstOrDefault();
+                                            if (previtem != null)
+                                            {
+                                                orderItem.UnitPrice = previtem.UnitPrice;
+                                                orderItem.SubTotal = orderItem.Quantity * previtem.UnitPrice;
+                                                var tax = db.GLTaxRates.Find(previtem.GLTaxRateID);
+                                                if (tax != null)
+                                                    orderItem.TaxAmount = orderItem.SubTotal * tax.CalculatedRate / 100;
+
+                                                orderItem.Total = orderItem.SubTotal + orderItem.TaxAmount;
+                                            }
+                                        }
+
+
+                                        #endregion
                                     }
 
-                                    else if (pr.PreviousProcurementMethod == ProcurementMethod.DirectPurchase)
-                                    {
-                                        var awardItem = db.PurchaseOrderItems
-                                            .Where(x => x.ItmCode == requisitionItem.ItmCode)
-                                            .Where(x => x.ItemType == requisitionItem.ItemType);
-
-                                        if (requisitionItem.ItemType == PurchaseItemType.FixedAsset)
-                                            awardItem = awardItem.Where(x => x.Name == requisitionItem.Name);
-
-                                        var previtem = awardItem.FirstOrDefault();
-                                        if (previtem != null)
-                                        {
-                                            orderItem.UnitPrice = previtem.UnitPrice;
-                                            orderItem.SubTotal = orderItem.Quantity * previtem.UnitPrice;
-                                            var tax = db.GLTaxRates.Find(previtem.GLTaxRateID);
-                                            if (tax != null)
-                                                orderItem.TaxAmount = orderItem.SubTotal * tax.CalculatedRate / 100;
-
-                                            orderItem.Total = orderItem.SubTotal + orderItem.TaxAmount;
-                                        }
-                                    }
+                                    db.PurchaseOrderItems.Add(orderItem);
+                                    db.SaveChanges();
 
 
                                     #endregion
                                 }
-
-                                db.PurchaseOrderItems.Add(orderItem);
-                                db.SaveChanges();
-
-
-                                #endregion
                             }
+
+                            
                         }
-
+                        #endregion
                         #endregion
 
-                        #endregion
                     }
                 }
             }

@@ -15,7 +15,7 @@ namespace ExceedERP.Core.Domain.Procurement.Need
         [DisplayName("Branch or Project")]
         public int BranchId { get; set; }
         [DisplayName("Business Unit")]
-        public int ? BusinessUnitId { get; set; }
+        public int  BusinessUnitId { get; set; }
         [Required]
         [DisplayName("Work Unit")]
         public int OrgStructureId { get; set; }

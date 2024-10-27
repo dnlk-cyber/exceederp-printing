@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Finance.GL;
 using static System.String;
 
@@ -816,7 +814,7 @@ namespace ExceedERP.Helpers.Finance
 
 
             int accountindex = 0;
-            accountindex = _accountHelper.IsDynamicCoA() ? _accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Account) : _dynamicAccountHelper.GetNaturalAccountSequenceIndex();
+            accountindex =  _dynamicAccountHelper.GetNaturalAccountSequenceIndex();
 
             switch (accountindex)
             {
@@ -979,7 +977,7 @@ namespace ExceedERP.Helpers.Finance
 
 
             int accountindex = 0;
-            accountindex = _accountHelper.IsDynamicCoA() ? _accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Account) : _dynamicAccountHelper.GetNaturalAccountSequenceIndex();
+            accountindex =   _dynamicAccountHelper.GetNaturalAccountSequenceIndex();
                 
             switch (accountindex)
             {
@@ -1143,7 +1141,7 @@ namespace ExceedERP.Helpers.Finance
 
 
             int accountindex = 0;
-            accountindex = _accountHelper.IsDynamicCoA() ? _accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Account) : _dynamicAccountHelper.GetNaturalAccountSequenceIndex();
+            accountindex = _dynamicAccountHelper.GetNaturalAccountSequenceIndex();
 
             switch (accountindex)
             {
@@ -1332,7 +1330,7 @@ namespace ExceedERP.Helpers.Finance
 
 
             int accountindex = 0;
-            accountindex = _accountHelper.IsDynamicCoA() ? _accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Account) : _dynamicAccountHelper.GetNaturalAccountSequenceIndex();
+            accountindex = _dynamicAccountHelper.GetNaturalAccountSequenceIndex();
 
             switch (accountindex)
             {
@@ -1523,7 +1521,7 @@ namespace ExceedERP.Helpers.Finance
 
 
             int accountindex = 0;
-            accountindex = _accountHelper.IsDynamicCoA() ? _accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Account) : _dynamicAccountHelper.GetNaturalAccountSequenceIndex();
+            accountindex = _dynamicAccountHelper.GetNaturalAccountSequenceIndex();
 
             switch (accountindex)
             {
@@ -1712,7 +1710,7 @@ namespace ExceedERP.Helpers.Finance
 
 
             int accountindex = 0;
-            accountindex = _accountHelper.IsDynamicCoA() ? _accountHelper.GetAccountSequenceIndex(GlSegmentTypes.Account) : _dynamicAccountHelper.GetNaturalAccountSequenceIndex();
+            accountindex = _dynamicAccountHelper.GetNaturalAccountSequenceIndex();
 
             switch (accountindex)
             {

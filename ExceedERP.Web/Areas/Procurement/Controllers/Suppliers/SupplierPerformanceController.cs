@@ -91,7 +91,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
                 db.SaveChanges();
                 supplierPerformance.SupplierPerformanceId = entity.SupplierPerformanceId;
                 #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "Supplier performance ", "Success", User.Identity.Name, $"created supplier performance for {entity.Supplier.Name}", Modules.Procurement);
+                UserHelper.OperationLog(Request.UserHostAddress, "Supplier performance ", "Success", User.Identity.Name, $"created supplier performance for {entity.ProcurementSupplierID}", Modules.Procurement);
                 #endregion
             }
 
@@ -132,7 +132,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
                 #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "Supplier performance ", "Success", User.Identity.Name, $"updated supplier performance for {entity.Supplier.Name}", Modules.Procurement);
+                UserHelper.OperationLog(Request.UserHostAddress, "Supplier performance ", "Success", User.Identity.Name, $"updated supplier performance for {entity.ProcurementSupplierID}", Modules.Procurement);
                 #endregion
             }
 

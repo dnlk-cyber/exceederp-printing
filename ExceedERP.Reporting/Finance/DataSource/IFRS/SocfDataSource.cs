@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Finance.Report;
 using ExceedERP.DataAccess.Context;
@@ -17,33 +18,44 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
         private readonly ReportHelper _reportHelper = new ReportHelper();
         private readonly AccountHelper _accountHelper = new AccountHelper();
         private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
+        private readonly ClosingHelper _closingHelper = new ClosingHelper();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<NoteVeiwModel> SocfReportNotes(string fiscalyear, string period)
         {
             List<NoteVeiwModel> list = new List<NoteVeiwModel>();
             var notes = _db.IfrsStatementOfCashFlows.FirstOrDefault();
-            var operatingActivityRanges = _db.IfrsSocfOperatingActivityRanges.ToList();
-            var investingActivityRanges = _db.IfrsSocfInvestingActivityRanges.ToList();
-            var financingActivityRanges = _db.IfrsSocfFinancingActivityRanges.ToList();
+            var operatingActivityRanges = _db.IfrsSocfOperatingActivityRanges.AsNoTracking().ToList();
+            var investingActivityRanges = _db.IfrsSocfInvestingActivityRanges.AsNoTracking().ToList();
+            var financingActivityRanges = _db.IfrsSocfFinancingActivityRanges.AsNoTracking().ToList();
 
             if (notes != null && !String.IsNullOrEmpty(fiscalyear))
             {
                 var fyearObj = _db.GLFiscalYears.Find(int.Parse(fiscalyear));
-                var prevYearBalance = new List<GLLedgerPostingLines>();
-                var currnetYearBalance = new List<GLLedgerPostingLines>();
+
+                var currnetYearBegBalance = new List<GLLedgerPostingLines>();
+                var currnetYearEndBalance = new List<GLLedgerPostingLines>();
+
+                var prevYearBegBalance = new List<GLLedgerPostingLines>();
+                var prevYearEndBalance = new List<GLLedgerPostingLines>();
 
                 if (fyearObj != null)
                 {
-                    int currentPeriod = String.IsNullOrEmpty(period) ? 0 : int.Parse(period);
+                    int currentEndPeriod = String.IsNullOrEmpty(period) ? 0 : int.Parse(period);
+                    int currentBegPeriod =  _fiscalYearHelper.GetFiscalYearFirstPeriod(fyearObj.GlFiscalYearId);
+
                     int prevyear = _fiscalYearHelper.GetPreviousFYearId(fyearObj.GlFiscalYearId);
                     var prevfyearObj = _db.GLFiscalYears.Find(prevyear);
 
-                    currnetYearBalance = _reportHelper.GetAccountBalance(fyearObj.GlFiscalYearId, currentPeriod);
+                    currnetYearBegBalance = _reportHelper.GetAccountBalance(fyearObj.GlFiscalYearId, currentBegPeriod);
+                    currnetYearEndBalance = _reportHelper.GetAccountBalance(fyearObj.GlFiscalYearId, currentEndPeriod);
                     if (prevfyearObj != null)
                     {
-                        int previousPeriod = String.IsNullOrEmpty(period) ? 0 : _fiscalYearHelper.GetParallelPeriodInYear(currentPeriod, prevfyearObj.GlFiscalYearId);
-                        prevYearBalance = _reportHelper.GetAccountBalance(prevfyearObj.GlFiscalYearId,previousPeriod);
+                        int previousEndPeriod = String.IsNullOrEmpty(period) ? 0 : _fiscalYearHelper.GetParallelPeriodInYear(currentEndPeriod, prevfyearObj.GlFiscalYearId);
+                        int previousBegPeriod = _fiscalYearHelper.GetFiscalYearFirstPeriod(prevfyearObj.GlFiscalYearId);
+
+                        prevYearBegBalance = _reportHelper.GetAccountBalance(prevfyearObj.GlFiscalYearId, previousBegPeriod);
+                        prevYearEndBalance = _reportHelper.GetAccountBalance(prevfyearObj.GlFiscalYearId, previousEndPeriod);
                     }
                 }
 
@@ -74,8 +86,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
                             var detail = new NoteDetailViewModel
                             {
                                 AccountDesc = accRange.Description,
-                                PreviousYearBalance = _reportHelper.GetAccountEndBalancesByAccountWithAllranges(prevYearBalance, r.AccountFrom, r.AccountTo, accRange.Values),
-                                CurrentYearBalance = _reportHelper.GetAccountEndBalancesByAccountWithAllranges(currnetYearBalance, r.AccountFrom, r.AccountTo, accRange.Values)
+                                PreviousYearBalance = _reportHelper.GetAccountEndBalancesByAccountWithAllranges(prevYearEndBalance, r.AccountFrom, r.AccountTo, accRange.Values),
+                                CurrentYearBalance = _reportHelper.GetAccountEndBalancesByAccountWithAllranges(currnetYearEndBalance, r.AccountFrom, r.AccountTo, accRange.Values)
                             };
                             connote.NoteDetailsList.Add(detail);
                         }
@@ -111,8 +123,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
                             var detail = new NoteDetailViewModel
                             {
                                 AccountDesc = accRange.Description,
-                                PreviousYearBalance = _reportHelper.GetAccountEndBalancesByAccountWithAllranges(prevYearBalance, r.AccountFrom, r.AccountTo, accRange.Values),
-                                CurrentYearBalance = _reportHelper.GetAccountEndBalancesByAccountWithAllranges(currnetYearBalance, r.AccountFrom, r.AccountTo, accRange.Values)
+                                PreviousYearBalance = _reportHelper.GetAccountEndBalancesByAccountWithAllranges(prevYearEndBalance, r.AccountFrom, r.AccountTo, accRange.Values),
+                                CurrentYearBalance = _reportHelper.GetAccountEndBalancesByAccountWithAllranges(currnetYearEndBalance, r.AccountFrom, r.AccountTo, accRange.Values)
                             };
                             connote.NoteDetailsList.Add(detail);
                         }
@@ -148,8 +160,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
                             var detail = new NoteDetailViewModel
                             {
                                 AccountDesc = accRange.Description,
-                                PreviousYearBalance = _reportHelper.GetAccountEndBalancesByAccountWithAllranges(prevYearBalance, r.AccountFrom, r.AccountTo, accRange.Values),
-                                CurrentYearBalance = _reportHelper.GetAccountEndBalancesByAccountWithAllranges(currnetYearBalance, r.AccountFrom, r.AccountTo, accRange.Values)
+                                PreviousYearBalance = _reportHelper.GetAccountEndBalancesByAccountWithAllranges(prevYearEndBalance, r.AccountFrom, r.AccountTo, accRange.Values),
+                                CurrentYearBalance = _reportHelper.GetAccountEndBalancesByAccountWithAllranges(currnetYearEndBalance, r.AccountFrom, r.AccountTo, accRange.Values)
                             };
                             connote.NoteDetailsList.Add(detail);
                         }
@@ -172,11 +184,20 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
             {
                 var fyearObj = _db.GLFiscalYears.Find(int.Parse(fiscalyear));
 
-                var socfRules = _db.IfrsStatementOfCashFlows.FirstOrDefault();
+                var socfRules = _db.IfrsStatementOfCashFlows.AsNoTracking().FirstOrDefault();
 
-                var prevYearTwoBalance = new List<GLLedgerPostingLines>();
-                var prevYearBalance = new List<GLLedgerPostingLines>();
-                var currnetYearBalance = new List<GLLedgerPostingLines>();
+                var currnetYearBegBalance = new List<GLLedgerPostingLines>();
+                var currnetYearEndBalance = new List<GLLedgerPostingLines>();
+
+                var prevYearBegBalance = new List<GLLedgerPostingLines>();
+                var prevYearEndBalance = new List<GLLedgerPostingLines>();
+
+
+                #region update earning  ledger--current year
+
+                _closingHelper.UpdateEarningForAYear(fyearObj.GlFiscalYearId);
+
+                #endregion
 
                 #region operating Activities variables
 
@@ -253,27 +274,31 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                 if (fyearObj != null && socfRules != null)
                 {
-                    int currentPeriod = String.IsNullOrEmpty(period) ? 0 : int.Parse(period);
+                    int currentEndPeriod = String.IsNullOrEmpty(period) ? 0 : int.Parse(period);
+                    int currentBegPeriod = _fiscalYearHelper.GetFiscalYearFirstPeriod(fyearObj.GlFiscalYearId);
+
                     int prevyear = _fiscalYearHelper.GetPreviousFYearId(fyearObj.GlFiscalYearId);
                     var prevfyearObj = _db.GLFiscalYears.Find(prevyear);
 
-                    int prevyeartwo = _fiscalYearHelper.GetPreviousFYearId(prevfyearObj.GlFiscalYearId);
-                    var prevfyeartwoObj = _db.GLFiscalYears.Find(prevyeartwo);
+                    currnetYearBegBalance = _reportHelper.GetAccountBalance(fyearObj.GlFiscalYearId, currentBegPeriod);
+                    currnetYearEndBalance = _reportHelper.GetAccountBalance(fyearObj.GlFiscalYearId, currentEndPeriod);
 
-                    currnetYearBalance = _reportHelper.GetAccountBalance(fyearObj.GlFiscalYearId,currentPeriod);
+                    int previousEndPeriod = 0;
+
                     if (prevfyearObj != null)
                     {
-                        int previousPeriod = String.IsNullOrEmpty(period) ? 0 : _fiscalYearHelper.GetParallelPeriodInYear(currentPeriod, prevfyearObj.GlFiscalYearId);
-                        prevYearBalance = _reportHelper.GetAccountBalance(prevfyearObj.GlFiscalYearId,previousPeriod);
+                        #region update earning  ledger--prev year
+
+                        _closingHelper.UpdateEarningForAYear(prevfyearObj.GlFiscalYearId);
+
+                        #endregion
+
+                        previousEndPeriod = String.IsNullOrEmpty(period) ? 0 : _fiscalYearHelper.GetParallelPeriodInYear(currentEndPeriod, prevfyearObj.GlFiscalYearId);
+                        int previousBegPeriod = _fiscalYearHelper.GetFiscalYearFirstPeriod(prevfyearObj.GlFiscalYearId);
+
+                        prevYearBegBalance = _reportHelper.GetAccountBalance(prevfyearObj.GlFiscalYearId, previousBegPeriod);
+                        prevYearEndBalance = _reportHelper.GetAccountBalance(prevfyearObj.GlFiscalYearId, previousEndPeriod);
                     }
-
-                    if (prevfyeartwoObj != null)
-                    {
-                        int previousPeriodTwo = String.IsNullOrEmpty(period) ? 0 : _fiscalYearHelper.GetParallelPeriodInYear(currentPeriod, prevfyeartwoObj.GlFiscalYearId);
-                        prevYearTwoBalance = _reportHelper.GetAccountBalance(prevfyeartwoObj.GlFiscalYearId, previousPeriodTwo);
-                    }
-
-
 
                     #region operating activity
 
@@ -293,56 +318,66 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                     #region operating -profit before tax
 
-                    var profitBeforeTaxOperatings = socfRules.OperatingActivities
-                        .Where(x => x.Category == IfrsCashFlowTypes.ProfitBeforeTax).ToList();
+                    //var profitBeforeTaxOperatings = socfRules.OperatingActivities
+                    //    .Where(x => x.Category == IfrsCashFlowTypes.ProfitBeforeTax).ToList();
 
 
-                    foreach (var revenueOperating in profitBeforeTaxOperatings)
-                    {
-                        decimal currentYearRevenueTotal = 0;
-                        decimal prevYearRevenueTotal = 0;
+                    //foreach (var revenueOperating in profitBeforeTaxOperatings)
+                    //{
+                    //    decimal currentYearRevenueTotal = 0;
+                    //    decimal prevYearRevenueTotal = 0;
 
 
-                        #region  account range
+                    //    #region  account range
 
-                        var accountRange = revenueOperating.IfrsSocfOperatingActivityRanges.ToList();
-                        foreach (var range in accountRange)
-                        {
+                    //    var accountRange = revenueOperating.IfrsSocfOperatingActivityRanges.ToList();
+                    //    foreach (var range in accountRange)
+                    //    {
 
-                            #region current year
+                    //        #region current year
 
-                            currentYearRevenueTotal =
-                                currentYearRevenueTotal +
-                                _reportHelper.GetAccountEndBalancesWithAllranges(currnetYearBalance, range.AccountFrom, range.AccountTo);
+                    //        currentYearRevenueTotal =
+                    //            currentYearRevenueTotal +
+                    //            _reportHelper.GetAccountEndBalancesWithAllranges(currnetYearBalance, range.AccountFrom, range.AccountTo);
 
-                            #endregion
+                    //        #endregion
 
-                            if (prevfyearObj != null)
-                            {
-                                #region previos year
+                    //        if (prevfyearObj != null)
+                    //        {
+                    //            #region previos year
 
-                                prevYearRevenueTotal =
-                                    prevYearRevenueTotal +
-                                    _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo);
+                    //            prevYearRevenueTotal =
+                    //                prevYearRevenueTotal +
+                    //                _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo);
 
-                                #endregion
-                            }
-                        }
-
-
-
-                        #endregion
+                    //            #endregion
+                    //        }
+                    //    }
 
 
-                        currentProfitBeforeTax = currentProfitBeforeTax + currentYearRevenueTotal;
-                        previousProfitBeforeTax = previousProfitBeforeTax + prevYearRevenueTotal;
+
+                    //    #endregion
 
 
-                    }
+                    //    currentProfitBeforeTax = currentProfitBeforeTax + currentYearRevenueTotal;
+                    //    previousProfitBeforeTax = previousProfitBeforeTax + prevYearRevenueTotal;
+
+
+                    //}
+
+                    #region current year earning
+
+                    if (prevfyearObj != null)
+                        previousProfitBeforeTax = _closingHelper.GetCurrentEarning(prevfyearObj.GlFiscalYearId, previousEndPeriod);
+                    if (fyearObj != null)
+                        currentProfitBeforeTax = _closingHelper.GetCurrentEarning(fyearObj.GlFiscalYearId, currentEndPeriod);
+                   
+
+                    #endregion
 
                     reportitem = new SocfReportItemVeiwModel
                     {
-                        Notes = profitBeforeTaxOperatings.FirstOrDefault()?.NoteNumber,
+                        Notes = "", /*profitBeforeTaxOperatings.FirstOrDefault()?.NoteNumber*/
                         CategoryDescription = "Profit Before Taxation",
                         CurrentYearBalance = currentProfitBeforeTax,
                         PreviousYearBalance = previousProfitBeforeTax,
@@ -380,7 +415,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                             currentYearAdjustmentTotal =
                                 currentYearAdjustmentTotal +
-                                _reportHelper.GetAccountEndBalancesWithAllranges(currnetYearBalance, range.AccountFrom, range.AccountTo);
+                                (_reportHelper.GetAccountEndBalancesWithAllranges(currnetYearEndBalance, range.AccountFrom, range.AccountTo)
+                                - _reportHelper.GetAccountBegBalancesWithAllranges(currnetYearBegBalance, range.AccountFrom, range.AccountTo));
 
                             #endregion
 
@@ -390,7 +426,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                                 prevYearAdjustmentTotal =
                                     prevYearAdjustmentTotal +
-                                    _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo);
+                                    (_reportHelper.GetAccountEndBalancesWithAllranges(prevYearEndBalance, range.AccountFrom, range.AccountTo)
+                                    - _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo));
 
                                 #endregion
                             }
@@ -404,22 +441,34 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
                         {
                             currentYearSumAdjustment = currentYearSumAdjustment + currentYearAdjustmentTotal;
                             previosYearSumAdjustment = previosYearSumAdjustment + prevYearAdjustmentTotal;
+                            
+                            reportitem = new SocfReportItemVeiwModel
+                            {
+                                Notes = adjustment.NoteNumber,
+                                CategoryDescription = adjustment.Description,
+                                CurrentYearBalance = currentYearAdjustmentTotal,
+                                PreviousYearBalance = prevYearAdjustmentTotal,
+                                IsHeader = false
+                            };
+                            socfReport.SocfReportItems.Add(reportitem);
                         }
                         else if (adjustment.Rule == IfrsCashFlowRule.DEDUCT)
                         {
                             currentYearSumAdjustment = currentYearSumAdjustment - currentYearAdjustmentTotal;
                             previosYearSumAdjustment = previosYearSumAdjustment - prevYearAdjustmentTotal;
+
+                            reportitem = new SocfReportItemVeiwModel
+                            {
+                                Notes = adjustment.NoteNumber,
+                                CategoryDescription = adjustment.Description,
+                                CurrentYearBalance = (-currentYearAdjustmentTotal),
+                                PreviousYearBalance = (-prevYearAdjustmentTotal),
+                                IsHeader = false
+                            };
+                            socfReport.SocfReportItems.Add(reportitem);
                         }
 
-                        reportitem = new SocfReportItemVeiwModel
-                        {
-                            Notes = adjustment.NoteNumber,
-                            CategoryDescription = adjustment.Description,
-                            CurrentYearBalance = currentYearAdjustmentTotal,
-                            PreviousYearBalance = prevYearAdjustmentTotal,
-                            IsHeader = false
-                        };
-                        socfReport.SocfReportItems.Add(reportitem);
+                       
                     }
 
                     #endregion
@@ -432,8 +481,6 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
                     {
                         decimal currentYearIncDecTotal = 0;
                         decimal prevYearIncDecTotal = 0;
-                        decimal prevYearTwoIncDecTotal = 0;
-
 
 
                         #region  account range
@@ -445,7 +492,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                             currentYearIncDecTotal =
                                 currentYearIncDecTotal +
-                                _reportHelper.GetAccountEndBalancesWithAllranges(currnetYearBalance, range.AccountFrom, range.AccountTo);
+                                (_reportHelper.GetAccountEndBalancesWithAllranges(currnetYearEndBalance, range.AccountFrom, range.AccountTo)
+                                - _reportHelper.GetAccountBegBalancesWithAllranges(currnetYearBegBalance, range.AccountFrom, range.AccountTo));
 
                             #endregion
 
@@ -455,133 +503,134 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                                 prevYearIncDecTotal =
                                     prevYearIncDecTotal +
-                                    _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo);
+                                    (_reportHelper.GetAccountEndBalancesWithAllranges(prevYearEndBalance, range.AccountFrom, range.AccountTo)
+                                    - _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo));
 
                                 #endregion
                             }
 
-                            if (prevfyeartwoObj != null)
-                            {
-                                #region previos year two
-
-                                prevYearTwoIncDecTotal =
-                                    prevYearTwoIncDecTotal +
-                                    _reportHelper.GetAccountEndBalancesWithAllranges(prevYearTwoBalance, range.AccountFrom, range.AccountTo);
-
-                                #endregion
-                            }
                         }
 
                         #endregion
 
                         if (increaseDecrease.Rule == IfrsCashFlowRule.ADD)
                         {
-                            currentYearIncDecTotal = currentYearIncDecTotal - prevYearIncDecTotal;
-                            prevYearIncDecTotal = prevYearIncDecTotal - prevYearTwoIncDecTotal;
+                            currentYearSumIncreaseDecrease = currentYearSumIncreaseDecrease + currentYearIncDecTotal;
+                            previosYearSumIncreaseDecrease = previosYearSumIncreaseDecrease + prevYearIncDecTotal;
+
+                            reportitem = new SocfReportItemVeiwModel
+                            {
+                                Notes = increaseDecrease.NoteNumber,
+                                CategoryDescription = increaseDecrease.Description,
+                                CurrentYearBalance = currentYearIncDecTotal,
+                                PreviousYearBalance = prevYearIncDecTotal,
+                                IsHeader = false
+                            };
+                            socfReport.SocfReportItems.Add(reportitem);
                         }
                         else if (increaseDecrease.Rule == IfrsCashFlowRule.DEDUCT)
                         {
-                            currentYearIncDecTotal = -(currentYearIncDecTotal - prevYearIncDecTotal);
-                            prevYearIncDecTotal = -(prevYearIncDecTotal - prevYearTwoIncDecTotal);
-                        }
-                        else if (increaseDecrease.Rule == IfrsCashFlowRule.ADD_INCREASE)
-                        {
-                            if (currentYearIncDecTotal > prevYearIncDecTotal)
-                            {
-                                currentYearIncDecTotal = currentYearIncDecTotal - prevYearIncDecTotal;
-                            }
-                            else
-                            {
-                                currentYearIncDecTotal = -(currentYearIncDecTotal - prevYearIncDecTotal);
-                            }
+                            currentYearSumIncreaseDecrease = currentYearSumIncreaseDecrease - currentYearIncDecTotal;
+                            previosYearSumIncreaseDecrease = previosYearSumIncreaseDecrease - prevYearIncDecTotal;
 
-                            if (prevYearIncDecTotal > prevYearTwoIncDecTotal)
+                            reportitem = new SocfReportItemVeiwModel
                             {
-                                prevYearIncDecTotal = prevYearIncDecTotal - prevYearTwoIncDecTotal;
-                            }
-                            else
-                            {
-                                prevYearIncDecTotal = -(prevYearIncDecTotal - prevYearTwoIncDecTotal);
-                            }
+                                Notes = increaseDecrease.NoteNumber,
+                                CategoryDescription = increaseDecrease.Description,
+                                CurrentYearBalance = (-currentYearIncDecTotal),
+                                PreviousYearBalance = (-prevYearIncDecTotal),
+                                IsHeader = false
+                            };
+                            socfReport.SocfReportItems.Add(reportitem);
                         }
 
-                        else if (increaseDecrease.Rule == IfrsCashFlowRule.ADD_DECREASE)
-                        {
-                            if (currentYearIncDecTotal < prevYearIncDecTotal)
-                            {
-                                currentYearIncDecTotal = currentYearIncDecTotal - prevYearIncDecTotal;
-                            }
-                            else
-                            {
-                                currentYearIncDecTotal = -(currentYearIncDecTotal - prevYearIncDecTotal);
-                            }
+                        //if (increaseDecrease.Rule == IfrsCashFlowRule.ADD_INCREASE)
+                        //{
+                        //    if (currentYearIncDecTotal > prevYearIncDecTotal)
+                        //    {
+                        //        currentYearIncDecTotal = currentYearIncDecTotal - prevYearIncDecTotal;
+                        //    }
+                        //    else
+                        //    {
+                        //        currentYearIncDecTotal = currentYearIncDecTotal - prevYearIncDecTotal;
+                        //    }
 
-                            if (prevYearIncDecTotal < prevYearTwoIncDecTotal)
-                            {
-                                prevYearIncDecTotal = prevYearIncDecTotal - prevYearTwoIncDecTotal;
-                            }
-                            else
-                            {
-                                prevYearIncDecTotal = -(prevYearIncDecTotal - prevYearTwoIncDecTotal);
-                            }
-                        }
+                        //    if (prevYearIncDecTotal > prevYearTwoIncDecTotal)
+                        //    {
+                        //        prevYearIncDecTotal = prevYearIncDecTotal - prevYearTwoIncDecTotal;
+                        //    }
+                        //    else
+                        //    {
+                        //        prevYearIncDecTotal = -prevYearIncDecTotal - prevYearTwoIncDecTotal;
+                        //    }
+                        //}
 
-                        else if (increaseDecrease.Rule == IfrsCashFlowRule.DEDUCT_INCREASE)
-                        {
-                            if (currentYearIncDecTotal > prevYearIncDecTotal)
-                            {
-                               
-                                currentYearIncDecTotal = -(currentYearIncDecTotal - prevYearIncDecTotal);
-                            }
-                            else
-                            {
-                                currentYearIncDecTotal = currentYearIncDecTotal - prevYearIncDecTotal;
-                            }
+                        //else if (increaseDecrease.Rule == IfrsCashFlowRule.ADD_DECREASE)
+                        //{
+                        //    if (currentYearIncDecTotal < prevYearIncDecTotal)
+                        //    {
+                        //        currentYearIncDecTotal = -(currentYearIncDecTotal - prevYearIncDecTotal);
+                        //    }
+                        //    else
+                        //    {
+                        //        currentYearIncDecTotal = -(currentYearIncDecTotal - prevYearIncDecTotal);
+                        //    }
 
-                            if (prevYearIncDecTotal > prevYearTwoIncDecTotal)
-                            {
-                                prevYearIncDecTotal = -(prevYearIncDecTotal - prevYearTwoIncDecTotal);
-                            }
-                            else
-                            {
-                                prevYearIncDecTotal = prevYearIncDecTotal - prevYearTwoIncDecTotal;
-                            }
-                        }
+                        //    if (prevYearIncDecTotal < prevYearTwoIncDecTotal)
+                        //    {
+                        //        prevYearIncDecTotal = -(prevYearIncDecTotal - prevYearTwoIncDecTotal);
+                        //    }
+                        //    else
+                        //    {
+                        //        prevYearIncDecTotal = -(prevYearIncDecTotal - prevYearTwoIncDecTotal);
+                        //    }
+                        //}
 
-                        else if (increaseDecrease.Rule == IfrsCashFlowRule.DEDUCT_DECREASE)
-                        {
-                            if (currentYearIncDecTotal < prevYearIncDecTotal)
-                            {
+                        //else if (increaseDecrease.Rule == IfrsCashFlowRule.DEDUCT_INCREASE)
+                        //{
+                        //    if (currentYearIncDecTotal > prevYearIncDecTotal)
+                        //    {
 
-                                currentYearIncDecTotal = -(currentYearIncDecTotal - prevYearIncDecTotal);
-                            }
-                            else
-                            {
-                                currentYearIncDecTotal = currentYearIncDecTotal - prevYearIncDecTotal;
-                            }
+                        //        currentYearIncDecTotal = -(currentYearIncDecTotal - prevYearIncDecTotal);
+                        //    }
+                        //    else
+                        //    {
+                        //        currentYearIncDecTotal = currentYearIncDecTotal - prevYearIncDecTotal;
+                        //    }
 
-                            if (prevYearIncDecTotal < prevYearTwoIncDecTotal)
-                            {
-                                prevYearIncDecTotal = -(prevYearIncDecTotal - prevYearTwoIncDecTotal);
-                            }
-                            else
-                            {
-                                prevYearIncDecTotal = prevYearIncDecTotal - prevYearTwoIncDecTotal;
-                            }
-                        }
+                        //    if (prevYearIncDecTotal > prevYearTwoIncDecTotal)
+                        //    {
+                        //        prevYearIncDecTotal = -(prevYearIncDecTotal - prevYearTwoIncDecTotal);
+                        //    }
+                        //    else
+                        //    {
+                        //        prevYearIncDecTotal = prevYearIncDecTotal - prevYearTwoIncDecTotal;
+                        //    }
+                        //}
 
-                        currentYearSumIncreaseDecrease = currentYearSumIncreaseDecrease + currentYearIncDecTotal;
-                        previosYearSumIncreaseDecrease = previosYearSumIncreaseDecrease + prevYearIncDecTotal;
+                        //else if (increaseDecrease.Rule == IfrsCashFlowRule.DEDUCT_DECREASE)
+                        //{
+                        //    if (currentYearIncDecTotal < prevYearIncDecTotal)
+                        //    {
 
-                        reportitem = new SocfReportItemVeiwModel
-                        {
-                            Notes = increaseDecrease.NoteNumber,
-                            CategoryDescription = increaseDecrease.Description,
-                            CurrentYearBalance = currentYearIncDecTotal,
-                            PreviousYearBalance = prevYearIncDecTotal,
-                            IsHeader = false
-                        };
-                        socfReport.SocfReportItems.Add(reportitem);
+                        //        currentYearIncDecTotal = -(currentYearIncDecTotal - prevYearIncDecTotal);
+                        //    }
+                        //    else
+                        //    {
+                        //        currentYearIncDecTotal = currentYearIncDecTotal - prevYearIncDecTotal;
+                        //    }
+
+                        //    if (prevYearIncDecTotal < prevYearTwoIncDecTotal)
+                        //    {
+                        //        prevYearIncDecTotal = -(prevYearIncDecTotal - prevYearTwoIncDecTotal);
+                        //    }
+                        //    else
+                        //    {
+                        //        prevYearIncDecTotal = prevYearIncDecTotal - prevYearTwoIncDecTotal;
+                        //    }
+                        //}
+
+                        
                     }
 
                     #endregion
@@ -622,7 +671,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                             currentYearNetTotal =
                                 currentYearNetTotal +
-                                _reportHelper.GetAccountEndBalancesWithAllranges(currnetYearBalance, range.AccountFrom, range.AccountTo);
+                                (_reportHelper.GetAccountEndBalancesWithAllranges(currnetYearEndBalance, range.AccountFrom, range.AccountTo)-
+                                _reportHelper.GetAccountBegBalancesWithAllranges(currnetYearBegBalance, range.AccountFrom, range.AccountTo));
 
                             #endregion
 
@@ -632,7 +682,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                                 prevYearNetTotal =
                                     prevYearNetTotal +
-                                    _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo);
+                                    (_reportHelper.GetAccountEndBalancesWithAllranges(prevYearEndBalance, range.AccountFrom, range.AccountTo)
+                                    - _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo));
 
                                 #endregion
                             }
@@ -646,22 +697,34 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
                         {
                             currentYearSumNet = currentYearSumNet + currentYearNetTotal;
                             previosYearSumNet = previosYearSumNet + prevYearNetTotal;
+
+                            reportitem = new SocfReportItemVeiwModel
+                            {
+                                Notes = netOp.NoteNumber,
+                                CategoryDescription = netOp.Description,
+                                CurrentYearBalance = currentYearNetTotal,
+                                PreviousYearBalance = prevYearNetTotal,
+                                IsHeader = false
+                            };
+                            socfReport.SocfReportItems.Add(reportitem);
                         }
                         else if (netOp.Rule == IfrsCashFlowRule.DEDUCT)
                         {
                             currentYearSumNet = currentYearSumNet - currentYearNetTotal;
                             previosYearSumNet = previosYearSumNet - prevYearNetTotal;
+
+                            reportitem = new SocfReportItemVeiwModel
+                            {
+                                Notes = netOp.NoteNumber,
+                                CategoryDescription = netOp.Description,
+                                CurrentYearBalance = (-currentYearNetTotal),
+                                PreviousYearBalance = (-prevYearNetTotal),
+                                IsHeader = false
+                            };
+                            socfReport.SocfReportItems.Add(reportitem);
                         }
 
-                        reportitem = new SocfReportItemVeiwModel
-                        {
-                            Notes = netOp.NoteNumber,
-                            CategoryDescription = netOp.Description,
-                            CurrentYearBalance = currentYearNetTotal,
-                            PreviousYearBalance = prevYearNetTotal,
-                            IsHeader = false
-                        };
-                        socfReport.SocfReportItems.Add(reportitem);
+                       
                     }
 
                     #endregion
@@ -718,7 +781,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                             currentYearAddTotal =
                                 currentYearAddTotal +
-                                _reportHelper.GetAccountEndBalancesWithAllranges(currnetYearBalance, range.AccountFrom, range.AccountTo);
+                                (_reportHelper.GetAccountEndBalancesWithAllranges(currnetYearEndBalance, range.AccountFrom, range.AccountTo)
+                                - _reportHelper.GetAccountBegBalancesWithAllranges(currnetYearBegBalance, range.AccountFrom, range.AccountTo));
 
                             #endregion
 
@@ -728,14 +792,14 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                                 prevYearAddTotal =
                                     prevYearAddTotal +
-                                    _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo);
+                                    (_reportHelper.GetAccountEndBalancesWithAllranges(prevYearEndBalance, range.AccountFrom, range.AccountTo)
+                                    - _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo));
 
                                 #endregion
                             }
                         }
 
                         #endregion
-
                         
                         currentYearsumInvestingAdd = currentYearsumInvestingAdd + currentYearAddTotal;
                         previosYearsumInvestingAdd = previosYearsumInvestingAdd + prevYearAddTotal;
@@ -760,9 +824,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
                     foreach (var deductInvesting in deductInvestings)
                     {
                         decimal currentYearDeductTotal = 0;
-                        decimal prevYearDeductTotal = 0;
-
-                        
+                        decimal prevYearDeductTotal = 0;                        
 
                         #region  account range
 
@@ -773,7 +835,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                             currentYearDeductTotal =
                                 currentYearDeductTotal +
-                                _reportHelper.GetAccountEndBalancesWithAllranges(currnetYearBalance, range.AccountFrom, range.AccountTo);
+                                (_reportHelper.GetAccountEndBalancesWithAllranges(currnetYearEndBalance, range.AccountFrom, range.AccountTo)
+                                - _reportHelper.GetAccountBegBalancesWithAllranges(currnetYearBegBalance, range.AccountFrom, range.AccountTo));
 
                             #endregion
 
@@ -783,24 +846,24 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                                 prevYearDeductTotal =
                                     prevYearDeductTotal +
-                                    _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo);
+                                    (_reportHelper.GetAccountEndBalancesWithAllranges(prevYearEndBalance, range.AccountFrom, range.AccountTo)
+                                    - _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo));
 
                                 #endregion
                             }
                         }
 
                         #endregion
-
                        
-                        currentYearsumInvestingDeduct = currentYearsumInvestingDeduct + currentYearDeductTotal;
-                        previosYearsumInvestingDeduct = previosYearsumInvestingDeduct + prevYearDeductTotal;
+                        currentYearsumInvestingDeduct = currentYearsumInvestingDeduct - currentYearDeductTotal;
+                        previosYearsumInvestingDeduct = previosYearsumInvestingDeduct - prevYearDeductTotal;
 
                         reportitem = new SocfReportItemVeiwModel
                         {
                             Notes = deductInvesting.NoteNumber,
                             CategoryDescription = deductInvesting.Description,
-                            CurrentYearBalance = currentYearDeductTotal,
-                            PreviousYearBalance = prevYearDeductTotal,
+                            CurrentYearBalance = (-currentYearDeductTotal),
+                            PreviousYearBalance = (-prevYearDeductTotal),
                             IsHeader = false
                         };
                         socfReport.SocfReportItems.Add(reportitem);
@@ -848,10 +911,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
                     foreach (var addFinancing in addFinancings)
                     {
                         decimal currentYearAddTotal = 0;
-                        decimal prevYearAddTotal = 0;
-
-
-                        
+                        decimal prevYearAddTotal = 0;                       
 
                         #region  account range
 
@@ -862,7 +922,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                             currentYearAddTotal =
                                 currentYearAddTotal +
-                                _reportHelper.GetAccountEndBalancesWithAllranges(currnetYearBalance, range.AccountFrom, range.AccountTo);
+                                (_reportHelper.GetAccountEndBalancesWithAllranges(currnetYearEndBalance, range.AccountFrom, range.AccountTo)
+                                - _reportHelper.GetAccountBegBalancesWithAllranges(currnetYearBegBalance, range.AccountFrom, range.AccountTo));
 
                             #endregion
 
@@ -872,7 +933,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                                 prevYearAddTotal =
                                     prevYearAddTotal +
-                                    _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo);
+                                    (_reportHelper.GetAccountEndBalancesWithAllranges(prevYearEndBalance, range.AccountFrom, range.AccountTo)
+                                    - _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo));
 
                                 #endregion
                             }
@@ -904,9 +966,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
                     foreach (var deductFinancing in deductFinancings)
                     {
                         decimal currentYearDeductTotal = 0;
-                        decimal prevYearDeductTotal = 0;
-
-                        
+                        decimal prevYearDeductTotal = 0;                       
 
                         #region  account range
 
@@ -917,7 +977,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                             currentYearDeductTotal =
                                 currentYearDeductTotal +
-                                _reportHelper.GetAccountEndBalancesWithAllranges(currnetYearBalance, range.AccountFrom, range.AccountTo);
+                                (_reportHelper.GetAccountEndBalancesWithAllranges(currnetYearEndBalance, range.AccountFrom, range.AccountTo)
+                                - _reportHelper.GetAccountBegBalancesWithAllranges(currnetYearBegBalance, range.AccountFrom, range.AccountTo));
 
                             #endregion
 
@@ -927,7 +988,8 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                                 prevYearDeductTotal =
                                     prevYearDeductTotal +
-                                    _reportHelper.GetAccountEndBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo);
+                                    (_reportHelper.GetAccountEndBalancesWithAllranges(prevYearEndBalance, range.AccountFrom, range.AccountTo)
+                                    - _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo));
 
                                 #endregion
                             }
@@ -936,15 +998,15 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
                         #endregion
 
                         
-                        currentYearsumFinancingExpense = currentYearsumFinancingExpense + currentYearDeductTotal;
-                        previosYearsumFinancingExpense = previosYearsumFinancingExpense + prevYearDeductTotal;
+                        currentYearsumFinancingExpense = currentYearsumFinancingExpense -currentYearDeductTotal;
+                        previosYearsumFinancingExpense = previosYearsumFinancingExpense - prevYearDeductTotal;
 
                         reportitem = new SocfReportItemVeiwModel
                         {
                             Notes = deductFinancing.NoteNumber,
                             CategoryDescription = deductFinancing.Description,
-                            CurrentYearBalance = currentYearDeductTotal,
-                            PreviousYearBalance = prevYearDeductTotal,
+                            CurrentYearBalance = (-currentYearDeductTotal),
+                            PreviousYearBalance = (-prevYearDeductTotal),
                             IsHeader = false
                         };
                         socfReport.SocfReportItems.Add(reportitem);
@@ -996,7 +1058,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                         currentBeginning =
                             currentBeginning +
-                            _reportHelper.GetAccountBegBalancesWithAllranges(currnetYearBalance, range.AccountFrom, range.AccountTo);
+                            _reportHelper.GetAccountBegBalancesWithAllranges(currnetYearBegBalance, range.AccountFrom, range.AccountTo);
 
                         #endregion
 
@@ -1006,7 +1068,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
 
                             previousBeginning =
                                 previousBeginning +
-                                _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBalance, range.AccountFrom, range.AccountTo);
+                                _reportHelper.GetAccountBegBalancesWithAllranges(prevYearBegBalance, range.AccountFrom, range.AccountTo);
 
                             #endregion
                         }

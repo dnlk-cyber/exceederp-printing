@@ -1,9 +1,5 @@
-﻿using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.HRM.SelfCare;
-using ExceedERP.DataAccess.Context;
+﻿using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Areas.HRM.Controllers;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -11,17 +7,13 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.Core.Domain.Common.DocumentApproval;
-using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
-using ExceedERP.Core.Domain.Budget;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Helpers.Finance;
+using DocumentFormat.OpenXml.ExtendedProperties;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.AP.FundTransfers
 {
@@ -390,9 +382,44 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.FundTransfers
         public JsonResult SendForApproval(int id)
         {
             var record = _db.FundTransfers.Find(id);
-            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.FundTransferDetails.Count > 0)
+			var lines = _db.FundTransferDetails.Where(x => x.FundTransferId == id);
+			if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.FundTransferDetails.Count > 0)
             {
-                record.Status = Enum.GetName(typeof(OperationStatuses), 4);
+				if (!lines.Any())
+				{
+					var formattedData1 = new
+					{
+						Message = "Please add fund transfer line items.",
+						Status = "NOT_OK"
+					};
+					return Json(formattedData1, JsonRequestBehavior.AllowGet);
+				}
+
+				foreach (var line in lines)
+				{
+					if (line.Requested <= 0)
+					{
+						var formattedData1 = new
+						{
+							Message = "Please fill requested amount",
+							Status = "NOT_OK"
+						};
+						return Json(formattedData1, JsonRequestBehavior.AllowGet);
+					}
+
+					if (line.Approved <= 0)
+					{
+						var formattedData1 = new
+						{
+							Message = "Please fill approved amount",
+							Status = "NOT_OK"
+						};
+						return Json(formattedData1, JsonRequestBehavior.AllowGet);
+					}
+
+				}
+
+				record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
                 record.SendForApprovalBy = User.Identity.Name;
                 record.SendForApprovalTime = DateTime.Now;

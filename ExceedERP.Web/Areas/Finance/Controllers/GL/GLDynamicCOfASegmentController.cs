@@ -90,7 +90,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 _db.GlChartOfAccountSegments.Add(entity);
                 _db.SaveChanges();
                 gLChartOfAccountSegment.GLChartOfAccountSegmentId = entity.GLChartOfAccountSegmentId;
-
+                CacheHelper.InvalidateSegmentsCache();
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "GL dynamic chart of account segment ", "Success", User.Identity.Name, $"created segment {entity.Values} under {entity.GlSegmentSetup.Name}", Modules.Finance);
                 #endregion
@@ -139,7 +139,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 _db.GlChartOfAccountSegments.Attach(entity);
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
-
+                CacheHelper.InvalidateSegmentsCache();
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "GL dynamic chart of account segment ", "Success", User.Identity.Name, $"updated segment {entity.Values} under {entity.GlSegmentSetup.Name}", Modules.Finance);
                 #endregion
@@ -174,6 +174,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 _db.GlChartOfAccountSegments.Attach(entity);
                 _db.GlChartOfAccountSegments.Remove(entity);
                 _db.SaveChanges();
+                CacheHelper.InvalidateSegmentsCache();
             }
 
             return Json(new[] { gLChartOfAccountSegment }.ToDataSourceResult(request, ModelState));
@@ -204,6 +205,39 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 
             }
 
+            string errMsg = "Record not found";
+            var formattedData1 = new
+            {
+                Message = errMsg,
+                Status = "NOT_OK"
+            };
+            return Json(formattedData1, JsonRequestBehavior.AllowGet);
+
+        }
+        public JsonResult RefreshDesc()
+        {
+            var branchSegment = _db.GlSegmentSetups.Where(x => x.SegmentType == DynamicSegmentTypes.Location).FirstOrDefault();
+                
+            var locationAccts = _db.GlChartOfAccountSegments.Where(p => p.GLSegmentSetupId == branchSegment.GLSegmentSetupId).ToList();
+            foreach ( var location in locationAccts) 
+            {
+                var map = _db.Branch.Where(x => x.LocationAccount == location.Values).FirstOrDefault();
+                if (map != null)
+                {
+                    location.Description =map.Name;
+                    _db.GlChartOfAccountSegments.Attach(location);
+                    _db.Entry(location).State = EntityState.Modified;
+                    _db.SaveChanges();
+
+                    var formattedData = new
+                    {
+                        Message = "Successfully Updated.",
+                        Status = "OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+            }
+            
             string errMsg = "Record not found";
             var formattedData1 = new
             {

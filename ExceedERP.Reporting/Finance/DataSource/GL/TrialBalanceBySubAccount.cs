@@ -11,10 +11,15 @@ using ExceedERP.Reporting.Finance.ViewModel;
 namespace ExceedERP.Reporting.Finance.DataSource.GL
 {
     [DataObject]
-    class TrialBalanceBySubAccount : List<TrialBalalnceViewModel>
+    class TrialBalanceBySubAccount : List<TrialBalalnceViewModel>, IDisposable
     {
-        private readonly ExceedDbContext _db = new ExceedDbContext();
-        readonly AccountHelper _accountHelper = new AccountHelper();
+        private readonly ExceedDbContext _db;
+        private readonly AccountHelper _accountHelper;
+        public TrialBalanceBySubAccount()
+        {
+            _db = new ExceedDbContext();
+            _accountHelper = new AccountHelper();
+        }
 
 
         [DataObjectMethod(DataObjectMethodType.Select)]
@@ -68,59 +73,39 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 
                 if (!String.IsNullOrEmpty(segmentType) && !String.IsNullOrEmpty(segmentValue))
                 {
-                    if (_accountHelper.IsDynamicCoA())
+                    var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segmentType);
+                    int index = setup?.Sequence ?? 0;
+                    switch (index)
                     {
-                        var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segmentType);
-                        int index = setup?.Sequence ?? 0;
-                        switch (index)
-                        {
-                            case 1:
-                                postedAccounts = postedAccounts.Where(x => x.Segment1 == segmentValue).AsQueryable();
-                                break;
+                        case 1:
+                            postedAccounts = postedAccounts.Where(x => x.Segment1 == segmentValue).AsQueryable();
+                            break;
 
-                            case 2:
-                                postedAccounts = postedAccounts.Where(x => x.Segment2 == segmentValue).AsQueryable();
-                                break;
+                        case 2:
+                            postedAccounts = postedAccounts.Where(x => x.Segment2 == segmentValue).AsQueryable();
+                            break;
 
-                            case 3:
-                                postedAccounts = postedAccounts.Where(x => x.Segment3 == segmentValue).AsQueryable();
-                                break;
+                        case 3:
+                            postedAccounts = postedAccounts.Where(x => x.Segment3 == segmentValue).AsQueryable();
+                            break;
 
-                            case 4:
-                                postedAccounts = postedAccounts.Where(x => x.Segment4 == segmentValue).AsQueryable();
-                                break;
+                        case 4:
+                            postedAccounts = postedAccounts.Where(x => x.Segment4 == segmentValue).AsQueryable();
+                            break;
 
-                            case 5:
-                                postedAccounts = postedAccounts.Where(x => x.Segment5 == segmentValue).AsQueryable();
-                                break;
+                        case 5:
+                            postedAccounts = postedAccounts.Where(x => x.Segment5 == segmentValue).AsQueryable();
+                            break;
 
-                            case 6:
-                                postedAccounts = postedAccounts.Where(x => x.Segment6 == segmentValue).AsQueryable();
-                                break;
-                            case 7:
-                                postedAccounts = postedAccounts.Where(x => x.Segment7 == segmentValue).AsQueryable();
-                                break;
-                            case 8:
-                                postedAccounts = postedAccounts.Where(x => x.Segment8 == segmentValue).AsQueryable();
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        switch (segmentType)
-                        {
-                            case "Branch":
-                                postedAccounts = postedAccounts.Where(x => x.BranchSegment == segmentValue).AsQueryable();
-                                break;
-
-                            case "Cost Center":
-                                postedAccounts = postedAccounts.Where(x => x.CostCenterSegment == segmentValue).AsQueryable();
-                                break;
-
-                            case "Sub Account":
-                                postedAccounts = postedAccounts.Where(x => x.SubAccountSegment == segmentValue).AsQueryable();
-                                break;
-                        }
+                        case 6:
+                            postedAccounts = postedAccounts.Where(x => x.Segment6 == segmentValue).AsQueryable();
+                            break;
+                        case 7:
+                            postedAccounts = postedAccounts.Where(x => x.Segment7 == segmentValue).AsQueryable();
+                            break;
+                        case 8:
+                            postedAccounts = postedAccounts.Where(x => x.Segment8 == segmentValue).AsQueryable();
+                            break;
                     }
                 }
 
@@ -210,7 +195,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                             }
                             else
                             {
-                                Logger.Debug($"{naturalAccount} is not found in the natural account list, but exists in the ledger.");
+                                //Logger.Debug($"{naturalAccount} is not found in the natural account list, but exists in the ledger.");
                             }
 
                         }
@@ -290,8 +275,11 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
             }
             return list;
         }
-       
 
+        public void Dispose()
+        {
+            _db?.Dispose();
+        }
 
     }
 

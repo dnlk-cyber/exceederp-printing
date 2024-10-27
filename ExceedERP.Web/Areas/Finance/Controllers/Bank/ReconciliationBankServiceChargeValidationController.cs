@@ -1,22 +1,20 @@
-﻿﻿using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
- using ExceedERP.Core.Domain.Common;
- using ExceedERP.Core.Domain.Finance;
- using Kendo.Mvc.Extensions;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Finance;
+using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Finance.Bank;
- using ExceedERP.DataAccess.Context;
- using ExceedERP.Helpers.Finance;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 {
+    [AuthorizeRoles(FinanceConstants.BankReconciliationUser, FinanceConstants.BankReconciliationApprover)]
     public class ReconciliationBankServiceChargeValidationController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -43,6 +41,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
             return Json(result);
         }
 
+        [AuthorizeRoles(FinanceConstants.BankReconciliationApprover)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ReconciliationBankServiceChargeValidations_Create(int id,[DataSourceRequest]DataSourceRequest request, ReconciliationBankServiceChargeValidation reconciliationBankServiceChargeValidation)
         {

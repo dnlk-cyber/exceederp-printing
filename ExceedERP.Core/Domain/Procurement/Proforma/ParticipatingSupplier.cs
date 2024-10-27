@@ -65,6 +65,9 @@ namespace ExceedERP.Core.Domain.Procurement.Proforma
         public bool IsOutOfStock { get; set; }
         public string Remark { get; set; }
         public int ProformaItemID { get; set; }//proforma item
+        [Display(Name = "Additional charge %")]
+        [Range(0, 100, ErrorMessage = "The Additional charge % must be between 1 and 100.")]
+        public decimal AdditionalChargePercent { get; set; }
         public virtual ICollection<ParticipatingSupplierItem> ParticipatingSupplierItems { get; set; }
 
     }

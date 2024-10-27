@@ -1,23 +1,17 @@
 ﻿using System;
 using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.Core.Domain.Procurement;
 using ExceedERP.DataAccess.Context;
 using System.Collections.Generic;
-using System.EnterpriseServices;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common.ViewModel;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Core.Domain.Procurement.Contract;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Microsoft.Ajax.Utilities;
-using System.Data.Entity;
 using ExceedERP.Core.Domain.Finance.AP;
-using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain.Procurement.PaymentRequest;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers
 {
@@ -47,7 +41,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                     }
                     catch (Exception e)
                     {
-                        Logger.Debug(e.Message);
+                        //Logger.Debug(e.Message);
                     }
 
                 #endregion
@@ -975,7 +969,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
         }
 
-        public JsonResult GetPOandContractGrns(string id,string type)
+        public JsonResult GetPOandContractGrns(string id,string type,string text)
 
         {
             List<SelectorVm> list = new List<SelectorVm>();
@@ -994,6 +988,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                         var stockReceives = db.GoodReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false)
                             .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
                             .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
+
+
 
                         foreach (var goodReceive in stockReceives)
                         {
@@ -1063,7 +1059,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                             .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
                             .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
 
-                        foreach (var goodReceive in stockReceives)
+                        if (!string.IsNullOrEmpty(text))
+                            stockReceives = stockReceives.Where(x => x.GoodReceiveId.ToString().Contains(text));
+
+                        foreach (var goodReceive in stockReceives)                                
                         {
                             var record = new SelectorVm
                             {
@@ -1083,6 +1082,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                         var serviceReceives = db.ServiceReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false)
                             .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
                             .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
+
+                        if (!string.IsNullOrEmpty(text))
+                            serviceReceives = serviceReceives.Where(x => x.ServiceReceiveId.ToString().Contains(text));
 
                         foreach (var serviceReceive in serviceReceives)
                         {
@@ -1104,6 +1106,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
                         var fixedAssetReceives = db.FixedAssetReceives.Where(x => x.IsOnlineApproved && x.IsVoid == false)
                             .Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId)
                             .Where(x => x.ReceiveRef == purchasePayment.PoOrContractNumber);
+
+                        if (!string.IsNullOrEmpty(text))
+                            fixedAssetReceives = fixedAssetReceives.Where(x => x.FixedAssetReceiveId.ToString().Contains(text));
 
                         foreach (var fixedAssetReceive in fixedAssetReceives)
                         {
@@ -1477,17 +1482,29 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers
 
                     if (items.Any())
                         totalAmount = items.Sum(x => x.SubTotal);
+
+                    var changes = db.PoChangeOforders
+                   .Where(x => x.IsOnlineApproved && x.IsVoid == false)
+                   .Where(x => x.PurchaseOrderID == did);
+                    if (changes.Any())
+                    {
+                        int maxChangeId = changes.Max(x => x.PoChangeOforderId);
+                        var newItems = db.PoChangeOfOrderItems.Where(x => x.PoChangeOforderId == maxChangeId).ToList();
+                        if (newItems.Any())
+                            totalAmount = newItems.Sum(x => x.SubTotal);
+                    }
+
                     #region additional charge
                     var additionalCharge = db.PoAdditionalCharges.Where(x => x.PurchaseOrderID == did).ToList();
-                    foreach ( var item in additionalCharge )
+                    foreach ( var additional in additionalCharge )
                     {
-                        if(item.AmountType== AmountType.Percent)
+                        if(additional.AmountType== AmountType.Percent)
                         {
-                            totalServiceCharge=totalAmount*(item.Amount/100);
+                            totalServiceCharge=totalAmount*(additional.Amount/100);
                         }
                         else
                         {
-                            totalServiceCharge = totalServiceCharge + item.Amount;
+                            totalServiceCharge = totalServiceCharge + additional.Amount;
                         }
                     }
                     #endregion

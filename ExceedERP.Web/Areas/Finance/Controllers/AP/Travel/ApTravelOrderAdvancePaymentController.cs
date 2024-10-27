@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance.AP.Travel;
@@ -75,7 +74,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 apTravelOrderAdvancePayment.ApTravelOrderAdvancePaymentId = entity.ApTravelOrderAdvancePaymentId;
 
                 UpdatetravelOrderBalance(id);
-                _distributionHelper.UpdateApTravelOrderDistribution(id);
+                //_distributionHelper.UpdateApTravelOrderDistribution(id);
 
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "AP travel order advance payment item", "Success", User.Identity.Name, $"created advance payment item {entity.Description} under record {entity.ApTravelOrderId} ", Modules.Finance);
@@ -117,7 +116,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
                 UpdatetravelOrderBalance(apTravelOrderAdvancePayment.ApTravelOrderId);
-                _distributionHelper.UpdateApTravelOrderDistribution(apTravelOrderAdvancePayment.ApTravelOrderId);
+                //_distributionHelper.UpdateApTravelOrderDistribution(apTravelOrderAdvancePayment.ApTravelOrderId);
 
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "AP travel order advance payment item", "Success", User.Identity.Name, $"updated advance payment item {entity.Description} under record {entity.ApTravelOrderId} ", Modules.Finance);
@@ -154,7 +153,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                 _db.ApTravelOrderAdvancePayments.Attach(entity);
                 _db.ApTravelOrderAdvancePayments.Remove(entity);
                 _db.SaveChanges();
-                _distributionHelper.UpdateApTravelOrderDistribution(apTravelOrderAdvancePayment.ApTravelOrderId);
+                //_distributionHelper.UpdateApTravelOrderDistribution(apTravelOrderAdvancePayment.ApTravelOrderId);
 
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted travel order advance item " + apTravelOrderAdvancePayment.ApTravelOrderId + " " + apTravelOrderAdvancePayment.Description, Modules.Finance);

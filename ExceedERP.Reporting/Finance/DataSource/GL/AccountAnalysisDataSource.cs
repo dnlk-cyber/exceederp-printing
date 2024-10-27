@@ -4,132 +4,106 @@ using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Reporting.Finance.ViewModel;
 
 namespace ExceedERP.Reporting.Finance.DataSource.GL
 {
     [DataObject]
-    public class AccountAnalysisDataSource : List<AccountAnalysisViewModel>
+    public class AccountAnalysisDataSource : List<AccountAnalysisViewModel>, IDisposable
     {
-        private readonly ExceedDbContext _db = new ExceedDbContext();
-
-        [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<AccountAnalysisViewModel> AccountAnalysis(string category,string source, string fromperiod, string toperiod,string postStatus,string approvalstatus,string createdby,string branchid)
+        private readonly ExceedDbContext _db;
+        public AccountAnalysisDataSource()
         {
-            _db.Database.CommandTimeout = 7200;//added
-            List<AccountAnalysisViewModel> list = new List<AccountAnalysisViewModel> { };
-            AccountAnalysisViewModel record;
-            if (category == null)
-                category = "";
+            _db=new ExceedDbContext();
+        }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<AccountAnalysisViewModel> AccountAnalysis(
+         string category, string source, string fromperiod, string toperiod,
+         string postStatus, string approvalstatus, string createdby, string branchid)
+        {
+            _db.Database.CommandTimeout = 7200; // added
+            List<AccountAnalysisViewModel> list = new List<AccountAnalysisViewModel>();
 
-            if (!String.IsNullOrEmpty(fromperiod) && !String.IsNullOrEmpty(toperiod))
+            if (!string.IsNullOrEmpty(fromperiod) && !string.IsNullOrEmpty(toperiod))
             {
                 int from = int.Parse(fromperiod);
                 int to = int.Parse(toperiod);
                 DateTime dt11 = _db.GLPeriods.Find(from).DateFrom;
                 DateTime dt22 = _db.GLPeriods.Find(to).DateTo;
+               
+                var journalQuery = _db.GLRecordJournalDetails
+                    //.Include(x => x.GLRecordJournal) // Eagerly load the GLRecordJournal
+                    .Where(x => x.GLRecordJournal.isVoid == false &&
+                               // x.GLRecordJournal.IsOnlineApproved &&
+                                x.GLRecordJournal.EffectiveDate >= dt11 &&
+                                x.GLRecordJournal.EffectiveDate <= dt22)
+                    .AsNoTracking(); // Disable tracking for better performance
 
-                var journal_lines = _db.GLRecordJournalDetails
-                    .Where(x => x.GLRecordJournal.isVoid==false)
-                    .Where(x => x.GLRecordJournal.EffectiveDate >= dt11)
-                    .Where(x => x.GLRecordJournal.EffectiveDate <= dt22)
-                    .Select(x=>new{x.GLRecordJournal,x.AccountCode,x.AccountDesc,x.AdditionalDescription,x.Debit,x.Credit,x.CreatedBy})
-                    .AsNoTracking()
-                    .AsQueryable();
-
-                if (!String.IsNullOrEmpty(approvalstatus))
+                // Apply filters dynamically
+                if (!string.IsNullOrEmpty(approvalstatus))
                 {
-                    if(approvalstatus== "APPROVED")
-                    {
-                        journal_lines =journal_lines
-                            .Where(x => x.GLRecordJournal.IsOnlineApproved)
-                            .AsNoTracking().AsQueryable();
-                        
-                    }
-                    else
-                    {
-                        journal_lines =journal_lines
-                                .Where(x => x.GLRecordJournal.IsOnlineApproved==false)
-                                .AsNoTracking().AsQueryable();
-                    }
+                    bool isApproved = approvalstatus == "APPROVED";
+                    journalQuery = journalQuery.Where(x => x.GLRecordJournal.IsOnlineApproved == isApproved);
                 }
 
-                if (!String.IsNullOrEmpty(postStatus))
+                if (!string.IsNullOrEmpty(postStatus))
                 {
-                    if (postStatus == "POSTED")
-                    {
-                        journal_lines =journal_lines
-                                .Where(x => x.GLRecordJournal.isPosted)
-                                .AsNoTracking().AsQueryable();
-
-                    }
-                    else
-                    {
-                        journal_lines =journal_lines
-                                .Where(x => x.GLRecordJournal.isPosted == false)
-                                .AsNoTracking().AsQueryable();
-                    }
+                    bool isPosted = postStatus == "POSTED";
+                    journalQuery = journalQuery.Where(x => x.GLRecordJournal.isPosted == isPosted);
                 }
 
-                if (!String.IsNullOrEmpty(category))
+                if (!string.IsNullOrEmpty(category))
                 {
-                    journal_lines =
-                        journal_lines.Where(x => x.GLRecordJournal.CategoryName.ToUpper() == category.ToUpper())
-                            .AsNoTracking().AsQueryable();
+                    journalQuery = journalQuery.Where(x =>x.GLRecordJournal.CategoryName==category);
                 }
 
-                if (!String.IsNullOrEmpty(source))
+                if (!string.IsNullOrEmpty(source))
                 {
-                    journal_lines =
-                        journal_lines.Where(x => x.GLRecordJournal.SourcesName.ToUpper() == source.ToUpper()).AsNoTracking().AsQueryable();
+                    journalQuery = journalQuery.Where(x => x.GLRecordJournal.SourcesName == source);
                 }
 
-                if (!String.IsNullOrEmpty(createdby))
+                if (!string.IsNullOrEmpty(createdby))
                 {
-                    journal_lines =
-                        journal_lines.Where(x => x.GLRecordJournal.CreatedBy== createdby).AsNoTracking().AsQueryable();
+                    journalQuery = journalQuery.Where(x => x.GLRecordJournal.CreatedBy == createdby);
                 }
 
-                if (!String.IsNullOrEmpty(branchid))
+                if (!string.IsNullOrEmpty(branchid))
                 {
-                    int did = int.Parse(branchid);
-                    journal_lines =
-                        journal_lines.Where(x => x.GLRecordJournal.BranchId == did).AsQueryable();
+                    int branchId = int.Parse(branchid);
+                    journalQuery = journalQuery.Where(x => x.GLRecordJournal.BranchId == branchId);
                 }
 
-
-                foreach (var journal in journal_lines)
+                // Project results to AccountAnalysisViewModel
+                list = journalQuery.Select(x => new AccountAnalysisViewModel
                 {
-                    record = new AccountAnalysisViewModel
-                    {
-                        JournalName = journal.GLRecordJournal.JournalName,
-                        Description = journal.GLRecordJournal.Description,
-                        Period = journal.GLRecordJournal.PeriodName,
-                        EffectiveDate = journal.GLRecordJournal.EffectiveDate.ToShortDateString(),
-                        JournalReference = journal.GLRecordJournal.JournalNumber,
-                        Category = journal.GLRecordJournal.CategoryName,
-                        AccountCode = journal.AccountCode,
-                        AccountDescription = journal.AccountDesc,
-                        AdditionalDescription = journal.AdditionalDescription,
-                        Debit = journal.Debit,
-                        Credit = journal.Credit,
-                        Remark=journal.GLRecordJournal.Remark,
-                        CreatedBy = journal.CreatedBy,
-                        ReferenceDoc = journal.GLRecordJournal.ReferenceDoc,
-                        PaymentReference = journal.GLRecordJournal.PaymentReference,
-                        InvoiceReferenceDoc = journal.GLRecordJournal.InvoiceReferenceDoc,
-                        PostStatus=journal.GLRecordJournal.isPosted? "Psted":"Not Posted"
-                    };
-                    list.Add(record);
-                }
-
-
+                    JournalName = x.GLRecordJournal.JournalName,
+                    Description = x.GLRecordJournal.Description,
+                    Period = x.GLRecordJournal.PeriodName,
+                    EffectiveDate = x.GLRecordJournal.EffectiveDate,
+                    JournalReference = x.GLRecordJournal.JournalNumber,
+                    Category = x.GLRecordJournal.CategoryName,
+                    AccountCode = x.AccountCode,
+                    AccountDescription = x.AccountDesc,
+                    AdditionalDescription = x.AdditionalDescription,
+                    Debit = x.Debit,
+                    Credit = x.Credit,
+                    Remark = x.GLRecordJournal.Remark,
+                    CreatedBy = x.CreatedBy,
+                    ReferenceDoc = x.GLRecordJournal.ReferenceDoc,
+                    PaymentReference = x.GLRecordJournal.PaymentReference,
+                    InvoiceReferenceDoc = x.GLRecordJournal.InvoiceReferenceDoc,
+                    PostStatus = x.GLRecordJournal.isPosted ? "Posted" : "Not Posted"
+                }).ToList();
             }
-            return list;
 
+            return list;
+        }
+        public void Dispose()
+        {
+            _db?.Dispose();
         }
 
-       
     }
 
 

@@ -8,7 +8,6 @@ using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
-using ExceedERP.Reporting.Inventory;
 using ExceedERP.Web.Helpers;
 using Hangfire;
 using Kendo.Mvc.Extensions;

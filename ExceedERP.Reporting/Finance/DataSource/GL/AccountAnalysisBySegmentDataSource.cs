@@ -10,13 +10,131 @@ using ExceedERP.Reporting.Finance.ViewModel;
 namespace ExceedERP.Reporting.Finance.DataSource.GL
 {
     [DataObject]
-    public class AccountAnalysisBySegmentDataSource : List<AccountAnalysisViewModel>
+    public class AccountAnalysisBySegmentDataSource : List<AccountAnalysisViewModel>, IDisposable
     {
-        private readonly ExceedDbContext _db = new ExceedDbContext();
-        readonly AccountHelper _accountHelper = new AccountHelper();
+        private readonly ExceedDbContext _db;
+        private readonly AccountHelper _accountHelper ;
+        public AccountAnalysisBySegmentDataSource()
+        {
+            _db = new ExceedDbContext();
+            _accountHelper = new AccountHelper();
+        }
+       
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<AccountAnalysisViewModel> AccountAnalysisBySegment(string category, string source, string acctFrom, string acctTo, string fromperiod, string toperiod,string segmentType,string segmentValue,string createdby, string branchid)
+        public List<AccountAnalysisViewModel> AccountAnalysisBySegment(
+    string category, string source, string acctFrom, string acctTo,
+    string fromperiod, string toperiod, string segmentType, string segmentValue,
+    string createdby, string branchid)
+        {
+            _db.Database.CommandTimeout = 7200; // added
+            List<AccountAnalysisViewModel> list = new List<AccountAnalysisViewModel>();
+
+            if (!string.IsNullOrEmpty(fromperiod) && !string.IsNullOrEmpty(toperiod))
+            {
+                int from = int.Parse(fromperiod);
+                int to = int.Parse(toperiod);
+                DateTime dt11 = _db.GLPeriods.Find(from).DateFrom;
+                DateTime dt22 = _db.GLPeriods.Find(to).DateTo;
+
+                var journals = _db.GLRecordJournalDetails
+                                // .Include(x => x.GLRecordJournal) // Eagerly load the GLRecordJournal
+                    .Where(x => string.Compare(x.AccountSegment, acctFrom, StringComparison.OrdinalIgnoreCase) >= 0 &&
+                                string.Compare(x.AccountSegment, acctTo, StringComparison.OrdinalIgnoreCase) <= 0 &&
+                                x.GLRecordJournal.IsOnlineApproved &&
+                                !x.GLRecordJournal.isVoid &&
+                                x.GLRecordJournal.EffectiveDate >= dt11 &&
+                                x.GLRecordJournal.EffectiveDate <= dt22)
+                    .Select(x => new
+                    {
+                        x.GLRecordJournal,
+                        x.AccountCode,
+                        x.AccountDesc,
+                        x.AdditionalDescription,
+                        x.Debit,
+                        x.Credit,
+                        x.CreatedBy,
+                        x.AccountSegment,
+                        x.BranchSegment,
+                        x.CostCenterSegment,
+                        x.SubAccountSegment,
+                        x.Segment1,
+                        x.Segment2,
+                        x.Segment3,
+                        x.Segment4,
+                        x.Segment5,
+                        x.Segment6,
+                        x.Segment7,
+                        x.Segment8
+                    })
+                    .AsNoTracking();
+
+                // Combine filters instead of chaining
+                if (!string.IsNullOrEmpty(category))
+                {
+                    journals = journals.Where(x => x.GLRecordJournal.CategoryName == category);
+                }
+
+                if (!string.IsNullOrEmpty(source))
+                {
+                    journals = journals.Where(x => x.GLRecordJournal.SourcesName == source);
+                }
+
+                if (!string.IsNullOrEmpty(createdby))
+                {
+                    journals = journals.Where(x => x.GLRecordJournal.CreatedBy == createdby);
+                }
+
+                if (!string.IsNullOrEmpty(branchid))
+                {
+                    int did = int.Parse(branchid);
+                    journals = journals.Where(x => x.GLRecordJournal.BranchId == did);
+                }
+
+                if (!string.IsNullOrEmpty(segmentType) && !string.IsNullOrEmpty(segmentValue))
+                {
+                    var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segmentType);
+                    int index = setup?.Sequence ?? 0;
+
+                    switch (index)
+                    {
+                        case 1: journals = journals.Where(x => x.Segment1 == segmentValue); break;
+                        case 2: journals = journals.Where(x => x.Segment2 == segmentValue); break;
+                        case 3: journals = journals.Where(x => x.Segment3 == segmentValue); break;
+                        case 4: journals = journals.Where(x => x.Segment4 == segmentValue); break;
+                        case 5: journals = journals.Where(x => x.Segment5 == segmentValue); break;
+                        case 6: journals = journals.Where(x => x.Segment6 == segmentValue); break;
+                        case 7: journals = journals.Where(x => x.Segment7 == segmentValue); break;
+                        case 8: journals = journals.Where(x => x.Segment8 == segmentValue); break;
+                    }
+                }
+
+                // Add results to list in one operation instead of iterating
+                list = journals.Select(journal => new AccountAnalysisViewModel
+                {
+                    JournalName = journal.GLRecordJournal.JournalName,
+                    Description = journal.GLRecordJournal.Description,
+                    Period = journal.GLRecordJournal.PeriodName,
+                    EffectiveDate = journal.GLRecordJournal.EffectiveDate,
+                    JournalReference = journal.GLRecordJournal.JournalNumber,
+                    Category = journal.GLRecordJournal.CategoryName,
+                    AccountCode = journal.AccountCode,
+                    AccountDescription = journal.AccountDesc,
+                    AdditionalDescription = journal.AdditionalDescription,
+                    Debit = journal.Debit,
+                    Credit = journal.Credit,
+                    Remark = journal.GLRecordJournal.Remark,
+                    CreatedBy = journal.CreatedBy,
+                    ReferenceDoc = journal.GLRecordJournal.ReferenceDoc,
+                    PaymentReference = journal.GLRecordJournal.PaymentReference,
+                    InvoiceReferenceDoc = journal.GLRecordJournal.InvoiceReferenceDoc,
+                }).ToList();
+            }
+
+            return list;
+        }
+
+        public List<AccountAnalysisViewModel> AccountAnalysisBySegment_old(string category, string source, string acctFrom, string acctTo, string fromperiod, string toperiod,string segmentType,string segmentValue,string createdby, string branchid)
         {
             _db.Database.CommandTimeout = 7200;//added
             List<AccountAnalysisViewModel> list = new List<AccountAnalysisViewModel> { };
@@ -92,59 +210,39 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 
                 if (!String.IsNullOrEmpty(segmentType) && !String.IsNullOrEmpty(segmentValue))
                 {
-                    if (_accountHelper.IsDynamicCoA())
+                    var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segmentType);
+                    int index = setup?.Sequence ?? 0;
+                    switch (index)
                     {
-                        var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segmentType);
-                        int index = setup?.Sequence ?? 0;
-                        switch (index)
-                        {
-                            case 1:
-                                journals = journals.Where(x => x.Segment1 == segmentValue).AsQueryable();
-                                break;
+                        case 1:
+                            journals = journals.Where(x => x.Segment1 == segmentValue).AsQueryable();
+                            break;
 
-                            case 2:
-                                journals = journals.Where(x => x.Segment2 == segmentValue).AsQueryable();
-                                break;
+                        case 2:
+                            journals = journals.Where(x => x.Segment2 == segmentValue).AsQueryable();
+                            break;
 
-                            case 3:
-                                journals = journals.Where(x => x.Segment3 == segmentValue).AsQueryable();
-                                break;
+                        case 3:
+                            journals = journals.Where(x => x.Segment3 == segmentValue).AsQueryable();
+                            break;
 
-                            case 4:
-                                journals = journals.Where(x => x.Segment4 == segmentValue).AsQueryable();
-                                break;
+                        case 4:
+                            journals = journals.Where(x => x.Segment4 == segmentValue).AsQueryable();
+                            break;
 
-                            case 5:
-                                journals = journals.Where(x => x.Segment5 == segmentValue).AsQueryable();
-                                break;
+                        case 5:
+                            journals = journals.Where(x => x.Segment5 == segmentValue).AsQueryable();
+                            break;
 
-                            case 6:
-                                journals = journals.Where(x => x.Segment6 == segmentValue).AsQueryable();
-                                break;
-                            case 7:
-                                journals = journals.Where(x => x.Segment7 == segmentValue).AsQueryable();
-                                break;
-                            case 8:
-                                journals = journals.Where(x => x.Segment8 == segmentValue).AsQueryable();
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        switch (segmentType)
-                        {
-                            case "Branch":
-                                journals = journals.Where(x => x.BranchSegment == segmentValue).AsQueryable();
-                                break;
-
-                            case "Cost Center":
-                                journals = journals.Where(x => x.CostCenterSegment == segmentValue).AsQueryable();
-                                break;
-
-                            case "Sub Account":
-                                journals = journals.Where(x => x.SubAccountSegment == segmentValue).AsQueryable();
-                                break;
-                        }
+                        case 6:
+                            journals = journals.Where(x => x.Segment6 == segmentValue).AsQueryable();
+                            break;
+                        case 7:
+                            journals = journals.Where(x => x.Segment7 == segmentValue).AsQueryable();
+                            break;
+                        case 8:
+                            journals = journals.Where(x => x.Segment8 == segmentValue).AsQueryable();
+                            break;
                     }
                 }
 
@@ -157,7 +255,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                         JournalName = journal.GLRecordJournal.JournalName,
                         Description = journal.GLRecordJournal.Description,
                         Period = journal.GLRecordJournal.PeriodName,
-                        EffectiveDate = journal.GLRecordJournal.EffectiveDate.ToShortDateString(),
+                        EffectiveDate = journal.GLRecordJournal.EffectiveDate,
                         JournalReference = journal.GLRecordJournal.JournalNumber,
                         Category = journal.GLRecordJournal.CategoryName,
                         AccountCode = journal.AccountCode,
@@ -180,6 +278,11 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 
         }
 
-      
+        public void Dispose()
+        {
+            _db?.Dispose();
+        }
+
+
     }
 }

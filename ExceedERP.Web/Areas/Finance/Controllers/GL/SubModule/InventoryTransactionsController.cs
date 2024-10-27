@@ -13,7 +13,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
 {
-     [AuthorizeRoles(FinanceConstants.GeneralSubLedgerTransfer)]
+    [AuthorizeRoles(FinanceConstants.GeneralSubLedgerTransfer)]
     public class InventoryTransactionsController : Controller
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
@@ -65,8 +65,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
         }
         public ActionResult GoodReceives_Read([DataSourceRequest]DataSourceRequest request)
         {
-
-            IQueryable<GoodReceive> goodreceives = _db.GoodReceives.Where(x => x.IsOnlineApproved && !x.IsVoid && !x.IsOnlineTransferred);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            
+            IQueryable<GoodReceive> goodreceives = _db.GoodReceives
+                .Where(x => x.IsOnlineApproved && !x.IsVoid && !x.IsOnlineTransferred)
+                .Where(x => mybraches.Contains(x.BranchId));
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
                 int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
@@ -144,8 +147,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             {
                 _transferHelper = new InventoryTransferHelper();
                 _response = _transferHelper.GoodReceive(record.GoodReceiveId,"Batch Transfer", User.Identity.Name);
-                if(_response!= "SUCCESS")
-                    Logger.Debug("Grn transfer ID:"+record.GoodReceiveId+_response);
+                if (_response != "SUCCESS")
+                    ;// Logger.Debug("Grn transfer ID:"+record.GoodReceiveId+_response);
             }
 
             #region auto job
@@ -203,11 +206,25 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             ViewData["Category"] = categories;
 
             ViewData["defaultCategory"] = categories.FirstOrDefault();
+
+            var suppliers = _db.ProcurementSuppliers;
+            var selectedSuppliers = suppliers.Select(
+                i => new
+                {
+                    Name = i.SupplierId + "-" + i.Name,
+                    Code = i.SupplierId
+                }).AsQueryable();
+            ViewData["Suppliers"] = selectedSuppliers;
+
             return View();
         }
         public ActionResult Issues_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<Issue> issues = _db.Issues.Where(x => x.IsFuel == false && x.IsOnlineApproved && !x.IsVoid && !x.IsOnlineTransferred);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+                
+            IQueryable<Issue> issues = _db.Issues
+                .Where(x => x.IsFuel == false && x.IsOnlineApproved && !x.IsVoid && !x.IsOnlineTransferred)
+                .Where(x => mybraches.Contains(x.BranchId));
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
                 int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
@@ -227,6 +244,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                 StoreRequisitionID = issue.StoreRequisitionID,
                 Reference = issue.Reference,
                 IssueDate = issue.IssueDate,
+                SupplierId = issue.SupplierId,
+                IsLoan = issue.IsLoan,
                 Status = issue.Status,
                 Remark = issue.Remark,
                 IsVoid = issue.IsVoid,
@@ -280,7 +299,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                 _transferHelper = new InventoryTransferHelper();
                 _response = _transferHelper.Issue(record.IssueID, "Bach Transfer", User.Identity.Name);
                 if (_response != "SUCCESS")
-                    Logger.Debug("Issue transfer ID:" + record.IssueID + _response);
+                    ;//Logger.Debug("Issue transfer ID:" + record.IssueID + _response);
             }
 
             #region auto job
@@ -338,11 +357,25 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                     GLPeriodId = i.InventoryPeriodId
                 }).AsQueryable();
             ViewData["inventoryPeriods"] = selectedinventoryPeriods;
+
+            var suppliers = _db.ProcurementSuppliers;
+            var selectedSuppliers = suppliers.Select(
+                i => new
+                {
+                    Name = i.SupplierId + "-" + i.Name,
+                    Code = i.SupplierId
+                }).AsQueryable();
+            ViewData["Suppliers"] = selectedSuppliers;
+
             return View();
         }
         public ActionResult IssueFuels_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<Issue> issues = _db.Issues.Where(x => x.IsFuel && x.IsOnlineApproved && !x.IsVoid && !x.IsOnlineTransferred);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+            IQueryable<Issue> issues = _db.Issues
+                .Where(x => x.IsFuel && x.IsOnlineApproved && !x.IsVoid && !x.IsOnlineTransferred)
+                .Where(x => mybraches.Contains(x.BranchId));
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
                 int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
@@ -367,6 +400,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                 SupplierAccountCode = issueFuel.SupplierAccountCode,
                 Reference = issueFuel.Reference,
                 IssueDate = issueFuel.IssueDate,
+                SupplierId = issueFuel.SupplierId,
+                IsLoan = issueFuel.IsLoan,
                 Status = issueFuel.Status,
                 Remark = issueFuel.Remark,
                 IsVoid = issueFuel.IsVoid,
@@ -421,7 +456,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                 _transferHelper = new InventoryTransferHelper();
                 _response = _transferHelper.IssueFuel(record.IssueID, "Bach Transfer", User.Identity.Name);
                 if (_response != "SUCCESS")
-                    Logger.Debug("Issue fuel transfer ID:" + record.IssueID + _response);
+                    ;// Logger.Debug("Issue fuel transfer ID:" + record.IssueID + _response);
             }
 
             #region auto job
@@ -486,7 +521,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
 
         public ActionResult ItemTransfer_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<ItemTransfer> itemtransfersends = _db.ItemTransfers.Where(st => st.IsOnlineApproved && !st.IsVoid && !st.IsOnlineTransferred);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+            IQueryable<ItemTransfer> itemtransfersends = _db.ItemTransfers
+                .Where(st => st.IsOnlineApproved && !st.IsVoid && !st.IsOnlineTransferred)
+                .Where(x => mybraches.Contains(x.BranchId));
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
                 int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
@@ -501,6 +540,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                 GLPeriodId = itemTransferReceive.GLPeriodId,
                 ItemTransferID = itemTransferReceive.ItemTransferID,
                 StoreRequisitionID = itemTransferReceive.StoreRequisitionID,
+                DocumentRef = itemTransferReceive.DocumentRef,
                 TransferDate = itemTransferReceive.TransferDate,
                 FromStore = itemTransferReceive.FromStore,
                 ToStore = itemTransferReceive.ToStore,
@@ -560,7 +600,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                 _transferHelper = new InventoryTransferHelper();
                 _response = _transferHelper.TransferSend(record.ItemTransferID, "Bach Transfer", User.Identity.Name);
                 if (_response != "SUCCESS")
-                    Logger.Debug("Item Transfer transfer ID:" + record.ItemTransferID + _response);
+                    ;// Logger.Debug("Item Transfer transfer ID:" + record.ItemTransferID + _response);
             }
 
             #region auto job
@@ -624,7 +664,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
         }
         public ActionResult ItemTransferReceives_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<ItemTransferReceive> itemtransferreceives = _db.ItemTransferReceive.Where(st => st.IsOnlineApproved && !st.IsVoid && !st.IsOnlineTransferred);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+            IQueryable<ItemTransferReceive> itemtransferreceives = _db.ItemTransferReceive
+                .Where(st => st.IsOnlineApproved && !st.IsVoid && !st.IsOnlineTransferred)
+                .Where(x => mybraches.Contains(x.BranchId));
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
                 int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
@@ -698,7 +742,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                 _transferHelper = new InventoryTransferHelper();
                 _response = _transferHelper.TransferReceive(record.ItemTransferID, "Bach Transfer", User.Identity.Name);
                 if (_response != "SUCCESS")
-                    Logger.Debug("Item Transfer transfer ID:" + record.ItemTransferID + _response);
+                    ;// Logger.Debug("Item Transfer transfer ID:" + record.ItemTransferID + _response);
             }
 
             #region auto job
@@ -757,7 +801,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
         }
         public ActionResult StoreReturns_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<StoreReturn> storereturns = _db.StoreReturns.Where(x=>x.IsOnlineApproved && !x.IsVoid && !x.IsOnlineTransferred);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+            IQueryable<StoreReturn> storereturns = _db.StoreReturns
+                .Where(x=>x.IsOnlineApproved && !x.IsVoid && !x.IsOnlineTransferred)
+                .Where(x => mybraches.Contains(x.BranchId));
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
                 int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
@@ -822,7 +870,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                 _transferHelper = new InventoryTransferHelper();
                 _response = _transferHelper.StoreReturn(record.StoreReturnID, "Bach Transfer", User.Identity.Name);
                 if (_response != "SUCCESS")
-                    Logger.Debug("Store ReturnID:" + record.StoreReturnID + _response);
+                    ;// Logger.Debug("Store ReturnID:" + record.StoreReturnID + _response);
             }
 
             #region auto job
@@ -880,8 +928,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             return View();
         }
         public ActionResult GoodSalesOrLend_Read([DataSourceRequest]DataSourceRequest request)
-        {            
-            IQueryable<GoodSellingAndLending> goodsellingandlendings = _db.GoodSellingAndLendings.Where(x => x.IsOnlineApproved && !x.IsVoid && !x.IsOnlineTransferred);
+        {
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+            IQueryable<GoodSellingAndLending> goodsellingandlendings = _db.GoodSellingAndLendings
+                .Where(x => x.IsOnlineApproved && !x.IsVoid && !x.IsOnlineTransferred)
+                .Where(x => mybraches.Contains(x.BranchId));
             if (GlobalHelper.IsMultipleBusinessUnit())
             {
                 int myBusinessUnit = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
@@ -944,7 +996,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                 _transferHelper = new InventoryTransferHelper();
                 _response = _transferHelper.GoodSelling(record.GoodSellingAndLendingID, "Bach Transfer", User.Identity.Name);
                 if (_response != "SUCCESS")
-                    Logger.Debug("Good selling ID:" + record.GoodSellingAndLendingID + _response);
+                    ;// Logger.Debug("Good selling ID:" + record.GoodSellingAndLendingID + _response);
             }
 
             #region auto job

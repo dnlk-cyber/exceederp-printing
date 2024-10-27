@@ -95,7 +95,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
                 db.SaveChanges();
                 supplierBlackList.SupplierBlackListId = entity.SupplierBlackListId;
                 #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "Supplier black list", "Success", User.Identity.Name, $"created supplier black list {entity.Supplier.Name}", Modules.Procurement);
+                UserHelper.OperationLog(Request.UserHostAddress, "Supplier black list", "Success", User.Identity.Name, $"created supplier black list {entity.ProcurementSupplierID}", Modules.Procurement);
                 #endregion
             }
 
@@ -136,7 +136,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
                 #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "Supplier black list", "Success", User.Identity.Name, $"updated supplier black list {entity.Supplier.Name}", Modules.Procurement);
+                UserHelper.OperationLog(Request.UserHostAddress, "Supplier black list", "Success", User.Identity.Name, $"updated supplier black list {entity.ProcurementSupplierID}", Modules.Procurement);
                 #endregion
             }
 

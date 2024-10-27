@@ -9,7 +9,9 @@ namespace ExceedERP.Core.Domain.Finance.AP
     {
         PettyCash,
         Check,
-        Transfer
+        Transfer,
+        RTGS,
+        CPO
     }
     public class ApMiscellaneousPayment : Operations
     {
@@ -57,10 +59,14 @@ namespace ExceedERP.Core.Domain.Finance.AP
         [Display(Name = "Deduction")]
         public decimal DeductAmount { get; set; }
         public int BranchId { get; set; }
+        //for access or view
         public int BusinessUnitId { get; set; }
+        public int CreatedAtBranchId { get; set; }
+        public int CreatedAtBusinessUnitId { get; set; }
         public virtual ICollection<ApMiscellaneousPaymentLine> ApMiscellaneousPaymentLines { get; set; }
         public virtual ICollection<ApMiscellaneousPaymentDistribution> ApMiscellaneousPaymentDistribution { get; set; }
         public virtual ICollection<ApMiscellaneousPaymentValidation> ApMiscellaneousPaymentValidation { get; set; }
+        
     }
 
     public class ApMiscellaneousPaymentLine : TrackUserSettingOperation

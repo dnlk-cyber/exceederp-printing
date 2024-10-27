@@ -58,6 +58,7 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox113 = new Telerik.Reporting.TextBox();
             this.textBox114 = new Telerik.Reporting.TextBox();
             this.textBox96 = new Telerik.Reporting.TextBox();
+            this.fundTransfer = new Telerik.Reporting.ObjectDataSource();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
             this.textBox62 = new Telerik.Reporting.TextBox();
             this.textBox61 = new Telerik.Reporting.TextBox();
@@ -101,7 +102,6 @@ namespace ExceedERP.Reporting.Finance.Print
             this.pictureBox5 = new Telerik.Reporting.PictureBox();
             this.textBox16 = new Telerik.Reporting.TextBox();
             this.pictureBox4 = new Telerik.Reporting.PictureBox();
-            this.fundTransfer = new Telerik.Reporting.ObjectDataSource();
             this.header = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -575,6 +575,14 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox96.StyleName = "Civic.TableBody";
             this.textBox96.Value = "Total";
             // 
+            // fundTransfer
+            // 
+            this.fundTransfer.DataMember = "ApFundTransferLines";
+            this.fundTransfer.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.Print.ApFundTransferOds);
+            this.fundTransfer.Name = "fundTransfer";
+            this.fundTransfer.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(int), "= Parameters.id.Value")});
+            // 
             // pageFooterSection1
             // 
             this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(2.5999999046325684D);
@@ -916,8 +924,8 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox49.Name = "textBox49";
             this.textBox49.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.7265627384185791D), Telerik.Reporting.Drawing.Unit.Inch(0.45503982901573181D));
             this.textBox49.Style.Font.Bold = false;
-            this.textBox49.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(10D);
-            this.textBox49.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Bottom;
+            this.textBox49.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox49.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Top;
             this.textBox49.Value = "Signature:";
             // 
             // pictureBox2
@@ -944,8 +952,8 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox50.Name = "textBox50";
             this.textBox50.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.7265627384185791D), Telerik.Reporting.Drawing.Unit.Inch(0.45503982901573181D));
             this.textBox50.Style.Font.Bold = false;
-            this.textBox50.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(10D);
-            this.textBox50.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Bottom;
+            this.textBox50.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox50.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Top;
             this.textBox50.Value = "Signature:";
             // 
             // pictureBox1
@@ -972,8 +980,8 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox51.Name = "textBox51";
             this.textBox51.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.7265627384185791D), Telerik.Reporting.Drawing.Unit.Inch(0.45503982901573181D));
             this.textBox51.Style.Font.Bold = false;
-            this.textBox51.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(10D);
-            this.textBox51.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Bottom;
+            this.textBox51.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox51.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Top;
             this.textBox51.Value = "Signature:";
             // 
             // pictureBox3
@@ -1000,8 +1008,8 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox48.Name = "textBox48";
             this.textBox48.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.7265627384185791D), Telerik.Reporting.Drawing.Unit.Inch(0.45503982901573181D));
             this.textBox48.Style.Font.Bold = false;
-            this.textBox48.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(10D);
-            this.textBox48.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Bottom;
+            this.textBox48.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox48.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Top;
             this.textBox48.Value = "Signature:";
             // 
             // pictureBox6
@@ -1028,8 +1036,8 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox47.Name = "textBox47";
             this.textBox47.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.7265627384185791D), Telerik.Reporting.Drawing.Unit.Inch(0.45503982901573181D));
             this.textBox47.Style.Font.Bold = false;
-            this.textBox47.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(10D);
-            this.textBox47.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Bottom;
+            this.textBox47.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox47.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Top;
             this.textBox47.Value = "Signature:";
             // 
             // pictureBox5
@@ -1056,8 +1064,8 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox16.Name = "textBox16";
             this.textBox16.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.7265627384185791D), Telerik.Reporting.Drawing.Unit.Inch(0.45503982901573181D));
             this.textBox16.Style.Font.Bold = false;
-            this.textBox16.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(10D);
-            this.textBox16.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Bottom;
+            this.textBox16.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox16.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Top;
             this.textBox16.Value = "Signature:";
             // 
             // pictureBox4
@@ -1077,14 +1085,6 @@ namespace ExceedERP.Reporting.Finance.Print
             this.pictureBox4.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(0D);
             this.pictureBox4.Style.BorderWidth.Right = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.pictureBox4.Value = "";
-            // 
-            // fundTransfer
-            // 
-            this.fundTransfer.DataMember = "ApFundTransferLines";
-            this.fundTransfer.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.Print.ApFundTransferOds);
-            this.fundTransfer.Name = "fundTransfer";
-            this.fundTransfer.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(int), "= Parameters.id.Value")});
             // 
             // header
             // 

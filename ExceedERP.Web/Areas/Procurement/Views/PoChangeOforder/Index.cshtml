@@ -8,7 +8,7 @@
           .Columns(columns =>
           {
               columns.Bound(p => p.PoChangeOforderId).Title("Change No.").Width(90).ClientTemplate("#=appendZeros(PoChangeOforderId)#");
-              columns.ForeignKey(p => p.PurchaseOrderID, (IEnumerable)ViewData["PurchaseOrders"], "Code", "Name").Title("Purchase Order").Width(90).EditorTemplateName("PurchaseOrderSelector");
+              columns.ForeignKey(p => p.PurchaseOrderID, (IEnumerable)ViewData["PurchaseOrders"], "Code", "Name").Title("Purchase Order").Width(90).EditorTemplateName("PurchaseOrderSelector").Filterable(ftb => ftb.Multi(true).Search(true));
             
               columns.Bound(c => c.Status).Width(120);
 
@@ -116,7 +116,7 @@
                                                 CreatedOn
                                             </dt>
                                             <dd>
-                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                             </dd>
                                             <dt>
@@ -135,7 +135,7 @@
                                                 Modified Date
                                             </dt>
                                             <dd>
-                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                             </dd>
                                         </dl>
                                         # if (!IsOnlineApproved)
@@ -215,7 +215,7 @@
                                                                                                           model.Field(p => p.ItemType).Editable(false);
                                                                                                           // model.Field(p => p.Quantity).Editable(false);
                                                                                                           model.Field(p => p.UoM).Editable(false);
-                                                                                                          model.Field(p => p.UnitPrice).Editable(false);
+                                                                                                          //model.Field(p => p.UnitPrice).Editable(false);
                                                                                                           model.Field(p => p.GLTaxRateID).Editable(false);
                                                                                                           model.Field(p => p.TaxAmount).Editable(false);
                                                                                                           model.Field(p => p.SubTotal).Editable(false);

@@ -6,10 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Finance.AP.Travel;
 using ExceedERP.Core.Domain.Finance.AR;
 using ExceedERP.Core.Domain.Finance.AR.SalesOrder;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Finance;
 using ExceedERP.Reporting.Finance.ViewModel.Print;
 using ExceedERP.Reporting.SharedDataSources;
 
@@ -39,13 +41,31 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                 headerDs.ApTravelOrderId = travelExpenseClaim.ApTravelOrderId.ToString();
                 headerDs.ClaimDate = travelExpenseClaim.ClaimDate;
                 headerDs.Reference = travelExpenseClaim.Reference;
+                headerDs.Difference = travelExpenseClaim.Difference;
+                //department
                 headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(travelExpenseClaim.CreatedBy));
-                var departmentApproval = _db.RequestesStatus
-                    .Where(x => x.ReferenceType == "TravelExpenseClaim")
-                    .Where(x => x.Status == RequestStatus.DEPARTMENT_APPROVAL)
-                    .FirstOrDefault(x => x.RequestId == travelExpenseClaim.ApTravelExpenseClaimId);
-                headerDs.DepartmentApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(departmentApproval?.ChangedBy));
+                headerDs.PreparedDate = travelExpenseClaim.DateCreated != null ? travelExpenseClaim.DateCreated : null;
+                headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(travelExpenseClaim.CreatedBy);
+                //var departmentApproval = _db.RequestesStatus
+                //    .Where(x => x.ReferenceType == "TravelExpenseClaim")
+                //    .Where(x => x.Status == RequestStatus.DEPARTMENT_APPROVAL)
+                //    .FirstOrDefault(x => x.RequestId == travelExpenseClaim.ApTravelExpenseClaimId);
+                headerDs.DepartmentSecondApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(travelExpenseClaim.DepartmentOnlineApprovedBy));
+                headerDs.DepartmentSecondApprovedDate = travelExpenseClaim.DepartmentOnlineApprovedTime != null ? travelExpenseClaim.DepartmentOnlineApprovedTime : null;
+                headerDs.DepartmentSecondApproverSignature = SignatureHelper.GetUserSignature(travelExpenseClaim.DepartmentOnlineApprovedBy);
+                //finace
+                headerDs.AccountantCheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(travelExpenseClaim.SendForApprovalBy));
+                headerDs.AccountantCheckedDate = travelExpenseClaim.SendForApprovalTime != null ? travelExpenseClaim.SendForApprovalTime : null;
+                headerDs.AccountantCheckerSignature = SignatureHelper.GetUserSignature(travelExpenseClaim.SendForApprovalBy);
+
                 headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(travelExpenseClaim.OnlineApprovedBy));
+                headerDs.ApprovedDate = travelExpenseClaim.OnlineApprovedTime != null ? travelExpenseClaim.OnlineApprovedTime : null;
+                headerDs.ApproverSignature = SignatureHelper.GetUserSignature(travelExpenseClaim.OnlineApprovedBy);
+
+                //budget
+                headerDs.BudgetApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(travelExpenseClaim.BudgetApprovedBy));
+                headerDs.BudgetApprovedDate = travelExpenseClaim.BudgetApprovedTime != null ? travelExpenseClaim.BudgetApprovedTime : null;
+                headerDs.BudgetSignature = SignatureHelper.GetUserSignature(travelExpenseClaim.BudgetApprovedBy);
             }
 
             if (organization != null)
@@ -89,6 +109,10 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
         {
             List<ApTravelExpenseExpenseLineVm> list = new List<ApTravelExpenseExpenseLineVm>();
             var requestLines = _db.ApTravelExpenseExpenses.Where(x => x.ApTravelExpenseClaimId == id).ToList();
+            if (FinanceConfigurationHelper.IgnorePerdiemInClaim())
+            {
+                requestLines = requestLines.Where(x => x.Type != TravelPaymentType.PerDiem).ToList();
+            }
             foreach (var line in requestLines)
             {
                 var entity = new ApTravelExpenseExpenseLineVm
@@ -142,6 +166,12 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
                 list.Add(entity);
             }
             return list;
+        }
+
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<ApTravelExpenseDistribution> ApTravelExpenseDistributions(int id)
+        {
+            return _db.ApTravelExpenseDistributions.Where(x => x.ApTravelExpenseClaimId == id).ToList();
         }
     }
 }

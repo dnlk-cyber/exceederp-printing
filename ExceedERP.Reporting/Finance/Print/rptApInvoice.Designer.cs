@@ -248,8 +248,8 @@ namespace ExceedERP.Reporting.Finance.Print
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.79999983310699463D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.79999983310699463D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.79999983310699463D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
             this.table1.Body.SetCellContent(0, 0, this.textBox14);
             this.table1.Body.SetCellContent(0, 1, this.textBox15);
             this.table1.Body.SetCellContent(0, 2, this.textBox16);
@@ -836,6 +836,7 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox87.Name = "textBox87";
             this.textBox87.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.99166673421859741D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
             this.textBox87.Style.Font.Bold = true;
+            this.textBox87.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox87.Value = "Checked by:-";
             // 
             // pictureBox1
@@ -854,6 +855,7 @@ namespace ExceedERP.Reporting.Finance.Print
             this.pictureBox1.Style.BorderWidth.Bottom = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.pictureBox1.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(0D);
             this.pictureBox1.Style.BorderWidth.Right = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.pictureBox1.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.pictureBox1.Value = "";
             // 
             // textBox45
@@ -891,6 +893,7 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox48.Name = "textBox48";
             this.textBox48.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.2748810052871704D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
             this.textBox48.Style.Font.Bold = true;
+            this.textBox48.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox48.Value = "Approved by:-";
             // 
             // textBox89
@@ -900,7 +903,7 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox89.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.73000001907348633D), Telerik.Reporting.Drawing.Unit.Inch(0.46000000834465027D));
             this.textBox89.Style.Font.Bold = false;
             this.textBox89.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
-            this.textBox89.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Bottom;
+            this.textBox89.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Top;
             this.textBox89.Value = "Signature";
             // 
             // textBox49
@@ -928,6 +931,7 @@ namespace ExceedERP.Reporting.Finance.Print
             this.pictureBox6.Style.BorderWidth.Bottom = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.pictureBox6.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(0D);
             this.pictureBox6.Style.BorderWidth.Right = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.pictureBox6.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.pictureBox6.Value = "";
             // 
             // textBox52
@@ -975,7 +979,7 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox88.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.73000001907348633D), Telerik.Reporting.Drawing.Unit.Inch(0.46000000834465027D));
             this.textBox88.Style.Font.Bold = false;
             this.textBox88.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
-            this.textBox88.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Bottom;
+            this.textBox88.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Top;
             this.textBox88.Value = "Signature";
             // 
             // textBox53
@@ -1003,6 +1007,7 @@ namespace ExceedERP.Reporting.Finance.Print
             this.pictureBox2.Style.BorderWidth.Bottom = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.pictureBox2.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(0D);
             this.pictureBox2.Style.BorderWidth.Right = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.pictureBox2.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.pictureBox2.Value = "";
             // 
             // textBox55
@@ -1040,6 +1045,7 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox67.Name = "textBox67";
             this.textBox67.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.99166673421859741D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
             this.textBox67.Style.Font.Bold = true;
+            this.textBox67.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox67.Value = "Prepared by:-";
             // 
             // textBox68
@@ -1049,7 +1055,7 @@ namespace ExceedERP.Reporting.Finance.Print
             this.textBox68.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.73000001907348633D), Telerik.Reporting.Drawing.Unit.Inch(0.46000000834465027D));
             this.textBox68.Style.Font.Bold = false;
             this.textBox68.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
-            this.textBox68.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Bottom;
+            this.textBox68.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Top;
             this.textBox68.Value = "Signature";
             // 
             // header

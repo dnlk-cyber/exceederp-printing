@@ -5,7 +5,6 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
@@ -14,7 +13,7 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers.SelfCare
-    {
+{
     [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class PurchaseRequsitionValidationSelfCareController : Controller
         {

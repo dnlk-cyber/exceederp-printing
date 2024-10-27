@@ -1,26 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Mvc;
-using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
-using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
 
 namespace ExceedERP.Helpers.Inventory
 {
     public  class InventoryTransferHelper
     {
-        private readonly ExceedDbContext _db = new ExceedDbContext();
-        AccountHelper helper = new AccountHelper();
-
+        private readonly ExceedDbContext _db;
+        private readonly AccountHelper accountHelper ;
+        public InventoryTransferHelper()
+        {
+            _db = new ExceedDbContext();
+            accountHelper = new AccountHelper();
+        }
         private string GetStoreDesc(string storecode)
         {
             string str = "";
@@ -175,7 +172,7 @@ namespace ExceedERP.Helpers.Inventory
                     #region split journal
                     foreach (var glRecordJournalDetail in journal.GLRecordJournalDetail)
                     {
-                        helper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
+                        this.accountHelper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
                     }
                     #endregion
                     record.IsOnlineTransferred = true;
@@ -337,7 +334,7 @@ namespace ExceedERP.Helpers.Inventory
                     #region split journal
                     foreach (var glRecordJournalDetail in journal.GLRecordJournalDetail)
                     {
-                        helper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
+                        this.accountHelper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
                     }
                     #endregion
                     record.IsOnlineTransferred = true;
@@ -504,7 +501,7 @@ namespace ExceedERP.Helpers.Inventory
                         #region split journal
                         foreach (var glRecordJournalDetail in journal.GLRecordJournalDetail)
                         {
-                            helper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
+                            this.accountHelper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
                         }
                         #endregion
 
@@ -679,7 +676,7 @@ namespace ExceedERP.Helpers.Inventory
                     #region split journal
                     foreach (var glRecordJournalDetail in journal.GLRecordJournalDetail)
                     {
-                        helper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
+                        this.accountHelper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
                     }
                     #endregion
                     record.IsOnlineTransferred = true;
@@ -847,7 +844,7 @@ namespace ExceedERP.Helpers.Inventory
                     #region split journal
                     foreach (var glRecordJournalDetail in journal.GLRecordJournalDetail)
                     {
-                        helper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
+                        this.accountHelper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
                     }
                     #endregion
                     record.IsOnlineTransferred = true;
@@ -1013,7 +1010,7 @@ namespace ExceedERP.Helpers.Inventory
                     #region split journal
                     foreach (var glRecordJournalDetail in journal.GLRecordJournalDetail)
                     {
-                        helper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
+                        this.accountHelper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
                     }
                     #endregion
                     record.IsOnlineTransferred = true;
@@ -1178,7 +1175,7 @@ namespace ExceedERP.Helpers.Inventory
                     #region split journal
                     foreach (var glRecordJournalDetail in journal.GLRecordJournalDetail)
                     {
-                        helper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
+                        this.accountHelper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
                     }
                     #endregion
                     record.IsOnlineTransferred = true;
@@ -1343,7 +1340,7 @@ namespace ExceedERP.Helpers.Inventory
                     #region split journal
                     foreach (var glRecordJournalDetail in journal.GLRecordJournalDetail)
                     {
-                        helper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
+                        this.accountHelper.SplitJournal(glRecordJournalDetail.GlRecordJournalDetailId);
                     }
                     #endregion
                     record.IsOnlineTransferred = true;

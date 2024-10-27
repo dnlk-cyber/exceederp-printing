@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ExceedERP.Core.Domain.Finance.GL;
@@ -11,294 +12,99 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 {
 
     [DataObject]
-    public class ChartOfAccountDataSource : List<ChartOfAccountViewModel>
+    public class ChartOfAccountDataSource : List<ChartOfAccountViewModel>, IDisposable
     {
-        private readonly ExceedDbContext _db = new ExceedDbContext();
-        readonly AccountHelper _accountHelper = new AccountHelper();
+        private readonly ExceedDbContext _db;
+        private readonly AccountHelper _accountHelper;
+        public ChartOfAccountDataSource()
+        {
+            _db=new ExceedDbContext();
+            _accountHelper=new AccountHelper();
+        }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<ChartOfAccountViewModel> GetChartOfAccount(string segment, string accountType)
         {
-            _db.Database.CommandTimeout = 7200;//added
-            List<ChartOfAccountViewModel> list = new List<ChartOfAccountViewModel> { };
-            if (_accountHelper.IsDynamicCoA())
+            _db.Database.CommandTimeout = 7200;
+            var list = new List<ChartOfAccountViewModel>();
+            var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segment);
+
+            if (setup == null) return list;
+
+            if (setup.SegmentType == DynamicSegmentTypes.NaturalAccount)
             {
-                var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segment);
-                if (setup != null)
+                var allAccounts = _db.GLChartOfAccountAccounts
+                    .Select(x => new { x.AccountType, x.Values, x.Description, x.AllowBudgeting, x.HasParent, x.AllowPosting })
+                    .ToList();
+
+                var specificAccounts = (accountType == "All" || string.IsNullOrEmpty(accountType))
+                    ? allAccounts
+                    : allAccounts.Where(x => FilterAccountByType(x.AccountType, accountType)).ToList();
+
+                foreach (var aaccount in specificAccounts)
                 {
-                    if (setup.SegmentType == DynamicSegmentTypes.NaturalAccount)
+                    list.Add(new ChartOfAccountViewModel
                     {
-                        ChartOfAccountViewModel record;
-                        var allaccounts = _db.GLChartOfAccountAccounts
-                            .Select(x=>new {x.AccountType,x.Values,x.Description,x.AllowBudgeting,x.HasParent,x.AllowPosting})
-                            .ToList();
-                        #region account
-
-                        if (accountType == "All")
-                        {
-                            var aaccounts = allaccounts;
-                            foreach (var aaccount in aaccounts)
-                            {
-                                record = new ChartOfAccountViewModel
-                                {
-                                    AccountCode = aaccount.Values,
-                                    AccountDescription = aaccount.Description,
-                                    Parent = aaccount.HasParent,
-                                    AllowingBudgeting = aaccount.AllowBudgeting ? "Yes" : "No",
-                                    AllowingPosting = aaccount.AllowPosting ? "Yes" : "No",
-                                    AccountType = aaccount.AccountType.ToString()
-                                };
-                                list.Add(record);
-                            }
-                        }
-                        else
-                        {
-                            var specificAccounts = allaccounts;
-
-                            #region get specificAccounts
-
-                            if (accountType == "Asset")
-                            {
-                                specificAccounts = allaccounts.Where(x => x.AccountType == GlAccountTypes.Asset)
-                                    .ToList();
-                            }
-                            else if (accountType == "Liability")
-                            {
-                                specificAccounts = allaccounts.Where(x => x.AccountType == GlAccountTypes.Liability)
-                                    .ToList();
-                            }
-                            else if (accountType == "Capital")
-                            {
-                                specificAccounts = allaccounts.Where(x => x.AccountType == GlAccountTypes.Capital)
-                                    .ToList();
-                            }
-                            else if (accountType == "Revenue")
-                            {
-                                specificAccounts = allaccounts.Where(x => x.AccountType == GlAccountTypes.Revenue)
-                                    .ToList();
-                            }
-                            else if (accountType == "Expense")
-                            {
-                                specificAccounts = allaccounts.Where(x => x.AccountType == GlAccountTypes.Expense)
-                                    .ToList();
-                            }
-                            else
-                            {
-
-                            }
-
-                            #endregion
-
-                            foreach (var aaccount in specificAccounts)
-                            {
-                                record = new ChartOfAccountViewModel
-                                {
-                                    AccountCode = aaccount.Values,
-                                    AccountDescription = aaccount.Description,
-                                    Parent = aaccount.HasParent,
-                                    AllowingBudgeting = aaccount.AllowBudgeting ? "Yes" : "No",
-                                    AllowingPosting = aaccount.AllowPosting ? "Yes" : "No",
-                                    AccountType = aaccount.AccountType.ToString()
-                                };
-                                list.Add(record);
-                            }
-
-                        }
-
-                        #endregion
-                    }
-                    else
-                    {
-                        var allaccounts = _db.GlChartOfAccountSegments.Where(x=>x.GLSegmentSetupId==setup.GLSegmentSetupId)
-                            .Select(x => new { x.Values, x.Description, x.AllowBudgeting, x.HasParent, x.AllowPosting })
-                            .ToList();
-                        #region account
-
-                        var aaccounts = allaccounts;
-                        foreach (var aaccount in aaccounts)
-                        {
-                            var record = new ChartOfAccountViewModel
-                            {
-                                AccountCode = aaccount.Values,
-                                AccountDescription = aaccount.Description,
-                                Parent = aaccount.HasParent,
-                                AllowingBudgeting = aaccount.AllowBudgeting ? "Yes" : "No",
-                                AllowingPosting = aaccount.AllowPosting ? "Yes" : "No",
-                                AccountType = ""
-                            };
-                            list.Add(record);
-                        }
-
-                        #endregion
-                    }
+                        AccountCode = aaccount.Values,
+                        AccountDescription = aaccount.Description,
+                        Parent = aaccount.HasParent,
+                        AllowingBudgeting = aaccount.AllowBudgeting ? "Yes" : "No",
+                        AllowingPosting = aaccount.AllowPosting ? "Yes" : "No",
+                        AccountType = aaccount.AccountType.ToString()
+                    });
                 }
             }
             else
             {
+                // For non-NaturalAccount, process GlChartOfAccountSegments
+                var allAccounts = _db.GlChartOfAccountSegments
+                    .Where(x => x.GLSegmentSetupId == setup.GLSegmentSetupId)
+                    .Select(x => new { x.Values, x.Description, x.AllowBudgeting, x.HasParent, x.AllowPosting })
+                    .ToList();
 
-                //ChartOfAccountViewModel record;
-                //var allaccounts = _db.GLChartOfAccountAccounts
-                //    .Select(x => new { x.AccountType, x.Values, x.Description, x.AllowBudgeting, x.HasParent, x.AllowPosting })
-                //    .ToList();
-                //if (segment == "Account")
-                //{
-                //    #region account
-
-                //    if (accountType == "All")
-                //    {
-                //        var aaccounts = allaccounts;
-                //        foreach (var aaccount in aaccounts)
-                //        {
-                //            record = new ChartOfAccountViewModel
-                //            {
-                //                AccountCode = aaccount.Values,
-                //                AccountDescription = aaccount.Description,
-                //                Parent = aaccount.HasParent,
-                //                AllowingBudgeting = aaccount.AllowBudgeting ? "Yes" : "No",
-                //                AllowingPosting = aaccount.AllowPosting ? "Yes" : "No",
-                //                AccountType = aaccount.AccountType.ToString()
-                //            };
-                //            list.Add(record);
-                //        }
-                //    }
-                //    else
-                //    {
-                //        var specificAccounts = allaccounts;
-
-                //        #region get specificAccounts
-
-                //        if (accountType == "Asset")
-                //        {
-                //            specificAccounts = allaccounts.Where(x => x.AccountType == GlAccountTypes.Asset).ToList();
-                //        }
-                //        else if (accountType == "Liability")
-                //        {
-                //            specificAccounts = allaccounts.Where(x => x.AccountType == GlAccountTypes.Liability)
-                //                .ToList();
-                //        }
-                //        else if (accountType == "Capital")
-                //        {
-                //            specificAccounts = allaccounts.Where(x => x.AccountType == GlAccountTypes.Capital).ToList();
-                //        }
-                //        else if (accountType == "Revenue")
-                //        {
-                //            specificAccounts = allaccounts.Where(x => x.AccountType == GlAccountTypes.Revenue).ToList();
-                //        }
-                //        else if (accountType == "Expense")
-                //        {
-                //            specificAccounts = allaccounts.Where(x => x.AccountType == GlAccountTypes.Expense).ToList();
-                //        }
-                //        else
-                //        {
-
-                //        }
-
-                //        #endregion
-
-                //        foreach (var aaccount in specificAccounts)
-                //        {
-                //            record = new ChartOfAccountViewModel
-                //            {
-                //                AccountCode = aaccount.Values,
-                //                AccountDescription = aaccount.Description,
-                //                Parent = aaccount.HasParent,
-                //                AllowingBudgeting = aaccount.AllowBudgeting ? "Yes" : "No",
-                //                AllowingPosting = aaccount.AllowPosting ? "Yes" : "No",
-                //                AccountType = aaccount.AccountType.ToString()
-                //            };
-                //            list.Add(record);
-                //        }
-
-                //    }
-
-                //    #endregion
-
-                //}
-                //else if (segment == "Branch")
-                //{
-                //    #region Branch
-
-                //    var laccounts = _db.GLChartOfAccountLocations
-                //        .Select(x => new {x.Values, x.Description, x.AllowBudgeting, x.HasParent, x.AllowPosting }).ToList();
-                //    foreach (var laccount in laccounts)
-                //    {
-                //        record = new ChartOfAccountViewModel
-                //        {
-                //            AccountCode = laccount.Values,
-                //            AccountDescription = laccount.Description,
-                //            Parent = laccount.HasParent,
-                //            AllowingBudgeting = laccount.AllowBudgeting ? "Yes" : "No",
-                //            AllowingPosting = laccount.AllowPosting ? "Yes" : "No",
-                //            AccountType = ""
-                //        };
-                //        list.Add(record);
-                //    }
-
-                //    #endregion
-                //}
-
-                //else if (segment == "Cost Center")
-                //{
-                //    #region Cost Center
-
-                //    var costcenters = _db.GLChartOfAccountCostCenters.Select(x => new {  x.Values, x.Description, x.AllowBudgeting, x.HasParent, x.AllowPosting }).ToList();
-                //    foreach (var csaccount in costcenters)
-                //    {
-                //        record = new ChartOfAccountViewModel
-                //        {
-                //            AccountCode = csaccount.Values,
-                //            AccountDescription = csaccount.Description,
-                //            Parent = csaccount.HasParent,
-                //            AllowingBudgeting = csaccount.AllowBudgeting ? "Yes" : "No",
-                //            AllowingPosting = csaccount.AllowPosting ? "Yes" : "No",
-                //            AccountType = ""
-                //        };
-                //        list.Add(record);
-                //    }
-
-                //    #endregion
-                //}
-
-                //else if (segment == "Sub Account")
-                //{
-                //    #region Sub Account
-
-                //    var subaccounts = _db.GLChartOfAccountSubAccounts
-                //        .Select(x => new { x.Values, x.Description, x.AllowBudgeting, x.HasParent, x.AllowPosting }).ToList();
-                //    foreach (var saaccount in subaccounts)
-                //    {
-                //        record = new ChartOfAccountViewModel
-                //        {
-                //            AccountCode = saaccount.Values,
-                //            AccountDescription = saaccount.Description,
-                //            Parent = saaccount.HasParent,
-                //            AllowingBudgeting = saaccount.AllowBudgeting ? "Yes" : "No",
-                //            AllowingPosting = saaccount.AllowPosting ? "Yes" : "No",
-                //            AccountType = ""
-                //        };
-                //        list.Add(record);
-                //    }
-
-                //    #endregion
-                //}
+                foreach (var aaccount in allAccounts)
+                {
+                    list.Add(new ChartOfAccountViewModel
+                    {
+                        AccountCode = aaccount.Values,
+                        AccountDescription = aaccount.Description,
+                        Parent = aaccount.HasParent,
+                        AllowingBudgeting = aaccount.AllowBudgeting ? "Yes" : "No",
+                        AllowingPosting = aaccount.AllowPosting ? "Yes" : "No",
+                        AccountType = "" // No AccountType for this case
+                    });
+                }
             }
 
             return list;
         }
 
+        private bool FilterAccountByType(GlAccountTypes accountType, string type)
+        {
+            if (type == "Asset") return accountType == GlAccountTypes.Asset;
+            if (type == "Liability") return accountType == GlAccountTypes.Liability;
+            if (type == "Capital") return accountType == GlAccountTypes.Capital;
+            if (type == "Revenue") return accountType == GlAccountTypes.Revenue;
+            if (type == "Expense") return accountType == GlAccountTypes.Expense;
+
+            return false;
+        }
+      
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<string> SegmentTypes()
         {
-
-            List<string> list = new List<string> {"Account", "Branch", "Cost Center", "Sub Account"};
-            return list;
+            return new List<string> { "Account", "Branch", "Cost Center", "Sub Account" };
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<string> AccountTypes()
         {
-            List<string> list = new List<string> {"All", "Asset", "Liability", "Capital", "Revenue", "Expense"};
-            return list;
+            return new List<string> { "All", "Asset", "Liability", "Capital", "Revenue", "Expense" };
+        }
+
+        public void Dispose()
+        {
+            _db?.Dispose(); 
         }
     }
 }

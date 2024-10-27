@@ -1,13 +1,27 @@
 ﻿using System.Web.Mvc;
 using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.Web.Areas.Inventory.Models;
+using ExceedERP.Core.Domain.Maintenance;
+using ExceedERP.Core.Domain.Planning;
 using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers
 {
-    [AuthorizeRoles(InventoryConstants.PropertyReport )]
+    [AuthorizeRoles(InventoryConstants.PropertyReport,PlanningRoles.Planning_User, MaintenanceRoles.MaintenanceReport)]
     public class InventoryReportController : Controller
     {
+        
+        public ActionResult SupplyPlanVsExecutedReport()
+        {
+            return View();
+        }
+        public ActionResult ConsumptionBySector()
+        {
+            return View();
+        }
+        public ActionResult GrnBySector()
+        {
+            return View();
+        }
         public ActionResult StockBalanceByQTYValueReport()
         {
             return View();

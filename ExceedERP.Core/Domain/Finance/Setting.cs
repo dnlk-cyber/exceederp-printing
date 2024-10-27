@@ -13,6 +13,10 @@ namespace ExceedERP.Core.Domain.Finance
         DISABLE_GRN_DISTRIBUTION,
         APPLY_CLEARING_ACCOUNT_GRN_DISTRIBUTION,
         ENABLE_PAYMENT_REQUEST_AUTHORIZATION,
+        IGNORE_PERDIEM_IN_CLAIM,
+        IGNORE_TRAVEL_DEPARTURE,
+        ALLOW_TRAVEL_CLAIM_FOR_OTHERS,
+        AUTO_CALCULATE_TRAVEL_PERDIEM,
 
     }
 
@@ -263,6 +267,7 @@ namespace ExceedERP.Core.Domain.Finance
         TDS,
         AP_Payment_SubContract,
         AR_Collection_Construction,
+        AP_Fund_Receive
     }
 
     public class JournalSourceMap : TrackUserSettingOperation

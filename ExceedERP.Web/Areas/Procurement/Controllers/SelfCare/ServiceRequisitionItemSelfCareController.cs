@@ -3,10 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
-using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
-using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
@@ -84,7 +81,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                         Quantity = purchaseRequisitionItem.Quantity,
                         IsApproved = purchaseRequisitionItem.IsApproved,
                         ItemSpecification = purchaseRequisitionItem.ItemSpecification,
-                        //UoM =  serviceCategory.UoMName,
+                        UoM = purchaseRequisitionItem.UoM,
                         ItemType = PurchaseItemType.Service,
                         DateCreated = DateTime.Now,
                         CreatedBy = User.Identity.Name
@@ -135,7 +132,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                         Quantity = purchaseRequisitionItem.Quantity,
                         IsApproved = purchaseRequisitionItem.IsApproved,
                         ItemSpecification = purchaseRequisitionItem.ItemSpecification,
-                        //UoM = item.UoMName,
+                        UoM = purchaseRequisitionItem.UoM,
                         ItemType = purchaseRequisitionItem.ItemType,
                         ModifiedBy = User.Identity.Name,
                         LastModified = DateTime.Today,

@@ -30,6 +30,9 @@ namespace ExceedERP.Core.Domain.Procurement.Proforma
         public string GRNNo { get; set; }
         [Display(Name = "Award Given ?")]
         public bool AwardGiven { get; set; }
+        [Display(Name = "Additional charge %")]
+        [Range(0, 100, ErrorMessage = "The Additional charge % must be between 1 and 100.")]
+        public decimal AdditionalChargePercent { get; set; }
         public string Remark { get; set; }
         public virtual ICollection<WinningSupplierItem> WinningItems { get; set; }
     }

@@ -4,10 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
-using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.Core.Domain.Procurement.Tender;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
@@ -18,12 +17,12 @@ using Kendo.Mvc.UI;
 namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
 {
 
-
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class PurchaseRequisitionAttachmentSelfCareController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser, ProcurementRoles.ProcurementContractApprover)]
+        
         public ActionResult Index()
         {
             return View();
@@ -36,7 +35,6 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return File(record.FilePath, "application/force-download", Path.GetFileName(record.FilePath));
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser, ProcurementRoles.ProcurementContractApprover)]
         public ActionResult PurchaseRequisitionAttachments_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<PurchaseRequisitionAttachment> purchaseRequisitionAttachments = _db.PurchaseRequisitionAttachments.Where(x => x.PurchaseRequisitionID == id);
@@ -51,7 +49,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(result);
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
+        
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionAttachments_Create([DataSourceRequest]DataSourceRequest request, IEnumerable<HttpPostedFileBase> PurchaseRequisitionAttachments, int id)
         {
@@ -91,7 +89,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] { PurchaseRequisitionAttachments }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
+       
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionAttachments_Update([DataSourceRequest]DataSourceRequest request, TenderMinuteUploadDBModel tenderMinuteUploadDbModel)
         {
@@ -112,7 +110,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] { tenderMinuteUploadDbModel }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(ProcurementRoles.ProcurementContractUser)]
+        
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitionAttachments_Destroy([DataSourceRequest]DataSourceRequest request, PurchaseRequisitionAttachment purchaseRequisitionAttachment)
         {

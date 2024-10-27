@@ -13,7 +13,6 @@ using ExceedERP.Core.Domain.Procurement.Tender;
 using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Areas.Finance.Models;
 using ExceedERP.Web.Areas.Procurement.Models;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -23,7 +22,7 @@ using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 {
-    
+
 
     public class TenderController : Controller
     {
@@ -397,24 +396,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
             return Json(new[] { tender }.ToDataSourceResult(request, ModelState));
         }
-
-        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
-        [HttpPost]
-        public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
-        {
-            var fileContents = Convert.FromBase64String(base64);
-
-            return File(fileContents, contentType, fileName);
-        }
-
-        [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
-        [HttpPost]
-        public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)
-        {
-            var fileContents = Convert.FromBase64String(base64);
-
-            return File(fileContents, contentType, fileName);
-        }
+             
 
         [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
         public JsonResult SendForApproval(int id)
@@ -854,6 +836,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
                 var allNoPriceParticipantItems = _db.BidParticipatingSupplierItems
                     .Where(x => x.BidPParticipatingSupplier.LotID == lotid)
+                    .Where(x => x.BidPParticipatingSupplier.IsQualified== PreQualification.Pass)
                     .Where(x => x.IsOutOfStock == false)
                     .Where(x => x.Total == 0);
 
@@ -919,7 +902,9 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
 
                 #endregion
                 var participants = _db.BidPParticipatingSupplierses
-                    .Where(x => x.LotID == lotid).ToList();
+                    .Where(x => x.LotID == lotid)
+                    .Where(x => x.IsQualified == PreQualification.Pass)
+                    .ToList();
                 foreach (var supplier in participants)
                 {
                     var participantsItems = _db.BidParticipatingSupplierItems
@@ -1027,7 +1012,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
                                 criteriaid = financialCriteria.TenderEvaluationCriteriaID;
                             //new block
                             List<BidParticipatingSupplierItem> allparticipantsItems = new List<BidParticipatingSupplierItem>();
-                            var bidparticipants = _db.BidPParticipatingSupplierses.Where(x => x.LotID == lotid).ToList();
+                            var bidparticipants = _db.BidPParticipatingSupplierses.Where(x=>x.IsQualified==PreQualification.Pass).Where(x => x.LotID == lotid).ToList();
                             foreach(var supp in bidparticipants)
                             {
                                 var participantItems = _db.BidParticipatingSupplierItems

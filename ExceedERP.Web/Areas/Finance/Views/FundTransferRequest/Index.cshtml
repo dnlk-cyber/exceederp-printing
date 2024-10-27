@@ -17,13 +17,13 @@
               columns.Bound(c => c.ReasonOfTransfer).Width(130);
               if (GlobalHelper.IsPayrollModebranchAndBusinessUnit())
               {
-                  columns.ForeignKey(c => c.FromBusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(180).EditorTemplateName("BusinessUnitSelector");
+                  columns.ForeignKey(c => c.FromBusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(180).EditorTemplateName("BusinessUnitSelector").Filterable(ftb => ftb.Multi(true).Search(true));
               }
-              columns.ForeignKey(c => c.FromBranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(180).EditorTemplateName("AllBranchSelector");
+              columns.ForeignKey(c => c.FromBranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(180).EditorTemplateName("AllBranchSelector").Filterable(ftb => ftb.Multi(true).Search(true));
               columns.ForeignKey(c => c.BankAccountId, (IEnumerable)ViewData["BankAccounts"], "Code", "Name").EditorTemplateName("AllBankAccountSelector").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
 
-              columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(100);
-              columns.ForeignKey(c => c.OrgStuructureId, (IEnumerable)ViewData["OrgStructure"], "OrgStructureId", "Name").Width(180);
+              columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+              columns.ForeignKey(c => c.OrgStuructureId, (IEnumerable)ViewData["OrgStructure"], "OrgStructureId", "Name").Width(180).Filterable(ftb => ftb.Multi(true).Search(true));
 
               columns.Bound(c => c.Remark).Width(150);
               columns.Bound(c => c.Status).Width(150);
@@ -136,7 +136,7 @@
                                                                                                                     </dt>
                                                                                                                     <dd>
 
-                                                                                                                        #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                                                                                                                        #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy hh:mm tt') #
 
                                                                                                                     </dd>
                                                                                                                     <dt>
@@ -149,7 +149,7 @@
                                                                                                                         CreatedOn
                                                                                                                     </dt>
                                                                                                                     <dd>
-                                                                                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                                                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                                                                                                     </dd>
                                                                                                                     <dt>
@@ -168,13 +168,13 @@
                                                                                                                         Modified Date
                                                                                                                     </dt>
                                                                                                                     <dd>
-                                                                                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                                                                                                     </dd>
                                                                                                                     <dt>
                                                                                                                         Department Approved On
                                                                                                                     </dt>
                                                                                                                     <dd>
-                                                                                                                        #=kendo.toString(kendo.parseDate(DepartmentOnlineApprovedTime), 'dd/MM/yyyy') #
+                                                                                                                        #=kendo.toString(kendo.parseDate(DepartmentOnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
 
 
                                                                                                                     </dd>
@@ -190,7 +190,7 @@
                                                                                                                         Budget Approved On
                                                                                                                     </dt>
                                                                                                                     <dd>
-                                                                                                                        #=kendo.toString(kendo.parseDate(BudgetApprovedTime), 'dd/MM/yyyy') #
+                                                                                                                        #=kendo.toString(kendo.parseDate(BudgetApprovedTime), 'dd/MM/yyyy hh:mm tt') #
 
 
                                                                                                                     </dd>
@@ -206,7 +206,7 @@
                                                                                                                         Checked On
                                                                                                                     </dt>
                                                                                                                     <dd>
-                                                                                                                        #=kendo.toString(kendo.parseDate(SendForApprovalTime), 'dd/MM/yyyy') #
+                                                                                                                        #=kendo.toString(kendo.parseDate(SendForApprovalTime), 'dd/MM/yyyy hh:mm tt') #
                                                                                                                     </dd>
                                                                                                                     <dt>
                                                                                                                         Checked By
@@ -219,7 +219,7 @@
                                                                                                                         Finance Approved On
                                                                                                                     </dt>
                                                                                                                     <dd>
-                                                                                                                        #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                                                                                                                        #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
 
 
                                                                                                                     </dd>

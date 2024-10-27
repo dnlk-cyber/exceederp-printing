@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Dashboard;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Finance.Report.GAAP;
@@ -12,10 +11,17 @@ namespace ExceedERP.Helpers.Finance
 {
     public partial class ReportHelper
     {
-        private  readonly ExceedDbContext _db = new ExceedDbContext();
-        private AccountHelper _accountHelper=new AccountHelper();
-        private readonly DynamicAccountHelper _dynamicAccountHelper=new DynamicAccountHelper();
-        private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
+        private  readonly ExceedDbContext _db;
+        private readonly AccountHelper _accountHelper;
+        private readonly DynamicAccountHelper _dynamicAccountHelper;
+        private readonly FiscalYearHelper _fiscalYearHelper;
+        public ReportHelper()
+        {
+            _db = new ExceedDbContext();
+            _accountHelper = new AccountHelper();
+            _dynamicAccountHelper = new DynamicAccountHelper();
+            _fiscalYearHelper = new FiscalYearHelper();
+        }
 
         #region Balance Sheet Report Helper
 
@@ -152,7 +158,7 @@ namespace ExceedERP.Helpers.Finance
                 month = _fiscalYearHelper.GetFiscalYearLastPeriod(fiscalyear);
             }
             return _db.GLLedgerPostingLines
-                .Where(x => x.GLPeriodId == month).ToList();
+                .Where(x => x.GLPeriodId == month).AsNoTracking().ToList();
         }
 
     
@@ -164,7 +170,7 @@ namespace ExceedERP.Helpers.Finance
             {
                 month = _fiscalYearHelper.GetFiscalYearLastPeriod(fiscalyear);
             }
-            return _db.GLLedgerPostingLines.Where(x => x.Type == LedgerPostTypes.Ending).Where(x => x.GLPeriodId == month).ToList();
+            return _db.GLLedgerPostingLines.Where(x => x.Type == LedgerPostTypes.Ending).Where(x => x.GLPeriodId == month).AsNoTracking().ToList();
         }
 
         public List<GLLedgerPostingLines> GetAccountBegBalance(int fiscalyear, int month = 0)
@@ -174,7 +180,7 @@ namespace ExceedERP.Helpers.Finance
             {
                 month = _fiscalYearHelper.GetFiscalYearFirstPeriod(fiscalyear);
             }
-            return _db.GLLedgerPostingLines.Where(x=>x.Type==LedgerPostTypes.Begining).Where(x => x.GLPeriodId == month).ToList();
+            return _db.GLLedgerPostingLines.Where(x=>x.Type==LedgerPostTypes.Begining).Where(x => x.GLPeriodId == month).AsNoTracking().ToList();
         }
 
         public List<GLLedgerPostingLines> GetAccountBalanceByPeriodRange(int fiscalyear, int fromMonth,int toMonth)
@@ -184,7 +190,7 @@ namespace ExceedERP.Helpers.Finance
             var periodList = _db.GLPeriods.Where(x => x.DateFrom >= fromDate)
                 .Where(x => x.DateTo <= toDate).Select(x => x.GLPeriodId).ToList();
             
-            var balances = _db.GLLedgerPostingLines.Where(x =>periodList.Contains(x.GLPeriodId)).ToList();
+            var balances = _db.GLLedgerPostingLines.Where(x =>periodList.Contains(x.GLPeriodId)).AsNoTracking().ToList();
             var yearEndBalances = balances;
 
             return yearEndBalances;
@@ -232,7 +238,7 @@ namespace ExceedERP.Helpers.Finance
 
         public  decimal GetAccountEndBalancesWithBranch(List<GLLedgerPostingLines> yearBalance, string account, string branchAccount)
         {
-            _accountHelper = new AccountHelper();
+     
             decimal accountyearEndBalances = 0;
             if (yearBalance.Any())
             {
@@ -325,7 +331,7 @@ namespace ExceedERP.Helpers.Finance
             string seg5From = fromAccCom.Split('-')[4];
             string seg5To = toAccCom.Split('-')[4];
 
-            _accountHelper = new AccountHelper();
+            
             decimal alances = 0;
             if (yearBalance.Any())
             {
@@ -412,7 +418,7 @@ namespace ExceedERP.Helpers.Finance
             string seg5From = fromAccCom.Split('-')[4];
             string seg5To = toAccCom.Split('-')[4];
 
-            _accountHelper = new AccountHelper();
+           
             decimal balances = 0;
             if (yearBalance.Any())
             {
@@ -499,7 +505,7 @@ namespace ExceedERP.Helpers.Finance
             string seg5From = fromAccCom.Split('-')[4];
             string seg5To = toAccCom.Split('-')[4];
 
-            _accountHelper = new AccountHelper();
+           
             decimal balances = 0;
             if (yearBalance.Any())
             {
@@ -587,7 +593,7 @@ namespace ExceedERP.Helpers.Finance
             string seg5From = fromAccCom.Split('-')[4];
             string seg5To = toAccCom.Split('-')[4];
 
-            _accountHelper = new AccountHelper();
+           
             decimal alances = 0;
             if (yearBalance.Any())
             {
@@ -638,7 +644,7 @@ namespace ExceedERP.Helpers.Finance
             string seg5From = fromAccCom.Split('-')[4];
             string seg5To = toAccCom.Split('-')[4];
 
-            _accountHelper = new AccountHelper();
+            
             decimal alances = 0;
             if (yearBalance.Any())
             {
@@ -689,7 +695,7 @@ namespace ExceedERP.Helpers.Finance
             string seg5From = fromAccCom.Split('-')[4];
             string seg5To = toAccCom.Split('-')[4];
 
-            _accountHelper = new AccountHelper();
+            
             decimal alances = 0;
             if (yearBalance.Any())
             {
@@ -777,7 +783,7 @@ namespace ExceedERP.Helpers.Finance
             string seg5From = fromAccCom.Split('-')[4];
             string seg5To = toAccCom.Split('-')[4];
 
-            _accountHelper = new AccountHelper();
+            
             decimal alances = 0;
             if (yearBalance.Any())
             {

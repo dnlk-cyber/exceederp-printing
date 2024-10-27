@@ -1,14 +1,7 @@
-﻿using System;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain.Finance.AP;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.Contract;
-using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.Core.Domain.Procurement.Supplier;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
@@ -18,7 +11,7 @@ using Kendo.Mvc.UI;
 namespace ExceedERP.Web.Areas.Procurement.Controllers.Contract
 {
 
-   
+
     public class ContractManagementFinanceController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();

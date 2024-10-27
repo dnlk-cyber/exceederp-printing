@@ -7,17 +7,21 @@
           columns.Bound(c => c.ProcurementPlanId).Title("#").Width(120).ClientTemplate("#=appendZeros(ProcurementPlanId)#");
           columns.ForeignKey(p => p.GlFiscalYearId, (IEnumerable)ViewData["Periods"], "GlFiscalYearId", "Name").Title("Fiscal Year").EditorTemplateName("GLYears").Width(120);
           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+          if (GlobalHelper.IsMultipleBusinessUnit())
+          {
+              columns.ForeignKey(p => p.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").EditorTemplateName("BusinessUnitSelector").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+          }
           columns.Bound(c => c.Name).Width(150);
           columns.Bound(c => c.Remark).Width(90);
           columns.Bound(c => c.Status).Width(80);
-        
-        
+
+
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(380);
       })
       .ToolBar(toolbar => {
-                              toolbar.Create();
-                              //toolbar.Excel();
-                              //toolbar.Pdf();
+          toolbar.Create();
+          //toolbar.Excel();
+          //toolbar.Pdf();
       })
       .Events(ev => ev.DetailExpand("detailExpand"))
       .Scrollable(h => h.Height(500))
@@ -41,7 +45,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      
+
       .ClientDetailTemplateId("templates")
       .DataSource(dataSource => dataSource
           .Ajax()
@@ -55,8 +59,8 @@
                   model.Field(p => p.Status).Editable(false);
                   //model.Field(p => p.GLPeriodId).Editable(false);
                   //model.Field(p => p.BranchId).Editable(false);
-                  model.Field(p => p.BusinessUnitId).Editable(false);
-                
+                  //model.Field(p => p.BusinessUnitId).Editable(false);
+
                   model.Field(p => p.OrgBranchName).Editable(false);
                   model.Field(p => p.CreatedBy).Editable(false);
                   model.Field(p => p.ModifiedBy).Editable(false);
@@ -129,7 +133,7 @@
                                     Created On
                                 </dt>
                                 <dd>
-                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
 
                                 </dd>

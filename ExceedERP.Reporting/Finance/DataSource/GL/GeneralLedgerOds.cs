@@ -14,14 +14,19 @@ using ExceedERP.Reporting.SharedDataSources;
 namespace ExceedERP.Reporting.Finance.DataSource.GL
 {
     [DataObject]
-    public class GeneralLedgerOds : List<StockBalanceOds>
+    public class GeneralLedgerOds : List<StockBalanceOds>, IDisposable
     {
         /**
         * v2 algorithm faster by 6 times...to test
         * optimization using include and selecting only required properties
         */
-        readonly ExceedDbContext _db = new ExceedDbContext();
-        private readonly AccountHelper _accountHelper = new AccountHelper();
+        private readonly ExceedDbContext _db;
+        private readonly AccountHelper _accountHelper;
+        public GeneralLedgerOds()
+        {
+            _db = new ExceedDbContext();
+            _accountHelper = new AccountHelper();
+        }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public GeneralLedgerHeaderVm GetGeneralLedgerHeader(string fromperiod, string toperiod, string acctFrom, string acctTo)
@@ -103,10 +108,13 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                 var periodList = _db.GLPeriods.Where(x => x.DateFrom >= from.DateFrom)
                                               .Where(x => x.DateTo <= to.DateTo)
                                                 .Select(x => new { x.DateFrom, x.DateTo, x.GLPeriodId, x.GlFiscalYear, x.Name })//added
-                                                .ToList();
+                                                .AsNoTracking()
+                                                .ToArray();
 
-              
-                var ledgers = _db.GLLedgerPostings
+				var sortedPeriods = periodList.OrderBy(x => x.DateTo).Select(a=>a.GLPeriodId).ToArray();
+
+
+				var ledgers = _db.GLLedgerPostings
                     .Include(x => x.GLLedgerPostingLines)
                     .Where(x => String.Compare(x.AccountSegment, acctFrom, StringComparison.Ordinal) >= 0)
                     .Where(x => String.Compare(x.AccountSegment, acctTo, StringComparison.Ordinal) <= 0)
@@ -123,32 +131,39 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                         x.Segment3,
                         x.Segment4,
                         x.Segment5,
-                        x.Segment6,
-                        x.Segment7,
-                        x.Segment8,
-                        x.GLLedgerPostingLines
-                       // GLLedgerPostingLines = x.GLLedgerPostingLines.Where(b => b.EffectiveDate >= dt11 && b.EffectiveDate <= dt22)
+                        //x.Segment6,
+                        //x.Segment7,
+                        //x.Segment8,
+                       // x.GLLedgerPostingLines
+                        GLLedgerPostingLines = x.GLLedgerPostingLines
+                        .Where(l => sortedPeriods.Contains(l.GLPeriodId))
+						.Select(l => new { 
+                            l.GLLedgerPostingLinesID,
+                            l.EffectiveDate,
+                            l.GLPeriodId,
+                            l.Debit,
+                            l.Credit,
+                            l.Balance,
+                            l.Type,
+                            l.Remark,
+                            l.JournalReference,
+                            l.CategoryName,
+                            l.AdditionalDescription,
+                            l.Description,
+                            l.ReferenceDoc,
+                            l.InvoiceReferenceDoc,
+                            l.PaymentReference
+                        })
 
-                    })
+
+					})
                     .AsNoTracking().AsQueryable();
-               
-                
 
-                #region get covered periods for sorting data
 
-              
 
-                var sortedPeriods = periodList.OrderBy(x => x.DateTo).Select(x=>new {x.GLPeriodId}).ToList();
-                var lastPeriod = periodList.OrderByDescending(x => x.DateTo).Take(1).FirstOrDefault();
-                //remove last period to avoid duplication
-                //foreach (var glPeriod in sortedPeriods)
-                //{
-                //    if(lastPeriod != null && glPeriod.GLPeriodId!=lastPeriod.GLPeriodId)
-                //        sortedPeriodsBeforeLast.Add(glPeriod);
-                //}
-                #endregion
+				var lastPeriod = periodList.OrderByDescending(x => x.DateTo).Take(1).FirstOrDefault();
 
-                if (!String.IsNullOrEmpty(costcenter))
+				if (!String.IsNullOrEmpty(costcenter))
                     ledgers = ledgers.Where(x => x.CostCenterSegment == costcenter).AsQueryable();
 
                 if (!String.IsNullOrEmpty(subaccountFrom)&& !String.IsNullOrEmpty(subaccountTo))
@@ -157,59 +172,39 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 
                 if (!String.IsNullOrEmpty(segmentType) && !String.IsNullOrEmpty(segmentValue))
                 {
-                    if (_accountHelper.IsDynamicCoA())
+                    var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segmentType);
+                    int index = setup?.Sequence ?? 0;
+                    switch (index)
                     {
-                        var setup = _db.GlSegmentSetups.FirstOrDefault(x => x.Name == segmentType);
-                        int index = setup?.Sequence ?? 0;
-                        switch (index)
-                        {
-                            case 1:
-                                ledgers = ledgers.Where(x => x.Segment1 == segmentValue).AsQueryable();
-                                break;
+                        case 1:
+                            ledgers = ledgers.Where(x => x.Segment1 == segmentValue).AsQueryable();
+                            break;
 
-                            case 2:
-                                ledgers = ledgers.Where(x => x.Segment2 == segmentValue).AsQueryable();
-                                break;
+                        case 2:
+                            ledgers = ledgers.Where(x => x.Segment2 == segmentValue).AsQueryable();
+                            break;
 
-                            case 3:
-                                ledgers = ledgers.Where(x => x.Segment3 == segmentValue).AsQueryable();
-                                break;
+                        case 3:
+                            ledgers = ledgers.Where(x => x.Segment3 == segmentValue).AsQueryable();
+                            break;
 
-                            case 4:
-                                ledgers = ledgers.Where(x => x.Segment4 == segmentValue).AsQueryable();
-                                break;
+                        case 4:
+                            ledgers = ledgers.Where(x => x.Segment4 == segmentValue).AsQueryable();
+                            break;
 
-                            case 5:
-                                ledgers = ledgers.Where(x => x.Segment5 == segmentValue).AsQueryable();
-                                break;
+                        case 5:
+                            ledgers = ledgers.Where(x => x.Segment5 == segmentValue).AsQueryable();
+                            break;
 
-                            case 6:
-                                ledgers = ledgers.Where(x => x.Segment6 == segmentValue).AsQueryable();
-                                break;
-                            case 7:
-                                ledgers = ledgers.Where(x => x.Segment7 == segmentValue).AsQueryable();
-                                break;
-                            case 8:
-                                ledgers = ledgers.Where(x => x.Segment8 == segmentValue).AsQueryable();
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        switch (segmentType)
-                        {
-                            case "Branch":
-                                ledgers = ledgers.Where(x => x.BranchSegment == segmentValue).AsQueryable();
-                                break;
-
-                            case "Cost Center":
-                                ledgers = ledgers.Where(x => x.CostCenterSegment == segmentValue).AsQueryable();
-                                break;
-
-                            case "Sub Account":
-                                ledgers = ledgers.Where(x => x.SubAccountSegment == segmentValue).AsQueryable();
-                                break;
-                        }
+                        //case 6:
+                        //    ledgers = ledgers.Where(x => x.Segment6 == segmentValue).AsQueryable();
+                        //    break;
+                        //case 7:
+                        //    ledgers = ledgers.Where(x => x.Segment7 == segmentValue).AsQueryable();
+                        //    break;
+                        //case 8:
+                        //    ledgers = ledgers.Where(x => x.Segment8 == segmentValue).AsQueryable();
+                        //    break;
                     }
                 }
 
@@ -230,18 +225,18 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                         
                         #region current transaction- only summary--ending
                        
-                        foreach (var period in sortedPeriods)
+                        foreach (var periodId in sortedPeriods)
                         {
                             #region ending
 
                             var endingRecords = ledgerPosting.GLLedgerPostingLines
-                                .Where(x => x.GLPeriodId == period.GLPeriodId)
+                                .Where(x => x.GLPeriodId == periodId)
                                 .Where(x => x.Type == LedgerPostTypes.Ending).ToList();
                             foreach (var balance in endingRecords)
                             {
                                 var lines = new GeneralLedgerVmLines
                                 {
-                                    Id = balance.GLLedgerPostingLinesID.ToString(),
+                                    Id = balance.GLLedgerPostingLinesID,
                                     Date = balance.EffectiveDate,
                                     Reference = balance.JournalReference,
                                     Description = balance.Description,
@@ -296,18 +291,18 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                     {
                         #region current transaction - all
                         
-                        foreach (var period in sortedPeriods)
+                        foreach (var periodId in sortedPeriods)
                         {
                             #region beginning
 
                             var begginningRecords = ledgerPosting.GLLedgerPostingLines
-                                .Where(x => x.GLPeriodId == period.GLPeriodId)
-                                .Where(x => x.Type == LedgerPostTypes.Begining).ToList();
+                                .Where(x => x.GLPeriodId == periodId)
+                                .Where(x => x.Type == LedgerPostTypes.Begining).ToArray();
                             foreach (var balance in begginningRecords)
                             {
                                 var lines = new GeneralLedgerVmLines
                                 {
-                                    Id = balance.GLLedgerPostingLinesID.ToString(),
+                                    Id = balance.GLLedgerPostingLinesID,
                                     Date = balance.EffectiveDate,
                                     Reference = balance.JournalReference,
                                     Description = balance.Description,
@@ -327,14 +322,15 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                             #region standard
 
                             var standardRecords = ledgerPosting.GLLedgerPostingLines
-                                .Where(x => x.GLPeriodId == period.GLPeriodId)
+                                .Where(x => x.GLPeriodId == periodId)
                                 .Where(x => x.Type == LedgerPostTypes.Standard)
-                                .ToList().OrderBy(x => x.EffectiveDate).ThenBy(x => x.GLLedgerPostingLinesID);
+								.OrderBy(x => x.EffectiveDate).ThenBy(x => x.GLLedgerPostingLinesID)
+								.ToArray();
                             foreach (var balance in standardRecords)
                             {
                                 var lines = new GeneralLedgerVmLines
                                 {
-                                    Id = balance.GLLedgerPostingLinesID.ToString(),
+                                    Id = balance.GLLedgerPostingLinesID,
                                     Date = balance.EffectiveDate,
                                     Reference = balance.JournalReference,
                                     Description = balance.Description,
@@ -398,13 +394,13 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
                             #region ending
 
                             var endingRecords = ledgerPosting.GLLedgerPostingLines
-                                .Where(x => x.GLPeriodId == period.GLPeriodId)
-                                .Where(x => x.Type == LedgerPostTypes.Ending).ToList();
+                                .Where(x => x.GLPeriodId == periodId)
+                                .Where(x => x.Type == LedgerPostTypes.Ending).ToArray();
                             foreach (var balance in endingRecords)
                             {
                                 var lines = new GeneralLedgerVmLines
                                 {
-                                    Id = balance.GLLedgerPostingLinesID.ToString(),
+                                    Id = balance.GLLedgerPostingLinesID,
                                     Date = balance.EffectiveDate,
                                     Reference = balance.JournalReference,
                                     Description = balance.Description,
@@ -429,7 +425,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 
                             var lastendingRecords = ledgerPosting.GLLedgerPostingLines
                                 .Where(x => x.GLPeriodId == lastPeriod.GLPeriodId)
-                                .Where(x => x.Type == LedgerPostTypes.Ending).ToList();
+                                .Where(x => x.Type == LedgerPostTypes.Ending).ToArray();
                             foreach (var balance in lastendingRecords)
                             {
                                 var lines = new GeneralLedgerVmLastLines
@@ -466,141 +462,10 @@ namespace ExceedERP.Reporting.Finance.DataSource.GL
 
             return balances.OrderBy(x => x.AccountCode);
         }
-        //public IOrderedEnumerable<GeneralLedgerVm> GetLedgerBalance(string fromperiod, string toperiod, string acctFrom, string acctTo)
-        //{
-        //    List<GeneralLedgerVm> balances = new List<GeneralLedgerVm>();
-        //    if (!String.IsNullOrEmpty(fromperiod) && !String.IsNullOrEmpty(toperiod))
-        //    {
-        //        int from = int.Parse(fromperiod);
-        //        int to = int.Parse(toperiod);
-
-        //        DateTime dt11 = _db.GLPeriods.Find(from).DateFrom;
-        //        DateTime dt22 = _db.GLPeriods.Find(to).DateTo;
-        //        int min = 0;
-
-        //        var accountRange = _db.GLChartOfAccountAccounts
-        //            .Where(x => String.Compare(x.Values.ToUpper(), acctFrom, StringComparison.Ordinal) >= 0)
-        //            .Where(x => String.Compare(x.Values.ToUpper(), acctTo, StringComparison.Ordinal) <= 0)
-        //            .Select(x => x.Values).ToList();
-
-        //        var ledgerposts = _db.GLLedgerPostings.ToList();
-        //        List<GLLedgerPosting> ledgers = new List<GLLedgerPosting>();
-        //        foreach (var acct in accountRange)
-        //        {
-        //            var acct1 = acct;
-        //            var exist = ledgerposts.Where(x => x.AccountSegment == acct1);
-        //            var glLedgerPostings = exist as IList<GLLedgerPosting> ?? exist.ToList();
-        //            if (glLedgerPostings.Any())
-        //            {
-        //                ledgers.AddRange(glLedgerPostings.ToList());
-        //            }
-        //        }
-
-        //        var ledgerPostingLines = _db.GLLedgerPostingLines.Where(b => b.EffectiveDate >= dt11 && b.EffectiveDate <= dt22).ToList();
-
-
-        //        foreach (var ledgerPosting in ledgers)
-        //        {
-        //            var selectedledgerPostingLines = ledgerPostingLines.Where(x => x.GLLedgerPosting.Description == ledgerPosting.Description).ToList();
-
-        //            var ledgeritem = new GeneralLedgerVm
-        //            {
-        //                Description = ledgerPosting.Description,
-        //                AccountDescription = FinanceHelper.GetAccountDesc(ledgerPosting.Description),
-        //                GeneralLedgerVmLines = new List<GeneralLedgerVmLines>()
-        //            };
-
-        //            if (selectedledgerPostingLines.Any())
-        //            {
-        //                min = selectedledgerPostingLines.Min(x => x.GLLedgerPostingLinesID);
-        //            }
-
-        //            #region beginning
-
-        //            var beginning = new GeneralLedgerVmLines();
-        //            if (min != 0)
-        //            {
-        //                var temp = selectedledgerPostingLines.Where(x => x.GLLedgerPostingLinesID < min).ToList();
-        //                if (temp.Any())
-        //                {
-        //                    int beginningId = temp.Max(x => x.GLLedgerPostingLinesID);
-        //                    var beginningLine = selectedledgerPostingLines.Find(x => x.GLLedgerPostingLinesID == beginningId);
-
-        //                    if (beginningLine != null)
-        //                    {
-        //                        beginning.Id = beginningLine.GLLedgerPostingLinesID.ToString();
-        //                        beginning.Date = beginningLine.EffectiveDate;
-        //                        beginning.Reference = beginningLine.JournalReference;
-        //                        beginning.Journal = beginningLine.CategoryName;
-        //                        beginning.TransDesc = "Beginning Balance";
-        //                        beginning.Debit = beginningLine.Debit;
-        //                        beginning.Credit = beginningLine.Credit;
-        //                        beginning.Balance = beginningLine.Balance;
-        //                        ledgeritem.GeneralLedgerVmLines.Add(beginning);
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    beginning.Id = "0";
-        //                    beginning.Date = null;
-        //                    beginning.Reference = "";
-        //                    beginning.Journal = "";
-        //                    beginning.TransDesc = "Beginning Balance";
-        //                    beginning.Debit = 0;
-        //                    beginning.Credit = 0;
-        //                    beginning.Balance = 0;
-        //                    ledgeritem.GeneralLedgerVmLines.Add(beginning);
-        //                }
-
-        //            }
-        //            else
-        //            {
-        //                beginning.Id = "0";
-        //                beginning.Date = null;
-        //                beginning.Reference = "";
-        //                beginning.Journal = "";
-        //                beginning.TransDesc = "Beginning Balance";
-        //                beginning.Debit = 0;
-        //                beginning.Credit = 0;
-        //                beginning.Balance = 0;
-        //                ledgeritem.GeneralLedgerVmLines.Add(beginning);
-        //            }
-
-        //            #endregion
-        //            #region current transaction
-
-        //            if (selectedledgerPostingLines.Any())
-        //            {
-        //                var itemNewBinCardLines = selectedledgerPostingLines.Where(x => x.GLLedgerPostingLinesID >= min).ToList();
-
-        //                foreach (var balance in itemNewBinCardLines)
-        //                {
-        //                    var lines = new GeneralLedgerVmLines
-        //                    {
-        //                        Id = balance.GLLedgerPostingLinesID.ToString(),
-        //                        Date = balance.EffectiveDate,
-        //                        Reference = balance.JournalReference,
-        //                        Journal = balance.CategoryName,
-        //                        TransDesc = balance.Description,
-        //                        Debit = balance.Debit,
-        //                        Credit = balance.Credit,
-        //                        Balance = balance.Balance
-        //                    };
-
-        //                    ledgeritem.GeneralLedgerVmLines.Add(lines);
-        //                }
-        //            }
-
-        //            #endregion
-
-
-
-
-        //            balances.Add(ledgeritem);
-        //        }
-        //    }
-
-        //    return balances.OrderBy(x => x.Description);
-        //}
+      
+        public void Dispose()
+        {
+            _db?.Dispose();
+        }
     }
 }

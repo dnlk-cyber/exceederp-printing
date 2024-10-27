@@ -9,7 +9,8 @@ namespace ExceedERP.Core.Domain.Finance.Report
         LegalReserve,
         RevaluationReserve,
         OtherReserve,
-        RetainedEarnings
+        RetainedEarnings,
+        Dividends
     }
     public enum IfrsContinuedOpRevenueExpense
     {

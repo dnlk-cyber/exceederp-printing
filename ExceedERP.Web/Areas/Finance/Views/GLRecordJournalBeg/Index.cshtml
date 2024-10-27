@@ -175,7 +175,7 @@
 
 
 
-		# if (IsOnlineApproved)
+		# if (IsOnlineApproved && !isPosted)
 		{#
 
 		<a onclick='return Post("#=GLRecordJournalBegId#")' href=' \#' title="Post"><i class="fa fa-step-forward fa-2x"></i>Post</a>
@@ -192,7 +192,7 @@
 																						Created On
 																					</dt>
 																					<dd>
-																						#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+																						#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
 																					</dd>
 																					<dt>
@@ -211,7 +211,7 @@
 																						Modified Date
 																					</dt>
 																					<dd>
-																						#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+																						#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
 																					</dd>
 																				</dl>
 																			</div>
@@ -401,9 +401,9 @@
 				alert(result);
 			}
 		});
-    }
+	}
 
-    function Post(id) {
+	function Post(id) {
 
 		$.ajax({
 			type: "POST",

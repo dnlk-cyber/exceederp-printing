@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace ExceedERP.Web.Areas.Procurement.Models
+﻿namespace ExceedERP.Web.Areas.Procurement.Models
 {
     public class AssignItemToParticipant
     {

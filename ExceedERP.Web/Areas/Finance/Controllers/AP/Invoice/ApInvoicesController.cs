@@ -99,10 +99,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         [AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableApprover, FinanceConstants.AccountPayableInvoice)]
         public ActionResult APPaybleInvoices_Read([DataSourceRequest]DataSourceRequest request, bool isNotTransffered)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
             IQueryable<ApPaybleInvoices> appaybleinvoices = _db.APPaybleInvoices
                 .Where(x=>x.IsManual==false)
-                .Where(x => mybraches.Contains(x.OrgBranchName));
+                .Where(x => mybraches.Contains(x.BranchId));
 
             if (isNotTransffered)
             {
@@ -1649,7 +1649,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         public JsonResult Void(int id)
         {
             var record = _db.APPaybleInvoices.Find(id);
-            if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred && record.APPaybleInvoicesLines.Count > 0)
+            if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred && record.APPaybleInvoiceDistribution.Count > 0)
             {
                 #region validate invoice
 
@@ -1698,15 +1698,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-            if (record.APPaybleInvoicesLines.Count == 0)
+            if(record.APPaybleInvoiceDistribution.Count == 0)
             {
                 var formattedData = new
                 {
-                    Message = "Please add invoice lines and try again.",
+                    Message = "Please add distribution.",
                     Status = "NOT_OK"
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
+
+
             if (record.IsVoid)
             {
                 var formattedData = new

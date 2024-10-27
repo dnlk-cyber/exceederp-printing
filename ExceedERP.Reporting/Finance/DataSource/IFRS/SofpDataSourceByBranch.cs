@@ -26,9 +26,9 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
         public List<NoteVeiwModel> SofpReportNotes(string fiscalyear, string period, string project, string costcenter, string subaccount)
         {
             List<NoteVeiwModel> list = new List<NoteVeiwModel>();
-            var notes = _db.IfrsStatementOfFinancialPositions.FirstOrDefault();
+            var notes = _db.IfrsStatementOfFinancialPositions.AsNoTracking().FirstOrDefault();
             var assetRanges = _db.IfrsSofpAssetRanges.ToList();
-            var equityAndLiablityRanges = _db.IfrsSofpEquityAndLiablityRanges.ToList();
+            var equityAndLiablityRanges = _db.IfrsSofpEquityAndLiablityRanges.AsNoTracking().ToList();
            
             if (notes != null && !String.IsNullOrEmpty(fiscalyear) && !String.IsNullOrEmpty(project))
             {
@@ -171,7 +171,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
             {
                 var fyearObj = _db.GLFiscalYears.Find(int.Parse(fiscalyear));
 
-                var sofpRules = _db.IfrsStatementOfFinancialPositions.FirstOrDefault();
+                var sofpRules = _db.IfrsStatementOfFinancialPositions.AsNoTracking().FirstOrDefault();
 
                 var prevYearBalance = new List<GLLedgerPostingLines>();
                 var currnetYearBalance = new List<GLLedgerPostingLines>();

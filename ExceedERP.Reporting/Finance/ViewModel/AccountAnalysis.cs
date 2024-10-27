@@ -16,7 +16,7 @@ namespace ExceedERP.Reporting.Finance.ViewModel
         [Display(Name = "Period")]
         public string Period { get; set; }
         [Display(Name = "Effective Date")]
-        public string EffectiveDate { get; set; }
+        public DateTime EffectiveDate { get; set; }
         [Display(Name = "Journal Reference")]
         public string JournalReference { get; set; }
         [Display(Name = "Category")]

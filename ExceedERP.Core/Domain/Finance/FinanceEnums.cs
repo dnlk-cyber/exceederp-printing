@@ -17,8 +17,7 @@
         Duplicate_Beginning_Ledger_Line,
         Duplicate_Ending_Ledger_Line,
         Unposted_Journal_Line,
-        Having_both_debit_credit,
-        // Journal_Unbalanced_debit_credit
+        Having_both_debit_credit
 
     }
 }

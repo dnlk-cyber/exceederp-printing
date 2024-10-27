@@ -31,6 +31,7 @@
           columns.Bound(c => c.PaymentReference).Width(130);
           columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(130);
           columns.Bound(c => c.Remark).Width(120);
+          columns.Bound(c => c.CreatedBy).Width(120);
           columns.Bound(c => c.Status).Width(80);
 
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
@@ -47,7 +48,40 @@
                                     .Label("Show Transferrable Only")
                                     .HtmlAttributes(new { onchange = "isNotTransferredCheck(this)" })
                     )
+            @(Html.Kendo().DropDownList()
+                      .OptionLabel("Select Year")
+                      .Name("yearSelector")
+                      .AutoBind(false)
+                      .DataValueField("GlFiscalYearId")
+                      .DataTextField("Name")
+                      .HtmlAttributes(new { style = "width: 200px;" })
+                      .DataSource(dataSource =>
+                      {
+                                    dataSource.Read(read => read.Action("GetOpenYears", "GlobalDataProvider", new { area = "Common" }))
+                            .ServerFiltering(false);
+                                }))
 
+
+                            @(Html.Kendo().DropDownList()
+                                                  .Name("PeriodList")
+                                                  .AutoBind(false)
+                                                  .DataValueField("GLPeriodId")
+                                                  .DataTextField("Name")
+                                                  .HtmlAttributes(new { style = "width: 200px;" })
+                                                  .ValuePrimitive(true)
+                                                  .DataSource(dataSource =>
+                                                  {
+                                                                dataSource.Read(read => read.Action("GetOpenPeriods", "GlobalDataProvider", new { area = "Common" }).Data("getFiscalYear"))
+                                                        .ServerFiltering(true);
+                                                            })
+                                                  .CascadeFrom("yearSelector")
+                            )
+
+                         @(Html.Kendo().Button()
+                                 .Name("btnPost")
+                                 .HtmlAttributes(new {type = "search", @class = "k-primary"})
+                                 .Events(e => e.Click("BatchTransfer"))
+                                 .Content("Batch Transfer"))
 
 
                 </text>);
@@ -113,7 +147,7 @@
                         model.Field(p => p.IsOnlineTransferredBy).Editable(false);
                         model.Field(p => p.OnlineTransferredTime).Editable(false);
 
-         
+
                         model.Field(p => p.ForBranchId).Editable(false);
                         model.Field(p => p.BranchId).Editable(false);
                         model.Field(p => p.BusinessUnitId).Editable(false);
@@ -154,17 +188,18 @@
                             # if (!IsOnlineApproved&&!IsSendForApproval)
                             {#
                             <a onclick='return sendForApproval("#=ApPaymentId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                            <br />
+
                             # } #
 
                             # if (IsOnlineApproved)
                             {#
                             <a target="new" href='@Url.Action("ApPayment", "FinancePrint")/#=ApPaymentId#'><i class="fa fa-print fa-2x"></i></a>
-                            <br />
+
                             # } #
 
                             # if (IsOnlineApproved && !IsOnlineTransferred )
                             {#
+                             &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                             <a onclick='return transferToGl("#=ApPaymentId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
                             # } #
 
@@ -179,7 +214,7 @@
                                     Created On
                                 </dt>
                                 <dd>
-                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                 </dd>
                                 <dt>
@@ -198,8 +233,36 @@
                                     Modified Date
                                 </dt>
                                 <dd>
-                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                 </dd>
+        <dt>
+    Checked On
+</dt>
+<dd>
+    #=kendo.toString(kendo.parseDate(SendForApprovalTime), 'dd/MM/yyyy hh:mm tt') #
+</dd>
+<dt>
+    Checked By
+</dt>
+<dd>
+    #=SendForApprovalBy #
+</dd>
+
+<dt>
+    Approved On
+</dt>
+<dd>
+    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
+
+
+</dd>
+<dt>
+    Approved By
+</dt>
+<dd>
+    #=OnlineApprovedBy #
+
+</dd>
                             </dl>
                         </div>
                         <hr>
@@ -213,8 +276,8 @@
                         # } #
 
                     </text>);
-                           
-                                    
+
+
 
                                             items.Add().Text("Distribution").Content(
                                                 @<text>
@@ -375,15 +438,15 @@
                                                                                 }).Width(280);
 
                                                                             })
-                                                                            
+
                                                                             .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                            
+
                                                                             .ClientDetailTemplateId("purchasetemplates")
                                                                             .Sortable(sortable =>
                                                                             {
                                                                                 sortable.SortMode(GridSortMode.SingleColumn);
                                                                             })
-                                                                            
+
                                                                             .Scrollable()
                                                                             .DataSource(dataSource => dataSource
                                                                                 .Ajax()
@@ -402,7 +465,7 @@
                                                                                     .RequestStart("onRequestStart(\"PurchaseViewModel#=ApPaymentId#\")")
                                                                                     .RequestEnd("onRequestEnd(\"PurchaseViewModel#=ApPaymentId#\")"))
                                                                                 .Read(read => read.Action("PurchaseHeader_Read", "ApPayment", new { id = "#=ApPaymentId#" }))
-                                                                                
+
                                                                             )
                                                                             .ToClientTemplate())
 
@@ -423,7 +486,7 @@
                                                           .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
                                                           .Items(items =>
                                                           {
-                                                           
+
                                                                     items.Add().Text("Items").Content(@<text>
                                                                         @(Html.Kendo().Grid<PurchaseItemViewModel>()
                                                                                                           .Name("Item#=PurchaseId#")
@@ -496,11 +559,11 @@
 
                                                                                                           })
                                                                                                           .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                  
+
 
                                                                                                                 .Scrollable()
                                                                                                                 .Sortable()
-                                                                                                               
+
                                                                                                           .DataSource(dataSource => dataSource
                                                                                                               .Ajax()
                                                                                                                        .Model(
@@ -522,13 +585,13 @@
 
                                                                                                               .Read(read => read.Action("PurchasePaymentSchedule_Read", "ApPayment", new { id = "#=PurchaseId#", type = "#=PoTypeEnum#" }))
                                                                                                                  )
-                                                                                                                       
+
                                                                                                            .ToClientTemplate()
                                                                                 )
                                                                             </text>
                                                                                                           );
 
-                                                                                   
+
 
                                                                                           items.Add().Text("Validation").Content(
                                                                                                                                             @<text>
@@ -554,7 +617,7 @@
                                                                                                                                                                                                       {
                                                                                                                                                                                                           sortable.SortMode(GridSortMode.SingleColumn);
                                                                                                                                                                                                       })
-                                                                                                                                                                                                    
+
                                                                                                                                                                                                       .Scrollable()
                                                                                                                                                                                                       .DataSource(dataSource => dataSource
                                                                                                                                                                                                           .Ajax()
@@ -588,6 +651,46 @@
 </script>
 
 <script>
+
+    function getFiscalYear() {
+        return { year: $("#yearSelector").data("kendoDropDownList").value() }
+    }
+
+     function BatchTransfer() {
+     var periodObject = $("#PeriodList").data("kendoDropDownList");
+     var periodid = periodObject.value();
+
+     if (periodid != null) {
+
+         $.ajax({
+             type: "POST",
+             url: '@Url.Action("Batchtransfer", "ApPayment", new {area = "Finance"})',
+             data: { id: periodid },
+             success: function (result) {
+                 // toastr.warnning(result.Message);
+                 alert(result.Message);
+                 location.reload(true);
+             }, //end succ
+             beforeSend: function(){
+                 // Show image container
+                 $("#loading-image").show();
+             },
+             complete:function(data){
+                 // Hide image container
+                 $("#loading-image").hide();
+             },
+             error: function (result) {
+                 alert(result);
+             }
+         });
+
+
+         $("#grid").data("kendoGrid").dataSource.read();
+     } else {
+         alert("Please select period.");
+     }
+
+ }
 
     function voidRecord(id) {
         var recordStatus = "";
@@ -653,7 +756,7 @@
     }
 
 
-  
+
 
     function filterinvoices() {
 
@@ -661,13 +764,13 @@
             text: $("#InvoiceNumber").data("kendoDropDownList").filterInput.val()
         };
     }
- 
+
     function onSupplierSelect(e) {
 
         var dataItem = this.dataItem(e.item);
         //begin
         var supplier = dataItem.Code;
-       
+
         $.ajax({
             url: '/Finance/FinanceDataProvider/GetSupplierBalance',
             type: 'POST',
@@ -729,7 +832,7 @@
             type: 'POST',
             data: { id: id },
             success: function (result) {
-               
+
                 $("#InvoiceAmount").val(result.AmountDue).trigger("change");
                 $("#SupplierId").val(result.SupplierId).trigger("change");
                 $("#SupplierName").val(result.SupplierName).trigger("change");

@@ -276,7 +276,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
         {
             return Json(new
             {
-                Type = _accountHelper.IsDynamicCoA() ? "Yes":"No"
+                Type =  "Yes"
 
             }, JsonRequestBehavior.AllowGet);
         }
@@ -691,18 +691,18 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             #endregion
             #region sales refund
 
-            //var refund = _db.SalesReturn
-            //    .Where(x => x.IsOnlineApproved && x.IsVoid == false && x.Paid == false).AsQueryable();
-            //foreach (var c in refund)
-            //{
-            //    string name = _db.OrganizationCustomers.Where(x=>x.OrganizationCustomerID==c.CustomerId).FirstOrDefault()?.TradeName;
-            //    var record = new SelectorVm
-            //    {
-            //        Code = "SALES-RETURN_" + c.SalesReturnId.ToString(),
-            //        Name = "SALES-RETURN_" + name + "_" + c.Reason + "_" + c.SalesReturnId
-            //    };
-            //    list.Add(record);
-            //}
+            var refund = _db.SalesReturn
+                .Where(x => x.IsOnlineApproved && x.IsVoid == false && x.Paid == false).AsQueryable();
+            foreach (var c in refund)
+            {
+                string name = _db.OrganizationCustomers.Where(x=>x.OrganizationCustomerID==c.CustomerId).FirstOrDefault()?.TradeName;
+                var record = new SelectorVm
+                {
+                    Code = "SALES-RETURN_" + c.SalesReturnId.ToString(),
+                    Name = "SALES-RETURN_" + name + "_" + c.Reason + "_" + c.SalesReturnId
+                };
+                list.Add(record);
+            }
 
             #endregion
 
@@ -1103,36 +1103,20 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
         }
         public JsonResult GetSubAccounts()
         {
-            if (_accountHelper.IsDynamicCoA())
-            {
-                var segmentSetup = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType== DynamicSegmentTypes.SubAccount);
+            var segmentSetup = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
 
-                if (segmentSetup != null)
+            if (segmentSetup != null)
+            {
+                var subAccounts = _db.GlChartOfAccountSegments.Where(x =>
+                                              x.Enable && !x.Parent && x.GLSegmentSetupId == segmentSetup.GLSegmentSetupId);
+                return Json(subAccounts.Select(e => new
                 {
-                    var subAccounts = _db.GlChartOfAccountSegments.Where(x =>
-                                                  x.Enable && !x.Parent && x.GLSegmentSetupId == segmentSetup.GLSegmentSetupId);
-                    return Json(subAccounts.Select(e => new
-                        {
-                            Description = e.Values + "-" + e.Description,
-                            Values = e.Values
-                        }),
-                        JsonRequestBehavior.AllowGet);
-                }
+                    Description = e.Values + "-" + e.Description,
+                    Values = e.Values
+                }),
+                    JsonRequestBehavior.AllowGet);
+            }
 
-                #region null;
-                
-                #endregion
-            }
-            else
-            {
-               //var subAccounts = _db.GLChartOfAccountSubAccounts.Where(x => x.Enable && !x.Parent);
-               // return Json(subAccounts.Select(e => new
-               //     {
-               //         Description = e.Values + "-" + e.Description,
-               //         Values = e.Values
-               //     }),
-               //     JsonRequestBehavior.AllowGet);
-            }
 
             return null;
 
@@ -1206,11 +1190,20 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
         public JsonResult GetTravelOrders()
         {
-            var orders = _db.ApTravelOrders.Where(x => x.IsOnlineApproved  && x.IsVoid == false).AsQueryable();
+            var orders = _db.ApTravelOrders
+                .Where(x => x.IsOnlineApproved  && x.IsVoid == false && x.Claimed==false)
+                .AsQueryable();
+
+            if(!FinanceConfigurationHelper.AllowtravelClaimForOthers())
+            {
+                int empId = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
+                orders = orders.Where(x => x.EmployeeId == empId);
+            }
+
             return Json(orders.Select(c => new
                 {
                     Code = c.ApTravelOrderId,
-                    Name = c.ApTravelOrderId + "_" + c.Reference
+                    Name = c.ApTravelOrderId + "_" + c.PurposeOfTravel
             }),
                 JsonRequestBehavior.AllowGet);
         }
@@ -1827,10 +1820,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                                     {
                                         x.PurchasePaymentId,
                                         x.SupplierName,
-                                        x.Type
+                                        x.Type,
+                                        x.IsAuthorized
                                     })
 
                                     .AsQueryable();
+
+            if (FinanceConfigurationHelper.IsPaymentRequestAuthorizationEnabled())
+            {
+                paymentRequests = paymentRequests.Where(x => x.IsAuthorized);
+            }
 
             //if (!String.IsNullOrWhiteSpace(text))
             //    purchaseOrders = purchaseOrders.Where(x => x.PurchaseOrderID.ToString() == text
@@ -1874,10 +1873,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                                         {
                                             x.PurchasePaymentId,
                                             x.SupplierName,
-                                            x.Type
+                                            x.Type,
+                                            x.IsAuthorized
                                         })
 
                                         .AsQueryable();
+
+                if (FinanceConfigurationHelper.IsPaymentRequestAuthorizationEnabled())
+                {
+                    paymentRequests = paymentRequests.Where(x => x.IsAuthorized);
+                }
+
 
                 if (!String.IsNullOrWhiteSpace(text))
                     paymentRequests = paymentRequests.Where(x => x.PurchasePaymentId.ToString() == text
@@ -1950,10 +1956,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                                     {
                                         x.PurchasePaymentId,
                                         x.SupplierName,
-                                        x.Type
+                                        x.Type,
+                                        x.IsAuthorized
                                     })
 
                                     .AsQueryable();
+
+            if (FinanceConfigurationHelper.IsPaymentRequestAuthorizationEnabled())
+            {
+                paymentRequests = paymentRequests.Where(x => x.IsAuthorized);
+            }
+
 
             if (!String.IsNullOrWhiteSpace(text))
                 paymentRequests = paymentRequests.Where(x => x.PurchasePaymentId.ToString() == text
@@ -1981,6 +1994,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
 
 
         }
+        public JsonResult GetBankAccountsByUser()
+        {
+            List<string> userBankAccounts = UserInformationHelper.GetUserBanks(User.Identity.Name);
+            var acounts = _db.BankAccounts.Where(x => userBankAccounts.Contains(x.AccountNumber));
 
+            return Json(acounts.Select(p => new
+            {
+                AccountNumber = p.AccountNumber,
+                AccountName = p.AccountNumber + "-" + p.AccountName
+            }),
+                JsonRequestBehavior.AllowGet);
+        }
     }
 }

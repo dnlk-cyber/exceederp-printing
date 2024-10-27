@@ -112,6 +112,8 @@
               model.Field(p => p.OrgStructureId).Editable(false);
               model.Field(p => p.CreatedAtOrgStructureId).Editable(false);
               // model.Field(p => p.EmployeeId).Editable(false);
+              model.Field(p => p.IsForProduction).Editable(false);
+              model.Field(p => p.IsForMaintenance).Editable(false);
               model.Field(p => p.Status).Editable(false);
               //model.Field(p => p.RequestDate).Editable(false);
               model.Field(p => p.PrevRequestDate).Editable(false);
@@ -160,7 +162,7 @@
                                             Request Date
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy hh:mm tt') #
                                         </dd>
                                         <dt>
                                             Status
@@ -184,7 +186,7 @@
                                             CreatedOn
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                         </dd>
                                         <dt>
@@ -203,7 +205,7 @@
                                             Modified Date
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                         </dd>
                                         <dt>
                                             Approved By
@@ -215,7 +217,7 @@
                                             Approval Time
                                         </dt>
                                         <dd>
-                                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
                                         </dd>
                                     </dl>
                                 </div>

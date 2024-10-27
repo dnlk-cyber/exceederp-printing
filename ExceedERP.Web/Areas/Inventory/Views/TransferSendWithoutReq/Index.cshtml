@@ -111,7 +111,7 @@
                                 </dt>
                                 <dd>
 
-                                    #=kendo.toString(kendo.parseDate(TransferDate), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(TransferDate), 'dd/MM/yyyy hh:mm tt') #
                                 </dd>
                                 <dt>
                                     Ship From
@@ -153,7 +153,7 @@
                                     CreatedOn
                                 </dt>
                                 <dd>
-                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                 </dd>
                                 <dt>
@@ -172,7 +172,7 @@
                                     Modified Date
                                 </dt>
                                 <dd>
-                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                 </dd>
                             </dl>
                         </div>
@@ -181,7 +181,10 @@
 
                         # if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
                         {#
+                     @if (HttpContext.Current.User.IsInRole("Property_Void"))
+                     {
                         <a onclick='return voidRecord("#=ItemTransferID#")' href=' \#' title="Void Record"><i class="fa  fa-bolt fa-2x" style="color:red"></i></a>
+                     }
 
                         # } #
 
@@ -204,7 +207,7 @@
                                                         columns.Bound(c => c.ReceivedQuantity).Title("Received QTY").Width(80);
                                                         columns.Bound(c => c.Remark).Width(60);
 
-                                                       
+
 
                                                         columns.Command(command =>
                                                         {

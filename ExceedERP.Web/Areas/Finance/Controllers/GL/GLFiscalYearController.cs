@@ -20,7 +20,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
     [AuthorizeRoles(FinanceConstants.FinanceAdmin)]
     public class GlFiscalYearController : Controller
     {
-        private readonly ExceedDbContext _db = new ExceedDbContext();
+        private  ExceedDbContext _db = new ExceedDbContext();
         readonly FinanceHelper _financeHelper=new FinanceHelper();
 
         public ActionResult Index()
@@ -646,6 +646,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
         }
         public JsonResult ClosePeriod(string id)
         {
+            ExceedDbContext _db = new ExceedDbContext();
             if (id != null)
             {
                 var glPeriod = _db.GLPeriods.Find(int.Parse(id));
@@ -682,6 +683,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
         public JsonResult OpenPeriod(string id)
         {
+            ExceedDbContext _db = new ExceedDbContext();
             if (id != null)
             {
                 var glPeriod = _db.GLPeriods.Find(int.Parse(id));

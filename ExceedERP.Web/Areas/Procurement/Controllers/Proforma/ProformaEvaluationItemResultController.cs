@@ -5,7 +5,6 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Procurement.Proforma;
 using ExceedERP.Core.Domain.Procurement.Settings;
-using ExceedERP.Core.Domain.Procurement.Tender;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
@@ -14,7 +13,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
 {
-       
+
     public class ProformaEvaluationItemResultController : Controller
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();

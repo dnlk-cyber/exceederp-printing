@@ -835,11 +835,7 @@ namespace ExceedERP.Web.Controllers
             InventoryHelper.CreateBeginning(id);
             return View("Success");
         }
-        public ActionResult CreateBranchItems(string id)
-        {
-            InventoryHelper.UpdateAllBranchItems(int.Parse(id));
-            return View("Success");
-        }
+       
         public ActionResult TransferIssue()
         {
             //var issues = _db.Issues.Where(x => x.IsOnlineApproved && x.IsVoid == false && x.IsFuel ==false).ToList();

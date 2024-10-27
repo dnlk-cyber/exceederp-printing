@@ -12,7 +12,7 @@ namespace ExceedERP.Core.Domain.Procurement.Proforma
     {
         public int ProformaPurchaseID { get; set; }
         [Required]
-        [Display(Name = " Proforma Reference")]
+        [Display(Name = "Reference")]
         public string ProformaReference { get; set; }
         [Required]
         public string Description { get; set; }

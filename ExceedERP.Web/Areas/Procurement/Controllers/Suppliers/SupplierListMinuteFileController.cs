@@ -64,6 +64,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Suppliers
 
                 string subPath = "~/App_Data/Uploads/Procurement/SupplierListMoM/";
 
+                bool exists = Directory.Exists(Server.MapPath(subPath));
+
+                if (!exists)
+                    Directory.CreateDirectory(Server.MapPath(subPath));
 
                 string fileName = "";
                 foreach (var temp in file)

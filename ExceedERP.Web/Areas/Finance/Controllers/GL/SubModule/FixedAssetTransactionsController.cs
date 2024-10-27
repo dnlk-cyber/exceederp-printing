@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.FixedAsset.Receives;
@@ -120,7 +117,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                 _transferHelper = new FixedAssetTransferHelper();
                 _response = _transferHelper.GoodReceive(record.FixedAssetReceiveId, "Bach Transfer", User.Identity.Name);
                 if (_response != "SUCCESS")
-                    Logger.Debug("Fixed Grn transfer ID:" + record.FixedAssetReceiveId + _response);
+                    ;// Logger.Debug("Fixed Grn transfer ID:" + record.FixedAssetReceiveId + _response);
             }
 
             #region auto job

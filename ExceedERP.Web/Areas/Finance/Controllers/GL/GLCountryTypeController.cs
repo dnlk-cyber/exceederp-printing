@@ -42,19 +42,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult GLCountryTypes_Create([DataSourceRequest]DataSourceRequest request, GLCountryType gLCountryType)
         {
-            #region validation
+			#region validation
 
-            bool valid = true;
-            var exists = _db.GLCountryTypes.Where(x => x.GLCountryTypeID != gLCountryType.GLCountryTypeID).Where(x => x.CountryName.ToUpper().Equals(gLCountryType.CountryName.ToUpper())).ToList();
+			var exists = _db.GLCountryTypes.Where(x => x.GLCountryTypeID != gLCountryType.GLCountryTypeID).Where(x => x.CountryName.ToUpper().Equals(gLCountryType.CountryName.ToUpper())).ToList();
 
             if (exists.Any())
             {
                 ModelState.AddModelError("", gLCountryType.CountryName + " already exists in the system.");
-                valid = false;
-            }
+			}
 
-            #endregion
-            if (ModelState.IsValid)
+			#endregion
+			if (ModelState.IsValid)
             {
                 var entity = new GLCountryType
                 {
@@ -79,20 +77,18 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult GLCountryTypes_Update([DataSourceRequest]DataSourceRequest request, GLCountryType gLCountryType)
-        { 
-            #region validation
+        {
+			#region validation
 
-                bool valid = true;
-                var exists = _db.GLCountryTypes.Where(x => x.GLCountryTypeID != gLCountryType.GLCountryTypeID).Where(x => x.CountryName.ToUpper().Equals(gLCountryType.CountryName.ToUpper())).ToList();
+			var exists = _db.GLCountryTypes.Where(x => x.GLCountryTypeID != gLCountryType.GLCountryTypeID).Where(x => x.CountryName.ToUpper().Equals(gLCountryType.CountryName.ToUpper())).ToList();
 
                 if (exists.Any())
                 {
                     ModelState.AddModelError("", gLCountryType.CountryName + " already exists in the system.");
-                    valid = false;
-                }
+			}
 
-                #endregion
-            if (ModelState.IsValid)
+			#endregion
+			if (ModelState.IsValid)
             {
                 var entity = new GLCountryType
                 {

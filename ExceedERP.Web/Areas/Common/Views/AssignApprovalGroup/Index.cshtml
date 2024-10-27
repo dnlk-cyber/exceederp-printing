@@ -116,8 +116,8 @@
                                                                                 .Name("AssignApprovalGroupAssignment#=AssignApprovalGroupId#")
                                                                                 .Columns(columns =>
                                                                             {
-                                                                                        columns.ForeignKey(p => p.ApprovalGroupId, (IEnumerable)ViewData["ApprovalGroups"], "ApprovalGroupId", "Description").Width(80).EditorTemplateName("DocumentApprovalGroup");
-                                                                                        columns.Bound(c => c.DocumentType).Width(80).EditorTemplateName("DocumentType");
+                                                                                        columns.ForeignKey(p => p.ApprovalGroupId, (IEnumerable)ViewData["ApprovalGroups"], "ApprovalGroupId", "Name").Width(120).EditorTemplateName("DocumentApprovalGroup");
+                                                                                        columns.Bound(c => c.DocumentType).Width(100).EditorTemplateName("DocumentType");
                                                                                         columns.Bound(c => c.From).Width(70);
                                                                                         columns.Bound(c => c.To).Width(70);
 

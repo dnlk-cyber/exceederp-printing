@@ -23,7 +23,7 @@
 			  columns.Bound(c => c.CreatedBy).Width(120);
 			  columns.Bound(c => c.PaymentReference).Width(100).Title("Pay. Ref.");
 			  columns.Bound(c => c.InvoiceReferenceDoc).Width(100).Title("Invoice Ref");
-			  columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Width(100).Title("Branch");
+			  columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Width(100).Title("Branch").Filterable(ftb => ftb.Multi(true).Search(true));
 			  columns.Bound(c => c.Remark).Width(100);
 			  columns.Bound(c => c.Status).Width(100);
 
@@ -67,9 +67,9 @@
 			.Filterable()
 		   //.ColumnMenu()
 
-		   .Events(ev => ev.DetailExpand("detailExpand"))
+		   .Events(ev => ev.DetailExpand("detailExpandJournal"))
 		   .Scrollable(h => h.Height(500))
-		   .Events(x => x.DataBound("onDataBoundMaster"))
+		   .Events(x => x.DataBound("onDataBoundMasterJournal"))
 			.ClientDetailTemplateId("templates")
 		  .DataSource(dataSource => dataSource
 			  .Ajax()
@@ -102,9 +102,9 @@
 					model.Field(p => p.FiscalYear).Editable(false);
 					model.Field(p => p.DebitSum).Editable(false);
 
-					model.Field(p => p.InvoiceReferenceDoc).Editable(false);
-					model.Field(p => p.ReferenceDoc).Editable(false);
-					model.Field(p => p.PaymentReference).Editable(false);
+					//model.Field(p => p.InvoiceReferenceDoc).Editable(false);
+					//model.Field(p => p.ReferenceDoc).Editable(false);
+					//model.Field(p => p.PaymentReference).Editable(false);
 
 					model.Field(p => p.BranchId).Editable(false);
 					model.Field(p => p.BusinessUnitId).Editable(false);
@@ -172,7 +172,7 @@
 										Created On
 									</dt>
 									<dd>
-										#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+										#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
 									</dd>
 									<dt>
@@ -191,7 +191,7 @@
 										Modified Date
 									</dt>
 									<dd>
-										#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+										#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
 									</dd>
 								</dl>
 							</div>
@@ -203,22 +203,22 @@
 											  .Name("GLRecordJournalDetail#=GlRecordJournalId#")
 											  .Columns(columns =>
 											  {
-													  columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(80);
-													  columns.Bound(c => c.AccountDesc).Title("Account Description").Width(180);
-													  columns.Bound(c => c.AdditionalDescription).Title("Description").Width(80);
-													  columns.Bound(c => c.Debit).Width(50).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-													  columns.Bound(c => c.Credit).Width(50).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-													  columns.Command(command =>
-													  {
+												  columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(80);
+												  columns.Bound(c => c.AccountDesc).Title("Account Description").Width(180);
+												  columns.Bound(c => c.AdditionalDescription).Title("Description").Width(80);
+												  columns.Bound(c => c.Debit).Width(50).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+												  columns.Bound(c => c.Credit).Width(50).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+												  columns.Command(command =>
+												  {
 
-														  command.Edit(); command.Destroy();
+													  command.Edit(); command.Destroy();
 
-													  }).Width(180).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
-												  })
+												  }).Width(180).ClientFooterTemplate("Difference: \\#=kendo.toString(Debit.sum-Credit.sum,'0.0000')\\# ");
+											  })
 											  .ToolBar(toolbar =>
 											  {
-													  toolbar.Create();
-												  })
+												  toolbar.Create();
+											  })
 
 											  .Editable(editable => editable.Mode(GridEditMode.InLine))
 											  .Pageable(pageable => pageable
@@ -230,26 +230,26 @@
 											  .Scrollable()
 											  .Sortable()
 											  .Filterable()
-											  .Events(x => x.DataBound("onDataBoundLines"))
+											  .Events(x => x.DataBound("onDataBoundJournalLines"))
 											  .DataSource(dataSource => dataSource
 												  .Ajax()
 												  .Sort(sort => sort.Add("Debit").Descending())
 												  .Aggregates(aggregates =>
 												  {
-														  aggregates.Add(p => p.Debit).Sum();
-														  aggregates.Add(p => p.Credit).Sum();
-													  })
+													  aggregates.Add(p => p.Debit).Sum();
+													  aggregates.Add(p => p.Credit).Sum();
+												  })
 												  .Model(
 													  model =>
 													  {
-															  model.Id(p => p.GlRecordJournalDetailId);
-															  model.Field(p => p.AccountDesc).Editable(false);
-															  model.Field(p => p.OrgBranchName).Editable(false);
-															  model.Field(p => p.CreatedBy).Editable(false);
-															  model.Field(p => p.ModifiedBy).Editable(false);
-															  model.Field(p => p.LastModified).Editable(false);
-															  model.Field(p => p.DateCreated).Editable(false);
-														  })
+														  model.Id(p => p.GlRecordJournalDetailId);
+														  model.Field(p => p.AccountDesc).Editable(false);
+														  model.Field(p => p.OrgBranchName).Editable(false);
+														  model.Field(p => p.CreatedBy).Editable(false);
+														  model.Field(p => p.ModifiedBy).Editable(false);
+														  model.Field(p => p.LastModified).Editable(false);
+														  model.Field(p => p.DateCreated).Editable(false);
+													  })
 												  .Events(ev => ev
 													  .Error("error_handler(\"GLRecordJournalDetail#=GlRecordJournalId#\")")
 													  .RequestStart("onRequestStart(\"GLRecordJournalDetail#=GlRecordJournalId#\")")
@@ -289,7 +289,7 @@
 															  toolbar.Create();
 														  })
 													  .Editable(editable => editable.Mode(GridEditMode.InLine))
-													  .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+													  .Events(x => x.DataBound("onDataBoundJournalValidation"))
 
 													  .DataSource(dataSource => dataSource
 														  .Ajax()
@@ -327,6 +327,91 @@
 
 <script>
 
+	var masterDataItem;
+	var masterRow;
+	var masterGrid;
+
+	var codeid;
+	var isapproved;
+	var issecondapproved;
+	var isSendForApproval;
+	var isOnlineTransferred;
+
+	function detailExpandJournal(e) {
+
+		masterRow = e.masterRow;
+		masterGrid = $("#grid").data("kendoGrid");
+		masterDataItem = masterGrid.dataItem(masterRow);
+		isapproved = masterDataItem.IsOnlineApproved;
+		isSendForApproval = masterDataItem.IsSendForApproval;
+		isOnlineTransferred = masterDataItem.IsOnlineTransferred;
+
+	}
+	function onDataBoundMasterJournal(e) {
+		//this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+		//approved
+		var grid = $("#grid").data("kendoGrid");
+		var gridData = grid.dataSource.view();
+
+		for (var i = 0; i < gridData.length; i++) {
+			var currentUid = gridData[i].uid;
+			if (gridData[i].IsOnlineApproved || gridData[i].IsSendForApproval) {
+				var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+				var editButton = $(currenRow).find(".k-grid-edit");
+				var deleteButton = $(currenRow).find(".k-grid-delete");
+				editButton.hide();
+				deleteButton.hide();
+			}
+
+			if (gridData[i].IsUnPosted) {
+				var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");              
+				var deleteButton = $(currenRow).find(".k-grid-delete");
+				deleteButton.hide();
+			}
+		}
+
+		//changing colors
+		var rows = e.sender.tbody.children();
+		for (var j = 0; j < rows.length; j++) {
+			var row = $(rows[j]);
+			var dataItem = e.sender.dataItem(row);
+			if (dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
+				row.css("background-color", "lightgreen");
+			}
+			if (!dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
+				row.css("background-color", "lightskyblue");
+			}
+
+			if (dataItem.IsVoid) {
+				row.css("background-color", "slategray");
+				row.css("color", "black");
+			}
+		}
+	}
+	function onDataBoundJournalLines(e) {
+
+		var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionItem_" + codeid;
+		if (isapproved || isSendForApproval) {
+
+			$(".k-grid-add", detailGrid).hide();
+			$(".k-grid-delete", detailGrid).hide();
+			$(".k-grid-edit", detailGrid).hide();
+		}
+	}
+	function onDataBoundJournalValidation(e) {
+
+		var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionValidation_" + codeid;
+
+		if (isapproved || !isSendForApproval) {
+
+			$(".k-grid-add", detailGrid).hide();
+			$(".k-grid-delete", detailGrid).hide();
+			$(".k-grid-edit", detailGrid).hide();
+		}
+
+		this.table.find(".k-grid-edit").hide();
+	}
 	function sendForApproval(id) {
 		var recordStatus = "";
 

@@ -447,8 +447,8 @@ namespace ExceedERP.Reporting.Finance.IFRS
             // 
             // notesDataSource
             // 
-            this.notesDataSource.DataMember = "ScoiReportNotes";
-            this.notesDataSource.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.IFRS.ScoiDataSource);
+            this.notesDataSource.DataMember = "SocfReportNotes";
+            this.notesDataSource.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.IFRS.SocfDataSource);
             this.notesDataSource.Name = "notesDataSource";
             this.notesDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("fiscalyear", typeof(string), "= Parameters.fiscalyear.Value"),

@@ -20,9 +20,19 @@ namespace ExceedERP.Reporting.Finance.ViewModel.Print
         public string PaymentMethod { get; set; }
         public string PaymentRequest { get; set; }
         public string Remark { get; set; }
+        //dep
         public string PreparedBy { get; set; }
         public DateTime? PreparedDate { get; set; }
         public Image PreparedBySignature { get; set; }
+
+        public string DepartmentCheckedBy { get; set; }
+        public DateTime? DepartmentCheckedDate { get; set; }
+        public Image DepartmentCheckerSignature { get; set; }
+
+        public string DepartmentApprovedBy { get; set; }
+        public DateTime? DepartmentApprovedDate { get; set; }
+        public Image DepartmentApproverSignature { get; set; }
+        //finance
         public string AccountantCheckedBy { get; set; }
         public DateTime? AccountantCheckedDate { get; set; }
         public Image AccountantCheckerSignature { get; set; }

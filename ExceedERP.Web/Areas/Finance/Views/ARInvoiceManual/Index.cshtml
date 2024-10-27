@@ -135,11 +135,12 @@
         # if (IsOnlineApproved)
         {#
         <a target="new" href='@Url.Action("ArInvoice", "FinancePrint")/#=ArInvoiceId#'><i class="fa fa-print fa-2x"></i></a>
-        <br />
+
         # } #
 
         # if (IsOnlineApproved && !IsOnlineTransferred )
-        {#      
+        {#
+          &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
         <a onclick='return transferToGl("#=ArInvoiceId#")' href=' \#' title="Send for Approval"><i class="fa fa-paper-plane fa-2x"></i></a>
         # } #
     </div>
@@ -152,7 +153,7 @@
                 Created On
             </dt>
             <dd>
-                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
             </dd>
             <dt>
@@ -171,8 +172,36 @@
                 Modified Date
             </dt>
             <dd>
-                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
             </dd>
+        <dt>
+    Checked On
+</dt>
+<dd>
+    #=kendo.toString(kendo.parseDate(SendForApprovalTime), 'dd/MM/yyyy hh:mm tt') #
+</dd>
+<dt>
+    Checked By
+</dt>
+<dd>
+    #=SendForApprovalBy #
+</dd>
+
+<dt>
+    Approved On
+</dt>
+<dd>
+    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
+
+
+</dd>
+<dt>
+    Approved By
+</dt>
+<dd>
+    #=OnlineApprovedBy #
+
+</dd>
         </dl>
     </div>
      <hr>
@@ -257,7 +286,7 @@
                                   .Update(update => update.Action("ARInvoiceLines_Update", "ArInvoiceManualLines", new { id = "#=ArInvoiceId#" }))
                                   .Destroy(destroy => destroy.Action("ARInvoiceLines_Destroy", "ArInvoiceManualLines"))
                               )
-                              
+
                               .ToClientTemplate())
                     </text>);
 
@@ -315,7 +344,7 @@
                                       .Update(update => update.Action("ARInvoiceValidations_Update", "ARInvoiceValidation", new {id = "#=ArInvoiceId#"}))
                                       .Destroy(destroy => destroy.Action("ARInvoiceValidations_Destroy", "ARInvoiceValidation"))
                                   )
-                                      
+
                                   .ToClientTemplate()
                                   )
 
@@ -350,7 +379,7 @@
                               toolbar.Create();
                           })
                           .Editable(editable => editable.Mode(GridEditMode.InLine))
-                          
+
                           .Sortable(sortable =>
                           {
                               sortable.SortMode(GridSortMode.SingleColumn);

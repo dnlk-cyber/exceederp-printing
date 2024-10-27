@@ -3,18 +3,16 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers
 {
-    
+
     public class ServiceReceiveValidationController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();

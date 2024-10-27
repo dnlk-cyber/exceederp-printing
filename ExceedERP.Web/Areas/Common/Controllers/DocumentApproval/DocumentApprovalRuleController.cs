@@ -1,15 +1,13 @@
-﻿﻿using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
- using ExceedERP.DataAccess.Context;
-using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
 {
@@ -116,6 +114,9 @@ namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
                 db.DocumentApprovalRules.Add(entity);
                 db.SaveChanges();
                 documentApprovalRule.DocumentApprovalRuleId = entity.DocumentApprovalRuleId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Document approval rule", "Success", User.Identity.Name, $"created rule of document type {entity.DocumentType}  ", Modules.Administration);
+                #endregion
             }
 
             return Json(new[] { documentApprovalRule }.ToDataSourceResult(request, ModelState));
@@ -146,6 +147,9 @@ namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
                 db.DocumentApprovalRules.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Document approval rule", "Success", User.Identity.Name, $"updated rule of document type {entity.DocumentType}  ", Modules.Administration);
+                #endregion
             }
 
             return Json(new[] { documentApprovalRule }.ToDataSourceResult(request, ModelState));
@@ -176,6 +180,9 @@ namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
                 db.DocumentApprovalRules.Attach(entity);
                 db.DocumentApprovalRules.Remove(entity);
                 db.SaveChanges();
+                #region operation log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Document approval rule", "Success", User.Identity.Name, $"deleted approval rule of document type  {documentApprovalRule.DocumentType} ", Modules.Administration);
+                #endregion
             }
 
             return Json(new[] { documentApprovalRule }.ToDataSourceResult(request, ModelState));

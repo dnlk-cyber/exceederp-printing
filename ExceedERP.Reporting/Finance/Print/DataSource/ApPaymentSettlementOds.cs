@@ -18,7 +18,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
         [DataObjectMethod(DataObjectMethodType.Select)]
         public ApMiscPaymentViewModel PaymentSettlementHeader(int id)
         {
-            var payment = _db.ApPaymentSettlements.Find(id);
+            var paymentRequest = _db.ApPaymentSettlements.Find(id);
             decimal netpayment = 0;
             var paymentlines = _db.ApPaymentSettlementLines.Where(x=>x.ApPaymentSettlementId==id);
             if(paymentlines.Any())
@@ -27,17 +27,36 @@ namespace ExceedERP.Reporting.Finance.DataSource.Print
 
             ApMiscPaymentViewModel headerDs = new ApMiscPaymentViewModel();
 
-            if (payment != null)
+            if (paymentRequest != null)
             {
-                headerDs.VoucherId = payment.ApPaymentSettlementId.ToString();
+                headerDs.VoucherId = paymentRequest.ApPaymentSettlementId.ToString();
                 headerDs.DocTitile = "PAYMENT SETTLEMENT";
                 headerDs.SupplierName = "";
                 headerDs.NetPayable = netpayment;
-                headerDs.PaymentReference = payment.Reference;
-                headerDs.PaymentDate = payment.PaymentDate;
-                headerDs.Remark = payment.Remark;
-                headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(payment.CreatedBy));
-                headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(payment.OnlineApprovedBy));
+                headerDs.PaymentReference = paymentRequest.Reference;
+                headerDs.PaymentDate = paymentRequest.PaymentDate;
+                headerDs.Remark = paymentRequest.Remark;
+
+                //department
+                headerDs.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.CreatedBy));
+                headerDs.PreparedDate = paymentRequest.DateCreated != null ? paymentRequest.DateCreated : null;
+                headerDs.PreparedBySignature = SignatureHelper.GetUserSignature(paymentRequest.CreatedBy);
+
+                headerDs.DepartmentCheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.DepartmentSendForApprovalBy));
+                headerDs.DepartmentCheckedDate = paymentRequest.DepartmentOnlineApprovedTime != null ? paymentRequest.DepartmentSendForApprovalTime : null;
+                headerDs.DepartmentCheckerSignature = SignatureHelper.GetUserSignature(paymentRequest.DepartmentSendForApprovalBy);
+
+                headerDs.DepartmentApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.DepartmentOnlineApprovedBy));
+                headerDs.DepartmentApprovedDate = paymentRequest.DepartmentOnlineApprovedTime != null ? paymentRequest.DepartmentOnlineApprovedTime : null;
+                headerDs.DepartmentApproverSignature = SignatureHelper.GetUserSignature(paymentRequest.DepartmentOnlineApprovedBy);
+                //finance
+                headerDs.AccountantCheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.SendForApprovalBy));
+                headerDs.AccountantCheckedDate = paymentRequest.SendForApprovalTime != null ? paymentRequest.SendForApprovalTime : null;
+                headerDs.AccountantCheckerSignature = SignatureHelper.GetUserSignature(paymentRequest.SendForApprovalBy);
+
+                headerDs.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(paymentRequest.OnlineApprovedBy));
+                headerDs.ApprovedDate = paymentRequest.OnlineApprovedTime != null ? paymentRequest.OnlineApprovedTime : null;
+                headerDs.ApproverSignature = SignatureHelper.GetUserSignature(paymentRequest.OnlineApprovedBy);
             }
 
             if (organization != null)

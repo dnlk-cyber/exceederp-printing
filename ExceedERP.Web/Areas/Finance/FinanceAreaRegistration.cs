@@ -17,7 +17,7 @@ namespace ExceedERP.Web.Areas.Finance
             context.MapRoute(
                 "Finance_default",
                 "Finance/{controller}/{action}/{id}",
-                new { action = "Index", id = UrlParameter.Optional }
+                new { controller = "FinanceHome", action = "Index", id = UrlParameter.Optional }
             );
         }
     }

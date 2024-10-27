@@ -1,17 +1,17 @@
 ﻿@using System.Collections
-<legend>Annual Need Assessment</legend>
+<legend>Annual Procurement Need </legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Need.AnnualNeedAssesment>()
       .Name("grid")
       .Columns(columns =>
       {
-          columns.ForeignKey(p => p.GlFiscalYearId, (IEnumerable)ViewData["Periods"], "GlFiscalYearId", "Name").Title("Fiscal Year").EditorTemplateName("GLYears").Width(120);
-          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+          columns.ForeignKey(p => p.GlFiscalYearId, (IEnumerable)ViewData["Periods"], "GlFiscalYearId", "Name").Title("Fiscal Year").EditorTemplateName("GLYears").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           if (GlobalHelper.IsMultipleBusinessUnit())
           {
-              columns.ForeignKey(p => p.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").EditorTemplateName("BusinessUnitSelector").Width(150);
+              columns.ForeignKey(p => p.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").EditorTemplateName("BusinessUnitSelector").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           }
-          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(180).EditorTemplateName("WorkUnitCostCenterSelector");
-          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(150).EditorTemplateName("EmployeeSelector");
+          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(180).EditorTemplateName("WorkUnitCostCenterSelector").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(150).EditorTemplateName("EmployeeSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.Remark).Width(100);
           columns.Bound(c => c.Status).Width(100);
 
@@ -158,7 +158,7 @@
                                     Created On
                                 </dt>
                                 <dd>
-                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
 
                                 </dd>

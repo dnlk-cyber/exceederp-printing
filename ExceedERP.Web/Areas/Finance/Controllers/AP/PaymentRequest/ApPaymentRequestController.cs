@@ -3,17 +3,13 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
-using ExceedERP.Web.Areas.HRM.Controllers;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -110,7 +106,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                 PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                 PONo = paymentRequest.PONo,
                 GRN = paymentRequest.GRN,
-                
+
+                Paid = paymentRequest.Paid,
+                PaymentAmount = paymentRequest.PaymentAmount,
+                AmountDue = paymentRequest.AmountDue,
+
                 Status =paymentRequest.Status,
                 Remark =paymentRequest.Remark,
                 IsVoid =paymentRequest.IsVoid,
@@ -224,7 +224,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                     PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                     PONo = paymentRequest.PONo,
                     GRN = paymentRequest.GRN,
-                    
+
+                    Paid = paymentRequest.Paid,
+                    PaymentAmount = paymentRequest.PaymentAmount,
+                    AmountDue = paymentRequest.AmountDue,
+
                     Remark = paymentRequest.Remark,
                     IsVoid = paymentRequest.IsVoid,
                     VoidBy = paymentRequest.VoidBy,
@@ -337,7 +341,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
                     PurchaseRequestNo = paymentRequest.PurchaseRequestNo,
                     PONo = paymentRequest.PONo,
                     GRN = paymentRequest.GRN,
-                   
+
+                    Paid = paymentRequest.Paid,
+                    PaymentAmount = paymentRequest.PaymentAmount,
+                    AmountDue = paymentRequest.AmountDue,
+
                     Remark = paymentRequest.Remark,
                     IsVoid = paymentRequest.IsVoid,
                     VoidBy = paymentRequest.VoidBy,
@@ -505,7 +513,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.PaymentRequest
             var record = _db.PaymentRequests.Find(id);
             if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred)
             {
-                #region validate invoice
+                #region validate payment request
 
                 var payments = _db.ApDirectPayments
                     .Where(x => x.SourceId == "PAYMENT-REQUEST_"+record.PaymentRequestId.ToString())

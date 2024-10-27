@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.Procurement.PR;
 
 namespace ExceedERP.Core.Domain.Procurement
 {
@@ -11,7 +13,7 @@ namespace ExceedERP.Core.Domain.Procurement
         GRN,
         External
     }
-    public class ItemPriceIndex : TrackUserOperation
+    public class ItemPriceIndex : Operations
     {
         public int ItemPriceIndexID { get; set; }
         [DisplayName("Branch or Project")]
@@ -30,7 +32,6 @@ namespace ExceedERP.Core.Domain.Procurement
         public decimal PriceBeforeVAT { get; set; }
         [Display(Name = "Source of Data")]
         public string SourceOfData { get; set; }
-        public string Remark { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Date Of Information")]
@@ -40,6 +41,15 @@ namespace ExceedERP.Core.Domain.Procurement
         public int GLPeriodId { get; set; }
         [Display(Name = "Supplier Name")]
         public string SupplierName { get; set; }
+        public virtual ICollection<PriceIndexValidation> PriceIndexValidations { get; set; }
 
+    }
+
+    public class PriceIndexValidation : VoucherValidation
+    {
+        public int PriceIndexValidationId { get; set; }
+        public int ItemPriceIndexID { get; set; }
+
+        public virtual ItemPriceIndex ItemPriceIndex { get; set; }
     }
 }

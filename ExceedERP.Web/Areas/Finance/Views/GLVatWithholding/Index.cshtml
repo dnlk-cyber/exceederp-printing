@@ -12,7 +12,10 @@
           columns.Bound(c => c.LastModified).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
           columns.Bound(c => c.CreatedBy).Width(100).Hidden(true);
           columns.Bound(c => c.ModifiedBy).Width(100).Hidden(true);
-          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          columns.Command(command => {
+              command.Edit();
+             // command.Destroy(); 
+          }).Width(180);
       })
       .ToolBar(toolbar => {
           if (@ViewBag.Count == 0)
@@ -33,7 +36,7 @@
 
       .Scrollable()
       .Sortable()
-      .Filterable()
+      //.Filterable()
 
       .DataSource(dataSource => dataSource
           .Ajax()

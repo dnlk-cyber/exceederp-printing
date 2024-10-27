@@ -235,7 +235,7 @@ namespace ExceedERP.Reporting.Finance
             // CustomerObjectDataSource
             // 
             this.CustomerObjectDataSource.DataMember = "GetCustomerList";
-            this.CustomerObjectDataSource.DataSource = typeof(CustomerOds);
+            this.CustomerObjectDataSource.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.AR.CustomerOds);
             this.CustomerObjectDataSource.Name = "CustomerObjectDataSource";
             // 
             // TransactionTypeObjectDataSource
@@ -264,7 +264,7 @@ namespace ExceedERP.Reporting.Finance
             this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1214771270751953D)));
             this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1363568305969238D)));
             this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.6681545972824097D)));
-            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.08426220715045929D)));
+            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.084262199699878693D)));
             this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.11543918401002884D)));
             this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.32356682419776917D)));
             this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D)));
@@ -418,11 +418,11 @@ namespace ExceedERP.Reporting.Finance
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.56622904539108276D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.6141778826713562D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.57726269960403442D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.88059419393539429D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.88059413433074951D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.60880774259567261D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.93057751655578613D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.93057751655578613D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.95339751243591309D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.95339745283126831D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1320465803146362D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1317470073699951D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.653603196144104D)));
@@ -670,7 +670,7 @@ namespace ExceedERP.Reporting.Finance
             // CustomerLedgerObjectDataSource
             // 
             this.CustomerLedgerObjectDataSource.DataMember = "GetCustomerLedger";
-            this.CustomerLedgerObjectDataSource.DataSource = typeof(CustomerLedgerObjectDatasource);
+            this.CustomerLedgerObjectDataSource.DataSource = typeof(ExceedERP.Reporting.Finance.DataSource.GL.CustomerLedgerObjectDatasource);
             this.CustomerLedgerObjectDataSource.Name = "CustomerLedgerObjectDataSource";
             this.CustomerLedgerObjectDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("from", typeof(System.DateTime), "= Parameters.from.Value"),

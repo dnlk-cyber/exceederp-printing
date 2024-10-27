@@ -6,7 +6,6 @@ using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
-using ExceedERP.Reporting.Finance.DataSource.Print;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -46,6 +45,15 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 			var witholdings = _db.GLTaxRates.Where(x => x.ApplyToWithholding).Where(x => x.ApplyToAp).ToList();
 
 			ViewData["witholdingType"] = witholdings;
+
+			var employees = _db.Person_Employee;
+			var selectedEmployees = employees.Select(
+			  i => new
+			  {
+				  Name = i.EmployeeCode + " " + i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+				  Code = i.EmployeeId
+			  }).AsQueryable();
+			ViewData["employees"] = selectedEmployees;
 		}
 
 		[AuthorizeRoles(FinanceConstants.AccountPayableView, FinanceConstants.AccountPayableApprover, FinanceConstants.AccountPayablePayment)]
@@ -90,6 +98,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 				Remark = aPDirectPayments.Remark,
 				IsSettled = aPDirectPayments.IsSettled,
 				IsSendForApproval = aPDirectPayments.IsSendForApproval,
+				SendForApprovalBy = aPDirectPayments.SendForApprovalBy,
+				SendForApprovalTime = aPDirectPayments.SendForApprovalTime,
 				IsOnlineTransferred = aPDirectPayments.IsOnlineTransferred,
 				IsOnlineTransferredBy = aPDirectPayments.IsOnlineTransferredBy,
 				OnlineTransferredTime = aPDirectPayments.OnlineTransferredTime,
@@ -120,7 +130,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 			if (aPDirectPayments.IsNewSupplier && String.IsNullOrWhiteSpace(aPDirectPayments.SourceId))
 				ModelState.AddModelError("source", "Please select payment source.");
 
-			if (!String.IsNullOrEmpty(aPDirectPayments.PaymentReference))
+			if (!string.IsNullOrEmpty(aPDirectPayments.PaymentReference))
 			{
 				var exists = _db.ApDirectPayments.Where(x => x.PaymentReference == aPDirectPayments.PaymentReference && x.IsVoid == false).ToList();
 
@@ -128,12 +138,34 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 					ModelState.AddModelError("Payment Reference", $"{aPDirectPayments.PaymentReference}  already exists in the system.");
 			}
 
-			if (!String.IsNullOrEmpty(aPDirectPayments.SourceId))
+			if (string.IsNullOrEmpty(aPDirectPayments.PaymentMethod))
+				ModelState.AddModelError("Payment method", $"Please select payment method.");
+
+			if (!string.IsNullOrEmpty(aPDirectPayments.SourceId))
 			{
+				int did = int.Parse(aPDirectPayments.SourceId.Split('_')[1]);
+				string sourceType = aPDirectPayments.SourceId.Split('_')[0];
+
 				var exists = _db.ApDirectPayments.Where(x => x.SourceId == aPDirectPayments.SourceId && x.IsVoid == false).ToList();
 
-				if (exists.Any())
+				if (exists.Any() && sourceType!= "PAYMENT-REQUEST")
 					ModelState.AddModelError("Payment Source", $"{aPDirectPayments.SourceId}  already exists in the system.");
+
+				if (sourceType=="PAYMENT-REQUEST")
+				{
+					List<int> Ids = exists.Select(x => x.ApDirectPaymentId).ToList();
+					var paymentLines = _db.ApDirectPaymentLines.Where(x => Ids.Contains(x.ApDirectPaymentId)).ToList();
+					var requestLines = _db.PaymentRequestLines.Where(x => x.PaymentRequestId==did).ToList();
+					if(paymentLines.Any())
+					{
+						decimal payamount= paymentLines.Sum(x => x.Amount);
+						decimal requestamount = requestLines.Any() ? requestLines.Sum(x => x.Amount) : 0;
+
+						if (payamount >= requestamount)
+							ModelState.AddModelError("over", "The amount of payment paid and under process is more than the request. ");
+
+					}
+				}
 			}
 			#endregion
 
@@ -158,7 +190,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 							aPDirectPayments.BranchId = paymentRequest.BranchId;
 							aPDirectPayments.BusinessUnitId = paymentRequest.BusinessUnitId;
 							aPDirectPayments.SupplierName = paymentRequest.Supplier;
-							aPDirectPayments.Purchaser = paymentRequest.Purchaser ?? 0;
+							aPDirectPayments.Purchaser = paymentRequest.EmployeeId;
 							aPDirectPayments.Grn = paymentRequest.GRN;
 							aPDirectPayments.Po = paymentRequest.PONo;
 						}
@@ -169,6 +201,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 						{
 							aPDirectPayments.BranchId = travelOrder.BranchId;
 							aPDirectPayments.BusinessUnitId = travelOrder.BusinessUnitId;
+							aPDirectPayments.Purchaser = travelOrder.EmployeeId;
 						}
 						break;
 					case "EXPENSE-CLAIM":
@@ -177,6 +210,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 						{
 							aPDirectPayments.BranchId = claim.BranchId;
 							aPDirectPayments.BusinessUnitId = claim.BusinessUnitId;
+							aPDirectPayments.Purchaser = claim.EmployeeId;
 						}
 						break;
 					case "FUND-TRANSFER":
@@ -185,16 +219,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 						{
 							aPDirectPayments.BranchId = fund.BranchId;
 							aPDirectPayments.BusinessUnitId = fund.BusinessUnitId;
+							aPDirectPayments.Purchaser = fund.EmployeeId;
 						}
 						break;
-					//case "SALES-RETURN":
-					//	var refund = _db.SalesReturn.Find(did);
-					//	if (refund != null)
-					//	{
-					//		aPDirectPayments.BranchId = refund.BranchId;
-					//		aPDirectPayments.BusinessUnitId = refund.BusinessUnitId;
-					//	}
-					//	break;
+					case "SALES-RETURN":
+						var refund = _db.SalesReturn.Find(did);
+						if (refund != null)
+						{
+							aPDirectPayments.BranchId = refund.BranchId;
+							aPDirectPayments.BusinessUnitId = refund.BusinessUnitId;
+						}
+						break;
 
 				}
 
@@ -277,14 +312,37 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 				if (exists.Any())
 					ModelState.AddModelError("Payment Reference", $"{aPDirectPayments.PaymentReference}  already exists in the system.");
 			}
+
+			if (string.IsNullOrEmpty(aPDirectPayments.PaymentMethod))
+				ModelState.AddModelError("Payment method", $"Please select payment method.");
+
 			if (!String.IsNullOrEmpty(aPDirectPayments.SourceId))
 			{
+				int did = int.Parse(aPDirectPayments.SourceId.Split('_')[1]);
+				string sourceType = aPDirectPayments.SourceId.Split('_')[0];
 				var exists = _db.ApDirectPayments
 					.Where(x => x.ApDirectPaymentId != aPDirectPayments.ApDirectPaymentId)
 					.Where(x => x.SourceId == aPDirectPayments.SourceId && x.IsVoid == false).ToList();
 
-				if (exists.Any())
+				if (exists.Any() && sourceType != "PAYMENT-REQUEST")
 					ModelState.AddModelError("Payment Source", $"{aPDirectPayments.SourceId}  already exists in the system.");
+							   
+
+				if (sourceType == "PAYMENT-REQUEST")
+				{
+					List<int> Ids = exists.Select(x => x.ApDirectPaymentId).ToList();
+					var paymentLines = _db.ApDirectPaymentLines.Where(x => Ids.Contains(x.ApDirectPaymentId)).ToList();
+					var requestLines = _db.PaymentRequestLines.Where(x => x.PaymentRequestId == did).ToList();
+					if (paymentLines.Any())
+					{
+						decimal payamount = paymentLines.Sum(x => x.Amount);
+						decimal requestamount = requestLines.Any() ? requestLines.Sum(x => x.Amount) : 0;
+
+						if (payamount >= requestamount)
+							ModelState.AddModelError("over", "The amount of payment paid and under process is more than the request. ");
+
+					}
+				}
 			}
 
 			#endregion
@@ -310,7 +368,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 							aPDirectPayments.BranchId = paymentRequest.BranchId;
 							aPDirectPayments.BusinessUnitId = paymentRequest.BusinessUnitId;
 							aPDirectPayments.SupplierName = paymentRequest.Supplier;
-							aPDirectPayments.Purchaser = paymentRequest.Purchaser ?? 0;
+							aPDirectPayments.Purchaser = paymentRequest.EmployeeId;
 							aPDirectPayments.Grn = paymentRequest.GRN;
 							aPDirectPayments.Po = paymentRequest.PONo;
 						}
@@ -321,6 +379,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 						{
 							aPDirectPayments.BranchId = travelOrder.BranchId;
 							aPDirectPayments.BusinessUnitId = travelOrder.BusinessUnitId;
+							aPDirectPayments.Purchaser = travelOrder.EmployeeId;
 						}
 						break;
 					case "EXPENSE-CLAIM":
@@ -329,6 +388,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 						{
 							aPDirectPayments.BranchId = claim.BranchId;
 							aPDirectPayments.BusinessUnitId = claim.BusinessUnitId;
+							aPDirectPayments.Purchaser = claim.EmployeeId;
 						}
 						break;
 					case "FUND-TRANSFER":
@@ -337,16 +397,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 						{
 							aPDirectPayments.BranchId = fund.BranchId;
 							aPDirectPayments.BusinessUnitId = fund.BusinessUnitId;
+							aPDirectPayments.Purchaser = fund.EmployeeId;
 						}
 						break;
-					//case "SALES-RETURN":
-					//	var refund = _db.SalesReturn.Find(did);
-					//	if (refund != null)
-					//	{
-					//		aPDirectPayments.BranchId = refund.BranchId;
-					//		aPDirectPayments.BusinessUnitId = refund.BusinessUnitId;
-					//	}
-					//	break;
+					case "SALES-RETURN":
+						var refund = _db.SalesReturn.Find(did);
+						if (refund != null)
+						{
+							aPDirectPayments.BranchId = refund.BranchId;
+							aPDirectPayments.BusinessUnitId = refund.BusinessUnitId;
+						}
+						break;
 				}
 
 				#endregion
@@ -696,46 +757,46 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
 					#endregion
 					break;
-				//case "SALES-RETURN":
-				//	#region refund
+				case "SALES-RETURN":
+					#region refund
 
-				//	var refundDetails = _db.SalesReturnLines.Where(x => x.SalesReturnId == did).ToList();
-				//	var refund = _db.SalesReturn.Find(did);
-				//	foreach (var detail in refundDetails)
-				//	{
-				//		string acc = "NA";
+					var refundDetails = _db.SalesReturnLines.Where(x => x.SalesReturnId == did).ToList();
+					var refund = _db.SalesReturn.Find(did);
+					foreach (var detail in refundDetails)
+					{
+						string acc = "NA";
 
-				//		var entity = new ApDirectPaymentLine
-				//		{
-				//			ApDirectPaymentId = record.ApDirectPaymentId,
-				//			Purpose = refund.Reason,
-				//			Amount = detail.SubTotal,
-				//			ForexAmount = detail.SubTotal,
-				//			ExchangeRate = 1,
-				//			Currency = "NA",
-				//			AccountCode = acc,
-				//			GLTaxRateID = detail.TaxTypeId!=null? (int)detail.TaxTypeId:0,
-				//			TaxAmount = detail.TaxAmount,
-				//			WithholdingType = 0,
-				//			WithholdingAmount = 0,
-				//			WithholdTax = false,
-				//			WithholdTaxAmount = 0,
-				//			TotalAmount = detail.SubTotal+detail.TaxAmount,
-				//			NetPayable = detail.SubTotal + detail.TaxAmount,
-				//			Remark = "",
-				//			DateCreated = DateTime.Now,
-				//			LastModified = detail.LastModified,
-				//			CreatedBy = User.Identity.Name,
-				//			ModifiedBy = detail.ModifiedBy
-				//		};
+						var entity = new ApDirectPaymentLine
+						{
+							ApDirectPaymentId = record.ApDirectPaymentId,
+							Purpose = refund.Reason,
+							Amount = detail.SubTotal,
+							ForexAmount = detail.SubTotal,
+							ExchangeRate = 1,
+							Currency = "NA",
+							AccountCode = acc,
+							GLTaxRateID = detail.TaxTypeId!=null? (int)detail.TaxTypeId:0,
+							TaxAmount = detail.TaxAmount,
+							WithholdingType = 0,
+							WithholdingAmount = 0,
+							WithholdTax = false,
+							WithholdTaxAmount = 0,
+							TotalAmount = detail.SubTotal+detail.TaxAmount,
+							NetPayable = detail.SubTotal + detail.TaxAmount,
+							Remark = "",
+							DateCreated = DateTime.Now,
+							LastModified = detail.LastModified,
+							CreatedBy = User.Identity.Name,
+							ModifiedBy = detail.ModifiedBy
+						};
 
-				//		_db.ApDirectPaymentLines.Add(entity);
+						_db.ApDirectPaymentLines.Add(entity);
 
-				//		_db.SaveChanges();
-				//	}
+						_db.SaveChanges();
+					}
 
-				//	#endregion
-				//	break;
+					#endregion
+					break;
 			}
 			#region update distribution
 			_distributionHelper.UpdateApDirectPaymentDistribution(record.ApDirectPaymentId);
@@ -1192,6 +1253,64 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 			}
 
 			return null;
+		}
+
+		[AuthorizeRoles(FinanceConstants.AccountPayablePayment)]
+		public JsonResult Batchtransfer(string id)
+		{
+
+			string _response = "SUCCESS";
+			int did = int.Parse(id);
+			var period = _db.GLPeriods.Find(did);
+
+			List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+			var untransffered = _db.ApDirectPayments
+				.Where(x=>x.PaymentDate>=period.DateFrom && x.PaymentDate<=period.DateTo)
+				.Where(x => x.IsOnlineApproved && x.IsVoid == false && x.IsOnlineTransferred==false)
+				 //.Where(x => mybraches.Contains(x.CreatedAtBranchId))
+				 .Where(x => x.CreatedBy==User.Identity.Name)
+				.AsQueryable();
+
+			if (GlobalHelper.IsMultipleBusinessUnit())
+			{
+				List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+				untransffered = untransffered.Where(x => myBusinessUnits.Contains(x.CreatedAtBusinessUnitId));
+			}
+
+			if (!untransffered.Any())
+			{
+				var formattedData1 = new
+				{
+					Message = "Data not found for transffer.",
+					Status = "NOT_OK"
+				};
+				return Json(formattedData1, JsonRequestBehavior.AllowGet);
+			}
+
+			foreach (var record in untransffered)
+			{
+				_response = FinanceTransferHelper.ApDirectPayment(record.ApDirectPaymentId, "Batch Transfer", User.Identity.Name);
+				if (_response != "SUCCESS") ;
+					//Logger.Debug("AP Direct payment transfer ID:" + record.ApDirectPaymentId + _response);
+			}
+
+			#region auto job
+
+
+
+			#endregion
+
+			#region operation log
+			UserHelper.OperationLog(Request.UserHostAddress, "AP direct payment", "Success", User.Identity.Name, $"batch transfer for period {id} ", Modules.Finance);
+			#endregion
+
+			var formattedData = new
+			{
+				Message = $"Operation Completed. {untransffered.Count()} records transffred.",
+				Status = "OK"
+			};
+			return Json(formattedData, JsonRequestBehavior.AllowGet);
 		}
 
 		[AuthorizeRoles(FinanceConstants.AccountPayableVoid)]

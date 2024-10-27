@@ -3,17 +3,15 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain.Finance.Common;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
 {
-     //[AuthorizeRoles(FinanceConstants.FinanceAdmin)]
+    //[AuthorizeRoles(FinanceConstants.FinanceAdmin)]
     public class InvoiceArchiveController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();

@@ -89,7 +89,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
         [AuthorizeRoles(FinanceConstants.GeneralLedgerUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult GLRecordJournalBegDistributions_Create(int id, [DataSourceRequest]DataSourceRequest request, GLRecordJournalBegDistribution GLRecordJournalBegDistribution)
+        public ActionResult GLRecordJournalBegDistributions_Create(int id, [DataSourceRequest]DataSourceRequest request, GLRecordJournalBegDistribution line)
         {
             if (id == 0)
             {
@@ -97,16 +97,22 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
             }
             #region validated record
 
-            GLRecordJournalBeg parent =
-                _db.GlRecordJournalBegs.FirstOrDefault(x => x.GLRecordJournalBegId == GLRecordJournalBegDistribution.GLRecordJournalBegId);
+            var exist = _db.GLRecordJournalBegDistributions
+                .Where(x => x.GLRecordJournalBegId == id).
+                Where(x=>x.AccountCode.ToUpper()==line.AccountCode.ToUpper()).FirstOrDefault();
+            if(exist!=null)
+                ModelState.AddModelError("duplicate", "The account code already exists,update it.");
+
+            var parent =
+                _db.GlRecordJournalBegs.FirstOrDefault(x => x.GLRecordJournalBegId ==id);
 
             if (parent != null && parent.IsOnlineApproved)
                 ModelState.AddModelError("approved", "Record is already approved,hence you can not add a record.");
-            if (GLRecordJournalBegDistribution.Debit>0 && GLRecordJournalBegDistribution.Credit>0)
+            if (line.Debit>0 && line.Credit>0)
                 ModelState.AddModelError("same", "Both debit and credit can't have nvalue at the same time.");
-            if (GLRecordJournalBegDistribution.Debit == 0 && GLRecordJournalBegDistribution.Credit == 0)
+            if (line.Debit == 0 && line.Credit == 0)
                 ModelState.AddModelError("same", "Both debit and credit can't have zero value at the same time.");
-            if (GLRecordJournalBegDistribution.Debit < 0 || GLRecordJournalBegDistribution.Credit < 0)
+            if (line.Debit < 0 || line.Credit < 0)
                 ModelState.AddModelError("negative", "Negative values are not allowed.");
 
             #endregion
@@ -115,53 +121,62 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     var entity = new GLRecordJournalBegDistribution
                     {
                         GLRecordJournalBegId = id,
-                        AccountCode = GLRecordJournalBegDistribution.AccountCode,
-                        AccountDesc = _accountHelper.GetAccountDesc(GLRecordJournalBegDistribution.AccountCode),
-                        Debit = GLRecordJournalBegDistribution.Debit,
-                        Credit = GLRecordJournalBegDistribution.Credit,
-                        AdditionalDescription = GLRecordJournalBegDistribution.AdditionalDescription,
-                        AccountType = GLRecordJournalBegDistribution.AccountType,
-                        AccountSegment = GLRecordJournalBegDistribution.AccountSegment,
-                        BranchSegment = GLRecordJournalBegDistribution.BranchSegment,
-                        CostCenterSegment = GLRecordJournalBegDistribution.CostCenterSegment,
-                        SubAccountSegment = GLRecordJournalBegDistribution.SubAccountSegment,
-                        ChannelSegment = GLRecordJournalBegDistribution.ChannelSegment,
-                        OrgBranchName = GLRecordJournalBegDistribution.OrgBranchName,
+                        AccountCode = line.AccountCode,
+                        AccountDesc = _accountHelper.GetAccountDesc(line.AccountCode),
+                        Debit = line.Debit,
+                        Credit = line.Credit,
+                        AdditionalDescription = line.AdditionalDescription,
+                        AccountType = line.AccountType,
+                        AccountSegment = line.AccountSegment,
+                        BranchSegment = line.BranchSegment,
+                        CostCenterSegment = line.CostCenterSegment,
+                        SubAccountSegment = line.SubAccountSegment,
+                        ChannelSegment = line.ChannelSegment,
+                        OrgBranchName = line.OrgBranchName,
                         DateCreated = DateTime.Now,
-                        LastModified = GLRecordJournalBegDistribution.LastModified,
+                        LastModified = line.LastModified,
                         CreatedBy = User.Identity.Name,
-                        ModifiedBy = GLRecordJournalBegDistribution.ModifiedBy
+                        ModifiedBy = line.ModifiedBy
                     };
 
 
                     _db.GLRecordJournalBegDistributions.Add(entity);
                     _db.SaveChanges();
-                    GLRecordJournalBegDistribution.GLRecordJournalBegDistributionId = entity.GLRecordJournalBegDistributionId;
+                    line.GLRecordJournalBegDistributionId = entity.GLRecordJournalBegDistributionId;
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "GL record beginning journal item", "Success", User.Identity.Name, $"created item {entity.AccountCode} under beginning journal {entity.GLRecordJournalBegId}", Modules.Finance);
                 #endregion
 
             }
 
-            return Json(new[] { GLRecordJournalBegDistribution }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { line }.ToDataSourceResult(request, ModelState));
         }
 
         [AuthorizeRoles(FinanceConstants.GeneralLedgerUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult GLRecordJournalBegDistributions_Update(int id,[DataSourceRequest]DataSourceRequest request, GLRecordJournalBegDistribution GLRecordJournalBegDistribution)
+        public ActionResult GLRecordJournalBegDistributions_Update(int id,[DataSourceRequest]DataSourceRequest request, GLRecordJournalBegDistribution line)
         {
             #region validated record
 
-            GLRecordJournalBeg parent =
-                _db.GlRecordJournalBegs.FirstOrDefault(x => x.GLRecordJournalBegId == GLRecordJournalBegDistribution.GLRecordJournalBegId);
+            var exist = _db.GLRecordJournalBegDistributions
+               .Where(x => x.GLRecordJournalBegDistributionId != line.GLRecordJournalBegDistributionId)
+               .Where(x => x.GLRecordJournalBegId == line.GLRecordJournalBegId) 
+               .Where(x => x.AccountCode.ToUpper() == line.AccountCode.ToUpper()).FirstOrDefault();
+
+            if (exist != null)
+                ModelState.AddModelError("duplicate", "The account code already exists,update it.");
+            
+
+            var parent =
+                _db.GlRecordJournalBegs.FirstOrDefault(x => x.GLRecordJournalBegId == line.GLRecordJournalBegId);
 
             if (parent != null && parent.IsOnlineApproved)
                 ModelState.AddModelError("approved", "Record is already approved,hence you can not add a record.");
-            if (GLRecordJournalBegDistribution.Debit > 0 && GLRecordJournalBegDistribution.Credit > 0)
+            if (line.Debit > 0 && line.Credit > 0)
                 ModelState.AddModelError("same", "Both debit and credit can't have nvalue at the same time.");
-            if (GLRecordJournalBegDistribution.Debit == 0 && GLRecordJournalBegDistribution.Credit == 0)
+            if (line.Debit == 0 && line.Credit == 0)
                 ModelState.AddModelError("same", "Both debit and credit can't have zero value at the same time.");
-            if (GLRecordJournalBegDistribution.Debit < 0 || GLRecordJournalBegDistribution.Credit < 0)
+            if (line.Debit < 0 || line.Credit < 0)
                 ModelState.AddModelError("negative", "Negative values are not allowed.");
 
             #endregion
@@ -169,22 +184,22 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
             { var entity = new GLRecordJournalBegDistribution
                     {
                         GLRecordJournalBegId = id,
-                        GLRecordJournalBegDistributionId = GLRecordJournalBegDistribution.GLRecordJournalBegDistributionId,
-                        AccountCode = GLRecordJournalBegDistribution.AccountCode,
-                        AccountDesc = _accountHelper.GetAccountDesc(GLRecordJournalBegDistribution.AccountCode),
-                        Debit = GLRecordJournalBegDistribution.Debit,
-                        Credit = GLRecordJournalBegDistribution.Credit,
-                        AdditionalDescription = GLRecordJournalBegDistribution.AdditionalDescription,
-                        AccountType = GLRecordJournalBegDistribution.AccountType,
-                        AccountSegment = GLRecordJournalBegDistribution.AccountSegment,
-                        BranchSegment = GLRecordJournalBegDistribution.BranchSegment,
-                        CostCenterSegment = GLRecordJournalBegDistribution.CostCenterSegment,
-                        SubAccountSegment = GLRecordJournalBegDistribution.SubAccountSegment,
-                        ChannelSegment = GLRecordJournalBegDistribution.ChannelSegment,
-                        OrgBranchName = GLRecordJournalBegDistribution.OrgBranchName,
-                        DateCreated = GLRecordJournalBegDistribution.DateCreated,
+                        GLRecordJournalBegDistributionId = line.GLRecordJournalBegDistributionId,
+                        AccountCode = line.AccountCode,
+                        AccountDesc = _accountHelper.GetAccountDesc(line.AccountCode),
+                        Debit = line.Debit,
+                        Credit = line.Credit,
+                        AdditionalDescription = line.AdditionalDescription,
+                        AccountType = line.AccountType,
+                        AccountSegment = line.AccountSegment,
+                        BranchSegment = line.BranchSegment,
+                        CostCenterSegment = line.CostCenterSegment,
+                        SubAccountSegment = line.SubAccountSegment,
+                        ChannelSegment = line.ChannelSegment,
+                        OrgBranchName = line.OrgBranchName,
+                        DateCreated = line.DateCreated,
                         LastModified = DateTime.Now,
-                        CreatedBy = GLRecordJournalBegDistribution.CreatedBy,
+                        CreatedBy = line.CreatedBy,
                         ModifiedBy = User.Identity.Name
                     };
 
@@ -198,7 +213,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
             }
 
-            return Json(new[] { GLRecordJournalBegDistribution }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { line }.ToDataSourceResult(request, ModelState));
         }
 
         [AuthorizeRoles(FinanceConstants.GeneralLedgerUser)]

@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.AP.Travel;
-using ExceedERP.Core.Domain.Finance.Bank;
-using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
-using ExceedERP.Web.Hubs;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -70,7 +65,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                         record.OnlineApprovedBy = User.Identity.Name;
                         record.OnlineApprovedTime = DateTime.Now;
                         _db.Entry(record).State = EntityState.Modified;
-                        _db.SaveChanges();
+                        //_db.SaveChanges();
+
+                        #region update travel order claim status
+                        var travel = _db.ApTravelOrders.Find(record.ApTravelOrderId);
+                        travel.Claimed = true;
+                        _db.Entry(travel).State = EntityState.Modified;
+                        #endregion
 
                     }
 
@@ -79,7 +80,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                         record.IsSendForApproval = false;
                         record.Status = "Finance Rejected";
                         _db.Entry(record).State = EntityState.Modified;
-                        _db.SaveChanges();
+                        //_db.SaveChanges();
+                     
                     }
 
                     var entity = new ApTravelExpenseValidation
@@ -88,9 +90,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
                         Status = apTravelExpenseValidation.Status,
                         Remark = apTravelExpenseValidation.Remark,
                         OrgBranchName = apTravelExpenseValidation.OrgBranchName,
-                        DateCreated = apTravelExpenseValidation.DateCreated,
+                        DateCreated = DateTime.Now,
                         LastModified = apTravelExpenseValidation.LastModified,
-                        CreatedBy = apTravelExpenseValidation.CreatedBy,
+                        CreatedBy = User.Identity.Name,
                         ModifiedBy = apTravelExpenseValidation.ModifiedBy
                     };
 

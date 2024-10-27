@@ -23,10 +23,10 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
         public List<NoteVeiwModel> ScoiReportNotes(string fiscalyear, string periodFrom, string periodTo, string project, string segmentType, string segmentValue, string costcenter, string subaccount)
         {
             List<NoteVeiwModel> list = new List<NoteVeiwModel>();
-            var notes = _db.IfrsStatementOfComprehensiveIncomes.FirstOrDefault();
-            var continuingOperationRanges = _db.IfrsScoiContinuingOperationRanges.ToList();
+            var notes = _db.IfrsStatementOfComprehensiveIncomes.AsNoTracking().FirstOrDefault();
+            var continuingOperationRanges = _db.IfrsScoiContinuingOperationRanges.AsNoTracking().ToList();
             var discontinuedOperationRanges = _db.IfrsScoiDiscontinuedOperationRanges.ToList();
-            var otherComprehensiveIncomeRanges = _db.IfrsScoiOtherComprehensiveIncomeRanges.ToList();
+            var otherComprehensiveIncomeRanges = _db.IfrsScoiOtherComprehensiveIncomeRanges.AsNoTracking().ToList();
 
             if (notes != null && !String.IsNullOrEmpty(fiscalyear))
             {
@@ -330,7 +330,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS
         {
             ScoiReportVeiwModel scoiReport = new ScoiReportVeiwModel();            
 
-            var scoiRules = _db.IfrsStatementOfComprehensiveIncomes.FirstOrDefault();                
+            var scoiRules = _db.IfrsStatementOfComprehensiveIncomes.AsNoTracking().FirstOrDefault();                
 
             if (scoiRules != null && !String.IsNullOrEmpty(fiscalyear))
             {

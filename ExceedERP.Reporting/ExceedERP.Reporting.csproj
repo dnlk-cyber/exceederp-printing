@@ -842,6 +842,8 @@
       <DependentUpon>CustomerLedger.cs</DependentUpon>
     </Compile>
     <Compile Include="Finance\CustomExpression.cs" />
+    <Compile Include="Finance\DataSource\AP\DirectPaymentUsersOds.cs" />
+    <Compile Include="Finance\DataSource\AP\TravelOrderPaymentListOds.cs" />
     <Compile Include="Finance\DataSource\FinanceSharedDataSource.cs" />
     <Compile Include="Finance\DataSource\GAAP\GaapBalanceSheetByBranchOds.cs" />
     <Compile Include="Finance\DataSource\GL\AccountAnalysisBySegmentDataSource.cs" />
@@ -1121,6 +1123,12 @@
     <Compile Include="Finance\PurchaserLedger.designer.cs">
       <DependentUpon>PurchaserLedger.cs</DependentUpon>
     </Compile>
+    <Compile Include="Finance\rptAPTravelOrderPayList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Finance\rptAPTravelOrderPayList.Designer.cs">
+      <DependentUpon>rptAPTravelOrderPayList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Finance\rptBankJournal.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1157,18 +1165,6 @@
     <Compile Include="Finance\IFRS\rptSOCIByProject.Designer.cs">
       <DependentUpon>rptSOCIByProject.cs</DependentUpon>
     </Compile>
-    <Compile Include="Finance\rptSalesInvoice.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Finance\rptSalesInvoice.designer.cs">
-      <DependentUpon>rptSalesInvoice.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Finance\rptSaleStatus.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Finance\rptSaleStatus.designer.cs">
-      <DependentUpon>rptSaleStatus.cs</DependentUpon>
-    </Compile>
     <Compile Include="Finance\rptTrialBalanceBySubAccount.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1181,74 +1177,6 @@
     <Compile Include="Finance\rptVoidDocList.Designer.cs">
       <DependentUpon>rptVoidDocList.cs</DependentUpon>
     </Compile>
-    <Compile Include="Finance\Sales\DataSource\CommissionByPartnerAndAgentDataSource.cs" />
-    <Compile Include="Finance\Sales\DataSource\CustomerTransactionHistoryDataSource.cs" />
-    <Compile Include="Finance\Sales\DataSource\InvoiceRegisterDataSource.cs" />
-    <Compile Include="Finance\Sales\DataSource\PartnerAndAgentSettlementDataSource.cs" />
-    <Compile Include="Finance\Sales\DataSource\ProductSoldToCustomerObjectDataSource.cs" />
-    <Compile Include="Finance\Sales\DataSource\SaleInvoiceObjectDataSource.cs" />
-    <Compile Include="Finance\Sales\DataSource\SalesOrderCustomerObjectDataSource.cs" />
-    <Compile Include="Finance\Sales\DataSource\SalesOrderDataSource.cs" />
-    <Compile Include="Finance\Sales\DataSource\SalesOrderRegisterDataSource.cs" />
-    <Compile Include="Finance\Sales\DataSource\SaleStatusObjectDataSource.cs" />
-    <Compile Include="Finance\Sales\DataSource\SupplierTransactionHistoryObjectDataSource.cs" />
-    <Compile Include="Finance\Sales\rptCommissionByPartnerAndAgent.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Finance\Sales\rptCommissionByPartnerAndAgent.Designer.cs">
-      <DependentUpon>rptCommissionByPartnerAndAgent.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Finance\Sales\rptCustomerTransactionHistory.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Finance\Sales\rptCustomerTransactionHistory.Designer.cs">
-      <DependentUpon>rptCustomerTransactionHistory.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Finance\Sales\rptInvoiceRegister.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Finance\Sales\rptInvoiceRegister.Designer.cs">
-      <DependentUpon>rptInvoiceRegister.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Finance\Sales\rptPartnerAndAgentSettlement.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Finance\Sales\rptPartnerAndAgentSettlement.Designer.cs">
-      <DependentUpon>rptPartnerAndAgentSettlement.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Finance\Sales\rptProductSoldToCustomer.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Finance\Sales\rptProductSoldToCustomer.designer.cs">
-      <DependentUpon>rptProductSoldToCustomer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Finance\Sales\rptSalesOrder.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Finance\Sales\rptSalesOrder.Designer.cs">
-      <DependentUpon>rptSalesOrder.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Finance\Sales\rptSalesOrderRegister.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Finance\Sales\rptSalesOrderRegister.Designer.cs">
-      <DependentUpon>rptSalesOrderRegister.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Finance\Sales\rptSupplierTransactionHistory.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Finance\Sales\rptSupplierTransactionHistory.Designer.cs">
-      <DependentUpon>rptSupplierTransactionHistory.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Finance\Sales\ViewModel\CommissionByPartnerAndAgentViewModel.cs" />
-    <Compile Include="Finance\Sales\ViewModel\CustomerTransactionHistoryViewModel.cs" />
-    <Compile Include="Finance\Sales\ViewModel\CustomerTransactionLists.cs" />
-    <Compile Include="Finance\Sales\ViewModel\InvoiceRegisterViewModel.cs" />
-    <Compile Include="Finance\Sales\ViewModel\PartnerAndAgentSettlementViewModel.cs" />
-    <Compile Include="Finance\Sales\ViewModel\SalesOrderRegisterViewModel.cs" />
-    <Compile Include="Finance\Sales\ViewModel\SalesOrderViewModel.cs" />
-    <Compile Include="Finance\Sales\ViewModel\SupplierTransactionHistoryViewModel.cs" />
-    <Compile Include="Finance\Sales\ViewModel\SupplierTransactionListsViewModel.cs" />
     <Compile Include="Finance\SubLedger\APJournalEntries.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1309,6 +1237,7 @@
     </Compile>
     <Compile Include="Finance\ViewModel\APAgingbySupplierViewModel.cs" />
     <Compile Include="Finance\ViewModel\APAgingbyInvoiceViewModel.cs" />
+    <Compile Include="Finance\ViewModel\AP\APTravelOrderPayListVm.cs" />
     <Compile Include="Finance\ViewModel\BankReconciliationStatementVm.cs" />
     <Compile Include="Finance\ViewModel\GAAP\CashFlowProjectionHeaderViewModel.cs" />
     <Compile Include="Finance\ViewModel\GAAP\CashFlowProjectionViewModel.cs" />
@@ -1317,6 +1246,7 @@
     <Compile Include="Finance\ViewModel\GAAP\BalanceSheet.cs" />
     <Compile Include="Finance\ViewModel\GAAP\GaapNoteVeiwModel.cs" />
     <Compile Include="Finance\ViewModel\ManualVoidDocVm.cs" />
+    <Compile Include="Finance\ViewModel\NameDescVm.cs" />
     <Compile Include="Finance\ViewModel\Print\ApFundTransferVm.cs" />
     <Compile Include="Finance\ViewModel\Print\ApTravelExpenseClaimVm.cs" />
     <Compile Include="Finance\ViewModel\Print\ApTravelOrderVm.cs" />
@@ -5046,6 +4976,9 @@
     <EmbeddedResource Include="Finance\rptAPAgingBySupplier.resx">
       <DependentUpon>rptAPAgingBySupplier.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Finance\rptAPTravelOrderPayList.resx">
+      <DependentUpon>rptAPTravelOrderPayList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Finance\rptBankJournal.resx">
       <DependentUpon>rptBankJournal.cs</DependentUpon>
     </EmbeddedResource>
@@ -5064,41 +4997,11 @@
     <EmbeddedResource Include="Finance\IFRS\rptSOCIByProject.resx">
       <DependentUpon>rptSOCIByProject.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Finance\rptSalesInvoice.resx">
-      <DependentUpon>rptSalesInvoice.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Finance\rptSaleStatus.resx">
-      <DependentUpon>rptSaleStatus.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Finance\rptTrialBalanceBySubAccount.resx">
       <DependentUpon>rptTrialBalanceBySubAccount.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Finance\rptVoidDocList.resx">
       <DependentUpon>rptVoidDocList.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Finance\Sales\rptCommissionByPartnerAndAgent.resx">
-      <DependentUpon>rptCommissionByPartnerAndAgent.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Finance\Sales\rptCustomerTransactionHistory.resx">
-      <DependentUpon>rptCustomerTransactionHistory.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Finance\Sales\rptInvoiceRegister.resx">
-      <DependentUpon>rptInvoiceRegister.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Finance\Sales\rptPartnerAndAgentSettlement.resx">
-      <DependentUpon>rptPartnerAndAgentSettlement.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Finance\Sales\rptProductSoldToCustomer.resx">
-      <DependentUpon>rptProductSoldToCustomer.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Finance\Sales\rptSalesOrder.resx">
-      <DependentUpon>rptSalesOrder.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Finance\Sales\rptSalesOrderRegister.resx">
-      <DependentUpon>rptSalesOrderRegister.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Finance\Sales\rptSupplierTransactionHistory.resx">
-      <DependentUpon>rptSupplierTransactionHistory.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Finance\SubLedger\APJournalEntries.resx">
       <DependentUpon>APJournalEntries.cs</DependentUpon>

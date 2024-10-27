@@ -1,15 +1,12 @@
-﻿﻿using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Finance.AP;
- using ExceedERP.DataAccess.Context;
- using ExceedERP.Helpers.Finance;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Finance;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
 
@@ -69,7 +66,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             if (apPaymentSettlementLine.Source != SettlemetSource.NA.ToString())
             {
                 if (apPaymentSettlementLine.AccountCode == null)
-                    ModelState.AddModelError("sourceid", "Please select source document.");
+                    ModelState.AddModelError("sourceid", "Please fill account code.");
             }
 
             var exist = _db.ApPaymentSettlementLines.Where(x => x.Source !=SettlemetSource.NA.ToString())
@@ -209,7 +206,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             if (apPaymentSettlementLine.Source != SettlemetSource.NA.ToString())
             {
                 if (apPaymentSettlementLine.AccountCode == null)
-                    ModelState.AddModelError("sourceid", "Please select source document.");
+                    ModelState.AddModelError("sourceid", "Please fill account code.");
             }
 
             var exist = _db.ApPaymentSettlementLines.Where(x => x.Source != SettlemetSource.NA.ToString())

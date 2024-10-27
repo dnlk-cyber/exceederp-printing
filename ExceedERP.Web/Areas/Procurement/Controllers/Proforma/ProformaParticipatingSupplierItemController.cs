@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Global;
@@ -65,9 +64,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ParticipatingSupplierItems_Create([DataSourceRequest]DataSourceRequest request, ParticipatingSupplierItem participatingSupplier, int id)
         {
-            var tax = _db.GLTaxRates.Find(participatingSupplier.GLTaxRateID);
-           
+            var tax = _db.GLTaxRates.Find(participatingSupplier.GLTaxRateID);           
             var proformaItem = _db.ProformaItems.Find(participatingSupplier.ProformaItemID);
+            var participant = _db.ParticipatingSuppliers
+                .Where(x=>x.ParticipatingSupplierID== participatingSupplier.ParticipatingSupplierID).FirstOrDefault();
 
             if (ModelState.IsValid)
             {
@@ -80,6 +80,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
 
                     if (exist == null)
                     {
+                        decimal subTotal = proformaItem.Quantity * participatingSupplier.UPrice;
+                        decimal additionalCharge = (participant.AdditionalChargePercent / 100) * subTotal;
+                        decimal total = subTotal + additionalCharge;
+                        decimal taxAmount = (tax.CalculatedRate * total);
+                        decimal grandTotal = total + taxAmount;
+
                         var entity = new ParticipatingSupplierItem
                         {
                             ParticipatingSupplierID = id,
@@ -95,12 +101,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                             UoM = proformaItem.UoM,
                             ItemType = proformaItem.ItemType,
                             GLTaxRateID = participatingSupplier.GLTaxRateID,
-                            TaxAmount = (tax.CalculatedRate * proformaItem.Quantity * participatingSupplier.UPrice),
+                            TaxAmount = taxAmount,
                             Quantity = proformaItem.Quantity,
                             UPrice = participatingSupplier.UPrice,
-                            TPrice = proformaItem.Quantity * participatingSupplier.UPrice +
-                                        (tax.CalculatedRate * proformaItem.Quantity * participatingSupplier.UPrice),
-                                
+                            TPrice = grandTotal,                                
                             IsOutOfStock = participatingSupplier.IsOutOfStock,
                             Remark = participatingSupplier.Remark,
                             OrgBranchName = participatingSupplier.OrgBranchName,
@@ -130,12 +134,13 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
         public ActionResult ParticipatingSupplierItems_Update([DataSourceRequest]DataSourceRequest request, ParticipatingSupplierItem participatingSupplier)
         {
             var tax = _db.GLTaxRates.Find(participatingSupplier.GLTaxRateID);
-
             var proformaItem = _db.ProformaItems.Find(participatingSupplier.ProformaItemID);
+            var participant = _db.ParticipatingSuppliers
+                .Where(x => x.ParticipatingSupplierID == participatingSupplier.ParticipatingSupplierID).FirstOrDefault();
 
             #region get proforma item info
 
-            
+
             if (proformaItem != null)
             {
                 participatingSupplier.CatCode = proformaItem.CatCode;
@@ -157,6 +162,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 {
                     if (proformaItem != null)
                     {
+                        decimal subTotal = proformaItem.Quantity * participatingSupplier.UPrice;
+                        decimal additionalCharge = (participant.AdditionalChargePercent / 100) * subTotal;
+                        decimal total = subTotal + additionalCharge;
+                        decimal taxAmount = (tax.CalculatedRate * total);
+                        decimal grandTotal = total + taxAmount;
+
                         var entity = new ParticipatingSupplierItem
                         {
                             ParticipatingSupplierItemId = participatingSupplier.ParticipatingSupplierItemId,
@@ -173,10 +184,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                             ItemType = participatingSupplier.ItemType,
                             ProformaItemID = participatingSupplier.ProformaItemID,
                             GLTaxRateID = participatingSupplier.GLTaxRateID,
-                            TaxAmount = (tax.CalculatedRate * proformaItem.Quantity * participatingSupplier.UPrice),
+                            TaxAmount = taxAmount,
                             Quantity = proformaItem.Quantity,
                             UPrice = participatingSupplier.UPrice,
-                            TPrice = proformaItem.Quantity * participatingSupplier.UPrice + (tax.CalculatedRate * proformaItem.Quantity * participatingSupplier.UPrice),
+                            TPrice = grandTotal,
                             
                             IsOutOfStock = participatingSupplier.IsOutOfStock,
                             Remark = participatingSupplier.Remark,

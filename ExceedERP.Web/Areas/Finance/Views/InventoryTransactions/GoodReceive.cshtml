@@ -13,12 +13,13 @@
           columns.Bound(c => c.GoodReceiveId).Title("Receive No.").Width(120).ClientTemplate("#=appendZeros(GoodReceiveId)#");
           columns.ForeignKey(p => p.ReceiveTypeId, (IEnumerable)ViewData["ReeceiveType"], "ReceiveTypeId", "Name").EditorTemplateName("ReceiveTypeSelector").Width(150);
           columns.Bound(p => p.ReceiveRef).EditorTemplateName("ReceiveReferenceSelector").Width(150);
+          columns.Bound(p => p.Reference).Width(130);
           columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper").Filterable(ftb => ftb.Multi(true).Search(true));
-          columns.Bound(p => p.SupplierName).EditorTemplateName("ReceiveSupplierSelector").Width(150);
+          columns.Bound(p => p.SupplierName).EditorTemplateName("ReceiveSupplierSelector").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.SupplierInvoiceNo).Title("Supplier Invoice").Width(150);
           columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.ReceiveDate).Title("Receive Date").Width(150);
-          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.Status).Width(150);
 
       })
@@ -148,7 +149,7 @@
                                     </dt>
                                     <dd>
 
-                                        #=kendo.toString(kendo.parseDate(ReceiveDate), 'dd/MM/yyyy') #
+                                        #=kendo.toString(kendo.parseDate(ReceiveDate), 'dd/MM/yyyy hh:mm tt') #
 
                                     </dd>
                                     <dt>
@@ -162,7 +163,7 @@
                                         CreatedOn
                                     </dt>
                                     <dd>
-                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                     </dd>
                                     <dt>
@@ -182,7 +183,7 @@
                                         Modified Date
                                     </dt>
                                     <dd>
-                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                     </dd>
                                 </dl>
 

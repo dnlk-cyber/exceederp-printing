@@ -25,7 +25,7 @@
                         "/>"
                         );
                       columns.Bound(c => c.DebitSum).Width(100).Format("{0:n}");
-                      columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Width(100).Title("Branch");
+                      columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Width(100).Title("Branch").Filterable(ftb => ftb.Multi(true).Search(true));
                       columns.Bound(c => c.Remark).Width(100);
                       columns.Bound(c => c.Status).Width(100);
                   })
@@ -204,7 +204,7 @@
                                                                                 Created On
                                                                             </dt>
                                                                             <dd>
-                                                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                                                             </dd>
                                                                             <dt>
@@ -223,7 +223,7 @@
                                                                                 Modified Date
                                                                             </dt>
                                                                             <dd>
-                                                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                                                             </dd>
                                                                         </dl>
                                                                     </div>
@@ -245,7 +245,7 @@
 
                                                                                                                                   command.Edit();
 
-                                                                                                                              }).Width(120).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
+                                                                                                                              }).Width(120).ClientFooterTemplate("Difference: \\#=kendo.toString(Debit.sum-Credit.sum,'0.0000')\\# ");
                                                                                                                                       })
                                                                                                                       .Editable(editable => editable.Mode(GridEditMode.InLine))
                                                                                                                       .Pageable(pageable => pageable

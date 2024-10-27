@@ -595,15 +595,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-            if (record.PurchaseRequisitionItems.Count == 0)
-            {
-                var formattedData = new
-                {
-                    Message = "Please add line items first.",
-                    Status = "NOT_OK"
-                };
-                return Json(formattedData, JsonRequestBehavior.AllowGet);
-            }
+            
            
             if (record.IsOnlineTransferred)
             {

@@ -62,8 +62,11 @@
 )
 
 <script>
-    function filterEmployees()
-    {
-        text: $("#EmployeeId").data("kendoDropDownList").filterInput.val()
+
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
     }
+   
 </script>

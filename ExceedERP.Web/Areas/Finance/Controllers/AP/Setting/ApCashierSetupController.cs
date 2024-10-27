@@ -1,18 +1,15 @@
-﻿﻿using System;
-using System.Collections.Generic;
+﻿using System;
 
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Finance.AP;
- using ExceedERP.Core.Domain.Finance.GL.Dynamic;
- using ExceedERP.DataAccess.Context;
- using ExceedERP.Helpers.Common;
- using ExceedERP.Helpers.Finance;
+using ExceedERP.Core.Domain.Finance.GL.Dynamic;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Finance;
 using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.AP
@@ -60,26 +57,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
             #region get sub account description
 
-            if (_accountHelper.IsDynamicCoA())
-            {
-                var segmentSetup = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
+            var segmentSetup = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
 
-                if (segmentSetup != null)
-                {
-                    var subAccounts = _db.GlChartOfAccountSegments
-                        .Where(x =>x.GLSegmentSetupId == segmentSetup.GLSegmentSetupId)
-                        .FirstOrDefault(x=>x.Values== apCashierSetup.Cashier);
-                    apCashierSetup.Description = subAccounts?.Description;
-                }
-
-               
-            }
-            else
+            if (segmentSetup != null)
             {
-                //var subAccounts = _db.GLChartOfAccountSubAccounts.FirstOrDefault(x => x.Values == apCashierSetup.Cashier);
-                //apCashierSetup.Description = subAccounts?.Description;
+                var subAccounts = _db.GlChartOfAccountSegments
+                    .Where(x => x.GLSegmentSetupId == segmentSetup.GLSegmentSetupId)
+                    .FirstOrDefault(x => x.Values == apCashierSetup.Cashier);
+                apCashierSetup.Description = subAccounts?.Description;
             }
-            
+
 
             #endregion
             if (ModelState.IsValid)
@@ -115,24 +102,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         {
             #region get sub account description
 
-            if (_accountHelper.IsDynamicCoA())
+            var segmentSetup = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
+
+            if (segmentSetup != null)
             {
-                var segmentSetup = _db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
-
-                if (segmentSetup != null)
-                {
-                    var subAccounts = _db.GlChartOfAccountSegments
-                        .Where(x => x.GLSegmentSetupId == segmentSetup.GLSegmentSetupId)
-                        .FirstOrDefault(x => x.Values == apCashierSetup.Cashier);
-                    apCashierSetup.Description = subAccounts?.Description;
-                }
-
-
-            }
-            else
-            {
-                //var subAccounts = _db.GLChartOfAccountSubAccounts.FirstOrDefault(x => x.Values == apCashierSetup.Cashier);
-                //apCashierSetup.Description = subAccounts?.Description;
+                var subAccounts = _db.GlChartOfAccountSegments
+                    .Where(x => x.GLSegmentSetupId == segmentSetup.GLSegmentSetupId)
+                    .FirstOrDefault(x => x.Values == apCashierSetup.Cashier);
+                apCashierSetup.Description = subAccounts?.Description;
             }
 
 

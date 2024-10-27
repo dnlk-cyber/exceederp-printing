@@ -8,7 +8,6 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.CRM;
 using ExceedERP.Helpers.Inventory;
@@ -18,7 +17,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 {
-   
+
     public class StoreRequisitionPropertyValidationController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -107,17 +106,27 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                         }
                         else
                         {
-                         
+                            if (storeRequisition.IsForMaintenance)
+                            {
+                                CRMMaintenanceIntegrationHelper.CreateShipmentFromMaintenance(storeRequisition, User.Identity.Name);
+                            }
+                            else
+                            {
                                 #region transfer to issue
 
                                 TransferStoreRequisitionItemsToIssue(storeRequisition);
 
                                 #endregion
-                            
+                            }
 
                             #region transfer to purchase
 
                             TransferToPurchaseRequisition(storeRequisition);
+
+                            #endregion
+                            #region transfer to production
+
+                            //TransferToProduction(storeRequisition);
 
                             #endregion
                         }
@@ -536,6 +545,117 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             }
 
         }
+
+        //private void TransferToProduction(StoreRequisition storerequisition)
+        //{
+        //    bool transferrable = false;
+        //    var exist = db.WorkOrderSheets.Where(x => x.StoreRequisitionID == storerequisition.StoreRequisitionID)
+        //        .AsNoTracking().ToList();
+        //    if (!exist.Any())
+        //    {
+        //        //&& requestedItem.GeneratePurchaseReq
+        //        #region check if there is anything to purchase
+        //        foreach (var requestedItem in storerequisition.StoreRequisitionItem)
+        //        {
+        //            if (requestedItem.ProductionQuantity > 0)
+        //            {
+        //                transferrable = true;
+        //                break;
+        //            }
+        //        }
+        //        #endregion
+        //        if (transferrable)
+        //        {
+        //            #region purchase
+        //            #region create purchase requisition
+        //            int forbranch = 0;
+        //            if (storerequisition.IsForOther && !storerequisition.IsTransfer)
+        //            {
+        //                if (storerequisition.ForBranchId != null)
+        //                    forbranch = (int)storerequisition.ForBranchId;
+        //            }
+        //            else if (!storerequisition.IsForOther && !storerequisition.IsTransfer)
+        //            {
+        //                forbranch = storerequisition.BranchId;
+        //            }
+        //            //else if (storerequisition.IsTransfer)
+        //            //{
+        //            //    forbranch = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storerequisition.ToStoreCode);
+        //            //}
+
+        //            var entity = new WorkOrderSheet
+        //            {
+        //                OrganizationCustomerId = null,
+        //                StoreID = null,
+        //                BranchId = storerequisition.BranchId,
+        //                StoreRequisitionID = storerequisition.StoreRequisitionID,
+        //                GLFiscalYearId = db.GLFiscalYears.Where(x => x.DateFrom >= storerequisition.RequestDate && storerequisition.RequestDate <= x.DateTo).FirstOrDefault().GlFiscalYearId,
+        //                OrderNumber = storerequisition.ModelNo,
+        //                OrderFrom = "StoreRequisition",
+        //                OrderDate = DateTime.Now,
+        //                OrderTo = "production",
+        //                IsOrderd = false,
+        //                IsDepartmentApproved = false,
+        //                IsProductionApproved = false,
+        //                DateCreated = DateTime.Now,
+        //                CreatedBy = User.Identity.Name,
+        //                LastModified = storerequisition.LastModified,
+        //                ModifiedBy = storerequisition.ModifiedBy,
+        //            };
+        //            db.WorkOrderSheets.Add(entity);
+        //            db.SaveChanges();
+        //            #endregion
+        //            foreach (var requestedItem in storerequisition.StoreRequisitionItem)
+        //            {
+        //                if (requestedItem.PurchaseQuantity > 0)
+        //                {
+        //                    #region stock item
+        //                    //var item = db.InventoryItems.Where(x => x.ItemCode == requestedItem.ItemCode).FirstOrDefault();
+        //                    var product = db.Products.Where(x => x.ItemCode == requestedItem.ItemCode).FirstOrDefault();
+        //                    var ProductCategoryId = int.TryParse(product.CategoryID, out int categoryId);
+
+        //                    var productionItem = new WorkOrderSheetDetail
+        //                    {
+        //                        WorkOrderSheetId = entity.WorkOrderSheetId,
+        //                        DeliveryDate = DateTime.Now.AddDays(1),
+        //                        ProductID = product.ProductID,
+        //                        IsOrderd = false,
+        //                        ProductCategoryId = categoryId,
+        //                        QTy = requestedItem.PurchaseQuantity,
+        //                        NameOfClientOrProject = " ",
+        //                        OrderType = 0,
+        //                        Unit = requestedItem.Unit,
+        //                        UnitPrice = 0,
+        //                        ProductType = "0",
+        //                        RequestNumber = "",
+        //                        TotalPrice = 0,
+        //                        IsManual = false,
+        //                        Remark = "",
+
+
+        //                    };
+        //                    db.WorkOrderSheetDetails.Add(productionItem);
+        //                    db.SaveChanges();
+        //                    #endregion
+        //                }
+        //            }
+        //            //foreach (var attachement in storerequisition.StoreRequisitionAttachments)
+        //            //{
+        //            //    #region attachment
+        //            //    var prattachment = new WorkOrderAttachment
+        //            //    {
+        //            //        WorkOrderSheetDetailId = productionItem.PurchaseRequisitionID,
+        //            //        FileName = attachement.FileName,
+        //            //        FilePath = attachement.FilePath
+        //            //    };
+        //            //    db.PurchaseRequisitionAttachments.Add(prattachment);
+        //            //    db.SaveChanges();
+        //            //    #endregion
+        //            //}
+        //            #endregion
+        //        }
+        //    }
+        //}
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

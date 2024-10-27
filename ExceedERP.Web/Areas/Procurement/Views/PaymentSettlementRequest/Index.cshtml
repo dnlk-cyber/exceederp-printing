@@ -80,9 +80,12 @@
                            model.Field(p => p.ApPaymentSettlementId).Editable(false);
                            model.Field(p => p.BranchId).Editable(false);
                            model.Field(p => p.BusinessUnitId).Editable(false);
+                           model.Field(p => p.OrgStuructureId).Editable(false);
                            model.Field(p => p.CreatedAtBranchId).Editable(false);
                            model.Field(p => p.CreatedAtBusinessUnitId).Editable(false);
+                           model.Field(p => p.CreatedAtOrgStructureId).Editable(false);
 
+                           model.Field(p => p.CurrentApprovalStep).Editable(false);
 
                            model.Field(p => p.VoidTime).Editable(false);
                            model.Field(p => p.VoidBy).Editable(false);
@@ -154,7 +157,7 @@
                                                                             Created On
                                                                         </dt>
                                                                         <dd>
-                                                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                                                         </dd>
                                                                         <dt>
@@ -173,13 +176,13 @@
                                                                             Modified Date
                                                                         </dt>
                                                                         <dd>
-                                                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                                                         </dd>
                                                                         <dt>
                                                                         Department Approved On
                                                                     </dt>
                                                                     <dd>
-                                                                        #=kendo.toString(kendo.parseDate(DepartmentOnlineApprovedTime), 'dd/MM/yyyy') #
+                                                                        #=kendo.toString(kendo.parseDate(DepartmentOnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
 
 
                                                                     </dd>
@@ -297,33 +300,34 @@
                                                                                               .Name("ApPaymentSettlementGrn#=ApPaymentSettlementId#")
                                                                                               .Columns(columns =>
                                                                                               {
-                                                                                                          columns.Bound(c => c.ApPaymentSettlementGrnId).Hidden(true);
-                                                                                                          columns.Bound(c => c.ItemType).Width(120).EditorTemplateName("PurchaseType");
-                                                                                                          columns.Bound(o => o.GrnNo).Width(150).EditorTemplateName("GrnSelector").ClientTemplate(
+                                                                                                  columns.Bound(c => c.ApPaymentSettlementGrnId).Hidden(true);
+                                                                                                  columns.Bound(c => c.ItemType).Width(120).EditorTemplateName("PurchaseType");
+                                                                                                  //columns.Bound(o => o.GrnNo).Width(150).EditorTemplateName("GrnSelector").ClientTemplate(
 
-                                                                                                            @Html.ActionLink("\\#=GrnNo\\#", "Goodreceive", "InventoryPrint", new { area = "Inventory", Id = "\\#=GrnNo\\#" }, new { @class = "detail-link", @target = "_blank" }).ToHtmlString()
+                                                                                                  //  @Html.ActionLink("\\#=GrnNo\\#", "Goodreceive", "InventoryPrint", new { area = "Inventory", Id = "\\#=GrnNo\\#" }, new { @class = "detail-link", @target = "_blank" }).ToHtmlString()
 
-                                                                                                            );
+                                                                                                  //  );
+                                                                                                  columns.Bound(o => o.GrnNo).Width(150).EditorTemplateName("GrnSelector").ClientTemplate("\\#=generatePritLink(ItemType,GrnNo)\\#");
 
-                                                                                                          columns.Command(command =>
-                                                                                                          {
+                                                                                                  columns.Command(command =>
+                                                                                                  {
 
-                                                                                                              command.Edit();
-                                                                                                              command.Destroy();
+                                                                                                      command.Edit();
+                                                                                                      command.Destroy();
 
-                                                                                                          }).Width(680);
+                                                                                                  }).Width(680);
 
-                                                                                                      })
+                                                                                              })
                                                                                               .ToolBar(toolbar =>
                                                                                               {
-                                                                                                          toolbar.Create();
-                                                                                                      })
+                                                                                                  toolbar.Create();
+                                                                                              })
                                                                                               .Editable(editable => editable.Mode(GridEditMode.InLine))
 
                                                                                               .Sortable(sortable =>
                                                                                               {
-                                                                                                          sortable.SortMode(GridSortMode.SingleColumn);
-                                                                                                      })
+                                                                                                  sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                              })
                                                                                               .Filterable()
                                                                                               .Scrollable()
                                                                                               .Events(x => x.DataBound("onDataBoundLineDepartment"))
@@ -332,13 +336,13 @@
                                                                                                   .Model(
                                                                                                       model =>
                                                                                                       {
-                                                                                                                  model.Id(p => p.ApPaymentSettlementGrnId);
-                                                                                                                  model.Field(p => p.OrgBranchName).Editable(false);
-                                                                                                                  model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                                  model.Field(p => p.ModifiedBy).Editable(false);
-                                                                                                                  model.Field(p => p.LastModified).Editable(false);
-                                                                                                                  model.Field(p => p.DateCreated).Editable(false);
-                                                                                                              })
+                                                                                                          model.Id(p => p.ApPaymentSettlementGrnId);
+                                                                                                          model.Field(p => p.OrgBranchName).Editable(false);
+                                                                                                          model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                          model.Field(p => p.LastModified).Editable(false);
+                                                                                                          model.Field(p => p.DateCreated).Editable(false);
+                                                                                                      })
                                                                                                   .Events(ev => ev
                                                                                                       .Error("error_handler(\"ApPaymentSettlementGrn#=ApPaymentSettlementId#\")")
                                                                                                       .RequestStart("onRequestStart(\"ApPaymentSettlementGrn#=ApPaymentSettlementId#\")")
@@ -421,6 +425,23 @@
 
 <script>
 
+    function generatePritLink(type, grn) {
+        if (type == 0) {
+            var url = '@Url.Action("Goodreceive", "InventoryPrint", new { area = "Inventory" })/' + grn
+            return '<a href="' + url + '" target="_blank">'+grn+'</a>';
+        }
+
+        else if (type == 1) {
+            var url = '@Url.Action("FixedAssetReceive", "FixedAssetPrint", new { area = "FixedAsset" })/' + grn
+            return '<a href="' + url + '" target="_blank">'+grn+'</a>';
+        }
+         else if (type == 2) {
+             var url = '@Url.Action("ServiceReceivePrint", "ProcurementPrint", new { area = "Procurement" })/' + grn
+             return '<a href="' + url + '" target="_blank">'+grn+'</a>';
+         }
+
+    }
+
     function voidRecord(id) {
         var recordStatus = "";
         var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
@@ -442,7 +463,7 @@
         }
     }
 
-  
+
 
     function sendForApproval(id) {
         var recordStatus = "";

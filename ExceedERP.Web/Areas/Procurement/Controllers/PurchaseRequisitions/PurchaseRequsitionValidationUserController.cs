@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
@@ -14,8 +13,8 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
-    {
-     public class PurchaseRequsitionValidationUserController : Controller
+{
+    public class PurchaseRequsitionValidationUserController : Controller
         {
         private readonly ExceedDbContext db = new ExceedDbContext();
 

@@ -23,7 +23,7 @@ namespace ExceedERP.Reporting.Finance.ViewModel
 
     public class GeneralLedgerVmLines
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         [Display(Name = "Account No.")]
         public string AccountCode { get; set; }
         [Display(Name = "Account Name")]

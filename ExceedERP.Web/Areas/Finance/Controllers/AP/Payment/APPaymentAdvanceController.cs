@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.AP;
-using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
 using ExceedERP.Core.Domain.Finance.Common;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
@@ -13,10 +12,8 @@ using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.Core.Domain.Procurement.Supplier;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
-using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Areas.Finance.Models;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -185,6 +182,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
                 Remark = apPayment.Remark,
                 IsSendForApproval = apPayment.IsSendForApproval,
+                SendForApprovalBy = apPayment.SendForApprovalBy,
+                SendForApprovalTime = apPayment.SendForApprovalTime,
                 IsOnlineTransferred = apPayment.IsOnlineTransferred,
                 IsOnlineTransferredBy = apPayment.IsOnlineTransferredBy,
                 OnlineTransferredTime = apPayment.OnlineTransferredTime,
@@ -239,6 +238,22 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     ModelState.AddModelError("Payment Reference", $"{apPayment.PaymentReference}  already exists in the system.");
             }
 
+            if (!String.IsNullOrEmpty(apPayment.PaymentReference))
+            {
+                var purchasePayment = _db.PurchasePayments.Find(int.Parse(apPayment.PurchaseReference));
+
+            
+                var list = _db.APPayments
+                    .Where(x => x.PaymentReference == apPayment.PaymentReference && x.IsVoid == false).ToList();
+
+                if (list.Any())
+                {
+                    decimal sumInPayment = apPayment.PrepaymentAmount + list.Sum(x => x.PaymentAmount) + list.Sum(x => x.PrepaymentAmount);
+                    if (purchasePayment.PaymentAmount < sumInPayment)
+                        ModelState.AddModelError("Payment amount", $"{apPayment.PaymentReference}  already exists in the system.\n total paid will be over payment request by {sumInPayment - purchasePayment.PaymentAmount}");
+                }
+            }
+
             //if (apPayment.EmployeeId != null && !String.IsNullOrWhiteSpace(apPayment.PoType) && !String.IsNullOrWhiteSpace(apPayment.PurchaseReference))
             //{
             //    if (!IsPurchaseBelongToPurchaser((int)apPayment.EmployeeId, apPayment.PoType, apPayment.PurchaseReference))
@@ -277,11 +292,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 {
                     if (tax != null && tax.IsCost)
                     {
-                        apPayment.WithholdingAmount = (apPayment.PaymentAmount + apPayment.TaxAmount) * withholdingtype.CalculatedRate;
+                        apPayment.WithholdingAmount = (apPayment.PrepaymentAmount + apPayment.TaxAmount) * withholdingtype.CalculatedRate;
                     }
                     else
                     {
-                        apPayment.WithholdingAmount = apPayment.PaymentAmount * withholdingtype.CalculatedRate;
+                        apPayment.WithholdingAmount = apPayment.PrepaymentAmount * withholdingtype.CalculatedRate;
                     }
                 }
             }
@@ -426,6 +441,22 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     ModelState.AddModelError("Payment Reference", $"{apPayment.PaymentReference}  already exists in the system.");
             }
 
+            if (!String.IsNullOrEmpty(apPayment.PaymentReference))
+            {
+                var purchasePayment = _db.PurchasePayments.Find(int.Parse(apPayment.PurchaseReference));
+
+                var list = _db.APPayments
+                    .Where(x => x.ApPaymentId != apPayment.ApPaymentId)
+                    .Where(x => x.PaymentReference == apPayment.PaymentReference && x.IsVoid == false).ToList();
+
+                if (list.Any())
+                {
+                    decimal sumInPayment = apPayment.PrepaymentAmount + list.Sum(x => x.PaymentAmount) + list.Sum(x => x.PrepaymentAmount);
+                    if (purchasePayment.PaymentAmount < sumInPayment)
+                        ModelState.AddModelError("Payment amount", $"{apPayment.PaymentReference}  already exists in the system.\n total paid will be over payment request by {sumInPayment - purchasePayment.PaymentAmount}");
+                }
+            }
+
             //if (apPayment.EmployeeId != null && !String.IsNullOrWhiteSpace(apPayment.PoType) && !String.IsNullOrWhiteSpace(apPayment.PurchaseReference))
             //{
             //    if (!IsPurchaseBelongToPurchaser((int)apPayment.EmployeeId, apPayment.PoType, apPayment.PurchaseReference))
@@ -462,11 +493,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 {
                     if (tax != null && tax.IsCost)
                     {
-                        apPayment.WithholdingAmount = (apPayment.PaymentAmount + apPayment.TaxAmount) * withholdingtype.CalculatedRate;
+                        apPayment.WithholdingAmount = (apPayment.PrepaymentAmount + apPayment.TaxAmount) * withholdingtype.CalculatedRate;
                     }
                     else
                     {
-                        apPayment.WithholdingAmount = apPayment.PaymentAmount * withholdingtype.CalculatedRate;
+                        apPayment.WithholdingAmount = apPayment.PrepaymentAmount * withholdingtype.CalculatedRate;
                     }
                 }
             }
@@ -1138,7 +1169,64 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             return null;
         }
 
+        [AuthorizeRoles(FinanceConstants.AccountPayablePayment)]
+        public JsonResult Batchtransfer(string id)
+        {
 
+            string _response = "SUCCESS";
+            int did = int.Parse(id);
+            var period = _db.GLPeriods.Find(did);
+
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+            var untransffered = _db.APPayments
+                .Where(x => x.IsPrepayment)
+                .Where(x => x.PaymentDate >= period.DateFrom && x.PaymentDate <= period.DateTo)
+                .Where(x => x.IsOnlineApproved && x.IsVoid == false && x.IsOnlineTransferred == false)
+                 //.Where(x => mybraches.Contains(x.CreatedAtBranchId))
+                 .Where(x => x.CreatedBy == User.Identity.Name)
+                .AsQueryable();
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                untransffered = untransffered.Where(x => myBusinessUnits.Contains(x.CreatedAtBusinessUnitId));
+            }
+
+            if (!untransffered.Any())
+            {
+                var formattedData1 = new
+                {
+                    Message = "Data not found for transffer.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData1, JsonRequestBehavior.AllowGet);
+            }
+
+            foreach (var record in untransffered)
+            {
+                _response = FinanceTransferHelper.ApPayment(record.ApPaymentId, "Batch Transfer", User.Identity.Name);
+                if (_response != "SUCCESS")
+                    ;// Logger.Debug("AP pre payment transfer ID:" + record.ApPaymentId + _response);
+            }
+
+            #region auto job
+
+
+
+            #endregion
+
+            #region operation log
+            UserHelper.OperationLog(Request.UserHostAddress, "AP payment", "Success", User.Identity.Name, $"batch transfer for period {id} ", Modules.Finance);
+            #endregion
+
+            var formattedData = new
+            {
+                Message = $"Operation Completed. {untransffered.Count()} records transffred.",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
         [AuthorizeRoles(FinanceConstants.AccountPayableVoid)]
         public JsonResult Void(int id)
         {
@@ -1158,6 +1246,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 var paymentRequest = _db.PurchasePayments.Find(did);
                 if (paymentRequest != null)
                 {
+                    paymentRequest.AmountDue = paymentRequest.AmountDue + record.PrepaymentAmount;
                     paymentRequest.Paid = false;
                     _db.PurchasePayments.Attach(paymentRequest);
                     _db.Entry(paymentRequest).State = EntityState.Modified;

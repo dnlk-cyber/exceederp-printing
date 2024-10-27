@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using DocumentFormat.OpenXml.Drawing;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.Core.Domain.Finance.GL;
@@ -12,8 +11,6 @@ using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
-using ExceedERP.Reporting.Finance.DataSource.Print;
-using ExceedERP.Reporting.Finance.Print;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -94,8 +91,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 ApPaymentSettlementId = apPaymentsettlement.ApPaymentSettlementId,
                 BranchId = apPaymentsettlement.BranchId,
                 BusinessUnitId = apPaymentsettlement.BusinessUnitId,
+                OrgStuructureId = apPaymentsettlement.OrgStuructureId,
                 CreatedAtBranchId = apPaymentsettlement.CreatedAtBranchId,
                 CreatedAtBusinessUnitId = apPaymentsettlement.CreatedAtBusinessUnitId,
+                CreatedAtOrgStructureId = apPaymentsettlement.CreatedAtOrgStructureId,
                 SupplierId = apPaymentsettlement.SupplierId,
                 CollectedByPurchaser = apPaymentsettlement.CollectedByPurchaser,
                 EmployeeId = apPaymentsettlement.EmployeeId,
@@ -105,6 +104,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 
                 Remark = apPaymentsettlement.Remark,
                 IsSendForApproval = apPaymentsettlement.IsSendForApproval,
+                SendForApprovalBy = apPaymentsettlement.SendForApprovalBy,
                 IsOnlineTransferred = apPaymentsettlement.IsOnlineTransferred,
                 IsOnlineTransferredBy = apPaymentsettlement.IsOnlineTransferredBy,
                 OnlineTransferredTime = apPaymentsettlement.OnlineTransferredTime,
@@ -124,7 +124,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 DepartmentSendForApprovalBy = apPaymentsettlement.DepartmentSendForApprovalBy,
                 DepartmentSendForApprovalTime = apPaymentsettlement.DepartmentSendForApprovalTime,
 
-               
+                ForwardedFrom = apPaymentsettlement.ForwardedFrom,
+                ForwardedTo = apPaymentsettlement.ForwardedTo,
+                IsFinalApproval = apPaymentsettlement.IsFinalApproval,
+                CurrentApprovalStep = apPaymentsettlement.CurrentApprovalStep,
+
                 DateCreated = apPaymentsettlement.DateCreated,
                 LastModified = apPaymentsettlement.LastModified,
                 CreatedBy = apPaymentsettlement.CreatedBy,
@@ -163,6 +167,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             #region data
             apPaymentsettlement.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
             apPaymentsettlement.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+            apPaymentsettlement.CreatedAtOrgStructureId = UserInformationHelper.GetUserPlacementWorkUnit(User.Identity.Name);
             if (apPaymentsettlement.EmployeeId != 0)
             {
                 var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == apPaymentsettlement.EmployeeId && x.isCurrent);
@@ -170,11 +175,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 {
                     apPaymentsettlement.BranchId = placement.BranchId;
                     apPaymentsettlement.BusinessUnitId = placement.BusinessUnitId;
+                    apPaymentsettlement.OrgStuructureId = placement.OrgStructureId;
                 }
                 else
                 {
                     apPaymentsettlement.BranchId = apPaymentsettlement.CreatedAtBranchId;
                     apPaymentsettlement.BusinessUnitId = apPaymentsettlement.CreatedAtBusinessUnitId;
+                    apPaymentsettlement.OrgStuructureId = apPaymentsettlement.CreatedAtOrgStructureId;
                 }
             }
             #endregion
@@ -185,8 +192,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 {
                     BranchId = apPaymentsettlement.BranchId,
                     BusinessUnitId = apPaymentsettlement.BusinessUnitId,
+                    OrgStuructureId = apPaymentsettlement.OrgStuructureId,
                     CreatedAtBranchId = apPaymentsettlement.CreatedAtBranchId,
                     CreatedAtBusinessUnitId = apPaymentsettlement.CreatedAtBusinessUnitId,
+                    CreatedAtOrgStructureId = apPaymentsettlement.CreatedAtOrgStructureId,
                     SupplierId = apPaymentsettlement.SupplierId,
                     CollectedByPurchaser = apPaymentsettlement.CollectedByPurchaser,
                     EmployeeId = apPaymentsettlement.EmployeeId,
@@ -214,7 +223,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                     DepartmentSendForApprovalBy = apPaymentsettlement.DepartmentSendForApprovalBy,
                     DepartmentSendForApprovalTime = apPaymentsettlement.DepartmentSendForApprovalTime,
 
-                   
+                    ForwardedFrom = apPaymentsettlement.ForwardedFrom,
+                    ForwardedTo = apPaymentsettlement.ForwardedTo,
+                    IsFinalApproval = apPaymentsettlement.IsFinalApproval,
+                    CurrentApprovalStep = apPaymentsettlement.CurrentApprovalStep,
+
                     DateCreated = DateTime.Now,
                     LastModified = apPaymentsettlement.LastModified,
                     CreatedBy = User.Identity.Name,
@@ -259,9 +272,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
             }
 
             #endregion
-            #region data
-            apPaymentsettlement.CreatedAtBranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name);
-            apPaymentsettlement.CreatedAtBusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name);
+            #region data           
             if (apPaymentsettlement.EmployeeId != 0)
             {
                 var placement = _db.Placements.FirstOrDefault(x => x.EmployeeId == apPaymentsettlement.EmployeeId && x.isCurrent);
@@ -269,11 +280,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 {
                     apPaymentsettlement.BranchId = placement.BranchId;
                     apPaymentsettlement.BusinessUnitId = placement.BusinessUnitId;
+                    apPaymentsettlement.OrgStuructureId = placement.OrgStructureId;
                 }
                 else
                 {
                     apPaymentsettlement.BranchId = apPaymentsettlement.CreatedAtBranchId;
                     apPaymentsettlement.BusinessUnitId = apPaymentsettlement.CreatedAtBusinessUnitId;
+                    apPaymentsettlement.OrgStuructureId = apPaymentsettlement.CreatedAtOrgStructureId;
                 }
             }
             #endregion
@@ -285,8 +298,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         ApPaymentSettlementId = apPaymentsettlement.ApPaymentSettlementId,
                         BranchId = apPaymentsettlement.BranchId,
                         BusinessUnitId = apPaymentsettlement.BusinessUnitId,
+                        OrgStuructureId = apPaymentsettlement.OrgStuructureId,
                         CreatedAtBranchId = apPaymentsettlement.CreatedAtBranchId,
                         CreatedAtBusinessUnitId = apPaymentsettlement.CreatedAtBusinessUnitId,
+                        CreatedAtOrgStructureId = apPaymentsettlement.CreatedAtOrgStructureId,
                         SupplierId = apPaymentsettlement.SupplierId,
                         CollectedByPurchaser = apPaymentsettlement.CollectedByPurchaser,
                         EmployeeId = apPaymentsettlement.EmployeeId,
@@ -314,7 +329,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         DepartmentSendForApprovalBy = apPaymentsettlement.DepartmentSendForApprovalBy,
                         DepartmentSendForApprovalTime = apPaymentsettlement.DepartmentSendForApprovalTime,
 
-                       
+                        ForwardedFrom = apPaymentsettlement.ForwardedFrom,
+                        ForwardedTo = apPaymentsettlement.ForwardedTo,
+                        IsFinalApproval = apPaymentsettlement.IsFinalApproval,
+                        CurrentApprovalStep = apPaymentsettlement.CurrentApprovalStep,
+
                         DateCreated = apPaymentsettlement.DateCreated,
                         LastModified = DateTime.Now,
                         CreatedBy = apPaymentsettlement.CreatedBy,
@@ -346,8 +365,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         ApPaymentSettlementId = apPaymentsettlement.ApPaymentSettlementId,
                         BranchId = apPaymentsettlement.BranchId,
                         BusinessUnitId = apPaymentsettlement.BusinessUnitId,
+                        OrgStuructureId = apPaymentsettlement.OrgStuructureId,
                         CreatedAtBranchId = apPaymentsettlement.CreatedAtBranchId,
                         CreatedAtBusinessUnitId = apPaymentsettlement.CreatedAtBusinessUnitId,
+                        CreatedAtOrgStructureId = apPaymentsettlement.CreatedAtOrgStructureId,
                         SupplierId = apPaymentsettlement.SupplierId,
                         CollectedByPurchaser = apPaymentsettlement.CollectedByPurchaser,
                         EmployeeId = apPaymentsettlement.EmployeeId,
@@ -533,6 +554,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 record.SendForApprovalTime = DateTime.Now;
                 _db.Entry(record).State = EntityState.Modified;
                 _db.SaveChanges();
+                var formattedData = new
+                {
+                    Message = "Successfully Sent.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
 
             }
             return null;
@@ -743,8 +770,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                          Source = JournalSources.DirectPaymentSettlement.ToString(),
                          EffectiveDate = record.PaymentDate.Date,
                          BranchId = record.BranchId,
+                         BusinessUnitId = record.CreatedAtBusinessUnitId,
                          Status = "Approved",
-                         Remark = record.Reference,
+                         Remark = record.Remark,
                          PaymentReference = record.Reference,
                          ReferenceDoc=record.Remark,
                          InvoiceReferenceDoc="",
@@ -815,6 +843,64 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
 
              return null;
          }
+
+        [AuthorizeRoles(FinanceConstants.AccountPayablePayment)]
+        public JsonResult Batchtransfer(string id)
+        {
+
+            string _response = "SUCCESS";
+            int did = int.Parse(id);
+            var period = _db.GLPeriods.Find(did);
+
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+
+            var untransffered = _db.ApPaymentSettlements
+                .Where(x => x.PaymentDate >= period.DateFrom && x.PaymentDate <= period.DateTo)
+                .Where(x => x.IsOnlineApproved && x.IsVoid == false && x.IsOnlineTransferred == false)
+                 //.Where(x => mybraches.Contains(x.CreatedAtBranchId))
+                 .Where(x => x.CreatedBy == User.Identity.Name)
+                .AsQueryable();
+
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                untransffered = untransffered.Where(x => myBusinessUnits.Contains(x.CreatedAtBusinessUnitId));
+            }
+
+            if (!untransffered.Any())
+            {
+                var formattedData1 = new
+                {
+                    Message = "Data not found for transffer.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData1, JsonRequestBehavior.AllowGet);
+            }
+
+            foreach (var record in untransffered)
+            {
+                _response = FinanceTransferHelper.Settlement(record.ApPaymentSettlementId, "Batch Transfer", User.Identity.Name);
+                if (_response != "SUCCESS")
+                    ;// Logger.Debug("AP settlement transfer ID:" + record.ApPaymentSettlementId + _response);
+            }
+
+            #region auto job
+
+
+
+            #endregion
+
+            #region operation log
+            UserHelper.OperationLog(Request.UserHostAddress, "AP settlement", "Success", User.Identity.Name, $"batch transfer for period {id} ", Modules.Finance);
+            #endregion
+
+            var formattedData = new
+            {
+                Message = $"Operation Completed. {untransffered.Count()} records transffred.",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
 
         [AuthorizeRoles(FinanceConstants.AccountPayableVoid)]
         public JsonResult Void(int id)

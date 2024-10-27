@@ -1,5 +1,4 @@
 ﻿using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
-using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
@@ -11,7 +10,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
 {
-	public class FundTransferDetailController : Controller
+    public class FundTransferDetailController : Controller
 	{
 		private ExceedDbContext db = new ExceedDbContext();
 		// GET: Finance/FundTransferDetail
@@ -35,6 +34,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
 		[AcceptVerbs(HttpVerbs.Post)]
 		public ActionResult FundTransferDetail_Create([DataSourceRequest]DataSourceRequest request, FundTransferDetail detail, int id)
 		{
+			if (detail.Requested<=0)
+				ModelState.AddModelError("requetes", "Please fill requested amount");
+			
 			detail.Approved = detail.Requested;
 
 			if (detail.Approved > detail.Requested)
@@ -65,6 +67,12 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
 		[AcceptVerbs(HttpVerbs.Post)]
 		public ActionResult FundTransferDetail_Update([DataSourceRequest]DataSourceRequest request, FundTransferDetail detail)
 		{
+			if (detail.Requested <= 0)
+				ModelState.AddModelError("requetes", "Please fill requested amount");
+
+			if (detail.Approved <= 0)
+				ModelState.AddModelError("approved", "Please fill approved amount");
+
 			if (detail.Approved > detail.Requested)
 				ModelState.AddModelError("above", "Approved should not be more than requested");
 

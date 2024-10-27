@@ -87,7 +87,7 @@
 
 
                             .Editable(editable => editable.Mode(GridEditMode.InLine))
-                            .HtmlAttributes(new { style = "height: 550px;" })
+                            .HtmlAttributes(new { style = "height: 650px;" })
                             .Pageable(pageable => pageable
                             .Input(true)
                             .Numeric(false)
@@ -191,7 +191,7 @@
                                                                                                     Created On
                                                                                                 </dt>
                                                                                                 <dd>
-                                                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                                                                                 </dd>
                                                                                                 <dt>
@@ -210,7 +210,7 @@
                                                                                                     Modified Date
                                                                                                 </dt>
                                                                                                 <dd>
-                                                                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                                                                                 </dd>
                                                                                                 <dt>
                                                                                                     Approved By
@@ -222,7 +222,7 @@
                                                                                                     Approved Date
                                                                                                 </dt>
                                                                                                 <dd>
-                                                                                                    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                                                                                                    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
                                                                                                 </dd>
                                                                                                 <dt>
                                                                                                     Posting Status
@@ -250,7 +250,7 @@
                                                                                                     Posted Date
                                                                                                 </dt>
                                                                                                 <dd>
-                                                                                                    #=kendo.toString(kendo.parseDate(PostedTime), 'dd/MM/yyyy') #
+                                                                                                    #=kendo.toString(kendo.parseDate(PostedTime), 'dd/MM/yyyy hh:mm tt') #
                                                                                                 </dd>
                                                                                             </dl>
                                                                                         </div>

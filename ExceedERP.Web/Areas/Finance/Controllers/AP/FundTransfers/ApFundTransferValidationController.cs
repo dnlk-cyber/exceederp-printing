@@ -1,27 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
-using ExceedERP.Core.Domain.Finance.AP.Travel;
-using ExceedERP.Core.Domain.Finance.Bank;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Web.Helpers;
-using ExceedERP.Web.Hubs;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 {
-	public class ApFundTransferValidationController : Controller
+    public class ApFundTransferValidationController : Controller
 	{
 		private ExceedDbContext _db = new ExceedDbContext();
 		readonly AccountHelper _accountHelper = new AccountHelper();
@@ -59,6 +53,28 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 			var record = _db.FundTransfers.Find(id);
 			if (record != null && record.IsOnlineApproved)
 				ModelState.AddModelError("approved", "You cannot manipulate this record,it is already approved");
+
+			if (FundTransferValidation.Status == ApprovalStatuses.Approve)
+			{
+				var lines = _db.FundTransferDetails.Where(x => x.FundTransferId == id);
+				if (!lines.Any())
+				{
+					ModelState.AddModelError("", "Please add fund transfer request line items.");
+				}
+
+				foreach (var line in lines)
+				{
+					if (line.Requested <= 0)
+					{
+						ModelState.AddModelError("requetes", "Please fill requested amount");
+					}
+
+					if (line.Approved <= 0)
+					{
+						ModelState.AddModelError("above", "Approved should not be more than requested");
+					}
+				}
+			}
 
 			if (ModelState.IsValid)
 			{

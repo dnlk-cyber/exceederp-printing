@@ -111,10 +111,12 @@
               model.Field(p => p.StoreRequisitionID).Editable(false);
               model.Field(p => p.BranchId).Editable(false);
               model.Field(p => p.BusinessUnitId).Editable(false);
-              // model.Field(p => p.GLPeriodId).Editable(false);
               model.Field(p => p.OrgStructureId).Editable(false);
               model.Field(p => p.CreatedAtOrgStructureId).Editable(false);
               // model.Field(p => p.EmployeeId).Editable(false);
+
+              model.Field(p => p.IsForProduction).Editable(false);
+              model.Field(p => p.IsForMaintenance).Editable(false);
 
               model.Field(p => p.CreatedBy).Editable(false);
               model.Field(p => p.DateCreated).Editable(false);
@@ -159,7 +161,7 @@
                             Request Date
                         </dt>
                         <dd>
-                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy hh:mm tt') #
                         </dd>
                         <dt>
                             Status
@@ -183,7 +185,7 @@
                             CreatedOn
                         </dt>
                         <dd>
-                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                         </dd>
                         <dt>
@@ -202,7 +204,7 @@
                             Modified Date
                         </dt>
                         <dd>
-                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                         </dd>
                         <dt>
                            Approved By
@@ -214,7 +216,7 @@
                             Approval Time
                         </dt>
                         <dd>
-                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                            #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
                         </dd>
                     </dl>
                 </div>
@@ -244,6 +246,7 @@
                           columns.Bound(c => c.ApprovedQuantity).Width(120);
                           columns.Bound(c => c.IssuedQuantity).Hidden().Width(90);
                           columns.Bound(c => c.PurchaseQuantity).Hidden().Width(90);
+                         
 
                           columns.Bound(c => c.CreatedBy).Hidden();
                           columns.Bound(c => c.DateCreated).Hidden();
@@ -284,6 +287,7 @@
                               model.Field(p => p.ModifiedBy).Editable(false);
                               model.Field(p => p.LastModified).Editable(false);
                               model.Field(p => p.AgreementPrice).Editable(false);
+                             
 
                           })
                           .Read(read => read.Action("FuelStoreRequisitionItems_Read", "FuelRequsitionItem", new { id = "#=StoreRequisitionID#" }))

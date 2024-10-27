@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
-using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.AP;
 using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
@@ -21,7 +18,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
 {
-	public class FundTransferRequestDepartmentValidationController : Controller
+    public class FundTransferRequestDepartmentValidationController : Controller
 	{
 
 		private readonly ExceedDbContext _db = new ExceedDbContext();
@@ -60,17 +57,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
 			var record = _db.FundTransfers.Find(id);
 			if (record != null && record.IsDepartmentOnlineApproved)
 				ModelState.AddModelError("approved","cannot manipulate this record,it is already approved");
-					   
-			var lines = _db.FundTransferDetails.Where(x => x.FundTransferId == id);
-			if (!lines.Any())
-			{
-				ModelState.AddModelError("", "Please add fund transfer request line items.");
-			}
-	
-
-			if (record != null && record.IsDepartmentOnlineApproved)
-				ModelState.AddModelError("approved", "You cannot manipulate this record,it is already approved");
-
+		
 			if (record != null && record.ForwardedTo != User.Identity.Name)
 				ModelState.AddModelError("notcorrectuser", "You can't approve this record,it is forwarded to another user.");
 
@@ -80,6 +67,30 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare.FundTransfers
 			if (hasApproved.Any())
 				ModelState.AddModelError("hasapproved", "You can't approve again.You have already approved.");
 
+			if (fundTransferDepartmentValidation.Status == ApprovalStatuses.Approve)
+			{
+				var lines = _db.FundTransferDetails.Where(x => x.FundTransferId == id);
+				if (!lines.Any())
+				{
+					ModelState.AddModelError("", "Please add fund transfer request line items.");
+				}
+
+				foreach (var line in lines)
+				{
+					if (line.Requested <= 0)
+					{
+						ModelState.AddModelError("requetes", "Please fill requested amount");
+					}
+
+					if (line.Approved <= 0)
+					{
+						ModelState.AddModelError("above", "Approved should not be more than requested");
+					}
+				}
+			}
+
+
+			
 			if (ModelState.IsValid)
 			{
 				if (record != null)

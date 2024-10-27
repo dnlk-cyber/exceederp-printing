@@ -1,9 +1,7 @@
 ﻿using ExceedERP.Core.Domain.Finance;
-using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Helpers.HR;
@@ -15,8 +13,14 @@ namespace ExceedERP.Helpers.Inventory
 {
     public  class DynamicDistributionHelper
     {
-        private  readonly ExceedDbContext _db = new ExceedDbContext();
-        private DynamicAccountHelper _dynamicAccount = new DynamicAccountHelper();
+        private  readonly ExceedDbContext _db ;
+        private readonly DynamicAccountHelper _dynamicAccount ;
+
+        public DynamicDistributionHelper()
+        {
+            _db = new ExceedDbContext();
+            _dynamicAccount = new DynamicAccountHelper();
+        }
         // inventory
         public void UpdateServiceReceiveDistribution(ServiceReceive record)
         {
@@ -193,7 +197,7 @@ namespace ExceedERP.Helpers.Inventory
                                     AccountCode = newacc,
                                     AccountDesc = _dynamicAccount.GetAccountDesc(clearingAccount.AccountCode),
                                     Debit = 0,
-                                    Credit = receiveItems.Sum(x => x.Total),
+                                    Credit = receiveItems.Sum(x => x.SubTotal),
                                     GoodReceiveId = record.GoodReceiveId
                                 };
                                 distributions.Add(defaultDistribution);

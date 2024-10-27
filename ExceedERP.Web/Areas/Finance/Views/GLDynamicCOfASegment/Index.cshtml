@@ -6,16 +6,16 @@
       {
           columns.ForeignKey(p => p.GLSegmentSetupId, (System.Collections.IEnumerable)ViewData["SetupSegments"], "GLSegmentSetupId", "Name").Width(130).Title("Type").Width(120).EditorTemplateName("SegmentTypeSelector");
           columns.Bound(c => c.Values).Width(80);
-          columns.Bound(c => c.Description).Width(140);
+          columns.Bound(c => c.Description).Width(200);
           columns.Bound(c => c.HasParent).Width(100);
-          columns.Bound(c => c.Enable).Width(100).Title("Enable").ClientTemplate(
+          columns.Bound(c => c.Enable).Width(85).Title("Enable").ClientTemplate(
               "<input type='checkbox' disabled = 'true' value='#= Values #' " +
               "# if (Enable) { #" +
               "checked='checked'" +
               "# } #" +
               "/>"
               );
-          columns.Bound(c => c.Parent).Width(100).Title("Is Parent?").ClientTemplate(
+          columns.Bound(c => c.Parent).Width(90).Title("Is Parent?").ClientTemplate(
               "<input type='checkbox' disabled = 'true' value='#= Values #' " +
               "# if (Parent) { #" +
               "checked='checked'" +
@@ -40,9 +40,26 @@
           columns.Bound(c => c.Type).Width(100);
           columns.Command(command => { command.Edit(); /*command.Destroy();*/  command.Custom("En").Click("Enable"); }).Width(180);
       })
-      .ToolBar(toolbar => {
-          toolbar.Create();
-      })
+      //.ToolBar(toolbar => {
+      //    toolbar.Create();
+      //})
+       .ToolBar(toolbar => {
+     toolbar.Template(
+                             @<text>
+
+               <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
+               @*<button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>*@
+              
+      
+                    @(Html.Kendo().Button()
+                            .Name("btnPost")
+                            .HtmlAttributes(new {type = "search", @class = "k-primary"})
+                            .Events(e => e.Click("RefreshDesc"))
+                            .Content("Refresh Description"))
+
+
+           </text>);
+ })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .HtmlAttributes(new { style = "height: 550px;" })
       .Pageable(pageable => pageable
@@ -77,6 +94,36 @@
       ))
 <script>
 
+    function RefreshDesc() {
+   
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("RefreshDesc", "GlDynamicCofASegment", new {area = "Finance"})',
+           
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            beforeSend: function(){
+                // Show image container
+                $("#loading-image").show();
+            },
+            complete:function(data){
+                // Hide image container
+                $("#loading-image").hide();
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+
+        $("#grid").data("kendoGrid").dataSource.read();
+    
+
+}
 
     function Enable(e) {
         var dataItem = this.dataItem($(e.currentTarget).closest("tr"));

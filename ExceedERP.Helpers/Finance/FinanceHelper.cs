@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Core.Domain.Finance.Bank;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Finance;
@@ -13,23 +12,32 @@ using Kendo.Mvc.Extensions;
 using ExceedERP.Core.Domain.Finance.ViewModels;
 using System.Configuration;
 using System.Data.SqlClient;
+using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Helpers.Finance
 {
     public partial class FinanceHelper
     {
-        
-        readonly AccountHelper _accountHelper = new AccountHelper();
-        readonly DynamicAccountHelper _dynamicAccountHelper = new DynamicAccountHelper();
-        private readonly FiscalYearHelper _fiscalYearHelper = new FiscalYearHelper();
-        
 
+        private readonly AccountHelper _accountHelper;
+        private readonly DynamicAccountHelper _dynamicAccountHelper;
+        private readonly FiscalYearHelper _fiscalYearHelper ;
+
+        public FinanceHelper()
+        {
+            _accountHelper = new AccountHelper();
+            _dynamicAccountHelper=new DynamicAccountHelper();
+            _fiscalYearHelper=new FiscalYearHelper();   
+        }
 
         public static bool CalculateProfitTax()
         {
-            ExceedDbContext db = new ExceedDbContext();
-           return db.GlRuleValues.Where(x => x.CalculateProfitTax).Any();            
+            using (ExceedDbContext db = new ExceedDbContext())
+            {
+                return db.GlRuleValues.Where(x => x.CalculateProfitTax).Any();
+            }
         }
+
 
         //public  List<InventoryTransactionViewModel> getInventoryTransactionData()
         //{
@@ -145,7 +153,7 @@ namespace ExceedERP.Helpers.Finance
         //}
 
 
-        public  void TransferIncomeStatement()
+        public void TransferIncomeStatement()
         {
             ExceedDbContext db = new ExceedDbContext();
             decimal totalRevenue = 0;
@@ -818,14 +826,7 @@ namespace ExceedERP.Helpers.Finance
 
                         #region split ledger account
 
-                        if (accountHelper.IsDynamicCoA())
-                        {
-                            _dynamicAccountHelper.SplitLedgerAccount(ledger);
-                        }
-                        else
-                        {
-                            accountHelper.SplitLedgerAccount(ledger);
-                        }
+                        _accountHelper.SplitLedgerAccount(ledger);
 
                         #endregion
                     }
@@ -1016,21 +1017,14 @@ namespace ExceedERP.Helpers.Finance
                                 context.GLLedgerPostingLines.Add(newledgerpostline);
                                 context.SaveChanges();
 
-                                #endregion
+                            #endregion
 
-                                #region split ledger account
+                            #region split ledger account
 
-                                if (accountHelper.IsDynamicCoA())
-                                {
-                                    _dynamicAccountHelper.SplitLedgerAccount(newledgerpost);
-                                }
-                                else
-                                {
-                                    accountHelper.SplitLedgerAccount(newledgerpost);
-                                }
+                            _accountHelper.SplitLedgerAccount(newledgerpost);
 
-                                #endregion
-                            }
+                            #endregion
+                        }
                         }
                     }               
 
@@ -1106,7 +1100,7 @@ namespace ExceedERP.Helpers.Finance
                                     CategoryName = journalline.GLRecordJournal.CategoryName,
                                     SourcesName = journalline.GLRecordJournal.SourcesName,
                                     Remark = gLRecordJournal.Remark,
-                                    AdditionalDescription = journalline.AdditionalDescription,
+                                    AdditionalDescription = journalline.AdditionalDescription,                                    
                                     ReferenceDoc = journalline.GLRecordJournal.ReferenceDoc,
                                     PaymentReference = journalline.GLRecordJournal.PaymentReference,
                                     InvoiceReferenceDoc = journalline.GLRecordJournal.InvoiceReferenceDoc,
@@ -1213,14 +1207,7 @@ namespace ExceedERP.Helpers.Finance
 
                                 #region split ledger account
 
-                                if (accountHelper.IsDynamicCoA())
-                                {
-                                    _dynamicAccountHelper.SplitLedgerAccount(newledgerpost);
-                                }
-                                else
-                                {
-                                    accountHelper.SplitLedgerAccount(newledgerpost);
-                                }
+                                _accountHelper.SplitLedgerAccount(newledgerpost);
 
                                 #endregion
                             }
@@ -1284,12 +1271,29 @@ namespace ExceedERP.Helpers.Finance
             }
 
         }
-        public bool Unpost(int journalId, string user)
+        public string Unpost(int journalId, string user)
         {
             ExceedDbContext db = new ExceedDbContext();
-            var journal = db.GLRecordJournals.Find(journalId);
+            var journal = db.GLRecordJournals.Find(journalId);         
             if (journal != null)
             {
+                #region validate if period is closed
+                var glperiod = db.GLPeriods.Where(x => x.Name == journal.PeriodName).FirstOrDefault();
+                if (glperiod == null)
+                    return "Period not found";
+                else 
+                {
+                    var year = db.GLFiscalYears.Find(glperiod.GlFiscalYearId);
+                    if(year==null)
+						return "Fiscal year not found";
+					else
+                    {
+                        if(year.Status != FiscalYearStatus.Open || glperiod.Status != FiscalYearStatus.Open)
+                            return "Either fiscal year or period is closed";
+                    }
+                }
+                #endregion
+
                 try
                 {
                     var journallines = db.GLRecordJournalDetails
@@ -1356,17 +1360,17 @@ namespace ExceedERP.Helpers.Finance
 
                     #endregion
 
-                    return true;
+                    return "";
                 }
                 catch (Exception ex)
                 {
-                    return false;
+                    return "Error happend";
                 }
 
 
             }
 
-            return false;
+            return "Journal not found";
 
         }
         public  void CreateBegEndInitial()
@@ -2972,12 +2976,15 @@ namespace ExceedERP.Helpers.Finance
                         {
                             #region beginning period
 
-                            var begRecord = selectedLines.Where(x => x.GLPeriodId == beginningPeriod.GLPeriodId)
-                                .FirstOrDefault(x => x.Type == LedgerPostTypes.Begining);
-                            var standardRecord = selectedLines.Where(x => x.GLPeriodId == beginningPeriod.GLPeriodId)
+                            var begRecord = selectedLines
+                                .Where(x => x.GLPeriodId == beginningPeriod.GLPeriodId)
+                                .Where(x => x.Type == LedgerPostTypes.Begining).FirstOrDefault();
+                            var standardRecord = selectedLines
+                                .Where(x => x.GLPeriodId == beginningPeriod.GLPeriodId)
                                 .Where(x => x.Type == LedgerPostTypes.Standard);
-                            var endRecord = selectedLines.Where(x => x.GLPeriodId == beginningPeriod.GLPeriodId)
-                                .FirstOrDefault(x => x.Type == LedgerPostTypes.Ending);
+                            var endRecord = selectedLines.
+                                Where(x => x.GLPeriodId == beginningPeriod.GLPeriodId)
+                               .Where(x => x.Type == LedgerPostTypes.Ending).FirstOrDefault();
 
                             if (begRecord != null)
                             {
@@ -3107,13 +3114,13 @@ namespace ExceedERP.Helpers.Finance
                                 #region next periods
 
                                 var begnningRecod = selectedLines.Where(x => x.GLPeriodId == period.GLPeriodId)
-                                    .FirstOrDefault(x => x.Type == LedgerPostTypes.Begining);
+                                    .Where(x => x.Type == LedgerPostTypes.Begining).FirstOrDefault();
 
                                 var standardRecords = selectedLines.Where(x => x.GLPeriodId == period.GLPeriodId)
                                     .Where(x => x.Type == LedgerPostTypes.Standard);
 
                                 var endingRecord = selectedLines.Where(x => x.GLPeriodId == period.GLPeriodId)
-                                    .FirstOrDefault(x => x.Type == LedgerPostTypes.Ending);
+                                    .Where(x => x.Type == LedgerPostTypes.Ending).FirstOrDefault();
 
 
                                 begninning = nextBegining;
@@ -4266,7 +4273,9 @@ namespace ExceedERP.Helpers.Finance
             }
 
 
-            foreach (var posting in postings)
+            var distinctLedgerIds = postings.DistinctByField(p => p.GLLedgerPostingID).ToList();
+
+            foreach (var posting in distinctLedgerIds)
             {
 
                 #region beginning period

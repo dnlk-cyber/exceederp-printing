@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using ExceedERP.Core.Domain.Procurement.Proforma;
-using ExceedERP.Core.Domain.Procurement.Tender;
+﻿using ExceedERP.Core.Domain.Procurement.Proforma;
 using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 
 namespace ExceedERP.Web.Areas.Procurement.Models

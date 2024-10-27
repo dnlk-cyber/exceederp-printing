@@ -23,10 +23,10 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
         public List<NoteVeiwModel> ScoiReportNotes(string fiscalyear,string periodFrom,string periodTo,string bizUnitCode, string location, string costcenter, string subaccount)
         {
             List<NoteVeiwModel> list = new List<NoteVeiwModel>();
-            var notes = _db.IfrsStatementOfComprehensiveIncomes.FirstOrDefault();
-            var continuingOperationRanges = _db.IfrsScoiContinuingOperationRanges.ToList();
-            var discontinuedOperationRanges = _db.IfrsScoiDiscontinuedOperationRanges.ToList();
-            var otherComprehensiveIncomeRanges = _db.IfrsScoiOtherComprehensiveIncomeRanges.ToList();
+            var notes = _db.IfrsStatementOfComprehensiveIncomes.AsNoTracking().FirstOrDefault();
+            var continuingOperationRanges = _db.IfrsScoiContinuingOperationRanges.AsNoTracking().ToList();
+            var discontinuedOperationRanges = _db.IfrsScoiDiscontinuedOperationRanges.AsNoTracking().ToList();
+            var otherComprehensiveIncomeRanges = _db.IfrsScoiOtherComprehensiveIncomeRanges.AsNoTracking().ToList();
 
             if (notes != null && !String.IsNullOrEmpty(fiscalyear))
             {
@@ -229,7 +229,7 @@ namespace ExceedERP.Reporting.Finance.DataSource.IFRS.ByBizUnit
             if (!String.IsNullOrEmpty(fiscalyear))
             {
                 var fyearObj = _db.GLFiscalYears.Find(int.Parse(fiscalyear));
-                var scoiRules = _db.IfrsStatementOfComprehensiveIncomes.FirstOrDefault();
+                var scoiRules = _db.IfrsStatementOfComprehensiveIncomes.AsNoTracking().FirstOrDefault();
                 var prevYearEndBalance = new List<GLLedgerPostingLines>();
                 var prevYearBegBalance = new List<GLLedgerPostingLines>();
                 var currentYearEndBalance = new List<GLLedgerPostingLines>();

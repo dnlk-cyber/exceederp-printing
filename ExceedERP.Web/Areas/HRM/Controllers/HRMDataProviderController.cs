@@ -21,22 +21,77 @@ using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.Common.ViewModel;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
-using ExceedERP.Helpers.Finance;
 using ExceedERP.Core.Domain.HRM.Payroll.Vm;
 using ExceedERP.Core.Domain.Archive;
 using ExceedERP.Core.Domain.Finance;
-using DocumentFormat.OpenXml.Drawing;
-using System.Data.Entity;
 using ExceedERP.Core.Domain.Insurance;
+using System.Data.Entity;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers
 {
+    [Authorize]
     public class HRMDataProviderController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
         //new
         private HRMInputs inputs = new HRMInputs();
+        public ActionResult GetActiveEmployeesForDepartmentDelegation()
+        {
+            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(id);
+            subordinates.Add(id);
+            var list = db.Person_Employee
+                                .Where(x => subordinates.Contains(x.EmployeeId))
+                                .Where(x => x.IsActive).ToList();
+            return Json(list.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameEnglish = p.EmployeeCode + " " + p.FullNameaEnglish,
+                FullNameAmharic = p.EmployeeCode + " " + p.FullNameAmharic
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetOneDepartmentEmployee()
+        {
+            // Get the employee ID of the current user
+            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
+            // Get the list of subordinates for the current user
+            var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(id);
+            var employees = db.Person_Employee.Where(x => x.IsActive && subordinates.Contains(x.EmployeeId) /*&& x.EmployeeId != id*/)
+               .Select(p => new
+               {
+                   EmployeeId = p.EmployeeId,
+                   FullNameEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish
+               })
+               .ToList();
+            return Json(employees, JsonRequestBehavior.AllowGet);
+
+            // Return the list of employees as JSON
+
+        }
+        public JsonResult GetClearanceType()
+        {
+            var oldJobTitle = db.Lookups.Where(x => x.LookupType == LookUpTypes.CLEARANCE_TYPE).ToList();
+
+            return Json(oldJobTitle.Select(p => new
+            {
+                LookupId = p.LookupId,
+                Description = p.Description,
+            }), JsonRequestBehavior.AllowGet);
+        }
+       
+        public JsonResult GetFiscalYearForPerformance()
+        {
+            var fiscalYear = db.GLFiscalYears.OrderByDescending(x => x.GlFiscalYearId).ToList();
+
+            return Json(fiscalYear.Select(p =>
+            new
+            {
+                GlFiscalYearId = p.GlFiscalYearId,
+                Name = p.Name
+
+            }), JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetEmployeeFullName(int id)
         {
             // Find the current placement of the employee with the given ID
@@ -108,7 +163,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 FullName = p.EmployeeCode + "- " + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult UpdateNextApprover(int currentEmployeeId, int nextApprovareEmployeeId)
+        public JsonResult UpdateNextApprover(int currentEmployeeId, int nextApproverEmployeeId)
         {
             // Find employee performances that meet the update criteria
             var employeePerformances = db.EmployeePerformances
@@ -120,7 +175,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 // Update the SecondLevelApproverId for each performance
                 foreach (var employeePerformance in employeePerformances)
                 {
-                    employeePerformance.SecondLevelApproverId = nextApprovareEmployeeId;
+                    employeePerformance.SecondLevelApproverId = nextApproverEmployeeId;
                     db.Entry(employeePerformance).State = EntityState.Modified;
                 }
 
@@ -342,15 +397,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             }), JsonRequestBehavior.AllowGet);
 
         }
-        public JsonResult GetAllWorkUnitForPerformances(int evaluationCriteriaId, int branchId, string text)
+        public JsonResult GetAllWorkUnitForPerformances(int evaluationCriteriaId, string businessUnitId, string branchId, string text)
         {
             var orgstuctureLists = new List<MainCompanyStructure>();
-            var workUnitIds = db.JobTitleMapping.Where(x => x.IsActive && x.BranchId == branchId).Select(x => x.OrgStructureId);
+            var placements = db.Placements.Where(x => x.isCurrent).ToList();
+            if (!string.IsNullOrEmpty(branchId) && placements.Any())
+            {
+                int.TryParse(branchId, out int braId);
+                placements = placements.Where(x => x.BranchId == braId).ToList();
+            }
+            if (!string.IsNullOrEmpty(businessUnitId) && placements.Any())
+            {
+                int.TryParse(businessUnitId, out int busisId);
+                placements = placements.Where(x => x.BusinessUnitId == busisId).ToList();
+            }
+
+            var workUnitIds = placements.Select(x => x.OrgStructureId).Distinct();
             var orgstuctures = db.MainCompanyEvalutionSettings.Where(x => x.MeasurementDefinitionId == evaluationCriteriaId && x.OrgStructureId != null);
 
             HashSet<int> orgIds = new HashSet<int>(orgstuctures.Where(x => workUnitIds.Contains((int)x.OrgStructureId)).Select(x => (int)x.OrgStructureId));
 
-            var structures = (orgIds.Any()) ? db.MainCompanyStructures.Where(x => orgIds.Contains(x.OrgStructureId)).Where(x => x.IsActive).ToList() : orgstuctureLists;
+            //var structures = orgIds.Any()? db.MainCompanyStructures.Where(x=> orgIds.Contains(x.OrgStructureId)).Where(x => x.IsActive).ToList(): orgstuctureLists;
+            var structures = orgIds.Any() ? db.MainCompanyStructures.Where(x => orgIds.Contains(x.OrgStructureId)).Where(x => x.IsActive).ToList() : workUnitIds.Any() ? db.MainCompanyStructures.Where(x => workUnitIds.Contains(x.OrgStructureId)).ToList() : orgstuctureLists;
 
             if (!string.IsNullOrEmpty(text) && structures.Any())
             {
@@ -1643,7 +1711,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         }
         public JsonResult GetAllBranch()
         {
-            var branches = db.Branch.ToList();
+            var branches = db.Branch.Where(x => x.IsActive).ToList();
             return Json(branches.Select(p => new
             {
                 BranchId = p.BranchId,
@@ -2048,10 +2116,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         {
             var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             // var employees = UserInformationHelper.GetEmployeesByReportsTo(User.Identity.Name);
-
-
             List<Person_Employee> personEmployees = new List<Person_Employee>();
-            var employeesId = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
+            //var employeesId = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
+            var employeesId = EmployeeHelper.GetSubordinates_FilteredByHead(employeeId).ToList();
             employeesId.Remove(employeeId);
             foreach (var id in employeesId)
             {
@@ -2387,44 +2454,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 {
                     type = GlCostCenterTypes.Project;
                 }
-                AccountHelper accountHelper = new AccountHelper();
-                if (accountHelper.IsDynamicCoA())
+               // AccountHelper accountHelper = new AccountHelper();
+                var glCostCenterSeg = db.GlSegmentSetups.Where(x => x.SegmentType == DynamicSegmentTypes.CostCenter).FirstOrDefault();
+                if (glCostCenterSeg != null)
                 {
-                    var glCostCenterSeg = db.GlSegmentSetups.Where(x => x.SegmentType == DynamicSegmentTypes.CostCenter).FirstOrDefault();
-                    if (glCostCenterSeg != null)
+                    var glcostcenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == glCostCenterSeg.GLSegmentSetupId).Where(x => x.Enable && !x.Parent).ToList();
+
+                    if (!string.IsNullOrEmpty(text))
                     {
-                        var glcostcenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == glCostCenterSeg.GLSegmentSetupId).Where(x => x.Enable && !x.Parent).ToList();
-
-                        if (!string.IsNullOrEmpty(text))
-                        {
-                            glcostcenters = glcostcenters.Where(x => x.Values.Contains(text) || x.Description.Contains(text)).ToList();
-                        }
-
-                        foreach (var item in glcostcenters)
-                        {
-                            var record = new SelectorVm
-                            {
-                                Code = item.Values,
-                                Name = item.Values + "-" + item.Description
-                            };
-                            costcenterList.Add(record);
-                        }
+                        glcostcenters = glcostcenters.Where(x => x.Values.Contains(text) || x.Description.Contains(text)).ToList();
                     }
-                }
-                else
-                {
-                    //var staticcostcenters = db.GLChartOfAccountCostCenters
-                    //    .Where(x => x.Type == type && x.Enable && !x.Parent)
-                    //   .ToList();
-                    //foreach (var item in staticcostcenters)
-                    //{
-                    //    var record = new SelectorVm
-                    //    {
-                    //        Code = item.Values,
-                    //        Name = item.Description
-                    //    };
-                    //    costcenterList.Add(record);
-                    //}
+
+                    foreach (var item in glcostcenters)
+                    {
+                        var record = new SelectorVm
+                        {
+                            Code = item.Values,
+                            Name = item.Values + "-" + item.Description
+                        };
+                        costcenterList.Add(record);
+                    }
                 }
 
             }            
@@ -2744,12 +2793,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         {
             var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
-            var subordinates = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(id);
+            var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(id);
+            //var subordinates1 = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(id);
             var employees = db.Person_Employee.Where(x => x.IsActive).Where(x => subordinates.Contains(x.EmployeeId)).ToList();
             return Json(employees.Select(p => new
             {
                 EmployeeId = p.EmployeeId,
-                FullNameaEnglish = p.EmployeeCode + "-" + p.FullNameaEnglish
+                FullNameaEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish
             }), JsonRequestBehavior.AllowGet);
         }
 
@@ -3203,11 +3253,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         public JsonResult GetEmployeesInSelectedDepartment(int OrgStructureId)
         {
             //employe.GetSubordinates_FilteredByBranchAlso
-            //var EemployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var EemployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(EemployeeId);
             var empIds = db.Placements.Where(x => x.OrgStructureId == OrgStructureId && x.isCurrent && mybraches.Contains(x.BranchId)).Select(x => x.EmployeeId).ToList();
 
-            var employees = db.Person_Employee.Where(x => x.IsActive).Where(x => empIds.Contains(x.EmployeeId)).ToList();
+            var employees = db.Person_Employee.Where(x => x.IsActive).Where(x => empIds.Contains(x.EmployeeId) || subordinates.Contains(x.EmployeeId)).DistinctByField(x => x.EmployeeId).ToList();
 
             return Json(employees.Select(p => new
             {

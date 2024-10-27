@@ -14,7 +14,7 @@ namespace ExceedERP.Core.Domain.Finance.AP
         DirectPayment,
     }
  
-    public class ApPaymentSettlement : DepartmentOperations
+    public class ApPaymentSettlement : DepartmentNewOperations
     {
         public int ApPaymentSettlementId { get; set; }
         [Display(Name = "Supplier")]
@@ -32,9 +32,12 @@ namespace ExceedERP.Core.Domain.Finance.AP
         public DateTime PaymentDate { get; set; }
         public int BranchId { get; set; }
         public int BusinessUnitId { get; set; }
+        [Display(Name = "Department")]
+        public int OrgStuructureId { get; set; }
         //for access or view
         public int CreatedAtBranchId { get; set; }
         public int CreatedAtBusinessUnitId { get; set; }
+        public int CreatedAtOrgStructureId { get; set; }
 
         public virtual ICollection<ApPaymentSettlementLine> ApPaymentSettlementLines { get; set; }
         public virtual ICollection<ApPaymentSettlementGrn> ApPaymentSettlementGrns { get; set; }

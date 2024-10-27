@@ -5,9 +5,9 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.ProcurementCategory).EditorTemplateName("ProcurementCategorys").Width(200);
-          columns.Bound(c => c.GuaranteeType).EditorTemplateName("GuaranteeTypes").Width(200);
-          columns.Bound(c => c.GuaranteeMode).EditorTemplateName("GuaranteeModes").Width(200);
+          columns.Bound(c => c.ProcurementCategory).EditorTemplateName("ProcurementCategorys").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Bound(c => c.GuaranteeType).EditorTemplateName("GuaranteeTypes").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Bound(c => c.GuaranteeMode).EditorTemplateName("GuaranteeModes").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.DateCreated).Hidden();
           columns.Bound(c => c.LastModified).Hidden();
           columns.Bound(c => c.CreatedBy).Hidden();
@@ -64,5 +64,4 @@
           .Update(update => update.Action("GuaranteeRules_Update", "GuaranteeRule"))
           .Destroy(destroy => destroy.Action("GuaranteeRules_Destroy", "GuaranteeRule"))
       )
-      .Events(events => events
-          .DataBound("onDataBoundMaster")))
+      )

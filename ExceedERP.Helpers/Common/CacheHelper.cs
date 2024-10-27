@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.Caching;
-using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Helpers.Common
 {
     public class CacheHelper
     {
-        
+        public const string GlSegmentSetups = "GlSegmentSetups";
+        public const string GlChartOfAccountSegments = "GlChartOfAccountSegments";
+        public const string GLChartOfAccountAccounts = "GLChartOfAccountAccounts";
+
         public static void ResetCache()
         {
             List<string> cacheKeys = MemoryCache.Default.Select(kvp => kvp.Key).ToList();
@@ -22,9 +19,37 @@ namespace ExceedERP.Helpers.Common
             }
         }
 
-        
+
+        public static void InvalidateGlSegmentSetupsCache()
+        {
+            if (MemoryCache.Default.Contains(GlSegmentSetups))
+            {
+                MemoryCache.Default.Remove(GlSegmentSetups);
+            }
+        }
+
+
+        public static void InvalidateSegmentsCache()
+        {
+            if (MemoryCache.Default.Contains(GlChartOfAccountSegments))
+            {
+                MemoryCache.Default.Remove(GlChartOfAccountSegments);
+            }
+        }
+
+
+        public static void InvalidateNaturalAccountCache()
+        {
+            if (MemoryCache.Default.Contains(GLChartOfAccountAccounts))
+            {
+                MemoryCache.Default.Remove(GLChartOfAccountAccounts);
+            }
+        }
+
+
+
 
     }
 
-    
+
 }

@@ -2,8 +2,6 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using DocumentFormat.OpenXml.Office2010.Excel;
-using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Procurement.PaymentRequest;
 using ExceedERP.Core.Domain.Procurement.Settings;
@@ -58,7 +56,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentRequest
                 .FirstOrDefault();
 
             if (exist != null)
-                ModelState.AddModelError("exist",$" Grn No of type {purchasePaymentGrn.ItemType.ToString()} is alreay added in purchase payment {exist.PurchasePaymentId}.");
+                ModelState.AddModelError("exist",$" Grn No of  {purchasePaymentGrn.GrnNo} type {purchasePaymentGrn.ItemType} is alreay added in purchase payment {exist.PurchasePaymentId}.");
             #endregion
 
             if (ModelState.IsValid)
@@ -100,7 +98,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PaymentRequest
                 .FirstOrDefault();
 
             if (exist != null)
-                ModelState.AddModelError("exist", $" Grn No of type {purchasePaymentGrn.ItemType.ToString()} is alreay added in purchase payment {exist.PurchasePaymentId}.");
+                ModelState.AddModelError("exist", $" Grn No of  {purchasePaymentGrn.GrnNo} type {purchasePaymentGrn.ItemType} is alreay added in purchase payment {exist.PurchasePaymentId}.");
             #endregion
 
             if (ModelState.IsValid)

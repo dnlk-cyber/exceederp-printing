@@ -44,15 +44,5 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
         public string Remark { get; set; }
        
     }
-    public class GsTravellerTicket
-    {
-        public int GsTravellerTicketId { get; set; }
-        public int ApTravelOrderDepartureId { get; set; }
-        [Display(Name = "Ticket No")]
-        public string TicketNumber { get; set; }
-        [Display(Name = "Seat No")]
-        public string SeatNumber { get; set; }
-        [Display(Name = "Price")]
-        public decimal TransportationPrice { get; set; }
-    }
+   
 }

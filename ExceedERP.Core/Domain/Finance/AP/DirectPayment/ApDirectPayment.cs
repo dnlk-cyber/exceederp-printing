@@ -29,7 +29,7 @@ namespace ExceedERP.Core.Domain.Finance.AP
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime PaymentDate { get; set; }
-        [Display(Name = "Purchaser")]
+        [Display(Name = "Requester or Purchaser")]
         public int Purchaser { get; set; }
         [Display(Name = "GRN/Work Order")]
         public string Grn { get; set; }

@@ -3,13 +3,16 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common.DocumentApproval;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.Proforma;
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Hubs;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
@@ -50,6 +53,16 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseValidations_Create([DataSourceRequest]DataSourceRequest request, PurchaseValidation purchaseValidation, int id)
         {
+            var record = _db.ProformaPurchases.Find(id);
+
+            if (record != null && record.ForwardedTo != User.Identity.Name)
+                ModelState.AddModelError("notcorrectuser", "You can't approve this record,it is forwarded to another user.");
+
+            var hasApproved = _db.PurchaseValidations
+                    .Where(x => x.ProformaPurchaseID == id)
+                .Where(x => x.CreatedBy == User.Identity.Name && x.Status == ApprovalStatuses.Approve).AsQueryable();
+            if (hasApproved.Any())
+                ModelState.AddModelError("hasapproved", "You can't approve again.You have already approved.");
             if (purchaseValidation.Status == ApprovalStatuses.Approve)
             {
                 #region validation
@@ -95,8 +108,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
 
                 #endregion
             }
-
-            ProformaPurchase record = _db.ProformaPurchases.Find(id);
+           
 
             if (ModelState.IsValid)
             {
@@ -106,42 +118,80 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
 
                     if (purchaseValidation.Status == ApprovalStatuses.Approve)
                     {
-                        record.Status = "Approved";
-                        record.IsOnlineApproved = true;
-                        record.IsVoid = false;
-                        record.OnlineApprovedBy = User.Identity.Name;
-                        record.OnlineApprovedTime = DateTime.Now;
-                        _db.Entry(record).State = EntityState.Modified;
-                        _db.SaveChanges();
-
-                        TransferItemsToPo(id);
-
-                        #region purchase status
-                        #region get follow up and update status
-
-                        var followup = _db.PurchaseFollowUps.FirstOrDefault(x => x.PurchaseRequisitionID == record.PurchaseRequisitionID);
-                        #endregion
-
-                        if (followup != null)
+                        if (record.IsFinalApproval)
                         {
-                            #region system status
-
-                            var followupsystem = new PurchaseFollowUpSystemStatus()
-                            {
-                                PurchaseFollowUp = followup,
-                                Date = DateTime.Now,
-                                Description = "Proforma  no : " + record.PurchaseRequisitionID + " for Purchase requisition no : " + record.PurchaseRequisitionID + " approved",
-                                User = User.Identity.Name
-                            };
-
-                            _db.PurchaseFollowUpSystemStatus.Add(followupsystem);
+                            record.Status = "Approved";
+                            record.IsOnlineApproved = true;
+                            record.IsVoid = false;
+                            record.OnlineApprovedBy = User.Identity.Name;
+                            record.OnlineApprovedTime = DateTime.Now;
+                            _db.Entry(record).State = EntityState.Modified;
                             _db.SaveChanges();
 
+                            TransferItemsToPo(id);
+
+                            #region purchase status
+                            #region get follow up and update status
+
+                            var followup = _db.PurchaseFollowUps.FirstOrDefault(x => x.PurchaseRequisitionID == record.PurchaseRequisitionID);
+                            #endregion
+
+                            if (followup != null)
+                            {
+                                #region system status
+
+                                var followupsystem = new PurchaseFollowUpSystemStatus()
+                                {
+                                    PurchaseFollowUp = followup,
+                                    Date = DateTime.Now,
+                                    Description = "Proforma  no : " + record.PurchaseRequisitionID + " for Purchase requisition no : " + record.PurchaseRequisitionID + " approved",
+                                    User = User.Identity.Name
+                                };
+
+                                _db.PurchaseFollowUpSystemStatus.Add(followupsystem);
+                                _db.SaveChanges();
+
+                                #endregion
+                            }
+
+                            _dashboardHelper.AddNotofication(Request.UserHostAddress, "", "", DateTime.Now, "", "Proforma  no : " + record.ProformaPurchaseID + " for Purchase requisition no : " + record.PurchaseRequisitionID + " approved by user : " + User.Identity.Name + " at " + DateTime.Now);
                             #endregion
                         }
+                        else
+                        {
+                            record.Status = "Partially Approved";
+                            record.IsOnlineApproved = false;
+                            record.IsVoid = false;
+                            record.OnlineApprovedBy = User.Identity.Name;
+                            record.OnlineApprovedTime = DateTime.Now;
+                            _db.Entry(record).State = EntityState.Modified;
+                            _db.SaveChanges();
 
-                        _dashboardHelper.AddNotofication(Request.UserHostAddress, "", "", DateTime.Now, "", "Proforma  no : " + record.PurchaseRequisitionID + " for Purchase requisition no : " + record.PurchaseRequisitionID + " approved by user : " + User.Identity.Name + " at " + DateTime.Now);
-                        #endregion
+                            #region approval notification
+
+                            NotifModels notif = new NotifModels
+                            {
+                                UserId = record.ForwardedFrom,
+                                URL = DocApprovalWorkflowHelper.GetDocUrl(ApprovalDocumentType.ProformaPurchase, record.ProformaPurchaseID),
+                                Message =
+                                    $"Proforma document {record.ProformaPurchaseID} is approved by User: {record.ForwardedTo} at {DateTime.Now} and forwarded to next user."
+                            };
+
+                            Notify.NotifyUser(notif);
+
+                            #endregion
+
+                            #region forward to next approver
+                            var awardIds = _db.WinningSuppliers.Where(x => x.AwardGiven).Where(x => x.ProformaPurchaseID == id).Select(x => x.WinningSupplierID).ToList();
+                            var awardItems = _db.WinningSupplierItems.Where(x => awardIds.Contains(x.WinningSupplierID)).ToList();
+                            decimal docamount = awardItems.Sum(x => x.TPrice);
+                            int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
+                            DocApprovalWorkflowHelper.ForwardToApprover(record.ProformaPurchaseID, docamount, "",
+                                record.ForwardedTo, ApprovalDocumentType.ProformaPurchase, false, step);
+
+                            #endregion
+
+                        }
                     }
                     if (purchaseValidation.Status == ApprovalStatuses.Reject)
                     {
@@ -350,6 +400,23 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
 
                     #endregion
 
+                    if(uw.AdditionalChargePercent>0)
+                    {
+                        #region additional charge
+                        var additionalCharge = new PoAdditionalCharge
+                        {
+                            PurchaseOrder = purchaseOrder,
+                            AmountType = AmountType.Percent,
+                            Amount = uw.AdditionalChargePercent,
+                            GLTaxRateID=0,
+                            CreatedBy = User.Identity.Name,
+                            DateCreated = DateTime.Now
+                        };
+                        _db.PoAdditionalCharges.Add(additionalCharge);
+                        _db.SaveChanges();
+
+                        #endregion
+                    }
                     #endregion
                 }
 

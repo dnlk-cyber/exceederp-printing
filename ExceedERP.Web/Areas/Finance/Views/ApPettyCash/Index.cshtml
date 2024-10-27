@@ -88,11 +88,12 @@
                                                         # if (IsOnlineApproved)
                                                         {#
                                                         <a target="_new" href='@Url.Action("ApPettyCash", "FinancePrint")/#=ApPettyCashId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                                        <br />
+
                                                         # } #
 
                                                         # if (IsOnlineApproved && !IsOnlineTransferred )
                                                         {#
+                                                         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                                                         <a onclick='return transferToGl("#=ApPettyCashId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
                                                         # } #
 
@@ -117,7 +118,7 @@
                                                                 </dt>
                                                                 <dd>
 
-                                                                    #=kendo.toString(kendo.parseDate(Date), 'dd/MM/yyyy') #
+                                                                    #=kendo.toString(kendo.parseDate(Date), 'dd/MM/yyyy hh:mm tt') #
 
                                                                 </dd>
                                                                 <dt>
@@ -130,7 +131,7 @@
                                                                     CreatedOn
                                                                 </dt>
                                                                 <dd>
-                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                                                 </dd>
                                                                 <dt>
@@ -149,7 +150,7 @@
                                                                     Modified Date
                                                                 </dt>
                                                                 <dd>
-                                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                                                 </dd>
                                                             </dl>
                                                         </div>

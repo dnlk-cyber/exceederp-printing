@@ -1,6 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.Core.Domain.Procurement;
 using ExceedERP.Core.Domain.Procurement.Proforma;
 using ExceedERP.Core.Domain.Procurement.Supplier;
 using ExceedERP.Core.Domain.Procurement.Tender;
@@ -21,7 +20,6 @@ using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 using ExceedERP.Helpers.Common;
 using Microsoft.AspNet.Identity;
-using Telerik.Reporting;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers
@@ -38,6 +36,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             if (!String.IsNullOrWhiteSpace(text))
             {
                 var employees = db.Person_Employee
+                    .Where(x=>x.IsActive)
                     .Where(x => x.EmployeeCode.ToUpper().Contains(text.ToUpper()) ||
                         x.FirstNameEnglish.ToUpper().Contains(text.ToUpper()) ||
                           x.MiddleNameEnglish.ToUpper().Contains(text.ToUpper()) ||

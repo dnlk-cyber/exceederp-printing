@@ -48,6 +48,28 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TravelOrderAdvancePayments_Create(int id,[DataSourceRequest]DataSourceRequest request, ApTravelOrderAdvancePayment apTravelOrderAdvancePayment)
         {
+            var exists=_db.ApTravelOrderAdvancePayments
+                .Where(x=>x.ApTravelOrderId==id)
+                .Where(x=>x.Type== apTravelOrderAdvancePayment.Type)
+                .Where(x=>x.Type!= TravelPaymentType.Other)
+                .FirstOrDefault();
+            if(exists!=null)
+                ModelState.AddModelError("exisit", "You have already added this payment type");
+            #region check auto calculate
+            if (FinanceConfigurationHelper.AutoCalculatetravelPerdiem() && apTravelOrderAdvancePayment.Type == TravelPaymentType.PerDiem)
+            {
+                var departureAndReturn=_db.ApTravelOrderDepartures.Where(x=>x.ApTravelOrderId==id).ToList();
+                var departureDate= departureAndReturn.Where(x=>x.Type==DepartureType.Departure);
+                var returnDate= departureAndReturn.Where(x => x.Type == DepartureType.Return);
+
+                if (!departureDate.Any() || !returnDate.Any())
+                    ModelState.AddModelError("dates", "Please fill both departure and return date");
+                else
+                {
+                    apTravelOrderAdvancePayment.Quantity = (int)(returnDate.FirstOrDefault().ArrivalDate-departureDate.FirstOrDefault().Date).Days+1;
+                }
+            }
+            #endregion
             if (ModelState.IsValid)
             {
                 var entity = new ApTravelOrderAdvancePayment
@@ -74,7 +96,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 apTravelOrderAdvancePayment.ApTravelOrderAdvancePaymentId = entity.ApTravelOrderAdvancePaymentId;
 
                 UpdatetravelOrderBalance(id);
-                _distributionHelper.UpdateApTravelOrderDistribution(id);
+                //_distributionHelper.UpdateApTravelOrderDistribution(id);
 
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "Self care advance payment item", "Success", User.Identity.Name, $"created advance payment item {entity.Description} under record {entity.ApTravelOrderId} ", Modules.Finance);
@@ -90,6 +112,29 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TravelOrderAdvancePayments_Update([DataSourceRequest]DataSourceRequest request, ApTravelOrderAdvancePayment apTravelOrderAdvancePayment)
         {
+            var exists = _db.ApTravelOrderAdvancePayments
+               .Where(x => x.ApTravelOrderAdvancePaymentId != apTravelOrderAdvancePayment.ApTravelOrderAdvancePaymentId)
+               .Where(x => x.ApTravelOrderId == apTravelOrderAdvancePayment.ApTravelOrderId)
+               .Where(x => x.Type == apTravelOrderAdvancePayment.Type)
+               .Where(x => x.Type != TravelPaymentType.Other)
+               .FirstOrDefault();
+            if (exists != null)
+                ModelState.AddModelError("exisit", "You have already added this payment type");
+            #region check auto calculate
+            if (FinanceConfigurationHelper.AutoCalculatetravelPerdiem() && apTravelOrderAdvancePayment.Type==TravelPaymentType.PerDiem)
+            {
+                var departureAndReturn = _db.ApTravelOrderDepartures.Where(x => x.ApTravelOrderId == apTravelOrderAdvancePayment.ApTravelOrderId).ToList();
+                var departureDate = departureAndReturn.Where(x => x.Type == DepartureType.Departure);
+                var returnDate = departureAndReturn.Where(x => x.Type == DepartureType.Return);
+
+                if (!departureDate.Any() || !returnDate.Any())
+                    ModelState.AddModelError("dates", "Please fill both departure and return date");
+                else
+                {
+                    apTravelOrderAdvancePayment.Quantity = (int)(returnDate.FirstOrDefault().ArrivalDate - departureDate.FirstOrDefault().Date).Days + 1;
+                }
+            }
+            #endregion
             if (ModelState.IsValid)
             {
                 var entity = new ApTravelOrderAdvancePayment
@@ -116,7 +161,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 _db.Entry(entity).State = EntityState.Modified;
                 _db.SaveChanges();
                 UpdatetravelOrderBalance(apTravelOrderAdvancePayment.ApTravelOrderId);
-                _distributionHelper.UpdateApTravelOrderDistribution(apTravelOrderAdvancePayment.ApTravelOrderId);
+               // _distributionHelper.UpdateApTravelOrderDistribution(apTravelOrderAdvancePayment.ApTravelOrderId);
 
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "Self care advance payment item", "Success", User.Identity.Name, $"updated advance payment item {entity.Description} under record {entity.ApTravelOrderId} ", Modules.Finance);
@@ -154,7 +199,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.SelfCare
                 _db.ApTravelOrderAdvancePayments.Remove(entity);
                 _db.SaveChanges();
                 UpdatetravelOrderBalance(apTravelOrderAdvancePayment.ApTravelOrderId);
-                _distributionHelper.UpdateApTravelOrderDistribution(apTravelOrderAdvancePayment.ApTravelOrderId);
+                //_distributionHelper.UpdateApTravelOrderDistribution(apTravelOrderAdvancePayment.ApTravelOrderId);
             }
 
             return Json(new[] { apTravelOrderAdvancePayment }.ToDataSourceResult(request, ModelState));

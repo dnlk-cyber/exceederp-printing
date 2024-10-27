@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.Bank;
 using ExceedERP.Core.Domain.Finance.Common;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Core.Domain.HRM.Attendance;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Finance;
-using ExceedERP.Helpers.Inventory;
+using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
 {
+    [AuthorizeRoles(FinanceConstants.BankReconciliationUser, FinanceConstants.BankReconciliationApprover)]
     public class ReconciliationBookAccountController : Controller
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();
@@ -41,8 +41,16 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
         {
             AccountHelper _accountHelper = new AccountHelper();
             List<ReconciliationBookAccount> reconlist = new List<ReconciliationBookAccount>();
+            List<string> userBankAccounts = UserInformationHelper.GetUserBanks(User.Identity.Name);
+            List<string> userBankAccountCode = new List<string>();
+            foreach(string b in userBankAccounts)
+            {
+                var bank=_db.BankAccounts.Where(x=>x.AccountNumber == b).FirstOrDefault();
+                if(bank!=null)
+                    userBankAccountCode.Add(bank.AccountCode);
+            }
 
-            IQueryable<ReconciliationBookAccount> reconcilationbookaccounts = _db.ReconcilationBookAccounts;
+            IQueryable <ReconciliationBookAccount> reconcilationbookaccounts = _db.ReconcilationBookAccounts.Where(x => userBankAccountCode.Contains(x.AccountCode));
             if (!String.IsNullOrWhiteSpace(accountnumber))
             {
                 var bank = _db.BankAccounts.FirstOrDefault(x => x.AccountNumber == accountnumber);
@@ -64,6 +72,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                 Type = reconciliationBookAccount.Type,
                 Reference = reconciliationBookAccount.Reference,
                 ReferenceDoc = reconciliationBookAccount.ReferenceDoc,
+                AdditionalDescription = reconciliationBookAccount.AdditionalDescription,
                 Debit = reconciliationBookAccount.Debit,
                 Credit = reconciliationBookAccount.Credit,
                 ExRate = reconciliationBookAccount.ExRate,
@@ -110,7 +119,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                                                                   //.Where(x => x.AccountCode == bankaccount.AccountCode)//old    
                                                                   .Where(x => x.AccountSegment == account && x.SubAccountSegment == subaccount)//neew
                                                                   .Where(x => x.Date < dt2)
-                                                                  .Where(x => x.RecordType != RecordType.Beginning)
+                                                                  //.Where(x => x.RecordType != RecordType.Beginning)
                                                                   .Where(x => x.Reconciled == false);
                    
 
@@ -127,6 +136,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                             Type = reconciliationBookAccount.Type,
                             Reference = reconciliationBookAccount.Reference,
                             ReferenceDoc = reconciliationBookAccount.ReferenceDoc,
+                            AdditionalDescription = reconciliationBookAccount.AdditionalDescription,
                             Debit = reconciliationBookAccount.Debit,
                             Credit = reconciliationBookAccount.Credit,
                             ExRate = reconciliationBookAccount.ExRate,
@@ -181,6 +191,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                         AccountCode = record.AccountCode,
                         Type = record.Type,
                         ReferenceDoc = record.ReferenceDoc,
+                        AdditionalDescription = record.AdditionalDescription,
                         Reference = record.Reference,
                         Debit = record.Debit,
                         Credit = record.Credit,
@@ -240,6 +251,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                             AccountCode =accountcode.AccountCode,
                             Type = reconciliationBookAccount.Type,
                             Reference = reconciliationBookAccount.Reference,
+                            AdditionalDescription = reconciliationBookAccount.AdditionalDescription,
                             Debit = reconciliationBookAccount.Debit,
                             Credit = reconciliationBookAccount.Credit,
                             ExRate = reconciliationBookAccount.ExRate,
@@ -294,7 +306,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                                                                   
                                                                   .Where(x => x.AccountSegment == account && x.SubAccountSegment == subaccount)//neew
                                                                   .Where(x => x.ReconciledDate ==reconcileDate)
-                                                                  .Where(x => x.RecordType != RecordType.Beginning)
+                                                                  //.Where(x => x.RecordType != RecordType.Beginning)
                                                                   .Where(x => x.Reconciled == true);
 
 
@@ -311,6 +323,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                             Type = reconciliationBookAccount.Type,
                             Reference = reconciliationBookAccount.Reference,
                             ReferenceDoc = reconciliationBookAccount.ReferenceDoc,
+                            AdditionalDescription = reconciliationBookAccount.AdditionalDescription,
                             Debit = reconciliationBookAccount.Debit,
                             Credit = reconciliationBookAccount.Credit,
                             ExRate = reconciliationBookAccount.ExRate,
@@ -365,6 +378,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                         AccountCode = record.AccountCode,
                         Type = record.Type,
                         ReferenceDoc = record.ReferenceDoc,
+                        AdditionalDescription = record.AdditionalDescription,
                         Reference = record.Reference,
                         Debit = record.Debit,
                         Credit = record.Credit,
@@ -417,6 +431,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                     Type = reconciliationBookAccount.Type,
                     Reference = reconciliationBookAccount.Reference,
                     ReferenceDoc = reconciliationBookAccount.ReferenceDoc,
+                    AdditionalDescription = reconciliationBookAccount.AdditionalDescription,
                     Debit = reconciliationBookAccount.Debit,
                     Credit = reconciliationBookAccount.Credit,
                     ExRate = reconciliationBookAccount.ExRate,
@@ -543,6 +558,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                             Type = reconciliationBookAccount.Type,
                             Reference = reconciliationBookAccount.Reference,
                             ReferenceDoc = reconciliationBookAccount.ReferenceDoc,
+                            AdditionalDescription = reconciliationBookAccount.AdditionalDescription,
                             Debit = reconciliationBookAccount.Debit,
                             Credit = reconciliationBookAccount.Credit,
                             ExRate = reconciliationBookAccount.ExRate,
@@ -606,6 +622,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                         Type = reconciliationBookAccount.Type,
                         Reference = reconciliationBookAccount.Reference,
                         ReferenceDoc = reconciliationBookAccount.ReferenceDoc,
+                        AdditionalDescription = reconciliationBookAccount.AdditionalDescription,
                         Debit = reconciliationBookAccount.Debit,
                         Credit = reconciliationBookAccount.Credit,
                         ExRate = reconciliationBookAccount.ExRate,
@@ -661,6 +678,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                     Type = reconciliationBookAccount.Type,
                     Reference = reconciliationBookAccount.Reference,
                     ReferenceDoc = reconciliationBookAccount.ReferenceDoc,
+                    AdditionalDescription = reconciliationBookAccount.AdditionalDescription,
                     Debit = reconciliationBookAccount.Debit,
                     Credit = reconciliationBookAccount.Credit,
                     ExRate = reconciliationBookAccount.ExRate,

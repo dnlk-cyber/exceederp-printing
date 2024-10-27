@@ -146,7 +146,7 @@
                                     CreatedOn
                                 </dt>
                                 <dd>
-                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
 
                                 </dd>
                                 <dt>
@@ -165,7 +165,7 @@
                                     Modified Date
                                 </dt>
                                 <dd>
-                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
                                 </dd>
                             </dl>
 
@@ -182,6 +182,8 @@
                                           columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(150);
                                           columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(150);
                                           columns.Bound(c => c.Quantity).Width(140);
+                                          columns.Bound(c => c.UnitPrice).Width(140);
+                                          columns.Bound(c => c.TotalPrice).Width(140);
                                       })
 
                                       .Events(ev => ev.Edit("onEdit"))
@@ -195,7 +197,13 @@
                                               .RequestStart("onRequestStart(\"StoreReturnItem_#=StoreReturnID#\")")
                                               .RequestEnd("onRequestEnd(\"StoreReturnItem_#=StoreReturnID#\")"))
 
-                                          .Model(model => model.Id(p => p.StoreReturnItemsID))
+                                                .Model(model =>
+                                                {
+                                                    model.Id(p => p.StoreReturnItemsID);
+                                                    model.Field(p => p.StoreReturnItemsID).Editable(false);
+                                                    model.Field(p => p.TotalPrice).Editable(false);
+                                                    model.Field(p => p.StoreReturnID).Editable(false);
+                                                })
                                           .Read(read => read.Action("StoreReturnItems_Read", "StoreReturnItem", new { area = "Inventory", id = "#=StoreReturnID#" }))
                                       ).ToClientTemplate())
 

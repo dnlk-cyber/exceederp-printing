@@ -1,15 +1,12 @@
-﻿﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Common.DocumentApproval;
- using ExceedERP.DataAccess.Context;
-using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
 {
@@ -93,6 +90,9 @@ namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
                 db.AssignApprovalGroups.Add(entity);
                 db.SaveChanges();
                 assignApprovalGroup.AssignApprovalGroupId = entity.AssignApprovalGroupId;
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Assign approval group ", "Success", User.Identity.Name, $"created item for business unit {entity.BusinessUnit} , branch {entity.OpertatingUnit}, position {entity.Position} and employee id {entity.EmployeeId}  ", Modules.Administration);
+                #endregion
             }
 
             return Json(new[] { assignApprovalGroup }.ToDataSourceResult(request, ModelState));
@@ -131,6 +131,9 @@ namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
                 db.AssignApprovalGroups.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Assign approval group ", "Success", User.Identity.Name, $"updated item for business unit {entity.BusinessUnit} , branch {entity.OpertatingUnit}, position {entity.Position} and employee id {entity.EmployeeId}  ", Modules.Administration);
+                #endregion
             }
 
             return Json(new[] { assignApprovalGroup }.ToDataSourceResult(request, ModelState));
@@ -155,6 +158,9 @@ namespace ExceedERP.Web.Areas.Common.Controllers.DocumentApproval
                 db.AssignApprovalGroups.Attach(entity);
                 db.AssignApprovalGroups.Remove(entity);
                 db.SaveChanges();
+                #region delete log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, $"Deleted approval group assignment for {assignApprovalGroup.BusinessUnit} , branch {assignApprovalGroup.OpertatingUnit}, position {assignApprovalGroup.Position} and employee id {assignApprovalGroup.EmployeeId}");
+                #endregion
             }
 
             return Json(new[] { assignApprovalGroup }.ToDataSourceResult(request, ModelState));

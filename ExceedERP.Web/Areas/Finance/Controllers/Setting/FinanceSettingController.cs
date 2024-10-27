@@ -143,6 +143,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
                 _db.FinanceSettings.Attach(entity);
                 _db.FinanceSettings.Remove(entity);
                 _db.SaveChanges();
+                #region delete log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted finance setting information of setting " + financeSetting.FinanceSettingId, Modules.Finance);
+                #endregion
             }
 
             return Json(new[] { financeSetting }.ToDataSourceResult(request, ModelState));

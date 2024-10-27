@@ -951,7 +951,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
         public JsonResult Void(int id)
         {
             var record = _db.APPaybleInvoices.Find(id);
-            if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred && record.APPaybleInvoicesLines.Count > 0)
+            if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred && record.APPaybleInvoiceDistribution.Count > 0)
             {
                 #region validate invoice
 
@@ -1000,15 +1000,17 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-            if (record.APPaybleInvoicesLines.Count == 0)
+            if (record.APPaybleInvoiceDistribution.Count == 0)
             {
                 var formattedData = new
                 {
-                    Message = "Please add invoice lines and try again.",
+                    Message = "Please add distribution.",
                     Status = "NOT_OK"
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
+
+
             if (record.IsVoid)
             {
                 var formattedData = new

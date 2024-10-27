@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
@@ -13,6 +12,7 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Finance;
+using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.Finance.Controllers.Settings
 {
@@ -81,6 +81,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Settings
                 db.Configurations.Add(entity);
                 db.SaveChanges();
                 configuration.ConfigurationId = entity.ConfigurationId;
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Finance configuration change", "Success", User.Identity.Name, $"created setting {entity.Category} {entity.Reference}", Modules.Finance);
+                #endregion
             }
 
             return Json(new[] { configuration }.ToDataSourceResult(request, ModelState));
@@ -119,6 +123,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Settings
                 db.Configurations.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Finance configuration change", "Success", User.Identity.Name, $"updated setting {entity.Category} {entity.Reference}", Modules.Finance);
+                #endregion
             }
 
             return Json(new[] { configuration }.ToDataSourceResult(request, ModelState));
@@ -147,7 +155,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Settings
                     ModifiedBy = configuration.ModifiedBy
                 };
                 #region delete log
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Inventory setting information of setting " + configuration.Attribute);
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted finance setting information of setting " + configuration.Reference,Modules.Finance);
                 #endregion
                 db.Configurations.Attach(entity);
                 db.Configurations.Remove(entity);
@@ -162,30 +170,6 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Settings
             switch (Reference)
             {
 
-
-                //case "ITEM_CODE_LENGTH":
-
-                //    attributes =
-                //          Enum.GetValues(typeof(ItemCodeLengthAttributes))
-                //              .Cast<ItemCodeLengthAttributes>()
-                //              .Select(v => v.ToString())
-                //              .ToList();
-                //    break;
-                //case "PRINT_COPY_QTY":
-                //    attributes =
-                //          Enum.GetValues(typeof(PrintCopyAttributes))
-                //              .Cast<PrintCopyAttributes>()
-                //              .Select(v => v.ToString())
-                //              .ToList();
-                //    break;
-
-                //case "PRINT_COPY_MEMBER":
-                //    attributes =
-                //          Enum.GetValues(typeof(PrintCopyAttributes))
-                //              .Cast<PrintCopyAttributes>()
-                //              .Select(v => v.ToString())
-                //              .ToList();
-                //    break;
                 case "ENABLE_TELEBIRR_PAYMENT_METHOD":
                     attributes =
                           Enum.GetValues(typeof(BooleanTypeAttributes))
@@ -229,7 +213,37 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Settings
                               .Select(v => v.ToString())
                               .ToList();
                     break;
-                    
+                case "IGNORE_PERDIEM_IN_CLAIM":
+                    attributes =
+                          Enum.GetValues(typeof(BooleanTypeAttributes))
+                              .Cast<BooleanTypeAttributes>()
+                              .Select(v => v.ToString())
+                              .ToList();
+                    break;
+                case "IGNORE_TRAVEL_DEPARTURE":
+                    attributes =
+                          Enum.GetValues(typeof(BooleanTypeAttributes))
+                              .Cast<BooleanTypeAttributes>()
+                              .Select(v => v.ToString())
+                              .ToList();
+                    break;
+                case "ALLOW_TRAVEL_CLAIM_FOR_OTHERS":
+                    attributes =
+                          Enum.GetValues(typeof(BooleanTypeAttributes))
+                              .Cast<BooleanTypeAttributes>()
+                              .Select(v => v.ToString())
+                              .ToList();
+                    break;
+
+                case "AUTO_CALCULATE_TRAVEL_PERDIEM":
+                    attributes =
+                          Enum.GetValues(typeof(BooleanTypeAttributes))
+                              .Cast<BooleanTypeAttributes>()
+                              .Select(v => v.ToString())
+                              .ToList();
+                    break;
+
+
 
             }
 
