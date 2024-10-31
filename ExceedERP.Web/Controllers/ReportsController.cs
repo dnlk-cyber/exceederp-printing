@@ -25,16 +25,16 @@ namespace ExceedERP.Web.Controllers
 			var resolver = new ReportFileResolver(reportsPath)
 				.AddFallbackResolver(new ReportTypeResolver());
 
-			//Setup the ReportServiceConfiguration
-			configurationInstance = new ReportServiceConfiguration
-			{
-				HostAppId = "Html5App",
-				Storage = new FileStorage(),
-				ReportResolver = resolver,
-				// ReportSharingTimeout = 0,
-				// ClientSessionTimeout = 15,
-			};
-		}
+            //Setup the ReportServiceConfiguration
+            configurationInstance = new ReportServiceConfiguration
+            {
+                HostAppId = "Html5App",
+                Storage = new FileStorage("C:\\ExceedTemp"),//new //new FileStorage(),
+                ReportResolver = resolver,
+                // ReportSharingTimeout = 0,
+                // ClientSessionTimeout = 15,
+            };
+        }
 
 		public ReportsController()
 		{
