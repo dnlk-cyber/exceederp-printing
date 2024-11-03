@@ -16,7 +16,10 @@
           columns.Bound(c => c.NetGross).Width( 150);
           columns.Bound(c => c.AdditionalAmount).Width( 150);
           columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsActive #' " + " # if (IsActive) { #" + "checked='checked'" + "# } #" + " />").Width(120);
-          //columns.Bound(c => c.ApplyToAll).ClientTemplate("<input type='checkbox'  disabled='true' value='#=ApplyToAll #' " + " # if (ApplyToAll) { #" + "checked='checked'" + "# } #" + " />").Width(120);
+          if (HttpContext.Current.User.IsInRole("Payroll_Input_ApplyAll"))
+          {
+              columns.Bound(c => c.ApplyToAll).ClientTemplate("<input type='checkbox'  disabled='true' value='#=ApplyToAll #' " + " # if (ApplyToAll) { #" + "checked='checked'" + "# } #" + " />").Width(120);
+          }
           columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
       })
       .ToolBar(toolbar => {
@@ -41,7 +44,7 @@
           selectable.Type(GridSelectionType.Row);
       })
          .Scrollable(h => h.Height(500))
-                 
+
                           .Sortable(sortable =>
                           {
                               sortable.SortMode(GridSortMode.SingleColumn);
@@ -55,6 +58,7 @@
                                             .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
+          .Sort(sort => sort.Add("RegContributionId").Descending())
               .Events(events =>
               {
                   events.Error("error_handler(\"RegularContributiongrid\")");

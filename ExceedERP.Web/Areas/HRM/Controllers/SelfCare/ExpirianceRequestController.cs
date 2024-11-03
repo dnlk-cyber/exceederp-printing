@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using ExceedERP.Core.Domain.Global;
 using System.Data.Entity;
@@ -165,7 +165,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             return RedirectToAction("Index");
         }
-        public ActionResult SendForApprovalExperienceRequest(int id)
+        public JsonResult SendForApprovalExperienceRequest(int id)
         {
             HRMInputs.RequestId = id;
             RequestesStatus requestesStatus;
@@ -187,6 +187,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
                 db.RequestesStatus.Add(entityy);
                 db.SaveChanges();
+                var formatedData = new  {
+                    Message ="Successfully Sent",
+                    status ="Okay"
+                };
+                return Json(formatedData, JsonRequestBehavior.AllowGet);
             }
             else
             {
@@ -218,10 +223,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
                 db.RequestesStatus.Add(entityy);
                 db.SaveChanges();
+                var formatedData = new
+                {
+                    Message = "Successfully Sent",
+                    status = "Okay"
+                };
+                return Json(formatedData, JsonRequestBehavior.AllowGet);
 
             }
-
-            return RedirectToAction("Index");
+            
         }
         public bool CheckStatusForBackColor(int exId)
         {
@@ -235,8 +245,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public ActionResult ExprianceRequests_Read([DataSourceRequest]DataSourceRequest request)
         {
             var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeid);
-            IQueryable<ExperienceRequest> expriancerequests = db.ExprianceRequests.Where(x => employeeids.Contains(x.EmployeeId));
+            //List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeid);
+            List<int> employeeIds = EmployeeHelper.GetSubordinates_FilteredByHead(employeeid);
+            IQueryable<ExperienceRequest> expriancerequests = db.ExprianceRequests.Where(x => employeeIds.Contains(x.EmployeeId));
 
             DataSourceResult result = expriancerequests.ToDataSourceResult(request, exprianceRequest => new
             {
@@ -282,7 +293,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 EmployeeId = experienceRequest.EmployeeId;
             }
 
-            if (experienceRequest.ApplicationDateAm != null)
+            if (!string.IsNullOrEmpty(experienceRequest.ApplicationDateAm))
             {
                 var splitDate = experienceRequest.ApplicationDateAm.Split('/');
                 experienceRequest.ApplicationDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
@@ -317,9 +328,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 var entity = new ExperienceRequest
                 {
                     EmployeeId = EmployeeId,
-                    ApplicationDate = Date,
+                    ApplicationDate = experienceRequest.ApplicationDate,
                     Remark = experienceRequest.Remark,
-                    ApplicationDateAm = AmharicDate,
+                    ApplicationDateAm = experienceRequest.ApplicationDateAm,
                     EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == EmployeeId)?.EmployeeCode,
                     RequestType = experienceRequest.RequestType,
                     DateCreated = DateTime.Now,
@@ -350,7 +361,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         {
             ModelState.Clear();
 
-            if (experienceRequest.ApplicationDateAm != null)
+            if (!string.IsNullOrEmpty(experienceRequest.ApplicationDateAm))
             {
                 var splitDate = experienceRequest.ApplicationDateAm.Split('/');
                 experienceRequest.ApplicationDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
@@ -371,9 +382,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 {
                     ExperienceRequestId = experienceRequest.ExperienceRequestId,
                     EmployeeId = experienceRequest.EmployeeId,
-                    ApplicationDate = Date,
+                    ApplicationDate = experienceRequest.ApplicationDate,
                     Remark = experienceRequest.Remark,
-                    ApplicationDateAm = AmharicDate,
+                    ApplicationDateAm = experienceRequest.ApplicationDateAm,
                     EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == experienceRequest.EmployeeId).FirstOrDefault().EmployeeCode,
                     RequestType = experienceRequest.RequestType,
                     DateCreated = experienceRequest.DateCreated,

@@ -2,7 +2,6 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -16,8 +15,8 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 {
-    
-     [AuthorizeRoles(HrmConstants.HRDisciplineUser)]
+
+    [AuthorizeRoles(HrmConstants.HRDisciplineUser)]
     public class EmpDisciplinaryHearingController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

@@ -1,21 +1,20 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
-﻿
-﻿using System.Data.Entity;
-﻿using System.Data.OleDb;
-﻿using System.Linq;
+
+using System.Data.Entity;
+using System.Data.OleDb;
+using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
- using ExceedERP.Core.Domain;
- using Kendo.Mvc.Extensions;
+using ExceedERP.Core.Domain;
+using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Common;
-﻿using ExceedERP.Core.Domain.Common.HRM;
-﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.SalaryStructure;
 using ExceedERP.Helpers.Common;
 

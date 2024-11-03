@@ -4,7 +4,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>@Resources.RecruitmentRequest</legend>
+<legend>Employee Transfer Request</legend>
 @(Html.Kendo().Grid<EmployeeTransferRequest>()
               .Name("EmployeeTransferRequestgrid")
               .Columns(columns =>
@@ -12,21 +12,23 @@
                   columns.Bound(c => c.EmployeeTransferRequestId).Title("S.N").Width(80);
                   //columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
                   columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("GetAllActiveEmployees").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.Placement_FullName).Width(180);
-                  columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-                  columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
-                  columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+                  columns.ForeignKey(c => c.FromBusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").EditorTemplateName("GetAllBusinessUnits").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                  columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").EditorTemplateName("GetAllBusinessUnits").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                  columns.ForeignKey(c => c.FromBranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").EditorTemplateName("GetAllBranches").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                  columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").EditorTemplateName("GetAllBranches").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                  columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").EditorTemplateName("GetAllWorkUnits").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
                   columns.Bound(c => c.RequestDate).Width(120);
                   columns.Bound(c => c.Reason).Width(130);
                   columns.Bound(c => c.Remark).Width(110);
                   columns.Command(command =>
                   {
-                     // command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                     // command.Destroy().Text(Resources.ActionButton_Cancel);
+                      // command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                      // command.Destroy().Text(Resources.ActionButton_Cancel);
                   }).Width(200);
               })
               .ToolBar(toolbar =>
               {
-                 // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                  // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
 
               })
               .Editable(editable => editable.Mode(GridEditMode.InLine))
@@ -64,9 +66,9 @@
 
                   })
                   .Read(read => read.Action("EmployeeTransferRequests_Read", "EmployeeTransferRequestHRs"))
-                 // .Create(create => create.Action("EmployeeTransferRequests_Create", "EmployeeTransferRequestHRs"))
-                 // .Update(update => update.Action("EmployeeTransferRequests_Update", "EmployeeTransferRequestHRs"))
-                  //.Destroy(destroy => destroy.Action("EmployeeTransferRequests_Destroy", "EmployeeTransferRequestHRs"))
+              // .Create(create => create.Action("EmployeeTransferRequests_Create", "EmployeeTransferRequestHRs"))
+              // .Update(update => update.Action("EmployeeTransferRequests_Update", "EmployeeTransferRequestHRs"))
+              //.Destroy(destroy => destroy.Action("EmployeeTransferRequests_Destroy", "EmployeeTransferRequestHRs"))
               ).ClientDetailTemplateId("Employee_transfer_requests_template")
 )
 
@@ -78,25 +80,23 @@
             {
 
                    
-                    items.Add().Text("Detail ").Content(
-                    @<text>
-                        # if (!IsDepartmentOnlineApproved&&!IsDepartmentSendForApproval)
-                            {#
-                            <a onclick='return sendForApproval("#=EmployeeTransferRequestId#")' href=' \#' title="Send for Department Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                            <br />
-                            # } #
-                        @transferRequestDetail()
-                    </text>);
-                   items.Add().Text("Department Validation").Content(
-                    @<text>
-                        @transferRequestDepartmentValidation()
-                    </text>);
-                    items.Add().Text("Validation ").Content(
-                    @<text>
-                        @transferRequestValidation()
-                    </text>);
-                    
-                   
+                items.Add().Text("Detail ").Content(
+                @<text>
+                    # if (!IsDepartmentOnlineApproved&&!IsDepartmentSendForApproval)
+                        {#
+                        <a onclick='return sendForApproval("#=EmployeeTransferRequestId#")' href=' \#' title="Send for Department Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                        <br />
+                        # } #
+                    @transferRequestDetail()
+                </text>);
+                items.Add().Text("Department Validation").Content(
+                @<text>
+                    @transferRequestDepartmentValidation()
+                </text>);
+                items.Add().Text("Validation ").Content(
+                @<text>
+                    @transferRequestValidation()
+                </text>);
 
             }).ToClientTemplate()
     )

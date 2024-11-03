@@ -14,10 +14,14 @@ using ExceedERP.Web.Models;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain;
+using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
 {
-
+    [AuthorizeRoles(HrmConstants.HRAttendanceUser,
+          HrmConstants.HRDepartmentHead,
+          HrmConstants.HREmployeeSelfService)]
     public class AttendancesNewForWeeKController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -92,32 +96,32 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
         }
         public List<int> GetEmployeesUnderBoss(int id)
         {
-            List<int> employeesIdList = new List<int>();
+            List<int> employeesIdList = EmployeeHelper.GetSubordinates_FilteredByHead(id);
 
-            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == id && x.isCurrent);
-            if (placement != null)
-            {
-                var placements = db.Placements.Where(x => x.OrgStructureId == placement.OrgStructureId && x.isCurrent);
-                if (placements.Any())
-                {
-                    var empIdList = placements.Select(x => x.EmployeeId).ToList();
-                    employeesIdList.AddRange(empIdList);
-                }
+            //var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == id && x.isCurrent);
+            //if (placement != null)
+            //{
+            //    var placements = db.Placements.Where(x => x.OrgStructureId == placement.OrgStructureId && x.isCurrent);
+            //    if (placements.Any())
+            //    {
+            //        var empIdList = placements.Select(x => x.EmployeeId).ToList();
+            //        employeesIdList.AddRange(empIdList);
+            //    }
 
-                var employeesUnderThisParent = db.MainCompanyStructures.Where(x => x.Parent == placement.OrgStructureId).ToList();
-                foreach (var und in employeesUnderThisParent)
-                {
-                    var employeesPlacedInThisParent = db.Placements.Where(x => x.OrgStructureId == und.OrgStructureId).ToList();
-                    if (employeesPlacedInThisParent.Any())
-                    {
-                        var empIds = employeesPlacedInThisParent.Select(x => x.EmployeeId).ToList();
+            //    var employeesUnderThisParent = db.MainCompanyStructures.Where(x => x.Parent == placement.OrgStructureId).ToList();
+            //    foreach (var und in employeesUnderThisParent)
+            //    {
+            //        var employeesPlacedInThisParent = db.Placements.Where(x => x.OrgStructureId == und.OrgStructureId).ToList();
+            //        if (employeesPlacedInThisParent.Any())
+            //        {
+            //            var empIds = employeesPlacedInThisParent.Select(x => x.EmployeeId).ToList();
 
-                        employeesIdList.AddRange(empIds);
-                    }
+            //            employeesIdList.AddRange(empIds);
+            //        }
 
-                }
+            //    }
 
-            }
+            //}
 
             return employeesIdList;
         }
@@ -133,9 +137,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
         public ActionResult AttendancesNewForWeeK_Read([DataSourceRequest]DataSourceRequest request, string date)
         {
             DateTime attendanceDate = DateTime.Today;
-
             int empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var employees = GetEmployeesUnderBoss(empId);
+            //var employees = GetEmployeesUnderBoss(empId);
+            var employees = EmployeeHelper.GetSubordinates_FilteredByHead(empId);
 
             if (!string.IsNullOrEmpty(date))
             {
@@ -165,6 +169,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                 weekDates.Add(date1);
             }
             var attendancenewRecords = db.AttendanceNews.ToList().Where(x => employees.Contains(x.EmployeeId)).Where(x => weekDates.Contains(x.Date) /*x.Date == attendanceDate*/);
+            #region COMMENTED OUT  EXISTEDCODE
             //var attendancenewLists= attendancenewRecords.GroupBy(x => x.EmployeeId)
             //.Select(group => new AttendanceNewVM
             //{
@@ -244,123 +249,245 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
             //    // Add other properties as needed
             //})
             //.ToList();
-            var attendancenewLists= attendancenewRecords.GroupBy(x => x.EmployeeId)
-            .Select(group => new AttendanceNewVM
+            #endregion
+            var attendancenewLists = new List<AttendanceNewVM>();
+            if (attendancenewRecords.Any())
             {
-                EmployeeId = group.Key,
-                OrgStructureId = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).OrgStructureId
-                    : 0,
-                AttendanceNewId = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AttendanceNewId
-                    : 0,
-                DayOneDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).Date
-                    : DateTime.MinValue,
-                IsPresentMorning1 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).IsPresentMorning
-                    :false,
-                MorningAttendance1 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
-                    :TakeAttendance.Present,
-                AfternoonAttendance1 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
-                    :TakeAttendance.Present,
-                IsPresentAfternoon1 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).IsPresentAfternoon
-                    :false,
-                DayTwoDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday).Date
-                    : DateTime.MinValue,
-                MorningAttendance2 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
-                    : TakeAttendance.Present,
-                AfternoonAttendance2 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
-                    : TakeAttendance.Present,
-                IsPresentMorning2 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday).IsPresentMorning
-                    : false,
-                IsPresentAfternoon2 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday).IsPresentAfternoon
-                    : false,
-                DayThreeDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday).Date
-                    : DateTime.MinValue,
-                MorningAttendance3 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
-                    : TakeAttendance.Present,
-                AfternoonAttendance3 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
-                    : TakeAttendance.Present,
-                IsPresentMorning3 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday).IsPresentMorning
-                    : false,
-                IsPresentAfternoon3 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday).IsPresentAfternoon
-                    : false,
-                DayFourDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday).Date
-                    : DateTime.MinValue,
-                MorningAttendance4 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
-                    : TakeAttendance.Present,
-                AfternoonAttendance4 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
-                    : TakeAttendance.Present,
-                IsPresentMorning4 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday).IsPresentMorning
-                    : false,
-                IsPresentAfternoon4 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday).IsPresentAfternoon
-                    : false,
-                DayFiveDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Friday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Friday).Date
-                    : DateTime.MinValue,
-                MorningAttendance5 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
-                    : TakeAttendance.Present,
-                AfternoonAttendance5 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
-                    : TakeAttendance.Present,
-                IsPresentMorning5 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Friday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Friday).IsPresentMorning
-                    : false,
-                IsPresentAfternoon5 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Friday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Friday).IsPresentAfternoon
-                    : false,
-                DaySixDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday).Date
-                    : DateTime.MinValue,
-                MorningAttendance6 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
-                    : TakeAttendance.Present,
-                AfternoonAttendance6 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
-                    : TakeAttendance.Present,
-                IsPresentMorning6 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday).IsPresentMorning
-                    : false,
-                IsPresentAfternoon6 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday).IsPresentAfternoon
-                    : false,
-                IsDepartmentApproved = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday|| ar.Date.DayOfWeek == DayOfWeek.Tuesday
-                                                    || ar.Date.DayOfWeek == DayOfWeek.Wednesday|| ar.Date.DayOfWeek == DayOfWeek.Thursday
-                                                    || ar.Date.DayOfWeek == DayOfWeek.Friday|| ar.Date.DayOfWeek == DayOfWeek.Saturday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday).IsDepartmentApproved
-                    : false,
-                IsApproved = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday|| ar.Date.DayOfWeek == DayOfWeek.Tuesday
-                                                    || ar.Date.DayOfWeek == DayOfWeek.Wednesday|| ar.Date.DayOfWeek == DayOfWeek.Thursday
-                                                    || ar.Date.DayOfWeek == DayOfWeek.Friday|| ar.Date.DayOfWeek == DayOfWeek.Saturday)
-                    ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday).IsApproved
-                    : false,
-                IsPresentAfternoon = true,
-                IsPresentMorning = true,
-                // Add other properties as needed
-            })
-            .ToList();
-            //IQueryable<AttendanceNew> attendancenews = db.AttendanceNews.Where(x => employees.Contains(x.EmployeeId)).Where(x => weekDates.Contains(x.Date) /*x.Date == attendanceDate*/);
+                attendancenewLists = attendancenewRecords.GroupBy(x => x.EmployeeId)
+                                   .Select(group => new AttendanceNewVM
+                                   {
+                                       EmployeeId = group.Key,
+                                       OrgStructureId = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).OrgStructureId
+                                           : 0,
+                                       AttendanceNewId = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AttendanceNewId
+                                           : 0,
+                                       DayOneDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).Date
+                                           : DateTime.MinValue,
+                                       IsPresentMorning1 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).IsPresentMorning
+                                           : false,
+                                       MorningAttendance1 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
+                                           : TakeAttendance.Present,
+                                       AfternoonAttendance1 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
+                                           : TakeAttendance.Present,
+                                       IsPresentAfternoon1 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).IsPresentAfternoon
+                                           : false,
+                                       DayTwoDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday).Date
+                                           : DateTime.MinValue,
+                                       MorningAttendance2 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
+                                           : TakeAttendance.Present,
+                                       AfternoonAttendance2 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
+                                           : TakeAttendance.Present,
+                                       IsPresentMorning2 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday).IsPresentMorning
+                                           : false,
+                                       IsPresentAfternoon2 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday).IsPresentAfternoon
+                                           : false,
+                                       DayThreeDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday).Date
+                                           : DateTime.MinValue,
+                                       MorningAttendance3 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
+                                           : TakeAttendance.Present,
+                                       AfternoonAttendance3 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
+                                           : TakeAttendance.Present,
+                                       IsPresentMorning3 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday).IsPresentMorning
+                                           : false,
+                                       IsPresentAfternoon3 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday).IsPresentAfternoon
+                                           : false,
+                                       DayFourDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday).Date
+                                           : DateTime.MinValue,
+                                       MorningAttendance4 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
+                                           : TakeAttendance.Present,
+                                       AfternoonAttendance4 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
+                                           : TakeAttendance.Present,
+                                       IsPresentMorning4 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday).IsPresentMorning
+                                           : false,
+                                       IsPresentAfternoon4 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday).IsPresentAfternoon
+                                           : false,
+                                       DayFiveDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Friday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Friday).Date
+                                           : DateTime.MinValue,
+                                       MorningAttendance5 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
+                                           : TakeAttendance.Present,
+                                       AfternoonAttendance5 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
+                                           : TakeAttendance.Present,
+                                       IsPresentMorning5 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Friday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Friday).IsPresentMorning
+                                           : false,
+                                       IsPresentAfternoon5 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Friday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Friday).IsPresentAfternoon
+                                           : false,
+                                       DaySixDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday).Date
+                                           : DateTime.MinValue,
+                                       MorningAttendance6 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
+                                           : TakeAttendance.Present,
+                                       AfternoonAttendance6 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
+                                           : TakeAttendance.Present,
+                                       IsPresentMorning6 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday).IsPresentMorning
+                                           : false,
+                                       IsPresentAfternoon6 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday).IsPresentAfternoon
+                                           : false,
+                                       IsDepartmentApproved = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday || ar.Date.DayOfWeek == DayOfWeek.Tuesday
+                                                                           || ar.Date.DayOfWeek == DayOfWeek.Wednesday || ar.Date.DayOfWeek == DayOfWeek.Thursday
+                                                                           || ar.Date.DayOfWeek == DayOfWeek.Friday || ar.Date.DayOfWeek == DayOfWeek.Saturday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday).IsDepartmentApproved
+                                           : false,
+                                       IsApproved = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday || ar.Date.DayOfWeek == DayOfWeek.Tuesday
+                                                                           || ar.Date.DayOfWeek == DayOfWeek.Wednesday || ar.Date.DayOfWeek == DayOfWeek.Thursday
+                                                                           || ar.Date.DayOfWeek == DayOfWeek.Friday || ar.Date.DayOfWeek == DayOfWeek.Saturday)
+                                           ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday).IsApproved
+                                           : false,
+                                       IsPresentAfternoon = true,
+                                       IsPresentMorning = true,
+                                       // Add other properties as needed
+                                   })
+                                   .ToList();
 
+            }
+            #region comments
+            //var attendancenewLists = attendancenewRecords.GroupBy(x => x.EmployeeId)
+            //.Select(group => new AttendanceNewVM
+            //{
+            //    EmployeeId = group.Key,
+            //    OrgStructureId = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).OrgStructureId
+            //        : 0,
+            //    AttendanceNewId = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AttendanceNewId
+            //        : 0,
+            //    DayOneDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).Date
+            //        : DateTime.MinValue,
+            //    IsPresentMorning1 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).IsPresentMorning
+            //        :false,
+            //    MorningAttendance1 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
+            //        :TakeAttendance.Present,
+            //    AfternoonAttendance1 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
+            //        :TakeAttendance.Present,
+            //    IsPresentAfternoon1 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).IsPresentAfternoon
+            //        :false,
+            //    DayTwoDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday).Date
+            //        : DateTime.MinValue,
+            //    MorningAttendance2 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
+            //        : TakeAttendance.Present,
+            //    AfternoonAttendance2 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
+            //        : TakeAttendance.Present,
+            //    IsPresentMorning2 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday).IsPresentMorning
+            //        : false,
+            //    IsPresentAfternoon2 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Tuesday).IsPresentAfternoon
+            //        : false,
+            //    DayThreeDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday).Date
+            //        : DateTime.MinValue,
+            //    MorningAttendance3 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
+            //        : TakeAttendance.Present,
+            //    AfternoonAttendance3 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
+            //        : TakeAttendance.Present,
+            //    IsPresentMorning3 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday).IsPresentMorning
+            //        : false,
+            //    IsPresentAfternoon3 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Wednesday).IsPresentAfternoon
+            //        : false,
+            //    DayFourDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday).Date
+            //        : DateTime.MinValue,
+            //    MorningAttendance4 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
+            //        : TakeAttendance.Present,
+            //    AfternoonAttendance4 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
+            //        : TakeAttendance.Present,
+            //    IsPresentMorning4 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday).IsPresentMorning
+            //        : false,
+            //    IsPresentAfternoon4 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Thursday).IsPresentAfternoon
+            //        : false,
+            //    DayFiveDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Friday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Friday).Date
+            //        : DateTime.MinValue,
+            //    MorningAttendance5 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
+            //        : TakeAttendance.Present,
+            //    AfternoonAttendance5 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
+            //        : TakeAttendance.Present,
+            //    IsPresentMorning5 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Friday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Friday).IsPresentMorning
+            //        : false,
+            //    IsPresentAfternoon5 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Friday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Friday).IsPresentAfternoon
+            //        : false,
+            //    DaySixDate = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday).Date
+            //        : DateTime.MinValue,
+            //    MorningAttendance6 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).MorningAttendance
+            //        : TakeAttendance.Present,
+            //    AfternoonAttendance6 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Monday).AfternoonAttendance
+            //        : TakeAttendance.Present,
+            //    IsPresentMorning6 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday).IsPresentMorning
+            //        : false,
+            //    IsPresentAfternoon6 = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday).IsPresentAfternoon
+            //        : false,
+            //    IsDepartmentApproved = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday|| ar.Date.DayOfWeek == DayOfWeek.Tuesday
+            //                                        || ar.Date.DayOfWeek == DayOfWeek.Wednesday|| ar.Date.DayOfWeek == DayOfWeek.Thursday
+            //                                        || ar.Date.DayOfWeek == DayOfWeek.Friday|| ar.Date.DayOfWeek == DayOfWeek.Saturday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday).IsDepartmentApproved
+            //        : false,
+            //    IsApproved = group.Any(ar => ar.Date.DayOfWeek == DayOfWeek.Monday|| ar.Date.DayOfWeek == DayOfWeek.Tuesday
+            //                                        || ar.Date.DayOfWeek == DayOfWeek.Wednesday|| ar.Date.DayOfWeek == DayOfWeek.Thursday
+            //                                        || ar.Date.DayOfWeek == DayOfWeek.Friday|| ar.Date.DayOfWeek == DayOfWeek.Saturday)
+            //        ? group.FirstOrDefault(ar => ar.Date.DayOfWeek == DayOfWeek.Saturday).IsApproved
+            //        : false,
+            //    IsPresentAfternoon = true,
+            //    IsPresentMorning = true,
+            //    // Add other properties as needed
+            //})
+            //.ToList();
+            //IQueryable<AttendanceNew> attendancenews = db.AttendanceNews.Where(x => employees.Contains(x.EmployeeId)).Where(x => weekDates.Contains(x.Date) /*x.Date == attendanceDate*/);
+            #endregion
             DataSourceResult result = attendancenewLists.ToDataSourceResult(request, attendanceNew => new
             {
                 AttendanceNewId = attendanceNew.AttendanceNewId,

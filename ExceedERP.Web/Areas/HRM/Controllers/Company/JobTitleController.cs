@@ -12,7 +12,6 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.SalaryStructure;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;

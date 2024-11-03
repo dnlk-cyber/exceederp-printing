@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain;
 using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
+
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService)]
     public class MyProfileController : Controller
     {
         // GET: HRM/MyProfile

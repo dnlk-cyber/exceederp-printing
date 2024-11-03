@@ -1,0 +1,124 @@
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using System.Collections
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Employee Reward</legend>
+@(Html.Kendo().Grid<EmployeeReward>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.EmployeeRewardId).Title("#").Width(80);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("AllEmployeeSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.Bound(c => c.SubBranch).Width(170);
+          columns.Bound(c => c.DateAm).EditorTemplateName("Calander").Width(150);
+          columns.Bound(c => c.RewardType).Width(130);
+          columns.Bound(c => c.Unit).Width(110);
+          columns.Bound(c => c.ReasonForReward).Width(110);
+          columns.Bound(c => c.Amount).Width(110);
+          columns.Bound(c => c.Remark).Width(110);
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Benefit_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+
+          }).Width(200);
+
+      })
+      .ToolBar(toolbar =>
+      {
+
+      toolbar.Template(@<text>
+         <div class="toolbar">
+          
+             @item.CreateButton(Resources.ActionButton_AddNewRecord)  
+         </div> 
+         </text>);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .Scrollable(h => h.Height(500))
+
+         .Events(ev =>
+         {
+             //ev.DetailExpand("onDetailExpandUser");
+             ev.Edit("onEdit");
+             //ev.DataBound("onDataBound");
+
+         })
+         .Filterable()
+         .Pageable(pageable => pageable
+         .Input(true)
+         .Numeric(false)
+         .Refresh(true)
+         .PageSizes(true)
+         .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+      .Ajax()
+      .Events(events =>
+      {
+
+          events.Error("error_handler(\"grid\")");
+          events.RequestStart("onRequestStart(\"grid\")");
+          events.RequestEnd("onRequestEnd(\"grid\")");
+
+      })
+      .Model(model =>
+      {
+          model.Id(p => p.EmployeeRewardId);
+          model.Field(p => p.EmployeeRewardId).Editable(false);
+
+      })
+      .Read(read => read.Action("EmployeeRewards_Read", "EmployeeRewards"))
+      .Create(create => create.Action("EmployeeRewards_Create", "EmployeeRewards"))
+      .Update(update => update.Action("EmployeeRewards_Update", "EmployeeRewards"))
+      .Destroy(destroy => destroy.Action("EmployeeRewards_Destroy", "EmployeeRewards"))
+      )
+)
+      
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+</style>
+         
+<script>
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function onEdit(e) {
+        var dataItem = e.model;
+
+       
+
+        // Check your condition
+        if (dataItem.RewardType == 0 || dataItem.RewardType == 2) {
+
+            //$("#Unit").attr("disabled", true);
+            //$("#Amount").attr("disabled", true);
+            //$("#SpecialistEmployeeId").data("kendoDropDownList").enable(false);
+            
+        }
+        //if () {
+
+        //    //$("#SpecialistEmployeeId").attr("disabled", true);
+        //    //$("#SpecialistEmployeeId").data("kendoDropDownList").enable(false);
+
+        //}
+        //else {
+        //    $("#SpecialistEmployeeId").attr("disabled", true);
+        //    $("#SpecialistEmployeeId").data("kendoDropDownList").enable(false);
+
+        //}
+    }
+
+</script>
+

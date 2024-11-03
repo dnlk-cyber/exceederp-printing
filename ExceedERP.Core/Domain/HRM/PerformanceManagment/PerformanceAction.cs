@@ -6,9 +6,7 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
     {
         [Key]
         public int ActionId { get; set; }
-
         public int? MeasurementDefinitionId { get; set; }
-        public int? MeasurementId { get; set; }
         [Display(Name = "HR_PerformanceManagment_PerformanceAction_ActionName", ResourceType = typeof(Localization.Resources))]
         [Required]
         public string ActionName { get; set; }
@@ -19,5 +17,7 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public decimal Result { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
+        public int? MeasurementId { get; set; }
+       // public virtual Measurement GetMeasurement { get; set; }
     }
 }

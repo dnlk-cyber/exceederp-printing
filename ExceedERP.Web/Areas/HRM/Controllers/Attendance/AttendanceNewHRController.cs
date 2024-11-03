@@ -14,9 +14,12 @@ using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Web.Hubs;
+using ExceedERP.Core.Domain;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
 {
+    [AuthorizeRoles(HrmConstants.HRAttendanceUser,HrmConstants.HRAdmin)]
+
     public class AttendanceNewHRController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -55,14 +58,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                 var splitDateTo = date.Split('/');
                 attendanceDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateTo[0]), Convert.ToInt32(splitDateTo[1]), Convert.ToInt32(splitDateTo[2]));
             }
-
-            IQueryable<AttendanceNew> attendancenews = db.AttendanceNews.Where(x => x.Date == attendanceDate && x.IsDepartmentApproved);
+            List<int> branchIds = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            List<int> EmployeeIds = new List<int>(db.Placements.Where(x => x.isCurrent && branchIds.Contains(x.BranchId)).Select(x => x.EmployeeId));
+            IQueryable<AttendanceNew> attendancenews = db.AttendanceNews.Where(x=> EmployeeIds.Contains(x.EmployeeId)).Where(x => x.Date == attendanceDate && x.IsDepartmentApproved);
 
             DataSourceResult result = attendancenews.ToDataSourceResult(request, attendanceNew => new
             {
                 AttendanceNewId = attendanceNew.AttendanceNewId,
                 EmployeeId = attendanceNew.EmployeeId,
-                //OrgStructureId = GetDepartment(attendanceNew.EmployeeId),
                 OrgStructureId = attendanceNew.OrgStructureId,
                 Date = attendanceNew.Date,
                 MorningAttendance = attendanceNew.MorningAttendance,
@@ -106,14 +109,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                     db.SaveChanges();
                     if (att != null)
                     {
-                        NotifModels notif = new NotifModels
-                        {
-                            UserId = UserInformationHelper.GetEmployeeUserId(att.EmployeeId),
-                            Title = "attendance ",
-                            Message = "Your attendance  is Approved"
-                        };
+                        //NotifModels notif = new NotifModels
+                        //{
+                        //    UserId = UserInformationHelper.GetEmployeeUserId(att.EmployeeId),
+                        //    Title = "attendance ",
+                        //    Message = "Your attendance  is Approved"
+                        //};
 
-                        Notify.NotifyUser(notif);
+                        //Notify.NotifyUser(notif);
                     }
                 }
 

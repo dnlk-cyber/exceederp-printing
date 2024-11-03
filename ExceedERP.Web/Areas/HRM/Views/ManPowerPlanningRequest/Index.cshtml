@@ -21,8 +21,11 @@
             columns.Bound(c => c.PlanType).EditorTemplateName("Enum").Filterable(ftb => ftb.Multi(true).Search(true)).Width(110);
             columns.Bound(c => c.NoOfShouldBeStaff).Width(135);
             columns.Bound(c => c.NoOfCurrentStaff).Width(130);
-
-            columns.Bound(c => c.NoOfVaccantPostion).Title(Resources.Recruitment_Requested_Vacancy).Width(140);
+            columns.Bound(c => c.NumberOfStaff).Width(140);
+            columns.Bound(c => c.Education).Width(160);
+            columns.Bound(c => c.Experience).Width(160);
+            columns.Bound(c => c.Reason).Width(130);
+            columns.Bound(c => c.Remark).Width(130);
 
             columns.Command(command =>
             {

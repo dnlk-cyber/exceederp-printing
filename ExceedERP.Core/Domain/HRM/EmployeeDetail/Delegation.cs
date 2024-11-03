@@ -36,5 +36,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
         public bool IsOpen { get; set; }
+        [Display(Name ="Is With Benefit")]
+        public bool IsWithBenefit { get; set; }
     }
 }

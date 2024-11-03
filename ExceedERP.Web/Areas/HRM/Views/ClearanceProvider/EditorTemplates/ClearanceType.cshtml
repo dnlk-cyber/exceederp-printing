@@ -2,9 +2,10 @@
 @using ExceedERP.Core.Domain.Common
 @using ExceedERP.Core.Localization
 @(Html.Kendo().DropDownListFor(m => m)
- .OptionLabel( Resources.Select)
-                    .DataTextField("Description")
-                            .DataValueField("LookupId")
+      .OptionLabel( Resources.Select)
+      .DataTextField("Description")
+      .DataValueField("LookupId")
+      .Filter("Contains")
       .DataSource(dataSource =>
       {//GetJobTitleSelected
           dataSource.Read(read => read.Action("GetClearanceType", "HRMDataProvider", new { area = "HRM" }))

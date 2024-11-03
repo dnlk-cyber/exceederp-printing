@@ -16,9 +16,9 @@
           columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CosignType"], "LookupId", "Description").EditorTemplateName("CosignType").Width(120);
           columns.Bound(c => c.AgreementDateAm).EditorTemplateName("Calander").Width(150);
           columns.Bound(c => c.FullName).Width (120);
-          
           columns.Bound(c => c.Workorganization).Width (150);
-          //columns.Bound(c => c.Remark);
+          columns.Bound(c => c.Salary).Width(100);
+          columns.Bound(c => c.Remark).Width(100);
           columns.Command(command =>
           {
               if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
@@ -61,7 +61,7 @@
               .Numeric(false)
               .Refresh(true)
               .PageSizes(true)
-              .ButtonCount(5))                  
+              .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
           .Events(events =>
@@ -71,7 +71,7 @@
               events.RequestEnd("onRequestEnd(\"Cosigngrid\")");
           })
           .Model(model => { model.Id(p => p.CosignId);
-            model.Field(p => p.EmployeeCode).Editable (false);})
+              model.Field(p => p.EmployeeCode).Editable (false);})
           .Read(read => read.Action("Cosigns_Read", "EmployeeCosign"))
           .Create(create => create.Action("Cosigns_Create", "EmployeeCosign"))
           .Update(update => update.Action("Cosigns_Update", "EmployeeCosign"))
@@ -92,7 +92,7 @@
         @<text>
 
             @(Html.Kendo().Grid<Address>()
-                      .Name("OrganizationAddresseGrid_#=CosignId#")
+                   .Name("OrganizationAddresseGrid_#=CosignId#")
       .Columns(columns =>
       {
           columns.Bound(c => c.Category).EditorTemplateName("Enum");

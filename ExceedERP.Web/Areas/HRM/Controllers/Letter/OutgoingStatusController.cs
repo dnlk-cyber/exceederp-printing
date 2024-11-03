@@ -3,7 +3,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.Letters;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
@@ -14,8 +13,8 @@ using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Letter
 {
-   
-     [AuthorizeRoles(HrmConstants.HRAdmin, HrmConstants.HRLettersUser)]
+
+    [AuthorizeRoles(HrmConstants.HRAdmin, HrmConstants.HRLettersUser)]
     public class OutgoingStatusController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
@@ -19,7 +13,7 @@ using ExceedERP.Web.Helpers;
 namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 {
     //[Authorize(Roles = HR_Training_User + "," + HR_Admin)]
-    [AuthorizeRoles(HrmConstants.HRTrainingUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRTrainingUser)]
 
     public class TrainingOutComeController : BaseController
     {

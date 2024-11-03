@@ -68,13 +68,13 @@
           selectable.Mode(GridSelectionMode.Single);
           selectable.Type(GridSelectionType.Row);
       })
+      .Events(e =>
+      {
+          e.Save("GetDate");
+          e.Edit("GetDate");
+          e.DataBound("onDataBound");
 
-                .Events(e =>
-                {
-                    e.Save("GetDate");
-                    e.Edit("GetDate");
-                    e.DataBound("onDataBound");
-                })
+      })
       .Scrollable(h => h.Height(500))
       .Pageable(pageable => pageable
           .Input(true)
@@ -463,6 +463,8 @@
     function filterEmployees() {
         return {
             text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
-        }
+
+            //text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        };
     }
 </script>

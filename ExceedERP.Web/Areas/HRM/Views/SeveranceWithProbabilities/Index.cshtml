@@ -1,0 +1,195 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Severance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>Severance  </Legend>
+@(Html.Kendo().Grid<SeveranceWithProbability>()
+    .Name("SeveranceWithProbability_grid")
+    .Columns(columns =>
+    {
+
+        // columns.Bound(c => c.EmployeeCode).Width(120);
+        columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("EmployeeEditor").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
+        columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
+        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+        //columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+        columns.Bound(c => c.DateOfBirthAm).Width(100);
+        columns.Bound(c => c.HiredDateAmharic).Width(100);
+        columns.Bound(c => c.NormalRetirmentAgeAm).Width(140);
+        columns.Bound(c => c.Gender).Width(100);
+        columns.Bound(c => c.Salary).Width(100);
+        columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(130);
+        columns.Bound(c => c.YearWorked).Width(100);
+        columns.Bound(c => c.RemainingNoOfYears).Width(120);
+        columns.Bound(c => c.Age).Width(80);
+        columns.Bound(c => c.ProbabilityOfTurnover).Width(120);
+        columns.Bound(c => c.SalaryUpOnRetirement).Width(130);
+        columns.Bound(c => c.PVOfSalaryUponRetirement).Width(130);
+        columns.Bound(c => c.MaxAllowedPeriod).Width(130);
+        columns.Bound(c => c.MaxEntitelementAmount).Width(130);
+        columns.Bound(c => c.EV1).Width(80);
+        columns.Bound(c => c.MortalityRate).Width(120);
+        columns.Bound(c => c.EV2).Width(80);
+        columns.Bound(c => c.TotalEV).Width(100);
+
+        columns.Command(command =>
+        {
+            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+            command.Destroy().Text(Resources.ActionButton_Cancel);
+        }).Width(200);
+
+
+    })
+    .ToolBar(toolbar =>
+    {
+    toolbar.Template(@<text>
+
+        <div class="toolbar">
+                @(Html.Kendo().DropDownList()
+                        .Name("GlFiscalYear")
+                        .ValuePrimitive(true)
+                        .OptionLabel(Resources.Select)
+                        .DataTextField("Name")
+                        .DataValueField("GlFiscalYearId")
+                        .Filter("contains")
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
+                            .ServerFiltering(false);
+
+
+                        }))
+                @if (HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
+                 {
+                    @(Html.Kendo().Button()
+                                .Name("btnRefresh")
+                                .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                .Events(e => e.Click("generateSeverances"))
+                                .Content("Generate Severance"))
+
+
+                 }   
+                 @(Html.Kendo().Button()
+                       .Name("btnExcelExport")
+                       .HtmlAttributes(new { type = "button", @class = "k-primary pull-right" })
+                       .Content("Export to Excel")
+                       .Events(events => events.Click("onExcelExportClick")))
+                  
+                
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                    </div>
+
+
+         </text>);
+
+
+
+    })
+
+            .Excel(excel => excel.ProxyURL(Url.Action("Excel_Export_Save", "SeveranceWithProbabilities")).AllPages(true))
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(550))
+            .Sortable(sortable =>
+            {
+                sortable.SortMode(GridSortMode.SingleColumn);
+
+            })
+            .Filterable()
+            // .ColumnMenu()
+            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5)
+                                .Enabled(true))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Events(events =>
+            {
+                events.Error("error_handler(\"SeveranceWithProbability_grid\")");
+                events.RequestStart("onRequestStart(\"SeveranceWithProbability_grid\")");
+                events.RequestEnd("onRequestEnd(\"SeveranceWithProbability_grid\")");
+
+
+
+            })
+            .Model(model =>
+            {
+                model.Id(p => p.SeveranceWithProbabilityId);
+                //model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                model.Field(p => p.EmployeeId).Editable(false);
+                model.Field(p => p.EmployeeCode).Editable(false);
+                model.Field(p => p.BusinessUnitId).Editable(false);
+                model.Field(p => p.BranchId).Editable(false);
+                model.Field(p => p.OrgStructureId).Editable(false);
+            })
+            .Read(read => read.Action("SeveranceWithProbabilities_Read", "SeveranceWithProbabilities"))
+            .Create(create => create.Action("SeveranceWithProbabilities_Create", "SeveranceWithProbabilities"))
+            .Update(update => update.Action("SeveranceWithProbabilities_Update", "SeveranceWithProbabilities"))
+            .Destroy(destroy => destroy.Action("SeveranceWithProbabilities_Destroy", "SeveranceWithProbabilities"))
+
+            )
+
+)
+
+
+<script>
+
+    function generateSeverances() {
+        $('#loading-image').show();
+        var Period = $("#GlFiscalYear").data("kendoDropDownList");
+        var period = Period.value();
+        if (period == "") {
+            alert("select Year First");
+            $('#loading-image').hide();
+            location.reload(true);
+        }
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GenerateSeveranceProbability", "SeveranceWithProbabilities", new { area = "HRM" })',
+            data: { yearId: period },
+            success: function (result) {
+                alert(result.Message);
+                $('#loading-image').hide();
+                location.reload(true);
+            },
+            error: function (result) {
+                alert(result.Message);
+                $('#loading-image').hide();
+
+            }
+        });
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<script>
+    function onExcelExportClick() {
+        // Get the reference to the grid
+        var grid = $("#SeveranceWithProbability_grid").data("kendoGrid");
+
+        // Get the URL for the Excel export action
+        var excelExportUrl = "@Url.Action("Excel_Export_Save", "SeveranceWithProbabilities")";
+
+        // Trigger the Excel export
+        grid.saveAsExcel({
+            fileName: "EmployeeSeveranceWithProbabilityData.xlsx",
+            proxyURL: excelExportUrl,
+            allPages: true
+        });
+    }
+</script>

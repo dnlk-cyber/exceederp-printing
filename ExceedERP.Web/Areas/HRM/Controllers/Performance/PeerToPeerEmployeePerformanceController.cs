@@ -248,10 +248,99 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             return Json(eval1);
         }
+        //public int GenerateEmployeeForPeerToPeerPerofmanceEvaluation(int empId, int fiscalYearId, int periodId, int evaluationCriteriaId)
+        //{
+        //    var empPerformance = db.EmployeePerformances.FirstOrDefault(x => x.EmployeeId == empId && x.GlFiscalYearId == fiscalYearId && x.GlPeriodId == periodId && x.EvaluationCriteriaTypeId == evaluationCriteriaId);
+        //    if (empPerformance == null)
+        //    {
+        //        var entity = new EmployeePerformance
+        //        {
+        //            EmployeeId = empId,
+        //            GlFiscalYearId = fiscalYearId,
+        //            GlPeriodId = periodId,
+        //            EvaluationCriteriaTypeId = evaluationCriteriaId,
+        //            Weight = 0,
+        //            Result = 0
+        //        };
+
+        //        db.EmployeePerformances.Add(entity);
+        //        db.SaveChanges();
+
+        //        var measurments = db.Measurements.Where(x => x.MeasurementDefinitionId == entity.EvaluationCriteriaTypeId).ToList();
+
+        //        foreach (var meas in measurments)
+        //        {
+        //            var checkExit = db.EmployeeMeasurement.FirstOrDefault(x => x.MeasurmentId == meas.MeasurementId && x.EmployeePerformanceId == entity.EmployeePerformanceId);
+
+        //            if (checkExit == null)
+        //            {
+        //                var empMeasure = new EmployeeMeasurement();
+
+        //                empMeasure.MeasurmentId = meas.MeasurementId;
+        //                empMeasure.EmployeePerformanceId = entity.EmployeePerformanceId;
+        //                empMeasure.Weight = meas.MesPercentageofWeight;
+        //                empMeasure.Result = 0;
+
+        //                db.EmployeeMeasurement.Add(empMeasure);
+        //                db.SaveChanges();
+
+        //                var performanceActions = db.PerformanceActions.Where(x => x.MeasurementId == empMeasure.MeasurmentId).ToList();
+
+        //                foreach (var per in performanceActions)
+        //                {
+        //                    var performanceActionScore = new EmployeePerformanceScore
+        //                    {
+        //                        PerformanceActionId = per.ActionId,
+        //                        EmployeeMeasurementId = empMeasure.EmpMeasurementId,
+        //                        Weight = per.AcPercentageofWeight,
+        //                        Score = 0,
+        //                        Remark = "",
+        //                    };
+
+        //                    db.EmployeePerformanceScores.Add(performanceActionScore);
+        //                    db.SaveChanges();
+        //                }
+        //            }
+        //        }
+
+        //        return entity.EmployeePerformanceId;
+        //        //var returnvalue = new
+        //        //{
+        //        //    EmployeePerformanceId = entity.EmployeePerformanceId
+        //        //};
+
+        //        //return Json(returnvalue, JsonRequestBehavior.AllowGet);
+        //    }
+        //    else
+        //    {
+        //        return empPerformance.EmployeePerformanceId;
+        //        //var returnvalue1 = new
+        //        //{
+        //        //    EmployeePerformanceId = empPerformance.EmployeePerformanceId
+        //        //};
+
+        //        //return Json(returnvalue1, JsonRequestBehavior.AllowGet);
+        //    }
+
+        //}
         public int GenerateEmployeeForPeerToPeerPerofmanceEvaluation(int empId, int fiscalYearId, int periodId, int evaluationCriteriaId)
         {
-            var empPerformance = db.EmployeePerformances.FirstOrDefault(x => x.EmployeeId == empId && x.GlFiscalYearId == fiscalYearId && x.GlPeriodId == periodId && x.EvaluationCriteriaTypeId == evaluationCriteriaId);
-            if (empPerformance == null)
+
+            var Performance = db.EmployeePerformances
+                .Where(x => x.GlFiscalYearId == fiscalYearId
+                        && x.EmployeeId == empId
+                        && x.EvaluationCriteriaTypeId == evaluationCriteriaId
+                        && x.GlPeriodId == periodId).FirstOrDefault();
+            var category = db.MeasurementDefinitions.Find(evaluationCriteriaId);
+            
+
+            
+
+            var placement = db.Placements.Where(x => x.isCurrent)
+                                         .Where(x => x.EmployeeId == empId)
+                                         .FirstOrDefault();
+
+            if (Performance == null && placement != null)
             {
                 var entity = new EmployeePerformance
                 {
@@ -259,31 +348,58 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                     GlFiscalYearId = fiscalYearId,
                     GlPeriodId = periodId,
                     EvaluationCriteriaTypeId = evaluationCriteriaId,
+                    BusinessUnitId = placement.BusinessUnitId,
+                    OrgStructureId = placement.OrgStructureId,
+                    BranchId = placement.BranchId,
+                    JobTitleId = placement.LookupId,
+                    IsCurrent = placement.isCurrent,
+                    CriteriaCategoryId = category != null? category.CriteriaCategoryId:0,
+                    DirectBossId = placement.HeadId != null ? (int)placement.HeadId : 0,
+                    ResponsibilityLevel = placement.ResponsibilityLevel,
+                    Date = DateTime.Now,
+                    DateCreated = DateTime.Now,
+                    LastModified = DateTime.Now,
+                    CreatedBy = User.Identity.Name,
+                    ModifiedBy = User.Identity.Name,
+                    Comment = User.Identity.Name,
+                    Remark = User.Identity.Name,
+                    EmployeeRemark = User.Identity.Name,
+                    DeadLine = 0,
+                    IsAcceptedByEmployee = false,
+                    IsApproved = false,
+                    IsSecondLevelApproved = false,
+                    IsImmediateSuppurvisorApproved = false,
+                    IsSectorApplied = false,
+                    IsCorporateApplied = false,
+                    IsHRApproved = false,
+                    IsHRLevelEvalution = false,
+                    IsRejectedByEmployee = false,
+                    IsSecondLevelRejected = false,
+                    Grade = null,
+                    ReasonFor2ndRejection = null,
                     Weight = 0,
-                    Result = 0
+                    Result = 0,
                 };
 
                 db.EmployeePerformances.Add(entity);
                 db.SaveChanges();
+                Performance.EmployeePerformanceId = entity.EmployeePerformanceId;
 
-                var measurments = db.Measurements.Where(x => x.MeasurementDefinitionId == entity.EvaluationCriteriaTypeId).ToList();
+                var measurements = db.Measurements.Where(x => x.MeasurementDefinitionId == entity.EvaluationCriteriaTypeId).ToList();
 
-                foreach (var meas in measurments)
+                foreach (var meas in measurements)
                 {
                     var checkExit = db.EmployeeMeasurement.FirstOrDefault(x => x.MeasurmentId == meas.MeasurementId && x.EmployeePerformanceId == entity.EmployeePerformanceId);
 
                     if (checkExit == null)
                     {
                         var empMeasure = new EmployeeMeasurement();
-
                         empMeasure.MeasurmentId = meas.MeasurementId;
                         empMeasure.EmployeePerformanceId = entity.EmployeePerformanceId;
                         empMeasure.Weight = meas.MesPercentageofWeight;
                         empMeasure.Result = 0;
-
                         db.EmployeeMeasurement.Add(empMeasure);
                         db.SaveChanges();
-
                         var performanceActions = db.PerformanceActions.Where(x => x.MeasurementId == empMeasure.MeasurmentId).ToList();
 
                         foreach (var per in performanceActions)
@@ -301,28 +417,116 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                             db.SaveChanges();
                         }
                     }
+
                 }
+                // Update weight
+                entity.Weight = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == entity.EmployeePerformanceId).Sum(x => x.Weight);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+                return Performance.EmployeePerformanceId;
 
-                return entity.EmployeePerformanceId;
-                //var returnvalue = new
-                //{
-                //    EmployeePerformanceId = entity.EmployeePerformanceId
-                //};
-
-                //return Json(returnvalue, JsonRequestBehavior.AllowGet);
             }
-            else
+
+            else if (Performance != null && placement != null)
             {
-                return empPerformance.EmployeePerformanceId;
-                //var returnvalue1 = new
-                //{
-                //    EmployeePerformanceId = empPerformance.EmployeePerformanceId
-                //};
 
-                //return Json(returnvalue1, JsonRequestBehavior.AllowGet);
+                Performance.BusinessUnitId = placement.BusinessUnitId;
+                Performance.OrgStructureId = placement.OrgStructureId;
+                Performance.BranchId = placement.BranchId;
+                Performance.JobTitleId = placement.LookupId;
+                Performance.IsCurrent = placement.isCurrent;
+                //  Performance.DirectBossId = placement.HeadId != null ? (int)placement.HeadId : 0,
+                Performance.DirectBossId = placement.HeadId ?? 0;
+                Performance.ResponsibilityLevel = placement.ResponsibilityLevel;
+                Performance.Result = Performance.Result;
+                Performance.ModifiedBy = User.Identity.Name;
+                Performance.LastModified = DateTime.Now;
+                db.Entry(Performance).State = EntityState.Modified;
+                db.SaveChanges();
+                var measurements = db.Measurements.Where(x => x.MeasurementDefinitionId == Performance.EvaluationCriteriaTypeId).ToList();
+                foreach (var meas in measurements)
+                {
+                    var checkExit = db.EmployeeMeasurement.FirstOrDefault(x => x.MeasurmentId == meas.MeasurementId && x.EmployeePerformanceId == Performance.EmployeePerformanceId);
+
+                    if (checkExit == null)
+                    {
+                        var empMeasure = new EmployeeMeasurement();
+
+                        empMeasure.MeasurmentId = meas.MeasurementId;
+                        empMeasure.EmployeePerformanceId = Performance.EmployeePerformanceId;
+                        empMeasure.Weight = meas.MesPercentageofWeight;
+                        empMeasure.Result = 0;
+                        db.EmployeeMeasurement.Add(empMeasure);
+                        db.SaveChanges();
+
+                        var performanceActions = db.PerformanceActions.Where(x => x.MeasurementId == empMeasure.MeasurmentId).ToList();
+
+                        foreach (var per in performanceActions)
+                        {
+
+                            var performanceActionScore = new EmployeePerformanceScore
+                            {
+                                PerformanceActionId = per.ActionId,
+                                EmployeeMeasurementId = empMeasure.EmpMeasurementId,
+                                Weight = per.AcPercentageofWeight,
+                                Score = 0,
+                                Remark = "",
+                            };
+
+                            db.EmployeePerformanceScores.Add(performanceActionScore);
+                            db.SaveChanges();
+                        }
+                    }
+                    else
+                    {
+                        checkExit.MeasurmentId = meas.MeasurementId;
+                        checkExit.EmployeePerformanceId = Performance.EmployeePerformanceId;
+                        checkExit.Weight = meas.MesPercentageofWeight;
+                        checkExit.Result = checkExit.Result;
+                        db.Entry(checkExit).State = EntityState.Modified;
+                        db.SaveChanges();
+                        var performanceActions = db.PerformanceActions.Where(x => x.MeasurementId == checkExit.MeasurmentId).ToList();
+
+                        foreach (var per in performanceActions)
+                        {
+                            var check = db.EmployeePerformanceScores.FirstOrDefault(x => x.PerformanceActionId == per.ActionId && x.EmployeeMeasurementId == checkExit.EmpMeasurementId);
+                            if (check == null)
+                            {
+                                var performanceActionScore = new EmployeePerformanceScore
+                                {
+                                    PerformanceActionId = per.ActionId,
+                                    EmployeeMeasurementId = checkExit.EmpMeasurementId,
+                                    Weight = per.AcPercentageofWeight,
+                                    Score = 0,
+                                    Remark = "",
+                                };
+
+                                db.EmployeePerformanceScores.Add(performanceActionScore);
+                                db.SaveChanges();
+                            }
+                            else
+                            {
+                                check.Weight = per.AcPercentageofWeight;
+                                check.Score = check.Score;
+                                db.Entry(check).State = EntityState.Modified;
+                                db.SaveChanges();
+
+                            }
+
+                        }
+
+                    }
+
+
+                }
+                db.SaveChanges();
+                return Performance.EmployeePerformanceId;
+
             }
 
+            return 0;
         }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

@@ -1,25 +1,21 @@
-﻿﻿using System;
-using System.Collections.Generic;
+﻿using System;
 
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
- using ExceedERP.Core.Domain;
- using Kendo.Mvc.Extensions;
+using ExceedERP.Core.Domain;
+using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.HRM.Company;
 using ExceedERP.Helpers.Common;
- using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
-  
+
     [AuthorizeRoles(HrmConstants.HRAdmin)]
     public class RegionNationController : BaseController
     {

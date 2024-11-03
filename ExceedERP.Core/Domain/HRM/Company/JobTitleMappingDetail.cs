@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.HRM.Company
@@ -10,6 +10,9 @@ namespace ExceedERP.Core.Domain.HRM.Company
        
         [Display(Name = "HR_Company_JobTitleMappingDetail_LookupId", ResourceType = typeof(Localization.Resources))]
         public int LookupId { get; set; }
+        [Display(Name = "HR_TrainingEducation_Education_EduField", ResourceType = typeof(Localization.Resources))]
+        public int EduField { get; set; }
+        public decimal Percentage { get; set; }
         //public virtual Lookup Lookup { get; set; }
         [Display(Name = "HR_HRMPlan_RecruitmentPlan_RelevantExp", ResourceType = typeof(Localization.Resources))]
         public string RelevantExp { get; set; }

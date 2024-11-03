@@ -4,52 +4,133 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<Legend>@Resources.SickLeaveSetting</Legend>
-@(Html.Kendo().Grid<SickLeaveSetting>()
-          .Name("SickLeaveSettinggrid")
-          .Columns(columns =>
-          {
-              columns.Bound(c => c.CurrentValue).Width(200);
-              columns.Command(command =>
-              {
-                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                  command.Destroy().Text(Resources.ActionButton_Cancel);
-              }).Width(200);
-          })
-          .ToolBar(toolbar =>
-          {
-              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-          })
-          .Editable(editable => editable.Mode(GridEditMode.InLine))
-            .Scrollable(h => h.Height(500))
-                 .Groupable()
-                          .Sortable(sortable =>
-                          {
-                              sortable.SortMode(GridSortMode.SingleColumn);
-                          })
-              .Filterable()
-                 .Pageable(pageable => pageable
-                                            .Input(true)
-                                            .Numeric(false)
-                                            .Refresh(true)
-                                            .PageSizes(true)
-                                            .ButtonCount(5))
-          .DataSource(dataSource => dataSource
-              .Ajax()
-                  .Events(events =>
-                  {
-                      events.Error("error_handler(\"SickLeaveSettinggrid\")");
-                      events.RequestStart("onRequestStart(\"SickLeaveSettinggrid\")");
-                      events.RequestEnd("onRequestEnd(\"SickLeaveSettinggrid\")");
-                  })
 
-              .Model(model => model.Id(p => p.SickLeaveSettingId))
-              .Read(read => read.Action("SickLeaveSetting_Read", "SickLeaveSetting"))
-              .Create(create => create.Action("SickLeaveSetting_Create", "SickLeaveSetting"))
-              .Update(update => update.Action("SickLeaveSetting_Update", "SickLeaveSetting"))
-              .Destroy(destroy => destroy.Action("SickLeaveSetting_Destroy", "SickLeaveSetting"))
-          )
+
+@(Html.Kendo().TabStrip()
+    .Name("tabstrip")
+    .Animation(animation =>
+        animation.Open(effect =>
+            effect.Fade(FadeDirection.In)))
+     .Items(tabstrip =>
+     {
+     tabstrip.Add().Text(Resources.SickLeaveSetting)
+        .Selected(true)
+        .Content(@<text>
+
+        <Legend>@Resources.SickLeaveSetting</Legend>
+                            
+        @(Html.Kendo().Grid<SickLeaveSetting>()
+              .Name("SickLeaveSettinggrid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.CurrentValue).Width(200);
+                  columns.Command(command =>
+                  {
+                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                  }).Width(200);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Scrollable(h => h.Height(500))
+                     .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                  .Filterable()
+                     .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                      .Events(events =>
+                      {
+                          events.Error("error_handler(\"SickLeaveSettinggrid\")");
+                          events.RequestStart("onRequestStart(\"SickLeaveSettinggrid\")");
+                          events.RequestEnd("onRequestEnd(\"SickLeaveSettinggrid\")");
+                      })
+
+                  .Model(model => model.Id(p => p.SickLeaveSettingId))
+                  .Read(read => read.Action("SickLeaveSetting_Read", "SickLeaveSetting"))
+                  .Create(create => create.Action("SickLeaveSetting_Create", "SickLeaveSetting"))
+                  .Update(update => update.Action("SickLeaveSetting_Update", "SickLeaveSetting"))
+                  .Destroy(destroy => destroy.Action("SickLeaveSetting_Destroy", "SickLeaveSetting"))
+              )
+        )
+
+     </text>);
+
+       tabstrip.Add().Text(Resources.Enum_LeaveType_SICK_LEAVE.ToLowerInvariant()+"-"+Resources.SalarySetting)
+         .Content(@<text>
+
+            <legend>@Resources.NavigatorEmployeeCodeSetting</legend>
+            @(Html.Kendo().Grid<SickLeaveSalarySetting>()
+              .Name("SickLeaveSalarySettinggrid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.SickLeaveSalarySettingId).Title("#").Width(80);
+                  columns.Bound(c => c.FromDays).Width(120);
+                  columns.Bound(c => c.ToDays).Width(120);
+                  columns.Bound(c => c.PayableSalaryInPercent).Width(150);
+                  columns.Command(command =>
+                  {
+                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                  }).Width(200);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Scrollable(h => h.Height(500))
+                     .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                  .Filterable()
+                     .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                      .Events(events =>
+                      {
+                          events.Error("error_handler(\"SickLeaveSalarySettinggrid\")");
+                          events.RequestStart("onRequestStart(\"SickLeaveSalarySettinggrid\")");
+                          events.RequestEnd("onRequestEnd(\"SickLeaveSalarySettinggrid\")");
+                      })
+
+                  .Model(model => { model.Id(p => p.SickLeaveSalarySettingId);
+                      model.Field(p => p.SickLeaveSalarySettingId).Editable(false);
+                  })
+                  .Read(read => read.Action("SickLeaveSalarySetting_Read", "SickLeaveSalarySetting"))
+                  .Create(create => create.Action("SickLeaveSalarySetting_Create", "SickLeaveSalarySetting"))
+                  .Update(update => update.Action("SickLeaveSalarySetting_Update", "SickLeaveSalarySetting"))
+                  .Destroy(destroy => destroy.Action("SickLeaveSalarySetting_Destroy", "SickLeaveSalarySetting"))
+              )
+        )
+
+                          
+     </text>);
+
+
+
+
+     })
 )
+
 <script>
     //function error_handler(e) {
     //    if (e.errors) {

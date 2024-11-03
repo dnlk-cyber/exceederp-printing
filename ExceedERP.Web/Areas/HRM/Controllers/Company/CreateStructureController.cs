@@ -1,23 +1,23 @@
-﻿using System;
+using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.Global;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Web.Controllers;
+using ExceedERP.Web.Helpers;
+using Kendo.Mvc;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.DataAccess.Context;
-using Kendo.Mvc.Extensions;
-using Kendo.Mvc.UI;
-using ExceedERP.Web.Controllers;
-using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Helpers;
-using Kendo.Mvc;
-using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
-    [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser)]
     public class CreateStructureController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -202,30 +202,104 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult MainCompanyStructures_Update([DataSourceRequest]DataSourceRequest request, MainCompanyStructure mainCompanyStructure)
         {
-            ModelState.Clear();
             if (ModelState.IsValid)
             {
-                var entity = new MainCompanyStructure
+                // Fetch the existing structure
+                var structure = db.MainCompanyStructures.Find(mainCompanyStructure.OrgStructureId);
+                if (structure != null && structure.Parent != mainCompanyStructure.Parent)
                 {
-                    OrgStructureId = mainCompanyStructure.OrgStructureId,
-                    Name = mainCompanyStructure.Name,
-                    Parent = mainCompanyStructure.Parent,
-                    StructureId = mainCompanyStructure.StructureId,
-                    IsActive = mainCompanyStructure.IsActive,
-                    Remark = mainCompanyStructure.Remark,
-                    DateCreated = mainCompanyStructure.DateCreated,
-                    LastModified = DateTime.Now,
-                    CreatedBy = mainCompanyStructure.CreatedBy,
-                    ModifiedBy = User.Identity.Name
-                };
+                    // Fetch current placements related to the structure
+                    var placements = db.Placements
+                                       .Where(x => x.isCurrent && x.OrgStructureId == mainCompanyStructure.OrgStructureId)
+                                       .ToList();
+                    // Update the ParentOrgStructureId for each placement
+                    foreach (var placement in placements)
+                    {
+                        placement.ParentOrgStructureId = mainCompanyStructure.Parent; // Ensure Parent isn't null
+                        db.Entry(placement).State = EntityState.Modified;
+                    }
+                }
+                var jobTitleMappings = db.JobTitleMapping.Where(x=>x.OrgStructureId==mainCompanyStructure.OrgStructureId);
+                foreach(var jobTitleMapping in jobTitleMappings)
+                {
+                    if (jobTitleMapping.WorkUnitId != mainCompanyStructure.Parent)
+                    {
+                        jobTitleMapping.WorkUnitId = mainCompanyStructure.Parent; // Ensure Parent isn't null
+                        db.Entry(jobTitleMapping).State = EntityState.Modified;
+                    }
+                }
+               
+                // Map updated properties to the existing entity
+                structure.Name = mainCompanyStructure.Name;
+                structure.Parent = mainCompanyStructure.Parent;
+                structure.StructureId = mainCompanyStructure.StructureId;
+                structure.IsActive = mainCompanyStructure.IsActive;
+                structure.Remark = mainCompanyStructure.Remark;
+                structure.LastModified = DateTime.Now;
+                structure.ModifiedBy = User.Identity.Name;
+                db.Entry(structure).State = EntityState.Modified;
 
-                db.MainCompanyStructures.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
+                //var jobTitleMapping = db.JobTitleMapping.Where(x => x.OrgStructureId == mainCompanyStructure.OrgStructureId)
+                //    if({ }
+                // Save all changes within a transaction
+                using (var transaction = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        db.SaveChanges();
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        // Handle exception, e.g., log it
+                        ModelState.AddModelError("", "An error occurred while updating the structure.");
+                    }
+                }
+                
             }
 
             return Json(new[] { mainCompanyStructure }.ToDataSourceResult(request, ModelState));
         }
+
+        //public ActionResult MainCompanyStructures_Update([DataSourceRequest]DataSourceRequest request, MainCompanyStructure mainCompanyStructure)
+        //{
+        //    ModelState.Clear();
+        //    var structure = db.MainCompanyStructures.Find(mainCompanyStructure.OrgStructureId); 
+        //    if (structure != null&& structure.Parent != mainCompanyStructure.Parent)
+        //    {
+        //        var placements = db.Placements.Where(x=>x.isCurrent)
+        //                                  .Where(x => x.OrgStructureId == mainCompanyStructure.OrgStructureId).ToList();
+        //        foreach(var placement in placements)
+        //        {
+        //            placement.ParentOrgStructureId = mainCompanyStructure.Parent;
+        //            db.Entry(placement).State = EntityState.Modified;
+        //        }
+        //    }
+        //    if (ModelState.IsValid)
+        //    {
+        //        var entity = new MainCompanyStructure
+        //        {
+        //            OrgStructureId = mainCompanyStructure.OrgStructureId,
+        //            Name = mainCompanyStructure.Name,
+        //            Parent = mainCompanyStructure.Parent,
+        //            StructureId = mainCompanyStructure.StructureId,
+        //            IsActive = mainCompanyStructure.IsActive,
+        //            Remark = mainCompanyStructure.Remark,
+        //            DateCreated = mainCompanyStructure.DateCreated,
+        //            LastModified = DateTime.Now,
+        //            CreatedBy = mainCompanyStructure.CreatedBy,
+        //            ModifiedBy = User.Identity.Name
+        //        };
+
+        //        db.MainCompanyStructures.Attach(entity);
+        //        db.Entry(entity).State = EntityState.Modified;
+        //        db.SaveChanges();
+
+        //    }
+
+        //    return Json(new[] { mainCompanyStructure }.ToDataSourceResult(request, ModelState));
+        //}
 
         [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]

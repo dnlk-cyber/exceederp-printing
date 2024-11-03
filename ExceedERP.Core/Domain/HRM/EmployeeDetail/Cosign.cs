@@ -18,9 +18,9 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [Required]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
-        [Display(Name = "HR_EmployeeDetail_Cosign_AgreementDate", ResourceType = typeof(Localization.Resources))]
+        [Display(Name = "HR_SelfCare_OverTimeRequest_FromDate", ResourceType = typeof(Localization.Resources))]
         public DateTime AgreementDate { get; set; }
-        [Display(Name = "HR_EmployeeDetail_Cosign_AgreementDate", ResourceType = typeof(Localization.Resources))]
+        [Display(Name = "HR_SelfCare_OverTimeRequest_FromDate", ResourceType = typeof(Localization.Resources))]
         [Required]
         public string AgreementDateAm { get; set; }
         [Required ]
@@ -38,6 +38,8 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public virtual Lookup CosignType { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
+        [Display(Name = "HR_EmployeeDetail_Placement_Salary", ResourceType = typeof(Localization.Resources))]
+        public decimal? Salary { get; set; }
 
     }
 }

@@ -495,7 +495,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public JsonResult GetEmployeesUnderLogedInUserDepartment()
         {
             int empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var empIds = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
+            //var empIds = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
+            var empIds = EmployeeHelper.GetSubordinates_FilteredByHead(empId);
 
             var employees = db.Person_Employee.Where(x => empIds.Contains(x.EmployeeId) && x.IsActive).ToList();
 

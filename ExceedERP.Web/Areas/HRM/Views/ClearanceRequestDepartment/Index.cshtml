@@ -1,0 +1,209 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Company
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Clearance Request</legend>
+@(Html.Kendo().Grid<ClearanceRequest>()
+      .Name("ClearanceProviderGrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").EditorTemplateName("Organization").Width(200);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["clearanceType"], "LookupId", "Description").EditorTemplateName("ClearanceType").Width(200);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ActiveEmployeeDepart").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.Bound(c => c.Remark).Width(120);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Department_Head") || HttpContext.Current.User.IsInRole("HR_Department_Head"))
+              {
+                  command.Custom("cmd-approve").Click("departmentApproval").Text("Approve").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-success", @title = "Approve  ", @id = "approve" });
+
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(300);
+      })
+      .ToolBar(toolbar => {
+          if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      //.TemplateName("ClearanceProvider").Window(window => { window.Title("Clearance Provider"); window.Scrollable(false); }))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+
+      })
+      .Events(ev =>
+          {
+              ev.DataBound("onDataBound");
+          })
+      .Scrollable(h => h.Height(500))
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+
+      })
+      .Filterable()
+      .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"ClearanceProviderGrid\")");
+                    events.RequestStart("onRequestStart(\"ClearanceProviderGrid\")");
+                    events.RequestEnd("onRequestEnd(\"ClearanceProviderGrid\")");
+                })
+
+          .Model(model => model.Id(p => p.ClearanceRequestId))
+          .Read(read => read.Action("ClearanceRequestDepartment_Read", "ClearanceRequestDepartment"))
+          .Create(create => create.Action("ClearanceRequestDepartment_Create", "ClearanceRequestDepartment"))
+          .Update(update => update.Action("ClearanceRequestDepartment_Update", "ClearanceRequestDepartment"))
+          .Destroy(destroy => destroy.Action("ClearanceRequestDepartment_Destroy", "ClearanceRequestDepartment"))
+      ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                .Name("tabstrip_#=ClearanceRequestId#")
+                .SelectedIndex(0)
+                .Items(items =>
+                {
+                    items.Add().Text("Detail").Content(
+                    @<text>
+                        # if (!IsSendForApproval){#
+                        <a onclick='return sendForApproval("#=ClearanceRequestId#")' href=' \#' title="@Resources.HR_Send_For_Approval"><i class="fa fa-share-square fa-2x"></i></a>
+
+                        #}#
+
+                    </text>);
+
+
+
+        }).ToClientTemplate())
+
+</script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script>
+    function departmentApproval(e) {
+
+       var row = $(e.target).closest("tr");
+        var grid = $("#grid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.ClearanceRequestId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+            $.ajax({
+                url: '@Url.Action("DepartmentApproval", "ClearanceRequestDepartment")',
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsDepartmentOnlineApproved || dataItem.IsOnlineApproved) {
+
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+                row.find(".k-grid-cmd-approve").remove();
+                row.find("#approve").hide();
+                $(".k-grid-top").show();
+
+            }
+            if (dataItem.IsSendForApproval && (!dataItem.IsDepartmentOnlineApproved || !dataItem.IsOnlineApproved)) {
+
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").remove();
+                row.find(".k-grid-cmd-approve").show();
+                row.find("#approve").show();
+                $(".k-grid-top").show();
+
+            }
+            else {
+
+                row.find(".k-grid-delete").show();
+
+            }
+
+
+        }
+    }
+    function filterEmployee() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+
+
+        };
+    }
+
+    function sendForApproval(id) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApprovalRequest", "ClearanceRequestDepartment", new { area = "HRM" })',
+            data: { id: id },
+            success: function (result) {
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            },
+            error: function (result) {
+                alert(result.Message);
+            }
+        });
+    }
+</script>

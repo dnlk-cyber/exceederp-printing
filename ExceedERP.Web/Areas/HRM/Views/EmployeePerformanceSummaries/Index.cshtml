@@ -3,102 +3,103 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-}
 
+}
 <legend>@Resources.NavigatorPerformance_EmployeePerformance</legend>
 @(Html.Kendo().Grid<EmployeePerformance>()
-            .Name("EmployeePerformancegrid")
-            .Columns(columns =>
-            {
-                columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("EmployeeLists").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
-                columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["fiscalYearList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
-                columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["Period"], "QuarterId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
-                columns.Bound(c => c.IsCurrent).Filterable(ftb => ftb.Multi(true).Search(true)).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsCurrent ? checked='checked' :'' # >").Width(130);
+      .Name("EmployeePerformancegrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("EmployeeLists").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["fiscalYearList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
+          columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["Period"], "QuarterId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+          columns.Bound(c => c.IsCurrent).Filterable(ftb => ftb.Multi(true).Search(true)).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsCurrent ? checked='checked' :'' # >").Width(130);
 
-                columns.Bound(c => c.ReasonFor2ndRejection).Width(140);
-                columns.Bound(c => c.IsSecondLevelApproved).ClientTemplate(
-                           "<input type='checkbox' disabled = 'true' value='#=IsSecondLevelApproved#' " +
-                           "#if(IsSecondLevelApproved) { #" +
-                           "checked='checked'" +
-                           "# } #" +
-                           "/>").Width(120);
-                columns.Bound(c => c.IsSecondLevelRejected).ClientTemplate(
-                           "<input type='checkbox' disabled = 'true' value='#=IsSecondLevelRejected#' " +
-                           "#if(IsSecondLevelRejected) { #" +
-                           "checked='checked'" +
-                           "# } #" +
-                           "/>").Width(120);
-                columns.Bound(c => c.IsApproved).ClientTemplate(
-                               "<input type='checkbox' disabled = 'true' value='#=IsApproved#' " +
-                               "#if(IsApproved) { #" +
-                               "checked='checked'" +
-                               "# } #" +
-                               "/>").Title("is Submitted").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
-                columns.Bound(c => c.IsAcceptedByEmployee).Title("Is Accepted").ClientTemplate(
-                              "<input type='checkbox' disabled = 'true' value='#=IsAcceptedByEmployee#' " +
-                              "#if(IsAcceptedByEmployee) { #" +
-                              "checked='checked'" +
-                              "# } #" +
-                              "/>").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
-                columns.Bound(c => c.IsRejectedByEmployee).Title("Is Rejected").ClientTemplate(
-                              "<input type='checkbox' disabled = 'true' value='#=IsRejectedByEmployee#' " +
-                              "#if(IsRejectedByEmployee) { #" +
-                              "checked='checked'" +
-                              "# } #" +
-                              "/>").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
-                columns.Bound(c => c.IsImmediateSuppurvisorApproved).ClientTemplate(
-                              "<input type='checkbox' disabled = 'true' value='#=IsImmediateSuppurvisorApproved#' " +
-                              "#if(IsImmediateSuppurvisorApproved) { #" +
-                              "checked='checked'" +
-                              "# } #" +
-                              "/>").Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
-                columns.Command(command =>
+          columns.Bound(c => c.ReasonFor2ndRejection).Width(140);
+          columns.Bound(c => c.IsSecondLevelApproved).ClientTemplate(
+                     "<input type='checkbox' disabled = 'true' value='#=IsSecondLevelApproved#' " +
+                     "#if(IsSecondLevelApproved) { #" +
+                     "checked='checked'" +
+                     "# } #" +
+                     "/>").Width(120);
+          columns.Bound(c => c.IsSecondLevelRejected).ClientTemplate(
+                     "<input type='checkbox' disabled = 'true' value='#=IsSecondLevelRejected#' " +
+                     "#if(IsSecondLevelRejected) { #" +
+                     "checked='checked'" +
+                     "# } #" +
+                     "/>").Width(120);
+          columns.Bound(c => c.IsApproved).ClientTemplate(
+                         "<input type='checkbox' disabled = 'true' value='#=IsApproved#' " +
+                         "#if(IsApproved) { #" +
+                         "checked='checked'" +
+                         "# } #" +
+                         "/>").Title("is Submitted").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+          columns.Bound(c => c.IsAcceptedByEmployee).Title("Is Accepted").ClientTemplate(
+                        "<input type='checkbox' disabled = 'true' value='#=IsAcceptedByEmployee#' " +
+                        "#if(IsAcceptedByEmployee) { #" +
+                        "checked='checked'" +
+                        "# } #" +
+                        "/>").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+          columns.Bound(c => c.IsRejectedByEmployee).Title("Is Rejected").ClientTemplate(
+                        "<input type='checkbox' disabled = 'true' value='#=IsRejectedByEmployee#' " +
+                        "#if(IsRejectedByEmployee) { #" +
+                        "checked='checked'" +
+                        "# } #" +
+                        "/>").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+          columns.Bound(c => c.IsImmediateSuppurvisorApproved).ClientTemplate(
+                        "<input type='checkbox' disabled = 'true' value='#=IsImmediateSuppurvisorApproved#' " +
+                        "#if(IsImmediateSuppurvisorApproved) { #" +
+                        "checked='checked'" +
+                        "# } #" +
+                        "/>").Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
+          columns.Command(command =>
+          {
+              command.Custom("cmd-approval-request").IconClass("fa fa-check ").Text("1st Level Approval").Click("immidiateApproval").HtmlAttributes(new { @class = "btn btn-success" });
+              if (HttpContext.Current.User.IsInRole("Performance_Second_Level_Approval")
+                  || HttpContext.Current.User.IsInRole("Performance_2nd_Level_Approval"))
+              {
+                  command.Custom("cmd-secondlevelapproval-request").IconClass("fa fa-check ").Text("2nd Approval").Click("secondLevelApproval").HtmlAttributes(new { @class = "btn btn-primary" });
+
+              }
+
+          }).Width(200);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable(h => h.Height("auto"))
+      .Events(ev => ev.DataBound("onDataBound"))
+      .Pageable(pageable => pageable
+            .Refresh(true))
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .Events(events =>
                 {
-                    command.Custom("cmd-approval-request").IconClass("fa fa-check ").Text("1st Level Approval").Click("immidiateApproval").HtmlAttributes(new { @class = "btn btn-success" });
-                    if (HttpContext.Current.User.IsInRole("Performance_Second_Level_Approval")
-                        || HttpContext.Current.User.IsInRole("Performance_2nd_Level_Approval"))
-                    {
-                        command.Custom("cmd-secondlevelapproval-request").IconClass("fa fa-check ").Text("2nd Approval").Click("secondLevelApproval").HtmlAttributes(new { @class = "btn btn-primary" });
-
-                    }
-
-                }).Width(100);
+                    events.Error("error_handler(\"EmployeePerformancegrid\")");
+                    events.RequestStart("onRequestStart(\"EmployeePerformancegrid\")");
+                    events.RequestEnd("onRequestEnd(\"EmployeePerformancegrid\")");
 
 
-
-            })
-            .Editable(editable => editable.Mode(GridEditMode.InLine))
-            .Filterable()
-            .Scrollable(h => h.Height("auto"))
-            .Events(ev => ev.DataBound("onDataBound"))
-            .Pageable(pageable => pageable
-                .Refresh(true))
-                .DataSource(dataSource => dataSource
-                         .Ajax()
-                         .Events(events =>
-                         {
-                             events.Error("error_handler(\"EmployeePerformancegrid\")");
-                             events.RequestStart("onRequestStart(\"EmployeePerformancegrid\")");
-                             events.RequestEnd("onRequestEnd(\"EmployeePerformancegrid\")");
-                         })
-                         .Model(model =>
-                         {
-                             model.Id(p => p.EmployeePerformanceId);
-                             model.Field(p => p.Result).Editable(false);
+                })
+                .Model(model =>
+                {
+                    model.Id(p => p.EmployeePerformanceId);
+                    model.Field(p => p.Result).Editable(false);
 
 
-                         })
-                        .Read(read => read.Action("EmployeePerformanceSummaries_Read", "EmployeePerformanceSummaries"))
-                        ).ClientDetailTemplateId("employee_performance_template")
+
+                })
+                .Read(read => read.Action("EmployeePerformanceSummaries_Read", "EmployeePerformanceSummaries"))
+                       
+                ).ClientDetailTemplateId("employee_performance_template")
 )
 
 <script id="employee_performance_template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                        .Name("tabstrip_#=EmployeePerformanceId#")
-                        .SelectedIndex(0)
-                        .Items(items =>
-                        {
-                            items.Add().Text("Detail").Content(
+            .Name("tabstrip_#=EmployeePerformanceId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("Detail").Content(
                 @<text>
 
                     <div>
@@ -424,7 +425,7 @@
                     // Reload the page to reflect the changes
                     location.reload();
                 } else {
-                    alert("Approval cannot be granted. The individual must first Accept or Reject the evaluation.");
+                    alert("Approval cannot be granted. The individual must first Accept or Reject All the evaluations.");
                     grid.dataSource.read();
                 }
             },

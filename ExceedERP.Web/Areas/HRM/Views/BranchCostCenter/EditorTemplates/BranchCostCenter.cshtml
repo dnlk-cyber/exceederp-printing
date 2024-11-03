@@ -53,7 +53,7 @@
                                                                                 @foreach (var ch in @chi.Children)
                                                                                 {
 
-                                                                                    <li data-expanded="false">cost
+                                                                                    <li data-expanded="false">@*cost*@
                                                                                         @ch.Title
                                                                                         @if (@ch.Children.Count > 0)
                                                                                         {
@@ -69,7 +69,31 @@
                                                                                                             <ul>
                                                                                                                 @foreach (var cc in @c.Children)
                                                                                                                 {
-                                                                                                                    <li>@cc.Title</li>
+                                                                                                                    <li data-expanded="false">
+                                                                                                                        @cc.Title
+                                                                                                                        @if (@cc.Children.Count > 0)
+                                                                                                                        {
+                                                                                                                            <ul>
+                                                                                                                                @foreach (var k in @cc.Children)
+                                                                                                                                {
+                                                                                                                                    <li data-expanded="false">
+                                                                                                                                        @k.Title
+                                                                                                                                        @if (@k.Children.Count > 0)
+                                                                                                                                        {
+                                                                                                                                            <ul>
+                                                                                                                                                @foreach (var p in @k.Children)
+                                                                                                                                                {
+                                                                                                                                                    <li data-expanded="false">
+                                                                                                                                                        @p.Title
+                                                                                                                                                    </li>
+                                                                                                                                                }
+                                                                                                                                            </ul>
+                                                                                                                                        }
+                                                                                                                                    </li>
+                                                                                                                                }
+                                                                                                                            </ul>
+                                                                                                                        }
+                                                                                                                    </li>
                                                                                                                 }
                                                                                                             </ul>
                                                                                                         }

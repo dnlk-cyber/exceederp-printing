@@ -14,7 +14,6 @@ using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.SalaryStructure;
 using ExceedERP.Helpers.Common;
 

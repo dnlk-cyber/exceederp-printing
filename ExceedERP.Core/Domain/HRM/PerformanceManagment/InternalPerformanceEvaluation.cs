@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -15,8 +15,11 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public int NumberOfEmployee { get; set; }
         [Display(Name="Work Unit")]
         public int OrgStructureId { get; set; }
+        [Display(Name = "Is Confirmed")]
+        public bool IsConfirmed { get; set; }
         public int PerformanceRequestPeriodId { get; set; }
-      //InternalCustomer  public virtual PerformanceRequestPeriod PerformanceRequest { get; set; }
+        //InternalCustomer 
+        //public virtual PerformanceRequestPeriod PerformanceRequest { get; set; }
 
 
 
@@ -31,6 +34,8 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public int EmployeeId { get; set; }
         [Display(Name = "To be Evaluted Name ")]
         public int? TobeEvalutedEmployeeId { get; set; }
+        [Display(Name = "Is Confirmed")]
+        public bool IsConfirmed { get; set; }
         public int InternalCustomerPerformanceEvaluationId { get; set; }
         public virtual InternalCustomerPerformanceEvaluation InternalCustomerEvaluation { get; set; }
     }

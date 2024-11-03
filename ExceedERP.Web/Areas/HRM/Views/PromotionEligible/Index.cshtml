@@ -1,0 +1,604 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Localization
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Promotion Eligible</legend>
+
+@(Html.Kendo().Grid<Placement>()
+      .Name("PlacementGrid")
+      .Columns(columns =>
+      {
+
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.Placement_FullName).Width(150);
+          columns.ForeignKey(c => c.HeadId, (IEnumerable)ViewData["EmployeeList"], "HeadId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+          columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+          columns.ForeignKey(c => c.ParentOrgStructureId, (System.Collections.IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(170);
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+          columns.Bound(c => c.IsHead).Width(90).ClientTemplate(
+           "<input type='checkbox' disabled = 'true' value='#=IsHead#' " +
+           "# if (IsHead) { #" +
+           "checked='checked'" +
+           "# } #" +
+           "/>");
+          columns.Bound(c => c.HireDate).Width(100);
+          columns.Bound(c => c.AssignmentDateAmharic).Width(150);
+          columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+          columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+          columns.Bound(c => c.Salary).Width(80);
+          columns.Bound(c => c.AssignmentType).Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.Bound(c => c.EmployementType).Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.Bound(c => c.isCurrent).ClientTemplate("<input type='checkbox' disabled='true' value='#=isCurrent #' " + " # if (isCurrent) { #" + "checked='checked'" + "# } #" + " />").Width(100);
+          columns.Bound(c => c.IsApprove).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= IsApprove#' " +
+              "# if (IsApprove) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>").Width(100);
+
+          columns.Bound(c => c.ResponsibilityLevel).Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.Bound(c => c.Remark).Width(100);
+          columns.Command(command =>
+          {
+              //if (HttpContext.Current.User.IsInRole("HR_Placement_User"))
+              //{
+              //    //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              //}
+              if (HttpContext.Current.User.IsInRole("PlacementApprover"))
+              {
+                  command.Custom("").Click("updatePromotionEligible").Text("promote").IconClass("fa fa-add fa4x").HtmlAttributes(new { @class = "btn btn-success", @title = "Update Placement ", @id = "generateplacement" });
+              }
+              //if (HttpContext.Current.User.IsInRole("HR_Placement_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+              //{
+              //    //command.Destroy().Text(Resources.ActionButton_Cancel);
+              //}
+
+          }).Width(350);
+
+      })
+      .ToolBar(toolbar =>
+      {
+          //if (HttpContext.Current.User.IsInRole("HR_Placement_User"))
+          //{
+          //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          //}
+
+          if (HttpContext.Current.User.IsInRole("GenerateDayAbsent"))
+          {
+
+
+
+          }
+          if (HttpContext.Current.User.IsInRole("HR_Placement_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+          {
+              toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+              //toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+
+          }
+      })
+      .Excel(excel => excel
+      .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".xlsx")
+      .Filterable(true)
+        .AllPages(true)
+        .ProxyURL(Url.Action("Excel_Export_Save", "EmployeePlacmentWithOJ")))
+        //.Pdf(pdf => pdf
+        //.AllPages()
+        //.FileName(Resources.NavigatorPlacment_EmployeePlacment + ".pdf")
+        //.ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePlacmentWithOJ")))
+        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Placement").Window(window => { window.Title(Resources.NavigatorPlacment_EmployeePlacment); window.Scrollable(false); }))
+        .Scrollable(h => h.Height(500))
+        .Sortable(sortable =>
+        {
+            sortable.SortMode(GridSortMode.SingleColumn);
+
+        })
+        .Filterable()
+        .Events(e =>
+        {
+            e.Save("GetDate");
+            e.Edit("GetDate");
+            e.DataBound("onDataBound");
+            e.Cancel("onCancel");
+        })
+        .Pageable(pageable => pageable
+        .Input(true)
+        .Numeric(false)
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+                .Ajax()
+                .Sort(sort => sort.Add(s => s.PlacementId).Descending())
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"PlacementGrid\")");
+                    events.RequestStart("onRequestStart(\"PlacementGrid\")");
+                    events.RequestEnd("onRequestEnd(\"PlacementGrid\")");
+                })
+
+        .Model(model =>
+        {
+            model.Id(p => p.PlacementId);
+            model.Field(p => p.AssignmentType).DefaultValue(-1);
+            model.Field(p => p.ResponsibilityLevel).DefaultValue(-1);
+            model.Field(p => p.EmployementType).DefaultValue(-1);
+
+
+        })
+        .Read(read => read.Action("PromotionEligible_Read", "PromotionEligible"))
+        .Create(create => create.Action("PromotionEligible_Create", "PromotionEligible"))
+        .Update(update => update.Action("PromotionEligible_Update", "PromotionEligible"))
+        .Destroy(destroy => destroy.Action("PromotionEligible_Destroy", "PromotionEligible"))
+
+        )
+)
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 1000px;
+    }
+</style>
+<script>
+
+
+    var isNew_Global = "";
+    function onDepartmentDataBound() {
+        if (isNew_Global === "True") {
+
+            $("#FullNameTextBox_Id").hide();
+            $("#EmpIdDropdown_Id").show();
+        }
+        else if (isNew_Global === "False") {
+            $("#FullNameTextBox_Id").show();
+            $("#EmpIdDropdown_Id").hide();
+        }
+    }
+
+    function GetEmployeeNameEmploye(e) {
+        var autocomplete = $("#EmployeeId").data("kendoAutoComplete");
+        var id = autocomplete.value();
+
+        $.ajax({
+            url: '@Url.Action("SetEmployeeId", "EmployeePlacmentWithOJ")',
+            contentType: "application/json; charset=utf-8",
+            data: { 'fullName': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+    }
+
+    function handleButtonClick(e) {
+            e.preventDefault(); // Prevent default form submission behavior
+
+            var fromGrade = $("#FromGrade").data("kendoDropDownList").value();
+            var toGrade = $("#ToGrade").data("kendoDropDownList").value();
+            var fromStep = $("#FromStep").data("kendoDropDownList").value();
+            var toStep = $("#ToStep").data("kendoDropDownList").value(); // Corrected typo in variable name
+
+            // Check conditions sequentially and return if any condition fails
+            if (fromGrade === "") {
+                alert("Please select From grade first");
+                return;
+            }
+            if (toGrade === "") {
+                alert("Please select the to Grade first");
+                return;
+            }
+            if (fromStep === "") {
+                alert("Please select from step");
+                return;
+            }
+            if (toStep === "") {
+                alert("Please select the to step");
+                return;
+                }
+            if (toStep === fromStep) {
+                alert(" From and  to step  can't be equal Please select another");
+                return;
+            }
+            if (fromGrade === toGrade) {
+                alert(" from and  to grade can't be equal Please select another");
+                return;
+            }
+
+
+        // If all conditions pass, make the AJAX request
+        $('#loading-image').show();
+        $.ajax({
+            url: '@Url.Action("UpdateSalary", "EmployeePlacmentWithOJ")',
+            data: { fromRank: fromGrade, toRank: toGrade, fromStep: fromStep, toStep: toStep },
+            type: 'POST',
+            cache: false,
+            success: function(result) {
+                alert(result);
+            }
+        });
+    }
+
+</script>
+
+
+<script>
+
+    function GetAssignDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromAmharic").trigger("change");
+        $("#ToAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "EmployeePlacmentHistory")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function(result) {
+                    r = result;
+                }
+            });
+        }
+    }
+
+</script>
+<script>
+    
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+
+
+    function onCancel(e) {
+        $("#PlacementGrid").data("kendoGrid").dataSource.read();
+    }
+
+    function filterBranch() {
+        return {
+            businessUnitId: $("#BusinessUnitId").val(),
+            searchText: $("#BranchId").data("kendoDropDownList").filterInput.val(),
+
+        };
+    }
+    function filterDepartment() {
+        return {
+            branchId: $("#BranchId").val(),
+            businessUnitId: $("#BusinessUnitId").val(),
+            searchText: $("#OrgStructureId").data("kendoDropDownList").filterInput.val(),
+        };
+    }
+</script>
+
+
+<script>
+    function GetSalary() {
+        //if (isNew_Global == "True") {
+            var rank = $("#RankId").data("kendoDropDownList").value();
+            var step = $("#StepId").data("kendoDropDownList").value();
+            //var Jobs = $("#LookupId").data("kendoDropDownList");
+            //var job = Jobs.value();
+
+            if (rank != 0 && step != 0) {
+
+                $("#Salary").val(0);
+
+                $.ajax({
+                    url: '@Url.Action("GetSalaryAmount", "EmployeePlacmentWithOJ")',
+                    data: { rank: rank, step: step },
+                    type: 'POST',
+                    cache: false,
+                    success: function (result) {
+                        $("#Salary").val(result);
+                        $("#Salary").trigger("change");
+                    }
+                });
+            }
+        //}
+    }
+
+</script>
+
+
+<script>
+    function GetDepartment() {
+
+        var Titles = $("#OrgStructureId").data("kendoDropDownList");
+        var OrgId = Titles.value();
+        var jobs = $("#LookupId").data("kendoDropDownList");
+        var title = jobs.value();
+        $.ajax({
+            url: '@Url.Action("GetDepartments", "EmployeePlacmentWithOJ")',
+
+            data: { OrgId: OrgId, title: title },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                var s = r.split(/-/);
+
+                $("#Salary").val(s[0]);
+                $("#RankId").val(Number( s[1]));
+                $("#StepId").val(Number(s[2]));
+            }
+
+        });
+    }
+
+</script>
+<script>
+    function filterCategories() {
+        return {
+            OrgStructureId: $("#OrgStructureId").val()
+        };
+
+    }
+
+    function filterStructure() {
+        return {
+            OrgStructureId: $("#OrgStructureId").val(),
+        };
+    }
+    function filterReportToStructure() {
+        return {
+            OrgStructureId: $("#OrgStructureId").val(),
+            isHead: $("#IsHead").is(":checked")
+        };
+    }
+    function filterReportToStructurechange(e) {
+        filterReportToStructure();
+    }
+    function onHeadCheckBox(isChecked) {
+        $("#ReportsTo").data("kendoDropDownList").dataSource.read();
+    }
+
+    function filterEmployees() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+    function GetDate(e) {
+
+        $("#AssignmentDateAmharic").trigger("change");
+
+        if (e.model.isNew() === false) {
+            $("#EmployeeId").kendoDropDownList({
+                enable: false
+            });
+
+            isNew_Global = "False";
+        }
+        else {
+            isNew_Global = "True";
+        }
+    }
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+    function convertValues(value) {
+        var data = {};
+
+        value = $.isArray(value) ? value : [value];
+
+        for (var idx = 0; idx < value.length; idx++) {
+            data["values[" + idx + "]"] = value[idx];
+        }
+
+        return data;
+    }
+    function Refresh(e) {
+        if (confirm("are you sure to refresh salary")) {
+            $.ajax({
+                url: "/HRM/EmployeePlacmentWithOJ/Refresh/",
+                //data: {
+                //    value: options.value || 0,
+                //    status: 1,
+                //    excludeId: -1
+                //},
+                success: function (data) {
+                    options.success(data);
+                }
+            });
+        }
+        else {
+            alert("not updated");
+        }
+    }
+</script>
+
+<script>
+    function Pend(e) {
+
+     var row = $(e.target).closest("tr");
+        var grid = $("#PlacementGrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.PlacementId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("Pend", "EmployeePlacmentWithJ")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }
+
+    ////////////////////////////////
+
+    function UnPend(e) {
+
+     var row = $(e.target).closest("tr");
+        var grid = $("#PlacementGrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.PlacementId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("UnPend", "EmployeePlacmentWithJ")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }
+
+</script>
+
+<script>
+
+    function onDataBound(e) {
+
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+
+            if (dataItem.isCurrent === true && dataItem.IsPend === false) {
+                row.find("#pend").show();
+                row.find("#unpend").hide();
+            }
+            else if (dataItem.isCurrent === true && dataItem.IsPend === true) {
+                row.css("background-color", "gray");
+                row.find("#pend").hide();
+                row.find("#unpend").show();
+            }
+            else if (dataItem.isCurrent === false) {
+                row.find("#pend").hide();
+                row.find("#unpend").hide();
+            }
+            if (dataItem.IsApprove === true) {
+                row.find("#approveplacement").hide();
+            }
+            if (dataItem.IsApprove === false) {
+                row.css("background-color", "#FF842D");
+
+            }
+            if (dataItem.Age > 60) {
+
+                row.css("background-color", "olive");
+
+            }
+        }
+    }
+
+    function updatePromotionEligible(e) {
+    var row = $(e.target).closest("tr");
+    var grid = $("#PlacementGrid").data("kendoGrid");
+    var dataItem = grid.dataItem(row);
+    var id = dataItem.PlacementId;
+
+    if (id.length !== 0) {
+        $('#loading-image').show();
+        
+        $.ajax({
+            url: '@Url.Action("PromoteUnpromotedEmployee", "PromotionEligible")',
+            data: { id: id },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                alert(result.Message);
+                $('#loading-image').hide();
+                grid.dataSource.read();
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+                alert("An error occurred while processing your request.");
+                $('#loading-image').hide();
+            }
+        });
+    } else {
+        alert("Invalid ID.");
+    }
+}
+
+    function OpenAttachementWindow() {
+
+        $("#Attachement_InstitutionIncomingId").val(institutionIncomingLetterId);
+
+        var wnd = $("#IncomingAttachementWindow").data("kendoWindow");
+        wnd.center().open();
+    }
+    function UploadFile(id) {
+        $("#employeeId").val(id);
+        var wnd = $("#UploadDoc").data("kendoWindow");
+        wnd.center().open();
+    }
+
+</script>
+<style>
+    #approveButtonStyle {
+        border-radius: 5%;
+        padding-top: 1px;
+        padding-bottom: 1px;
+    }
+
+    .flex-container {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center; /*This ensures vertical alignment is centered*/
+        justify-content: space-between; /*Adjust this as needed*/
+        margin: 10px; /*Provides a gap between items*/
+    }
+
+    .flex-item {
+        flex: 1 1 15%; /*Adjust basis and grow/shrink as needed*/
+        min-width: 120px; /*Adjust based on your content's minimum size*/
+        margin: 5px; /*Ensures some space around items*/
+        box-sizing: border-box;
+    }
+
+    .flex-item-group {
+        display: flex;
+        justify-content: space-between; /* Or center, end, etc., based on your preference */
+        margin: 10px; /* Adjust the gap between items */
+    }
+    .custom-button {
+        height: 50px; /* Adjust the height as needed */
+        width: 120px; /* Adjust the width as needed */
+        font-size: 16px;
+    }
+
+</style>

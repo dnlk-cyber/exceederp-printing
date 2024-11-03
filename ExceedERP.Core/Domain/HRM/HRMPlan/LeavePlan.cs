@@ -1,4 +1,4 @@
-﻿////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 // file:	domain\hrm\plan.cs
 //
 // summary:	Implements the plan class
@@ -16,12 +16,12 @@ namespace ExceedERP.Core.Domain.HRM.HRMPlan
     /// <summary>    A plan. </summary>
     ///
     /// <remarks>    Mekanehiwot, 10/31/2016. </remarks>
+    /// <remarks>    Modified By Kibrom Abera, 08/16/2024. </remarks>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
-    public class LeavePlan
-        :TrackUserOperation
+    public class LeavePlan: DepartmentNewOperations
     {
         [Key ]
         public int LeavePlanId { get; set; }
@@ -54,7 +54,15 @@ namespace ExceedERP.Core.Domain.HRM.HRMPlan
         [Required]
         [Display(Name = "HR_HRMPlan_LeavePlan_LeaveAmount", ResourceType = typeof(Localization.Resources))]
         public decimal LeaveAmount { get; set; }
-          [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
+          
+    }
+    public class LeavePlanValidation : TrackUserOperation
+    {
+        public int LeavePlanValidationId { get; set; }
+        public ApprovalStatuses Status { get; set; }
         public string Remark { get; set; }
+        public int LeavePlanId { get; set; }
+        public virtual LeavePlan Plan { get; set; }
+
     }
 }

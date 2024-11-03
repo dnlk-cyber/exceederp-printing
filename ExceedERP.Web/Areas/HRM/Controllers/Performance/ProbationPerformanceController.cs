@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.HRM.PerformanceManagment;
+using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
@@ -35,6 +35,75 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             ViewData["Jobtitle"] = db.Lookups.ToList();
             ViewData["Measurments"] = db.Lookups.Where(x=>x.LookupType == Core.Domain.Common.LookUpTypes.PROBATION_MEASUREMENT).ToList();
         }
+        public ActionResult ProbationPerformanceEvaluation_Read([DataSourceRequest]DataSourceRequest request, int empId)
+        {
+            IQueryable<ProbationPerformance> probations = db.ProbationPerformances.Where(x=>x.EmployeeId==empId);
+            DataSourceResult result = probations.ToDataSourceResult(request, probation => new {
+
+                ProbationPerformanceId = probation.ProbationPerformanceId,
+                EmployeeId = probation.EmployeeId,
+                Result = probation.Result,
+                ResultType = probation.ResultType,
+                HireDate = probation.HireDate,
+                HireDateAm = probation.HireDateAm,
+                LookupId = probation.LookupId,
+                OrgStructureId = probation.OrgStructureId,
+                ProbationEndDate = probation.ProbationEndDate,
+                ProbationEndDateAm = probation.ProbationEndDateAm,
+                Status = probation.Status
+            });
+
+            return Json(result);
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult ProbationPerformanceEvaluation_Create([DataSourceRequest]DataSourceRequest request, ProbationPerformance probation, int empId)
+        {
+            ModelState.Clear();
+            probation.EmployeeId = empId;
+            var person = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == empId);
+            var hda = probation.HireDateAm;
+            if(person != null)
+            {
+                probation.HireDate = person.HiredDate;
+                probation.HireDateAm = person.HiredDateAmharic;
+                probation.Status = person.Status;
+
+            }
+            var place = db.Placements.FirstOrDefault(x=>x.EmployeeId == empId && x.isCurrent);
+            if(place != null)
+            {
+                 probation.LookupId = place.LookupId;
+                probation.OrgStructureId = place.OrgStructureId;
+            }
+
+            if (ModelState.IsValid)
+            {
+                
+                var entity = GetMappedObject(probation);
+                db.ProbationPerformances.Add(entity);
+                db.SaveChanges();
+
+                #region operation log
+                var person1 = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == entity.EmployeeId);
+                if(person1 != null)
+                {
+                    if(person1 != null)
+                    {
+                       
+                            UserHelper.OperationLog(Request.UserHostAddress, "Probation Performance ", "Success", User.Identity.Name, User.Identity.Name + " add Probation Performance for " + person1.FullNameaEnglish + " date " + DateTime.Today.ToShortDateString(),Modules.HRM);
+                        
+                    }
+
+                }
+
+                #endregion
+
+            }
+
+            return Json(new[] { probation }.ToDataSourceResult(request, ModelState));
+        }
+
         public ActionResult ProbationPerformance_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<ProbationPerformance> probations = db.ProbationPerformances;
@@ -42,6 +111,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
                 ProbationPerformanceId = probation.ProbationPerformanceId,
                 EmployeeId = probation.EmployeeId,
+                Result = probation.Result,
+                ResultType = probation.ResultType,
                 HireDate = probation.HireDate,
                 HireDateAm = probation.HireDateAm,
                 LookupId = probation.LookupId,
@@ -92,19 +163,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             if (ModelState.IsValid)
             {
-
-                var entity = new ProbationPerformance
-                {
-                    EmployeeId = probation.EmployeeId,
-                    HireDate = hd,
-                    HireDateAm = hda,
-                    LookupId = look,
-                    OrgStructureId = org,
-                    ProbationEndDate = ed,
-                    ProbationEndDateAm = probation.ProbationEndDateAm,
-                    Status = probation.Status
-                };
-
+                
+                probation.HireDate = hd;
+                probation.HireDateAm = hda;
+                probation.LookupId = look;
+                probation.OrgStructureId = org;
+                probation.ProbationEndDate = ed; 
+                var entity = GetMappedObject(probation);
                 db.ProbationPerformances.Add(entity);
                 db.SaveChanges();
 
@@ -140,21 +205,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
                 var splitDateEnd = probation.ProbationEndDateAm.Split('/');
                 DateTime ed = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateEnd[0]), Convert.ToInt32(splitDateEnd[1]), Convert.ToInt32(splitDateEnd[2]));
-
-
-                var entity = new ProbationPerformance
-                {
-                    ProbationPerformanceId = probation.ProbationPerformanceId,
-                    EmployeeId = probation.EmployeeId,
-                    HireDate = hd,
-                    HireDateAm = probation.HireDateAm,
-                    LookupId = probation.LookupId,
-                    OrgStructureId = probation.OrgStructureId,
-                    ProbationEndDate = ed,
-                    ProbationEndDateAm = probation.ProbationEndDateAm,
-                    Status = probation.Status
-                };
-
+                
+                probation.HireDate = hd;
+                probation.ProbationEndDate = ed;
+                var entity = GetMappedObject(probation);
                 db.ProbationPerformances.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
@@ -183,18 +237,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         {
             if (ModelState.IsValid)
             {
-                var entity = new ProbationPerformance
-                {
-                    ProbationPerformanceId = probation.ProbationPerformanceId,
-                    EmployeeId = probation.EmployeeId,
-                    HireDate = probation.HireDate,
-                    HireDateAm = probation.HireDateAm,
-                    LookupId = probation.LookupId,
-                    OrgStructureId = probation.OrgStructureId,
-                    ProbationEndDate = probation.ProbationEndDate,
-                    ProbationEndDateAm = probation.ProbationEndDateAm,
-                    Status = probation.Status
-                };
+                var entity = GetMappedObject(probation);
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Probation Performance " + probation.ProbationPerformanceId);
                 #endregion
@@ -206,6 +249,24 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             return Json(new[] { probation }.ToDataSourceResult(request, ModelState));
         }
 
+        private ProbationPerformance GetMappedObject(ProbationPerformance probation)
+        {
+            var entity = new ProbationPerformance
+            {
+                ProbationPerformanceId = probation.ProbationPerformanceId,
+                EmployeeId = probation.EmployeeId,
+                Result = probation.Result,
+                ResultType = probation.ResultType,
+                HireDate = probation.HireDate,
+                HireDateAm = probation.HireDateAm,
+                LookupId = probation.LookupId,
+                OrgStructureId = probation.OrgStructureId,
+                ProbationEndDate = probation.ProbationEndDate,
+                ProbationEndDateAm = probation.ProbationEndDateAm,
+                Status = probation.Status
+            };
+            return entity;
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

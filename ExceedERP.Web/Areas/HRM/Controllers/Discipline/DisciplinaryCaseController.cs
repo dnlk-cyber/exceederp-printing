@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -270,6 +268,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         public ActionResult DisciplinaryCases_Destroy([DataSourceRequest]DataSourceRequest request, DisciplinaryCase disciplinaryCase)
         {
             ModelState.Clear();
+            if(db.EmpDisciplinaryHearing.Any(x=>x.DisciplinaryCaseId== disciplinaryCase.DisciplinaryCaseId)
+                &&db.EmpDisciplineMeasure.Any(x => x.DisciplinaryCaseId == disciplinaryCase.DisciplinaryCaseId)
+                &&db.DisciplineMeasuerByMoney.Any(x => x.DisciplinaryCaseId == disciplinaryCase.DisciplinaryCaseId)
+                &&db.Appeal.Any(x => x.DisciplinaryCaseId == disciplinaryCase.DisciplinaryCaseId))
+            {
+                ModelState.AddModelError("", "you can't delete delete the detail first");
+                return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));
+
+
+            }
 
             if (!CheckDisciplineValidation(disciplinaryCase.DisciplinaryCaseId))
             {

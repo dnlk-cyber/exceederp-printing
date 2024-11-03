@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -21,5 +21,13 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public DateTime? ProbationEndDate { get; set; }
         public string ProbationEndDateAm { get; set; }
         public EmployeeStatus Status { get; set; }
+        public EvaluateProbation ResultType { get; set; }
+        public decimal Result { get; set; }
+    }
+    public enum EvaluateProbation
+    {
+        NA,
+        Fit,
+        UnFit
     }
 }

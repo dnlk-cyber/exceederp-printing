@@ -4,17 +4,19 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>@Resources.RecruitmentRequest</legend>
+<legend>Employee Transfer Request</legend>
 @(Html.Kendo().Grid<EmployeeTransferRequest>()
               .Name("EmployeeTransferRequestgrid")
               .Columns(columns =>
               {
-                  columns.Bound(c => c.EmployeeTransferRequestId).Title("S.N").Width(80);
+                  columns.Bound(c => c.EmployeeTransferRequestId).Title("S.No").Width(80);
                   //columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
                   columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("GetAllActiveEmployees").Filterable(ftb => ftb.Multi(true).Search(true)).Title(Resources.Placement_FullName).Width(180);
-                  columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-                  columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
-                  columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+                  columns.ForeignKey(c => c.FromBusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").EditorTemplateName("GetAllBusinessUnits").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                  columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").EditorTemplateName("GetAllBusinessUnits").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                  columns.ForeignKey(c => c.FromBranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").EditorTemplateName("GetAllBranches").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                  columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").EditorTemplateName("GetAllBranches").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                  columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").EditorTemplateName("GetAllWorkUnits").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
                   columns.Bound(c => c.RequestDate).Width(120);
                   columns.Bound(c => c.Reason).Width(130);
                   columns.Bound(c => c.Remark).Width(110);

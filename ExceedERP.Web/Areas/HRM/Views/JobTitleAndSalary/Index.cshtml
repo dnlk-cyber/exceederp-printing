@@ -9,8 +9,6 @@
     //var sett = new HRMInputs();
     bool isJobTitleIncludedInSalary = HRMInputs.GetSalarySetting();
 }
-
-
 @(Html.Kendo().TabStrip()
           .Name("SettingTabStrip")
           .Animation(animation =>
@@ -88,64 +86,68 @@
 tabstrip.Add()
 .Text(Resources.HR_RecruitmentManagment_ApplicantResult_Rank)
 .Content(@<text>@Resources.HR_RecruitmentManagment_ApplicantResult_Rank
-                        @(Html.Kendo().Grid<Rank>()
-                        .Name("Rankgrid")
-                        .Columns(columns =>
-                        {
-                            columns.Bound(c => c.RankName);
-                            columns.Bound(c => c.StartingSalary);
-                            columns.Bound(c => c.MaximumSalary);
-                            columns.Bound(c => c.Remark);
-                            columns.Command(command =>
-                            {
-                                if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                                {
-                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                }
-                                if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-                                {
-                                    command.Destroy().Text(Resources.ActionButton_Cancel);//
-                                }
-                            }).Width(200);
-                        })
-                                          .ToolBar(toolbar =>
-                                          {
-                                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                          })
-                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                    .Selectable(selectable =>
-                                    {
-                                        selectable.Mode(GridSelectionMode.Single);
-                                        selectable.Type(GridSelectionType.Row);
-                                    })
-                                        .Scrollable(h => h.Height(500))
-                                         .Sortable(sortable =>
-                                         {
-                                             sortable.SortMode(GridSortMode.SingleColumn);
-                                         })
-                                         .Filterable()
-                                         .Pageable(pageable => pageable
-                                         .Input(true)
-                                         .Numeric(false)
-                                         .Refresh(true)
-                                         .PageSizes(true)
-                                         .ButtonCount(5))
-                                 .DataSource(dataSource => dataSource
-                                     .Ajax()
-                                         .Events(events =>
-                                         {
-                                             events.Error("error_handler(\"Rankgrid\")");
-                                             events.RequestStart("onRequestStart(\"Rankgrid\")");
-                                             events.RequestEnd("onRequestEnd(\"Rankgrid\")");
-                                         })
+        @(Html.Kendo().Grid<Rank>()
+        .Name("Rankgrid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.RankName);
+            columns.Bound(c => c.StartingSalary);
+            columns.Bound(c => c.MaximumSalary);
+            columns.Bound(c => c.Remark);
+            columns.Command(command =>
+            {
+                if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+                {
+                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                }
+                if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+                {
+                    command.Destroy().Text(Resources.ActionButton_Cancel);//
+                }
+            }).Width(200);
 
-                                    .Model(model => model.Id(p => p.RankId))
-                                    .Read(read => read.Action("Ranks_Read", "Rank"))
-                                    .Create(create => create.Action("Ranks_Create", "Rank"))
-                                    .Update(update => update.Action("Ranks_Update", "Rank"))
-                                    .Destroy(destroy => destroy.Action("Ranks_Destroy", "Rank"))
-                                     )
+        })
+        .ToolBar(toolbar =>
+        {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+
+        })
+        .Scrollable(h => h.Height(500))
+            .Sortable(sortable =>
+            {
+                sortable.SortMode(GridSortMode.SingleColumn);
+            })
+            .Filterable()
+            .Pageable(pageable => pageable
+            .Input(true)
+            .Numeric(false)
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+            .Events(events =>
+            {
+                events.Error("error_handler(\"Rankgrid\")");
+                events.RequestStart("onRequestStart(\"Rankgrid\")");
+                events.RequestEnd("onRequestEnd(\"Rankgrid\")");
+
+            })
+
+                    .Model(model => model.Id(p => p.RankId))
+                    .Read(read => read.Action("Ranks_Read", "Rank"))
+                    .Create(create => create.Action("Ranks_Create", "Rank"))
+                    .Update(update => update.Action("Ranks_Update", "Rank"))
+                    .Destroy(destroy => destroy.Action("Ranks_Destroy", "Rank"))
                         )
+        )
 </text>);
 
 
@@ -214,17 +216,18 @@ tabstrip.Add()
 tabstrip.Add()
 .Text(Resources.HR_SalaryStructure_SalaryJobTitle_Salary)
 .Content(@<text>
-<div class="form-group">
+@*<div class="form-group">
         <label>@Resources.Is_Job_Title_Included_In_Salary &nbsp;&nbsp;</label>
         <input type="checkbox" name="IsJobTitleIncludedInSalary" id="IsJobTitleIncludedInSalary" class="checkboxsize" style="display:inline;" onchange="ChangeSalarySetting()"/>
     <br />
-</div>
+</div>*@
 <br /><br />
 
     @(Html.Kendo().Grid<SalaryJobTitle>()
             .Name("SalaryJobTitle")
             .Columns(columns =>
             {
+                columns.Bound(c => c.SalJobTiId).Title("#").Width(80);
                 if (isJobTitleIncludedInSalary == true)
                 {
                     columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitles"], "LookupId", "Description").EditorTemplateName("JobTitles").Width(150);
@@ -270,8 +273,9 @@ tabstrip.Add()
            .Refresh(true)
            .PageSizes(true)
            .ButtonCount(5))
-          .DataSource(dataSource => dataSource
+      .DataSource(dataSource => dataSource
           .Ajax()
+          .Sort(x => x.Add(sort => sort.SalJobTiId).Descending())
           .Events(events =>
           {
               events.Error("error_handler(\"SalaryJobTitle\")");
@@ -279,7 +283,11 @@ tabstrip.Add()
               events.RequestEnd("onRequestEnd(\"SalaryJobTitle\")");
           })
 
-       .Model(model => model.Id(p => p.SalJobTiId))
+        .Model(model =>
+        {
+            model.Id(p => p.SalJobTiId);
+            model.Field(p => p.SalJobTiId).Editable(false);
+        })
        .Read(read => read.Action("SalariesJobTitles_Read", "SalaryJobTitle"))
        .Create(create => create.Action("SalariesJobTitles_Create", "SalaryJobTitle"))
        .Update(update => update.Action("SalariesJobTitles_Update", "SalaryJobTitle"))

@@ -1,4 +1,4 @@
-using ExceedERP.Core.Domain.Common;
+﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Localization;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -8,6 +8,7 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
 {
     public class EmployeePerformance: TrackUserSettingOperation
     {
+
         [Key]
         public int EmployeePerformanceId { get; set; }
         [Display(Name ="Employee")]
@@ -53,7 +54,7 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public bool IsSectorApplied { get; set; }
         [Display(Name = "Is Immediate Suppurvisor Approved")]
         public bool IsImmediateSuppurvisorApproved { get; set; }
-        [Display(Name = "Is Accepted By Employee ")]
+        [Display(Name = "Is Accepted")]
         public bool IsAcceptedByEmployee { get; set; }
         [Display(Name = "Is Rejected By Employee ")]
         public bool IsRejectedByEmployee { get; set; }

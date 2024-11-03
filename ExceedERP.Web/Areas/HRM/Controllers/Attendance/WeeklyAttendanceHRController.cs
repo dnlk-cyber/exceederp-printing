@@ -24,8 +24,8 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
 {
-    [AuthorizeRoles(HrmConstants.HRDepartmentHead)]
-
+    [AuthorizeRoles(HrmConstants.HRAttendanceUser,HrmConstants.HRDepartmentHead,
+                     HrmConstants.HREmployeeSelfService, HrmConstants.HRAdmin)]
     public class WeeklyAttendanceHRController : BaseController
     {
 

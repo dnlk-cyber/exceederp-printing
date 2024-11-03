@@ -16,7 +16,7 @@ using ExceedERP.Core.Domain.Global;
 namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 {
 
-    [AuthorizeRoles(HrmConstants.HRTrainingUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRTrainingUser)]
     public class TrainingProviderController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

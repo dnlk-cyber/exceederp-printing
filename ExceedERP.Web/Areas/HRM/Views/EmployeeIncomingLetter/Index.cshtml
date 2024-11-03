@@ -1,4 +1,5 @@
 ﻿@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.ArchiveManagement
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -12,7 +13,7 @@
           columns.Bound(c => c.LetterReferenceNo);
           columns.Bound(c => c.RecivedDate);
           columns.Bound(c => c.OwnerName);
-          columns.ForeignKey(c => c.InstitutionTypeId, (System.Collections.IEnumerable)ViewData["InstuType"], "InstitutionTypeId", "InstitutionName").EditorTemplateName("Institution");
+          columns.ForeignKey(c => c.InstitutionTypeId,(System.Collections.IEnumerable)ViewData["InstuType"], "InstitutionTypeId", "InstitutionName").EditorTemplateName("Institution");
           columns.Bound(c => c.Subject);
           // columns.Bound(c => c.Shelve);
           //columns.Bound(c => c.Row);

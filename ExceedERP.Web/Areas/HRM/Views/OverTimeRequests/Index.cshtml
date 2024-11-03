@@ -38,6 +38,7 @@
                                                                     .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
+          .Sort(sort => sort.Add("OverTimeRequestId").Descending())
                 .Events(events =>
                                                                                     {
                                                                                         events.Error("error_handler(\"OverTimeRequestgrid\")");

@@ -23,7 +23,6 @@
               columns.Bound(c => c.Amount).Width(150);
               columns.Bound(c => c.Balance).Width(150);
               // columns.Bound(c => c.TotlalAmount).Width(150);
-
               //columns.Bound(c => c.Void).Width(100);
               //columns.Bound(c => c.HireDate).Width(100);
               //columns.Bound(c => c.SumOfBalances).Width(100);
@@ -74,9 +73,9 @@
                       {
                                 @(Html.Kendo().Button()
                                     .Name("btnRefresh")
-                                     .HtmlAttributes(new { type = "button", @class = "k-primary" })
-                                       .Events(e => e.Click("Refresh"))
-                                            .Content(Resources.Generate_Leave_Entitlement))
+                                    .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                    .Events(e => e.Click("Refresh"))
+                                    .Content(Resources.Generate_Leave_Entitlement))
                       }
 
                     &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
@@ -119,73 +118,78 @@
 
           })
 
-                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveEntitlePop").Window(window => { window.Title("Leave Entitlement"); window.Scrollable(false); }))
-                .Selectable(selectable =>
-                {
-                    selectable.Mode(GridSelectionMode.Single);
-                    selectable.Type(GridSelectionType.Row);
-                })
-                   .Scrollable(h => h.Height(500))
-                   .Sortable(sortable =>
-                   {
-                       sortable.SortMode(GridSortMode.SingleColumn);
-                   })
-                   .Filterable()
-                       .Pageable(pageable => pageable
-                            .Input(true)
-                            .Numeric(false)
-                            .Refresh(true)
-                            .PageSizes(true)
-                            .ButtonCount(5))
-                .DataSource(dataSource => dataSource
-                    .Ajax()
-                        .Events(events =>
-                        {
-                            events.Error("error_handler(\"LeaveEntitlegrid\")");
-                            events.RequestStart("onRequestStart(\"LeaveEntitlegrid\")");
-                            events.RequestEnd("onRequestEnd(\"LeaveEntitlegrid\")");
-                        })
+        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveEntitlePop").Window(window => { window.Title("Leave Entitlement"); window.Scrollable(false); }))
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
 
-                        .Model(model =>
-                        {
-                            model.Id(p => p.LeaveEntitleId);
-                            model.Field(p => p.EmployeeCode).Editable(false);
-                            model.Field(p => p.TotlalAmount).Editable(false);
-                            model.Field(p => p.BranchId).Editable(false);
-                            model.Field(p => p.HireDate).Editable(false);
-                            //model.Field(p => p.Balance).Editable(false);
-                            model.Field(p => p.SumOfBalances).Editable(false);
-                           // model.Field(p => p.Amount).Editable(false);
-                        })
-                    .Read(read => read.Action("LeavesEntitle_New_Read", "LeaveEntitle"))
-                     .Create(create => create.Action("LeavesEntitle_Create", "LeaveEntitle"))
-                     .Update(update => update.Action("LeavesEntitle_Update", "LeaveEntitle"))
-                    .Destroy(destroy => destroy.Action("LeavesEntitle_Destroy", "LeaveEntitle"))
-                ).ClientDetailTemplateId("template")
+        })
+        .Scrollable(h => h.Height(500))
+        .Sortable(sortable =>
+        {
+            sortable.SortMode(GridSortMode.SingleColumn);
+        })
+        .Filterable()
+            .Pageable(pageable => pageable
+                .Input(true)
+                .Numeric(false)
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+        .Ajax()
+            .Events(events =>
+            {
+                events.Error("error_handler(\"LeaveEntitlegrid\")");
+                events.RequestStart("onRequestStart(\"LeaveEntitlegrid\")");
+                events.RequestEnd("onRequestEnd(\"LeaveEntitlegrid\")");
+
+            })
+
+            .Model(model =>
+            {
+                model.Id(p => p.LeaveEntitleId);
+                model.Field(p => p.EmployeeCode).Editable(false);
+                model.Field(p => p.TotlalAmount).Editable(false);
+                model.Field(p => p.BranchId).Editable(false);
+                model.Field(p => p.HireDate).Editable(false);
+                //model.Field(p => p.Balance).Editable(false);
+                model.Field(p => p.SumOfBalances).Editable(false);
+                // model.Field(p => p.Amount).Editable(false);
+
+            })
+            .Read(read => read.Action("LeavesEntitle_New_Read", "LeaveEntitle"))
+            .Create(create => create.Action("LeavesEntitle_Create", "LeaveEntitle"))
+            .Update(update => update.Action("LeavesEntitle_Update", "LeaveEntitle"))
+            .Destroy(destroy => destroy.Action("LeavesEntitle_Destroy", "LeaveEntitle"))
+        ).ClientDetailTemplateId("template")
+
 )
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-             .Name("tabstrip_#=LeaveEntitleId#")
-             .SelectedIndex(0)
-             .Items(items =>
-             {
-             items.Add().Text("Entitle Detail").Content(
+        .Name("tabstrip_#=LeaveEntitleId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+                items.Add().Text("Entitle Detail").Content(
                 @<text>
 
                     @(Html.Kendo().Grid<LeaveEntitle>()
-                                      .Name("LeaveEntitleOld_#=LeaveEntitleId#")
-                                       .Columns(columns =>
-                                       {
-                                           columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").Width(150).EditorTemplateName("FiscalYear");//.Filterable(ftb => ftb.Multi(true).Search(true));
-                                           columns.Bound(c => c.Amount).Width(100);
-                                           columns.Bound(c => c.Balance).Width(100);
-                                           columns.Bound(c => c.Remark).Width(100);
-                                           columns.Command(command =>
-                                           {
-                                               command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { id="btnStyle"});
-                                               command.Destroy().Text(Resources.ActionButton_Cancel);
-                                           }).Width(200);
-                                       })
+                        .Name("LeaveEntitleOld_#=LeaveEntitleId#")
+                        .Columns(columns =>
+                        {
+                            columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").Width(150).EditorTemplateName("FiscalYear");//.Filterable(ftb => ftb.Multi(true).Search(true));
+                            columns.Bound(c => c.Amount).Width(100);
+                            columns.Bound(c => c.Balance).Width(100);
+                            columns.Bound(c => c.Remark).Width(100);
+                            columns.Command(command =>
+                            {
+                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { id="btnStyle"});
+                                command.Destroy().Text(Resources.ActionButton_Cancel);
+                            }).Width(200);
+
+                        })
                              //.ToolBar(toolbar =>
                              //{
 
@@ -195,23 +199,24 @@
 
                            .DataSource(dataSource => dataSource
                                .Ajax()
-                                        .Events(events =>
-                                        {
-                                            events.Error("error_handler(\"LeaveEntitleOld_#=LeaveEntitleId#\")");
-                                            events.RequestStart("onRequestStart(\"LeaveEntitleOld_#=LeaveEntitleId#\")");
-                                            events.RequestEnd("onRequestEnd(\"LeaveEntitleOld_#=LeaveEntitleId#\")");
-                                        })
+                               .Events(events =>
+                               {
+                                   events.Error("error_handler(\"LeaveEntitleOld_#=LeaveEntitleId#\")");
+                                   events.RequestStart("onRequestStart(\"LeaveEntitleOld_#=LeaveEntitleId#\")");
+                                   events.RequestEnd("onRequestEnd(\"LeaveEntitleOld_#=LeaveEntitleId#\")");
+
+                               })
 
                                .Model(model =>
                                {
                                    model.Id(p => p.LeaveEntitleId);
                                    model.Field(p => p.GlFiscalYearId).Editable(false);
                                })
-                                    .Read(read => read.Action("LeavesEntitle_OnePerson_Read", "LeaveEntitle", new { id = "#=EmployeeId#" }))
-                                    //.Create(create => create.Action("LeavesEntitle_Create", "LeaveEntitle", new { id = "#=EmployeeId#" }))
-                                    .Update(update => update.Action("LeavesEntitle_Update", "LeaveEntitle"))
-                                    .Destroy(destroy => destroy.Action("LeavesEntitle_Destroy", "LeaveEntitle"))
-                               ).ToClientTemplate()
+                               .Read(read => read.Action("LeavesEntitle_OnePerson_Read", "LeaveEntitle", new { id = "#=EmployeeId#" }))
+                               //.Create(create => create.Action("LeavesEntitle_Create", "LeaveEntitle", new { id = "#=EmployeeId#" }))
+                               .Update(update => update.Action("LeavesEntitle_Update", "LeaveEntitle"))
+                               .Destroy(destroy => destroy.Action("LeavesEntitle_Destroy", "LeaveEntitle"))
+                        ).ToClientTemplate()
                     )
                 </text>
 );
@@ -316,7 +321,8 @@
         this.read();
 
     }
-    function Refresh(e) {
+
+    @*function Refresh(e) {
         $('#loading-image').show();
         try {
             var Period = $("#GlFiscalYear").data("kendoDropDownList");
@@ -337,8 +343,40 @@
                 }
 
             });
-        } catch (e) {
+        }
+        catch (e) {
             //alert("Please select the row!!");
+        }
+
+    }*@
+    function Refresh(e)
+    {
+        $('#loading-image').show();
+        try {
+            var Period = $("#GlFiscalYear").data("kendoDropDownList");
+            var period = Period.value();
+            var isChecked = $('#chkIsInclude').is(':checked');
+
+            $.ajax({
+                @*url: '@Url.Action("GetEmployeeLeaveEntitlemntNewAwaj", "LeaveEntitle")',*@
+                url: '@Url.Action("GetEmployeeLeaveEntitlemntNewAwajCopy", "LeaveEntitle")',
+                data: { check: isChecked, period: period },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    $('#loading-image').hide();
+                    $("#LeaveEntitlegrid").data("kendoGrid").dataSource.read();
+                },
+                error: function (xhr, status, error) {
+                    $('#loading-image').hide();
+                    console.error("Error: " + status + " " + error);
+                    alert("An error occurred while processing your request.");
+                }
+            });
+        } catch (e) {
+            $('#loading-image').hide();
+            console.error("Exception: ", e);
+            alert("An unexpected error occurred. Please try again.");
         }
 
     }

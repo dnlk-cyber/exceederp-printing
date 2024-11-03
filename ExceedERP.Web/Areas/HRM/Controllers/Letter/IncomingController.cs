@@ -6,9 +6,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.Common.Controllers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -23,7 +21,7 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Letter
 {
-  
+
     [AuthorizeRoles(HrmConstants.HRAdmin, HrmConstants.HRLettersUser)]
     public class IncomingController : BaseController
     {

@@ -29,6 +29,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 PeerToPeerPerformanceEvaluationId = peerToPeerPerformance.PeerToPeerPerformanceEvaluationId,
                 PerformanceRequestPeriodId = peerToPeerPerformance.PerformanceRequestPeriodId,
                 EvaluatorId = peerToPeerPerformance.EvaluatorId,
+                IsAsignmentApproved = peerToPeerPerformance.IsAsignmentApproved,
                 EmployeeId = peerToPeerPerformance.EmployeeId
 
             });
@@ -108,12 +109,52 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 PeerToPeerPerformanceEvaluationId = peerToPeerPerformance.PeerToPeerPerformanceEvaluationId,
                 PerformanceRequestPeriodId = peerToPeerPerformance.PerformanceRequestPeriodId,
                 EvaluatorId = peerToPeerPerformance.EvaluatorId,
+                IsAsignmentApproved = peerToPeerPerformance.IsAsignmentApproved,
                 EmployeeId = peerToPeerPerformance.EmployeeId
                
             };
             return entity;
         }
-      
+
+        public JsonResult PeerToPeerEvaluatorConfirmation(int id)
+        {
+            var evaluator = db.PeerToPeerPerformanceEvaluations.Find(id);
+            if (evaluator != null)
+            {
+                if (evaluator.IsAsignmentApproved)
+                {
+                    var formattedData = new
+                    {
+                        Message = "You can't approve again, it is already approved.",
+                        Status = "OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    // Approve the assignment here
+                    evaluator.IsAsignmentApproved = true;
+                    db.Entry(evaluator).State = EntityState.Modified;
+                    db.SaveChanges();  // Make sure to save the changes in the database
+
+                    var formattedData = new
+                    {
+                        Message = "You successfully approved .",
+                        Status = "OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                var formattedData = new
+                {
+                    Message = "No evaluation found for the provided ID.",
+                    Status = "Error"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

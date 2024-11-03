@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
@@ -95,6 +91,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmployeeTransferRequests_Create([DataSourceRequest]DataSourceRequest request, EmployeeTransferRequest employeeTransfer)
         {
+            if(employeeTransfer.FromBranchId==employeeTransfer.BranchId
+                || employeeTransfer.BusinessUnitId == employeeTransfer.FromBusinessUnitId)
+            {
+                ModelState.AddModelError("exist", " transfering to the same is not possible");
+            }
+            if (db.EmployeeTransferRequests.Where(x => x.EmployeeId == employeeTransfer.EmployeeId
+                      && x.BusinessUnitId==employeeTransfer.BusinessUnitId
+                      && x.FromBusinessUnitId==employeeTransfer.FromBusinessUnitId
+                      && x.FromBranchId==employeeTransfer.FromBranchId
+                      &&x.BranchId== employeeTransfer.BranchId).Any())
+            {
+                ModelState.AddModelError("exist", " transfering to the same is not possible");
+            }
             ModelState.Clear();
             if (ModelState.IsValid)
             {
@@ -113,6 +122,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmployeeTransferRequests_Update([DataSourceRequest]DataSourceRequest request, EmployeeTransferRequest employeeTransfer)
         {
+            if (employeeTransfer.FromBranchId == employeeTransfer.BranchId
+                || employeeTransfer.BusinessUnitId == employeeTransfer.FromBusinessUnitId)
+            {
+                ModelState.AddModelError("exist", " transfering to the same is not possible");
+            }
+            if (db.EmployeeTransferRequests.Where(x => x.EmployeeId == employeeTransfer.EmployeeId
+                      && x.BusinessUnitId == employeeTransfer.BusinessUnitId
+                      && x.FromBusinessUnitId == employeeTransfer.FromBusinessUnitId
+                      && x.FromBranchId == employeeTransfer.FromBranchId
+                      && employeeTransfer.EmployeeTransferRequestId !=x.EmployeeTransferRequestId
+                      && x.BranchId == employeeTransfer.BranchId).Any())
+            {
+                ModelState.AddModelError("exist", " transfering to the same is not possible");
+            }
             ModelState.Clear();
             if (ModelState.IsValid)
             {

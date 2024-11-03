@@ -97,15 +97,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public int SetEmployee(string x)
         {
             IsForOther = false;
-
             if (x == "true")
             {
                 var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                var list = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
-
+                //var list = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
+                var list = EmployeeHelper.GetSubordinates_FilteredByHead(employeeId).ToList();
                 IsForOther = true;
                 return list.Count();
-
             }
             return 0;
         }
@@ -120,9 +118,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
         public ActionResult Terminations_Read([DataSourceRequest]DataSourceRequest request)
         {
-            var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeid);
-
+            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            //List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeid);
+            List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByHead(employeeId);
             IQueryable<Core.Domain.HRM.EmployeeDetail.Termination> terminations = db.Terminations.Where(x => employeeids.Contains(x.EmployeeId));
             DataSourceResult result = terminations.ToDataSourceResult(request, termination => new
             {

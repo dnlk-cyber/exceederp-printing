@@ -22,7 +22,7 @@ using System.Web.Mvc;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
 {
 
-    [AuthorizeRoles(HrmConstants.HRTerminationUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRTerminationUser)]
     public class TerminationController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -85,9 +85,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
         public JsonResult TerminateEmployee(int id)
         {
 
+           
             var termination = db.Terminations.FirstOrDefault(x => x.TerminationId == id);
             if (termination != null)
             {
+                
                 if (termination.IsOnlineApproved)
                 {
                     var formatedData = new
@@ -97,11 +99,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
                     };
                     return Json(formatedData, JsonRequestBehavior.AllowGet);
                 }
-              
                 else
                 {
                     termination.IsOnlineApproved = true;
-
                     db.Entry(termination).State = EntityState.Modified;
                     //db.SaveChanges();
                     #region change resquest status 
@@ -186,66 +186,67 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
             var termination = db.Terminations.FirstOrDefault(x => x.TerminationId == id);
             if (termination != null)
             {
-                termination.IsOnlineApproved = true;
-                termination.IsForciblyTerminated = true;
-                termination.Remark += "Terminated back by " + User.Identity.Name+" ";
+               
+                    termination.IsOnlineApproved = true;
+                    termination.IsForciblyTerminated = true;
+                    termination.Remark += "Terminated back by " + User.Identity.Name + " ";
 
-                db.Entry(termination).State = EntityState.Modified;
+                    db.Entry(termination).State = EntityState.Modified;
 
-                #region change resquest status 
+                    #region change resquest status 
 
-                var statusDep = new RequestesStatus
-                {
-                    RequestId = termination.TerminationId,
-                    Date = DateTime.Now.Date,
-                    ReferenceType = "Termination",
-                    Status = RequestStatus.DEPARTMENT_APPROVAL
-                };
-                db.RequestesStatus.Add(statusDep);
+                    var statusDep = new RequestesStatus
+                    {
+                        RequestId = termination.TerminationId,
+                        Date = DateTime.Now.Date,
+                        ReferenceType = "Termination",
+                        Status = RequestStatus.DEPARTMENT_APPROVAL
+                    };
+                    db.RequestesStatus.Add(statusDep);
 
-                var statusApp = new RequestesStatus
-                {
-                    RequestId = termination.TerminationId,
-                    Date = DateTime.Now.Date,
-                    ReferenceType = "Termination",
-                    Status = RequestStatus.APPROVE
-                };
-                db.RequestesStatus.Add(statusApp);
+                    var statusApp = new RequestesStatus
+                    {
+                        RequestId = termination.TerminationId,
+                        Date = DateTime.Now.Date,
+                        ReferenceType = "Termination",
+                        Status = RequestStatus.APPROVE
+                    };
+                    db.RequestesStatus.Add(statusApp);
 
-                #endregion
+                    #endregion
 
-                db.SaveChanges();
-
-                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId);
-                if (person != null)
-                {
-                    person.IsActive = false;
-
-                    db.Entry(person).State = EntityState.Modified;
                     db.SaveChanges();
-                }
 
-                var placements = db.Placements.Where(x => x.EmployeeId == termination.EmployeeId).ToList();
+                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId);
+                    if (person != null)
+                    {
+                        person.IsActive = false;
 
-                foreach (var place in placements)
-                {
-                    place.isCurrent = false;
+                        db.Entry(person).State = EntityState.Modified;
 
-                    db.Entry(place).State = EntityState.Modified;
+                    }
+
+                    var placements = db.Placements.Where(x => x.EmployeeId == termination.EmployeeId).ToList();
+
+                    foreach (var place in placements)
+                    {
+                        place.isCurrent = false;
+
+                        db.Entry(place).State = EntityState.Modified;
+                    }
                     db.SaveChanges();
-                }
-
-                var formatedData = new
-                {
-                    Message = "This employee is successfully Terminated",
-                    Status = "OK"
-                };
-                return Json(formatedData, JsonRequestBehavior.AllowGet);
+                    var formatedData = new
+                    {
+                        Message = "This employee is successfully Terminated",
+                        Status = "OK"
+                    };
+                    return Json(formatedData, JsonRequestBehavior.AllowGet);
+                
 
             }
             var formatedData1 = new
             {
-                Message = "Please select employee",
+                Message = "Record Not Found",
                 Status = "Fail"
             };
             return Json(formatedData1, JsonRequestBehavior.AllowGet);
@@ -258,9 +259,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
                 termination.IsOnlineApproved = false;
                 termination.IsForciblyTerminated = false;
                 termination.Remark += "Unterminated back by " + User.Identity.Name+",";
-
                 db.Entry(termination).State = EntityState.Modified;
-
                 #region change resquest status 
 
                 var statusDep = new RequestesStatus
@@ -282,16 +281,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
                 db.RequestesStatus.Add(statusApp);
 
                 #endregion
-
-                db.SaveChanges();
-
+                
                 var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId);
                 if (person != null)
                 {
                     person.IsActive = true;
 
                     db.Entry(person).State = EntityState.Modified;
-                    db.SaveChanges();
+                    //db.SaveChanges();
                 }
 
                 var placements = db.Placements.Where(x => x.EmployeeId == termination.EmployeeId).ToList();
@@ -300,9 +297,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
                 {
                     place.isCurrent = true;
                     db.Entry(place).State = EntityState.Modified;
-                    db.SaveChanges();
+                   // db.SaveChanges();
                 }
-
+                db.SaveChanges();
                 var formatedData = new
                 {
                     Message = "This employee is successfully un-Terminated",
@@ -440,7 +437,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
             if (termination.ApplicationDate > DateTime.Now.Date)
             {
 
-                ModelState.AddModelError("", "Application date should be less or equal to the current date!!");
+                ModelState.AddModelError("", "Application date should be less or equal to the Current date!!");
             }
 
             if (ModelState.IsValid)

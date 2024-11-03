@@ -1,0 +1,109 @@
+﻿@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>HRM ISO Document Titles and Document Numbers</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.IsoDocument>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Module).Filterable(f => f.Multi(true).Search(true)).Width(100);
+          columns.Bound(c => c.DocumentType).Width(200)/*.Filterable(f => f.Multi(true).Search(true))*/;
+          columns.Bound(c => c.FormTitle).Width(150)/*.Filterable(f => f.Multi(true).Search(true))*/;
+          columns.Bound(c => c.FormNumber).Width(100)/*.Filterable(f => f.Multi(true).Search(true))*/;
+          //columns.Bound(c => c.Remark);
+          //columns.Bound(c => c.URL).Title("Report URL").ClientTemplate("<a href='#=URL#' target='_blank'>#=URL#</a>");
+          columns.Bound(c => c.URL).Width(80).Title(" ").ClientTemplate("<a href='#=URL#' target='_blank'> Go to Report &nbsp;<i class='fa fa-external-link'></i></a>");
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              //command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(100);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Template(
+            @<text>
+                    @*<a class="k-button k-button-icontext k-grid-add btn btn-success" href='\\#'><span class="fa fa-plus-circle"></span>&nbsp; Add New Manually</a>*@
+                    <a class="k-button k-button-icontext btn btn-primary" id="fetchLatestButtn" onclick='return updateDocumentInfo()' href='#'><span class="fa fa-refresh"></span>&nbsp;&nbsp;Update</a>
+                    <a id="fetchLoadingIcon" hidden> <i class="fa fa-spinner fa-spin fa-2x fa-fw"></i></a>
+            </text>);
+
+      })
+      .Filterable()
+      .Sortable()
+      .Pageable(pageable =>
+      {
+          pageable.Input(true);
+          pageable.Refresh(true);
+          pageable.Info(true);
+          pageable.Numeric(true);
+          pageable.PageSizes(true);
+          pageable.PageSizes(new List<int> { 5, 10, 20, 50, 100 });
+          pageable.ButtonCount(5);
+      })
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(h=> h.Height( 500))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Group(group =>
+          {
+              group.Add(p => p.Module);
+          })
+          .PageSize(20)
+          .Events(events =>
+          {
+              events.Error("error_handler(\"grid\")");
+              events.RequestStart("onRequestStart(\"grid\")");
+              events.RequestEnd("onRequestEnd(\"grid\")");
+          })
+
+          .Model(model =>
+          {
+              model.Id(p => p.IsoDocumentId);
+              model.Field(p => p.Module).Editable(false);
+              model.Field(p => p.DocumentType).Editable(false);
+              model.Field(p => p.URL).Editable(false);
+          })
+          .Read(read => read.Action("Data_Read", "HRMIsoDocuments"))
+          .Create(create => create.Action("Data_Create", "HRMIsoDocuments"))
+          .Update(update => update.Action("Data_Update", "HRMIsoDocuments"))
+          .Destroy(destroy => destroy.Action("Data_Destroy", "HRMIsoDocuments"))
+      )
+)
+
+<script type="text/javascript">
+    function updateDocumentInfo() {
+        toastr.info("Operation started, please wait while we process your request.");
+        var updateBtn = $("#fetchLatestButtn");
+        updateBtn.attr('disabled', true);
+        var indicatorBtn = $("#fetchLoadingIcon");
+        indicatorBtn.show();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("UpdateOrGenerateDocument", "IsoDocuments", new { area = "Common" })',
+            cache: false,
+            success: function (result) {
+                indicatorBtn.hide();
+                updateBtn.attr('disabled', false);
+                if (result.Status == "OK") {
+                    toastr.success(result.Message);
+                } else {
+                    toastr.error(result.Message);
+                }
+                $("#grid").data("kendoGrid").dataSource.read();
+            }, 
+            error: function (result) {
+                indicatorBtn.hide();
+                updateBtn.attr('disabled', false);
+                toastr.error("Operation failed. " + result.Message);
+            }
+        });
+    }
+</script>

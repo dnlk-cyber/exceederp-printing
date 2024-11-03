@@ -18,7 +18,8 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
 {
-    [AuthorizeRoles(HrmConstants.HRAttendanceUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRAttendanceUser,
+          HrmConstants.HRDepartmentHead)]
     public class LateComingSummaryController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

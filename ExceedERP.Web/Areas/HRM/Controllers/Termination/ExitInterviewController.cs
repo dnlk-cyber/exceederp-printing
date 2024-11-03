@@ -3,7 +3,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
@@ -15,7 +14,7 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
 {
-    [AuthorizeRoles(HrmConstants.HRTerminationUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRTerminationUser)]
     public class ExitInterviewController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

@@ -80,8 +80,19 @@
           {
               columns.ForeignKey(c => c.EvaluatorId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameEng").EditorTemplateName("EmployeeList").Width(260);
               columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameEng").EditorTemplateName("EmployeeList").Width(260);
+              columns.Bound(c => c.IsAsignmentApproved).ClientTemplate(
+                                     "<input type='checkbox' disabled = 'true' value='\\#= IsAsignmentApproved\\#' " +
+                                     "\\# if (IsAsignmentApproved) { \\#" +
+                                     "checked='checked'" +
+                                     "\\# } \\#" +
+                                     "/>"
+                                     ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(75);
 
-              columns.Command(command => { command.Edit(); command.Destroy(); });
+              columns.Command(command => {
+                  command.Edit();
+                  command.Custom("cmd-confirm").IconClass("fa fa-check ").Text("Confirm").Click("AssignmentConfirmation").HtmlAttributes(new { @class = "btn btn-success" });
+
+                  command.Destroy(); });
           })
           .ToolBar(toolbar =>
           {
@@ -94,6 +105,7 @@
           .Events(events =>
           {
               events.Cancel("onCancel");
+              events.DataBound("onPeerToPeerDataBound");
               events.Edit("onEdit");
           })
           .DataSource(dataSource => dataSource
@@ -185,10 +197,18 @@
           {
 
               columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameEng").EditorTemplateName("EmployeeList").Width(260);
-
+              columns.Bound(c => c.IsConfirmed).ClientTemplate(
+                                     "<input type='checkbox' disabled = 'true' value='\\#= IsConfirmed\\#' " +
+                                     "\\# if (IsConfirmed) { \\#" +
+                                     "checked='checked'" +
+                                     "\\# } \\#" +
+                                     "/>"
+                                     ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(75);
               columns.Command(command =>
               {
                   command.Edit();
+                  command.Custom("cmd-confirm").IconClass("fa fa-check ").Text("Confirm").Click("InternalCustomerAssignmentConfirmation").HtmlAttributes(new { @class = "btn btn-success" });
+
                   command.Destroy();
               });
           })
@@ -204,6 +224,7 @@
           {
               events.Cancel("onCancel");
               events.Edit("onEdit");
+              events.DataBound("onInternalCustomerDataBound");
           })
           .DataSource(dataSource => dataSource
               .Ajax()
@@ -325,5 +346,114 @@
             }
 
         }
+        function onPeerToPeerDataBound(e)
+        {
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++)
+        {
+
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsAsignmentApproved) {
+                row.css("background-color", "lightGreen");
+
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-cmd-confirm").hide();
+            }
+            
+        }
+
+    }
+
+    function onInternalCustomerDataBound(e)
+    {
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++)
+        {
+
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsConfirmed) {
+                row.css("background-color", "lightGreen");
+
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-cmd-confirm").hide();
+            }
+            
+        }
+
+    }
 
     </script>
+    
+<script>
+    function AssignmentConfirmation(e)
+    {
+
+        var grid = this,
+                dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+
+        var id = dataItem.PeerToPeerPerformanceEvaluationId;
+        var conf = confirm("Are you sure you want to approve this quarter performance evaluation");
+        if (conf === true)
+        {
+            $('#loading-image').show();
+            $.ajax({
+                    url: '@Url.Action("PeerToPeerEvaluatorConfirmation", "PeerToPeerPerformanceEvaluations")',
+                    data: { id: id },
+                    type: 'POST',
+                    cache: false,
+                    success: function (result) {
+                        alert(result.Message);
+                        $('#loading-image').hide();
+                        grid.dataSource.read();
+
+
+
+
+                },
+                error: function (xhr, status, error) {
+                            $('#loading-image').hide();
+                            alert("An error occurred: " + error);
+
+                }
+
+
+
+            });
+            
+        }
+        
+    }
+    
+    function InternalCustomerAssignmentConfirmation(e)
+    {
+
+        var grid = this,
+                dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        var id = dataItem.InternalCustomerId;
+        var conf = confirm("Are you sure you want to Confirm ");
+        if (conf === true)
+        {
+                $('#loading-image').show();
+                $.ajax({
+                        url: '@Url.Action("InternalCustomerConfirmation", "InternalCustomers")',
+                        data: { id: id },
+                        type: 'POST',
+                        cache: false,
+                        success: function (result) {
+                            alert(result.Message);
+                            $('#loading-image').hide();
+                            grid.dataSource.read();
+                        },
+                        error: function (xhr, status, error) {
+                            $('#loading-image').hide();
+                            alert("An Error occurred: " + error);
+                        }
+                });
+            }
+
+    }
+</script>

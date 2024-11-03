@@ -49,17 +49,15 @@
           }
           toolbar.Custom().Text(Resources.ActionButton_Refersh);
       })
-           .Excel(excel => excel
-                                                                    .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".xlsx")
-                                            .Filterable(true)
-                                                .AllPages(true)
-                                                                            .ProxyURL(Url.Action("Excel_Export_Save", "EmployeePlacment"))
-                                        )
-                                             .Pdf(pdf => pdf
-                                            .AllPages()
-                                                                        .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".pdf")
-                                                                            .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePlacment"))
-                                        )
+      .Excel(excel => excel
+                        .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".xlsx")
+                        .Filterable(true)
+                            .AllPages(true)           
+                            .ProxyURL(Url.Action("Excel_Export_Save", "EmployeePlacment")) )
+                            .Pdf(pdf => pdf
+                            .AllPages()
+                            .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".pdf")
+                            .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePlacment")))
          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Placement").Window(window => { window.Title(Resources.NavigatorPlacment_EmployeePlacment); window.Scrollable(false); }))
          .Scrollable(h => h.Height(500))
          .Groupable()

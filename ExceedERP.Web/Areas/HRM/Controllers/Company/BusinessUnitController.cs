@@ -8,10 +8,12 @@ using ExceedERP.Helpers.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
+using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
-    // [AuthorizeRoles(HRCon)]
+    [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
     public class BusinessUnitController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

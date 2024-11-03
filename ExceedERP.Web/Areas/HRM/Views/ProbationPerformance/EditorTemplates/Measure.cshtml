@@ -5,11 +5,13 @@
 
     .OptionLabel(Resources.Select)
              .DataTextField("Description")
-                            .DataValueField("LookupId")
-                              .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetProbationMeasurments", "HRMDataProvider", new { area = "HRM" }))
-                                                    .ServerFiltering(false);
-                          })
+             .DataValueField("LookupId")
+             .Filter("contains")
+             .DataSource(dataSource =>
+             {
+                 dataSource.Read(read => read.Action("GetProbationMeasurments", "HRMDataProvider", new { area = "HRM" }))
+                                       .ServerFiltering(false);
+
+             })
                              .ValuePrimitive(true)
 )

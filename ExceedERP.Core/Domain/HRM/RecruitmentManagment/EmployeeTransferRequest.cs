@@ -24,13 +24,13 @@ namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime RequestDate { get; set; }
-        [Display(Name = "Branch")]
+        [Display(Name = "To Branch")]
         public int BranchId { get; set; }
         [DisplayName("From Business Unit ")]
         public int? FromBusinessUnitId { get; set; }
         [Display(Name = "From Branch")]
         public int FromBranchId { get; set; }
-        [DisplayName("Business Unit ")]
+        [DisplayName(" To Business Unit ")]
         public int? BusinessUnitId { get; set; }
         public virtual ICollection<TransferRequestDetail> TransferRequestDetails { get; set; }
         public virtual ICollection<TransferRequestValidation> TransferRequestValidations { get; set; }

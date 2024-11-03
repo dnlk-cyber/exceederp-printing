@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.HRM.PerformanceManagment;
+using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
@@ -81,6 +81,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                             }
 
                         }
+                        prob.Result += entity.Score;
+                        db.Entry(prob).State = EntityState.Modified;
+                        db.SaveChanges();
+
+
 
                     }
                 }
@@ -126,6 +131,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                             }
 
                         }
+                        prob.Result = (decimal)db.ProbationPerformanceDetails
+                          .Where(x => x.ProbationPerformanceId == prob.ProbationPerformanceId).Sum(x => x.Score);
+                        db.Entry(prob).State = EntityState.Modified;
+                        db.SaveChanges();
 
                     }
                 }

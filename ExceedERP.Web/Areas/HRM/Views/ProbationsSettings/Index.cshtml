@@ -1,0 +1,62 @@
+﻿@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Localization
+@{
+    
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>Probation Setting</Legend>
+@(Html.Kendo().Grid<ProbationsSetting>()
+      .Name("Probationgrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ProbationsSettingId).Title("#").Width(80);
+          columns.Bound(c => c.PromotionDays).Width(150);
+          columns.Bound(c => c.MinimumFitValue).Width(150);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(500))
+            .Sortable(sortable =>
+            {
+                sortable.SortMode(GridSortMode.SingleColumn);
+
+            })
+            .Filterable()
+            .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(events =>
+                  {
+                      events.Error("error_handler(\"Probationgrid\")");
+                      events.RequestStart("onRequestStart(\"Probationgrid\")");
+                      events.RequestEnd("onRequestEnd(\"Probationgrid\")");
+                  })
+
+              .Model(model => {
+                  model.Id(p => p.ProbationsSettingId);
+                  model.Field(p => p.ProbationsSettingId).Editable(false);
+              })
+              .Read(read => read.Action("ProbationsSettings_Read", "ProbationsSettings"))
+              .Create(create => create.Action("ProbationsSettings_Create", "ProbationsSettings"))
+              .Update(update => update.Action("ProbationsSettings_Update", "ProbationsSettings"))
+              .Destroy(destroy => destroy.Action("ProbationsSettings_Destroy", "ProbationsSettings"))
+          )
+)
+<script>
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

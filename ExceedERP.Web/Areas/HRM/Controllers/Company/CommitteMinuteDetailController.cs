@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using System.Data.Entity;
 using System.Linq;
@@ -8,7 +7,6 @@ using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Core.Domain.Common;
@@ -16,7 +14,6 @@ using System.IO;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Helpers.Common;
-using System.Data.Entity.Validation;
 using ExceedERP.Core.Domain;
 using ExceedERP.Web.Helpers;
 

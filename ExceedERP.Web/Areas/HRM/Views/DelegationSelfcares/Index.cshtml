@@ -63,13 +63,14 @@
                     .ButtonCount(5))
         .DataSource(dataSource => dataSource
             .Ajax()
-                 .Events(events =>
-                 {
-                     events.Error("error_handler(\"Delegation\")");
-                     events.RequestStart("onRequestStart(\"Delegation\")");
-                     events.RequestEnd("onRequestEnd(\"Delegation\")");
-                 })
+            .Sort(x=>x.Add(sort=>sort.DelegationId).Descending())
+            .Events(events =>
+            {
+                events.Error("error_handler(\"Delegation\")");
+                events.RequestStart("onRequestStart(\"Delegation\")");
+                events.RequestEnd("onRequestEnd(\"Delegation\")");
 
+            })
             .Model(model =>
             {
                 model.Id(p => p.DelegationId);
@@ -78,10 +79,10 @@
                 //model.Field(p => p.FromDateTimeAm).Editable(false);
                 model.Field(p => p.ToDateTime).Editable(false);
             })
-                .Read(read => read.Action("Delegations_Read", "DelegationSelfcares"))
-                .Create(create => create.Action("Delegations_Create", "DelegationSelfcares"))
-                .Update(update => update.Action("Delegations_Update", "DelegationSelfcares"))
-                .Destroy(destroy => destroy.Action("Delegations_Destroy", "DelegationSelfcares"))
+            .Read(read => read.Action("Delegations_Read", "DelegationSelfcares"))
+            .Create(create => create.Action("Delegations_Create", "DelegationSelfcares"))
+            .Update(update => update.Action("Delegations_Update", "DelegationSelfcares"))
+            .Destroy(destroy => destroy.Action("Delegations_Destroy", "DelegationSelfcares"))
 
         ).ClientDetailTemplateId("template")
 )

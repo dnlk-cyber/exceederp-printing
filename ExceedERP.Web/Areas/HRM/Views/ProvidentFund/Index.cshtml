@@ -13,7 +13,8 @@
 
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("PayrollListOfEmployee").Width(260);
           columns.Bound(c => c.IsMemeber).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsMemeber #' " + " # if (IsMemeber) { #" + "checked='checked'" + "# } #" + " />").Width(120);
-         columns.Bound(c => c.Remark).Width(200);
+          columns.Bound(c => c.ApplyPension).ClientTemplate("<input type='checkbox'  disabled='true' value='#=ApplyPension #' " + " # if (ApplyPension) { #" + "checked='checked'" + "# } #" + " />").Width(120);
+          columns.Bound(c => c.Remark).Width(200);
           columns.Command(command =>
           {
               command.Edit();
@@ -31,7 +32,7 @@
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
          .Scrollable(h => h.Height(500))
-             .Groupable()
+
                       .Sortable(sortable =>
                       {
                           sortable.SortMode(GridSortMode.SingleColumn);
@@ -45,18 +46,19 @@
                                         .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
-          //.Batch(true )
+          .Sort(sort => sort.Add("ProvidentFundId").Descending())
+                                                    //.Batch(true )
                                                     .Events(events =>
-                                                                             {
-                                                                                 events.Error("error_handler(\"ProvidentFundgrid\")");
-                                                                                 events.RequestStart("onRequestStart(\"ProvidentFundgrid\")");
-                                                                                 events.RequestEnd("onRequestEnd(\"ProvidentFundgrid\")");
-                                                                             })
-                                                   
+                                                    {
+                                                        events.Error("error_handler(\"ProvidentFundgrid\")");
+                                                        events.RequestStart("onRequestStart(\"ProvidentFundgrid\")");
+                                                        events.RequestEnd("onRequestEnd(\"ProvidentFundgrid\")");
+                                                    })
+
           .Model(model =>
           {
               model.Id(p => p.ProvidentFundId);
-             
+
           })
                           .Read(read => read.Action("ProvidentFunds_Read", "ProvidentFund"))
                           .Create(create => create.Action("ProvidentFunds_Create", "ProvidentFund"))

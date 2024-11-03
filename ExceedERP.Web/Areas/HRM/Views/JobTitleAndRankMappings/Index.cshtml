@@ -1,0 +1,79 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Company
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.HRM_JobTitle_and_Rank_Mapping</legend>
+@(Html.Kendo().Grid<JobTitleAndRankMapping>()
+      .Name("JobTitleAndRankMapping")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitles"], "LookupId", "Description").EditorTemplateName("JobTitles").Width(150);
+          columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Width(150);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);//
+              }
+          }).Width(200);
+
+      })
+      .ToolBar(toolbar => {
+          if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("SalaryJobTitle").Window(window => { window.Title(Resources.Navigator_Company_JobTitleSalary); window.Scrollable(false); }))
+         .Selectable(selectable =>
+         {
+             selectable.Mode(GridSelectionMode.Single);
+             selectable.Type(GridSelectionType.Row);
+         })
+         .Scrollable(h => h.Height(500))
+         .Sortable(sortable =>
+         {
+             sortable.SortMode(GridSortMode.SingleColumn);
+
+         })
+         .Filterable()
+         .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(events =>
+          {
+              events.Error("error_handler(\"JobTitleAndRankMapping\")");
+              events.RequestStart("onRequestStart(\"JobTitleAndRankMapping\")");
+              events.RequestEnd("onRequestEnd(\"JobTitleAndRankMapping\")");
+
+          })
+
+          .Model(model => model.Id(p => p.JobTitleAndRankMappingId))
+          .Read(read => read.Action("JobTitleAndRankMappings_Read", "JobTitleAndRankMappings"))
+          .Create(create => create.Action("JobTitleAndRankMappings_Create", "JobTitleAndRankMappings"))
+          .Update(update => update.Action("JobTitleAndRankMappings_Update", "JobTitleAndRankMappings"))
+          .Destroy(destroy => destroy.Action("JobTitleAndRankMappings_Destroy", "JobTitleAndRankMappings"))
+      )
+)
+<script>
+    
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+

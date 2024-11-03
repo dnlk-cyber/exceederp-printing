@@ -3,9 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -21,7 +19,7 @@ using ExceedERP.Core.Domain.Global;
 namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 {
 
-    [AuthorizeRoles(HrmConstants.HRTrainingUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRTrainingUser)]
     public class CourseTrackingController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

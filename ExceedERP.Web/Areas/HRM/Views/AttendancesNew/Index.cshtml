@@ -190,10 +190,7 @@
         grid.dataSource.read();
 
         var attendanceDate = $("#AttendanceDate").val();
-
-       // $("span.k-link").text(attendanceDate);
-
-           $.ajax({
+        $.ajax({
             url: '@Url.Action("GetDayOfWeek", "AttendancesNew")',
             //contentType: "application/json; charset=utf-8",
             data: { date: attendanceDate },
@@ -203,7 +200,8 @@
                 r = result;
                 $("span.k-link").text(attendanceDate +" ("+r.Message+")");
             }
-         });
+
+        });
 
     }
 </script>
@@ -212,7 +210,6 @@
 <script>
 
      $(document).ready(function () {
-
        $.ajax({
         url: '@Url.Action("GetCurrentDateInAmharic", "AttendancesNew")',
         //contentType: "application/json; charset=utf-8",
@@ -225,7 +222,6 @@
         }
      });
    });
-
 </script>
 
 
@@ -285,8 +281,8 @@
             if (confirm("Are you sure to return back this attendance ?")) {
 
                    $.ajax({
-                         url: '@Url.Action("ReturnAttendance", "AttendancesNew")',
-                         //contentType: "application/json; charset=utf-8",
+                       url: '@Url.Action("ReturnAttendance", "AttendancesNew")',
+                       //contentType: "application/json; charset=utf-8",
                        data: { date: attendanceDate },
                          type: 'POST',
                          cache: false,

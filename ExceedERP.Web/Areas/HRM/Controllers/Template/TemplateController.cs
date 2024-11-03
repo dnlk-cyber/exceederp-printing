@@ -1,16 +1,10 @@
-﻿
-using ExceedERP.DataAccess.Context;
+﻿using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using ExceedERP.Core.Domain.HRM.Templates;
-using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Web.Controllers;
 

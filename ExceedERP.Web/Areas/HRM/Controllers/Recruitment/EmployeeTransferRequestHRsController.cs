@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
@@ -21,7 +17,7 @@ using ExceedERP.Core.Domain.Inventory;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
 
-    [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
     public class EmployeeTransferRequestHRsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -43,7 +39,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             ViewData["workunits"] = workunits;
 
         }
-        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin, HrmConstants.HRRecruitmentUser)]
+        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
         public ActionResult EmployeeTransferRequests_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<EmployeeTransferRequest> employeeTransfers = db.EmployeeTransferRequests.Where(x=>x.IsDepartmentOnlineApproved);
@@ -54,6 +50,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 EmployeeId = employeeTransfer.EmployeeId,
                 OrgStructureId = employeeTransfer.OrgStructureId,
                 BranchId = employeeTransfer.BranchId,
+                FromBusinessUnitId = employeeTransfer.FromBusinessUnitId,
                 BusinessUnitId = employeeTransfer.BusinessUnitId,
                 Reason = employeeTransfer.Reason,
                 RequestDate = employeeTransfer.RequestDate,
@@ -62,7 +59,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 ForwardedFrom = employeeTransfer.ForwardedFrom,
                 ForwardedTo = employeeTransfer.ForwardedTo,
                 FromBranchId = employeeTransfer.FromBranchId,
-                FromBusinessUnitId = employeeTransfer.FromBusinessUnitId,
                 CurrentApprovalStep = employeeTransfer.CurrentApprovalStep,
                 CreatedBy = employeeTransfer.CreatedBy,
                 DateCreated = employeeTransfer.DateCreated,
@@ -96,6 +92,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         public ActionResult EmployeeTransferRequests_Create([DataSourceRequest]DataSourceRequest request, EmployeeTransferRequest employeeTransfer)
         {
             ModelState.Clear();
+            if (employeeTransfer.FromBranchId == employeeTransfer.BranchId
+               || employeeTransfer.BusinessUnitId == employeeTransfer.FromBusinessUnitId)
+            {
+                ModelState.AddModelError("exist", " transfering to the same is not possible");
+            }
+            if (db.EmployeeTransferRequests.Where(x => x.EmployeeId == employeeTransfer.EmployeeId
+                      && x.BusinessUnitId == employeeTransfer.BusinessUnitId
+                      && x.FromBusinessUnitId == employeeTransfer.FromBusinessUnitId
+                      && x.FromBranchId == employeeTransfer.FromBranchId
+                      && x.BranchId == employeeTransfer.BranchId).Any())
+            {
+                ModelState.AddModelError("exist", " transfering to the same is not possible");
+            }
             if (ModelState.IsValid)
             {
                 employeeTransfer.DateCreated = DateTime.Now;
@@ -114,6 +123,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         public ActionResult EmployeeTransferRequests_Update([DataSourceRequest]DataSourceRequest request, EmployeeTransferRequest employeeTransfer)
         {
             ModelState.Clear();
+            if (employeeTransfer.FromBranchId == employeeTransfer.BranchId
+               || employeeTransfer.BusinessUnitId == employeeTransfer.FromBusinessUnitId)
+            {
+                ModelState.AddModelError("exist", " transfering to the same is not possible");
+            }
+            if (db.EmployeeTransferRequests.Where(x => x.EmployeeId == employeeTransfer.EmployeeId
+                      && x.BusinessUnitId == employeeTransfer.BusinessUnitId
+                      && x.FromBusinessUnitId == employeeTransfer.FromBusinessUnitId
+                      && x.FromBranchId == employeeTransfer.FromBranchId
+                      && employeeTransfer.EmployeeTransferRequestId != x.EmployeeTransferRequestId
+                      && x.BranchId == employeeTransfer.BranchId).Any())
+            {
+                ModelState.AddModelError("exist", " transfering to the same is not possible");
+            }
             if (ModelState.IsValid)
             {
                 employeeTransfer.LastModified = DateTime.Now;
@@ -128,7 +151,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             return Json(new[] { employeeTransfer }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin)]
+        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmployeeTransferRequests_Destroy([DataSourceRequest]DataSourceRequest request, EmployeeTransferRequest employeeTransfer)
         {
@@ -154,15 +177,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 EmployeeId =employeeTransfer.EmployeeId,
                 OrgStructureId =employeeTransfer.OrgStructureId,
                 BranchId=employeeTransfer.BranchId,
-                BusinessUnitId=employeeTransfer.BusinessUnitId,
-                Reason=employeeTransfer.Reason,
+                FromBranchId = employeeTransfer.FromBranchId,
+                BusinessUnitId = employeeTransfer.BusinessUnitId,
+                FromBusinessUnitId = employeeTransfer.FromBusinessUnitId,
+                Reason = employeeTransfer.Reason,
                 RequestDate=employeeTransfer.RequestDate,
                 Remark=employeeTransfer.Remark,
                 Status=employeeTransfer.Status,
                 ForwardedFrom=employeeTransfer.ForwardedFrom,
                 ForwardedTo=employeeTransfer.ForwardedTo,
-                FromBranchId=employeeTransfer.FromBranchId,
-                FromBusinessUnitId=employeeTransfer.FromBusinessUnitId,
                 CurrentApprovalStep=employeeTransfer.CurrentApprovalStep,
                 CreatedBy=employeeTransfer.CreatedBy,
                 DateCreated=employeeTransfer.DateCreated,

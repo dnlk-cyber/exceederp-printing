@@ -15,10 +15,13 @@ using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Web.Hubs;
+using ExceedERP.Core.Domain;
+using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
 {
-
+    [AuthorizeRoles(HrmConstants.HRAttendanceUser,HrmConstants.HRAdmin, 
+        HrmConstants.HRDepartmentHead,  HrmConstants.HREmployeeSelfService)]
     public class AttendancesNewController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -77,34 +80,33 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
         }
         public List<int> GetEmployeesUnderBoss(int id)
         {
-            List<int> employeesIdList = new List<int>();
+            List<int> employeesIdList = EmployeeHelper.GetSubordinates_FilteredByHead(id);
 
-            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == id && x.isCurrent);
-            if (placement != null)
-            {
-                var placements = db.Placements.Where(x => x.OrgStructureId == placement.OrgStructureId &&x.BranchId==placement.BranchId&& x.isCurrent);
-                if (placements.Any())
-                {
-                    var empIdList = placements.Select(x => x.EmployeeId).ToList();
-                    employeesIdList.AddRange(empIdList);
-                }
+			//var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == id &&  x.IsHead && x.isCurrent);
+			//if (placement != null)
+			//{
+			//    var placements = db.Placements.Where(x => x.OrgStructureId == placement.OrgStructureId && x.EmployeeId != id && x.isCurrent);
+			//    if (placements.Any())
+			//    {
+			//        var empIdList = placements.Select(x => x.EmployeeId).ToList();
+			//        employeesIdList.AddRange(empIdList);
+			//    }
 
-                var employeesUnderThisParent = db.MainCompanyStructures.Where(x => x.Parent == placement.OrgStructureId).ToList();
-                foreach (var und in employeesUnderThisParent)
-                {
-                    var employeesPlacedInThisParent = db.Placements.Where(x => x.OrgStructureId == und.OrgStructureId&& x.BranchId == placement.BranchId).ToList();
-                    if (employeesPlacedInThisParent.Any())
-                    {
-                        var empIds = employeesPlacedInThisParent.Select(x => x.EmployeeId).ToList();
+			//    var employeesUnderThisParent = db.MainCompanyStructures.Where(x => x.Parent == placement.OrgStructureId).ToList();
+			//    foreach (var und in employeesUnderThisParent)
+			//    {
+			//        var employeesPlacedInThisParent = db.Placements.Where(x => x.OrgStructureId == und.OrgStructureId && x.BranchId == placement.BranchId).ToList();
+			//        if (employeesPlacedInThisParent.Any())
+			//        {
+			//            var empIds = employeesPlacedInThisParent.Select(x => x.EmployeeId).ToList();
+			//            employeesIdList.AddRange(empIds);
+			//        }
 
-                        employeesIdList.AddRange(empIds);
-                    }
+			//    }
 
-                }
+			//}
 
-            }
-
-            return employeesIdList;
+			return employeesIdList;
         }
         public int GetDepartment(int id)
         {
@@ -118,9 +120,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
         public ActionResult AttendanceNews_Read([DataSourceRequest]DataSourceRequest request, string date)
         {
             DateTime attendanceDate = DateTime.Today;
-
             int empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var employees = GetEmployeesUnderBoss(empId);
+            //var employees = GetEmployeesUnderBoss(empId);
+            var employees = EmployeeHelper.GetSubordinatesOfSubortinates_FilteredByHead(empId); 
 
             if (!string.IsNullOrEmpty(date))
             {
@@ -135,11 +137,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                     GenerateEmployeesForAttendance(attendanceDate);
                 }
             }
-            else
-            {
-                
-            }
-
+          
             IQueryable<AttendanceNew> attendancenews = db.AttendanceNews.Where(x => employees.Contains(x.EmployeeId)).Where(x => x.Date == attendanceDate);
 
             DataSourceResult result = attendancenews.ToDataSourceResult(request, attendanceNew => new
@@ -264,7 +262,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
         {
             ModelState.Clear();
             var results = new List<WeeklyAttendance>();
-
             if (attendances.Any() && ModelState.IsValid)
             {
                 foreach (var att in attendances)

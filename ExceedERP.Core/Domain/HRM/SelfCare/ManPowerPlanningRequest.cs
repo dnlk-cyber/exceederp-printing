@@ -1,5 +1,8 @@
-﻿using System;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.HRM.SelfCare
@@ -19,13 +22,12 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         [Display(Name = "HR_SelfCare_RecruitmentRequest_LookupId", ResourceType = typeof(Localization.Resources))]
         public int? LookupId { get; set; }
         [Required]
-        [Display(Name = "HR_SelfCare_RecruitmentRequest_NoOfVaccantPostion", ResourceType = typeof(Localization.Resources))]
-        public int NoOfVaccantPostion { get; set; }
+        [Display(Name = "No of Staff")]
+        public int NumberOfStaff { get; set; }
         [Display(Name = "HR_SelfCare_RecruitmentRequest_NoOfCurrentStaff", ResourceType = typeof(Localization.Resources))]
         public int NoOfCurrentStaff { get; set; }
         [Display(Name = "HR_SelfCare_RecruitmentRequest_NoOfShouldBeStaff", ResourceType = typeof(Localization.Resources))]
         public int NoOfShouldBeStaff { get; set; }
-
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         [Required]
@@ -45,5 +47,11 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         public bool IsNewJobTitle { get; set; }
         [Display(Name ="New Job Title")]
         public string JobTitle { get; set; }
+        [Display(Name = "Education")]
+        public string Education { get; set; }
+        [Display(Name = "Experience")]
+        public string Experience { get; set; }
+        [Display(Name = "Reason")]
+        public string Reason { get; set; }
     }
 }

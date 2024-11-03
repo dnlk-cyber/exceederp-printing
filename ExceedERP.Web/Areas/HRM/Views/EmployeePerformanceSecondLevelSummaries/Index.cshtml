@@ -15,6 +15,24 @@
             columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["Period"], "QuarterId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
             columns.Bound(c => c.IsCurrent).Filterable(ftb => ftb.Multi(true).Search(true)).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsCurrent ? checked='checked' :'' # >").Width(150);
             columns.Bound(c => c.ReasonFor2ndRejection).Width(140);
+            columns.Bound(c => c.IsApproved).ClientTemplate(
+                   "<input type='checkbox' disabled = 'true' value='#=IsApproved#' " +
+                   "#if(IsApproved) { #" +
+                   "checked='checked'" +
+                   "# } #" +
+                   "/>").Title("Is Submitted").Width(120);
+            columns.Bound(c => c.IsAcceptedByEmployee).ClientTemplate(
+                "<input type='checkbox' disabled = 'true' value='#=IsAcceptedByEmployee#' " +
+                "#if(IsAcceptedByEmployee) { #" +
+                "checked='checked'" +
+                "# } #" +
+                "/>").Title("Is Accepted").Width(120);
+            columns.Bound(c => c.IsRejectedByEmployee).ClientTemplate(
+                "<input type='checkbox' disabled = 'true' value='#=IsRejectedByEmployee#' " +
+                "#if(IsRejectedByEmployee) { #" +
+                "checked='checked'" +
+                "# } #" +
+                "/>").Title("Is Rejected").Width(120);
             columns.Bound(c => c.IsSecondLevelApproved).ClientTemplate(
                        "<input type='checkbox' disabled = 'true' value='#=IsSecondLevelApproved#' " +
                        "#if(IsSecondLevelApproved) { #" +
@@ -36,12 +54,11 @@
 
 
         })
-
-            .Editable(editable => editable.Mode(GridEditMode.InLine))
-            .Filterable()
-            .Scrollable(h => h.Height("auto"))
-            .Events(ev=>ev.DataBound("onDataBound"))
-            .Pageable(pageable => pageable
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Filterable()
+        .Scrollable(h => h.Height("auto"))
+        .Events(ev=>ev.DataBound("onDataBound"))
+        .Pageable(pageable => pageable
                 //.Input(true)
                 // .Numeric(false)
                 .Refresh(true)
@@ -57,13 +74,14 @@
                     events.RequestStart("onRequestStart(\"EmployeePerformancegrid\")");
                     events.RequestEnd("onRequestEnd(\"EmployeePerformancegrid\")");
                 })
-                     .Model(model =>
-                     {
-                         model.Id(p => p.EmployeePerformanceId);
-                         model.Field(p => p.Result).Editable(false);
+                .Model(model =>
+                {
+                    model.Id(p => p.EmployeePerformanceId);
+                    model.Field(p => p.Result).Editable(false);
 
 
-                     })
+
+                })
                     .Read(read => read.Action("EmployeePerformanceSecondLevelSummaries_Read", "EmployeePerformanceSecondLevelSummaries"))
                     ).ClientDetailTemplateId("employee_performance_template")
                     )
@@ -346,7 +364,7 @@
                             grid.dataSource.read();
                         }
                         else {
-                            alert("Approval cannot be granted until the 1st level evaluation is approved");
+                            alert("Approval cannot be granted until All 1st level evaluation is approved");
                             grid.dataSource.read();
                         }
                         

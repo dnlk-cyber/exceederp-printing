@@ -534,9 +534,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         [AuthorizeRoles(HrmConstants.HRPlacementAdmin, HrmConstants.HRPlacementUser, HrmConstants.HRAdmin)]
         public ActionResult Placements_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            //int branchId = UserInformationHelper.GetUserBranchByUserName(User.Identity.Name);
-            var placements = db.Placements.Where(x => !x.IsTemporary).Where(x => x.isCurrent || !x.IsApprove).ToList();//.Where(x => mybraches.Contains(x.BranchId.ToString()) && x.isCurrent);
+            //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            ////int branchId = UserInformationHelper.GetUserBranchByUserName(User.Identity.Name);
+            //var placements = db.Placements.Where(x => !x.IsTemporary).Where(x => x.isCurrent || !x.IsApprove).ToList();//.Where(x => mybraches.Contains(x.BranchId.ToString()) && x.isCurrent);
+            
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            IQueryable<Placement> placements = db.Placements.Where(x => !x.IsTemporary)
+                                                            .Where(x => x.isCurrent || !x.IsApprove)
+                                                            .Where(x => mybraches.Contains(x.BranchId));
+            if (GlobalHelper.IsMultipleBusinessUnit())
+            {
+                List<int> myBusinessUnits = UserInformationHelper.GetUserBusinessUnits(User.Identity.Name);
+                placements = placements.Where(x => myBusinessUnits.Contains(x.BusinessUnitId));
+            }
             DataSourceResult result = placements.ToDataSourceResult(request, placement => new
             {
                 PlacementId = placement.PlacementId,
@@ -693,6 +703,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 if (contractLast != null && contractLast.To <= placement.AssignmentDate)
                 {
                     ModelState.AddModelError("", "First Extend Contract date for this employee ");
+                    return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
+
                 }
             }
 
@@ -704,6 +716,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 if (freelancerLast != null && freelancerLast.To <= placement.AssignmentDate)
                 {
                     ModelState.AddModelError("", "First Extend Freelancer date for this employee ");
+                    return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
+
                 }
             }
 
@@ -720,6 +734,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     if (totalPlaced >= manPower.Quntity)
                     {
                         ModelState.AddModelError("", "This Jobtitle is set to Bounded so you can't assign more");
+                        return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
+
                     }
 
                 }
@@ -727,17 +743,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             if (placement.EmployementType == EmployeeStatus.NOTSELECTED)
             {
                 ModelState.AddModelError("", "Please Select Employement status Type");
-
+                return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
             }
             if (placement.AssignmentType == AssignmentType.NOTSELECTED)
             {
                 ModelState.AddModelError("", "Please Select Employee Assignment Type");
+                return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
 
             }
             if (placement.ResponsibilityLevel == ResponsibilityLevel.NOTSELECTED)
             {
                 ModelState.AddModelError("", "Please Select Employee Responsibility Level");
-
+                return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
+            }
+            if (placement.HeadId == null)
+            {
+                placement.HeadId = EmployeeHelper.GetSupervisor(placement.EmployeeId);
             }
             if (ModelState.IsValid)
             {
@@ -769,17 +790,34 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 placement.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
                 var entity = GetMappedObject(placement);
                 db.Placements.Add(entity);
-                db.SaveChanges();
-
-                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == placement.EmployeeId);
                 if (person != null)
                 {
                     person.IsActive = true;
                     person.BranchId = entity.BranchId;
                     person.Status = entity.EmployementType;
                     person.OrgBranchName = entity.BranchId.ToString();
-
                     db.Entry(person).State = EntityState.Modified;
+                }
+                db.SaveChanges();
+                placement.PlacementId = entity.PlacementId;
+                if (entity.IsHead)
+                {
+                    var subordinateEmployeeIds = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(entity.EmployeeId);
+                    foreach (var subEmployeeId in subordinateEmployeeIds)
+                    {
+                        var changeHead = db.Placements
+                                           .FirstOrDefault(x => x.EmployeeId == subEmployeeId
+                                                             && x.isCurrent);
+
+                        if (changeHead != null)
+                        {
+                            changeHead.HeadId = entity.EmployeeId;
+                            db.Entry(changeHead).State = EntityState.Modified;
+                            
+                        }
+
+                    }
                     db.SaveChanges();
                 }
 
@@ -813,6 +851,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 if (placement.AssignmentDate.Date < emp.HiredDate.Date)
                 {
                     ModelState.AddModelError("", "assignment date can't lessthan hire date");
+                    return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
+
                 }
             }
 
@@ -820,40 +860,49 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             if (placement.AssignmentDate > DateTime.Now)
             {
                 ModelState.AddModelError("", "Assigment date should be less or equal to the current date!!");
+                return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
+
             }
             var pp = db.Placements.FirstOrDefault(x => x.EmployeeId == placement.EmployeeId && x.isCurrent && x.PlacementId != placement.PlacementId);
             if (pp != null && placement.isCurrent)
             {
                 ModelState.AddModelError("", "this employee have other current placement ");
+                return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
+
             }
 
             var workunitHead = db.Placements.FirstOrDefault(x => x.PlacementId != placement.PlacementId && x.BranchId == placement.BranchId && x.OrgStructureId == placement.OrgStructureId && x.IsHead && x.isCurrent);
             if (placement.IsHead && workunitHead != null)
             {
                 ModelState.AddModelError("", "This Workunit already have Head");
+                return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
+
             }
 
-           
-                if (placement.EmployementType == EmployeeStatus.CONTRACT)
+
+            if (placement.EmployementType == EmployeeStatus.CONTRACT)
+            {
+
+                var contractLast = db.Contract.Where(x => x.EmployeeId == placement.EmployeeId).OrderByDescending(x => x.To).FirstOrDefault();
+
+                if (contractLast != null && contractLast.To <= placement.AssignmentDate)
                 {
-                    var contractLast = db.Contract.Where(x => x.EmployeeId == placement.EmployeeId).OrderByDescending(x => x.To).FirstOrDefault();
-                    if (contractLast != null && contractLast.To <= placement.AssignmentDate)
-                    {
                         ModelState.AddModelError("", "First Extend Contract date for this employee ");
-                    }
-                }
+                    return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
 
-                if (placement.EmployementType == EmployeeStatus.FREELANCER)
+
+                }
+            }
+
+            if (placement.EmployementType == EmployeeStatus.FREELANCER)
+            {
+                var freelancerLast = db.Freelancers.Where(x => x.EmployeeId == placement.EmployeeId).OrderByDescending(x => x.To).ToList().FirstOrDefault();
+                if (freelancerLast != null && freelancerLast.To <= placement.AssignmentDate)
                 {
-                    var freelancerLast = db.Freelancers.Where(x => x.EmployeeId == placement.EmployeeId).OrderByDescending(x => x.To).ToList().FirstOrDefault();
-                    if (freelancerLast != null && freelancerLast.To <= placement.AssignmentDate)
-                    {
-                        ModelState.AddModelError("", "First Extend Freelancer date for this employee ");
-                    }
+                    ModelState.AddModelError("", "First Extend Freelancer date for this employee ");
                 }
-                
-            
-
+            }
+               
             var manPower = db.JobTitleMapping.FirstOrDefault(x => x.BranchId == placement.BranchId 
                                                                     && x.OrgStructureId == placement.OrgStructureId
                                                                     && x.LookupId == placement.LookupId);
@@ -871,88 +920,39 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     if (totalPlaced >= manPower.Quntity)
                     {
                         ModelState.AddModelError("", "This Jobtitle is set to Bounded so you can't assign more");
+                        return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
+
                     }
                 }
+
             }
 
             if (placement.EmployementType == EmployeeStatus.NOTSELECTED)
             {
                 ModelState.AddModelError("", "Please Select Employement status Type");
+                return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
+
 
             }
             if (placement.AssignmentType == AssignmentType.NOTSELECTED)
             {
                 ModelState.AddModelError("", "Please Select Employee Assignment Type");
+                return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
+
 
             }
             if (placement.ResponsibilityLevel == ResponsibilityLevel.NOTSELECTED)
             {
                 ModelState.AddModelError("", "Please Select Employee Responsibility Level");
+                return Json(new[] { placement }.ToDataSourceResult(request, ModelState));
+
 
             }
-            #region Old Commented
-            //if (ModelState.IsValid)
-            //{
+            if(placement.HeadId == null)
+            {
+                placement.HeadId = EmployeeHelper.GetSupervisor(placement.EmployeeId);
+            }
 
-            //    var place = db.Placements.Find(placement.PlacementId);
-            //    if (place != null)
-            //    {
-            //        place.PlacementId = placement.PlacementId;
-            //        place.IsHead = placement.IsHead;
-            //        place.EmployementType = placement.EmployementType;
-            //        place.AssignmentDate = placement.AssignmentDate;
-            //        place.BranchId = placement.BranchId;
-            //        place.JobTitleName = GetTitleName(placement.LookupId);
-            //        place.OrgStructureId = placement.OrgStructureId;
-            //        place.ParentOrgStructureId = placement.ParentOrgStructureId;
-            //        place.ReportsTo = placement.ReportsTo;
-            //        place.RankId = placement.RankId;
-            //        place.StepId = placement.StepId;
-            //        place.LookupId = placement.LookupId;
-            //        place.HeadId = placement.HeadId;
-            //        place.Department = placement.ReportsTo;
-            //        place.Salary = placement.Salary;
-            //        place.AssignmentType = placement.AssignmentType;
-            //        place.ResponsibilityLevel = placement.ResponsibilityLevel;
-            //        place.Remark = placement.Remark;
-            //        place.BusinessUnitId = placement.BusinessUnitId;
-            //        place.DateCreated = placement.DateCreated;
-            //        place.LastModified = DateTime.Now;
-            //        place.ModifiedBy = User.Identity.Name;
-            //        place.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-            //        place.AssignmentDateAmharic = placement.AssignmentDateAmharic;
-            //        place.EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == placement.EmployeeId)?.EmployeeCode;
-
-            //        db.Entry(place).State = EntityState.Modified;
-            //        db.SaveChanges();
-
-            //        var employee = db.Person_Employee.FirstOrDefault(p => p.EmployeeId == placement.EmployeeId);
-
-            //        if (employee != null && place.isCurrent)
-            //        {
-            //            employee.OrgBranchName = placement.BranchId.ToString();
-            //            employee.ModifiedBy = User.Identity.Name;
-            //            employee.LastModified = DateTime.Now;
-            //            employee.BranchId = placement.BranchId;
-            //            employee.Status = placement.EmployementType;
-
-            //            db.Entry(employee).State = EntityState.Modified;
-            //            db.SaveChanges();
-            //        }
-
-            //        PerapreEmployeeAllowance(placement.EmployeeId, placement.LookupId);
-
-            //        #region operation log
-            //        var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == place.EmployeeId);
-            //        if (person != null)
-            //        {
-            //            UserHelper.OperationLog(Request.UserHostAddress, "Employee Placement", "Success", User.Identity.Name, "Placement Info of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name, Modules.HRM);
-
-            //        }
-            //        #endregion
-            //    }
-            //}
-            #endregion
             if (ModelState.IsValid)
             {
                 placement.PreparedByEmpId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -993,8 +993,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 #endregion
                 db.Placements.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
-
+                //db.SaveChanges();
                 var employee = db.Person_Employee.FirstOrDefault(p => p.EmployeeId == entity.EmployeeId);
 
                 if (employee != null)
@@ -1005,9 +1004,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     employee.BranchId = placement.BranchId;
                     employee.Status = placement.EmployementType;
                     db.Entry(employee).State = EntityState.Modified;
+                   // db.SaveChanges();
+                }
+                if (entity.IsHead)
+                {
+                    var subordinateEmployeeIds = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(entity.EmployeeId);
+                    foreach (var subEmployeeId in subordinateEmployeeIds)
+                    {
+                        var changeHead = db.Placements
+                                           .FirstOrDefault(x => x.EmployeeId == subEmployeeId
+                                                             && x.isCurrent);
+
+                        if (changeHead != null)
+                        {
+                            changeHead.HeadId = entity.EmployeeId;
+                            db.Entry(changeHead).State = EntityState.Modified;
+
+                        }
+
+                    }
                     db.SaveChanges();
                 }
-
+                db.SaveChanges();
                 PerapreEmployeeAllowance(entity.EmployeeId, placement.LookupId);
 
                 #region operation log

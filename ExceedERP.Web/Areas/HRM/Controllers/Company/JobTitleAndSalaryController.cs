@@ -1,18 +1,20 @@
-﻿using ExceedERP.Core.Domain.Common;
+﻿using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.HRM.Company;
 using ExceedERP.Core.Domain.HRM.SalaryStructure;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
-using System;
+using ExceedERP.Web.Helpers;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
+    [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
+
     public class JobTitleAndSalaryController : BaseController
     {
         ExceedDbContext db = new ExceedDbContext();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -29,8 +29,7 @@ using System.Configuration;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
 
-    [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin, HrmConstants.HRRecruitmentUser)]
-
+    [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
     public class ApplicantRegistrationController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -47,7 +46,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         public static DateTime RegistnDate { get; set; }
         public static DateTime EndDate { get; set; }
         public static string RegistnDateAm { get; set; }
-        string ErrorMessage = "";
         public ActionResult Index()
         {
             PopulateViewData();
@@ -57,9 +55,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         {
 
             var context = new ApplicationDbContext();
-
             var allUsers = context.Users.ToList();
-
             var name = allUsers.Where(X => X.UserName == User.Identity.Name).FirstOrDefault();
             if (name != null)
             {
@@ -69,19 +65,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             GetEducationLevel();
             var media = db.Lookups.Where(x => x.LookupType == LookUpTypes.MEDIA);
             ViewData["Media"] = media;     
-
             ViewData["Vacancy"] = db.VaccancyPlans.ToList();
-
             ViewData["recruitmentVacancy"] = db.RecruitmentVacancy.ToList();
-
             var jobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
             ViewData["JobTitle"] = jobtitles;
-
             ViewData["branch"] = db.Branch.ToList();
-
             ViewData["EducationLevel"] = db.Lookups.Where(x=>x.LookupType == LookUpTypes.EDUCATION_LEVEL).ToList();
             ViewData["EducationField"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_FIELD).ToList();
-
             ViewData["ExperienceOrgType"] = db.ExperienceOrganizationTypeSettings.ToList();
             ViewData["ExperienceJobTitle"] = db.ExperienceJobTitles.ToList();
             ViewData["Lookups"] = db.Lookups.Where(x=>x.LookupType == LookUpTypes.JOB_TITLE).ToList();
@@ -99,12 +89,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     var detail = db.VaccancyPlans.Where(x => x.VacancyId == p.VacancyId).FirstOrDefault();
                     if (detail != null)
                     {
-                        //var lookup = db.Lookups.Where(x => x.LookupId == detail.LookupId).FirstOrDefault();
-                        //if (lookup != null)
-                        //{
-                        // titleList.Add(lookup);
                         titleList.Add(detail);
-                        // }
                     }
 
 
@@ -119,7 +104,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         }
         private bool CheckAppRegnValidation(int id)
         {
-            ErrorMessage = "";
+            var ErrorMessage = "";
 
 
             #region ApplicantScreeningResult
@@ -690,50 +675,125 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         public ActionResult ApplyForVacancy(HttpPostedFileBase file, string idh)
         {
             ModelState.Clear();
-            
+
             if (ModelState.IsValid)
             {
-               int applicantDetailId = int.Parse(idh);
+                int applicantDetailId = int.Parse(idh);
 
-                var applicantDetail = db.ApplicantDetails.FirstOrDefault(x=>x.ApplicantDetailId == applicantDetailId);
-                if (applicantDetail != null) {
+                var applicantDetail = db.ApplicantDetails.FirstOrDefault(x => x.ApplicantDetailId == applicantDetailId);
+                if (applicantDetail != null && file != null)
+                {
+                    #region File Validation
+                    // Ensure the file is valid and not empty
+                    if (file.ContentLength > 0)
+                    {
+                        // You can add additional validation if needed, e.g., checking the file size.
+                        // Remove the extension restrictions to allow all file types
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Uploaded file is empty.");
+                        return RedirectToAction("Index");  // Adjust as needed
+                    }
+                    #endregion
+
                     #region Upload File
+                    try
+                    {
+                        // Use the file name without extension and add timestamp
+                        string fileName = Path.GetFileNameWithoutExtension(file.FileName);
+                        string fileExtension = Path.GetExtension(file.FileName);
+                        fileName = DateTime.Now.ToString("yyyyMMdd") + "-" + fileName.Trim() + fileExtension;
+                        string path = HttpContext.Server.MapPath("~/Content/HRM/Recruitment/ApplicationRegistraion/");
+                        // Get Upload path from Web.Config file AppSettings
+                        //string uploadPath = ConfigurationManager.AppSettings["UserFilePath"];
+                        //if (string.IsNullOrEmpty(uploadPath))
+                        //{
+                        //    throw new ConfigurationErrorsException("UserFilePath is missing in the configuration.");
+                        //}
 
-                    //Use Namespace called :  System.IO  
-                    string FileName = Path.GetFileNameWithoutExtension(file.FileName);
+                        // Combine paths correctly and create directory if needed
+                        string filePath = Path.Combine(path, fileName);
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
 
-                    //To Get File Extension  
-                    string FileExtension = Path.GetExtension(file.FileName);
+                        // Save the file to the server
+                        file.SaveAs(filePath);
 
-                    //Add Current Date To Attached File Name  
-                    FileName = DateTime.Now.ToString("yyyyMMdd") + "-" + FileName.Trim() + FileExtension;
+                        // Update applicant details
+                        applicantDetail.FilePath = filePath;
+                        applicantDetail.FileName = fileName;
 
-                    //Get Upload path from Web.Config file AppSettings.  
-                    string UploadPath = ConfigurationManager.AppSettings["UserFilePath"].ToString();
-
-                    //Its Create complete path to store in server.  
-                    var FilePath = UploadPath + FileName;
-
-                    //To copy and save file into server.  
-                     file.SaveAs(FilePath);
+                        db.Entry(applicantDetail).State = System.Data.Entity.EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log the exception as needed
+                        ModelState.AddModelError("", "Error saving the file: " + ex.Message);
+                        return RedirectToAction("Index");  // Adjust to handle the error appropriately
+                    }
                     #endregion
-
-                    #region  Update
-
-                    applicantDetail.FilePath = FilePath;
-                    applicantDetail.FileName = FileName;
-
-                    db.Entry(applicantDetail).State = System.Data.Entity.EntityState.Modified;
-                    db.SaveChanges();
-
-                    #endregion
-
                 }
-
+                else
+                {
+                    ModelState.AddModelError("", "Invalid applicant details or file not provided.");
+                    return RedirectToAction("Index");
+                }
             }
 
             return RedirectToAction("Index");
         }
+
+        //public ActionResult ApplyForVacancy(HttpPostedFileBase file, string idh)
+        //{
+        //    ModelState.Clear();
+
+        //    if (ModelState.IsValid)
+        //    {
+        //       int applicantDetailId = int.Parse(idh);
+
+        //        var applicantDetail = db.ApplicantDetails.FirstOrDefault(x=>x.ApplicantDetailId == applicantDetailId);
+        //        if (applicantDetail != null) {
+        //            #region Upload File
+
+        //            //Use Namespace called :  System.IO  
+        //            string FileName = Path.GetFileNameWithoutExtension(file.FileName);
+
+        //            //To Get File Extension  
+        //            string FileExtension = Path.GetExtension(file.FileName);
+
+        //            //Add Current Date To Attached File Name  
+        //            FileName = DateTime.Now.ToString("yyyyMMdd") + "-" + FileName.Trim() + FileExtension;
+
+        //            //Get Upload path from Web.Config file AppSettings.  
+        //            string UploadPath = ConfigurationManager.AppSettings["UserFilePath"].ToString();
+
+        //            //Its Create complete path to store in server.  
+        //            var FilePath = UploadPath + FileName;
+
+        //            //To copy and save file into server.  
+        //             file.SaveAs(FilePath);
+        //            #endregion
+
+        //            #region  Update
+
+        //            applicantDetail.FilePath = FilePath;
+        //            applicantDetail.FileName = FileName;
+
+        //            db.Entry(applicantDetail).State = System.Data.Entity.EntityState.Modified;
+        //            db.SaveChanges();
+
+        //            #endregion
+
+        //        }
+
+        //    }
+
+        //    return RedirectToAction("Index");
+        //}
 
         protected override void Dispose(bool disposing)
         {

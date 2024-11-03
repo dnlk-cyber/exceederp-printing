@@ -9,42 +9,44 @@
           .Name("LeaveSettinggrid")
           .Columns(columns =>
           {
-              //columns.Bound(c => c.Reference);
 
               columns.ForeignKey(c => c.Attribute, (IEnumerable)ViewData["LeaveSetting"], "Text", "Text").EditorTemplateName("Setting");
               columns.Bound(c => c.CurrentValue);
               // columns.Bound(c => c.PreviousValue);
               // columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYeaer"], "GlFiscalYearId", "Name").EditorTemplateName("FiscalYear");
               columns.Bound(c => c.Remark);
-              columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+              columns.Command(command => {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }).Width(200);
           })
           .ToolBar(toolbar =>
           {
-              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);              
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
           })
           .Editable(editable => editable.Mode(GridEditMode.InLine))
             .Scrollable(h => h.Height(250))
-                // .Groupable()
-                          .Sortable(sortable =>
-                          {
-                              sortable.SortMode(GridSortMode.SingleColumn);
-                          })
-              .Filterable()
-                 .Pageable(pageable => pageable
-                                            .Input(true)
-                                            .Numeric(false)
-                                            .Refresh(true)
-                                            .PageSizes(true)
-                                            .ButtonCount(5))
+            .Sortable(sortable =>
+            {
+                sortable.SortMode(GridSortMode.SingleColumn);
+
+            })
+            .Filterable()
+            .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
           .DataSource(dataSource => dataSource
               .Ajax()
-                  .Events(events =>
-                  {
-                      events.Error("error_handler(\"LeaveSettinggrid\")");
-                      events.RequestStart("onRequestStart(\"LeaveSettinggrid\")");
-                      events.RequestEnd("onRequestEnd(\"LeaveSettinggrid\")");
-                  })
+              .Events(events =>
+              {
+                  events.Error("error_handler(\"LeaveSettinggrid\")");
+                  events.RequestStart("onRequestStart(\"LeaveSettinggrid\")");
+                  events.RequestEnd("onRequestEnd(\"LeaveSettinggrid\")");
 
+              })
               .Model(model => model.Id(p => p.ConfigurationId))
               .Read(read => read.Action("Configurations_Read", "LeaveSetting"))
               .Create(create => create.Action("Configurations_Create", "LeaveSetting"))

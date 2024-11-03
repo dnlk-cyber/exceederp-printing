@@ -76,9 +76,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return View();
         }
-     
-            
-
         private int CalculateProbationAmount(DateTime hiringDate )
         {
             int probationAmount = 0;
@@ -165,7 +162,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             ViewData["RankList"] = db.Ranks.Select(x => new {x.RankId,x.RankName}).ToList();
             ViewData["StepList"] = db.Steps.Select(x => new {x.StepId,x.StepName }).ToList();
         }
-        
         public JsonResult GenerateProfile(string id, string text)
         {
             int EmployeeId = Convert.ToInt32(id);
@@ -1370,7 +1366,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             }
             return 1;
         }
-
         private List<int> GetEmployeeIdInProhabition(List<Person_Employee> employees)
         {
             List<int> employeeIds = new List<int>(); 
@@ -1614,6 +1609,85 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                             .Where(x => mybraches.Contains(x.BranchId.ToString()) 
                             && x.IsActive 
                             && x.IsPlaced).ToList();
+            DataSourceResult result = person_employees.ToDataSourceResult(request, person_Employee => new
+            {
+                EmployeeId = person_Employee.EmployeeId,
+                EmployeeCode = person_Employee.EmployeeCode,
+                MothersFullName = person_Employee.MothersFullName,
+                BirthPlace = person_Employee.BirthPlace,
+                Nation = person_Employee.Nation,
+                Region = person_Employee.Region,
+                Religion = person_Employee.Religion,
+                MartialStatus = person_Employee.MartialStatus,
+                Status = person_Employee.Status,
+                HiredDate = person_Employee.HiredDate,
+                FirstName = person_Employee.FirstName,
+                MiddleName = person_Employee.MiddleName,
+                LastName = person_Employee.LastName,
+                Nationality = person_Employee.Nationality,
+                DateOfBirth = person_Employee.DateOfBirth,
+                Title = person_Employee.Title,
+                Gender = person_Employee.Gender,
+                CategoryID = person_Employee.CategoryID,
+                IsActive = person_Employee.IsActive,
+                Remark = person_Employee.Remark,
+                DateCreated = person_Employee.DateCreated,
+                LastModified = person_Employee.LastModified,
+                CreatedBy = person_Employee.CreatedBy,
+                ModifiedBy = person_Employee.ModifiedBy,
+                OrgBranchName = person_Employee.OrgBranchName,
+                FirstNameEnglish = person_Employee.FirstNameEnglish,
+                MiddleNameEnglish = person_Employee.MiddleNameEnglish,
+                LastNameEnglish = person_Employee.LastNameEnglish,
+                DateOfBirthAm = person_Employee.DateOfBirthAm,
+                HiredDateAmharic = person_Employee.HiredDateAmharic,
+                ProhabitionState = CheckProhabition(person_Employee.EmployeeId),
+                BranchId = person_Employee.BranchId,//Branch(person_Employee.EmployeeId),
+                IsProbationEnd = person_Employee.Status == EmployeeStatus.PROBATION ? Probation(person_Employee.EmployeeId) : false,
+                ContratLeftDay = GetContractLeftDay(person_Employee.EmployeeId),
+                PhoneNo = person_Employee.PhoneNo,
+                City = person_Employee.City,
+                SubCity = person_Employee.SubCity,
+                Wereda = person_Employee.Wereda,
+                EmployeeTypeId = person_Employee.EmployeeTypeId,
+                IsPlaced = person_Employee.IsPlaced,
+                Age = EmployeeHelper.GetAge(person_Employee.EmployeeId)
+            });
+
+            return Json(result);
+        }
+
+        [AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
+        public ActionResult RetiringEmolyeeNotificationBefore180DaysLeft_Read([DataSourceRequest]DataSourceRequest request)
+        {
+
+            //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            //60 years * 365.25days = 21915 days , before 6 month = 6 * 30 = 180=>21915 - 180 = 21735
+            //var person_employees = db.Person_Employee
+            //                .Where(x => (DateTime.Now - x.DateOfBirth).TotalDays >= 21735)
+            //                .Where(x => mybraches.Contains(x.BranchId.ToString())
+            //                && x.IsActive
+            //                && x.IsPlaced).ToList();
+            List<string> myBranches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+
+            //// 60 years * 365.25 days = 21915 days (including leap years)
+            //// 180 days before reaching 60 years = 21915 - 180 = 21735 days
+            //double retirementThresholdInDays = 60 * 365.25 - 180; // 21735 days
+
+            //var person_employees = db.Person_Employee
+            //    .Where(x => (DateTime.Now - x.DateOfBirth).TotalDays >= retirementThresholdInDays)
+            //    .Where(x => myBranches.Contains(x.BranchId.ToString()) && x.IsActive && x.IsPlaced)
+            //    .ToList();
+
+            // Calculate the threshold date for employees who have 180 days or less until they turn 60
+
+            DateTime sixtyYearsAgo = DateTime.Now.AddYears(-60);
+            DateTime retirementNotificationDate = sixtyYearsAgo.AddDays(180);
+
+            var person_employees = db.Person_Employee
+                .Where(x => x.DateOfBirth <= retirementNotificationDate)
+                .Where(x => myBranches.Contains(x.BranchId.ToString()) && x.IsActive && x.IsPlaced)
+                .ToList();
             DataSourceResult result = person_employees.ToDataSourceResult(request, person_Employee => new
             {
                 EmployeeId = person_Employee.EmployeeId,
@@ -2342,6 +2416,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             #endregion
             return File(fileContents, contentType, fileName);
         }
+
         [HttpPost]
         public ActionResult Pdf_Export_Save(string contentType, string base64, string fileName)
         {

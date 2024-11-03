@@ -21,7 +21,7 @@
                   {
                       command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
                       command.Destroy().Text(Resources.ActionButton_Cancel);
-                  }).Width(150);
+                  }).Width(200);
               })
               .ToolBar(toolbar =>
               {
@@ -72,73 +72,74 @@
 )
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                                            .Name("tabstrip_#=ProbationPerformanceId#")
-                                                                    .SelectedIndex(0)
-                                                                    .Items(items =>
-                                                                     {
+        .Name("tabstrip_#=ProbationPerformanceId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
 
 
-                                                             //*****************************************************************************************************//
-                                                             items.Add().Text("Probation Performance Detail").Content(
-                                                                        @<text>
+             //*****************************************************************************************************//
+             items.Add().Text("Probation Performance Detail").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ProbationPerformanceDetail>()
+                        .Name("ProbationPerformanceDetail#=ProbationPerformanceId#")
+                        .Columns(columns =>
+                        {
+
+                            columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Measurments"], "LookupId", "Description").EditorTemplateName("Measure").Width(150).Title("Measurement");
+                            columns.Bound(c => c.Score).Width(100);
+                            columns.Bound(c => c.Measurement).Width(100).Title("Measurement Value");
+                            columns.Command(command =>
+                            {
+
+                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                            }).Width(100);
 
 
-                                                                            @(Html.Kendo().Grid<ProbationPerformanceDetail>()
-                                                                                                                                                              .Name("ProbationPerformanceDetail#=ProbationPerformanceId#")
-                                                                                                                                              .Columns(columns =>
-                                                                                                                                              {
+                        })
 
-                                                                                                                                                  columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Measurments"], "LookupId", "Description").EditorTemplateName("Measure").Width(150).Title("Measurement");
-                                                                                                                                                  columns.Bound(c => c.Score).Width(100);
-                                                                                                                                                  columns.Bound(c => c.Measurement).Width(100).Title("Measurement Value");
-                                                                                                                                                  columns.Command(command =>
-                                                                                                                                                  {
+                        .ToolBar(toolbar =>
+                        {
+                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
 
-                                                                                                                                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                                                                                                                                      command.Destroy().Text(Resources.ActionButton_Cancel);
-
-                                                                                                                                                  }).Width(100);
-                                                                                                                                              })
-
-                                                                                                                                              .ToolBar(toolbar =>
-                                                                                                                                              {
-                                                                                                                                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                                                                                                                              })
-
-                                                                                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                                      .Scrollable()
-                                                                                                                                      .Selectable()
-                                                                                                                                      .DataSource(dataSource => dataSource
-                                                                                                                                          .Ajax()
-                                                                                                                                                  .Events(events =>
-                                                                                                                                                  {
-                                                                                                                                                      events.Error("error_handler(\"ProbationPerformanceDetail#=ProbationPerformanceId#\")");
-                                                                                                                                                      events.RequestStart("onRequestStart(\"ProbationPerformanceDetail#=ProbationPerformanceId#\")");
-                                                                                                                                                      events.RequestEnd("onRequestEnd(\"ProbationPerformanceDetail#=ProbationPerformanceId#\")");
-                                                                                                                                                  })
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable()
+                        .Selectable()
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"ProbationPerformanceDetail#=ProbationPerformanceId#\")");
+                                        events.RequestStart("onRequestStart(\"ProbationPerformanceDetail#=ProbationPerformanceId#\")");
+                                        events.RequestEnd("onRequestEnd(\"ProbationPerformanceDetail#=ProbationPerformanceId#\")");
+                                    })
 
 
-                                                                      .Model(model =>
-                                                                      {
-                                                                          model.Id(p => p.ProbationPerformanceDetailId);
-                                                                          model.Field(p=>p.Measurement).Editable(false);
-                                                                      })
-                                                                   .Read(read => read.Action("ProbationPerformanceDetail_Read", "ProbationPerformanceDetail", new { id = "#=ProbationPerformanceId#" }))
-                                                                   .Create(create => create.Action("ProbationPerformanceDetail_Create", "ProbationPerformanceDetail", new { id = "#=ProbationPerformanceId#" }))
-                                                                  .Update(update => update.Action("ProbationPerformanceDetail_Update", "ProbationPerformanceDetail"))
-                                                                  .Destroy(destroy => destroy.Action("ProbationPerformanceDetail_Destroy", "ProbationPerformanceDetail"))
+                            .Model(model =>
+                            {
+                                model.Id(p => p.ProbationPerformanceDetailId);
+                                model.Field(p=>p.Measurement).Editable(false);
+                            })
+                        .Read(read => read.Action("ProbationPerformanceDetail_Read", "ProbationPerformanceDetail", new { id = "#=ProbationPerformanceId#" }))
+                        .Create(create => create.Action("ProbationPerformanceDetail_Create", "ProbationPerformanceDetail", new { id = "#=ProbationPerformanceId#" }))
+                        .Update(update => update.Action("ProbationPerformanceDetail_Update", "ProbationPerformanceDetail"))
+                        .Destroy(destroy => destroy.Action("ProbationPerformanceDetail_Destroy", "ProbationPerformanceDetail"))
 
-                                                                                                                                      ).ToClientTemplate()
-                                                                            )
+                                                                                            
+                        ).ToClientTemplate()
+                                )
 
-                                                                        </text>
-                                                                                                                                          );
+                         </text>);
 
-                                                                     //**********************************************************************************//
-                                                                     
-                                                                         
+            //**********************************************************************************//
 
-                                                                                 }).ToClientTemplate())
+
+
+
+        }).ToClientTemplate())
 </script>
 
 

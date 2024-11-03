@@ -6,8 +6,9 @@
      .DataTextField("FullNameaEnglish")
      .DataValueField("EmployeeId")
      .OptionLabel(Resources.Select)
-      .ValuePrimitive(true)
-      .DataSource(dataSource =>
+     .Filter("contains")
+     .ValuePrimitive(true)
+     .DataSource(dataSource =>
       {
           //GetActiveEmployeesForRInterview
          // GetActiveEmployees

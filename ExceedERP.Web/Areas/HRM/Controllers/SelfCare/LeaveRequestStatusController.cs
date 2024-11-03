@@ -103,7 +103,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
         public ActionResult LeaveRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
-           // var leaverequest = db.LeaveRequest.ToList();
+           
+            // var leaverequest = db.LeaveRequest.ToList();
             //List<LeaveRequest> leaves = new List<LeaveRequest>();
             //foreach (var m in leaverequest)
             //{
@@ -115,6 +116,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             //    }
 
             //}
+
             var leaveRequestIds = db.RequestesStatus.Where(x => x.Status == RequestStatus.DEPARTMENT_APPROVAL && x.ReferenceType == "Leave").Select(x => x.RequestId);
             var leaveRequests = db.LeaveRequest.Where(x=> leaveRequestIds.Contains(x.LeaveRequestId)).ToList();
 
@@ -158,6 +160,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             return Json(result);
         }
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeaveRequest_Create([DataSourceRequest]DataSourceRequest request, LeaveRequest leaveRequest)
         {

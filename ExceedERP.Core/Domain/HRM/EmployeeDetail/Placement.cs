@@ -25,7 +25,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [Required]
         [Display(Name = "HR_EmployeeDetail_Placement_PersonEmployeeID", ResourceType = typeof(Localization.Resources))]
         public int EmployeeId { get; set; }
-        //public virtual Person_Employee Employee { get; set; }
+        public virtual Person_Employee Employee { get; set; }
         [Required]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]

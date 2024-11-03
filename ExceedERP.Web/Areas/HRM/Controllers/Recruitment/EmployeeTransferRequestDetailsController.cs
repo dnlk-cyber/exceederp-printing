@@ -1,31 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
-using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
 
-    [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
     public class EmployeeTransferRequestDetailsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
      
-        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin, HrmConstants.HRRecruitmentUser)]
+        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
         public ActionResult EmployeeTransferRequestDetails_Read([DataSourceRequest]DataSourceRequest request, int empTRId)
         {
             IQueryable<TransferRequestDetail> requestDetails = db.TransferRequestDetails.Where(x=>x.EmployeeTransferRequestId==empTRId);
@@ -85,7 +80,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             return Json(new[] { requestDetail }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin)]
+        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmployeeTransferRequestDetails_Destroy([DataSourceRequest]DataSourceRequest request, TransferRequestDetail requestDetail)
         {

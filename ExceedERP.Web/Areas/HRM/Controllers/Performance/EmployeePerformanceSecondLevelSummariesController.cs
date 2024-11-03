@@ -110,6 +110,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 OrgStructureId = employeePerformance.OrgStructureId,
                 BranchId = employeePerformance.BranchId,
                 BusinessUnitId = employeePerformance.BusinessUnitId,
+                IsApproved = employeePerformance.IsApproved,
+                IsRejectedByEmployee = employeePerformance.IsRejectedByEmployee,
+                IsAcceptedByEmployee = employeePerformance.IsAcceptedByEmployee,
                 IsCurrent = employeePerformance.IsCurrent,
                 IsHRApproved = employeePerformance.IsHRApproved,
                 IsSecondLevelApproved = employeePerformance.IsSecondLevelApproved,
@@ -141,6 +144,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 OrgStructureId = employeePerformance.OrgStructureId,
                 BranchId = employeePerformance.BranchId,
                 BusinessUnitId = employeePerformance.BusinessUnitId,
+                IsApproved = employeePerformance.IsApproved,
+                IsRejectedByEmployee = employeePerformance.IsRejectedByEmployee,
+                IsAcceptedByEmployee = employeePerformance.IsAcceptedByEmployee,
                 IsCurrent = employeePerformance.IsCurrent,
                 EvaluationCriteriaTypeId = employeePerformance.EvaluationCriteriaTypeId,
                 ReasonFor2ndRejection = employeePerformance.ReasonFor2ndRejection,
@@ -248,8 +254,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             {
                 ModelState.AddModelError("", "Score can't exceed the weight");
             }
-
-            
             var before = db.EmployeePerformanceScores.Find(employeePerformanceScore.EmployeePerformanceScoreId);
             if(before != null)
             {
@@ -324,15 +328,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         }
         public string ApproveEvaluation(int year, int period, int employee)
         {
-            var employeePerformances = db.EmployeePerformances.Where(x => x.GlFiscalYearId == year && x.GlPeriodId == period && x.EmployeeId == employee&&x.IsApproved&&x.IsImmediateSuppurvisorApproved).ToList();
+            var employeePerformances = db.EmployeePerformances
+                                                    .Where(x => x.GlFiscalYearId == year 
+                                                    && x.GlPeriodId == period 
+                                                    && x.EmployeeId == employee
+                                                    &&x.IsApproved
+                                                    &&x.IsImmediateSuppurvisorApproved).ToList();
             var status = "false";
+            if(db.EmployeePerformances.Where(x => x.GlFiscalYearId == year 
+                            && x.GlPeriodId == period 
+                            && x.EmployeeId == employee 
+                            && x.IsApproved 
+                            && !x.IsImmediateSuppurvisorApproved).Any())
+                            {
+                                return status;
+                            }
             foreach ( var employeePerformance in employeePerformances)
             {
                 employeePerformance.IsSecondLevelApproved = true;
-
                 db.Entry(employeePerformance).State = EntityState.Modified;
                 db.SaveChanges();
-
                 status= "true";
             }
             if (employee != 0)

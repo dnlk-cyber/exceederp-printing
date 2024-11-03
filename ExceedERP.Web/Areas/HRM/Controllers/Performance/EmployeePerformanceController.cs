@@ -285,7 +285,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 Result = result,
                 Approval = approval
             };
-
             return Json(eval);
         }
 
@@ -432,7 +431,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                         && x.CriteriaCategoryId == criteriaCategoryId 
                         && x.GlPeriodId == periodId).FirstOrDefault();
             
-                var placement = db.Placements.Where(x => x.isCurrent).Where(x => x.EmployeeId == empId).FirstOrDefault();
+                var placement = db.Placements.Where(x => x.isCurrent)
+                                             .Where(x => x.EmployeeId == empId)
+                                             .FirstOrDefault();
             
             if (Performance == null && placement != null)
                 {
@@ -468,6 +469,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                         IsHRApproved = false,
                         IsHRLevelEvalution = false,
                         IsRejectedByEmployee = false,
+                        IsSecondLevelRejected = false,
+                        Grade = null,
+                        ReasonFor2ndRejection = null,
                         Weight = 0,
                         Result = 0,
                     };

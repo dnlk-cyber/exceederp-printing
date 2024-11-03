@@ -92,7 +92,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             if (x == "true")
             {
                   var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                  var list = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
+                  //var list = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
+                  var list = EmployeeHelper.GetSubordinates_FilteredByHead(employeeId).ToList();
                
                 IsForOther = true;
                 return list.Count();

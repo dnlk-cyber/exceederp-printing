@@ -3,7 +3,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.Discipline;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
@@ -11,13 +10,12 @@ using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 {
 
-    [AuthorizeRoles(HrmConstants.HRDisciplineUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRDisciplineUser)]
     public class DisciplineMeasuresController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

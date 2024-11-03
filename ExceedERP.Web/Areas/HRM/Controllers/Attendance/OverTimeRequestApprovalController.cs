@@ -21,6 +21,8 @@ using ExceedERP.Web.Hubs;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
 {
+    [AuthorizeRoles(HrmConstants.HRAttendanceUser,
+      HrmConstants.HRDepartmentHead,HrmConstants.HREmployeeSelfService)]
     public class OverTimeRequestApprovalController : Controller
     {
         // GET: HRM/OverTimeRequestApproval

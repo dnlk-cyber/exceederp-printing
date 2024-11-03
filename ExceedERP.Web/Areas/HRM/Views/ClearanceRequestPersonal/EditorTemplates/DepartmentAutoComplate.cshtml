@@ -1,0 +1,12 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Localization
+@(Html.Kendo().AutoCompleteFor(m => m)
+
+                        .DataTextField("Name")
+                        .Filter("startswith")
+                         //.Separator(", ")
+              .BindTo((System.Collections.IEnumerable)ViewData["Department"])
+)
+                  
+

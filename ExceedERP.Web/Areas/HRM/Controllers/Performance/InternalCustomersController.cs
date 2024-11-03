@@ -29,6 +29,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
                 InternalCustomerId = internalCustomer.InternalCustomerId,
                 EmployeeId = internalCustomer.EmployeeId,
+                IsConfirmed = internalCustomer.IsConfirmed,
                 TobeEvalutedEmployeeId = internalCustomer.TobeEvalutedEmployeeId,
                 InternalCustomerPerformanceEvaluationId = internalCustomer.InternalCustomerPerformanceEvaluationId
 
@@ -90,6 +91,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult InternalCustomers_Destroy([DataSourceRequest]DataSourceRequest request, InternalCustomer internalCustomer)
         {
+
             if (ModelState.IsValid)
             {
                 var entity = GetMappedObject(internalCustomer);
@@ -107,12 +109,52 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 InternalCustomerId = internalCustomer.InternalCustomerId,
                 EmployeeId = internalCustomer.EmployeeId,
                 TobeEvalutedEmployeeId = internalCustomer.TobeEvalutedEmployeeId,
+                IsConfirmed = internalCustomer.IsConfirmed,
                 InternalCustomerPerformanceEvaluationId = internalCustomer.InternalCustomerPerformanceEvaluationId
 
             };
             return entity;
         }
-       
+        public JsonResult InternalCustomerConfirmation(int id)
+        {
+            var evaluator = db.InternalCustomers.Find(id);
+            if (evaluator != null)
+            {
+                if (evaluator.IsConfirmed)
+                {
+                    var formattedData = new
+                    {
+                        Message = "You can't approve again, it is already approved.",
+                        Status = "OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    // Approve the assignment here
+                    evaluator.IsConfirmed = true;
+                    db.Entry(evaluator).State = EntityState.Modified;
+                    db.SaveChanges();  // Make sure to save the changes in the database
+
+                    var formattedData = new
+                    {
+                        Message = "You successfully approved .",
+                        Status = "OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+            }
+            else
+            {
+                var formattedData = new
+                {
+                    Message = "No evaluation found for the provided ID.",
+                    Status = "Error"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

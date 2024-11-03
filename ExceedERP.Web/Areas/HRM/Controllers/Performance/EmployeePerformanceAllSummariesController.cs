@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -135,7 +135,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
                         empPerformance.OrgStructureId = placementss.OrgStructureId;
                         empPerformance.BranchId = placementss.BranchId;
-                        empPerformance.DirectBossId = placement.HeadId ?? 0;
+                        empPerformance.DirectBossId = placementss.HeadId ?? 0;
                         empPerformance.BusinessUnitId = placementss.BusinessUnitId;
                         empPerformance.ResponsibilityLevel = placementss.ResponsibilityLevel;
                         empPerformance.JobTitleId = placementss.LookupId;
@@ -145,7 +145,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                     }
                 }
             }
-            return RedirectToAction("Index", "EmployeePerformanceCorporateAndSectorLevels");
+            return View("Success");
         }
         public ActionResult EmployeePerformanceAllSummaries_Read([DataSourceRequest] DataSourceRequest request)
         {

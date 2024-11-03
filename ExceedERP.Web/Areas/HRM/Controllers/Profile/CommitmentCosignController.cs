@@ -50,6 +50,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 LookupId = cosign.LookupId,
                 Occupation = cosign.Occupation,
                 Workorganization = cosign.Workorganization,
+                Salary = cosign.Salary,
                 Remark = cosign.Remark,
                 AgreementDateAm = cosign.AgreementDateAm,
             });
@@ -83,6 +84,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                         Occupation = cosign.Occupation,
                         Workorganization = cosign.Workorganization,
                         LookupId = cosign.LookupId,
+                        Salary = cosign.Salary,
                         AgreementDateAm = AgreementDateAm,
                         Remark = cosign.Remark
                     };
@@ -140,6 +142,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     {
                         CosignId = cosign.CosignId,
                         EmployeeId = cosign.EmployeeId,
+                        Salary = cosign.Salary,
                         AgreementDate = AgreementDate,
                         FullName = cosign.FullName,
                         Occupation = cosign.Occupation,
@@ -180,6 +183,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     EmployeeId = cosign.EmployeeId,
                     AgreementDate = cosign.AgreementDate,
                     FullName = cosign.FullName,
+                    Salary = cosign.Salary,
                     Occupation = cosign.Occupation,
                     Workorganization = cosign.Workorganization,
                     LookupId = cosign.LookupId,

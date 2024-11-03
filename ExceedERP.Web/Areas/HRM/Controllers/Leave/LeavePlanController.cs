@@ -5,7 +5,6 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -69,11 +68,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
     
         public ActionResult LeavePlans_Read([DataSourceRequest]DataSourceRequest request)
         {
-            var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeid);
-            //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-           // List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<LeavePlan> leaveplans = db.LeavePlans.Where(x => employeeids.Contains(x.EmployeeId));
+            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            //List<int> employeeIds = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeid);
+            List<int> employeeIds = EmployeeHelper.GetSubordinates_FilteredByHead(employeeId);
+            IQueryable<LeavePlan> leaveplans = db.LeavePlans.Where(x => employeeIds.Contains(x.EmployeeId)&&x.IsSendForApproval);
             DataSourceResult result = leaveplans.ToDataSourceResult(request, leavePlan => new
             {
                 LeavePlanId = leavePlan.LeavePlanId,
@@ -86,11 +84,33 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 FromAmharic = leavePlan.FromAmharic,
                 ToAmharic = leavePlan.ToAmharic,
                 EmployeeCode = leavePlan.EmployeeCode,
+                CurrentApprovalStep = leavePlan.CurrentApprovalStep,
+                DepartmentOnlineApprovedBy = leavePlan.DepartmentOnlineApprovedBy,
+                DepartmentOnlineApprovedTime = leavePlan.DepartmentOnlineApprovedTime,
+                IsDepartmentOnlineApproved = leavePlan.IsDepartmentOnlineApproved,
+                DepartmentSendForApprovalBy = leavePlan.DepartmentSendForApprovalBy,
+                DepartmentSendForApprovalTime = leavePlan.DepartmentSendForApprovalTime,
+                IsDepartmentSendForApproval = leavePlan.IsDepartmentSendForApproval,
+                ForwardedFrom = leavePlan.ForwardedFrom,
+                ForwardedTo = leavePlan.ForwardedTo,
+                IsFinalApproval = leavePlan.IsFinalApproval,
+                IsSendForApproval = leavePlan.IsSendForApproval,
+                SendForApprovalTime = leavePlan.SendForApprovalTime,
+                IsOnlineApproved = leavePlan.IsOnlineApproved,
+                IsOnlineTransferred = leavePlan.IsOnlineTransferred,
+                IsOnlineTransferredBy = leavePlan.IsOnlineTransferredBy,
+                IsVoid = leavePlan.IsVoid,
+                OnlineApprovedBy = leavePlan.OnlineApprovedBy,
+                OnlineApprovedTime = leavePlan.OnlineApprovedTime,
+                OnlineTransferredTime = leavePlan.OnlineTransferredTime,
+                SendForApprovalBy = leavePlan.SendForApprovalBy,
+                VoidTime = leavePlan.VoidTime,
+                OrgBranchName = leavePlan.OrgBranchName,
+                VoidBy = leavePlan.VoidBy,
                 DateCreated = leavePlan.DateCreated,
-                LastModified = leavePlan.LastModified,
                 CreatedBy = leavePlan.CreatedBy,
                 ModifiedBy = leavePlan.ModifiedBy,
-                OrgBranchName = leavePlan.OrgBranchName,
+                LastModified = leavePlan.LastModified
             });
 
             return Json(result);
@@ -102,98 +122,112 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         {
             ModelState.Clear();
 
+            // Check if both FromAmharic and ToAmharic dates are provided
+            if (leavePlan.FromAmharic == null || leavePlan.ToAmharic == null)
+            {
+                ModelState.AddModelError("", "Both From and To Dates are required!!");
+                return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
+            }
+
+            // Convert FromAmharic date to Gregorian
+            if (leavePlan.FromAmharic != null)
+            {
+                var splitDate = leavePlan.FromAmharic.Split('/');
+                leavePlan.From = XAPI.EthiopicDateTime.GetGregorianDate(
+                    Convert.ToInt32(splitDate[0]),
+                    Convert.ToInt32(splitDate[1]),
+                    Convert.ToInt32(splitDate[2]));
+            }
+
+            // Convert ToAmharic date to Gregorian
+            if (leavePlan.ToAmharic != null)
+            {
+                var splitDate = leavePlan.ToAmharic.Split('/');
+                leavePlan.To = XAPI.EthiopicDateTime.GetGregorianDate(
+                    Convert.ToInt32(splitDate[0]),
+                    Convert.ToInt32(splitDate[1]),
+                    Convert.ToInt32(splitDate[2]));
+            }
+
+            // Check if the 'From' date is after the 'To' date
+            if (leavePlan.From.Date > leavePlan.To.Date)
+            {
+                ModelState.AddModelError("", "Please check the date range!!");
+                return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
+            }
+
+            // Calculate the total number of days in the leave period
+            double resultDate = GetWeekDays(leavePlan.From, leavePlan.To);
+
+            // Retrieve the fiscal year information
             var year = db.GLFiscalYears.Find(leavePlan.GlFiscalYearId);
             int selectedToYear = year.DateTo.Year;
             int selectedFromYear = year.DateFrom.Year;
             int currentYear = DateTime.Now.Year;
-            var splitDateFrom = leavePlan.FromAmharic.Split('/');
-            From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateFrom[0]), Convert.ToInt32(splitDateFrom[1]), Convert.ToInt32(splitDateFrom[2]));
-            var splitDateTo = leavePlan.ToAmharic.Split('/');
-            To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateTo[0]), Convert.ToInt32(splitDateTo[1]), Convert.ToInt32(splitDateTo[2]));
 
-            var date = db.LeavePlans.Where(x => x.EmployeeId == leavePlan.EmployeeId && x.From >= From && x.From <= To);
-            var date2 = db.LeavePlans.Where(x => x.EmployeeId == leavePlan.EmployeeId && x.To >= From && x.To <= To);
-
-            if (From.Date > To.Date)
+            // Check if the leave plan is for the current year
+            if ((selectedFromYear < currentYear && selectedToYear < currentYear) ||
+                (selectedFromYear > currentYear && selectedToYear > currentYear))
             {
-                ModelState.AddModelError("", "Please Check the date range!!");
-            }
-            if (FromAmharic == null || ToAmharic == null)
-            {
-                ModelState.AddModelError("", "Date form and to values are mandatory!!");
-            }
-            if ((selectedFromYear < currentYear && selectedToYear < currentYear) || (selectedFromYear > currentYear && selectedToYear > currentYear))
-            {
-                ModelState.AddModelError("", "You can not Plan for other years");
-            }
-            if (date.Any() || date2.Any())
-            {
-                ModelState.AddModelError("", "This range of Date is arranged for other plan");
+                ModelState.AddModelError("", "You cannot plan for other years");
+                return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
             }
 
+            // Calculate the total leave balance for the employee
+            var totalSum = db.LeavesEntitle
+                .Where(x => !x.IsExpired && x.EmployeeId == leavePlan.EmployeeId)
+                .ToList();
+            var totalBalance = totalSum.Sum(x => x.Balance);
 
+            // Check if the requested leave amount exceeds the employee's total balance
+            if (leavePlan.LeaveAmount > totalBalance)
+            {
+                ModelState.AddModelError("", "You cannot plan such an amount of leave!!");
+                return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
+            }
+
+            if (leavePlan.LeaveAmount > totalBalance)
+            {
+                ModelState.AddModelError("", "You cannot plan such an amount of leave!!");
+                return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
+            }
+
+            // Check if the requested leave amount exceeds the number of days in the period
+            else if (leavePlan.LeaveAmount > (decimal)resultDate)
+            {
+                ModelState.AddModelError("", "Leave date cannot be out of range");
+                return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
+            }
+
+            // Set additional properties for the leave plan
+            leavePlan.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+            leavePlan.EmployeeCode = inputs.GetEmployees()
+                .FirstOrDefault(x => x.PersonId == leavePlan.EmployeeId)?.EmployeeCode;
+            leavePlan.CreatedBy = User.Identity.Name;
+            leavePlan.DateCreated = DateTime.Now;
+            leavePlan.IsSendForApproval = true;
+            // If the model state is valid, save the leave plan to the database
             if (ModelState.IsValid)
             {
 
 
 
-                int resultDate = To.Subtract(From).Days;
-                //var years = db.GLFiscalYears.Find(leavePlan.GlFiscalYearId);
-                //int year = Convert.ToInt32(years.Name);
 
-                //var entitlew = db.LeavesEntitle.Where(x => x.GlFiscalYearId == leavePlan.GlFiscalYearId && x.EmployeeId == leavePlan.EmployeeId).ToList().Sum(x => x.Amount);
-                //var taken = db.Leaves.Where(x => x.GlFiscalYearId == leavePlan.GlFiscalYearId && x.EmployeeId == leavePlan.EmployeeId).ToList().Sum(x => x.Amount);
-                //var tranferedList = db.LeaveTransfer.Where(x => x.To == leavePlan.GlFiscalYearId && x.EmployeeId == leavePlan.EmployeeId).ToList().Sum(x => x.Amount);
-                //var total = entitlew + tranferedList - taken;
-
-                var totalSum = db.LeavesEntitle.Where(x=>!x.IsExpired && x.EmployeeId == leavePlan.EmployeeId).ToList();
-                var totalBalance = totalSum.Sum(x=>x.Balance);
-                if (leavePlan.LeaveAmount > totalBalance)
+                var entity = GetMappedObject(leavePlan);
+                db.LeavePlans.Add(entity);
+                db.SaveChanges();
+                leavePlan.LeavePlanId = entity.LeavePlanId;
+                #region operation log
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                if (person != null)
                 {
-                    //string messages = "You can not plan such amount of leave!!";
-                    //return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-                    ModelState.AddModelError("", "You can not plan such amount of leave!!");
-                }
-                else if (leavePlan.LeaveAmount > resultDate)
-                {
-                    ModelState.AddModelError("", "Leave Date cannot be out of range");
-                }
-                else
-                {
-                    var entity = new LeavePlan
-                    {
-
-                        EmployeeId = leavePlan.EmployeeId,
-                        GlFiscalYearId = leavePlan.GlFiscalYearId,
-                        LeaveAmount = leavePlan.LeaveAmount,
-                        From = From,
-                        To = To,
-                        Remark = leavePlan.Remark,
-                        FromAmharic = FromAmharic,
-                        ToAmharic = ToAmharic,
-                        EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == leavePlan.EmployeeId)?.EmployeeCode,
-                        DateCreated = leavePlan.DateCreated,
-                        LastModified = leavePlan.LastModified,
-                        CreatedBy = leavePlan.CreatedBy,
-                        ModifiedBy = leavePlan.ModifiedBy,
-                        OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                    };
-
-                    db.LeavePlans.Add(entity);
-                    db.SaveChanges();
-                    leavePlan.LeavePlanId = entity.LeavePlanId;
-
-                    #region operation log
-                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if (person != null)
-                    {
-                        var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                    var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
                         
-                            UserHelper.OperationLog(Request.UserHostAddress, "Leave Plan", "Success", User.Identity.Name, "Leave Plan for " + person.EmployeeCode + " is Created By  " + User.Identity.Name,Modules.HRM);
+                        UserHelper.OperationLog(Request.UserHostAddress, "Leave Plan", "Success", User.Identity.Name, "Leave Plan for " + person.EmployeeCode + " is Created By  " + User.Identity.Name,Modules.HRM);
                         
-                    }
-                    #endregion
                 }
+                #endregion
+                
 
             }
 
@@ -227,58 +261,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             }
             if (ModelState.IsValid)
             {
-                if (FromAmharic == null)
-                {
-                    FromAmharic = leavePlan.FromAmharic;
-                    var splitDate = FromAmharic.Split('/');
-                    From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (ToAmharic == null)
-                {
-                    ToAmharic = leavePlan.ToAmharic;
-                    var splitDate = FromAmharic.Split('/');
-                    To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (From.Date > To.Date)
-                {
-                    ModelState.AddModelError("", "Please Check the date range!!");
-                }
-                else
-                {
-                    var entity = new LeavePlan
-                    {
-                        LeavePlanId = leavePlan.LeavePlanId,
-                        EmployeeId = leavePlan.EmployeeId,
-                        GlFiscalYearId = leavePlan.GlFiscalYearId,
-                        From = From,
-                        To = To,
-                        LeaveAmount = leavePlan.LeaveAmount,
-                        Remark = leavePlan.Remark,
-                        FromAmharic = FromAmharic,
-                        ToAmharic = ToAmharic,
-                        EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == leavePlan.EmployeeId)?.EmployeeCode,
-                        DateCreated = leavePlan.DateCreated,
-                        LastModified = leavePlan.LastModified,
-                        CreatedBy = leavePlan.CreatedBy,
-                        ModifiedBy = leavePlan.ModifiedBy,
-                        OrgBranchName = leavePlan.OrgBranchName,
-                    };
+               
+                var entity = GetMappedObject(leavePlan);
+                db.LeavePlans.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
 
-                    db.LeavePlans.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    #region operation log
-                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if (person != null)
-                    {
-                        var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                #region operation log
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                if (person != null)
+                {
+                    var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
                        
-                            UserHelper.OperationLog(Request.UserHostAddress, "Leave Plan", "Success", User.Identity.Name, "Leave Plan of "+person.EmployeeCode +" is Updated By  " + User.Identity.Name,Modules.HRM);
+                        UserHelper.OperationLog(Request.UserHostAddress, "Leave Plan", "Success", User.Identity.Name, "Leave Plan of "+person.EmployeeCode +" is Updated By  " + User.Identity.Name,Modules.HRM);
                         
-                    }
-                    #endregion
                 }
+                #endregion
+                
             }
 
             return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
@@ -290,24 +289,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             ModelState.Clear();
             if (ModelState.IsValid)
             {
-                var entity = new LeavePlan
-                {
-                    LeavePlanId = leavePlan.LeavePlanId,
-                    EmployeeId = leavePlan.EmployeeId,
-                    GlFiscalYearId = leavePlan.GlFiscalYearId,
-                    From = leavePlan.From,
-                    To = leavePlan.To,
-                    LeaveAmount = leavePlan.LeaveAmount,
-                    Remark = leavePlan.Remark,
-                    FromAmharic = leavePlan.FromAmharic,
-                    ToAmharic = leavePlan.ToAmharic,
-                    EmployeeCode = leavePlan.EmployeeCode,
-                    DateCreated = leavePlan.DateCreated,
-                    LastModified = leavePlan.LastModified,
-                    CreatedBy = leavePlan.CreatedBy,
-                    ModifiedBy = leavePlan.ModifiedBy,
-                    OrgBranchName = leavePlan.OrgBranchName,
-                };
+                var entity = GetMappedObject(leavePlan);
                 #region delete log
                 var leaves = db.GLFiscalYears.Find(leavePlan.GlFiscalYearId);
                 var delete = leaves.Name;
@@ -320,6 +302,107 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
         }
+        private LeavePlan GetMappedObject(LeavePlan leavePlan)
+        {
+            var entity = new LeavePlan
+            {
+                LeavePlanId = leavePlan.LeavePlanId,
+                EmployeeId = leavePlan.EmployeeId,
+                GlFiscalYearId = leavePlan.GlFiscalYearId,
+                From = leavePlan.From,
+                To = leavePlan.To,
+                LeaveAmount = leavePlan.LeaveAmount,
+                Remark = leavePlan.Remark,
+                FromAmharic = leavePlan.FromAmharic,
+                ToAmharic = leavePlan.ToAmharic,
+                EmployeeCode = leavePlan.EmployeeCode,
+                CurrentApprovalStep = leavePlan.CurrentApprovalStep,
+                DepartmentOnlineApprovedBy = leavePlan.DepartmentOnlineApprovedBy,
+                DepartmentOnlineApprovedTime = leavePlan.DepartmentOnlineApprovedTime,
+                IsDepartmentOnlineApproved = leavePlan.IsDepartmentOnlineApproved,
+                DepartmentSendForApprovalBy = leavePlan.DepartmentSendForApprovalBy,
+                DepartmentSendForApprovalTime = leavePlan.DepartmentSendForApprovalTime,
+                IsDepartmentSendForApproval = leavePlan.IsDepartmentSendForApproval,
+                ForwardedFrom = leavePlan.ForwardedFrom,
+                ForwardedTo = leavePlan.ForwardedTo,
+                IsFinalApproval = leavePlan.IsFinalApproval,
+                IsSendForApproval = leavePlan.IsSendForApproval,
+                SendForApprovalTime = leavePlan.SendForApprovalTime,
+                IsOnlineApproved = leavePlan.IsOnlineApproved,
+                IsOnlineTransferred = leavePlan.IsOnlineTransferred,
+                IsOnlineTransferredBy = leavePlan.IsOnlineTransferredBy,
+                IsVoid = leavePlan.IsVoid,
+                OnlineApprovedBy = leavePlan.OnlineApprovedBy,
+                OnlineApprovedTime = leavePlan.OnlineApprovedTime,
+                OnlineTransferredTime = leavePlan.OnlineTransferredTime,
+                SendForApprovalBy = leavePlan.SendForApprovalBy,
+                VoidTime = leavePlan.VoidTime,
+                OrgBranchName = leavePlan.OrgBranchName,
+                VoidBy = leavePlan.VoidBy,
+                DateCreated = leavePlan.DateCreated,
+                CreatedBy = leavePlan.CreatedBy,
+                ModifiedBy = leavePlan.ModifiedBy,
+                LastModified = leavePlan.LastModified
+            };
+            return entity;
+        }
+        private double GetWeekDays(DateTime startDate, DateTime endDate)
+        {
+            double noOfWeek = 0;
+            var sundayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SUNDAY);
+            var saturdayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SATURDAY);
+            List<DateTime> dayList = new List<DateTime>();
+            TimeSpan diff = endDate - startDate;
+            int days = diff.Days;
+            for (var i = 0; i <= days; i++)
+            {
+                var testDate = startDate.AddDays(i);
+                switch (testDate.DayOfWeek)
+                {
+                    case DayOfWeek.Saturday:
+
+                        if (saturdayweekendSetting != null)
+                        {
+                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
+                            if (holiday == null)
+                            {
+                                if (saturdayweekendSetting.IsHalfDay)
+                                {
+                                    noOfWeek += 0.5;
+                                }
+                                else
+                                {
+                                    noOfWeek += 1;
+
+                                }
+                            }
+                        }
+                        break;
+                    case DayOfWeek.Sunday:
+
+                        if (sundayweekendSetting != null)
+                        {
+                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
+                            if (holiday == null)
+                            {
+                                if (sundayweekendSetting.IsHalfDay)
+                                {
+                                    noOfWeek += 0.5;
+                                }
+                                else
+                                {
+                                    noOfWeek += 1;
+
+                                }
+                            }
+                        }
+                        //dayList.Add(testDate);
+                        break;
+                }
+            }
+            return noOfWeek;
+        }
+
         [HttpPost]
         public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
         {

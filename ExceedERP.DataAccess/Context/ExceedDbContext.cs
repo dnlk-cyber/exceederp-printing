@@ -732,9 +732,9 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new MeasurementDefinitionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MeasurementEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PerformanceActionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new EmployeeMeasurementDefinitionEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new EmployeeMeasurementDefinitionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeMeasurementEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new EmployeePerformanceActionEntityTypeConfiguration());
+           // modelBuilder.Configurations.Add(new EmployeePerformanceActionEntityTypeConfiguration());
             #endregion
             #region Recruitment
             modelBuilder.Configurations.Add(new ApplicantRegistrationEntityTypeConfiguration());
@@ -2855,7 +2855,7 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<ProbationPerformance> ProbationPerformances { get; set; }
         public System.Data.Entity.DbSet<ProbationPerformanceDetail> ProbationPerformanceDetails { get; set; }
         public System.Data.Entity.DbSet<LeaveReturn> LeaveReturns { get; set; }
-        public System.Data.Entity.DbSet<RetirementSetting> RetirementSettings { get; set; }
+        public DbSet<RetirementSetting> RetirementSettings { get; set; }
         public System.Data.Entity.DbSet<Template> Templates { get; set; }
         public System.Data.Entity.DbSet<ExperienceRequest> ExprianceRequests { get; set; }
 

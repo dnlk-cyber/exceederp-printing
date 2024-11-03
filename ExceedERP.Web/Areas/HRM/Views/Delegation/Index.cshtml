@@ -8,34 +8,48 @@
 }
 <legend>@Resources.NavigatorBenefit_Delegation</legend>
 @(Html.Kendo().Grid<Delegation>()
-            .Name("Delegation")
-        .Columns(columns =>
-        {
-            //columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(120);
-            columns.ForeignKey(c => c.FromEmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("Employees").Width(200);
-            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("Employees").Width(200);
-            columns.Bound(c => c.FromDateTimeAm).EditorTemplateName("Calander").Width(200);
-            columns.Bound(c => c.ToDateTimeAm).EditorTemplateName("Calander").Width(200);
-            //columns.Bound(c => c.Reason).Width(250);
+      .Name("Delegation")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.IsWithBenefit).ClientTemplate(
+           "<input type='checkbox' disabled = 'true' value='#= IsWithBenefit#' " +
+           "# if (IsWithBenefit) { #" +
+           "checked='checked'" +
+           "# } #" +
+           "/>"
+           ).Width(120);
+          //columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(120);
+          columns.ForeignKey(c => c.FromEmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("Employees").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("Employees").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
+          columns.Bound(c => c.FromDateTimeAm).EditorTemplateName("Calander").Width(200);
+          columns.Bound(c => c.ToDateTimeAm).EditorTemplateName("Calander").Width(200);
+          columns.Bound(c => c.IsOpen).ClientTemplate(
+          "<input type='checkbox' disabled = 'true' value='#= IsOpen#' " +
+          "# if (IsOpen) { #" +
+          "checked='checked'" +
+          "# } #" +
+          "/>"
+          ).Width(120);
+          //columns.Bound(c => c.Reason).Width(250);
 
-            columns.Command(command =>
-            {
-                if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                {
-                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { @id = "delegationEdit" });
-                    command.Custom("").Click("Open").Text(Resources.Button_Open).IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-yellow", @title = "Open delegation and set start date ", @id = "open" });
-                    command.Custom("").Click("Close").Text(Resources.Button_Close).IconClass("fa fa-remove fa4x").HtmlAttributes(new { @class = "btn btn-white", @title = "Close delegation and set end date ", @id = "close" });
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { @id = "delegationEdit" });
+                  command.Custom("").Click("Open").Text(Resources.Button_Open).IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-yellow", @title = "Open delegation and set start date ", @id = "open" });
+                  command.Custom("").Click("Close").Text(Resources.Button_Close).IconClass("fa fa-remove fa4x").HtmlAttributes(new { @class = "btn btn-white", @title = "Close delegation and set end date ", @id = "close" });
 
-                }
-                if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                {
-                    command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { @id = "delegationDelete" }); ;
-                }
-            }).Width(350);
-        })
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { @id = "delegationDelete" }); ;
+              }
+          }).Width(350);
+      })
         .ToolBar(toolbar =>
         {
-            if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+            if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
             {
                 toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
             }
@@ -49,7 +63,6 @@
                  x.Edit("GetDate");
              })
            .Scrollable(h => h.Height(500))
-               .Groupable()
                         .Sortable(sortable =>
                         {
                             sortable.SortMode(GridSortMode.SingleColumn);
@@ -69,6 +82,7 @@
                      events.RequestStart("onRequestStart(\"Delegation\")");
                      events.RequestEnd("onRequestEnd(\"Delegation\")");
                  })
+                 .Sort(sort=>sort.Add(x=>x.DelegationId).Descending())
 
             .Model(model =>
             {
@@ -100,7 +114,7 @@
           .Name("DeligationCC#=DelegationId#")
               .Columns(columns =>
               {
-                  columns.ForeignKey(c => c.CC, (IEnumerable)ViewData["CC"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Width(150);
+                  columns.ForeignKey(c => c.CC, (IEnumerable)ViewData["CC"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Width(300);
                   //columns.Bound(c => c.IsCurrent).Width(100);
                   columns.Command(command =>
                   {
@@ -110,7 +124,7 @@
                       command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { id="ccDeleteButton"});
                       // }
 
-                  }).Width(100);
+                  });
               })
 
                   .ToolBar(toolbar =>
@@ -118,7 +132,7 @@
                       //if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
                       //{
                       toolbar.Create().Text(Resources.ActionButton_AddNewRecord).HtmlAttributes(new { id = "ccAddButton" });
-                     //}
+                      //}
                   })
                   .Events(E =>
                   {
@@ -129,19 +143,20 @@
                          .Selectable()
                          .DataSource(dataSource => dataSource
                              .Ajax()
-                                     .Events(events =>
-                                     {
-                                         events.Error("error_handler(\"DeligationCC#=DelegationId#\")");
-                                         events.RequestStart("onRequestStart(\"DeligationCC#=DelegationId#\")");
-                                         events.RequestEnd("onRequestEnd(\"DeligationCC#=DelegationId#\")");
-                                     })
+                             .Events(events =>
+                             {
+                                 events.Error("error_handler(\"DeligationCC#=DelegationId#\")");
+                                 events.RequestStart("onRequestStart(\"DeligationCC#=DelegationId#\")");
+                                 events.RequestEnd("onRequestEnd(\"DeligationCC#=DelegationId#\")");
+
+                             })
 
 
-                                   .Model(model => model.Id(p => p.DeligationCCId))
-                                .Read(read => read.Action("DelegationCC_Read", "Delegation", new { id = "#=DelegationId#" }))
-                                .Create(create => create.Action("DelegationCC_Create", "Delegation", new { id = "#=DelegationId#" }))
-                               .Update(update => update.Action("DelegationCC_Update", "Delegation"))
-                               .Destroy(destroy => destroy.Action("DelegationCC_Destroy", "Delegation"))
+                             .Model(model => model.Id(p => p.DeligationCCId))
+                             .Read(read => read.Action("DelegationCC_Read", "Delegation", new { id = "#=DelegationId#" }))
+                             .Create(create => create.Action("DelegationCC_Create", "Delegation", new { id = "#=DelegationId#" }))
+                             .Update(update => update.Action("DelegationCC_Update", "Delegation"))
+                             .Destroy(destroy => destroy.Action("DelegationCC_Destroy", "Delegation"))
 
                                                                                                          ).ToClientTemplate()
                              )
@@ -158,7 +173,7 @@
                               .Name("DelegationReason#=DelegationId#")
                             .Columns(columns =>
                             {
-                                columns.Bound(c => c.Reason).Width(200);
+                                columns.Bound(c => c.Reason).Width(300);
                                 columns.Command(command =>
                                 {
                                     //if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
@@ -166,7 +181,7 @@
                                     command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { id = "reasonEditButton" });
                                     command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { id = "reasonDeleteButton" });
                                     //}
-                                }).Width(100);
+                                });
                             })
 
                  .ToolBar(toolbar =>
@@ -204,7 +219,8 @@
                                   )
                                     </text>
                                             );
-                                         }).ToClientTemplate())
+
+                 }).ToClientTemplate())
 </script>
 
 

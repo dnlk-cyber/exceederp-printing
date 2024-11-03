@@ -106,7 +106,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             int orgStructureId = 0;
 
             var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var place = db.Placements.FirstOrDefault(x => x.EmployeeId == employeeid);
+            var place = db.Placements.FirstOrDefault(x => x.EmployeeId == employeeid&&x.isCurrent);
             if (place != null)
             {
                 orgStructureId = place.OrgStructureId;
@@ -176,7 +176,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     NoOfCurrentStaff = current,
                     NoOfShouldBeStaff = jobTitleQuantity,
                     PlanType = planType,
-                    NoOfVaccantPostion = recruitmentRequest.NoOfVaccantPostion,
+                    NumberOfStaff = recruitmentRequest.NoOfVaccantPostion,
                     Date = DateTime.Now,
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Now,

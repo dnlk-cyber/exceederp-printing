@@ -169,7 +169,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             SetSettingValues();
             decimal screenSum = 0;
             var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeid);
+            //List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeid);
+            List<int> employeeids = EmployeeHelper.GetSubordinates_FilteredByHead(employeeid);
             IQueryable<ApplicantionForm> applicarionForm = db.ApplicantionFormes.Where(x => employeeids.Contains(x.EmployeeId));
 
             //IQueryable<ApplicantionForm> applicantionformes = db.ApplicantionFormes.Where(x => x.EmployeeId == EmployeeId);

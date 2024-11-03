@@ -16,6 +16,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
+    [Authorize]
     public class ManPowerPlanningRequestsController : BaseController
     {
         // GET: HRM/ManPowerPlanningRequests
@@ -140,134 +141,114 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             }
            var manpowerPlanning = requests.AsQueryable().OrderBy(x => x.Date);
-            DataSourceResult result = manpowerPlanning.ToDataSourceResult(request, req => new
+            DataSourceResult result = manpowerPlanning.ToDataSourceResult(request, manPowerPlanningRequest => new
             {
-                ManPowerPlanningRequestId = req.ManPowerPlanningRequestId,
-                OrgStructureId = req.OrgStructureId,
-                GlFiscalYearId = req.GlFiscalYearId,
-                EmploymentType = req.EmploymentType,
-                LookupId = req.LookupId,
-                NoOfCurrentStaff = req.NoOfCurrentStaff,
-                NoOfShouldBeStaff = req.NoOfShouldBeStaff,
-                NoOfVaccantPostion = req.NoOfVaccantPostion,
-                PlanType = req.PlanType,
-                Date = req.Date,
-                CreatedBy = req.CreatedBy,
-                DateCreated = req.DateCreated,
-                ModifiedBy = req.ModifiedBy,
-                LastModified = req.LastModified,
-                OrgBranchName = req.OrgBranchName,
-                BranchId = req.BranchId,
+                ManPowerPlanningRequestId = manPowerPlanningRequest.ManPowerPlanningRequestId,
+                OrgStructureId = manPowerPlanningRequest.OrgStructureId,
+                GlFiscalYearId = manPowerPlanningRequest.GlFiscalYearId,
+                EmploymentType = manPowerPlanningRequest.EmploymentType,
+                LookupId = manPowerPlanningRequest.LookupId,
+                NoOfCurrentStaff = manPowerPlanningRequest.NoOfCurrentStaff,
+                NoOfShouldBeStaff = manPowerPlanningRequest.NoOfShouldBeStaff,
+                NumberOfStaff = manPowerPlanningRequest.NumberOfStaff,
+                PlanType = manPowerPlanningRequest.PlanType,
+                Date = manPowerPlanningRequest.Date,
+                CreatedBy = manPowerPlanningRequest.CreatedBy,
+                DateCreated = manPowerPlanningRequest.DateCreated,
+                ModifiedBy = manPowerPlanningRequest.ModifiedBy,
+                LastModified = manPowerPlanningRequest.LastModified,
+                OrgBranchName = manPowerPlanningRequest.OrgBranchName,
+                BranchId = manPowerPlanningRequest.BranchId,
+                IsNewJobTitle = manPowerPlanningRequest.IsNewJobTitle,
+                Reason = manPowerPlanningRequest.Reason,
+                Experience = manPowerPlanningRequest.Experience,
+                Education = manPowerPlanningRequest.Education,
+                JobTitle = manPowerPlanningRequest.JobTitle,
+                Remark = manPowerPlanningRequest.Remark
             });
 
             return Json(result);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ManPowerPlanningRequests_Create([DataSourceRequest]DataSourceRequest request, ManPowerPlanningRequest req)
+        public ActionResult ManPowerPlanningRequests_Create([DataSourceRequest]DataSourceRequest request, ManPowerPlanningRequest planningRequest)
         {
             if (ModelState.IsValid)
             {
 
-                var entity = new ManPowerPlanningRequest
-                {
-                    OrgStructureId = req.OrgStructureId,
-                    GlFiscalYearId = req.GlFiscalYearId,
-                    EmploymentType = req.EmploymentType,
-                    LookupId = req.LookupId,
-                    NoOfCurrentStaff = req.NoOfCurrentStaff,
-                    NoOfShouldBeStaff = req.NoOfShouldBeStaff,
-                    NoOfVaccantPostion = req.NoOfVaccantPostion,
-                    PlanType = req.PlanType,
-                    Date = DateTime.Today,
-                    CreatedBy = req.CreatedBy,
-                    DateCreated = DateTime.Today,
-                    ModifiedBy = req.ModifiedBy,
-                    LastModified = req.LastModified,
-                    OrgBranchName = req.OrgBranchName,
-                    BranchId = req.BranchId,
-                };
-
+                var entity = GetMappedObject(planningRequest);
                 db.ManPowerPlanningRequests.Add(entity);
                 db.SaveChanges();
-                req.ManPowerPlanningRequestId = entity.ManPowerPlanningRequestId;
+                planningRequest.ManPowerPlanningRequestId = entity.ManPowerPlanningRequestId;
 
             }
 
-            return Json(new[] { req }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { planningRequest }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ManPowerPlanningRequests_Update([DataSourceRequest]DataSourceRequest request, ManPowerPlanningRequest req)
+        public ActionResult ManPowerPlanningRequests_Update([DataSourceRequest]DataSourceRequest request, ManPowerPlanningRequest planningRequest)
         {
             ModelState.Clear();
             if (ModelState.IsValid)
             {
 
-                var entity = new ManPowerPlanningRequest
-                {
-                    ManPowerPlanningRequestId = req.ManPowerPlanningRequestId,
-                    OrgStructureId = req.OrgStructureId,
-                    GlFiscalYearId = req.GlFiscalYearId,
-                    EmploymentType = req.EmploymentType,
-                    LookupId = req.LookupId,
-                    NoOfCurrentStaff = req.NoOfCurrentStaff,
-                    NoOfShouldBeStaff = req.NoOfShouldBeStaff,
-                    NoOfVaccantPostion = req.NoOfVaccantPostion,
-                    PlanType = req.PlanType,
-                    Date = req.Date,
-                    CreatedBy = req.CreatedBy,
-                    DateCreated = req.DateCreated,
-                    ModifiedBy = req.ModifiedBy,
-                    LastModified = req.LastModified,
-                    OrgBranchName = req.OrgBranchName,
-                    BranchId = req.BranchId,
-                };
-
-
+                var entity = GetMappedObject(planningRequest);
                 db.ManPowerPlanningRequests.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
 
             }
 
-            return Json(new[] { req }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { planningRequest }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ManPowerPlanningRequests_Destroy([DataSourceRequest]DataSourceRequest request, ManPowerPlanningRequest req)
+        public ActionResult ManPowerPlanningRequests_Destroy([DataSourceRequest]DataSourceRequest request, ManPowerPlanningRequest planningRequest)
         {
             ModelState.Clear();
             if (ModelState.IsValid)
             {
-                var entity = new ManPowerPlanningRequest
-                {
-                    ManPowerPlanningRequestId = req.ManPowerPlanningRequestId,
-                    OrgStructureId = req.OrgStructureId,
-                    GlFiscalYearId = req.GlFiscalYearId,
-                    EmploymentType = req.EmploymentType,
-                    LookupId = req.LookupId,
-                    NoOfCurrentStaff = req.NoOfCurrentStaff,
-                    NoOfShouldBeStaff = req.NoOfShouldBeStaff,
-                    NoOfVaccantPostion = req.NoOfVaccantPostion,
-                    PlanType = req.PlanType,
-                    Date = req.Date,
-                    CreatedBy = req.CreatedBy,
-                    DateCreated = req.DateCreated,
-                    ModifiedBy = req.ModifiedBy,
-                    LastModified = req.LastModified,
-                    OrgBranchName = req.OrgBranchName,
-                    BranchId = req.BranchId,
-                };
-
-
+                var entity = GetMappedObject(planningRequest);
                 db.ManPowerPlanningRequests.Attach(entity);
                 db.ManPowerPlanningRequests.Remove(entity);
                 db.SaveChanges();
             }
 
-            return Json(new[] { req }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { planningRequest }.ToDataSourceResult(request, ModelState));
         }
+
+        private ManPowerPlanningRequest GetMappedObject(ManPowerPlanningRequest manPowerPlanningRequest)
+        {
+            var entity = new ManPowerPlanningRequest
+            {
+                ManPowerPlanningRequestId = manPowerPlanningRequest.ManPowerPlanningRequestId,
+                OrgStructureId = manPowerPlanningRequest.OrgStructureId,
+                GlFiscalYearId = manPowerPlanningRequest.GlFiscalYearId,
+                EmploymentType = manPowerPlanningRequest.EmploymentType,
+                LookupId = manPowerPlanningRequest.LookupId,
+                NoOfCurrentStaff = manPowerPlanningRequest.NoOfCurrentStaff,
+                NoOfShouldBeStaff = manPowerPlanningRequest.NoOfShouldBeStaff,
+                NumberOfStaff = manPowerPlanningRequest.NumberOfStaff,
+                PlanType = manPowerPlanningRequest.PlanType,
+                Date = manPowerPlanningRequest.Date,
+                CreatedBy = manPowerPlanningRequest.CreatedBy,
+                DateCreated = manPowerPlanningRequest.DateCreated,
+                ModifiedBy = manPowerPlanningRequest.ModifiedBy,
+                LastModified = manPowerPlanningRequest.LastModified,
+                OrgBranchName = manPowerPlanningRequest.OrgBranchName,
+                BranchId = manPowerPlanningRequest.BranchId,
+                IsNewJobTitle = manPowerPlanningRequest.IsNewJobTitle,
+                Reason = manPowerPlanningRequest.Reason,
+                Experience = manPowerPlanningRequest.Experience,
+                Education = manPowerPlanningRequest.Education,
+                JobTitle = manPowerPlanningRequest.JobTitle,
+                Remark = manPowerPlanningRequest.Remark
+            };
+            return entity;
+
+        }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

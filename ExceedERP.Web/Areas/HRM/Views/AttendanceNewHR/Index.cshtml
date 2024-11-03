@@ -14,11 +14,8 @@
             columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
             columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
             columns.Bound(c => c.DateAm).Width(120);
-
             //columns.Group(group => group
-
             //  .Title(Resources.Enum_Leave_Day)
-
             //.Columns(info =>
             //{
             //    info.Bound(x => x.IsPresentMorning).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsPresentMorning #' " + " # if (IsPresentMorning) { #" + "checked='checked'" + "# } #" + " />").Width(130);

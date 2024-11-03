@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -18,8 +18,10 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
 {
-  
-    [AuthorizeRoles(HrmConstants.HRAttendanceUser, HrmConstants.HRAdmin)]
+
+    [AuthorizeRoles(HrmConstants.HRAttendanceUser,
+          HrmConstants.HRDepartmentHead,
+          HrmConstants.HREmployeeSelfService)]
     public class LateCommingController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

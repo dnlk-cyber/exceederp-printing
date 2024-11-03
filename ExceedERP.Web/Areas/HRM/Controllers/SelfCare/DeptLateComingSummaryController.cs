@@ -42,7 +42,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             //           select (new { e});
 
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var empIdList = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
+            //var empIdList = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
+            var empIdList = EmployeeHelper.GetSubordinates_FilteredByHead(empId);
             var list = inputs.GetEmployees().Where(x => x.IsActive && empIdList.Contains(x.PersonId) && x.PersonId != empId).ToList();
             ViewData["EmployeeList"] = list.Where(x => x.IsActive);
 
@@ -82,7 +83,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                              select (new { g.GLPeriodId });
             List<int> selectedPeriod = periodList.Select(x => x.GLPeriodId).ToList();
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var empIdList = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
+            var empIdList = EmployeeHelper.GetSubordinates_FilteredByHead(empId);
+            //var empIdList = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
             IQueryable<LateComingSummary> LateComingSummaries = db.LateComingSummaries.Where(x => empIdList.Contains(x.EmployeeId) /*&& selectedPeriod.Contains(x.GLPeriodId)*/);
             DataSourceResult result = LateComingSummaries.ToDataSourceResult(request, LateComingSummary => new
             {
@@ -281,7 +283,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public void Summary(int periodId)
         {
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var empIdList = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
+            //var empIdList = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
+            var empIdList = EmployeeHelper.GetSubordinates_FilteredByHead(empId);
             var period = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == periodId);
             if (period != null)
             {

@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain;
@@ -182,6 +180,29 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EvaluatorsRequest_Destroy([DataSourceRequest]DataSourceRequest request, PerformanceRequestPeriod performanceRequestPeriod)
         {
+            
+            var peerToPeerEvaluationsExist = db.PeerToPeerPerformanceEvaluations.Any(x => x.PerformanceRequestPeriodId == performanceRequestPeriod.PerformanceRequestPeriodId);
+            var internalCustomerEvaluationsExist = db.InternalCustomerPerformanceEvaluations.Any(x => x.PerformanceRequestPeriodId == performanceRequestPeriod.PerformanceRequestPeriodId);
+
+            if (peerToPeerEvaluationsExist || internalCustomerEvaluationsExist)
+            {
+                if (peerToPeerEvaluationsExist && internalCustomerEvaluationsExist)
+                {
+                    ModelState.AddModelError("", "You cannot delete this record because it is linked to both Peer-to-Peer and Internal Customer performance evaluations. Please delete the related evaluations first.");
+                }
+                else if (peerToPeerEvaluationsExist)
+                {
+                    ModelState.AddModelError("", "You cannot delete this record because it is linked to existing Peer-to-Peer performance evaluations. Please delete the related evaluations first.");
+                }
+                else if (internalCustomerEvaluationsExist)
+                {
+                    ModelState.AddModelError("", "You cannot delete this record because it is linked to existing Internal Customer performance evaluations. Please delete the related evaluations first.");
+                }
+
+                return Json(new[] { performanceRequestPeriod }.ToDataSourceResult(request, ModelState));
+            }
+
+
             if (ModelState.IsValid)
             {
                 var entity = GetMappedObject(performanceRequestPeriod);

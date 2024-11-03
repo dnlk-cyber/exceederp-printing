@@ -125,13 +125,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             //    x.GlFiscalYearId,
             //    x.GlPeriodId,
             //}).Select(g => new { g.Key.EmployeeId, g.Key.GlFiscalYearId, g.Key.GlPeriodId}).OrderByDescending(x=>x.GlFiscalYearId).ToList();    
-            var employeePerformances = db.EmployeePerformances.Where(x=>x.EmployeeId==id)
-                                .Where(x => x.IsApproved ).DistinctBy(x => new
-                                {
-                                    x.EmployeeId,
-                                    x.GlFiscalYearId,
-                                    x.GlPeriodId
-                                }).OrderByDescending(x => x.GlFiscalYearId).ToList();
+            var employeePerformances = db.EmployeePerformances.Where(x=>x.IsApproved).Where(x=>x.EmployeeId==id)
+                                //.Where(x => x.IsApproved ).DistinctBy(x => new
+                                //{
+                                //    x.EmployeeId,
+                                //    x.GlFiscalYearId,
+                                //    x.GlPeriodId
+                                //})
+                                .OrderByDescending(x => x.GlFiscalYearId).ToList();
             //IQueryable<EmployeePerformance> employeePerformances = db.EmployeePerformances;
             DataSourceResult result = employeePerformances.ToDataSourceResult(request, employeePerformance => new
             {
@@ -139,16 +140,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 EmployeeId = employeePerformance.EmployeeId,
                 GlFiscalYearId = employeePerformance.GlFiscalYearId,
                 GlPeriodId = employeePerformance.GlPeriodId,
+                IsApproved = employeePerformance.IsApproved,
                 OrgStructureId = employeePerformance.OrgStructureId,
                 BranchId = employeePerformance.BranchId,
                 BusinessUnitId = employeePerformance.BusinessUnitId,
+                EvaluationCriteriaTypeId = employeePerformance.EvaluationCriteriaTypeId,
                 Date = employeePerformance.Date,
                 DeadLine = employeePerformance.DeadLine,
                 IsHRApproved = employeePerformance.IsHRApproved,
                 IsAcceptedByEmployee = employeePerformance.IsAcceptedByEmployee,
-                //Result = employeePerformance.Result,
-                ////Result = GetResult(employeePerformance.EmpMeasurementId),
-                //Remark = employeePerformance.Remark
+                IsRejectedByEmployee = employeePerformance.IsRejectedByEmployee,
+                Result = GetEvaluationResult(employeePerformance.EmployeePerformanceId),
+                Weight = GetWeight(employeePerformance.EmployeePerformanceId),
+                Remark = employeePerformance.Remark
             });
 
             return Json(result);
@@ -166,6 +170,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 EmployeeId = employeePerformance.EmployeeId,
                 GlFiscalYearId = employeePerformance.GlFiscalYearId,
                 GlPeriodId = employeePerformance.GlPeriodId,
+                IsApproved = employeePerformance.IsApproved,
                 EvaluationCriteriaTypeId = employeePerformance.EvaluationCriteriaTypeId,
                 IsAcceptedByEmployee = employeePerformance.IsAcceptedByEmployee,
                 Result = GetEvaluationResult(employeePerformance.EmployeePerformanceId),
@@ -179,9 +184,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         public ActionResult EmployeeMeasurements_Read([DataSourceRequest] DataSourceRequest request, int performanceId)
         {
             
-
             IQueryable<EmployeeMeasurement> measurements = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == performanceId);
-
             DataSourceResult result = measurements.ToDataSourceResult(request, measur => new
             {
                 EmpMeasurementId = measur.EmpMeasurementId,
@@ -268,9 +271,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 db.SaveChanges();
 
                 #region operation log
-
-                // UserHelper.OperationLog(Request.UserHostAddress, "Employee Performance  ", "Success", User.Identity.Name, User.Identity.Name + " update Employee performance of employee id " + entity.EmployeeId, Modules.HRM);
-
+                 //UserHelper.OperationLog(Request.UserHostAddress, "Employee Performance  ", "Success", User.Identity.Name, User.Identity.Name + " update Employee performance of employee id " + entity.EmployeeId, Modules.HRM);
                 #endregion
 
             }
@@ -309,15 +310,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             }), JsonRequestBehavior.AllowGet);
         }
-        public string AcceptedEvaluation(int year, int period, int employee,string reason)
+        //public string AcceptedEvaluation(int year, int period, int employee,string reason)
+        public string AcceptedEvaluation(int employeePerformanceId, string reason)
         {
-            var employeePerformances = db.EmployeePerformances.Where(x => x.GlFiscalYearId == year && x.GlPeriodId == period && x.EmployeeId == employee&&x.IsApproved).ToList();
+            var employeePerformance = db.EmployeePerformances.FirstOrDefault(x => x.EmployeePerformanceId == employeePerformanceId &&x.IsApproved);
             var status = "false";
-            foreach ( var employeePerformance in employeePerformances)
+            if (employeePerformance !=null )
             {
                 employeePerformance.IsAcceptedByEmployee = true;
                 employeePerformance.EmployeeRemark = reason;
-
                 db.Entry(employeePerformance).State = EntityState.Modified;
                 db.SaveChanges();
 
@@ -326,11 +327,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             return status;
         }
-        public string RejectionReason_Create(int yearId, int periodId, int employeeId,string reason)
+        //public string RejectionReason_Create(int yearId, int periodId, int employeeId,string reason)
+        public string RejectionReason_Create(int employeePerformanceId, string reason)
         {
-            var employeePerformances = db.EmployeePerformances.Where(x => x.GlFiscalYearId == yearId && x.GlPeriodId == periodId && x.EmployeeId == employeeId&&x.IsApproved&&!x.IsSecondLevelApproved).ToList();
+            var employeePerformance = db.EmployeePerformances.FirstOrDefault(x => x.EmployeePerformanceId == employeePerformanceId&&x.IsApproved);
             var status = "false";
-            foreach ( var employeePerformance in employeePerformances)
+            if(employeePerformance !=null)
             {
                 employeePerformance.IsRejectedByEmployee = true;
                 employeePerformance.EmployeeRemark = reason;

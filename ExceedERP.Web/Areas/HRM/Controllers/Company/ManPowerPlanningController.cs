@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
@@ -10,6 +10,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
+    [Authorize]
     public class ManPowerPlanningController :  BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -22,20 +23,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             var branch = db.Branch.ToList();
             ViewData["Branches"] = branch;
             var structres = db.MainCompanyStructures;
-            ViewData["organization"] = structres;
+            ViewData["orgstructure"] = structres;
             var levels = db.Lookups.Where(l => l.LookupType == LookUpTypes.EDUCATION_LEVEL);
             ViewData["EduLevelList"] = levels;
+            var lookups = db.Lookups.Where(l => l.LookupType == LookUpTypes.EDUCATION_FIELD);
+            ViewData["EduFiledList"] = lookups.Select(x=>new { EduField =x.LookupId,x.Description});
             var branchCostCenter = db.BranchCostCenter.ToList();
-            foreach (var b in branchCostCenter)
-            {
-                var oneWorkUnit = db.MainCompanyStructures.Where(x => x.OrgStructureId == b.OrgStructureId).FirstOrDefault();
-                if (oneWorkUnit != null)
-                {
-                    workUnits.Add(oneWorkUnit);
-                }
-
-            }
-            ViewData["workunits"] = workUnits;
+            //foreach (var b in branchCostCenter)
+            //{
+            //    var oneWorkUnit = db.MainCompanyStructures.Where(x => x.OrgStructureId == b.OrgStructureId).FirstOrDefault();
+            //    if (oneWorkUnit != null)
+            //    {
+            //        workUnits.Add(oneWorkUnit);
+            //    }
+            //}
+            ViewData["parent"] = structres.Select(x => new { WorkUnitId= x.OrgStructureId, x.Name, });
             var types = db.Lookups.Where(x => x.LookupType == LookUpTypes.PROJECT_TYPE).ToList();
             ViewData["projects"] = types;
             ViewData["businessUnits"] = db.BusinessUnits;

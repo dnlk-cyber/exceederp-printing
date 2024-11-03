@@ -321,7 +321,11 @@
                             columns.Command(command =>
                             {
                                 // command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                command.Destroy().Text(Resources.ActionButton_Cancel);
+                                if (HttpContext.Current.User.IsInRole("Performance_Second_Level_Approval") 
+                                || HttpContext.Current.User.IsInRole("Performance_2nd_Level_Approval"))
+                                {
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }
 
 
                             }).Width(100);
@@ -724,6 +728,7 @@
     function filterWorkUnitEvaluationCriteria() {
         return {
             evaluationCriteriaId: $("#EvaluationCriteriaId").val(),
+            businessUnitId: $("#businessUnit").val(),
             branchId: $("#branch").val(),
             text: $("#workUnit").data("kendoDropDownList").filterInput.val()
 

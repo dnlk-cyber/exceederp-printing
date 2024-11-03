@@ -81,6 +81,7 @@
     <Compile Include="Context\InventoryEntityConfiguration.cs" />
     <Compile Include="Context\MaintenanceEntityTypeConfiguration.cs" />
     <Compile Include="Context\ManufacturingEntityConfiguration.cs" />
+    <Compile Include="Context\PayrollEntityConfiguration.cs" />
     <Compile Include="Context\PlanningEntityConfiguration.cs" />
     <Compile Include="Context\PrintingEntityConfiguration.cs" />
     <Compile Include="Context\ProductionEntityConfiguration.cs" />
@@ -506,6 +507,14 @@
     <Compile Include="Migrations\202410271956045_finprocurementinventoryupgrade.Designer.cs">
       <DependentUpon>202410271956045_finprocurementinventoryupgrade.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202411031711170_hrmupgrade.cs" />
+    <Compile Include="Migrations\202411031711170_hrmupgrade.Designer.cs">
+      <DependentUpon>202411031711170_hrmupgrade.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202411031748339_hrmadditional.cs" />
+    <Compile Include="Migrations\202411031748339_hrmadditional.Designer.cs">
+      <DependentUpon>202411031748339_hrmadditional.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -839,6 +848,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202410271956045_finprocurementinventoryupgrade.resx">
       <DependentUpon>202410271956045_finprocurementinventoryupgrade.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411031711170_hrmupgrade.resx">
+      <DependentUpon>202411031711170_hrmupgrade.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411031748339_hrmadditional.resx">
+      <DependentUpon>202411031748339_hrmadditional.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -3,7 +3,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -15,12 +14,11 @@ using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.HRMPlan;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.HR;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 {
-    [AuthorizeRoles(HrmConstants.HRTrainingUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRTrainingUser)]
     public class NeedAssessmentSummaryController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

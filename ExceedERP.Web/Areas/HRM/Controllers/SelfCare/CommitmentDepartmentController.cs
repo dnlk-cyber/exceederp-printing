@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
@@ -68,7 +68,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public ActionResult Commitments_Read([DataSourceRequest]DataSourceRequest request)
         {
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            List<int> subordinates = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
+            //List<int> subordinates = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(empId);
+            List<int> subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(empId);
             IQueryable<Commitment> commitments = db.Commitments.Where(x => subordinates.Contains(x.EmployeeId));
             DataSourceResult result = commitments.ToDataSourceResult(request, commitment => new
             {

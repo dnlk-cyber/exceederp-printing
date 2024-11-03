@@ -95,8 +95,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             if (x == "true")
             {
                 var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                var list = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
-
+                //var list = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
+                var list = EmployeeHelper.GetSubordinates_FilteredByHead(employeeId).ToList();
                 list.Remove(employeeId);
                 IsForOther = true;
                 return list.Count();
@@ -504,7 +504,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
                 if (leaveRequest.Type == LeaveType.MATERNITY)
                 {
-                    var config = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == LeaveHrmSetting.Maternitiy.ToString());
+                    var config = db.Configurations.FirstOrDefault(x => x.Category.ToUpper() == "HRM" && x.Attribute == LeaveHrmSetting.Maternitiy.ToString());
                     if (config != null)
                     {
                         var allowedDays = Convert.ToDecimal(config.CurrentValue);
@@ -523,7 +523,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     }
                 }
             }
-
             if (leaveRequest.LeaveActionTypes == LeaveActionTypes.Forced)
             {
                 if (leaveRequest.Type != LeaveType.ANNUAL && leaveRequest.Type != LeaveType.OTHER && leaveRequest.Type != LeaveType.Leave_With_Out_Pay)
@@ -532,25 +531,65 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
             }
-
             if (leaveRequest.Type == LeaveType.ANNUAL)
             {
-                var leavePlan = db.LeavePlans.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
+                // Attempt to find the employee's leave plan for the given fiscal year
+                var leavePlan = db.LeavePlans.FirstOrDefault(x =>
+                    x.EmployeeId == leaveRequest.EmployeeId &&
+                    x.GlFiscalYearId == fiscalYear.GlFiscalYearId &&
+                    (leaveRequest.From >= x.From || leaveRequest.To <= x.To));
+
+                // Check if the leave action is 'With_Plan' and a leave plan exists
                 if (leavePlan != null && leaveRequest.LeaveActionTypes == LeaveActionTypes.With_Plan)
                 {
-                    if (leaveRequest.From < leavePlan.From || leaveRequest.To > leavePlan.To || leaveRequest.LeaveDays > leavePlan.LeaveAmount)
+                    // 1. Check if the requested 'From' date is before the planned 'From' date
+                    if (leaveRequest.From < leavePlan.From)
                     {
-                        ModelState.AddModelError("", "The requested leave amount or dates are outside of your plan");
+                        ModelState.AddModelError("", "The start date of your leave is before the start date of your leave plan.");
+                        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+                    }
+
+                    // 2. Check if the requested 'To' date is after the planned 'To' date
+                    if (leaveRequest.To > leavePlan.To)
+                    {
+                        ModelState.AddModelError("", "The end date of your leave is after the end date of your leave plan.");
+                        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+                    }
+
+                    // 3. Check if the requested number of leave days exceeds the planned amount
+                    if (leaveRequest.LeaveDays > leavePlan.LeaveAmount)
+                    {
+                        ModelState.AddModelError("", "The requested number of leave days exceeds the amount allocated in your leave plan.");
                         return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                     }
                 }
+                // If the leave action is 'With_Plan' but no leave plan is found for the period
                 else if (leaveRequest.LeaveActionTypes == LeaveActionTypes.With_Plan)
                 {
-                    ModelState.AddModelError("", "You should set a leave plan for this period!!");
+                    ModelState.AddModelError("", "You must set a leave plan for this period.");
                     return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
+                // If the leave action is 'Without_Plan', it would proceed without these checks
             }
-
+            //if (leaveRequest.Type == LeaveType.ANNUAL)
+            //{
+            //    var leavePlan = db.LeavePlans.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId
+            //           && (leaveRequest.From >= x.From || leaveRequest.To <= x.To)
+            //           && x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
+            //    if (leavePlan != null && leaveRequest.LeaveActionTypes == LeaveActionTypes.With_Plan)
+            //    {
+            //        if (/*leaveRequest.From < leavePlan.From || leaveRequest.To > leavePlan.To ||*/ leaveRequest.LeaveDays > leavePlan.LeaveAmount)
+            //        {
+            //            ModelState.AddModelError("", "The requested leave amount or Leave dates are outside of your plan");
+            //            return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+            //        }
+            //    }
+            //    else if (leaveRequest.LeaveActionTypes == LeaveActionTypes.With_Plan)
+            //    {
+            //        ModelState.AddModelError("", "You should set a leave plan for this period!!");
+            //        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+            //    }
+            //}
             if (leaveRequest.LeaveDays == 0)
             {
                 ModelState.AddModelError("", "Leave Days must be greater than 0!!");

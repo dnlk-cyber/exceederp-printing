@@ -16,7 +16,7 @@ using ExceedERP.Core.Domain.Global;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
 
-    [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
     public class EmployeeTransferRequestValidationsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -129,7 +129,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             return Json(new[] { requestValidation }.ToDataSourceResult(request, ModelState));
         }
 
-        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin)]
+        [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmployeeTransferRequestValidations_Destroy([DataSourceRequest]DataSourceRequest request, TransferRequestValidation requestValidation)
         {

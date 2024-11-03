@@ -85,8 +85,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             if (x == "true")
             {
                 var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                var list = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
-
+                //var list = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(employeeId).ToList();
+                var list = EmployeeHelper.GetSubordinates_FilteredByHead(employeeId).ToList();
                 list.Remove(employeeId);
                 IsForOther = true;
                 return list.Count();
@@ -520,9 +520,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 return new JavaScriptResult() { Script = "alert('" + messages + "');" };
             }
 
-            var checkDate = db.LeaveRequest.FirstOrDefault(x => x.From <= leaveReturn.From && x.To >= leaveReturn.To && x.Type == LeaveType.ANNUAL&&x.IsOnlineApproved);
+            var checkDate = db.LeaveRequest.Any(x => x.From <= leaveReturn.From && x.To >= leaveReturn.To && x.Type == LeaveType.ANNUAL&&x.IsOnlineApproved);
 
-            if (checkDate == null)
+            if (!checkDate)
             {
                 ModelState.AddModelError("", "you have no annual leave taken in this date rage");
                 return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
@@ -540,6 +540,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             //        }
             //    }
             //}
+
             DaystoReturn =(decimal) GetWeekDays(leaveReturn.From, leaveReturn.To);
 
             //var amount = leaveReturn.To.Subtract(leaveReturn.From).Days + 1;
@@ -592,9 +593,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     Remark = "",
                     ApproverId = 0
                 };
-
                 db.RequestesStatus.Add(reqeustStatus);
                 db.SaveChanges();
+
 
             }
 

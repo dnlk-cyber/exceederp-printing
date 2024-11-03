@@ -136,7 +136,7 @@
                           .DataValueField("GlFiscalYearId")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
+                              dataSource.Read(read => read.Action("GetFisicalYearForRecruitmentAndManPower", "HRMDataProvider", new { area = "HRM" }))
                                   .ServerFiltering(false);
                           })
                           .ValuePrimitive(true)

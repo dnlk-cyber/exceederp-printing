@@ -23,7 +23,7 @@ using ExceedERP.Core.Domain.HRM.TrainingEducation;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
 
-    [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin, HrmConstants.HRRecruitmentUser)]
+    [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
     public class ApplicantScreeningResultController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -749,6 +749,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     experience.EmployeeId = profile.EmployeeId;
                     experience.OrgFullAddress = "Hiring Campany";
                     experience.Organozation = "Hiring Campnay";
+                    experience.ClearanceDateTime =  DateTime.Now;
                     experience.From =  exp.From.Value;
                     experience.FromExAmharic = XAPI.EthiopicDateTime.GetEthiopicDate(exp.From.Value.Day, exp.From.Value.Month, exp.From.Value.Year); 
                     experience.To =  exp.To.Value;

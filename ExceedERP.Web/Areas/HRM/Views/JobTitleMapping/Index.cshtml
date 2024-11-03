@@ -63,11 +63,11 @@
                     .Events(e => e.Click("CopyMapping"))
                     .Content(Resources.NavigatorCompany_GenerateMP))
                 }
-@if (HttpContext.Current.User.IsInRole("HR_Company_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
-{
-    @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "JobTitleMapping", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" });
-    @item.CustomCommandToolBarButton("PDF", "<span class='k-icon k-i-pdf'></span>" + Resources.ActionButton_ExportPDF, "Pdf_Export_Save", "JobTitleMapping", "", new { @class = "k-button k-button-icontext k-grid-pdf  btn btn-primary btn-xs pull-right" });
-}
+        @if (HttpContext.Current.User.IsInRole("HR_Company_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+        {
+            @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "JobTitleMapping", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" });
+            @item.CustomCommandToolBarButton("PDF", "<span class='k-icon k-i-pdf'></span>" + Resources.ActionButton_ExportPDF, "Pdf_Export_Save", "JobTitleMapping", "", new { @class = "k-button k-button-icontext k-grid-pdf  btn btn-primary btn-xs pull-right" });
+        }
      </div>
         </text>);
       })
@@ -174,11 +174,12 @@
       .Columns(columns =>
       {
           columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["EduLevelList"], "LookupId", "Description").EditorTemplateName("EduLevel").Width(150);
+          columns.ForeignKey(c => c.EduField, (IEnumerable)ViewData["EduFiledList"], "LookupId", "Description").EditorTemplateName("LookUpList").Width(135);
           columns.Bound(c => c.RelevantExp).Title("Relevant Experience and Edu").Width(150);
           columns.Bound(c => c.Experience).Title("Related Experience and Edu").Width(150);
           columns.Bound(c => c.SpecialSkill).Width(150);
           columns.Bound(c => c.PlannedSalary).Width(100);
-         // columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLPeriodSelector").Width(80);
+          // columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLPeriodSelector").Width(80);
 
           //columns.Bound(c => c.Remark);
           //columns.Bound(c => c.OrgBranchName);

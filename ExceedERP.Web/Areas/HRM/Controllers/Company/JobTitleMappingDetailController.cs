@@ -1,25 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.HRM.Company;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
-    [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
+    [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser)]
     public class JobTitleMappingDetailController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -45,6 +40,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 JobTitleMappingDetailId = jobTitleMappingDetail.JobTitleMappingDetailId,
 
                 LookupId = jobTitleMappingDetail.LookupId,
+                EduField = jobTitleMappingDetail.EduField,
+                Percentage = jobTitleMappingDetail.Percentage,
                 RelevantExp = jobTitleMappingDetail.RelevantExp,
                 Experience = jobTitleMappingDetail.Experience,
                 SpecialSkill = jobTitleMappingDetail.SpecialSkill,
@@ -70,6 +67,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 var entity = new JobTitleMappingDetail
                 {
                     LookupId = jobTitleMappingDetail.LookupId,
+                    EduField = jobTitleMappingDetail.EduField,
+                    Percentage = jobTitleMappingDetail.Percentage,
                     RelevantExp = jobTitleMappingDetail.RelevantExp,
                     Experience = jobTitleMappingDetail.Experience,
                     SpecialSkill = jobTitleMappingDetail.SpecialSkill,
@@ -102,6 +101,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     JobTitleMappingDetailId = jobTitleMappingDetail.JobTitleMappingDetailId,
 
                     LookupId = jobTitleMappingDetail.LookupId,
+                    EduField = jobTitleMappingDetail.EduField,
+                    Percentage = jobTitleMappingDetail.Percentage,
                     RelevantExp = jobTitleMappingDetail.RelevantExp,
                     Experience = jobTitleMappingDetail.Experience,
                     SpecialSkill = jobTitleMappingDetail.SpecialSkill,
@@ -134,6 +135,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     JobTitleMappingDetailId = jobTitleMappingDetail.JobTitleMappingDetailId,
 
                     LookupId = jobTitleMappingDetail.LookupId,
+                    EduField = jobTitleMappingDetail.EduField,
+                    Percentage = jobTitleMappingDetail.Percentage,
                     RelevantExp = jobTitleMappingDetail.RelevantExp,
                     Experience = jobTitleMappingDetail.Experience,
                     SpecialSkill = jobTitleMappingDetail.SpecialSkill,
