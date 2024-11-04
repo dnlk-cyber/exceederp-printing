@@ -248,7 +248,8 @@
                                       {
                                           columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(180);
                                           columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(180);
-                                      //    columns.ForeignKey(p => p.WorkItemCode, (IEnumerable)ViewData["WorkItem"], "Code", "Name").Width(120).EditorTemplateName("ConsWorkItemSelector");
+                                          //    columns.ForeignKey(p => p.WorkItemCode, (IEnumerable)ViewData["WorkItem"], "Code", "Name").Width(120).EditorTemplateName("ConsWorkItemSelector");
+                                          columns.Bound(c => c.ProductionJobNo).Width(90);
                                           columns.Bound(c => c.RequestedQuantity).Width(80);
                                           columns.Bound(c => c.ApprovedQuantity).Width(80);
                                           columns.Bound(c => c.IssuedQuantity).Width(70);
