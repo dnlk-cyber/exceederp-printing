@@ -515,6 +515,10 @@
     <Compile Include="Migrations\202411031748339_hrmadditional.Designer.cs">
       <DependentUpon>202411031748339_hrmadditional.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202411071131309_jobordernoinsrandpr.cs" />
+    <Compile Include="Migrations\202411071131309_jobordernoinsrandpr.Designer.cs">
+      <DependentUpon>202411071131309_jobordernoinsrandpr.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -854,6 +858,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202411031748339_hrmadditional.resx">
       <DependentUpon>202411031748339_hrmadditional.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411071131309_jobordernoinsrandpr.resx">
+      <DependentUpon>202411071131309_jobordernoinsrandpr.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

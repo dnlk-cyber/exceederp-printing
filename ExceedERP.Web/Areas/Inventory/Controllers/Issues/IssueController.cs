@@ -1119,6 +1119,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                         IssueID = issue.IssueID,
                         ItemCategoryCode = requestedItem.ItemCategoryCode,
                         ItemCode = requestedItem.ItemCode,
+                        ProductionJobNo = requestedItem.ProductionJobNo,
                         RequestedQuantity = requestedItem.RequestedQuantity,
                         ApprovedQuantity = requestedItem.IssuedQuantity,
                         IssuedQuantity = requestedItem.IssuedQuantity,

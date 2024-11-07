@@ -47,6 +47,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                 UoM = purchaseRequisitionItem.UoM,
                 ItemType = purchaseRequisitionItem.ItemType,
                 BudgetCode = purchaseRequisitionItem.BudgetCode,
+                ProductionJobNo = purchaseRequisitionItem.ProductionJobNo,
             });
 
             return Json(result);
@@ -96,6 +97,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     UoM = purchaseRequisitionItem.UoM,
                     ItemType = PurchaseItemType.Stock,
                     BudgetCode = purchaseRequisitionItem.BudgetCode,
+                    ProductionJobNo = purchaseRequisitionItem.ProductionJobNo,
                     DateCreated = DateTime.Now,
                     CreatedBy = User.Identity.Name
                 };
@@ -157,6 +159,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     UoM = purchaseRequisitionItem.UoM,
                     ItemType = purchaseRequisitionItem.ItemType,
                     BudgetCode = purchaseRequisitionItem.BudgetCode,
+                    ProductionJobNo = purchaseRequisitionItem.ProductionJobNo,
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Today,
                 };
@@ -195,6 +198,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.PurchaseRequisitions
                     UoM = purchaseRequisitionItem.UoM,
                     ItemType = purchaseRequisitionItem.ItemType,
                     BudgetCode = purchaseRequisitionItem.BudgetCode,
+                    ProductionJobNo = purchaseRequisitionItem.ProductionJobNo,
                 };
 
                 db.PurchaseRequisitionItems.Attach(entity);

@@ -72,6 +72,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                 IsApproved = storeRequisitionItem.IsApproved,
                 AgreementPrice = storeRequisitionItem.AgreementPrice,
                 ItemSpecification = storeRequisitionItem.ItemSpecification,
+                ProductionJobNo = storeRequisitionItem.ProductionJobNo,
                 Unit = GetItemUom(storeRequisitionItem.ItemCode),
                 CurrentBalance = IsSRReviewed(storeRequisitionItem.StoreRequisitionID) ? storeRequisitionItem.CurrentBalance : ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, GetStore(storeRequisitionItem.StoreRequisitionID)),
                 CurrentAPrice = IsSRReviewed(storeRequisitionItem.StoreRequisitionID) ? storeRequisitionItem.CurrentAPrice : ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeRequisitionItem.ItemCode, GetStore(storeRequisitionItem.StoreRequisitionID)),
@@ -125,6 +126,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     IsApproved = storeRequisitionItem.IsApproved,
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
                     GeneratePurchaseReq = storeRequisitionItem.GeneratePurchaseReq,
+                    ProductionJobNo = storeRequisitionItem.ProductionJobNo,
                     CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, sr.StoreCode),
                     CurrentAPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeRequisitionItem.ItemCode, sr.StoreCode),
 
@@ -193,6 +195,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     IsApproved = storeRequisitionItem.IsApproved,
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
                     GeneratePurchaseReq = storeRequisitionItem.GeneratePurchaseReq,
+                    ProductionJobNo = storeRequisitionItem.ProductionJobNo,
                     CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, sr.StoreCode),
                     CurrentAPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeRequisitionItem.ItemCode, sr.StoreCode),
 
@@ -236,6 +239,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     GeneratePurchaseReq = storeRequisitionItem.GeneratePurchaseReq,
                     CurrentBalance = storeRequisitionItem.CurrentBalance,
                     CurrentAPrice = storeRequisitionItem.CurrentAPrice,
+                    ProductionJobNo = storeRequisitionItem.ProductionJobNo,
                 };
 
                 db.StoreRequisitionItems.Attach(entity);

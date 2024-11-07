@@ -390,6 +390,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                                 UnitPrice = avgPrice,
                                 Total = avgPrice * requestedItem.IssuedQuantity,
                                 AgreementPrice = requestedItem.AgreementPrice,
+                                ProductionJobNo = requestedItem.ProductionJobNo,
 
 
                                 CreatedBy = User.Identity.Name,
@@ -511,6 +512,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                                 RequestedQuantity = requestedItem.PurchaseQuantity,
                                 Quantity = requestedItem.PurchaseQuantity,
                                 ItemSpecification = requestedItem.ItemSpecification,
+                                ProductionJobNo = requestedItem.ProductionJobNo,
                                 ItemType = PurchaseItemType.Stock,
                                 CreatedBy = User.Identity.Name,
                                 DateCreated = DateTime.Now

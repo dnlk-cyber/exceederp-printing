@@ -62,6 +62,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                 IsApproved = storeRequisitionItem.IsApproved,
                 ItemSpecification = storeRequisitionItem.ItemSpecification,
                 AgreementPrice = storeRequisitionItem.AgreementPrice,
+                ProductionJobNo = storeRequisitionItem.ProductionJobNo,
                 Unit = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemUom(storeRequisitionItem.ItemCode),
                 CurrentBalance = IsSRReviewed(storeRequisitionItem.StoreRequisitionID) ? storeRequisitionItem.CurrentBalance : ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, GetStore(storeRequisitionItem.StoreRequisitionID)),
                 CurrentAPrice = IsSRReviewed(storeRequisitionItem.StoreRequisitionID) ? storeRequisitionItem.CurrentAPrice : ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeRequisitionItem.ItemCode, GetStore(storeRequisitionItem.StoreRequisitionID)),
@@ -84,6 +85,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             var exist =
                 db.StoreRequisitionItems.Where(x => x.StoreRequisitionID == id)
                     .Where(x => x.ItemCode == storeRequisitionItem.ItemCode)
+                    .Where(x => x.ProductionJobNo == storeRequisitionItem.ProductionJobNo)
                     .Where(x => x.ItemSpecification == storeRequisitionItem.ItemSpecification)//added
                     .AsQueryable();
             if (exist.Any())
@@ -115,6 +117,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     PurchaseQuantity = 0,//assuming all will be given
                     IsApproved = storeRequisitionItem.IsApproved,
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
+                    ProductionJobNo = storeRequisitionItem.ProductionJobNo,
                     CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, sr.StoreCode),
                     CurrentAPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeRequisitionItem.ItemCode, sr.StoreCode),
 
@@ -150,6 +153,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                      .Where(x => x.StoreRequisitionItemID != storeRequisitionItem.StoreRequisitionItemID)
                      .Where(x => x.StoreRequisitionID == storeRequisitionItem.StoreRequisitionID)
                      .Where(x => x.ItemCode == storeRequisitionItem.ItemCode)
+                     .Where(x => x.ProductionJobNo == storeRequisitionItem.ProductionJobNo)
                      .Where(x => x.ItemSpecification == storeRequisitionItem.ItemSpecification)//added
                      .AsQueryable();
             if (exist.Any())
@@ -182,6 +186,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     IssuedQuantity = storeRequisitionItem.ApprovedQuantity,//default issue is equal to approved
                     PurchaseQuantity = 0,//assuming all will be given
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
+                    ProductionJobNo = storeRequisitionItem.ProductionJobNo,
                     CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, sr.StoreCode),
                     CurrentAPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(storeRequisitionItem.ItemCode, sr.StoreCode),
                     DateCreated = storeRequisitionItem.DateCreated,
@@ -224,6 +229,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
                     PurchaseQuantity = storeRequisitionItem.PurchaseQuantity,
                     IsApproved = storeRequisitionItem.IsApproved,
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
+                    ProductionJobNo = storeRequisitionItem.ProductionJobNo,
                     CurrentBalance = storeRequisitionItem.CurrentBalance,
                     CurrentAPrice = storeRequisitionItem.CurrentAPrice,
                 };

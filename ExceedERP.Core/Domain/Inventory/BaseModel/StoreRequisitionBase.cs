@@ -95,46 +95,47 @@ namespace ExceedERP.Core.Domain.Inventory
 
 	}
 
-	public class StoreRequisitionItemBase : TrackUserSettingOperation
-	{
-		[Required]
-		[DisplayName("Item Category")]
-		public string ItemCategoryCode { get; set; }
-		public virtual ItemCategory ItemCategory { get; set; }
-		[Required]
-		[DisplayName("Item Code")]
-		public string ItemCode { get; set; }
-		//public string ItemName { get; set; }
-		public virtual InventoryItem InventoryItem { get; set; }
-		[Display(Name = "Part No.")]
-		public string PartNo { get; set; }
-		[Display(Name = "Model No.")]
-		public string ModelNo { get; set; }
-		[Display(Name = "Serial No.")]
-		public string SerialNo { get; set; }
-		[Display(Name = "Chasis No.")]
-		public string ChasisNo { get; set; }
-		[Display(Name = "Requested QTY")]
-		public decimal RequestedQuantity { get; set; }
-		[Display(Name = "Approved QTY")]
-		public decimal ApprovedQuantity { get; set; }
-		[Display(Name = "Issued QTY")]
-		public decimal IssuedQuantity { get; set; }
-		[Display(Name = "Purchase QTY")]
-		public decimal PurchaseQuantity { get; set; }
-		public bool IsApproved { get; set; }//item by item
-		[Display(Name = "Specification")]
-		public string ItemSpecification { get; set; }
-		[Display(Name = "Generate PR")]
-		public bool GeneratePurchaseReq { get; set; }
-		[NotMapped]
-		public string Unit { get; set; }
-		[Display(Name = "Balance")]
-		public decimal CurrentBalance { get; set; }
-		[Display(Name = "Avg Price")]
-		public decimal CurrentAPrice { get; set; }
-		public decimal AgreementPrice { get; set; }
-	}
+    public class StoreRequisitionItemBase : TrackUserSettingOperation
+    {
+        [Required]
+        [DisplayName("Item Category")]
+        public string ItemCategoryCode { get; set; }
+        public virtual ItemCategory ItemCategory { get; set; }
+        [Required]
+        [DisplayName("Item Code")]
+        public string ItemCode { get; set; }
+        //public string ItemName { get; set; }
+        public virtual InventoryItem InventoryItem { get; set; }
+        [Display(Name = "Part No.")]
+        public string PartNo { get; set; }
+        [Display(Name = "Model No.")]
+        public string ModelNo { get; set; }
+        [Display(Name = "Serial No.")]
+        public string SerialNo { get; set; }
+        [Display(Name = "Chasis No.")]
+        public string ChasisNo { get; set; }
+        [Display(Name = "Requested QTY")]
+        public decimal RequestedQuantity { get; set; }
+        [Display(Name = "Approved QTY")]
+        public decimal ApprovedQuantity { get; set; }
+        [Display(Name = "Issued QTY")]
+        public decimal IssuedQuantity { get; set; }
+        [Display(Name = "Purchase QTY")]
+        public decimal PurchaseQuantity { get; set; }
+        public bool IsApproved { get; set; }//item by item
+        [Display(Name = "Specification")]
+        public string ItemSpecification { get; set; }
+        [Display(Name = "Generate PR")]
+        public bool GeneratePurchaseReq { get; set; }
+        [NotMapped]
+        public string Unit { get; set; }
+        [Display(Name = "Balance")]
+        public decimal CurrentBalance { get; set; }
+        [Display(Name = "Avg Price")]
+        public decimal CurrentAPrice { get; set; }
+        public decimal AgreementPrice { get; set; }
+        public string ProductionJobNo { get; set; }
+    }
 
 	public class StoreRequisitionValidationBase : TrackUserSettingOperation
 	{

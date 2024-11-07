@@ -43,6 +43,7 @@ namespace ExceedERP.Core.Domain.Procurement.PR
         public PurchaseItemType ItemType { get; set; }
         [DisplayName("Budget Code")]
         public string BudgetCode { get; set; }
+        public string ProductionJobNo { get; set; }
         public virtual ICollection<PurchaseRequisitionItemSpecification> Specifications { get; set; }
 
     }
