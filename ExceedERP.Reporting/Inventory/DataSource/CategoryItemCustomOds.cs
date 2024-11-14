@@ -23,9 +23,19 @@ namespace ExceedERP.Reporting.Inventory.DataSource
 
        
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<InventoryItem> GetInventoryItems()
+        public List<ItemSelectorVm> GetInventoryItems()
             {
-            return _db.InventoryItems.ToList(); 
+               return _db.InventoryItems.Select(x=>new ItemSelectorVm { ItemCode=x.ItemCode,ItemCategoryCode=x.ItemCategoryCode,Name=x.Name}).ToList(); 
             }
+        
     }
+
+    public class ItemSelectorVm
+    {
+        public string ItemCode { get; set; }
+        public string ItemCategoryCode { get; set; }
+        public string Name { get; set; }
+    }
+
+
 }
