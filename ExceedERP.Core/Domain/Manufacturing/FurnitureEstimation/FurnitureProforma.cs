@@ -15,7 +15,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public int FurnitureProformaInvoiceId { get; set; }
         
         [Display(Name ="Customer")]
-        public int CustomerId { get; set; }
+        public int CustomerId { get; set; }       
         [Display(Name ="Delivery Period(Days)")]
         public int DeliveryPeriod { get; set; }
         [Display(Name ="Delivery Date"), DataType(DataType.Date)]
@@ -47,8 +47,10 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public decimal Quantity { get; set; }
         [Display(Name = "Unit Price Before VAT")]
         public decimal UnitPriceBeforeVAT { get; set; }
+        public decimal TransportCost { get; set; }
         [Display(Name = "VAT")]
         public decimal VAT { get; set; }
+        public int GLTaxRateID { get; set; }
         [Display(Name = "Unit Price With VAT")]
         public decimal UnitPriceWithVAT { get; set; }
         [Display(Name ="Total Price")]
@@ -64,6 +66,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
     public enum TypeOfPayment
     {
         Cash,
-        Credit
+        Credit,
+        Advance
     }
 }

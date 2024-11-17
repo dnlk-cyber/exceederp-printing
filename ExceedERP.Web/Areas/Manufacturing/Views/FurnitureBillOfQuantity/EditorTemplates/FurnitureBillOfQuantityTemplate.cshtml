@@ -8,13 +8,13 @@
 
             <div>
                 @(Html.Kendo().DropDownListFor(m => m.JobTypeCategory)
-                                .OptionLabel("Task Type...")
-                                .DataTextField("Text")
-                                .DataValueField("Value")
-                                .Events(e => e.Change("onJobCategoryChange"))
-                                .Events(e => e.DataBound("onJobCategoryChange"))
-                                .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.JobTypeCategory))
-                                ).HtmlAttributes(new { style = "width:100%" })
+                    .OptionLabel("Task Type...")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Events(e => e.Change("onJobCategoryChange"))
+                    .Events(e => e.DataBound("onJobCategoryChange"))
+                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.JobTypeCategory))
+                    ).HtmlAttributes(new { style = "width:100%" })
                 )
             </div>
         </div>
@@ -42,16 +42,16 @@
             <label>Type Of Job</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.JobTypeId)
-                                    .ValuePrimitive(true)
-                                    .OptionLabel("Select Job...")
-                                    .DataTextField("Text")
-                                    .DataValueField("Value")
-                                    .Filter("contains")
-                                    .DataSource(dataSource =>
-                                    {
-                                        dataSource.Read(read => read.Action("GetStandardJobType", "ManufacturingDataProvider", new { area = "Manufacturing" }).Data("filterJobType"))
-                                            .ServerFiltering(true);
-                                    }).HtmlAttributes(new { style = "width:100%" }))
+                    .ValuePrimitive(true)
+                    .OptionLabel("Select Job...")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Filter("contains")
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetStandardJobType", "ManufacturingDataProvider", new { area = "Manufacturing" }).Data("filterJobType"))
+                            .ServerFiltering(true);
+                    }).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>
@@ -60,16 +60,16 @@
             <label>Customer</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.CustomerId)
-                                    .ValuePrimitive(true)
-                                    .OptionLabel("Select Customer...")
-                                    .DataTextField("Text")
-                                    .DataValueField("Value")
-                                    .Filter("contains")
-                                    .DataSource(dataSource =>
-                                    {
-                                        dataSource.Read(read => read.Action("GetACustomers", "ManufacturingDataProvider", new { area = "Manufacturing" }).Data("filterCustomer"))
-                                            .ServerFiltering(true);
-                                    }).HtmlAttributes(new { style = "width:100%" }))
+                    .ValuePrimitive(true)
+                    .OptionLabel("Select Customer...")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Filter("contains")
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetACustomers", "ManufacturingDataProvider", new { area = "Manufacturing" }).Data("filterCustomer"))
+                            .ServerFiltering(true);
+                    }).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>
@@ -89,18 +89,19 @@
             <label>Unit</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.Unit)
-                                                                   .ValuePrimitive(true)
-                                                                   .OptionLabel("Select unit...")
-                                                                   .DataTextField("UoMName")
-                                                                   .DataValueField("Value")
-                                                                   .Filter("contains")
+                    .ValuePrimitive(true)
+                    .OptionLabel("Select unit...")
+                    .DataTextField("UoMName")
+                    .DataValueField("Value")
+                    .Filter("contains")
 
-                                                                   .DataSource(dataSource =>
-                                                                   {
-                                                                       dataSource.Read(read => read.Action("GetUoM", "ManufacturingDataProvider", new { area = "Manufacturing" }))
-                                                                           .ServerFiltering(true);
-                                                                   }).HtmlAttributes(new { style = "width:100%" }))
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetUoM", "ManufacturingDataProvider", new { area = "Manufacturing" }))
+                            .ServerFiltering(true);
+                    }).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>
+    
 </div>

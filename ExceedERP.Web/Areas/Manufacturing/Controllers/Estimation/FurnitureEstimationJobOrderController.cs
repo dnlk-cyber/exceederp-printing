@@ -55,7 +55,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 
             var categories = db.ItemCategorys;
             var items = db.InventoryItems;
-            var costCenter = db.OrgBranchUserMappings;
+            //var costCenter = db.OrgBranchUserMappings;
             var branches = db.Branch;
 
             var inventoryPeriods = db.InventoryPeriods;

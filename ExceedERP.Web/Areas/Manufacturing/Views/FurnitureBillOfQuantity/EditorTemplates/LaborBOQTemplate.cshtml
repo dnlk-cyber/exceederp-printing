@@ -39,7 +39,7 @@
         <div class="form-group">
             <label>No of Employees</label>
             <div>
-                @(Html.Kendo().NumericTextBoxFor(model => model.NumberOfEmloyees).HtmlAttributes(new { style = "width:100%" }))
+                @(Html.Kendo().NumericTextBoxFor(model => model.NumberOfEmloyees).Min(0).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>
@@ -47,7 +47,7 @@
         <div class="form-group">
             <label>Estimated Minute</label>
             <div>
-                @(Html.Kendo().NumericTextBoxFor(model => model.EstimatedMinute).HtmlAttributes(new { style = "width:100%" }))
+                @(Html.Kendo().NumericTextBoxFor(model => model.EstimatedMinute).Min(0).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>

@@ -1717,6 +1717,14 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region Production Follow UP
+            modelBuilder.Configurations.Add(new FurnitureJobDesignEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FurnitureBoqJobDesignEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FurnitureBoqDocumentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FurnitureBoqRequestEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EstimationCostSummaryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EstimationDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EstimationSummaryEntityTypeConfiguration());
+
             modelBuilder.Configurations.Add(new FurnitureJobOrderProductionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FurnitureProductionBillOfMaterialEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FurnitureProductionBillOfLaborEntityTypeConfiguration());
@@ -2434,6 +2442,13 @@ namespace ExceedERP.DataAccess.Context
         #endregion
         #endregion
         #region Production Follow UP
+        public DbSet<FurnitureJobDesign> FurnitureJobDesigns { get; set; }
+        public DbSet<FurnitureBoqJobDesign> FurnitureBoqJobDesigns { get; set; }
+        public DbSet<FurnitureBoqRequest> FurnitureBoqRequests { get; set; }
+        public DbSet<FurnitureBoqDocument> FurnitureBoqDocuments { get; set; }
+        public DbSet<EstimationSummary> EstimationSummaries { get; set; }
+        public DbSet<EstimationDetail> EstimationDetails { get; set; }
+        public DbSet<EstimationCostSummary> EstimationCostSummaries { get; set; }
         public DbSet<FurnitureJobOrderProduction> FurnitureJobOrderProductions { get; set; }
         public DbSet<FurnitureProductionBillOfMaterial> FurnitureProductionBillOfMaterials { get; set; }
         public DbSet<FurnitureProductionBillOfLabor> FurnitureProductionBillOfLabors { get; set; }

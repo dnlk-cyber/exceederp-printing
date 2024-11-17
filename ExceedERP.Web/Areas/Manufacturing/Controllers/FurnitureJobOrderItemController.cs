@@ -40,7 +40,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 ModifiedBy = furnitureJobOrderItem.ModifiedBy,
                 FurnitureJobOrderFormId = furnitureJobOrderItem.FurnitureJobOrderFormId,
                 JobNo = furnitureJobOrderItem.JobNo,
-                IsClosed = furnitureJobOrderItem.IsClosed
+                IsClosed = furnitureJobOrderItem.IsClosed,
+                Remark = furnitureJobOrderItem.Remark
                 
             });
 
@@ -64,8 +65,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     
                     CreatedBy = User.Identity.Name,
                     FurnitureJobOrderFormId = id,
-                    JobNo = furnitureJobOrderItem.JobNo
-                    
+                    JobNo = furnitureJobOrderItem.JobNo,
+                    Remark = furnitureJobOrderItem.Remark
+
                 };
 
                 db.FurnitureJobOrderItems.Add(entity);
@@ -100,7 +102,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     CreatedBy = furnitureJobOrderItem.CreatedBy,
                     ModifiedBy = User.Identity.Name,
                     JobNo = furnitureJobOrderItem.JobNo,
-                    FurnitureJobOrderFormId = furnitureJobOrderItem.FurnitureJobOrderFormId
+                    FurnitureJobOrderFormId = furnitureJobOrderItem.FurnitureJobOrderFormId,
+                    Remark = furnitureJobOrderItem.Remark
                 };
 
                 db.FurnitureJobOrderItems.Attach(entity);
@@ -128,7 +131,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     DateCreated = furnitureJobOrderItem.DateCreated,
                     LastModified = furnitureJobOrderItem.LastModified,
                     CreatedBy = furnitureJobOrderItem.CreatedBy,
-                    ModifiedBy = furnitureJobOrderItem.ModifiedBy
+                    ModifiedBy = furnitureJobOrderItem.ModifiedBy,
+                    Remark = furnitureJobOrderItem.Remark
                 };
 
                 db.FurnitureJobOrderItems.Attach(entity);

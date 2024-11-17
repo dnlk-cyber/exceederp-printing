@@ -9,6 +9,62 @@ using System.Data.Entity.ModelConfiguration;
 
 namespace ExceedERP.DataAccess.Context
 {
+    class EstimationSummaryEntityTypeConfiguration : EntityTypeConfiguration<EstimationSummary>
+    {
+        public EstimationSummaryEntityTypeConfiguration()
+        {
+            this.ToTable("EstimationSummary", "Manufacturing");
+            this.HasKey<int>(p => p.EstimationSummaryId);
+        }
+    }
+    class EstimationDetailEntityTypeConfiguration : EntityTypeConfiguration<EstimationDetail>
+    {
+        public EstimationDetailEntityTypeConfiguration()
+        {
+            this.ToTable("EstimationDetail", "Manufacturing");
+            this.HasKey<int>(p => p.EstimationDetailId);
+        }
+    }
+    class EstimationCostSummaryEntityTypeConfiguration : EntityTypeConfiguration<EstimationCostSummary>
+    {
+        public EstimationCostSummaryEntityTypeConfiguration()
+        {
+            this.ToTable("EstimationCostSummary", "Manufacturing");
+            this.HasKey<int>(p => p.EstimationCostSummaryId);
+        }
+    }
+    class FurnitureBoqRequestEntityTypeConfiguration : EntityTypeConfiguration<FurnitureBoqRequest>
+    {
+        public FurnitureBoqRequestEntityTypeConfiguration()
+        {
+            this.ToTable("FurnitureBoqRequest", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureBoqRequestId);
+        }
+    }
+    class FurnitureBoqDocumentEntityTypeConfiguration : EntityTypeConfiguration<FurnitureBoqDocument>
+    {
+        public FurnitureBoqDocumentEntityTypeConfiguration()
+        {
+            this.ToTable("FurnitureBoqDocument", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureBoqDocumentId);
+        }
+    }
+    class FurnitureBoqJobDesignEntityTypeConfiguration : EntityTypeConfiguration<FurnitureBoqJobDesign>
+    {
+        public FurnitureBoqJobDesignEntityTypeConfiguration()
+        {
+            this.ToTable("FurnitureBoqJobDesign", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureBoqJobDesignId);
+        }
+    }
+    class FurnitureJobDesignEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJobDesign>
+    {
+        public FurnitureJobDesignEntityTypeConfiguration()
+        {
+            this.ToTable("FurnitureJobDesign", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureJobDesignId);
+        }
+    }
     class FurnitureJobOrderProductionEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJobOrderProduction>
     {
         public FurnitureJobOrderProductionEntityTypeConfiguration()

@@ -2197,6 +2197,22 @@
     <Compile Include="Fleet\View\WagonDrillTimesheetReport.Designer.cs">
       <DependentUpon>WagonDrillTimesheetReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="Furniture\DataSource\FurnitureProformaPrintOds.cs" />
+    <Compile Include="Furniture\DataSource\FurnitureSummaryReportOds.cs" />
+    <Compile Include="Furniture\Design\FurnitureSummaryReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureSummaryReport.Designer.cs">
+      <DependentUpon>FurnitureSummaryReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Furniture\Design\ProformaPrint.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Furniture\Design\ProformaPrint.Designer.cs">
+      <DependentUpon>ProformaPrint.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Furniture\ViewModel\FurnitureJobSummaryVm.cs" />
+    <Compile Include="Furniture\ViewModel\FurnitureProformaPrintViewModel.cs" />
     <Compile Include="Health\DataSource\AccidentObjectDataSource.cs" />
     <Compile Include="Health\DataSource\MedicalRequestODS.cs" />
     <Compile Include="Health\Design\MedicalRequestReport.cs">
@@ -5386,6 +5402,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\WagonDrillTimesheetReport.resx">
       <DependentUpon>WagonDrillTimesheetReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Furniture\Design\FurnitureSummaryReport.resx">
+      <DependentUpon>FurnitureSummaryReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Furniture\Design\ProformaPrint.resx">
+      <DependentUpon>ProformaPrint.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Health\Design\MedicalRequestReport.am.resx">
       <DependentUpon>MedicalRequestReport.cs</DependentUpon>

@@ -17,7 +17,16 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         {
             return View();
         }
-
+        public JsonResult GetTaxRate()
+        {
+            var tax = db.GLTaxRates;
+            var result = tax.Select(s => new
+            {
+                Text = s.TaxName,
+                Value = s.GLTaxRateID
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetInventoryItemCategory(string text)
         {
             // only Category
@@ -211,7 +220,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             var result = proformaInvoice.Select(s => new
             {
                 Value = s.FurnitureProformaInvoiceId,
-                Text = s.FurnitureProformaInvoiceId + "-" + db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == s.CustomerId).TradeName
+                Text = s.FurnitureProformaInvoiceId + "-" + db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == s.CustomerId)?.TradeName
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }

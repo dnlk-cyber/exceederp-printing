@@ -1,0 +1,647 @@
+﻿
+<link href="~/Content/toast/toastr.css" rel="stylesheet" />
+<script src="~/Content/toast/toastr.js"></script>
+<legend>Furniture Estimation Summary</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureEstimationForm>()
+                        .Name("grid")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.FurnitureEstimationId).Width(70);
+                            columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(130);
+                            columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Width(110).Title("Customer");
+                            columns.Bound(c => c.Quantity).Width(100);
+                            columns.Bound(c => c.Description).Width(80);
+
+                            columns.Command(command =>
+                            {
+                                //command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
+                                //command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "Check" }).Click("checkEstimation");
+                                //command.Custom("sendmargin").Text(" ").IconClass("fa fa-fast-forward").HtmlAttributes(new { @class = "marginsend", title = "margin send" }).Click("sendMarginForApproval");
+                                command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
+                                command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
+                                //command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
+                            }).Width(200);
+
+                        })
+                        .ToolBar(toolbar =>
+                        {
+                           // toolbar.Create();
+                //toolbar.Excel();
+                //toolbar.Pdf();
+            })
+                        .Events(ev => ev.DetailExpand("detailExpand")
+                        .DataBound("dataBound")
+                        )
+                        .Scrollable(s => s.Height(400))
+                        .ClientDetailTemplateId("cost_estimation")
+                        .Sortable()
+                        .Filterable()
+                        .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                        .TemplateName("EstimationForm")
+                        .Window(w => w.Title("Estimation Form").Width(600)))
+                        .Pageable(pageable => pageable
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Events(ev => ev.Error("error_handler(\"grid\")")
+                        .RequestStart("onRequestStart(\"grid\")")
+                        .RequestEnd("onRequestEnd(\"grid\")"))
+                        .Model(model => model.Id(p => p.FurnitureEstimationId))
+                        .Read(read => read.Action("EstimationForms_Read", "FurnitureEstimation"))
+                        //.Create(create => create.Action("FurnitureEstimations_Create", "FurnitureEstimation"))
+                        //.Update(update => update.Action("FurnitureEstimations_Update", "FurnitureEstimation"))
+                        //.Destroy(destroy => destroy.Action("EstimationForms_Destroy", "FurnitureEstimation"))
+                        .PageSize(10)
+                        .Sort(sort =>
+                        {
+                            sort.Add(e => e.FurnitureEstimationId).Descending();
+
+                        }))
+)
+
+
+<script id="cost_estimation" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                        .Name("tabstrip_grid_#=FurnitureEstimationId#")
+                        .SelectedIndex(0)
+                        .Items(itemn =>
+                         {
+
+                             itemn.Add().Text("Material Costs").Content(
+                            @<text>
+                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureMaterialCost>()
+                                                     .Name("material_costs_#=FurnitureEstimationId#") // template expression, to be evaluated in the master context
+                                                     .Columns(columns =>
+                                                     {
+                                                                 columns.Bound(c => c.FurnitureMaterialCostId).Hidden(true).Filterable(false);
+                                                                 columns.Bound(c => c.TaskType).Width(90).EditorTemplateName("TaskTypeTemplate").Width(120);
+                                                                 columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text").Width(100).EditorTemplateName("MaterialCategoryTemplate").Width(130);
+                                                                 columns.ForeignKey(c => c.ManufacturingMaterialCategoryItemId, (IEnumerable)ViewData["MaterialItem"], "Value", "Text").Width(100).EditorTemplateName("MaterialItemTemplate").Width(130);
+
+                                                                 columns.Bound(c => c.UnitOfMeasurment).Title("UoM").Width(100);
+
+                                                                 columns.Bound(c => c.Quantity).Format("{0:n2}").Width(80);
+                                                                 columns.Bound(c => c.UnitPrice).Width(100);
+                                                                 columns.Bound(c => c.TotalPrice).Format("{0:n2}").Width(130).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
+                                                     // escaped template expression, to be evaluated in the child/detail context
+                                                     //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+                                                             })
+                                                     .ToolBar(toolbar =>
+                                                     {
+                                                                 //toolbar.Create();
+
+                                                             })
+                                                     .Events(ev => ev.DataBound("onChildDataBound"))
+                                                     .Events(ev => ev.Edit("onEditMaterialCost"))
+                                                     .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                                                     .Pageable(pageable => pageable
+                                                     .Refresh(true)
+                                                     .PageSizes(true)
+                                                     .ButtonCount(5))
+                                                     .DataSource(dataSource => dataSource
+                                                         .Ajax()
+                                                         //   .ServerOperation(false)
+                                                         .Events(ev => ev.Error("error_handler(\"material_costs_#=FurnitureEstimationId#\")")
+                                                         .RequestStart("onRequestStart(\"material_costs_#=FurnitureEstimationId#\")")
+                                                         .RequestEnd("onRequestEnd(\"material_costs_#=FurnitureEstimationId#\")"))
+                                                         .Aggregates(aggregates =>
+
+                                                         {
+                                                                     aggregates.Add(c => c.TotalPrice).Sum();
+                                                                 })
+                                                         .Model(model => model.Id(p => p.FurnitureMaterialCostId))
+                                                         .Read(read => read.Action("FurnitureMaterialCosts_Read", "FurnitureMaterialCosts", new { estimationFormId = "#=FurnitureEstimationId#" }))
+                                                         //.Create(create => create.Action("FurnitureMaterialCosts_Create", "FurnitureMaterialCosts", new { parentId = "#=FurnitureEstimationId#" }))
+                                                         //.Update(update => update.Action("FurnitureMaterialCosts_Update", "FurnitureMaterialCosts"))
+                                                         //.Destroy(destroy => destroy.Action("FurnitureMaterialCosts_Destroy", "FurnitureMaterialCosts"))
+                                                         .Sort(sort =>
+                                                         {
+                                                                     sort.Add(m => m.LastModified).Descending();
+
+                                                                 })
+                                                         .PageSize(5))
+                                                         .ToClientTemplate())
+                            </text>);
+                                     itemn.Add().Text("Labor Costs").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.DirectLaborCost>()
+                                                     .Name("labor_costs_#=FurnitureEstimationId#")
+                                                     .Columns(columns =>
+                                                     {
+                                                         columns.Bound(x => x.DirectLaborCostId).Hidden(true);
+
+                                                         columns.Bound(o => o.TaskType).EditorTemplateName("TaskTypeTemplate").Width(80);
+                                                         columns.ForeignKey(o => o.TaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").EditorTemplateName("TaskCategoryTemplate").Width(120);
+
+                                                         //columns.Bound(o => o.TaskCategoryId).EditorTemplateName("TaskCategoryTemplate").Width(80);
+                                                         columns.Bound(o => o.WorkingTime).Width(80);
+                                                         columns.Bound(o => o.CostPerHour).Width(80).Title("Cost Per Minute");
+                                                         columns.Bound(o => o.TotalCost).Width(150).ClientFooterTemplate("Labor Cost: \\#=sum\\# ");
+                                                         //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+                                                     })
+
+                                                   .ToolBar(toolbar =>
+                                                   {
+                                                       //toolbar.Create();
+
+                                                   })
+                                                   .Editable(editable => editable.Mode(GridEditMode.InCell)
+                                                   )
+                                                   .Events(ev => ev.DataBound("onChildDataBound"))
+                                                   .Pageable(pageable => pageable
+                                                   .Refresh(true)
+                                                   .PageSizes(true)
+                                                   .ButtonCount(5))
+                                                   .DataSource(dataSource => dataSource
+                                                       .Ajax()
+
+                                                       .Events(ev => ev.Error("error_handler(\"labor_costs_#=FurnitureEstimationId#\")")
+                                                       .RequestStart("onRequestStart(\"labor_costs_#=FurnitureEstimationId#\")")
+                                                       .RequestEnd("onRequestEnd(\"labor_costs_#=FurnitureEstimationId#\")"))
+                                                       .Aggregates(aggregates =>
+
+                                                       {
+                                                           aggregates.Add(c => c.TotalCost).Sum();
+                                                       })
+                                                       .Model(model => model.Id(p => p.DirectLaborCostId))
+                                                       .Read(read => read.Action("DirectLaborCosts_Read", "FurnitureDirectLaborCosts", new { estimationFormId = "#=FurnitureEstimationId#" }))
+                                                       //.Create(create => create.Action("DirectLaborCosts_Create", "FurnitureDirectLaborCosts", new { parentId = "#=FurnitureEstimationId#" }))
+                                                       //.Update(update => update.Action("DirectLaborCosts_Update", "FurnitureDirectLaborCosts"))
+                                                       //.Destroy(destroy => destroy.Action("DirectLaborCosts_Destroy", "FurnitureDirectLaborCosts"))
+                                                       .Sort(sort =>
+                                                       {
+                                                           sort.Add(l => l.LastModified).Descending();
+                                                       })
+                                                       .PageSize(5))
+                                                       .ToClientTemplate()
+
+                            )
+                            @*@LaborCostBatch();*@
+
+                        </text>);
+
+                         itemn.Add().Text("Overall Costs").Content(@<text>
+                            
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureOverallCost>()
+                                                .Name("overall_costs_#=FurnitureEstimationId#")
+                                                .Columns(columns =>
+                                                {
+                                                                           columns.Bound(c => c.MaterialCost);
+                                                                           columns.Bound(c => c.LabourCost);
+                                                                           columns.Bound(c => c.OverHeadCost).Title("Overhead(%)").Width(120);
+                                                                           columns.Bound(c => c.ManufacturingCost);
+                                                                           columns.Bound(c => c.AdministrativeCost).Title("Adminst Cost(%)").Width(120);
+                                                                           columns.Bound(c => c.GrandTotalCost);
+                                                                           
+                                                                           columns.Command(command =>
+                                                                           {
+                                                                              
+                                                                               command.Custom("approvemargin").Text(" ").IconClass("fa fa-thumbs-up").HtmlAttributes(new { @class = "margin-approve", title = "approve margin" }).Click("approveMargin");
+
+                                                                           }).Width(200);
+
+                                                                       })
+
+                                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                    .Events(ev => ev.DataBound("onChildDataBound"))
+                                                    .Events(ev => ev.Edit("onEditOverHeadCost"))
+                                                    .DataSource(dataSource => dataSource
+                                                        .Ajax()
+                                                        //.ServerOperation(false)
+                                                        .Events(events => events.Error("error_handler")
+                                                            .RequestStart("onRequestStart(\"overall_costs_#=FurnitureEstimationId#\")")
+                                                            .RequestEnd("onRequestEnd(\"overall_costs_#=FurnitureEstimationId#\")"))
+                                                        .Model(model =>
+                                                        {
+                                                                                   model.Id(p => p.FurnitureOverallCostId);
+                                                                                   model.Field(p => p.LabourCost).Editable(false);
+                                                                                   model.Field(p => p.MaterialCost).Editable(false);
+                                                                                   model.Field(p => p.FurnitureOverallCostId).Editable(false);
+                                                                               })
+                                                        .Read(read => read.Action("FurnitureOverallCosts_Read", "FurnitureOverallCosts", new { estimationFormId = "#=FurnitureEstimationId#" }))
+                                                        //.Create(create => create.Action("FurnitureOverallCosts_Create", "FurnitureOverallCosts", new { parentId = "#=FurnitureEstimationId#" }))
+                                                        //.Update(update => update.Action("FurnitureOverallCosts_Update", "FurnitureOverallCosts"))
+                                                        //.Destroy(destroy => destroy.Action("FurnitureOverallCosts_Destroy", "FurnitureOverallCosts"))
+                                                        )
+
+                                                        .Sortable()
+                                                        .ToClientTemplate()
+
+                            )
+                        </text>
+
+                                    );
+                            }).ToClientTemplate())
+
+
+</script>
+
+
+<script>
+    function calculateOverallCost(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CalculateOverAllCost", "FurnitureOverallCosts", new { area = "Manufacturing" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function filterCategory() {
+        return {
+            text: $("#InventoryCategoryId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    $("#cmdAddRecord").click(function (e) {
+
+        var grid = $("#labor_costs_" + codeid).data("kendoGrid");
+        var sorting = grid.dataSource.sort();
+        var filtering = grid.dataSource.filter();
+        if (filtering) {
+            grid.dataSource.filter(null);
+        }
+        if (sorting) {
+            grid.dataSource.sort(null);
+        }
+        grid.addRow();
+        e.preventDefault();
+
+    });
+
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            $(this).find(".k-grid-reject").hide();
+            if (dataItem.IsOnlineApproved) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+            else if (dataItem.IsOnlineTransferred) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-reject").show();
+
+                $(this).find(".k-grid-approve").show();
+            }
+            else {
+                $(this).find(".k-grid-approve").hide();
+            }
+
+        });
+    }
+    function onChildDataBound(e) {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+            if (isApproved || sendMarginApprove) {
+                
+                $(this).find(".k-grid-approvemargin").hide();
+
+            }
+            
+        });
+
+    }
+    function onEditOverHeadCost() {
+        $("#GrandTotalCost").prop('disabled', true);
+        $("#ManufacturingCost").prop('disabled', true);
+        $("#FinalPriceIncludingProfit").prop('disabled', true);
+    }
+    function selectInventory() {
+        var productId = $("#InventoryId").val()
+        var storeCode = $("#StoreCode").val()
+
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetItemDetail", "PrintingEstimationDataProvider", new { Area = "Printing" })',
+            data: {
+                itemCode: productId, storeCode: storeCode
+
+            },
+            async: false,
+            success: function (result) {
+                data = result;
+
+                var up = $("#UnitPrice").val(data.AvgPrice);
+                var ba = $("#Balance").val(data.Balance);
+                up.trigger("change");
+                ba.trigger("change");
+
+
+
+
+            }
+        });
+    }
+    function checkEstimation(e) {
+        if (confirm("Are you sure this estimation form is to be checked?")) {
+             var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+            url: '@Url.Action("CheckEstimation", "FurnitureEstimation", new { Area = "Manufacturing" })',
+            data: { id: dataItem.FurnitureEstimationId },
+            success: function (result) {
+                if (result.Success) {
+                    toastr.success(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read();
+                }
+                else {
+                    toastr.error(result.Message);
+
+                }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+      }
+    }
+
+
+
+        function approveEstimation(e) {
+            if (confirm("Are you sure to approve this estimation form?")) {
+            var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+               type: "POST",
+                url: '@Url.Action("ApproveEstimationForm", "FurnitureEstimation", new { Area = "Manufacturing" })',
+                data: { id: dataItem.FurnitureEstimationId },
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message);
+
+                    }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+        }
+    }
+      function rejectEstimation(e) {
+            if (confirm("Are you sure to reject this checked estimation form?")) {
+             var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+            url: '@Url.Action("RejectEstimation", "EstimationForm", new { Area = "Printing" })',
+            data: { id: dataItem.EstimationFormId },
+            success: function (result) {
+                if (result.Success) {
+                    toastr.success(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read();
+                }
+                else {
+                    toastr.error(result.Message);
+
+                }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+        }
+        }
+
+    function onChange() {
+
+        var unitPricenumerictextbox = $("#UnitPrice");
+        var quantitynumerictextbox = $("#Quantity");
+        var totalPricenumerictextbox = $("#TotalPrice");
+        console.log(1000000);
+        var unitPrice = unitPricenumerictextbox.val();
+        var quantity = quantitynumerictextbox.val();
+        var totalPrice = unitPrice * quantity;
+        totalPrice = totalPrice.toFixed(3);
+        totalPricenumerictextbox.val(totalPrice);
+        totalPricenumerictextbox.trigger("change");
+    }
+    function filterCategories() {
+        //
+        // summary:
+             // send the filtering text along with the parent widget's value
+        var dropdownlist = $("#InventoryId").data("kendoDropDownList");
+
+        var filterInput = dropdownlist.filterInput.val();
+
+
+        return {
+            ItemCategoryCode: $("#InventoryCategoryId").val(),
+          text: filterInput
+        };
+    }
+    function onSave(e) {
+        //$("#grid").data("kendoGrid").dataSource.read();
+    }
+    function filterPrintingSteps() {
+        return {
+            PrintingStep: $("#PrintingSteps").val()
+
+        };
+    }
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var codeid;
+    var isApproved;
+    var isChecked;
+    var sendMarginApprove;
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.FurnitureEstimationId;
+        isApproved = masterDataItem.IsOnlineApproved;
+        isChecked = masterDataItem.IsOnlineTransferred;
+        sendMarginApprove = masterDataItem.IsSentForMarginApproval;
+        if (isChecked || isApproved) {
+            $(".k-grid-add", "#material_costs_" + codeid).hide();
+            $(".k-grid-add", "#labor_costs_" + codeid).hide();
+        }
+
+
+    }
+    function onEditMaterialCost() {
+        $("#UnitOfMeasurment").prop('disabled', true);
+
+
+    }
+    function filterTaskCategory() {
+        return {
+            taskType: $("#TaskType").val()
+        }
+    }
+    function filterMaterialItem() {
+        return {
+            materialCategoryId: $("#ManufacturingMaterialCategoryId").val(),
+            text: $("#ManufacturingMaterialCategoryItemId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterCategory() {
+        return {
+            text: $("#ManufacturingMaterialCategoryId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+        }
+    }
+
+    function filterJobType() {
+        return {
+            text: $("#JobTypeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+
+</script>
+<script>
+    function approveMargin(e) {
+        if (confirm("Are you sure this estimation form is to be checked?")) {
+             var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+            url: '@Url.Action("ApproveMargin", "FurnitureEstimation", new { Area = "Manufacturing" })',
+            data: { id: dataItem.FurnitureOverallCostId },
+            success: function (result) {
+                if (result.Success) {
+                    toastr.success(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read();
+                }
+                else {
+                    toastr.error(result.Message);
+
+                }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+      }
+    }
+
+    function sendMarginForApproval(e) {
+        if (confirm("Are you sure this estimation form is to be checked?")) {
+             var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+            url: '@Url.Action("SendForMarginApproval", "FurnitureEstimation", new { Area = "Manufacturing" })',
+            data: { id: dataItem.FurnitureEstimationId },
+            success: function (result) {
+                if (result.Success) {
+                    toastr.success(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read();
+                }
+                else {
+                    toastr.error(result.Message);
+
+                }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+      }
+    }
+</script>
+<style>
+    .k-grid .k-grid-toolbar .k-grid-add,
+    .k-grid tbody .k-grid-edit,
+    .k-grid tbody .k-grid-update,
+    .k-grid tbody .k-grid-cancel,
+    .k-grid tbody .k-grid-delete {
+        min-width: 0;
+    }
+
+        .k-grid .k-grid-toolbar .k-grid-add .k-icon,
+        .k-grid tbody .k-grid-edit .k-icon,
+        .k-grid tbody .k-grid-update .k-icon,
+        .k-grid tbody .k-grid-cancel .k-icon,
+        .k-grid tbody .k-grid-delete .k-icon {
+            margin: 0;
+        }
+
+    .k-grid tbody .k-button {
+        min-width: 30px;
+        min-height: 30px;
+    }
+
+    .check {
+        background-color: #e68a00;
+        color: white;
+    }
+
+    .approve {
+        background-color: #077d01;
+        color: white;
+    }
+
+    .reject {
+        color: white;
+        background-color: #fc0000;
+    }
+</style>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+
+    .row {
+        margin: 10px;
+    }
+
+        .row .col-sm-3 {
+            margin: 10px;
+        }
+
+    .k-textbox,
+    .k-numerictextbox,
+    .k-dropdown,
+    .k-dropdowntree,
+    .k-datepicker,
+    .k-upload {
+        width: 80%;
+    }
+</style>

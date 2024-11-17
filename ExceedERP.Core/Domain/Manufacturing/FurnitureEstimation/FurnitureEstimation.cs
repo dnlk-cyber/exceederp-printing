@@ -18,15 +18,16 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public int FurnitureEstimationId { get; set;}
         public int FurnitureBillOfQuantityId { get; set; }
         public int CustomerId { get; set; }
-        
         [Required]
         [Display(Name = "Type of Job ")]
-        public int  JobTypeId { get; set; }
+        public int JobTypeId { get; set; }
         
         [Required]
         public decimal Quantity { get; set; }
         public string Description { get; set; }
         public bool IsCurrent { get; set; }
+        public bool IsMarginAssigned { get; set; }
+        public bool JobCreated { get; set; }
 
     }
     

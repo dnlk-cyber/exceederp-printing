@@ -10,6 +10,7 @@
         columns.Bound(c => c.DeliveryPeriod).Width(120);
         columns.Bound(c => c.PriceValidityPeriod).Width(120);
         columns.Bound(c => c.ModeOfPayment).Width(100);
+        //columns.Bound(c => c.AdvancePaymentInPercent).Title("Advance Payment(%)").Width(100);
         columns.Bound(c => c.Remark).Width(90);
         columns.Command(command =>
         {
@@ -46,15 +47,17 @@
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-        .Name("tab_#=FurnitureProformaInvoiceId#")
-        .Items(item1 =>
-        {
-            item1.Add().Text("Proforma Item")
-            .Content(
-            @<text>
-                @ProformaItem();
-            </text>);
-        }).ToClientTemplate())
+                .Name("tab_#=FurnitureProformaInvoiceId#")
+                .Items(item1 =>
+                {
+                    item1.Add().Text("Proforma Item")
+                    .Content(
+                    @<text>
+                        <a href='@Url.Action("Proforma", "FurniturePrint")/?id=#=FurnitureProformaInvoiceId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+
+                        @ProformaItem();
+                    </text>);
+                        }).ToClientTemplate())
 </script>
 
 
@@ -66,15 +69,17 @@
               .Name("grid_#=FurnitureProformaInvoiceId#")
               .Columns(columns =>
               {
-                  
+
                   columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
                   columns.Bound(c => c.UnitOfMeasurment).Width(100);
                   columns.Bound(c => c.Quantity).Width(100);
                   columns.Bound(c => c.UnitPriceBeforeVAT).Width(100);
-                  columns.Bound(c => c.VAT).Width(100);
+                  columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Value", "Text").Title("Tax Type").Width(120);
+
                   columns.Bound(c => c.UnitPriceWithVAT).Width(100);
-                  columns.Bound(c => c.TotalPrice).Width(100);
-                  columns.Bound(c => c.Remark).Width(100);  
+                  columns.Bound(c => c.TransportCost).Width(100);
+                  columns.Bound(c => c.TotalPrice).Title("Selling Price").Width(100);
+                  columns.Bound(c => c.Remark).Width(100);
 
                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
               })
@@ -82,7 +87,8 @@
               {
                   toolbar.Create();
               })
-              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProformaItemEditorTemplate"))
+              .Editable(editable => editable.Mode(GridEditMode.PopUp)
+              .TemplateName("ProformaItemEditorTemplate"))
               .Filterable()
               .Scrollable()
               .Events(ev => ev.DataBound("onChildDataBound"))

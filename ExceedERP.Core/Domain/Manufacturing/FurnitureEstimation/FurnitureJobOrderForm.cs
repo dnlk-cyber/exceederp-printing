@@ -10,8 +10,11 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         [Key]
         public int FurnitureJobOrderFormId { get; set; }
        
-        public int CustomerId { get; set; }       
-       
+        public int CustomerId { get; set; }
+
+        [Display(Name = "Job Start Date"), DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime JobStartDate { get; set; }
         [Display(Name = "Delivery Date"), DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DeliveryDate { get; set; }
@@ -35,6 +38,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public string UnitOfMeasurment { get; set; }
 
         public decimal Quantity { get; set; }
+        public decimal TransportCost { get; set; }
         [Display(Name = "Unit Price Before VAT")]
         public decimal UnitPriceBeforeVAT { get; set; }
         [Display(Name = "VAT")]
@@ -44,6 +48,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
 
         public int FurnitureJobOrderFormId { get; set; }
         public bool IsClosed { get; set; }
+        public string Remark { get; set; }
         public FurnitureJobOrderForm FurnitureJobOrderForm { get; set; }
     }
 

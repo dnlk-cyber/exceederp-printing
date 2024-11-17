@@ -91,7 +91,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 IsCustomizedJob = furnitureBillOfQuantity.IsCustomizedJob,
                 JobNo = furnitureBillOfQuantity.JobNo,
                 JobTypeName = furnitureBillOfQuantity.JobTypeName,
-                Unit = furnitureBillOfQuantity.Unit
+                Unit = furnitureBillOfQuantity.Unit,
             });
 
             return Json(result);
@@ -120,7 +120,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                         Remark = furnitureBillOfQuantity.Remark,
                         DateCreated = DateTime.Today,
                         CreatedBy = User.Identity.Name,
-                        IsCustomizedJob = false
+                        IsCustomizedJob = false,
                     };
 
                     db.FurnitureBillOfQuantities.Add(entity);
@@ -150,7 +150,6 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                                 IsCustomizedJob = true,
                                 Unit = jobType.Unit,
                                 JobTypeName = jobType.JobTypeName,
-                                
                             };
 
                             db.FurnitureBillOfQuantities.Add(entity);
@@ -375,7 +374,6 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     CustomerId = billOfQuantity.CustomerId,
                     Quantity = billOfQuantity.Quantity,
                     FurnitureBillOfQuantityId = billOfQuantity.FurnitureBillOfQuantityId,
-
 
                 };
                 db.FurnitureEstimationForms.Add(estimation);

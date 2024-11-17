@@ -18,7 +18,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         private ExceedDbContext db = new ExceedDbContext();
 
         public ActionResult Index()
-        {
+        {          
             return View();
         }
 
@@ -40,16 +40,20 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 CreatedBy = furnitureProformaInvoiceItem.CreatedBy,
                 ModifiedBy = furnitureProformaInvoiceItem.ModifiedBy,
                 FurnitureProformaInvoiceId = furnitureProformaInvoiceItem.FurnitureProformaInvoiceId,
-                TotalPrice = furnitureProformaInvoiceItem.TotalPrice
+                TotalPrice = furnitureProformaInvoiceItem.TotalPrice,
+                TransportCost = furnitureProformaInvoiceItem.TransportCost,
+                FurnitureEstimationId = furnitureProformaInvoiceItem.FurnitureEstimationId,
+                IsActive = furnitureProformaInvoiceItem.IsActive,
+                GLTaxRateID = furnitureProformaInvoiceItem.GLTaxRateID
             });
 
             return Json(result);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult FurnitureProformaInvoiceItems_Create([DataSourceRequest]DataSourceRequest request, FurnitureProformaInvoiceItem furnitureProformaInvoiceItem, int proformaId)
+        public ActionResult FurnitureProformaInvoiceItems_Create([DataSourceRequest]DataSourceRequest request, FurnitureProformaInvoiceItem model, int proformaId)
         {           
-            var estimation = db.FurnitureEstimationForms.Find(furnitureProformaInvoiceItem.FurnitureEstimationId);
+            var estimation = db.FurnitureEstimationForms.Find(model.FurnitureEstimationId);
             if (estimation == null) ModelState.AddModelError(string.Empty, "Can't find Estimation");
 
             var jobType = db.FurnitureStandardJobTypes.Find(estimation.JobTypeId);
@@ -57,36 +61,42 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
             var overAllCost = db.FurnitureOverallCosts.FirstOrDefault(x => x.FurnitureEstimationId == estimation.FurnitureEstimationId);
             if (overAllCost == null) ModelState.AddModelError(string.Empty, "Overall cost not found");
-
+            var glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GLTaxRateID);
+            if(glTaxRate == null)
+            {
+                ModelState.AddModelError(string.Empty, "Tax rate not found!");
+            }
             if (ModelState.IsValid)
-            {             
+            {
+
                 var entity = new FurnitureProformaInvoiceItem
                 {
                     JobTypeId = estimation.JobTypeId,
                     UnitOfMeasurment = jobType.Unit,
-                    Quantity = furnitureProformaInvoiceItem.Quantity,
-                    UnitPriceBeforeVAT = overAllCost.FinalPriceIncludingProfit,
-                    VAT = 0.15M,
-                    UnitPriceWithVAT = overAllCost.FinalPriceIncludingProfit + overAllCost.FinalPriceIncludingProfit * 0.15M,
-                   
-                    Remark = furnitureProformaInvoiceItem.Remark,
+                    Quantity = model.Quantity,
+                    UnitPriceBeforeVAT = overAllCost.SellingPrice,
+                    VAT = glTaxRate.CalculatedRate,
+                    UnitPriceWithVAT = (overAllCost.SellingPrice * glTaxRate.CalculatedRate) + overAllCost.SellingPrice,
+                    Remark = model.Remark,
                     DateCreated = DateTime.Today,                   
                     CreatedBy = User.Identity.Name,                    
                     FurnitureProformaInvoiceId = proformaId,
-                    FurnitureEstimationId = furnitureProformaInvoiceItem.FurnitureEstimationId
+                    FurnitureEstimationId = model.FurnitureEstimationId,
+                    TransportCost = model.TransportCost,
+                    GLTaxRateID = model.GLTaxRateID
                 };
                 entity.TotalPrice = entity.UnitPriceWithVAT * entity.Quantity;
                 db.FurnitureProformaInvoiceItems.Add(entity);
                 db.SaveChanges();
-                furnitureProformaInvoiceItem.FurnitureProformaInvoiceItemId = entity.FurnitureProformaInvoiceItemId;
+                model.FurnitureProformaInvoiceItemId = entity.FurnitureProformaInvoiceItemId;
             }
-            return Json(new[] { furnitureProformaInvoiceItem }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult FurnitureProformaInvoiceItems_Update([DataSourceRequest]DataSourceRequest request, FurnitureProformaInvoiceItem furnitureProformaInvoiceItem)
+        public ActionResult FurnitureProformaInvoiceItems_Update([DataSourceRequest]DataSourceRequest request, FurnitureProformaInvoiceItem model)
         {
-            var estimation = db.FurnitureEstimationForms.Find(furnitureProformaInvoiceItem.FurnitureEstimationId);
+            var estimation = db.FurnitureEstimationForms.Find(model.FurnitureEstimationId);
             if (estimation == null) ModelState.AddModelError(string.Empty, "Can't find Estimation");
 
             var jobType = db.FurnitureStandardJobTypes.Find(estimation.JobTypeId);
@@ -94,23 +104,31 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
             var overAllCost = db.FurnitureOverallCosts.FirstOrDefault(x => x.FurnitureEstimationId == estimation.FurnitureEstimationId);
             if (overAllCost == null) ModelState.AddModelError(string.Empty, "Overall cost not found");
-
+            var glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GLTaxRateID);
+            if (glTaxRate == null)
+            {
+                ModelState.AddModelError(string.Empty, "Tax rate not found!");
+            }
             if (ModelState.IsValid)
             {
+
                 var entity = new FurnitureProformaInvoiceItem
                 {
                     JobTypeId = estimation.JobTypeId,
                     UnitOfMeasurment = jobType.Unit,
-                    Quantity = furnitureProformaInvoiceItem.Quantity,
-                    UnitPriceBeforeVAT = overAllCost.FinalPriceIncludingProfit,
-                    VAT = 0.15M,
-                    UnitPriceWithVAT = overAllCost.FinalPriceIncludingProfit + overAllCost.FinalPriceIncludingProfit * 0.15M,
+                    Quantity = model.Quantity,
+                    UnitPriceBeforeVAT = overAllCost.SellingPrice,
+                    VAT = glTaxRate.CalculatedRate,
+                    UnitPriceWithVAT = (overAllCost.SellingPrice * glTaxRate.CalculatedRate) + overAllCost.SellingPrice,
 
-                    Remark = furnitureProformaInvoiceItem.Remark,
+                    Remark = model.Remark,
                     DateCreated = DateTime.Today,
                     CreatedBy = User.Identity.Name,
-                    FurnitureProformaInvoiceId = furnitureProformaInvoiceItem.FurnitureProformaInvoiceId,
-                    FurnitureEstimationId = furnitureProformaInvoiceItem.FurnitureEstimationId
+                    FurnitureProformaInvoiceId = model.FurnitureProformaInvoiceId,
+                    FurnitureEstimationId = model.FurnitureEstimationId,
+                    TransportCost = model.TransportCost,
+                    GLTaxRateID = model.GLTaxRateID
+
                 };
                 entity.TotalPrice = entity.UnitPriceWithVAT * entity.Quantity;
                 db.FurnitureProformaInvoiceItems.Attach(entity);
@@ -118,7 +136,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 db.SaveChanges();
             }
 
-            return Json(new[] { furnitureProformaInvoiceItem }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -140,7 +158,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     LastModified = furnitureProformaInvoiceItem.LastModified,
                     CreatedBy = furnitureProformaInvoiceItem.CreatedBy,
                     ModifiedBy = furnitureProformaInvoiceItem.ModifiedBy,
-                    FurnitureProformaInvoiceId = furnitureProformaInvoiceItem.FurnitureProformaInvoiceId
+                    FurnitureProformaInvoiceId = furnitureProformaInvoiceItem.FurnitureProformaInvoiceId,
+                    TransportCost = furnitureProformaInvoiceItem.TransportCost
                 };
 
                 db.FurnitureProformaInvoiceItems.Attach(entity);

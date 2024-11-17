@@ -9,27 +9,27 @@
                         columns.Bound(c => c.FurnitureEstimationId).Width(70);
                         columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(130);
                         columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Width(110).Title("Customer");
-
                         columns.Bound(c => c.Quantity).Width(100);
                         columns.Bound(c => c.Description).Width(80);
 
                         columns.Command(command =>
                         {
-                            command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
+                            //command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
                             command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "Check" }).Click("checkEstimation");
                             command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
-                            command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
-                            command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
+                            //command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
+                            //command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
                         }).Width(200);
 
                     })
                     .ToolBar(toolbar =>
                     {
                         toolbar.Create();
-                        //toolbar.Excel();
-                        //toolbar.Pdf();
+                       
                     })
-                    .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
+                    .Events(ev => ev.DetailExpand("detailExpand")
+                    .DataBound("dataBound")
+                    )
                     .Scrollable(s => s.Height(400))
                     .ClientDetailTemplateId("cost_estimation")
                     .Sortable()
@@ -62,8 +62,7 @@
 
 <script id="cost_estimation" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                .Name("tabstrip_grid_#=FurnitureEstimationId#")
-                .SelectedIndex(0)
+                .Name("tabstrip_grid_#=FurnitureEstimationId#")              
                 .Items(itemn =>
                  {
 
@@ -80,22 +79,19 @@
 
                                                columns.Bound(c => c.UnitOfMeasurment).Title("UoM").Width(100);
 
-                                               columns.Bound(c => c.Quantity).Width(80);
+                                               columns.Bound(c => c.Quantity).Format("{0:n2}").Width(80);
                                                columns.Bound(c => c.UnitPrice).Width(100);
-                                               columns.Bound(c => c.TotalPrice).Width(130).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
-                                   // escaped template expression, to be evaluated in the child/detail context
-                                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
-
+                                               columns.Bound(c => c.TotalPrice).Format("{0:n2}").Width(130).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
+                                               // escaped template expression, to be evaluated in the child/detail context
+                                               columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
                                            })
                                      .ToolBar(toolbar =>
                                      {
-                                               toolbar.Create();
-
-                                           })
+                                        toolbar.Create();
+                                     })
                                      .Events(ev => ev.DataBound("onChildDataBound"))
                                      .Events(ev => ev.Edit("onEditMaterialCost"))
-                                     .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                     
+                                     .Editable(editable => editable.Mode(GridEditMode.InLine))                                   
                                      .Pageable(pageable => pageable
                                      .Refresh(true)
                                      .PageSizes(true)
@@ -109,8 +105,8 @@
                                          .Aggregates(aggregates =>
 
                                          {
-                                                   aggregates.Add(c => c.TotalPrice).Sum();
-                                               })
+                                            aggregates.Add(c => c.TotalPrice).Sum();
+                                         })
                                          .Model(model => model.Id(p => p.FurnitureMaterialCostId))
                                          .Read(read => read.Action("FurnitureMaterialCosts_Read", "FurnitureMaterialCosts", new { estimationFormId = "#=FurnitureEstimationId#" }))
                                          .Create(create => create.Action("FurnitureMaterialCosts_Create", "FurnitureMaterialCosts", new { parentId = "#=FurnitureEstimationId#" }))
@@ -137,7 +133,7 @@
 
                                                      //columns.Bound(o => o.TaskCategoryId).EditorTemplateName("TaskCategoryTemplate").Width(80);
                                                      columns.Bound(o => o.WorkingTime).Width(80);
-                                                     columns.Bound(o => o.CostPerHour).Width(80);
+                                                     columns.Bound(o => o.CostPerHour).Width(80).Title("Cost Per Minute");
                                                      columns.Bound(o => o.TotalCost).Width(150).ClientFooterTemplate("Labor Cost: \\#=sum\\# ");
                                                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
 
@@ -188,7 +184,7 @@
                                               <a href='@Url.Action("PrintingEstimationForms", "PrintingEstimationReport")/#=FurnitureEstimationId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
                                             #}#*@
 
-                                        <a onclick='return calculateOverallCost("#=FurnitureEstimationId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a>
+                                       <span class="cal"><a onclick='return calculateOverallCost("#=FurnitureEstimationId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a></span> 
                                         @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureOverallCost>()
                                                     .Name("overall_costs_#=FurnitureEstimationId#")
                                                     .Columns(columns =>
@@ -200,9 +196,15 @@
                                                         columns.Bound(c => c.AdministrativeCost).Title("Adminst Cost(%)").Width(120);
                                                         columns.Bound(c => c.GrandTotalCost);
                                                         columns.Bound(c => c.ProfitMargin);
-                                                        columns.Bound(c => c.FinalPriceIncludingProfit);
+                                                        columns.Bound(c => c.SellingPrice);
 
-                                                        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+                                                        columns.Command(command =>
+                                                        {
+                                                            command.Edit();
+                                                            command.Destroy();
+
+                                                        }).Width(200);
+
                                                     })
 
                                                         .Editable(editable => editable.Mode(GridEditMode.InLine))
@@ -216,13 +218,14 @@
                                                                 .RequestEnd("onRequestEnd(\"overall_costs_#=FurnitureEstimationId#\")"))
                                                             .Model(model =>
                                                             {
-                                                                   model.Id(p => p.FurnitureOverallCostId);
-                                                                   model.Field(p => p.LabourCost).Editable(false);
-                                                                   model.Field(p => p.MaterialCost).Editable(false);
-                                                                   model.Field(p => p.FurnitureOverallCostId).Editable(false);
-                                                               })
+                                                                model.Id(p => p.FurnitureOverallCostId);
+                                                                model.Field(p => p.LabourCost).Editable(false);
+                                                                model.Field(p => p.MaterialCost).Editable(false);
+                                                                model.Field(p => p.FurnitureOverallCostId).Editable(false);
+                                                                model.Field(p => p.ProfitMargin).Editable(false);
+                                                                model.Field(p => p.SellingPrice).Editable(false);
+                                                            })
                                                             .Read(read => read.Action("FurnitureOverallCosts_Read", "FurnitureOverallCosts", new { estimationFormId = "#=FurnitureEstimationId#" }))
-                                                            .Create(create => create.Action("FurnitureOverallCosts_Create", "FurnitureOverallCosts", new { parentId = "#=FurnitureEstimationId#" }))
                                                             .Update(update => update.Action("FurnitureOverallCosts_Update", "FurnitureOverallCosts"))
                                                             .Destroy(destroy => destroy.Action("FurnitureOverallCosts_Destroy", "FurnitureOverallCosts")))
 
@@ -238,60 +241,7 @@
 
 </script>
 
-@helper LaborCostBatch()
-{
-    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.DirectLaborCost>()
-                      .Name("labor_costs_#=FurnitureEstimationId#")
-                      .Columns(columns =>
-                      {
-                          columns.Bound(o => o.TaskType).EditorTemplateName("TaskTypeTemplate").Width(120);
-                          columns.ForeignKey(o => o.TaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").EditorTemplateName("TaskCategoryTemplate").Width(150);
-                          columns.Bound(o => o.WorkingTime).Width(100);
-                          columns.Bound(o => o.CostPerHour).Width(100);
-                          columns.Bound(o => o.TotalCost).Width(150).ClientFooterTemplate("Labor Cost: \\#=sum\\# ");
-                          columns.Command(command => { command.Destroy(); }).Width(180);
-                      })
-                      .ToolBar(toolbar =>
-                      {
-                          toolbar.Create();
-                          toolbar.Save();
-                      })
-                      .ColumnMenu()
-                      .Events(ev => ev.DataBound("onChildDataBound"))
-                      .Editable(editable => editable.Mode(GridEditMode.InCell))
-                      .Pageable()
-                      .Navigatable()
-                      .Selectable(selectable =>
-                      {
-                          selectable.Mode(GridSelectionMode.Single);
-                          selectable.Type(GridSelectionType.Cell);
-                      })
-                      .Sortable(sortable =>
-                      {
-                          sortable.SortMode(GridSortMode.SingleColumn);
-                      })
-                      .Filterable()
-                      .Scrollable()
-                      .DataSource(dataSource => dataSource
-                          .Ajax()
-                           .Events(ev => ev.Error("error_handler(\"labor_costs_#=FurnitureEstimationId#\")")
-                                            .RequestStart("onRequestStart(\"labor_costs_#=FurnitureEstimationId#\")")
-                                            .RequestEnd("onRequestEnd(\"labor_costs_#=FurnitureEstimationId#\")"))
-                                            .Aggregates(aggregates =>
 
-                                            {
-                                                aggregates.Add(c => c.TotalCost).Sum();
-                                            })
-                          .Batch(true)
-                          .Model(model => model.Id(p => p.DirectLaborCostId))
-                          .Read(read => read.Action("DirectLaborCosts_Read", "LaborCostbatch", new { estimationFormId = "#=FurnitureEstimationId#" }))
-                          .Create(create => create.Action("DirectLaborCosts_Create", "LaborCostbatch", new { estimationFormId = "#=FurnitureEstimationId#" }))
-                          .Update(update => update.Action("DirectLaborCosts_Update", "LaborCostbatch"))
-                          .Destroy(destroy => destroy.Action("DirectLaborCosts_Destroy", "LaborCostbatch"))
-                      ).ToClientTemplate()
-    )
-
-}
 <script>
     function calculateOverallCost(id) {
         var recordStatus = "";
@@ -332,21 +282,7 @@
         e.preventDefault();
 
     });
-    function onChangeOC() {
-        //var lc = parseInt($("#LaborCost").val());
-        //var mc = parseInt($("#MaterialCost").val());
-        //$("#MaterialCost").attr("disabled", "true");
-        //$("#LaborCost").attr("disabled", "true");
-        //console.log($("#LaborCost").val());
-        //console.log($("#MaterialCost").val());
-        //console.log($("#OverHeadCost").val());
-        //var ohC = $("#OverHeadCost").val();
-
-        //var oc = lc + mc;
-        //var tc = oc + oc + (ohC/100);
-        //var tt = $("#T").val(tc);
-        //tt.trigger("change");
-    }
+    
     function dataBound() {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
         var grid = this;
@@ -360,18 +296,17 @@
                 $(this).find(".k-grid-reject").hide();
                 $(this).find(".k-grid-delete").hide();
             }
-            else if (dataItem.IsOnlineTransferred) {
+            else if (dataItem.IsOnlineTransferred && dataItem.IsOnlineApproved == false) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-delete").hide();
-                $(this).find(".k-grid-reject").show();
-
                 $(this).find(".k-grid-approve").show();
+
             }
             else {
                 $(this).find(".k-grid-approve").hide();
             }
-
+            
         });
     }
     function onChildDataBound(e) {
@@ -379,11 +314,14 @@
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-            if (isChecked == true ||isApproved) {
+            
+            if (isChecked || isApproved) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-delete").hide();
-            }
+                //$(this).find(".k-grid-approvemargin").hide();
 
+            }
+            
         });
 
     }
@@ -440,9 +378,10 @@
                alert(result);
            }
        });
-        }
+      }
+    }
 
-        }
+
 
         function approveEstimation(e) {
             if (confirm("Are you sure to approve this estimation form?")) {
@@ -535,6 +474,7 @@
     var codeid;
     var isApproved;
     var isChecked;
+    var sendMarginApprove;
     function detailExpand(e) {
         masterRow = e.masterRow;
         masterGrid = $("#grid").data("kendoGrid");
@@ -542,9 +482,11 @@
         codeid = masterDataItem.FurnitureEstimationId;
         isApproved = masterDataItem.IsOnlineApproved;
         isChecked = masterDataItem.IsOnlineTransferred;
+        sendMarginApprove = masterDataItem.IsSentForMarginApproval;
         if (isChecked || isApproved) {
             $(".k-grid-add", "#material_costs_" + codeid).hide();
             $(".k-grid-add", "#labor_costs_" + codeid).hide();
+            $(".cal").hide();
         }
 
 
@@ -594,6 +536,7 @@
     }
 
 </script>
+
 <style>
     .k-grid .k-grid-toolbar .k-grid-add,
     .k-grid tbody .k-grid-edit,

@@ -41,49 +41,19 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 MaterialCost = model.MaterialCost,
                 OverHeadCost = model.OverHeadCost,
                 ProfitMargin = model.ProfitMargin,
-                FinalPriceIncludingProfit = model.FinalPriceIncludingProfit
+                SellingPrice = model.SellingPrice                
             });
 
             return Json(result);
         }
-        public ActionResult FurnitureOverallCosts_Create([DataSourceRequest]DataSourceRequest request, FurnitureOverallCost overallCost, int parentId)
-        {
-
-            if (ModelState.IsValid)
-            {
-                var estimationForm = db.FurnitureEstimationForms.Find(parentId);
-                var materialCost = db.FurnitureMaterialCosts.Where(x => x.FurnitureEstimationId == estimationForm.FurnitureEstimationId).ToList();
-                var labourCost = db.FurnitureLaborCosts.Where(x => x.EstimationFormId == estimationForm.FurnitureEstimationId).ToList();
-
-                if(materialCost.Any() && labourCost.Any())
-                {
-                    overallCost.MaterialCost = materialCost.Sum(s => s.TotalPrice);
-                    overallCost.LabourCost = labourCost.Sum(s => s.TotalCost);
-                }
-                var entity = new FurnitureOverallCost
-                {
-                    OverHeadCost = overallCost.OverHeadCost,
-                    FurnitureEstimationId = parentId,
-                    AdministrativeCost = overallCost.AdministrativeCost,
-                    LabourCost = overallCost.LabourCost,              
-                    MaterialCost = overallCost.MaterialCost,
-                };
-                entity.ManufacturingCost = overallCost.MaterialCost + overallCost.LabourCost + overallCost.OverHeadCost;
-                entity.GrandTotalCost = entity.ManufacturingCost + entity.AdministrativeCost;
-                db.FurnitureOverallCosts.Add(entity);
-                db.SaveChanges();
-
-                overallCost.FurnitureOverallCostId = entity.FurnitureOverallCostId;
-            }
-            return Json(new[] { overallCost }.ToDataSourceResult(request, ModelState));
-        }
+        
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FurnitureOverallCosts_Update([DataSourceRequest]DataSourceRequest request, FurnitureOverallCost overallCost)
         {
 
-            if (overallCost.OverHeadCost == 0 || overallCost.AdministrativeCost == 0 || overallCost.ProfitMargin == 0)
-                ModelState.AddModelError("", "Overhead.cost/Adm.Cost/Profit margin missing");
+            //if (overallCost.OverHeadCost == 0 || overallCost.AdministrativeCost == 0)
+            //    ModelState.AddModelError("", "Overhead.cost/Adm.Cost/Profit margin missing");
             if (ModelState.IsValid)
             {
                 
@@ -92,8 +62,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 overallCost.ManufacturingCost = overallCost.MaterialCost + overallCost.LabourCost + overallCost.OverHeadCost;
 
                 overallCost.GrandTotalCost = overallCost.ManufacturingCost + overallCost.AdministrativeCost;
-                var profit = overallCost.GrandTotalCost * overallCost.ProfitMargin;
-                overallCost.FinalPriceIncludingProfit = overallCost.GrandTotalCost + profit;
+                //var profit = overallCost.GrandTotalCost * overallCost.ProfitMargin;
+                //overallCost.FinalPriceIncludingProfit = overallCost.GrandTotalCost + profit;
 
                 db.FurnitureOverallCosts.Attach(overallCost);
                 db.Entry(overallCost).State = EntityState.Modified;

@@ -58,7 +58,14 @@
 
 
 <div class="row">
-   
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Start Date</label>
+            <div>
+                @(Html.Kendo().DatePickerFor(model => model.JobStartDate).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
 
     <div class="col-sm-2">
         <div class="form-group">

@@ -1144,6 +1144,8 @@
     <Compile Include="Domain\Maintenance\VehicleReceptionForm.cs" />
     <Compile Include="Domain\Maintenance\WorkUnitSection.cs" />
     <Compile Include="Domain\Manufacturing\FurnitureBillOfQuantity.cs" />
+    <Compile Include="Domain\Manufacturing\FurnitureEstimation\EstimationSummary.cs" />
+    <Compile Include="Domain\Manufacturing\FurnitureEstimation\furnitureBoqRequest.cs" />
     <Compile Include="Domain\Manufacturing\FurnitureEstimation\FurnitureCategory.cs" />
     <Compile Include="Domain\Manufacturing\FurnitureEstimation\FurnitureEnum.cs" />
     <Compile Include="Domain\Manufacturing\FurnitureEstimation\FurnitureEstimation.cs" />

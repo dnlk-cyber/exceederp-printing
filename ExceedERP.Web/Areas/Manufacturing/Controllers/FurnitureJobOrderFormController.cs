@@ -11,6 +11,7 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Manufacturing.Production;
+using ExceedERP.Core.Domain.Manufacturing;
 
 namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 {
@@ -64,7 +65,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 LastModified = furnitureJobOrderForm.LastModified,
                 CreatedBy = furnitureJobOrderForm.CreatedBy,
                 ModifiedBy = furnitureJobOrderForm.ModifiedBy,
-                JobClosed = furnitureJobOrderForm.JobClosed
+                JobClosed = furnitureJobOrderForm.JobClosed,
+                PaymentType = furnitureJobOrderForm.PaymentType,
+                JobStartDate = furnitureJobOrderForm.JobStartDate
             });
 
             return Json(result);
@@ -127,7 +130,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     DateCreated = furnitureJobOrderForm.DateCreated,
                     LastModified = furnitureJobOrderForm.LastModified,
                     CreatedBy = furnitureJobOrderForm.CreatedBy,
-                    ModifiedBy = furnitureJobOrderForm.ModifiedBy
+                    ModifiedBy = furnitureJobOrderForm.ModifiedBy,
+                    PaymentType = furnitureJobOrderForm.PaymentType,
+                    
                 };
 
                 db.FurnitureJobOrderForms.Attach(entity);
@@ -164,12 +169,17 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             var proformaInvoice = db.FurnitureProformaInvoices.Find(furnitureJobOrderForm.FurnitureProformaInvoiceId);
             if (proformaInvoice != null)
             {
-                var proformaItems = db.FurnitureProformaInvoiceItems.Where(x => x.FurnitureProformaInvoiceId == proformaInvoice.FurnitureProformaInvoiceId).ToList();
+                var proformaItems = db.FurnitureProformaInvoiceItems
+                    .Where(x => x.FurnitureProformaInvoiceId == proformaInvoice.FurnitureProformaInvoiceId)
+                    .ToList();
                 if (proformaItems.Any())
                 {
                     var jobOrder = new FurnitureJobOrderForm
                     {
-                        CustomerId = proformaInvoice.CustomerId,                                               
+                        
+                        CustomerId = proformaInvoice.CustomerId,
+                        JobStartDate = furnitureJobOrderForm.JobStartDate,
+                        DeliveryDate = furnitureJobOrderForm.JobStartDate.AddDays(proformaInvoice.DeliveryPeriod),
                         FurnitureProformaInvoiceId = proformaInvoice.FurnitureProformaInvoiceId,
                         DateCreated = DateTime.Today,
                         CreatedBy = User.Identity.Name,
@@ -256,21 +266,16 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             object response = null;
             var jobOrder = db.FurnitureJobOrderForms.Find(id);
             if (jobOrder != null)
-            {
-
-
-
+            {                
                 jobOrder.IsOnlineApproved = true;
                 jobOrder.OnlineApprovedBy = User.Identity.Name;
                 jobOrder.OnlineApprovedTime = DateTime.Today;
-
-
+                
                 db.FurnitureJobOrderForms.Attach(jobOrder);
                 db.Entry(jobOrder).State = EntityState.Modified;
                 db.SaveChanges();
                 //--Generate Productions--//
                 GenerateProduction(jobOrder);
-
                 response = new { Success = true, Message = "Successfully Approved and Created Production!" };
             }
             else
@@ -331,6 +336,22 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                                 FurnitureJobOrderProductionId = jobOrderProduction.FurnitureJobOrderProductionId
                             };
                             db.FurnitureProductionBillOfLabors.Add(productionBoqLabor);
+
+                           var boqJobDesgins = db.FurnitureBoqJobDesigns.Where(x => x.ReferenceId == billOfQuantity.FurnitureBillOfQuantityId).ToList();
+                            foreach (var boqJobDesign in boqJobDesgins)
+                            {
+
+                                FurnitureJobDesign furnitureJobDesign = new FurnitureJobDesign
+                                {
+                                    ShortPath = boqJobDesign.ShortPath,
+                                    Description = boqJobDesign.Description,
+                                    FileExtension = boqJobDesign.FileExtension,
+                                    FileName = boqJobDesign.FileName,
+                                    FilePath = boqJobDesign.FilePath,
+                                    FurnitureJobOrderProductionId = jobOrderProduction.FurnitureJobOrderProductionId
+                                };
+                                db.FurnitureJobDesigns.Add(furnitureJobDesign);                            
+                            };
 
                             db.SaveChanges();
                         }

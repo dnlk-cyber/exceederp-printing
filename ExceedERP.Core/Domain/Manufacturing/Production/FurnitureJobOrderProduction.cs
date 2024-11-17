@@ -67,4 +67,17 @@ namespace ExceedERP.Core.Domain.Manufacturing.Production
         public int FurnitureJobOrderProductionId { get; set; }
         public FurnitureJobOrderProduction FurnitureJobOrderProduction { get; set; }
     }
+
+    public class FurnitureJobDesign
+    {
+        [Key]
+        public int FurnitureJobDesignId { get; set; }
+        public int FurnitureJobOrderProductionId { get; set; }
+
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+        public string ShortPath { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
+    }
 }

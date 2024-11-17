@@ -19,6 +19,17 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 
         public ActionResult Index()
         {
+            ViewDataMethods();
+            return View();
+
+        }
+        public ActionResult EstimationSummary()
+        {
+            ViewDataMethods();
+            return View();
+        }
+        private void ViewDataMethods()
+        {
             ViewData["TaskCategory"] = db.ManifucturingTaskCategories.Select(s => new
             {
                 Value = s.ManifucturingTaskCategoryId,
@@ -43,9 +54,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                }).ToList();
             ViewData["Categorys"] = categories;
             var myCustomers = db.OrganizationCustomers.Select(
-                s=>new {
-                Code = s.OrganizationCustomerID,
-                Name = s.TradeName
+                s => new {
+                    Code = s.OrganizationCustomerID,
+                    Name = s.TradeName
                 }).ToList();
             ViewData["Customers"] = myCustomers;
 
@@ -67,10 +78,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 Value = s.ManufacturingMaterialCategoryItemId,
                 Text = s.ItemName
             }).ToList();
-            return View();
-
         }
-
         public JsonResult GetAllEstimationForms()
         {
             var data = db.EstimationForms;
@@ -89,18 +97,35 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             
             DataSourceResult result = estimationforms.ToDataSourceResult(request, model => new FurnitureEstimationForm
             {
-
                 FurnitureEstimationId = model.FurnitureEstimationId,
-                CustomerId = model.CustomerId,
-                
-                
+                CustomerId = model.CustomerId,               
                 JobTypeId = model.JobTypeId,
                 Quantity = model.Quantity,
                 IsOnlineTransferred = model.IsOnlineTransferred,
-                IsOnlineApproved = model.IsOnlineApproved
-                
+                IsOnlineApproved = model.IsOnlineApproved,
+                CreatedBy = model.CreatedBy,
+                DateCreated = model.DateCreated,
+                Description = model.Description,
+                FurnitureBillOfQuantityId = model.FurnitureBillOfQuantityId,
+                IsCurrent = model.IsCurrent,
+                IsOnlineTransferredBy = model.IsOnlineTransferredBy,
+                IsSendForApproval = model.IsSendForApproval,
+                IsVoid = model.IsVoid,
+                LastModified = model.LastModified,
+                ModifiedBy = model.ModifiedBy,
+                OnlineApprovedBy = model.OnlineApprovedBy,
+                OnlineApprovedTime = model.OnlineApprovedTime,
+                OnlineTransferredTime = model.OnlineTransferredTime,
+                OrgBranchName = model.OrgBranchName,
+                Remark = model.Remark,
+                SendForApprovalBy = model.SendForApprovalBy,
+                SendForApprovalTime = model.SendForApprovalTime,
+                Status = model.Status,
+                VoidBy = model.VoidBy,
+                VoidTime = model.VoidTime,  
+                IsMarginAssigned = model.IsMarginAssigned,
+                JobCreated = model.JobCreated
             });
-
             return Json(result);
         }
         public ActionResult FurnitureEstimations_Create([DataSourceRequest]DataSourceRequest request, FurnitureEstimationForm estimationForm)
@@ -141,28 +166,16 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 var entity = new FurnitureEstimationForm
                 {
                     FurnitureEstimationId = estimationForm.FurnitureEstimationId,
-                    CustomerId = estimationForm.CustomerId,
-                    
-                    Quantity = estimationForm.Quantity,
-                    //Size = estimationForm.Size,
-                    //JobTypeId = int.Parse(estimationForm.JT),
-                    //TextPaper = estimationForm.TextPaper,
-                    //TextPrint = estimationForm.TextPrint,
-                    //CoverPrint = estimationForm.CoverPrint,
-                    //BindingStyle = estimationForm.BindingStyle,
-                    
-            
+                    CustomerId = estimationForm.CustomerId,                    
+                    Quantity = estimationForm.Quantity,                             
                     ModifiedBy = User.Identity.Name,
-                    LastModified = DateTime.Now,
-                   
-
+                    LastModified = DateTime.Now,                  
                 };
 
                 db.FurnitureEstimationForms.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
             }
-
             return Json(new[] { estimationForm }.ToDataSourceResult(request, ModelState));
         }
 
@@ -186,34 +199,36 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             return Json(new[] { estimationForm }.ToDataSourceResult(request, ModelState));
         }
 
+
+
         public JsonResult CheckEstimation(int id)
         {
             var estimation = db.FurnitureEstimationForms.Find(id);
             object response = null;
             var overAllCost = db.FurnitureOverallCosts.FirstOrDefault(x => x.FurnitureEstimationId == estimation.FurnitureEstimationId);
-            if(overAllCost == null || overAllCost.FinalPriceIncludingProfit == 0)
+            if (overAllCost == null)
             {
                 response = new { Success = false, Message = "⚠️ You forgot to calculate overall cost" };
                 return Json(response);
             }
-            if (estimation!=null)
-                {
+            if (estimation != null)
+            {
                 estimation.IsOnlineTransferred = true;
                 estimation.IsOnlineTransferredBy = User.Identity.Name;
                 estimation.OnlineTransferredTime = DateTime.Today;
-                
+
                 db.Entry(estimation).State = EntityState.Modified;
                 db.SaveChanges();
-                response = new { Success = true,Message= "Estimation has been checked Successfully!" };
+                response = new { Success = true, Message = "Estimation has been checked Successfully!" };
 
             }
             else
             {
-                response= new { Success = false, Message = "Estimation not found!" };
+                response = new { Success = false, Message = "Estimation not found!" };
             }
 
             return Json(response);
-           
+
         }
 
         public JsonResult RejectEstimation(int id)
@@ -242,106 +257,78 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         {
             Object response = null;
             var estimationForm = db.FurnitureEstimationForms.Find(id);
-            estimationForm.IsOnlineApproved = true;
-            estimationForm.OnlineApprovedBy = User.Identity.Name;
-            estimationForm.OnlineApprovedTime = DateTime.Today;
+            var overAllCost = db.FurnitureOverallCosts.Where(x => x.FurnitureEstimationId == estimationForm.FurnitureEstimationId).ToList();
+            if (overAllCost.Any())
+            {
+                estimationForm.IsOnlineApproved = true;
+                estimationForm.OnlineApprovedBy = User.Identity.Name;
+                estimationForm.OnlineApprovedTime = DateTime.Today;
+                // Generates Estimation Summary
+                CreateEstimationSummary(estimationForm);
+                db.Entry(estimationForm).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Successfully Approved!" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "" };
 
-            db.Entry(estimationForm).State = EntityState.Modified;
-            db.SaveChanges();
-            response = new { Success = true, Message = "Successfully Approved!" };
-            //if (estimationForm != null)
-            //{
-            //    var overAllCost = db.FurnitureOverallCosts.FirstOrDefault(x => x.FurnitureEstimationId == estimationForm.FurnitureEstimationId);
-
-            //    if(overAllCost != null)
-            //    {
-            //        estimationForm.IsOnlineApproved = true;
-            //        estimationForm.OnlineApprovedBy = User.Identity.Name;
-            //        estimationForm.OnlineApprovedTime = DateTime.Today;
-
-            //        db.Entry(estimationForm).State = EntityState.Modified;
-
-            //        var existingProforma = db.FurnitureProformaInvoices.FirstOrDefault(x => x.CustomerId == estimationForm.CustomerId);
-            //        if(existingProforma == null)
-            //        {
-            //            // Create Proforma Invoice
-            //            var proformaInvoice = new FurnitureProformaInvoice
-            //            {
-            //                CustomerId = estimationForm.CustomerId,
-            //                DateCreated = DateTime.Today,
-            //                CreatedBy = User.Identity.Name,                           
-            //                DeliveryDate = DateTime.Today,
-            //            };
-            //            db.FurnitureProformaInvoices.Add(proformaInvoice);
-            //            db.SaveChanges();
-
-            //            // Create ProformaInvoiceItem
-            //            var jobTypeN = db.FurnitureStandardJobTypes.Find(estimationForm.JobTypeId);
-            //            if (jobTypeN == null)
-            //            {
-            //                response = new { Success = false, Message = "Something's wrong! Job Type Not Found" };
-            //                return Json(response);
-            //            }
-
-            //            var proformaItemN = new FurnitureProformaInvoiceItem
-            //            {
-            //                JobTypeId = jobTypeN.FurnitureStandardJobTypeId,
-            //                Quantity = estimationForm.Quantity,
-            //                UnitPriceBeforeVAT = overAllCost.FinalPriceIncludingProfit,
-            //                VAT = 0.15M,/* taxRate.CalculatedRate*/
-            //                DateCreated = DateTime.Today,
-            //                FurnitureProformaInvoiceId = proformaInvoice.FurnitureProformaInvoiceId,
-            //                UnitOfMeasurment = jobTypeN.Unit,
-            //                IsActive = true,
-
-            //            };
-            //            proformaItemN.UnitPriceWithVAT = proformaItemN.UnitPriceBeforeVAT + proformaItemN.UnitPriceBeforeVAT * proformaItemN.VAT;
-
-            //            db.FurnitureProformaInvoiceItems.Add(proformaItemN);
-            //            db.SaveChanges();
-            //            response = new { Success = true, Message = "Successfully Created proforma Invoice" };
-            //        }
-            //        else
-            //        {
-            //            // Create ProformaInvoiceItem
-            //            var jobType = db.FurnitureStandardJobTypes.Find(estimationForm.JobTypeId);
-            //            if (jobType == null)
-            //            {
-            //                response = new { Success = false, Message = "Something's wrong! Job Type Not Found" };
-            //                return Json(response);
-            //            }
-
-            //            var proformaItem = new FurnitureProformaInvoiceItem
-            //            {
-            //                JobTypeId = jobType.FurnitureStandardJobTypeId,
-            //                Quantity = estimationForm.Quantity,
-            //                UnitPriceBeforeVAT = overAllCost.FinalPriceIncludingProfit,
-            //                VAT = 0.15M,/* taxRate.CalculatedRate*/
-            //                DateCreated = DateTime.Today,
-            //                FurnitureProformaInvoiceId = existingProforma.FurnitureProformaInvoiceId,
-            //                UnitOfMeasurment = jobType.Unit,
-            //                IsActive = true
-            //            };
-            //            proformaItem.UnitPriceWithVAT = proformaItem.UnitPriceBeforeVAT + proformaItem.UnitPriceBeforeVAT * proformaItem.VAT;
-
-            //            db.FurnitureProformaInvoiceItems.Add(proformaItem);
-            //            db.SaveChanges();
-            //            response = new { Success = true, Message = "Successfully Created proforma Invoice" };
-            //        }
-
-            //    }
-            //    else
-            //    {
-            //        response = new { Success = false, Message = "Something's Wrong!, Overall Cost Not Found" };
-
-            //    }
-            //}
-            //else
-            //{
-            //    response = new { Success = false, Message = "Something's Wrong!" };
-            //}
-
+            }
             return Json(response);
+        }
+        private void CreateEstimationSummary(FurnitureEstimationForm furnitureEstimationForm)
+        {
+            var OverAllCost = db.FurnitureOverallCosts.FirstOrDefault(x => x.FurnitureEstimationId == furnitureEstimationForm.FurnitureEstimationId);
+            var estimationSummary = db.EstimationSummaries.FirstOrDefault(x => x.CustomerId == furnitureEstimationForm.CustomerId && !x.IsCalculated);
+            if(estimationSummary == null)
+            {
+                EstimationSummary summary = new EstimationSummary
+                {
+                    CustomerId = furnitureEstimationForm.CustomerId,
+                    DateCreated = DateTime.Today,
+                    CreatedBy = User.Identity.Name,
+                    Status = "Pending"
+                };
+
+                db.EstimationSummaries.Add(summary);
+                db.SaveChanges();
+
+                EstimationDetail estimationDetailNew = new EstimationDetail
+                {
+                    JobTypeId = furnitureEstimationForm.JobTypeId,
+                    MaterialCost = OverAllCost.MaterialCost,
+                    LabourCost = OverAllCost.LabourCost,
+                    AdministrativeCost = OverAllCost.AdministrativeCost,
+                    OverHeadCost = OverAllCost.OverHeadCost,
+                    ManufacturingCost = OverAllCost.MaterialCost,
+                    GrandTotalCost = OverAllCost.GrandTotalCost,
+                    Quantity = furnitureEstimationForm.Quantity,
+                    EstimationSummaryId = summary.EstimationSummaryId,
+
+                };
+
+                db.EstimationDetails.Add(estimationDetailNew);
+                db.SaveChanges();
+            }
+            else
+            {
+                EstimationDetail estimationDetail = new EstimationDetail
+                {
+                    JobTypeId = furnitureEstimationForm.JobTypeId,
+                    MaterialCost = OverAllCost.MaterialCost,
+                    LabourCost = OverAllCost.LabourCost,
+                    AdministrativeCost = OverAllCost.AdministrativeCost,
+                    OverHeadCost = OverAllCost.OverHeadCost,
+                    ManufacturingCost = OverAllCost.MaterialCost,
+                    GrandTotalCost = OverAllCost.GrandTotalCost,
+                    Quantity = furnitureEstimationForm.Quantity,
+                    EstimationSummaryId = estimationSummary.EstimationSummaryId
+                };
+
+                db.EstimationDetails.Add(estimationDetail);
+                db.SaveChanges();
+            }
+            
         }
         public JsonResult ApproveEstimation(int id)
         {
