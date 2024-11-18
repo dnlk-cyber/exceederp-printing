@@ -137,7 +137,6 @@
 
 @helper BoqDocs()
 {
-
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureBoqJobDesign>()
                                                 .Name("CompanyDocument#=FurnitureBillOfQuantityId#")
                                                 .Columns(columns =>
@@ -146,7 +145,7 @@
                                                     columns.Bound(c => c.Description);
 
                                                     columns.Template(e => { }).ClientTemplate("<a href='/Manufacturing/FurnitureBoqJobDesign/DownloadCompanyDocument?CompanyDocumentId=\\#=FurnitureBoqJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>");
-                                                    columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>");
+                                                    //columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>");
 
                                                     columns.Command(command =>
                                                     {

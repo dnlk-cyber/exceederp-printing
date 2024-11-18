@@ -14,6 +14,16 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             ViewBag.Id = id;
             return View();
         }
+        public ActionResult EstimationSummary(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
+        public ActionResult Estimation(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
         public ActionResult FurnitureSummary()
         {            
             return View();

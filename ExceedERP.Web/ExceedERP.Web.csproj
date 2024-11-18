@@ -1926,6 +1926,7 @@
     <Compile Include="Areas\Manufacturing\Controllers\ProductionFollowUp\ViewModel\ChangeOfOrderVM.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\StandardBillOfLaborController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\StandardBillOfMaterialController.cs" />
+    <Compile Include="Areas\Manufacturing\Controllers\StandardJobDesignController.cs" />
     <Compile Include="Areas\Manufacturing\ManufacturingAreaRegistration.cs" />
     <Compile Include="Areas\Manufacturing\Models\AddNewCustomer.cs" />
     <Compile Include="Areas\Manufacturing\Models\UpdateDLR.cs" />
@@ -7034,6 +7035,7 @@
     <Content Include="Areas\Manufacturing\Views\FurnitureEstimation\EstimationSummary.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurniturePrint\FurnitureSummary.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurniturePrint\Proforma.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurniturePrint\Estimation.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
@@ -8971,6 +8973,7 @@
     <Folder Include="Areas\Manufacturing\Views\ProductionDataProvider\" />
     <Folder Include="Areas\Manufacturing\Views\ProductionJobTypePlans\" />
     <Folder Include="Areas\Manufacturing\Views\QuarterlyProductionPlans\" />
+    <Folder Include="Areas\Manufacturing\Views\StandardJobDesign\" />
     <Folder Include="Areas\Manufacturing\Views\Views\PrintingEstimationDataProvider\" />
     <Folder Include="Areas\Planning\Models\" />
     <Folder Include="Areas\Planning\Views\Shared\" />

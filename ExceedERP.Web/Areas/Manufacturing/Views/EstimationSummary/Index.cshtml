@@ -20,6 +20,7 @@
                     .DataBound("dataBound")
                     )
               .Filterable()
+              .Scrollable(s => s.Height(400))
               .Scrollable()
               .DataSource(dataSource => dataSource
                   .Ajax()
@@ -35,19 +36,21 @@
 
 <script id="cost_estimation" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                            .Name("tab_grid_#=EstimationSummaryId#")
-                            .Items(itemn =>
-                            {
-                                itemn.Add().Text("Detail").Content(@<text>@Detail()</text>);
-                                        itemn.Add().Text("Cost Summary")
-                                        .Content(
-                                            @<text>
-    <span class="cal">
-        <a onclick='return calculateOverallCost("#=EstimationSummaryId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a>
-    </span>
-                                                    @CostSummary()
-                                            </text>);
-                                            }).ToClientTemplate()
+                                    .Name("tab_grid_#=EstimationSummaryId#")
+                                    .Items(itemn =>
+                                    {
+                                        itemn.Add().Text("Detail").Content(@<text>
+                                            <a href='@Url.Action("Proforma", "FurniturePrint")/?id=#=FurnitureProformaInvoiceId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                                            @Detail()</text>);
+                                                itemn.Add().Text("Cost Summary")
+                                    .Content(
+                                        @<text>
+                                            <span class="cal">
+                                                <a onclick='return calculateOverallCost("#=EstimationSummaryId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a>
+                                            </span>
+                                            @CostSummary()
+                                        </text>);
+                                }).ToClientTemplate()
     )
 </script>
 

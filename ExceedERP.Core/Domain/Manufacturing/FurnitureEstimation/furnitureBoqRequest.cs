@@ -12,7 +12,10 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         [Key]
         public int FurnitureBoqRequestId { get; set; }
         public int CustomerId { get; set; }
-        public string JobType { get; set; }       
+        public string JobType { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime RequestDate { get; set; }
+        public string Remark { get; set; } 
     }
 
     public class FurnitureBoqDocument

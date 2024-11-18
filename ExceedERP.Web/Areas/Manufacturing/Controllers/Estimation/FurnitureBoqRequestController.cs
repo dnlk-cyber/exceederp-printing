@@ -34,6 +34,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 FurnitureBoqRequestId = model.FurnitureBoqRequestId,
                 CustomerId = model.CustomerId,
                 JobType = model.JobType,
+                Remark = model.Remark,
+                RequestDate = model.RequestDate
                 
             });
 
@@ -49,7 +51,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 {
                     JobType = model.JobType,
                     CustomerId = model.CustomerId,
-                    
+                    Remark = model.Remark,
+                    RequestDate = model.RequestDate
                 };
 
                 db.FurnitureBoqRequests.Add(entity);

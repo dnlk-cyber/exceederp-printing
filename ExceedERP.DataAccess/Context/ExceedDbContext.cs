@@ -2442,6 +2442,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
         #endregion
         #region Production Follow UP
+        public DbSet<FurniturStandardJobDesign> FurniturStandardJobDesigns { get; set; }
         public DbSet<FurnitureJobDesign> FurnitureJobDesigns { get; set; }
         public DbSet<FurnitureBoqJobDesign> FurnitureBoqJobDesigns { get; set; }
         public DbSet<FurnitureBoqRequest> FurnitureBoqRequests { get; set; }

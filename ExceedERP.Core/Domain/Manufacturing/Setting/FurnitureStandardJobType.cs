@@ -58,4 +58,16 @@ namespace ExceedERP.Core.Domain.Manufacturing.Setting
         public int FurnitureStandardJobTypeId { get; set; } 
         public FurnitureStandardJobType FurnitureStandardJobType { get; set; }
     }
+    public class FurniturStandardJobDesign
+    {
+        [Key]
+        public int FurniturStandardJobDesignId { get; set; }
+        public int ReferenceId { get; set; }
+
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+        public string ShortPath { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
+    }
 }

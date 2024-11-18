@@ -195,7 +195,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             {
                 var materials = db.StandardBillOfMaterials.Where(x => x.FurnitureStandardJobTypeId == standardjobType.FurnitureStandardJobTypeId).ToList();
                 var labors = db.StandardBillOfLabors.Where(x => x.FurnitureStandardJobTypeId == standardjobType.FurnitureStandardJobTypeId).ToList();
-
+                var desgins = db.FurniturStandardJobDesigns.Where(x => x.ReferenceId == standardjobType.FurnitureStandardJobTypeId).ToList();
                 if (materials.Any() && labors.Any())
                 {
                     foreach (var material in materials)
@@ -232,6 +232,21 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                         };
                         db.FurnitureBOQLabors.Add(billOfLabor);
 
+                    }
+
+                    foreach (var design in desgins)
+                    {
+                        FurnitureBoqJobDesign entity = new FurnitureBoqJobDesign
+                        {
+                            ReferenceId = furnitureBillOfQuantity.FurnitureBillOfQuantityId,
+                            Description = design.Description,
+                            FileExtension = design.FileExtension,
+                            FileName = design.FileName,
+                            FilePath = design.FilePath,
+                            ShortPath = design.ShortPath,
+                            
+                        };
+                        db.FurnitureBoqJobDesigns.Add(entity);
                     }
                     db.SaveChanges();
                 }
@@ -438,6 +453,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
             var boqMaterials = db.FurnitureBOQMaterials.Where(x => x.FurnitureBillOfQuantityId == furnitureBillOfQuantity.FurnitureBillOfQuantityId).ToList();
             var boqLabors = db.FurnitureBOQLabors.Where(x => x.FurnitureBillOfQuantityId == furnitureBillOfQuantity.FurnitureBillOfQuantityId).ToList();
+            var designes = db.FurnitureBoqJobDesigns.Where(x => x.ReferenceId == furnitureBillOfQuantity.FurnitureBillOfQuantityId).ToList();
             if (!boqMaterials.Any() || !boqLabors.Any()) return 0;
             foreach (var boqMaterial in boqMaterials)
             {
@@ -473,6 +489,21 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
                 };
                 db.StandardBillOfLabors.Add(labor);
+            }
+            db.SaveChanges();
+
+            foreach (var designe in designes)
+            {
+                var entity = new FurniturStandardJobDesign
+                {
+                    ReferenceId = jobType.FurnitureStandardJobTypeId,
+                    Description = designe.Description,
+                    FileExtension = designe.FileExtension,
+                    FileName = designe.FileName,
+                    FilePath = designe.FilePath,
+                    ShortPath = designe.ShortPath
+                };
+                db.FurniturStandardJobDesigns.Add(entity);
             }
             db.SaveChanges();
 

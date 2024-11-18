@@ -2,49 +2,52 @@
 
 <label>Standard Job Type</label>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.FurnitureStandardJobType>()
-              .Name("grid")
-              .Columns(columns =>
-              {
-                  columns.Bound(c => c.JobCode);
-                  columns.Bound(c => c.JobTypeName);
-                  columns.Bound(c => c.Unit);                
-                  columns.Bound(c => c.DateCreated);
-                  columns.Bound(c => c.Remark);
-                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-              })
-              .ToolBar(toolbar =>
-              {
-                  toolbar.Create();
-              })
-              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("JobTypeEditorTemplate"))
-              .Filterable()
-              .Scrollable(s => s.Height(400))
-              .DataSource(dataSource => dataSource
-                  .Ajax()
-                  .Events(ev => ev.Error("error_handler(\"grid\")")
-                            .RequestStart("onRequestStart(\"grid\")")
-                            .RequestEnd("onRequestEnd(\"grid\")"))
-                  .Model(model => model.Id(p => p.FurnitureStandardJobTypeId))
-                  .Read(read => read.Action("FurnitureStandardJobTypes_Read", "FurnitureStandardJobType"))
-                  .Create(create => create.Action("FurnitureStandardJobTypes_Create", "FurnitureStandardJobType"))
-                  .Update(update => update.Action("FurnitureStandardJobTypes_Update", "FurnitureStandardJobType"))
-                  .Destroy(destroy => destroy.Action("FurnitureStandardJobTypes_Destroy", "FurnitureStandardJobType"))
-              ).ClientDetailTemplateId("tabstrip")
+                      .Name("grid")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.JobCode);
+                          columns.Bound(c => c.JobTypeName);
+                          columns.Bound(c => c.Unit);
+                          columns.Bound(c => c.DateCreated);
+                          columns.Bound(c => c.Remark);
+                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("JobTypeEditorTemplate"))
+                      .Filterable()
+                      .Scrollable(s => s.Height(400))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev.Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+                          .Model(model => model.Id(p => p.FurnitureStandardJobTypeId))
+                          .Read(read => read.Action("FurnitureStandardJobTypes_Read", "FurnitureStandardJobType"))
+                          .Create(create => create.Action("FurnitureStandardJobTypes_Create", "FurnitureStandardJobType"))
+                          .Update(update => update.Action("FurnitureStandardJobTypes_Update", "FurnitureStandardJobType"))
+                          .Destroy(destroy => destroy.Action("FurnitureStandardJobTypes_Destroy", "FurnitureStandardJobType"))
+                      ).ClientDetailTemplateId("tabstrip")
 )
 
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                                                .Name("grid_#=FurnitureStandardJobTypeId#")
-                                                                .Items(item1 =>
-                                                                {
-                                                                    item1.Add().Text("Bill of Material").Content(@<text>
-    @Material()
-                                                                    </text>);
-                                                                            item1.Add().Text("Bill of Labor").Content(@<text>
-    @Labor()
-                                                                            </text>);
-                                                                                }).ToClientTemplate())
+                                                                                        .Name("grid_#=FurnitureStandardJobTypeId#")
+                                                                                        .Items(item1 =>
+                                                                                        {
+                                                                                            item1.Add().Text("Bill of Material").Content(@<text>
+                                                                                                @Material()
+                                                                                            </text>);
+                                                                                                    item1.Add().Text("Bill of Labor").Content(@<text>
+                                                                                                        @Labor()
+                                                                                                    </text>);
+                                                                                                            item1.Add().Text("Documents").Content(@<text>
+                                                                                                                <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=FurnitureStandardJobTypeId#)" />
+                                                                                                                @StandardDocs()</text>);
+                                                                                                                }).ToClientTemplate())
 </script>
 
 
@@ -52,39 +55,39 @@
 {
 
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.StandardBillOfMaterial>()
-                      .Name("material_#=FurnitureStandardJobTypeId#")
-                      .Columns(columns =>
-                      {
-                          columns.Bound(c => c.WorkshopType);
-                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text");
-                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryItemId, (IEnumerable)ViewData["MaterialCategoryItem"], "Value", "Text");
-                          
-                          columns.Bound(c => c.UnitOfMeasurement);
-                          columns.Bound(c => c.Quantity);
-                          columns.Bound(c => c.Remark);
-                          
+                                      .Name("material_#=FurnitureStandardJobTypeId#")
+                                      .Columns(columns =>
+                                      {
+                                          columns.Bound(c => c.WorkshopType);
+                                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text");
+                                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryItemId, (IEnumerable)ViewData["MaterialCategoryItem"], "Value", "Text");
 
-                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                      })
-                      .ToolBar(toolbar =>
-                      {
-                          toolbar.Create();
-                      })
-                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("BillOfMaterialEditorTemplate"))
-                      .Pageable()
-                      .Filterable()
-                      .Scrollable()
-                      .DataSource(dataSource => dataSource
-                          .Ajax()
-                          .Events(ev => ev.Error("error_handler(\"material_#=FurnitureStandardJobTypeId#\")")
-                            .RequestStart("onRequestStart(\"material_#=FurnitureStandardJobTypeId#\")")
-                            .RequestEnd("onRequestEnd(\"material_#=FurnitureStandardJobTypeId#\")"))
-                          .Model(model => model.Id(p => p.StandardBillOfMaterialId))
-                          .Read(read => read.Action("StandardBillOfMaterials_Read", "StandardBillOfMaterial", new { id = "#=FurnitureStandardJobTypeId#" }))
-                          .Create(create => create.Action("StandardBillOfMaterials_Create", "StandardBillOfMaterial", new { id = "#=FurnitureStandardJobTypeId#" }))
-                          .Update(update => update.Action("StandardBillOfMaterials_Update", "StandardBillOfMaterial"))
-                          .Destroy(destroy => destroy.Action("StandardBillOfMaterials_Destroy", "StandardBillOfMaterial"))
-                      ).ToClientTemplate()
+                                          columns.Bound(c => c.UnitOfMeasurement);
+                                          columns.Bound(c => c.Quantity);
+                                          columns.Bound(c => c.Remark);
+
+
+                                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                      })
+                                      .ToolBar(toolbar =>
+                                      {
+                                          toolbar.Create();
+                                      })
+                                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("BillOfMaterialEditorTemplate"))
+                                      .Pageable()
+                                      .Filterable()
+                                      .Scrollable()
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Events(ev => ev.Error("error_handler(\"material_#=FurnitureStandardJobTypeId#\")")
+                                            .RequestStart("onRequestStart(\"material_#=FurnitureStandardJobTypeId#\")")
+                                            .RequestEnd("onRequestEnd(\"material_#=FurnitureStandardJobTypeId#\")"))
+                                          .Model(model => model.Id(p => p.StandardBillOfMaterialId))
+                                          .Read(read => read.Action("StandardBillOfMaterials_Read", "StandardBillOfMaterial", new { id = "#=FurnitureStandardJobTypeId#" }))
+                                          .Create(create => create.Action("StandardBillOfMaterials_Create", "StandardBillOfMaterial", new { id = "#=FurnitureStandardJobTypeId#" }))
+                                          .Update(update => update.Action("StandardBillOfMaterials_Update", "StandardBillOfMaterial"))
+                                          .Destroy(destroy => destroy.Action("StandardBillOfMaterials_Destroy", "StandardBillOfMaterial"))
+                                      ).ToClientTemplate()
     )
 
 }
@@ -92,37 +95,85 @@
 @helper Labor()
 {
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.StandardBillOfLabor>()
-              .Name("labor_#=FurnitureStandardJobTypeId#")
-              .Columns(columns =>
-              {
-                  columns.ForeignKey(c => c.ManufacturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
-                  
-                  columns.Bound(c => c.WorkShopType);
-                  columns.Bound(c => c.NumberOfEmloyees);
-                  columns.Bound(c => c.EstimatedMinute);
-                  columns.Bound(c => c.DateCreated);
+                              .Name("labor_#=FurnitureStandardJobTypeId#")
+                              .Columns(columns =>
+                              {
+                                  columns.ForeignKey(c => c.ManufacturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
 
-                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-              })
-              .ToolBar(toolbar =>
-              {
-                  toolbar.Create();
-              })
-              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("BillOfLaborEditorTemplate"))
-              .Filterable()
-              .Scrollable()
-              .DataSource(dataSource => dataSource
-                  .Ajax()
-                  .Events(ev => ev.Error("error_handler(\"labor_#=FurnitureStandardJobTypeId#\")")
-                            .RequestStart("onRequestStart(\"labor_#=FurnitureStandardJobTypeId#\")")
-                            .RequestEnd("onRequestEnd(\"labor_#=FurnitureStandardJobTypeId#\")"))
-                  .Model(model => model.Id(p => p.StandardBillOfLaborId))
-                  .Read(read => read.Action("StandardBillOfLabors_Read", "StandardBillOfLabor", new { id = "#=FurnitureStandardJobTypeId#" }))
-                  .Create(create => create.Action("StandardBillOfLabors_Create", "StandardBillOfLabor", new { id = "#=FurnitureStandardJobTypeId#" }))
-                  .Update(update => update.Action("StandardBillOfLabors_Update", "StandardBillOfLabor"))
-                  .Destroy(destroy => destroy.Action("StandardBillOfLabors_Destroy", "StandardBillOfLabor"))
-              ).ToClientTemplate()
+                                  columns.Bound(c => c.WorkShopType);
+                                  columns.Bound(c => c.NumberOfEmloyees);
+                                  columns.Bound(c => c.EstimatedMinute);
+                                  columns.Bound(c => c.DateCreated);
+
+                                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                              })
+                              .ToolBar(toolbar =>
+                              {
+                                  toolbar.Create();
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("BillOfLaborEditorTemplate"))
+                              .Filterable()
+                              .Scrollable()
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Events(ev => ev.Error("error_handler(\"labor_#=FurnitureStandardJobTypeId#\")")
+                                            .RequestStart("onRequestStart(\"labor_#=FurnitureStandardJobTypeId#\")")
+                                            .RequestEnd("onRequestEnd(\"labor_#=FurnitureStandardJobTypeId#\")"))
+                                  .Model(model => model.Id(p => p.StandardBillOfLaborId))
+                                  .Read(read => read.Action("StandardBillOfLabors_Read", "StandardBillOfLabor", new { id = "#=FurnitureStandardJobTypeId#" }))
+                                  .Create(create => create.Action("StandardBillOfLabors_Create", "StandardBillOfLabor", new { id = "#=FurnitureStandardJobTypeId#" }))
+                                  .Update(update => update.Action("StandardBillOfLabors_Update", "StandardBillOfLabor"))
+                                  .Destroy(destroy => destroy.Action("StandardBillOfLabors_Destroy", "StandardBillOfLabor"))
+                              ).ToClientTemplate()
     )
+
+}
+
+
+@helper StandardDocs()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.FurniturStandardJobDesign>()
+                                                                .Name("CompanyDocument#=FurnitureStandardJobTypeId#")
+                                                                .Columns(columns =>
+                                                                {
+                                                                    columns.Bound(c => c.FileName).ClientTemplate("<a href='/Manufacturing/StandardJobDesign/DownloadCompanyDocument?CompanyDocumentId=\\#=FurniturStandardJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>");
+                                                                    columns.Bound(c => c.Description);
+
+                                                                    columns.Template(e => { }).ClientTemplate("<a href='/Manufacturing/StandardJobDesign/DownloadCompanyDocument?CompanyDocumentId=\\#=FurniturStandardJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>");
+                                                                    //columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>");
+
+                                                                    columns.Command(command =>
+                                                                    {
+                                                                        command.Destroy().Text("Delete");
+                                                                    });
+                                                                })
+
+                                                                 .ToolBar(toolbar =>
+                                                                 {
+
+                                                                 })
+
+                                                                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Answer").Window(window => { window.Title(""); window.Scrollable(false); }))
+                                                                  .Events(ev =>
+                                                                  {
+                                                                      ev.DataBound("onDetailDataBound");
+
+                                                                  })
+                                                                    .Scrollable(h => h.Height("auto"))
+                                                                    .DataSource(dataSource => dataSource
+                                                                    .Ajax()
+                                                                     .Sort(sort => sort.Add(c => c.FurniturStandardJobDesignId).Descending())
+                                                                    .Events(events =>
+                                                                    {
+                                                                        events.Error("error_handler(\"CompanyDocument#=FurnitureStandardJobTypeId#\")");
+                                                                        events.RequestStart("onRequestStart(\"CompanyDocument#=FurnitureStandardJobTypeId#\")");
+                                                                        events.RequestEnd("onRequestEnd(\"CompanyDocument#=FurnitureStandardJobTypeId#\")");
+                                                                    })
+                                                                    .Model(model => model.Id(p => p.FurniturStandardJobDesignId))
+                                                                    .Read(read => read.Action("Read", "StandardJobDesign", new { id = "#=FurnitureStandardJobTypeId#" }))
+                                                                    .Destroy(destroy => destroy.Action("Delete", "StandardJobDesign", new { area = "Manufacturing" }))
+                                                                    ).ToClientTemplate())
 
 }
 
@@ -154,7 +205,80 @@
         }
     }
 </script>
+<script>
 
+    function onDetailDataBound(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+
+            var dataItem = grid.dataItem(row);
+            //if (dataItem.IsTransfered == true) {
+            //    row.find(".k-grid-delete").hide();
+            //}
+        }
+    }
+
+    function UploadCompanyDoc(id) {
+
+        $("#FurnitureStandardJobTypeId").val(id);
+
+        var wnd = $("#UploadCompanyFileWindow").data("kendoWindow");
+        wnd.center().open();
+    }
+
+    function UploadCompanyFile() {
+
+            $.ajax({
+                url: '@Url.Action("UploadCompanyFile", "StandardJobDesign")',
+                //contentType: "application/json; charset=utf-8",
+                data: function () {
+                    var data = new FormData();
+                    var kk = $("#CompanyFile");//.get(0).files[0];
+
+                    $.each($("input[type=file]"), function (i, obj) {
+                        $.each(obj.files, function (j, file) {
+                            data.append('CompanyFile[' + j + ']', file);
+                        })
+                    });
+
+                   // data.append("CompanyFile", $("#CompanyFile").get(0).files[0]);
+                    data.append("furnitureStandardJobTypeId", $("#FurnitureStandardJobTypeId").val());
+                    data.append("Description", $("#Description").val());
+                    return data;
+                }(),
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (result) {
+                    var wnd = $("#UploadCompanyFileWindow").data("kendoWindow").close();
+                    var id = $("#FurnitureStandardJobTypeId").val();
+                    alert(result);
+                    $("#CompanyDocument" + id).data("kendoGrid").dataSource.read();
+                }
+            });
+    }
+</script>
+@(Html.Kendo().Window().Name("UploadCompanyFileWindow")
+                        .Title("Upload Answer")
+                        .Visible(false)
+                        .Modal(true)
+                        .Content(@<text>
+                            <input type="hidden" id="FurnitureStandardJobTypeId" name="FurnitureStandardJobTypeId" />
+
+                            @*@Html.TextBox("CompanyFile", "", new { type = "file", @class = "form-control" })*@
+                            <input type="file" name="CompanyFile" id="CompanyFile[]" class="form-control" multiple />
+                            <br />
+                            <textarea id="Description" class="form-control"></textarea>
+                            <br />
+                            <div class="pull-right">
+                                @Html.Kendo().Button().Name("btnTo").Content("Upload").Events(e => e.Click("UploadCompanyFile"))
+                            </div>
+                        </text>)
+                                                         .Draggable(true)
+                                                         .Width(400))
 <style>
     div.k-edit-form-container {
         width: auto;

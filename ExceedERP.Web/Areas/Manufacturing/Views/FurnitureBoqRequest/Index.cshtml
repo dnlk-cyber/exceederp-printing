@@ -12,6 +12,8 @@
                       {
                           columns.Bound(c => c.JobType);
                           columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Title("Customer");
+                          columns.Bound(c => c.RequestDate);
+                          columns.Bound(c => c.Remark);
                           columns.Command(command =>
                           {
                               command.Edit();

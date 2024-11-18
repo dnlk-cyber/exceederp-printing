@@ -82,6 +82,5 @@ namespace ExceedERP.Core.Domain.Manufacturing
         public string ShortPath { get; set; }
         public string FileExtension { get; set; }
         public string Description { get; set; }
-        public int JobReferenceId { get; set; } 
     }
 }
