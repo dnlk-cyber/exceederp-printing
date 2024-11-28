@@ -129,23 +129,22 @@
                                                      .Name("labor_costs_#=FurnitureEstimationId#")
                                                      .Columns(columns =>
                                                      {
-                                                                 columns.Bound(x => x.DirectLaborCostId).Hidden(true);
+                                                         columns.Bound(x => x.DirectLaborCostId).Hidden(true);
 
-                                                                 columns.Bound(o => o.TaskType).EditorTemplateName("TaskTypeTemplate").Width(80);
-                                                                 columns.ForeignKey(o => o.TaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").EditorTemplateName("TaskCategoryTemplate").Width(120);
+                                                         columns.Bound(o => o.TaskType).EditorTemplateName("TaskTypeTemplate").Width(80);
 
-                                                                 columns.Bound(o => o.WorkingTime).Width(80);
-                                                                 columns.Bound(o => o.CostPerHour).Width(80).Title("Cost Per Minute");
-                                                                 columns.Bound(o => o.TotalCost).Width(150).ClientFooterTemplate("Labor Cost: \\#=sum\\# ");
-                                                                 columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+                                                         columns.Bound(o => o.WorkingTime).Width(80);
+                                                         columns.Bound(o => o.CostPerMinute).Width(80).Title("Cost Per Minute");
+                                                         columns.Bound(o => o.TotalCost).Width(150).ClientFooterTemplate("Labor Cost: \\#=sum\\# ");
+                                                         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
 
-                                                             })
+                                                     })
 
                                                    .ToolBar(toolbar =>
                                                    {
-                                                               toolbar.Create();
+                                                       toolbar.Create();
 
-                                                           })
+                                                   })
                                                    .Editable(editable => editable.Mode(GridEditMode.InCell)
                                                    )
                                                    .Events(ev => ev.DataBound("onChildDataBound"))
@@ -162,17 +161,24 @@
                                                        .Aggregates(aggregates =>
 
                                                        {
-                                                                   aggregates.Add(c => c.TotalCost).Sum();
-                                                               })
-                                                       .Model(model => model.Id(p => p.DirectLaborCostId))
+                                                           aggregates.Add(c => c.TotalCost).Sum();
+                                                       })
+                                                       .Model(model =>
+                                                       {
+                                                           model.Id(p => p.DirectLaborCostId);
+                                                           model.Field(p => p.TotalCost).Editable(false);
+                                                           model.Field(p => p.WorkingTime).Editable(false);
+                                                           model.Field(p => p.TaskType).Editable(false);
+                                                           model.Field(p => p.DirectLaborCostId).Editable(false);
+                                                       })
                                                        .Read(read => read.Action("DirectLaborCosts_Read", "FurnitureDirectLaborCosts", new { estimationFormId = "#=FurnitureEstimationId#" }))
                                                        .Create(create => create.Action("DirectLaborCosts_Create", "FurnitureDirectLaborCosts", new { parentId = "#=FurnitureEstimationId#" }))
                                                        .Update(update => update.Action("DirectLaborCosts_Update", "FurnitureDirectLaborCosts"))
                                                        .Destroy(destroy => destroy.Action("DirectLaborCosts_Destroy", "FurnitureDirectLaborCosts"))
                                                        .Sort(sort =>
                                                        {
-                                                                   sort.Add(l => l.LastModified).Descending();
-                                                               })
+                                                           sort.Add(l => l.LastModified).Descending();
+                                                       })
                                                        .PageSize(5))
                                                        .ToClientTemplate()
 

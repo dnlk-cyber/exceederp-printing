@@ -61,7 +61,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         public ActionResult FurnitureBillOfQuantities_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<FurnitureBillOfQuantity> furniturebillofquantities = db.FurnitureBillOfQuantities;
-            DataSourceResult result = furniturebillofquantities.ToDataSourceResult(request, furnitureBillOfQuantity =>  new FurnitureBillOfQuantity
+            DataSourceResult result = furniturebillofquantities.ToDataSourceResult(request, furnitureBillOfQuantity => new FurnitureBillOfQuantity
             {
                 FurnitureBillOfQuantityId = furnitureBillOfQuantity.FurnitureBillOfQuantityId,
                 JobTypeId = furnitureBillOfQuantity.JobTypeId,
@@ -100,7 +100,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FurnitureBillOfQuantities_Create([DataSourceRequest]DataSourceRequest request, FurnitureBillOfQuantity furnitureBillOfQuantity)
         {
-            
+
             if (ModelState.IsValid)
             {
                 if (furnitureBillOfQuantity.JobTypeCategory == JobTypeCategory.Custom_Made)
@@ -112,7 +112,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                         JobTypeName = furnitureBillOfQuantity.JobTypeName,
                         JobNo = furnitureBillOfQuantity.JobNo,
                         Unit = furnitureBillOfQuantity.Unit,
-                        
+
                         CustomerId = furnitureBillOfQuantity.CustomerId,
                         Quantity = furnitureBillOfQuantity.Quantity,
                         Size = furnitureBillOfQuantity.Size,
@@ -127,49 +127,50 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     db.SaveChanges();
                     furnitureBillOfQuantity.FurnitureBillOfQuantityId = entity.FurnitureBillOfQuantityId;
                 }
-                else if(furnitureBillOfQuantity.JobTypeCategory == JobTypeCategory.Standard)
+                if (furnitureBillOfQuantity.JobTypeCategory == JobTypeCategory.Standard)
                 {
                     var check = CheckBillOfMaterialAndLaborExistence(furnitureBillOfQuantity);
-                    if (!check) ModelState.AddModelError(string.Empty, "Something's wrong! couldn't find bill of material or labor");
-                    var jobType = db.FurnitureStandardJobTypes.Find(furnitureBillOfQuantity.JobTypeId);
-                    using (var transaction = db.Database.BeginTransaction())
+                if (!check) ModelState.AddModelError(string.Empty, "Something's wrong! couldn't find bill of material or labor");
+                var jobType = db.FurnitureStandardJobTypes.Find(furnitureBillOfQuantity.JobTypeId);
+                using (var transaction = db.Database.BeginTransaction())
+                {
+                    try
                     {
-                        try
+                        var entity = new FurnitureBillOfQuantity
                         {
-                            var entity = new FurnitureBillOfQuantity
-                            {
-                                JobTypeCategory = furnitureBillOfQuantity.JobTypeCategory,
-                                JobTypeId = furnitureBillOfQuantity.JobTypeId,
-                                CustomerId = furnitureBillOfQuantity.CustomerId,
-                                Quantity = 1,
-                                Size = furnitureBillOfQuantity.Size,
-                                Status = furnitureBillOfQuantity.Status,
-                                Remark = furnitureBillOfQuantity.Remark,
-                                DateCreated = DateTime.Today,
-                                CreatedBy = User.Identity.Name,
-                                IsCustomizedJob = true,
-                                Unit = jobType.Unit,
-                                JobTypeName = jobType.JobTypeName,
-                            };
+                            JobNo = jobType.JobCode,
+                            JobTypeCategory = furnitureBillOfQuantity.JobTypeCategory,
+                            JobTypeId = furnitureBillOfQuantity.JobTypeId,
+                            CustomerId = furnitureBillOfQuantity.CustomerId,
+                            Quantity = 1,
+                            Size = furnitureBillOfQuantity.Size,
+                            Status = furnitureBillOfQuantity.Status,
+                            Remark = furnitureBillOfQuantity.Remark,
+                            DateCreated = DateTime.Today,
+                            CreatedBy = User.Identity.Name,
+                            IsCustomizedJob = true,
+                            Unit = jobType.Unit,
+                            JobTypeName = jobType.JobTypeName,                           
+                        };
 
-                            db.FurnitureBillOfQuantities.Add(entity);
-                            db.SaveChanges();
-                            furnitureBillOfQuantity.FurnitureBillOfQuantityId = entity.FurnitureBillOfQuantityId;
+                        db.FurnitureBillOfQuantities.Add(entity);
+                        db.SaveChanges();
+                        furnitureBillOfQuantity.FurnitureBillOfQuantityId = entity.FurnitureBillOfQuantityId;
 
-                            // Generate materials and labor if job-type is standard
+                        // Generate materials and labor if job-type is standard
 
-                            GenerateBillOfMaterialAndLabor(furnitureBillOfQuantity);
+                        GenerateBillOfMaterialAndLabor(furnitureBillOfQuantity);
 
 
-                            transaction.Commit();
-                        }
-                        catch (Exception ex)
-                        {
-                            transaction.Rollback();
-                            ModelState.AddModelError("", "An error occurred while creating the bill of quantity.");
-                            // Log the exception if needed
-                        }
+                        transaction.Commit();
                     }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        ModelState.AddModelError("", "An error occurred while creating the bill of quantity.");
+                        // Log the exception if needed
+                    }
+                   }
                 }
 
 
@@ -244,7 +245,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                             FileName = design.FileName,
                             FilePath = design.FilePath,
                             ShortPath = design.ShortPath,
-                            
+
                         };
                         db.FurnitureBoqJobDesigns.Add(entity);
                     }
@@ -301,7 +302,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             if (ModelState.IsValid)
             {
                 var billOfQuantity = db.FurnitureBillOfQuantities.Find(furnitureBillOfQuantity.FurnitureBillOfQuantityId);
-                if(billOfQuantity != null)
+                if (billOfQuantity != null)
                 {
                     db.FurnitureBillOfQuantities.Remove(billOfQuantity);
                     var labor = db.FurnitureBOQLabors.Where(x => x.FurnitureBillOfQuantityId == billOfQuantity.FurnitureBillOfQuantityId);
@@ -309,9 +310,9 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     db.FurnitureBOQLabors.RemoveRange(labor);
                     db.FurnitureBOQMaterials.RemoveRange(material);
                 }
-                
 
-                
+
+
                 db.SaveChanges();
             }
 
@@ -356,12 +357,12 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     }
                     billOfQuantity.JobTypeId = jobtypeId;
                 }
-                
+
 
                 billOfQuantity.IsOnlineApproved = true;
                 billOfQuantity.OnlineApprovedBy = User.Identity.Name;
                 billOfQuantity.OnlineApprovedTime = DateTime.Today;
-                
+
 
                 db.FurnitureBillOfQuantities.Attach(billOfQuantity);
                 db.Entry(billOfQuantity).State = EntityState.Modified;
@@ -415,25 +416,25 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     db.FurnitureMaterialCosts.Add(material);
                     db.SaveChanges();
                 }
-                foreach (var item in boqLabor)
+
+                var groupedBoqLabor = boqLabor.GroupBy(x => x.WorkShopType).ToList();
+
+                foreach (var items in groupedBoqLabor)
                 {
-                    var taskCategory = db.ManifucturingTaskCategories.Find(item.ManufacturingTaskCategoryId);
+                    var taskCategory = db.ManifucturingTaskCategories.FirstOrDefault(x => x.Type == items.Key);
+
                     var labor = new DirectLaborCost
                     {
-                        TaskCategoryId = item.ManufacturingTaskCategoryId,
-                        CostPerHour = taskCategory.HourRate,
-
-                        TaskType = item.WorkShopType,
-                        WorkingTime = item.EstimatedMinute,
+                        CostPerMinute = taskCategory.HourRate,
+                        TaskType = items.Key,
+                        WorkingTime = items.Sum(x => (decimal?)x.EstimatedMinute) ?? 0,
                         FurnitureEstimationId = estimation.FurnitureEstimationId
                     };
-                    labor.TotalCost = labor.WorkingTime * labor.CostPerHour;
+                    labor.TotalCost = labor.WorkingTime * labor.CostPerMinute;
                     db.DirectLaborCosts.Add(labor);
                     db.SaveChanges();
                 }
-
             }
-
         }
         private int GenerateStandardJobType(FurnitureBillOfQuantity furnitureBillOfQuantity)
         {

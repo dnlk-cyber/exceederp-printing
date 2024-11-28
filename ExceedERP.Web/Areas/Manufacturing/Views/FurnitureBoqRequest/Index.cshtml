@@ -7,49 +7,56 @@
 <h2>Furniture Boq Request</h2>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureBoqRequest>()
-                      .Name("CompanyDocumentTypeGrid")
-                      .Columns(columns =>
-                      {
-                          columns.Bound(c => c.JobType);
-                          columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Title("Customer");
-                          columns.Bound(c => c.RequestDate);
-                          columns.Bound(c => c.Remark);
-                          columns.Command(command =>
-                          {
-                              command.Edit();
-                              command.Destroy();
-                          });
-                      })
-                      .ToolBar(toolbar =>
-                      {
-                          toolbar.Create();
-                      })
-                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                      .Pageable()
-                      .Filterable()
-                      .Scrollable(h => h.Height(600))
-                      .DataSource(dataSource => dataSource
-                          .Ajax()
-                          .Model(model => model.Id(p => p.FurnitureBoqRequestId))
-                          .Read(read => read.Action("FurnitureBoqRequest_Read", "FurnitureBoqRequest"))
-                          .Create(create => create.Action("FurnitureBoqRequest_Create", "FurnitureBoqRequest"))
-                          .Update(update => update.Action("FurnitureBoqRequest_Update", "FurnitureBoqRequest"))
-                          .Destroy(destroy => destroy.Action("FurnitureBoqRequest_Delete", "FurnitureBoqRequest"))
-                        ).ClientDetailTemplateId("template"))
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(c => c.JobType).Width(100);
+        columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Title("Customer").Width(100);
+        columns.Bound(c => c.RequestDate).Width(100);
+        columns.Bound(c => c.Remark).Width(100);
+        columns.Bound(c => c.Status).Width(100);
+        columns.Command(command =>
+        {
+            command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "Check" }).Click("checkEstimation");
+            command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
+            command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
+            command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
+            command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
+
+        }).Width(250);
+    })
+    .ToolBar(toolbar =>
+    {
+        toolbar.Create();
+    })
+    .Events(e => e.DataBound("dataBound"))
+    .Events(e => e.DetailExpand("detailExpand"))
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .Pageable()
+    .Filterable()
+    .Scrollable(h => h.Height(600))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .Model(model => model.Id(p => p.FurnitureBoqRequestId))
+        .Read(read => read.Action("FurnitureBoqRequest_Read", "FurnitureBoqRequest"))
+        .Create(create => create.Action("FurnitureBoqRequest_Create", "FurnitureBoqRequest"))
+        .Update(update => update.Action("FurnitureBoqRequest_Update", "FurnitureBoqRequest"))
+        .Destroy(destroy => destroy.Action("FurnitureBoqRequest_Delete", "FurnitureBoqRequest"))
+    ).ClientDetailTemplateId("template"))
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                       .Name("tabstrip_#=FurnitureBoqRequestId#")
-                                       .SelectedIndex(0)
-                                       .Items(items =>
-                                       {
-                                           items.Add().Text("Documents").Content(
-                            @<text>
-                                <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=FurnitureBoqRequestId#)" />
-    @BoqDocs()
-                            </text>);
-                                               }).ToClientTemplate())
-
+        .Name("tabstrip_#=FurnitureBoqRequestId#")
+        .Items(items =>
+        {
+            items.Add().Text("Documents").Content(
+            @<text>
+                <span class="btn-upload cal">
+                    <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=FurnitureBoqRequestId#)" />
+                </span>
+                @BoqDocs()
+            </text>);
+        }).ToClientTemplate())
 </script>
 
 
@@ -57,65 +64,171 @@
 {
 
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureBoqDocument>()
-                                .Name("CompanyDocument#=FurnitureBoqRequestId#")
-                                .Columns(columns =>
-                                {
-                                    columns.Bound(c => c.FileName).ClientTemplate("<a href='/Manufacturing/FurnitureBoqDocument/DownloadCompanyDocument?CompanyDocumentId=\\#=FurnitureBoqDocumentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>");
-                                    columns.Bound(c => c.Description);
-
-                                    columns.Template(e => { }).ClientTemplate("<a href='/Manufacturing/FurnitureBoqDocument/DownloadCompanyDocument?CompanyDocumentId=\\#=FurnitureBoqDocumentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>");
-                                    columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>");
-
-                                    columns.Command(command =>
-                                    {
-                                        command.Destroy().Text("Delete");
-                                    });
-                                })
-
-                                 .ToolBar(toolbar =>
-                                 {
-
-                                 })
-
-                                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Answer").Window(window => { window.Title(""); window.Scrollable(false); }))
-                                  .Events(ev =>
-                                  {
-                                      ev.DataBound("onDetailDataBound");
-
-                                  })
-                                    .Scrollable(h => h.Height("auto"))
-                                    .DataSource(dataSource => dataSource
-                                    .Ajax()
-                                     .Sort(sort => sort.Add(c => c.FurnitureBoqDocumentId).Descending())
-                                    .Events(events =>
-                                    {
-                                        events.Error("error_handler(\"CompanyDocument#=FurnitureBoqRequestId#\")");
-                                        events.RequestStart("onRequestStart(\"CompanyDocument#=FurnitureBoqRequestId#\")");
-                                        events.RequestEnd("onRequestEnd(\"CompanyDocument#=FurnitureBoqRequestId#\")");
-                                    })
-                                    .Model(model => model.Id(p => p.FurnitureBoqDocumentId))
-                                    .Read(read => read.Action("FurnitureBoqRequest_Read", "FurnitureBoqDocument", new { id = "#=FurnitureBoqRequestId#" }))
-                                    .Destroy(destroy => destroy.Action("FurnitureBoqRequest_Delete", "FurnitureBoqDocument", new { area = "Manufacturing" }))
-                                    ).ToClientTemplate())
-
+        .Name("CompanyDocument#=FurnitureBoqRequestId#")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.FileName).ClientTemplate("<a href='/Manufacturing/FurnitureBoqDocument/DownloadCompanyDocument?CompanyDocumentId=\\#=FurnitureBoqDocumentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>");
+            columns.Bound(c => c.Description);
+            columns.Template(e => { }).ClientTemplate("<a href='/Manufacturing/FurnitureBoqDocument/DownloadCompanyDocument?CompanyDocumentId=\\#=FurnitureBoqDocumentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>");
+            columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>");
+            columns.Command(command =>
+            {
+                command.Destroy().Text("Delete");
+            });
+        })                               
+        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Answer").Window(window => { window.Title(""); window.Scrollable(false); }))
+        .Events(e => e.DataBound("detailDataBound"))
+        .Scrollable(h => h.Height("auto"))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .Sort(sort => sort.Add(c => c.FurnitureBoqDocumentId).Descending())
+        .Events(events =>
+        {
+            events.Error("error_handler(\"CompanyDocument#=FurnitureBoqRequestId#\")");
+            events.RequestStart("onRequestStart(\"CompanyDocument#=FurnitureBoqRequestId#\")");
+            events.RequestEnd("onRequestEnd(\"CompanyDocument#=FurnitureBoqRequestId#\")");
+        })
+        .Model(model => model.Id(p => p.FurnitureBoqDocumentId))
+        .Read(read => read.Action("FurnitureBoqRequest_Read", "FurnitureBoqDocument", new { id = "#=FurnitureBoqRequestId#" }))
+        .Destroy(destroy => destroy.Action("FurnitureBoqRequest_Delete", "FurnitureBoqDocument", new { area = "Manufacturing" }))
+        ).ToClientTemplate())
 }
 
-
-<script>
-
-    function onDetailDataBound(e) {
-        var grid = this;
-        var gridRows = grid.tbody.find("tr");
-        for (var i = 0; i < gridRows.length; i++) {
-            var row = $(gridRows[i]);
-
-            var dataItem = grid.dataItem(row);
-            //if (dataItem.IsTransfered == true) {
-            //    row.find(".k-grid-delete").hide();
-            //}
+<script type="text/javascript">
+    function checkEstimation(e) {
+        if (confirm("Are you sure to be checked?")) {
+             var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+            url: '@Url.Action("CheckBoqRequest", "FurnitureBoqRequest", new { Area = "Manufacturing" })',
+            data: { id: dataItem.FurnitureBoqRequestId },
+            success: function (result) {
+                if (result.Success) {
+                    toastr.success(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read();
+                }
+                else {
+                    toastr.error(result.Message);
+                }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+      }
+    }
+    
+        function approveEstimation(e) {
+            if (confirm("Are you sure to approve this estimation form?")) {
+             var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+            url: '@Url.Action("ApproveBoqRequest", "FurnitureBoqRequest", new { Area = "Manufacturing" })',
+            data: { id: dataItem.FurnitureBoqRequestId },
+            success: function (result) {
+                if (result.Success) {
+                    toastr.success(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read();
+                }
+                else {
+                    toastr.error(result.Message);
+                }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+        }
+    }
+      function rejectEstimation(e) {
+            if (confirm("Are you sure to reject this checked estimation form?")) {
+             var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+            url: '@Url.Action("RejectBoqRequest", "FurnitureBoqRequest", new { Area = "Manufacturing" })',
+            data: { id: dataItem.FurnitureBoqRequestId },
+            success: function (result) {
+                if (result.Success) {
+                    toastr.success(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read();
+                }
+                else {
+                    toastr.error(result.Message);
+                }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
         }
     }
 
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            //$(this).find(".k-grid-reject").hide();
+            if (dataItem.IsApproved || dataItem.IsRejected) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+            else if (dataItem.IsChecked) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-reject").show();
+                $(this).find(".k-grid-approve").show();
+            }
+          
+            else {
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
+
+            }
+
+        });
+    }
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var masterId;
+    var isApproved;
+    var isChecked;
+    var isRejected
+    var sendMarginApprove;
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.FurnitureBoqRequestId;
+        isApproved = masterDataItem.IsApproved;
+        isRejected = masterDataItem.IsRejected;
+        if (isApproved) {
+            $(".cal").hide();
+        }
+    }
+    function detailDataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (isApproved || isRejected) {                
+                $(this).find(".k-grid-delete").hide();
+            }
+           
+        });
+    }
+</script>
+<script>
+
+    
     function UploadCompanyDoc(id) {
 
         $("#FurnitureBoqRequestId").val(id);
@@ -177,3 +290,21 @@
                 </text>)
                                  .Draggable(true)
                                  .Width(400))
+
+
+<style>
+    .check {
+        background-color: #e68a00;
+        color: white;
+    }
+
+    .approve {
+        background-color: #077d01;
+        color: white;
+    }
+
+    .reject {
+        color: white;
+        background-color: #fc0000;
+    }
+</style>

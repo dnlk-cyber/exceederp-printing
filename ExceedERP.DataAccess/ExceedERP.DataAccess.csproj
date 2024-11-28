@@ -527,6 +527,10 @@
     <Compile Include="Migrations\202411180945084_furnituredesigns.Designer.cs">
       <DependentUpon>202411180945084_furnituredesigns.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202411281337384_furnitureboq.cs" />
+    <Compile Include="Migrations\202411281337384_furnitureboq.Designer.cs">
+      <DependentUpon>202411281337384_furnitureboq.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -875,6 +879,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202411180945084_furnituredesigns.resx">
       <DependentUpon>202411180945084_furnituredesigns.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202411281337384_furnitureboq.resx">
+      <DependentUpon>202411281337384_furnitureboq.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

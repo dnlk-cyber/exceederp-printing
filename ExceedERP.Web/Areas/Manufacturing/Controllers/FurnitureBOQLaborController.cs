@@ -50,7 +50,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 var entity = new FurnitureBOQLabor
                 {
                     WorkShopType = furnitureBOQLabor.WorkShopType,
-                    NumberOfEmloyees = furnitureBOQLabor.NumberOfEmloyees,
+                    NumberOfEmloyees = 1,
                     EstimatedMinute = furnitureBOQLabor.EstimatedMinute,
                     DateCreated = DateTime.Today,
                     
@@ -78,7 +78,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 {
                     FurnitureBOQLaborId = furnitureBOQLabor.FurnitureBOQLaborId,
                     WorkShopType = furnitureBOQLabor.WorkShopType,
-                    NumberOfEmloyees = furnitureBOQLabor.NumberOfEmloyees,
+                    NumberOfEmloyees = 1,
                     EstimatedMinute = furnitureBOQLabor.EstimatedMinute,
                     DateCreated = furnitureBOQLabor.DateCreated,
                     LastModified = DateTime.Today,

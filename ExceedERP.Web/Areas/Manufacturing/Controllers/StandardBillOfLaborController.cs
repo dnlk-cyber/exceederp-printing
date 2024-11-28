@@ -51,7 +51,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 {
                     ManufacturingTaskCategoryId = standardBillOfLabor.ManufacturingTaskCategoryId,
                     WorkShopType = standardBillOfLabor.WorkShopType,
-                    NumberOfEmloyees = standardBillOfLabor.NumberOfEmloyees,
+                    NumberOfEmloyees = 1,
                     EstimatedMinute = standardBillOfLabor.EstimatedMinute,
                     DateCreated = DateTime.Today,
                     LastModified = standardBillOfLabor.LastModified,
@@ -78,7 +78,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     StandardBillOfLaborId = standardBillOfLabor.StandardBillOfLaborId,
                     ManufacturingTaskCategoryId = standardBillOfLabor.ManufacturingTaskCategoryId,
                     WorkShopType = standardBillOfLabor.WorkShopType,
-                    NumberOfEmloyees = standardBillOfLabor.NumberOfEmloyees,
+                    NumberOfEmloyees = 1,
                     EstimatedMinute = standardBillOfLabor.EstimatedMinute,
                     DateCreated = standardBillOfLabor.DateCreated,
                     LastModified = DateTime.Today,

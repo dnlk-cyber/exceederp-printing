@@ -1,6 +1,6 @@
 ﻿
 
-<label>Standard Job Type</label>
+<label>Furniture Job Type and Boq Standardization</label>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Setting.FurnitureStandardJobType>()
                       .Name("grid")
                       .Columns(columns =>
@@ -98,9 +98,8 @@
                               .Name("labor_#=FurnitureStandardJobTypeId#")
                               .Columns(columns =>
                               {
-                                  columns.ForeignKey(c => c.ManufacturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
-
                                   columns.Bound(c => c.WorkShopType);
+                                  columns.ForeignKey(c => c.ManufacturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
                                   columns.Bound(c => c.NumberOfEmloyees);
                                   columns.Bound(c => c.EstimatedMinute);
                                   columns.Bound(c => c.DateCreated);

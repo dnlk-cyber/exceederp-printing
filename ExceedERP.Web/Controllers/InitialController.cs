@@ -517,14 +517,19 @@ namespace ExceedERP.Web.Controllers
 					 new ApplicationRole(JobCostingRoles.JobCostingAdmin, "Job Costing Administrator", "Printing"),
 					 new ApplicationRole(JobCostingRoles.JobCostingJobCostUser, "Job Costing Job Cost User", "Printing"),
 					 new ApplicationRole(JobCostingRoles.JobCostingDailyLaborRateUser, "Job Costing Daily Labor RateUser", "Printing"),
-					 new ApplicationRole(JobCostingRoles.JobCostingIdleTimeUser, "JobCosting Idle Time User", "Printing")
+					 new ApplicationRole(JobCostingRoles.JobCostingIdleTimeUser, "JobCosting Idle Time User", "Printing"),
 				#endregion
 			 #endregion
 			   #region Manufucturing
-				#region Furniture Estimation
-					 ,new ApplicationRole(FurnitureEstimationRoles.FurnitureEstimationAdmin, "Furniture Estimation Administrator", "Manufucturing"),
-					 new ApplicationRole(FurnitureEstimationRoles.FurnitureEstimationUser, "Furniture Estimation Form User", "Manufucturing"),
-					#endregion
+				//#region Furniture Estimation
+				//	 ,new ApplicationRole(FurnitureEstimationRoles.FurnitureEstimationAdmin, "Furniture Estimation Administrator", "Manufucturing"),
+				//	 new ApplicationRole(FurnitureEstimationRoles.FurnitureEstimationUser, "Furniture Estimation Form User", "Manufucturing"),
+				//	#endregion
+                     #region Furniture
+				new ApplicationRole("FurnitureEstimation_Officer", "", "Manufacturing"),
+                new ApplicationRole("FurnitureEstimation_TeamLead", "", "Manufacturing"),
+                new ApplicationRole("FurnitureEstimation_DepartmentHead", "", "Manufacturing"),
+				#endregion
 				#region Production FollowUp
 					 new ApplicationRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionAdmin, "Production FollowUp Administrator", "Manufucturing"),
 					 new ApplicationRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionSetting, "Production FollowUp Setting", "Manufucturing"),

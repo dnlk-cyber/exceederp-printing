@@ -66,7 +66,7 @@ namespace ExceedERP.Core.Domain.Manufacturing
         public WorkShop WorkShopType { get; set; }
         [Display(Name ="Number of Employees")]
         public int NumberOfEmloyees { get; set; }
-        [Display(Name = "Estimated Minute")]
+        [Display(Name = "Estimated Minute per person")]
         public int EstimatedMinute { get; set; }       
         public int FurnitureBillOfQuantityId { get; set; }
         public FurnitureBillOfQuantity FurnitureBillOfQuantity { get; set; }

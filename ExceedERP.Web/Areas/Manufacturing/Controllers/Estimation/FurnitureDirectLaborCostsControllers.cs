@@ -34,49 +34,28 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 FurnitureEstimationId = laborCost.FurnitureEstimationId,
                 
                 WorkingTime = laborCost.WorkingTime,
-                CostPerHour = laborCost.CostPerHour,
+                CostPerMinute = laborCost.CostPerMinute,
                 TotalCost = laborCost.TotalCost,
                 DateCreated = laborCost.DateCreated,
                 LastModified = laborCost.LastModified,
                 TaskType = laborCost.TaskType,
-                TaskCategoryId = laborCost.TaskCategoryId
 
             });
 
             return Json(result, JsonRequestBehavior.AllowGet);
-        }
-        public ActionResult DirectLaborCosts_Create([DataSourceRequest]DataSourceRequest request, DirectLaborCost labourCost, int parentId)
-        {
-            if (ModelState.IsValid)
-            {
-                var taskCategory = db.ManifucturingTaskCategories.Find(labourCost.TaskCategoryId);
-                labourCost.CostPerHour = taskCategory.HourRate;
-                labourCost.TotalCost = labourCost.CostPerHour * labourCost.WorkingTime;
-                labourCost.FurnitureEstimationId = parentId;
-                db.DirectLaborCosts.Attach(labourCost);
-                db.DirectLaborCosts.Add(labourCost);
-                db.SaveChanges();
-            }
-
-
-            return Json(new[] { labourCost }.ToDataSourceResult(request, ModelState));
-        }
-
+        }        
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult DirectLaborCosts_Update([DataSourceRequest]DataSourceRequest request, DirectLaborCost labourCost)
+        public ActionResult DirectLaborCosts_Update([DataSourceRequest]DataSourceRequest request, DirectLaborCost model)
         {
-            var taskCategory = db.ManifucturingTaskCategories.Find(labourCost.TaskCategoryId);
-            if (taskCategory == null) ModelState.AddModelError(string.Empty, "Task category not found");
             if (ModelState.IsValid)
-            {
-                labourCost.CostPerHour = taskCategory.HourRate;
-                labourCost.TotalCost = labourCost.CostPerHour * labourCost.WorkingTime;
-                db.DirectLaborCosts.Attach(labourCost);
-                db.Entry(labourCost).State = EntityState.Modified;
+            {               
+                model.TotalCost = model.CostPerMinute * model.WorkingTime;
+                db.DirectLaborCosts.Attach(model);
+                db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
             }
 
-            return Json(new[] { labourCost }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -97,11 +76,10 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 FurnitureEstimationId = laborCost.FurnitureEstimationId,
                 
                 WorkingTime = laborCost.WorkingTime,
-                CostPerHour = laborCost.CostPerHour,
+                CostPerMinute = laborCost.CostPerMinute,
                 TotalCost = laborCost.TotalCost,
                 DateCreated = laborCost.DateCreated,
                 LastModified = laborCost.LastModified,
-                TaskCategoryId = laborCost.TaskCategoryId
             };
             return entity;
         }

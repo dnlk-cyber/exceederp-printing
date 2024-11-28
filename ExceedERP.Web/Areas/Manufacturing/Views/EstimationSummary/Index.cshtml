@@ -29,6 +29,7 @@
                     .RequestEnd("onRequestEnd(\"grid\")"))
                   .Model(model => model.Id(p => p.EstimationSummaryId))
                   .Read(read => read.Action("EstimationSummaries_Read", "EstimationSummary"))
+                  .Sort(sort => sort.Add(e => e.EstimationSummaryId).Descending())
               ).ClientDetailTemplateId("cost_estimation")
 
 )

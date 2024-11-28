@@ -43,11 +43,9 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         [Display(Name = "Total Working Time")]
         public decimal WorkingTime { get; set; }
         [ReadOnly(true)]
-        public decimal CostPerHour { get; set; }
+        public decimal CostPerMinute { get; set; }
         [ReadOnly(true)]
-        public decimal TotalCost { get; set; }
-        [Display(Name ="Task Category")]
-        public int TaskCategoryId { get; set; }
+        public decimal TotalCost { get; set; }       
         [Display(Name ="Task Type")]
         public WorkShop TaskType { get; set; }
     }

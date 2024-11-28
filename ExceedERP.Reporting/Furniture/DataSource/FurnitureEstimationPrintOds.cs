@@ -69,11 +69,10 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                 var labors = db.DirectLaborCosts.Where(x => x.FurnitureEstimationId == estimation.FurnitureEstimationId).ToList();
                 foreach (var labor in labors)
                 {
-                    var taskCategory = db.ManifucturingTaskCategories.FirstOrDefault(x => x.ManifucturingTaskCategoryId == labor.TaskCategoryId);
                     list.Add(new LaborCostViewModel
                     {
-                        CostPerMinute = labor.CostPerHour,
-                        TaskType = taskCategory.Name,
+                        CostPerMinute = labor.CostPerMinute,
+                        TaskType = labor.TaskType,
                         TotalCost = labor.TotalCost,
                         TotalWorkingTime = labor.WorkingTime
                     });

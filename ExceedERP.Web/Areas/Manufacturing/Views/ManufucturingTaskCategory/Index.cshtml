@@ -7,7 +7,7 @@
       {
         columns.Bound(c => c.Type).EditorTemplateName("ManufacturingTypeTemplate");
         columns.Bound(c => c.Name);
-        columns.Bound(c => c.StandardHour);
+        //columns.Bound(c => c.StandardHour);
         columns.Bound(c => c.HourRate);
         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })

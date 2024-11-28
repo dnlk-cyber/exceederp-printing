@@ -28,18 +28,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         }
         public ActionResult FurnitureBoqRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<FurnitureBoqRequest> furnitureBoqRequest = db.FurnitureBoqRequests;
-            DataSourceResult result = furnitureBoqRequest.ToDataSourceResult(request, model => new FurnitureBoqRequest
-            {
-                FurnitureBoqRequestId = model.FurnitureBoqRequestId,
-                CustomerId = model.CustomerId,
-                JobType = model.JobType,
-                Remark = model.Remark,
-                RequestDate = model.RequestDate
-                
-            });
-
-            return Json(result);
+            IQueryable<FurnitureBoqRequest> furnitureBoqRequest = db.FurnitureBoqRequests;          
+            return Json(furnitureBoqRequest.ToDataSourceResult(request));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -52,7 +42,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                     JobType = model.JobType,
                     CustomerId = model.CustomerId,
                     Remark = model.Remark,
-                    RequestDate = model.RequestDate
+                    RequestDate = model.RequestDate,
+                    Status = "Pending"
                 };
 
                 db.FurnitureBoqRequests.Add(entity);
@@ -83,6 +74,77 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             }
 
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
+        }
+
+        public JsonResult CheckBoqRequest(int id)
+        {
+            var boqRequest = db.FurnitureBoqRequests.Find(id);
+            var docs = db.FurnitureBoqDocuments.Where(x => x.FurnitureBoqRequestId == boqRequest.FurnitureBoqRequestId).ToList();
+            object response = null;
+            if (!docs.Any())
+            {
+                response = new { Success = false, Message = "no document was found!" };
+                return Json(response);
+            }
+            if (boqRequest != null && docs.Any())
+            {
+                boqRequest.IsChecked = true;
+                boqRequest.CheckedBy = User.Identity.Name;
+                boqRequest.CheckedDate = DateTime.Today;
+                boqRequest.Status = "Checked";
+
+                db.Entry(boqRequest).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Document has been checked Successfully!" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "not found!" };
+            }
+            return Json(response);
+        }
+
+        public JsonResult ApproveBoqRequest(int id)
+        {
+            var boqRequest = db.FurnitureBoqRequests.Find(id);
+            object response = null;
+            if (boqRequest != null)
+            {
+                boqRequest.IsApproved = true;
+                boqRequest.ApprovedBy = User.Identity.Name;
+                boqRequest.ApprovedDate = DateTime.Today;
+                boqRequest.Status = "Approved";
+
+                db.Entry(boqRequest).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Document has been approved Successfully!" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "not found!" };
+            }
+            return Json(response);
+        }
+        public JsonResult RejectBoqRequest(int id)
+        {
+            var boqRequest = db.FurnitureBoqRequests.Find(id);
+            object response = null;
+            if (boqRequest != null)
+            {
+                boqRequest.IsRejected = true;
+                boqRequest.RejectedBy = User.Identity.Name;
+                boqRequest.RejectedDate = DateTime.Today;
+                boqRequest.Status = "Rejected";
+
+                db.Entry(boqRequest).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Document has been rejected Successfully!" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "not found!" };
+            }
+            return Json(response);
         }
     }
 }

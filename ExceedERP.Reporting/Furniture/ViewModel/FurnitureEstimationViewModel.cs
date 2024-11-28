@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExceedERP.Core.Domain.Manufacturing.Setting;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,7 +26,7 @@ namespace ExceedERP.Reporting.Furniture.ViewModel
     }
     public class LaborCostViewModel
     {
-        public string TaskType { get; set; }
+        public WorkShop TaskType { get; set; }
         public decimal TotalWorkingTime { get; set; }
         public decimal CostPerMinute { get; set; }
         public decimal TotalCost { get; set; }
