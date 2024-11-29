@@ -44,20 +44,22 @@
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                                                .Name("grid_#=FurnitureBillOfQuantityId#")
-                                                                .Items(item1 =>
-                                                                {
-                                                                    item1.Add().Text("Material").Content(@<text>
-                                                                        @Material()
-                                                                    </text>);
-                                                                            item1.Add().Text("Labor").Content(@<text>
-                                                                                @Labor()
+                                                                        .Name("grid_#=FurnitureBillOfQuantityId#")
+                                                                        .Items(item1 =>
+                                                                        {
+                                                                            item1.Add().Text("Material").Content(@<text>
+                                                                                <a href='@Url.Action("FurnitureBoqPrint", "FurniturePrint")/?id=#=FurnitureBillOfQuantityId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+
+                                                                                @Material()
                                                                             </text>);
-                                                                                    item1.Add().Text("Job Design").Content(@<text>
-                                                                                        <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=FurnitureBillOfQuantityId#)" />
-                                                                                         @BoqDocs()
+                                                                                    item1.Add().Text("Labor").Content(@<text>
+                                                                                        @Labor()
                                                                                     </text>);
-                                                                                        }).ToClientTemplate())
+                                                                                            item1.Add().Text("Job Design").Content(@<text>
+                                                                                                <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=FurnitureBillOfQuantityId#)" />
+                                                                                                @BoqDocs()
+                                                                                            </text>);
+                                                                                                }).ToClientTemplate())
 </script>
 
 @helper Material()
@@ -105,8 +107,8 @@
                                               {
                                                   columns.Bound(c => c.WorkShopType).Width(120);
                                                   columns.ForeignKey(c => c.ManufacturingTaskCategoryId, (IEnumerable)ViewData["TaskCategory"], "Value", "Text").Width(120);
-                                                  columns.Bound(c => c.NumberOfEmloyees).Width(100);
-                                                  columns.Bound(c => c.EstimatedMinute).Width(100);
+                                                  columns.Bound(c => c.NumberOfEmloyees).Format("{0:n2}").Width(130).ClientFooterTemplate("Total Employees: \\#=sum\\# ").Width(100);
+                                                  columns.Bound(c => c.EstimatedMinute).Format("{0:n2}").Width(130).ClientFooterTemplate("Total Est Minute: \\#=sum\\# ").Width(100);
 
 
                                                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
@@ -121,6 +123,11 @@
                                               .Events(e => e.DataBound("onChildDataBound"))
                                               .DataSource(dataSource => dataSource
                                                   .Ajax()
+                                                   .Aggregates(aggregates =>
+                                                   {
+                                                       aggregates.Add(c => c.EstimatedMinute).Sum();
+                                                       aggregates.Add(c => c.NumberOfEmloyees).Sum();
+                                                   })
                                                   .Events(ev => ev.Error("error_handler(\"labor_#=FurnitureBillOfQuantityId#\")")
                                                             .RequestStart("onRequestStart(\"labor_#=FurnitureBillOfQuantityId#\")")
                                                             .RequestEnd("onRequestEnd(\"labor_#=FurnitureBillOfQuantityId#\")"))

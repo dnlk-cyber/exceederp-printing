@@ -7036,6 +7036,7 @@
     <Content Include="Areas\Manufacturing\Views\FurniturePrint\FurnitureSummary.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurniturePrint\Proforma.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurniturePrint\Estimation.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurniturePrint\FurnitureBoqPrint.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

@@ -44,4 +44,28 @@ namespace ExceedERP.Reporting.Furniture.ViewModel
         public decimal SellingPrice { get; set; }
 
     }
+
+    public class FurnitureBoqViewModel
+    {
+        public string JobCode { get; set; }
+        public string JobType { get; set; }
+        public string CustomerName { get; set; }
+        public decimal Quantity { get; set; }
+
+       
+    }
+    public class MaterialBoqViewModel
+    {
+        public WorkShop WorkShop { get; set; }
+        public string MaterialCategory { get; set; }
+        public string MaterialItem { get; set; }
+        public string Unit { get; set; }
+        public decimal Quantity { get; set; }
+    }
+    public class LaborBoqViewModel
+    {
+        public WorkShop WorkShop { get; set; }
+        public int NumberOfEmployees { get; set; }
+        public decimal EstimatedMinute { get; set; }
+    }
 }

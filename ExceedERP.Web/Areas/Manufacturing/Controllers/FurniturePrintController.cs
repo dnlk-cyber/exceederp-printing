@@ -28,5 +28,10 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         {            
             return View();
         }
+        public ActionResult FurnitureBoqPrint(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
     }
 }
