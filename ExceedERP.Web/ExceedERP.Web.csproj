@@ -2019,6 +2019,8 @@
     <Compile Include="Areas\Printing\Controllers\PrintDataProviderController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingBindingStyleController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingCostEstimationController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingCostEstimationSummaryController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingCostSummaryController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingEstimationLaborCostController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingEstimationMaterialCostController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobTypeController.cs" />
@@ -7037,6 +7039,7 @@
     <Content Include="Areas\Manufacturing\Views\FurniturePrint\Proforma.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurniturePrint\Estimation.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurniturePrint\FurnitureBoqPrint.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingCostEstimationSummary\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
@@ -9011,6 +9014,7 @@
     <Folder Include="Areas\Printing\Views\JobCostingViews\YearlyOverHeadRate\" />
     <Folder Include="Areas\Printing\Views\MegaDataProvider\" />
     <Folder Include="Areas\Printing\Views\PrintDataProvider\" />
+    <Folder Include="Areas\Printing\Views\PrintingCostSummary\" />
     <Folder Include="Areas\Printing\Views\PrintingEstimationDataProvider\" />
     <Folder Include="Areas\Printing\Views\ProductionDataProvider\" />
     <Folder Include="Areas\Printing\Views\ProductionFollowUpViews\AutoJobOrder\EditorTemplates\" />

@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -48,6 +48,16 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             {
                 Value = s.PrintingMaterialCategoryItemId,
                 Text = s.ItemName
+            }).ToList();
+            ViewData["PrintingProcess"] = db.PrintingProcesses.Select(s => new
+            {
+                Value = s.PrintingProcessId,
+                Text = s.ProcessName
+            }).ToList();
+            ViewData["PrintingMachineType"] = db.PrintingMachineTypes.Select(s => new
+            {
+                Value = s.PrintingMachineTypeId,
+                Text = s.MachineTypeName
             }).ToList();
 
             return View();
@@ -220,7 +230,179 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
             return Json(new[] { printingCostEstimation }.ToDataSourceResult(request, ModelState));
         }
+        public JsonResult CalculateOverAllCost(int id)
+        {
+            var msg = new
+            {
+                success = "Calculation succeeded",
+                error = "Failed to calculate make sure you have material and labour cost",
+                exists = "Already calculated"
+            };
+            var estimation = db.PrintingCostEstimations.Find(id);
+            if (estimation != null)
+            {
+                var overAllCost = db.PrintingOverAllCosts.Where(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId).ToList();
+                if (overAllCost.Any()) return Json(msg.exists);
+                var materialCosts = db.PrintingEstimationMaterialCosts.Where(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId).ToList();
+                var labourCosts = db.PrintingEstimationLaborCosts.Where(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId).ToList();
+                if (labourCosts.Any() && materialCosts.Any())
+                {
 
+                    var totalLabourCost = labourCosts.Sum(x => x.TotalCost);
+                    var totalMaterialCost = materialCosts.Sum(s => s.TotalCost);
+                    var entity = new PrintingOverAllCost
+                    {
+                       PrintingCostEstimationId = estimation.PrintingCostEstimationId,
+                       AdminstrativeCost = 0,
+                       GrandTotal = 0,
+                       GraphicsCost = 0,
+                       LaborCost = totalLabourCost,
+                       MaterialCost = totalMaterialCost,
+                       ProfitMargin = 0,
+                       TotalBeforeVAT = 0,
+                       TotalProductionCost = totalMaterialCost + totalLabourCost,
+                       UnitPrice = 0,
+                       VAT = 0
+                    };
+                    db.PrintingOverAllCosts.Add(entity);
+                    db.SaveChanges();
+
+                    return Json(msg.success, JsonRequestBehavior.AllowGet);
+
+                }
+            }
+            return Json(msg.error, JsonRequestBehavior.AllowGet);
+        }
+
+        #region Approval
+        public JsonResult CheckEstimation(int id)
+        {
+            var estimation = db.PrintingCostEstimations.Find(id);
+            object response = null;
+            var overAllCost = db.PrintingOverAllCosts.FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId);
+            if (overAllCost == null)
+            {
+                response = new { Success = false, Message = "⚠️ You forgot to calculate overall cost" };
+                return Json(response);
+            }
+            if (estimation != null)
+            {
+                estimation.Status = "Checked";
+                estimation.IsOnlineTransferred = true;
+                estimation.IsOnlineTransferredBy = User.Identity.Name;
+                estimation.OnlineTransferredTime = DateTime.Today;
+
+                db.Entry(estimation).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Estimation has been checked Successfully!" };
+
+            }
+            else
+            {
+                response = new { Success = false, Message = "Estimation not found!" };
+            }
+
+            return Json(response);
+
+        }
+
+        public JsonResult RejectEstimation(int id)
+        {
+            var estimation = db.PrintingCostEstimations.Find(id);
+            object response = null;
+
+            if (estimation != null)
+            {
+                estimation.Status = "Rejected";
+                db.PrintingCostEstimations.Attach(estimation);
+                db.Entry(estimation).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Estimation has been rejected Successfully!" };
+
+            }
+            else
+            {
+                response = new { Success = false, Message = "Estimation not found!" };
+            }
+
+            return Json(response);
+
+        }
+        public JsonResult ApproveEstimationForm(int id)
+        {
+            Object response = null;
+            var estimationForm = db.PrintingCostEstimations.Find(id);
+            var overAllCost = db.PrintingOverAllCosts.Where(x => x.PrintingCostEstimationId == estimationForm.PrintingCostEstimationId).ToList();
+            if (overAllCost.Any())
+            {
+                estimationForm.IsOnlineApproved = true;
+                estimationForm.OnlineApprovedBy = User.Identity.Name;
+                estimationForm.OnlineApprovedTime = DateTime.Today;
+                // Generates Estimation Summary
+                CreateEstimationSummary(estimationForm);
+                db.Entry(estimationForm).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Successfully Approved!" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "" };
+
+            }
+            return Json(response);
+        }
+        private void CreateEstimationSummary(PrintingCostEstimation model)
+        {
+            var OverAllCost = db.PrintingOverAllCosts.FirstOrDefault(x => x.PrintingCostEstimationId == model.PrintingCostEstimationId);
+            var estimationSummary = db.PrintingEstimationSummaries.FirstOrDefault(x => x.CustomerId == model.CustomerId && !x.IsCalculated);
+            if (estimationSummary == null)
+            {
+                PrintingEstimationSummary summary = new PrintingEstimationSummary
+                {
+                    CustomerId = model.CustomerId,
+                    DateCreated = DateTime.Today,
+                    CreatedBy = User.Identity.Name,
+                    Status = "Pending"
+                };
+
+                db.PrintingEstimationSummaries.Add(summary);
+                db.SaveChanges();
+
+                PrintingEstimationDetail estimationDetailNew = new PrintingEstimationDetail
+                {
+                    JobTypeId = model.JobTypeId,
+                    MaterialCost = OverAllCost.MaterialCost,
+                    LabourCost = OverAllCost.LaborCost,
+                    AdministrativeCost = OverAllCost.AdminstrativeCost,
+                    OverHeadCost = OverAllCost.OverHeadCost,
+                    ManufacturingCost = OverAllCost.MaterialCost,
+                    GrandTotalCost = OverAllCost.GrandTotal,
+                    Quantity = model.ProductQuantity,
+                    PrintingEstimationSummaryId = summary.PrintingEstimationSummaryId,
+                };
+                db.PrintingEstimationDetails.Add(estimationDetailNew);
+                db.SaveChanges();
+            }
+            else
+            {
+                PrintingEstimationDetail estimationDetail = new PrintingEstimationDetail
+                {
+                    JobTypeId = model.JobTypeId,
+                    MaterialCost = OverAllCost.MaterialCost,
+                    LabourCost = OverAllCost.LaborCost,
+                    AdministrativeCost = OverAllCost.AdminstrativeCost,
+                    OverHeadCost = OverAllCost.OverHeadCost,
+                    ManufacturingCost = OverAllCost.MaterialCost,
+                    GrandTotalCost = OverAllCost.GrandTotal,
+                    Quantity = model.ProductQuantity,
+                    PrintingEstimationSummaryId = estimationSummary.PrintingEstimationSummaryId,
+                };
+
+                db.PrintingEstimationDetails.Add(estimationDetail);
+                db.SaveChanges();
+            }
+        }
+        #endregion
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

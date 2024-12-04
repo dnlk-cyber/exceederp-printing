@@ -23,6 +23,30 @@ namespace ExceedERP.DataAccess.Context
             this.HasKey<int>(p => p.PrintingEstimationMaterialCostId);
         }
     }
+    public class PrintingEstimationSummaryEntityTypeConfiguration : EntityTypeConfiguration<PrintingEstimationSummary>
+    {
+        public PrintingEstimationSummaryEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingEstimationSummary", "Printing");
+            this.HasKey<int>(p => p.PrintingEstimationSummaryId);
+        }
+    }
+    public class PrintingEstimationDetailEntityTypeConfiguration : EntityTypeConfiguration<PrintingEstimationDetail>
+    {
+        public PrintingEstimationDetailEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingEstimationDetail", "Printing");
+            this.HasKey<int>(p => p.PrintingEstimationDetailId);
+        }
+    }
+    public class PrintingEstimationCostSummaryEntityTypeConfiguration : EntityTypeConfiguration<PrintingEstimationCostSummary>
+    {
+        public PrintingEstimationCostSummaryEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingEstimationCostSummary", "Printing");
+            this.HasKey<int>(p => p.PrintingEstimationCostSummaryId);
+        }
+    }
     public class PrintingEstimationLaborCostEntityTypeConfiguration : EntityTypeConfiguration<PrintingEstimationLaborCost>
     {
         public PrintingEstimationLaborCostEntityTypeConfiguration()

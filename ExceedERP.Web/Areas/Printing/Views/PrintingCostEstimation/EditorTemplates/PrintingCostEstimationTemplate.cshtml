@@ -109,8 +109,9 @@
     </div>
     <div class="col-sm-2">
         <div class="form-group">
-            <label></label>
+            <label>No of pages</label>
             <div>
+                @(Html.Kendo().TextBoxFor(model => model.TotalTextNoPages).HtmlAttributes(new { style = "width:100%" }))
 
             </div>
         </div>

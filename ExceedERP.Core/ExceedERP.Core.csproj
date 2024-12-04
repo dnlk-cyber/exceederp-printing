@@ -1256,6 +1256,7 @@
     <Compile Include="Domain\Printing\PrintingCostEstimation.cs" />
     <Compile Include="Domain\Printing\PrintingEstimationLaborCost.cs" />
     <Compile Include="Domain\Printing\PrintingEstimationMaterialCost.cs" />
+    <Compile Include="Domain\Printing\PrintingEstimationSummary.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\EstimationForm.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\LaborCost.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\MaterialCost.cs" />

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.Printing
 {
-    public class PrintingCostEstimation : TrackUserSettingOperation
+    public class PrintingCostEstimation : Operations
     {
         [Key]
         public int PrintingCostEstimationId { get; set; }
@@ -46,6 +46,6 @@ namespace ExceedERP.Core.Domain.Printing
         public decimal OverHeadCost { get; set; }
         public decimal TotalLaborCost { get; set; }
 
-
+        public bool IsMarginAssigned { get; set; }
     }
 }

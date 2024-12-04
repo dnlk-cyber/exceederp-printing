@@ -7,17 +7,17 @@
             <label>Material Category</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.PrintingMaterialCategoryId)
-                    .ValuePrimitive(true)
-                    .OptionLabel("Select Item...")
-                    .DataTextField("Text")
-                    .DataValueField("Value")
-                    .Filter("contains")
+                            .ValuePrimitive(true)
+                            .OptionLabel("Select Item...")
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .Filter("contains")
 
-                    .DataSource(dataSource =>
-                    {
-                        dataSource.Read(read => read.Action("GetPrintingMaterialCategory", "PrintDataProvider", new { area = "Printing" }).Data("filterCategory"))
-                            .ServerFiltering(true);
-                    }).HtmlAttributes(new { style = "width:100%" }))
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetPrintingMaterialCategory", "PrintDataProvider", new { area = "Printing" }).Data("filterCategory"))
+                                    .ServerFiltering(true);
+                            }).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>
@@ -26,17 +26,17 @@
             <label>Material Item</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.PrintingMaterialCategoryItemId)
-                    .ValuePrimitive(true)
-                    .OptionLabel("Select Item...")
-                    .DataTextField("Text")
-                    .DataValueField("Value")
-                    .Filter("contains")
-                    .CascadeFrom("PrintingMaterialCategoryId")
-                    .DataSource(dataSource =>
-                    {
-                        dataSource.Read(read => read.Action("GetPrintingMaterialCategoryItem", "PrintDataProvider", new { area = "Printing" }).Data("filterCategoryItem"))
-                            .ServerFiltering(true);
-                    }).HtmlAttributes(new { style = "width:100%" }))
+                            .ValuePrimitive(true)
+                            .OptionLabel("Select Item...")
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .Filter("contains")
+                            .CascadeFrom("PrintingMaterialCategoryId")
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetPrintingMaterialCategoryItem", "PrintDataProvider", new { area = "Printing" }).Data("filterCategoryItem"))
+                                    .ServerFiltering(true);
+                            }).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>
@@ -49,13 +49,14 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
+    @*<div class="col-sm-2">
         <div class="form-group">
-            <label></label>
+            <label>Unit cost</label>
             <div>
-                
+                @(Html.Kendo().NumericTextBoxFor(model => model.UnitCost).HtmlAttributes(new { style = "width:100%" }))
+
             </div>
         </div>
-    </div>
+    </div>*@
 </div>
 

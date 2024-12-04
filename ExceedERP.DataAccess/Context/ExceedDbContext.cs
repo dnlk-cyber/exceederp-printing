@@ -1608,6 +1608,9 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region printing 
+            modelBuilder.Configurations.Add(new PrintingEstimationSummaryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingEstimationDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingEstimationCostSummaryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingOverAllCostEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingEstimationLaborCostEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingEstimationMaterialCostsEntityTypeConfiguration());
@@ -2339,6 +2342,9 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Printing
+        public DbSet<PrintingEstimationSummary> PrintingEstimationSummaries { get; set; }
+        public DbSet<PrintingEstimationDetail> PrintingEstimationDetails { get; set; }
+        public DbSet<PrintingEstimationCostSummary> PrintingEstimationCostSummaries { get; set; }
         public DbSet<PrintingEstimationMaterialCost> PrintingEstimationMaterialCosts { get; set; }
         public DbSet<PrintingEstimationLaborCost> PrintingEstimationLaborCosts { get; set; }
         public DbSet<PrintingOverAllCost> PrintingOverAllCosts { get; set; }

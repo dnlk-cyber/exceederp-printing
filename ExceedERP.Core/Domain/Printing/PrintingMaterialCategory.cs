@@ -14,7 +14,7 @@ namespace ExceedERP.Core.Domain.Printing
         public int PrintingMaterialCategoryId { get; set; }
         [Display(Name = "Category Code")]
         public string InventoryCategoryCode { get; set; }
-        [Display(Name = "Manufacturing Category")]
+        [Display(Name = "Category Name")]
         public string CategoryName { get; set; }
         [Display(Name = "Cost Account Code")]
         public string CostAccountCode { get; set; }

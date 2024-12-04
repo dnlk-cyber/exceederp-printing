@@ -10,7 +10,9 @@ namespace ExceedERP.Core.Domain.Printing
         [Display(Name ="Process Category")]
         public PrintingProcessCategory ProcessCategory { get; set; }
         [Display(Name ="Process Name")]
-        public int PrintingProcessId { get; set; }
+        public int? PrintingProcessId { get; set; }
+        [Display(Name ="Machine Type")]
+        public int? PrintingMachineTypeId { get; set; }
         [Display(Name ="Estimated Hour")]
         public decimal EstimatedHours { get; set; }
         [Display(Name ="Labor Rate")]

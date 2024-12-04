@@ -21,6 +21,7 @@ namespace ExceedERP.Core.Domain.Printing
         public decimal TotalProductionCost { get; set; }
         [Display(Name = "Admin Cost")]
         public decimal AdminstrativeCost { get; set; }
+        public decimal OverHeadCost { get; set; }
         [Display(Name = "Profit Margin")]
         public decimal ProfitMargin { get; set; }
         [Display(Name = "Graphics Cost")]
@@ -32,6 +33,8 @@ namespace ExceedERP.Core.Domain.Printing
         public decimal VAT { get; set; }
         [Display(Name = "Grand Total")]
         public decimal GrandTotal { get; set; }
+        public decimal SellingPrice { get; set; }
+
 
         public int PrintingCostEstimationId { get; set; } 
 

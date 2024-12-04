@@ -21,9 +21,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             return View();
         }
 
-        public ActionResult PrintingEstimationMaterialCosts_Read([DataSourceRequest]DataSourceRequest request, int id)
+        public ActionResult PrintingEstimationMaterialCosts_Read([DataSourceRequest]DataSourceRequest request, int estId)
         {
-            IQueryable<PrintingEstimationMaterialCost> printingestimationmaterialcosts = db.PrintingEstimationMaterialCosts.Where(x => x.PrintingCostEstimationId == id);
+            IQueryable<PrintingEstimationMaterialCost> printingestimationmaterialcosts = db.PrintingEstimationMaterialCosts.Where(x => x.PrintingCostEstimationId == estId);
             DataSourceResult result = printingestimationmaterialcosts.ToDataSourceResult(request, printingEstimationMaterialCost => new PrintingEstimationMaterialCost
             {
                 PrintingEstimationMaterialCostId = printingEstimationMaterialCost.PrintingEstimationMaterialCostId,
@@ -44,7 +44,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingEstimationMaterialCosts_Create([DataSourceRequest]DataSourceRequest request, PrintingEstimationMaterialCost printingEstimationMaterialCost, int id)
+        public ActionResult PrintingEstimationMaterialCosts_Create([DataSourceRequest]DataSourceRequest request, PrintingEstimationMaterialCost printingEstimationMaterialCost, int estId)
         {            
             if (ModelState.IsValid)
             {
@@ -58,7 +58,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     LastModified = printingEstimationMaterialCost.LastModified,
                     CreatedBy = User.Identity.Name,
                     ModifiedBy = printingEstimationMaterialCost.ModifiedBy,
-                    PrintingCostEstimationId = id
+                    PrintingCostEstimationId = estId
                 };
 
                 entity.UnitCost = item.UnitPrice;
