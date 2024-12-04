@@ -72,7 +72,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         public ActionResult EvaluationCriteriaDetail_Create([DataSourceRequest]DataSourceRequest request, Measurement measurement, int id)
         {
             measurement.MeasurementDefinitionId = id;
-            var definition = db.MeasurementDefinitions.FirstOrDefault(x => x.MeasurementDefinitionId == measurement.MeasurementDefinitionId);
+            var definition = db.MeasurementDefinitions.Find(id);
             if (definition != null)
             {
                 var measurments = db.Measurements.Where(x => x.MeasurementDefinitionId == definition.MeasurementDefinitionId).ToList();
@@ -100,7 +100,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 {
                     MeasurementName = measurement.MeasurementName,
                     MesPercentageofWeight = measurement.MesPercentageofWeight,
-                    MeasurementDefinitionId = id,
+                    MeasurementDefinitionId = measurement.MeasurementDefinitionId,
                     Remark = measurement.Remark,
                     Result = measurement.Result,
                 };
@@ -116,7 +116,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EvaluationCriteriaDetail_Update([DataSourceRequest]DataSourceRequest request, Measurement measurement)
         {
-            var definition = db.MeasurementDefinitions.FirstOrDefault(x => x.MeasurementDefinitionId == measurement.MeasurementDefinitionId);
+            var definition = db.MeasurementDefinitions.Find(measurement.MeasurementDefinitionId);
             if (definition != null)
             {
                 var measurments = db.Measurements.Where(x => x.MeasurementDefinitionId == definition.MeasurementDefinitionId && x.MeasurementId != measurement.MeasurementId).ToList();
@@ -126,11 +126,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                     if (sumMeasur > definition.DefnPercentageofWeight)
                     {
                         ModelState.AddModelError("", "sum of percentage weight should less or equal to its parent weight");
+                        return Json(new[] { measurement }.ToDataSourceResult(request, ModelState));
+
                     }
                 }
                 else if(measurement.MesPercentageofWeight > definition.DefnPercentageofWeight)
                 {
                     ModelState.AddModelError("", "percentage weight should less or equal to its parent weight");
+                    return Json(new[] { measurement }.ToDataSourceResult(request, ModelState));
+
                 }
 
 
@@ -138,6 +142,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             else
             {
                 ModelState.AddModelError("", "check parent data");
+                return Json(new[] { measurement }.ToDataSourceResult(request, ModelState));
+
             }
             if (ModelState.IsValid)
             {

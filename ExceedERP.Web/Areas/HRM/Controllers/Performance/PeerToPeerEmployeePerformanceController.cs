@@ -24,7 +24,8 @@ using ExceedERP.Web.Models;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
 
-    [AuthorizeRoles(HrmConstants.HREmployeeSelfService)]
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService,
+        HrmConstants.HRDepartmentHead)]
     public class PeerToPeerEmployeePerformanceController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();

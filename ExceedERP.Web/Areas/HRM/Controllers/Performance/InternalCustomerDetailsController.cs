@@ -15,6 +15,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
     [AuthorizeRoles(HrmConstants.HRPerformanceAdmin, 
                     HrmConstants.HRPerformanceUser,
+                    HrmConstants.HREmployeeSelfService,
+                    HrmConstants.HRDepartmentHead,
                     HrmConstants.HRPerformanceReport)]
 
     public class InternalCustomerDetailsController : Controller
