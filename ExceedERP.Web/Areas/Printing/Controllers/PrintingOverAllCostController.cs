@@ -33,9 +33,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 AdminstrativeCost = printingOverAllCost.AdminstrativeCost,
                 ProfitMargin = printingOverAllCost.ProfitMargin,
                 GraphicsCost = printingOverAllCost.GraphicsCost,
-                UnitPrice = printingOverAllCost.UnitPrice,
-                TotalBeforeVAT = printingOverAllCost.TotalBeforeVAT,
-                VAT = printingOverAllCost.VAT,
+                OverHeadCost = printingOverAllCost.OverHeadCost,
+                SellingPrice = printingOverAllCost.SellingPrice,
                 GrandTotal = printingOverAllCost.GrandTotal,
                 PrintingCostEstimationId = printingOverAllCost.PrintingCostEstimationId
             });
@@ -56,9 +55,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     AdminstrativeCost = printingOverAllCost.AdminstrativeCost,
                     ProfitMargin = printingOverAllCost.ProfitMargin,
                     GraphicsCost = printingOverAllCost.GraphicsCost,
-                    UnitPrice = printingOverAllCost.UnitPrice,
-                    TotalBeforeVAT = printingOverAllCost.TotalBeforeVAT,
-                    VAT = printingOverAllCost.VAT,
+                    
                     GrandTotal = printingOverAllCost.GrandTotal,
                     PrintingCostEstimationId = id
                 };
@@ -72,32 +69,35 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingOverAllCosts_Update([DataSourceRequest]DataSourceRequest request, PrintingOverAllCost printingOverAllCost)
+        public ActionResult PrintingOverAllCosts_Update([DataSourceRequest]DataSourceRequest request, PrintingOverAllCost model)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PrintingOverAllCost
                 {
-                    PrintingOverAllCostId = printingOverAllCost.PrintingOverAllCostId,
-                    MaterialCost = printingOverAllCost.MaterialCost,
-                    LaborCost = printingOverAllCost.LaborCost,
-                    TotalProductionCost = printingOverAllCost.TotalProductionCost,
-                    AdminstrativeCost = printingOverAllCost.AdminstrativeCost,
-                    ProfitMargin = printingOverAllCost.ProfitMargin,
-                    GraphicsCost = printingOverAllCost.GraphicsCost,
-                    UnitPrice = printingOverAllCost.UnitPrice,
-                    TotalBeforeVAT = printingOverAllCost.TotalBeforeVAT,
-                    VAT = printingOverAllCost.VAT,
-                    GrandTotal = printingOverAllCost.GrandTotal,
-                    PrintingCostEstimationId = printingOverAllCost.PrintingCostEstimationId
+                    PrintingOverAllCostId = model.PrintingOverAllCostId,
+                    MaterialCost = model.MaterialCost,
+                    LaborCost = model.LaborCost,
+                   
+                    OverHeadCost = model.LaborCost + model.OverHeadCost,
+                    AdminstrativeCost = (model.MaterialCost + model.LaborCost + model.OverHeadCost) * model.AdminstrativeCost,
+                    TotalProductionCost = model.MaterialCost + model.LaborCost + model.OverHeadCost,
+                    ProfitMargin = model.ProfitMargin,
+                    GraphicsCost = model.GraphicsCost,
+                    
+                    GrandTotal = model.TotalProductionCost + model.AdminstrativeCost + model.GraphicsCost,
+                    PrintingCostEstimationId = model.PrintingCostEstimationId
                 };
-
+                model.GrandTotal = entity.GrandTotal;
+                model.AdminstrativeCost = entity.AdminstrativeCost;
+                model.OverHeadCost = entity.OverHeadCost;
+                model.TotalProductionCost = entity.TotalProductionCost;
                 db.PrintingOverAllCosts.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
             }
 
-            return Json(new[] { printingOverAllCost }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -114,9 +114,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     AdminstrativeCost = printingOverAllCost.AdminstrativeCost,
                     ProfitMargin = printingOverAllCost.ProfitMargin,
                     GraphicsCost = printingOverAllCost.GraphicsCost,
-                    UnitPrice = printingOverAllCost.UnitPrice,
-                    TotalBeforeVAT = printingOverAllCost.TotalBeforeVAT,
-                    VAT = printingOverAllCost.VAT,
+                   
                     GrandTotal = printingOverAllCost.GrandTotal,
                     PrintingCostEstimationId = printingOverAllCost.PrintingCostEstimationId
                 };

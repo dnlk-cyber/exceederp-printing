@@ -535,6 +535,10 @@
     <Compile Include="Migrations\202412040820314_estimationforprint.Designer.cs">
       <DependentUpon>202412040820314_estimationforprint.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202412051615448_printingproforma.cs" />
+    <Compile Include="Migrations\202412051615448_printingproforma.Designer.cs">
+      <DependentUpon>202412051615448_printingproforma.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -889,6 +893,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202412040820314_estimationforprint.resx">
       <DependentUpon>202412040820314_estimationforprint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202412051615448_printingproforma.resx">
+      <DependentUpon>202412051615448_printingproforma.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

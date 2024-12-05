@@ -15,6 +15,22 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
+    public class PrintingProformaInvoiceEntityTypeConfiguration : EntityTypeConfiguration<PrintingProformaInvoice>
+    {
+        public PrintingProformaInvoiceEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingProformaInvoice", "Printing");
+            this.HasKey<int>(p => p.PrintingProformaInvoiceId);
+        }
+    }
+    public class PrintingProformaInvoiceItemEntityTypeConfiguration : EntityTypeConfiguration<PrintingProformaInvoiceItem>
+    {
+        public PrintingProformaInvoiceItemEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingProformaInvoiceItem", "Printing");
+            this.HasKey<int>(p => p.PrintingProformaInvoiceItemId);
+        }
+    }
     public class PrintingEstimationMaterialCostsEntityTypeConfiguration : EntityTypeConfiguration<PrintingEstimationMaterialCost>
     {
         public PrintingEstimationMaterialCostsEntityTypeConfiguration()

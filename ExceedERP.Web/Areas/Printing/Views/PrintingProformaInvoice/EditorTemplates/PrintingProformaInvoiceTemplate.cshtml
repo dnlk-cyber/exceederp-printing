@@ -1,0 +1,74 @@
+﻿
+@model ExceedERP.Core.Domain.Printing.PrintingProformaInvoice
+
+<div class="row">
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Customer</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.CustomerId)
+                                            .ValuePrimitive(true)
+                                            .OptionLabel("Select Customer...")
+                                            .DataTextField("Text")
+                                            .DataValueField("Value")
+                                            .Filter("contains")
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetACustomers", "ManufacturingDataProvider", new { area = "Manufacturing" }).Data("filterCustomer"))
+                                                    .ServerFiltering(true);
+                                            }).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Delivery Period/Day</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.DeliveryPeriod).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Price Validity Period</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.PriceValidityPeriod).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Payment Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.PaymentType)
+                            .OptionLabel("Task Type...")
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+
+                            .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.TypeOfPayment))
+                            )
+                )
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Mode of Payment</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.ModeOfPayment).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    @*<div class="col-sm-2">
+            <div class="form-group">
+                <label>Advance Payment(%)</label>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.AdvancePaymentInPercent).HtmlAttributes(new { style = "width:100%" }))
+                </div>
+            </div>
+        </div>*@
+</div>

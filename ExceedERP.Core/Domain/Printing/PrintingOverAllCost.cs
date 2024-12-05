@@ -26,16 +26,11 @@ namespace ExceedERP.Core.Domain.Printing
         public decimal ProfitMargin { get; set; }
         [Display(Name = "Graphics Cost")]
         public decimal GraphicsCost { get; set; }
-        [Display(Name = "Unit Price")]
-        public decimal UnitPrice { get; set; }
-        [Display(Name = "Total Before VAT")]
-        public decimal TotalBeforeVAT { get; set; }
-        public decimal VAT { get; set; }
+        
         [Display(Name = "Grand Total")]
         public decimal GrandTotal { get; set; }
         public decimal SellingPrice { get; set; }
-
-
+        
         public int PrintingCostEstimationId { get; set; } 
 
     }

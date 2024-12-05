@@ -1,5 +1,5 @@
 ﻿@using ExceedERP.Core.Domain.Printing
-<label>Estimation Summary</label>
+<label>Printing Estimation Summary</label>
 
 @(Html.Kendo().Grid<PrintingEstimationSummary>()
                           .Name("grid")
@@ -36,7 +36,7 @@
                                                         itemn.Add().Text("Cost Summary")
                                 .Content(
                                     @<text>
-                                        <a onclick='return calculateOverallCost("#=PrintingEstimationSummaryId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a>
+                                        <span class="sum"><a onclick='return calculateOverallCost("#=PrintingEstimationSummaryId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a></span>
                                         @CostSummary()
                                     </text>);
                                         }).ToClientTemplate()
@@ -108,6 +108,41 @@
 
 
 <script type="text/javascript">
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            $(this).find(".k-grid-reject").hide();
+            if (dataItem.IsOnlineApproved) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+            
+        });
+    }
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var codeid;
+    var isApproved;
+    var isChecked;
+    var sendMarginApprove;
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.PrintingCostEstimationId;
+        isApproved = masterDataItem.IsOnlineApproved;
+        isChecked = masterDataItem.IsOnlineTransferred;
+        sendMarginApprove = masterDataItem.IsSentForMarginApproval;
+        if (isApproved) {           
+            $(".sum").hide();
+        }
+    }
     function calculateOverallCost(id) {
         var recordStatus = "";
 

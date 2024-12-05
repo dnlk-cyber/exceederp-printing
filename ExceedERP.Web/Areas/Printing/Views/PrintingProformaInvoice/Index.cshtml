@@ -1,0 +1,248 @@
+﻿@using ExceedERP.Core.Domain.Printing
+<label>Printing Proforma Invoice</label>
+
+@(Html.Kendo().Grid<PrintingProformaInvoice>()
+                .Name("grid")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.PrintingProformaInvoiceId).Width(100);
+                    columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
+                    columns.Bound(c => c.DeliveryPeriod).Width(120);
+                    columns.Bound(c => c.PriceValidityPeriod).Width(120);
+                    columns.Bound(c => c.ModeOfPayment).Width(100);
+                    columns.Bound(c => c.Remark).Width(90);
+                    columns.Command(command =>
+                    {
+                        command.Edit().Text(" ");
+                        command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+                        command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                        command.Destroy().Text(" ");
+
+                    }).Width(200);
+                })
+                .ToolBar(toolbar =>
+                {
+                    toolbar.Create();
+                })
+                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintingProformaInvoiceTemplate"))
+                .Filterable()
+                .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
+                .Scrollable(s => s.Height(400))
+
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Sort(sort => sort.Add(e => e.PrintingProformaInvoiceId).Descending())
+                    .Events(ev => ev.Error("error_handler(\"grid\")")
+                                .RequestStart("onRequestStart(\"grid\")")
+                                .RequestEnd("onRequestEnd(\"grid\")"))
+                    .Model(model => model.Id(p => p.PrintingProformaInvoiceId))
+                    .Read(read => read.Action("PrintingProformaInvoice_Read", "PrintingProformaInvoice"))
+                    .Create(create => create.Action("PrintingProformaInvoice_Create", "PrintingProformaInvoice"))
+                    .Update(update => update.Action("PrintingProformaInvoice_Update", "PrintingProformaInvoice"))
+                    .Destroy(destroy => destroy.Action("PrintingProformaInvoice_Delete", "PrintingProformaInvoice"))
+                ).ClientDetailTemplateId("tabstrip")
+)
+
+
+<script id="tabstrip" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                        .Name("tab_#=PrintingProformaInvoiceId#")
+                        .Items(item1 =>
+                        {
+                            item1.Add().Text("Proforma Item")
+                            .Content(
+                            @<text>
+                                @ProformaItem();
+                            </text>);
+                                }).ToClientTemplate())
+</script>
+
+
+@helper ProformaItem()
+{
+
+
+    @(Html.Kendo().Grid<PrintingProformaInvoiceItem>()
+                      .Name("grid_#=PrintingProformaInvoiceId#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+                          columns.Bound(c => c.UnitOfMeasurment).Width(100);
+                          columns.Bound(c => c.Quantity).Width(100);
+                          columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Value", "Text").Title("Tax Type").Width(120);
+
+                          columns.Bound(c => c.UnitPrice).Width(100);
+                          columns.Bound(c => c.TransportCost).Width(100);
+                          columns.Bound(c => c.TotalPrice).Title("Selling Price").Width(100);
+                          columns.Bound(c => c.Remark).Width(100);
+
+                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                      .TemplateName("PrintingProformaItemEditorTemplate"))
+                      .Filterable()
+                      .Scrollable()
+                      .Events(ev => ev.DataBound("onChildDataBound"))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev.Error("error_handler(\"grid_#=PrintingProformaInvoiceId#\")")
+                                                    .RequestStart("onRequestStart(\"grid_#=PrintingProformaInvoiceId#\")")
+                                                    .RequestEnd("onRequestEnd(\"grid_#=PrintingProformaInvoiceId#\")"))
+                          .Model(model => model.Id(p => p.PrintingProformaInvoiceItemId))
+                          .Read(read => read.Action("PrintingProformaItem_Read", "PrintingProformaItem", new { id = "#=PrintingProformaInvoiceId#" }))
+                          .Create(create => create.Action("PrintingProformaItem_Create", "PrintingProformaItem", new { id = "#=PrintingProformaInvoiceId#" }))
+                          .Update(update => update.Action("PrintingProformaItem_Update", "PrintingProformaItem"))
+                          .Destroy(destroy => destroy.Action("PrintingProformaItem_Delete", "PrintingProformaItem"))
+                      ).ToClientTemplate()
+    )
+
+}
+
+
+<script type="text/javascript">
+    function filterEstimation() {
+        return {
+            text: $("#PrintingCostEstimationId").data("kendoDropDownList").filterInput.val(),
+            //id: $("#CustomerId").val()
+        }
+    }
+    function filterJobType() {
+        return {
+            text: $("#JobTypeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterCustomer() {
+        return {
+            text: $("#CustomerId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            $(this).find(".k-grid-reject").hide();
+            if (dataItem.IsOnlineApproved) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+            else if (dataItem.IsSendForApproval) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-reject").show();
+
+                $(this).find(".k-grid-approve").show();
+            }
+            else {
+                $(this).find(".k-grid-approve").hide();
+            }
+
+        });
+    }
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var codeid;
+    var isApproved;
+    var isChecked;
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.PrintingProformaInvoiceId;
+        isApproved = masterDataItem.IsOnlineApproved;
+        isChecked = masterDataItem.IsOnlineTransferred;
+        if (isChecked || isApproved) {
+            $(".k-grid-add", "#grid_" + codeid).hide();
+
+        }
+
+
+    }
+    function onChildDataBound(e) {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (isChecked == true || isApproved) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+
+        });
+
+    }
+    function handleChecked(e) {
+      
+        if (confirm("Are you sure you this form is checked?")) {
+            var grid = this;
+            var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            var id = dataItem.PrintingProformaInvoiceId;
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CheckProforma", "PrintingProformaInvoice", new { Area = "Printing" })',
+                data: { id: id},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message);
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+
+      function handleApprove(e) {
+        if (confirm("Are you sure you want to approve?")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ApproveProforma", "PrintingProformaInvoice", new { Area = "Printing" })',
+                data: { id: dataItem.PrintingProformaInvoiceId},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+
+</script>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

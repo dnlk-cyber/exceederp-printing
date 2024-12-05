@@ -1608,6 +1608,8 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region printing 
+            modelBuilder.Configurations.Add(new PrintingProformaInvoiceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingProformaInvoiceItemEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingEstimationSummaryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingEstimationDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingEstimationCostSummaryEntityTypeConfiguration());
@@ -2342,6 +2344,8 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Printing
+        public DbSet<PrintingProformaInvoice> PrintingProformaInvoices { get; set; }
+        public DbSet<PrintingProformaInvoiceItem> PrintingProformaInvoiceItems { get; set; }
         public DbSet<PrintingEstimationSummary> PrintingEstimationSummaries { get; set; }
         public DbSet<PrintingEstimationDetail> PrintingEstimationDetails { get; set; }
         public DbSet<PrintingEstimationCostSummary> PrintingEstimationCostSummaries { get; set; }

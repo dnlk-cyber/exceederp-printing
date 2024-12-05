@@ -66,38 +66,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         public ActionResult PrintingCostEstimations_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PrintingCostEstimation> printingcostestimations = db.PrintingCostEstimations;
-            DataSourceResult result = printingcostestimations.ToDataSourceResult(request, printingCostEstimation => new PrintingCostEstimation
-            {
-                PrintingCostEstimationId = printingCostEstimation.PrintingCostEstimationId,
-                PaperSizeId = printingCostEstimation.PaperSizeId,
-                CustomerId = printingCostEstimation.CustomerId,
-                JobTypeId = printingCostEstimation.JobTypeId,
-                ProductQuantity = printingCostEstimation.ProductQuantity,
-                TotalTextNoPages = printingCostEstimation.TotalTextNoPages,
-                BindingStyleId = printingCostEstimation.BindingStyleId,
-                Width = printingCostEstimation.Width,
-                Length = printingCostEstimation.Length,
-                TextNoOfColors = printingCostEstimation.TextNoOfColors,
-                CoverNoOfColor = printingCostEstimation.CoverNoOfColor,
-                CoverPaperSize = printingCostEstimation.CoverPaperSize,
-                CoverRequired = printingCostEstimation.CoverRequired,
-                OnlyOneSideCover = printingCostEstimation.OnlyOneSideCover,
-                NoUpPagesPerA1 = printingCostEstimation.NoUpPagesPerA1,
-                ProcessCategoryId = printingCostEstimation.ProcessCategoryId,
-                TypeOfWorkId = printingCostEstimation.TypeOfWorkId,
-                EstimatedHrs = printingCostEstimation.EstimatedHrs,
-                DLaborRate = printingCostEstimation.DLaborRate,
-                TotalCost = printingCostEstimation.TotalCost,
-                OverHeadRate = printingCostEstimation.OverHeadRate,
-                OverHeadCost = printingCostEstimation.OverHeadCost,
-                TotalLaborCost = printingCostEstimation.TotalLaborCost,
-                DateCreated = printingCostEstimation.DateCreated,
-                LastModified = printingCostEstimation.LastModified,
-                CreatedBy = printingCostEstimation.CreatedBy,
-                ModifiedBy = printingCostEstimation.ModifiedBy
-            });
-
-            return Json(result);
+            
+            return Json(printingcostestimations.ToDataSourceResult(request));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -248,8 +218,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 if (labourCosts.Any() && materialCosts.Any())
                 {
 
-                    var totalLabourCost = labourCosts.Sum(x => x.TotalCost);
-                    var totalMaterialCost = materialCosts.Sum(s => s.TotalCost);
+                    var totalLabourCost = labourCosts.Sum(x => (decimal?)x.TotalCost) ?? 0;
+                    var totalMaterialCost = materialCosts.Sum(s => (decimal?)s.TotalCost) ?? 0;
                     var entity = new PrintingOverAllCost
                     {
                        PrintingCostEstimationId = estimation.PrintingCostEstimationId,
@@ -259,10 +229,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                        LaborCost = totalLabourCost,
                        MaterialCost = totalMaterialCost,
                        ProfitMargin = 0,
-                       TotalBeforeVAT = 0,
-                       TotalProductionCost = totalMaterialCost + totalLabourCost,
-                       UnitPrice = 0,
-                       VAT = 0
+                       TotalProductionCost = totalMaterialCost + totalLabourCost,                      
                     };
                     db.PrintingOverAllCosts.Add(entity);
                     db.SaveChanges();
