@@ -2023,6 +2023,7 @@
     <Compile Include="Areas\Printing\Controllers\PrintingCostSummaryController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingEstimationLaborCostController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingEstimationMaterialCostController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingJobOrderController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobTypeController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingMachineListController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingMachineTypeController.cs" />
@@ -9021,6 +9022,7 @@
     <Folder Include="Areas\Printing\Views\PrintDataProvider\" />
     <Folder Include="Areas\Printing\Views\PrintingCostSummary\" />
     <Folder Include="Areas\Printing\Views\PrintingEstimationDataProvider\" />
+    <Folder Include="Areas\Printing\Views\PrintingJobOrder\" />
     <Folder Include="Areas\Printing\Views\PrintingProformaItem\" />
     <Folder Include="Areas\Printing\Views\ProductionDataProvider\" />
     <Folder Include="Areas\Printing\Views\ProductionFollowUpViews\AutoJobOrder\EditorTemplates\" />

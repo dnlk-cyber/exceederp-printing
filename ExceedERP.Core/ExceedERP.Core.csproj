@@ -1267,6 +1267,7 @@
     <Compile Include="Domain\Printing\PrintingEstimation\PrintingStep.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\Setting\CommonEnum.cs" />
     <Compile Include="Domain\Printing\PrintingEstimation\Setting\Validation.cs" />
+    <Compile Include="Domain\Printing\PrintingJobOrder.cs" />
     <Compile Include="Domain\Printing\PrintingJobType.cs" />
     <Compile Include="Domain\Printing\PrintingMachineList.cs" />
     <Compile Include="Domain\Printing\PrintingMachineType.cs" />

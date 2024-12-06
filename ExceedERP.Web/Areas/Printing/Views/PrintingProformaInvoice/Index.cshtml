@@ -46,36 +46,33 @@
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                        .Name("tab_#=PrintingProformaInvoiceId#")
-                        .Items(item1 =>
-                        {
-                            item1.Add().Text("Proforma Item")
-                            .Content(
-                            @<text>
-                                @ProformaItem();
-                            </text>);
-                                }).ToClientTemplate())
+        .Name("tab_#=PrintingProformaInvoiceId#")
+        .Items(item1 =>
+        {
+            item1.Add().Text("Proforma Item")
+            .Content(
+            @<text>
+                @ProformaItem();
+            </text>);
+        }).ToClientTemplate())
 </script>
 
 
 @helper ProformaItem()
 {
-
-
     @(Html.Kendo().Grid<PrintingProformaInvoiceItem>()
                       .Name("grid_#=PrintingProformaInvoiceId#")
                       .Columns(columns =>
                       {
                           columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
-                          columns.Bound(c => c.UnitOfMeasurment).Width(100);
-                          columns.Bound(c => c.Quantity).Width(100);
-                          columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Value", "Text").Title("Tax Type").Width(120);
-
+                          columns.Bound(c => c.Quantity).Width(100);                    
+                          columns.Bound(c => c.NumberOfPages).Width(100);                    
                           columns.Bound(c => c.UnitPrice).Width(100);
+                          columns.Bound(c => c.TotalPrice).Width(100);
+                          columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Value", "Text").Title("Tax Type").Width(120);
                           columns.Bound(c => c.TransportCost).Width(100);
-                          columns.Bound(c => c.TotalPrice).Title("Selling Price").Width(100);
+                          columns.Bound(c => c.GrandTotalIncludingVAT).Title("Selling Price").Width(100);
                           columns.Bound(c => c.Remark).Width(100);
-
                           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
                       })
                       .ToolBar(toolbar =>
@@ -90,8 +87,8 @@
                       .DataSource(dataSource => dataSource
                           .Ajax()
                           .Events(ev => ev.Error("error_handler(\"grid_#=PrintingProformaInvoiceId#\")")
-                                                    .RequestStart("onRequestStart(\"grid_#=PrintingProformaInvoiceId#\")")
-                                                    .RequestEnd("onRequestEnd(\"grid_#=PrintingProformaInvoiceId#\")"))
+                                    .RequestStart("onRequestStart(\"grid_#=PrintingProformaInvoiceId#\")")
+                                    .RequestEnd("onRequestEnd(\"grid_#=PrintingProformaInvoiceId#\")"))
                           .Model(model => model.Id(p => p.PrintingProformaInvoiceItemId))
                           .Read(read => read.Action("PrintingProformaItem_Read", "PrintingProformaItem", new { id = "#=PrintingProformaInvoiceId#" }))
                           .Create(create => create.Action("PrintingProformaItem_Create", "PrintingProformaItem", new { id = "#=PrintingProformaInvoiceId#" }))
@@ -99,7 +96,6 @@
                           .Destroy(destroy => destroy.Action("PrintingProformaItem_Delete", "PrintingProformaItem"))
                       ).ToClientTemplate()
     )
-
 }
 
 

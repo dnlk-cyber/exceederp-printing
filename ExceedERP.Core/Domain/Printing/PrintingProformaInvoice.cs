@@ -41,7 +41,8 @@ namespace ExceedERP.Core.Domain.Printing
 
         [Display(Name = "Item")]
         public int JobTypeId { get; set; }
-        [Display(Name = "Unit of measurment")]
+        public int NumberOfPages { get; set; }
+        [Display(Name = "Unit of measurment")] 
         public string UnitOfMeasurment { get; set; }
         
         public decimal Quantity { get; set; }
@@ -49,8 +50,8 @@ namespace ExceedERP.Core.Domain.Printing
         public decimal UnitPrice { get; set; } //totalprice/quantity
         public decimal TotalPrice { get; set; }
         public decimal TransportCost { get; set; }        
-        public int GLTaxRateID { get; set; }        
-       
+        public int? GLTaxRateID { get; set; }
+        public decimal GrandTotalIncludingVAT { get; set; }
         public string Remark { get; set; }
         public bool IsActive { get; set; }
 

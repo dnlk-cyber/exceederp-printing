@@ -15,6 +15,22 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
+    public class PrintingJobOrderEntityTypeConfiguration : EntityTypeConfiguration<PrintingJobOrder>
+    {
+        public PrintingJobOrderEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingJobOrder", "Printing");
+            this.HasKey<int>(p => p.PrintingJobOrderId);
+        }
+    }
+    public class PrintingJobOrderItemEntityTypeConfiguration : EntityTypeConfiguration<PrintingJobOrderItem>
+    {
+        public PrintingJobOrderItemEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingJobOrderItem", "Printing");
+            this.HasKey<int>(p => p.PrintingJobOrderItemId);
+        }
+    }
     public class PrintingProformaInvoiceEntityTypeConfiguration : EntityTypeConfiguration<PrintingProformaInvoice>
     {
         public PrintingProformaInvoiceEntityTypeConfiguration()

@@ -1,4 +1,5 @@
-﻿using ExceedERP.Core.Domain.Printing;
+﻿using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Printing;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -29,46 +30,103 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public ActionResult PrintingProformaItem_Create([DataSourceRequest]DataSourceRequest request, PrintingProformaInvoiceItem model, int id)
         {
+            GLTaxRate glTaxRate = new GLTaxRate();
+            var printingEstimation = db.PrintingCostEstimations.Find(model.PrintingCostEstimationId);
+            if (printingEstimation == null) ModelState.AddModelError("", "Can't find proforma");
+
+         
+            var overAllCost = db.PrintingOverAllCosts.FirstOrDefault(x => x.PrintingCostEstimationId == printingEstimation.PrintingCostEstimationId);
+            if (overAllCost == null) ModelState.AddModelError(string.Empty, "Overall cost not found");
+            if(model.GLTaxRateID != null)
+            {
+                glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GLTaxRateID);
+                if (glTaxRate == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Tax rate not found!");
+                }
+            }
+            
+
             if (ModelState.IsValid)
             {
                 var entity = new PrintingProformaInvoiceItem
                 {
                     PrintingProformaInvoiceId = id,
-                    Quantity = model.Quantity,
-                    TotalPrice = model.TotalPrice,
+                    Quantity = printingEstimation.ProductQuantity,
+                    NumberOfPages = printingEstimation.TotalTextNoPages,
+                    TotalPrice = overAllCost.SellingPrice,
                     TransportCost = model.TransportCost,
-                    JobTypeId = model.JobTypeId,
+                    JobTypeId = printingEstimation.JobTypeId,
                     GLTaxRateID = model.GLTaxRateID,
-                    UnitOfMeasurment = model.UnitOfMeasurment,
-                    UnitPrice = model.UnitPrice,
+                    UnitOfMeasurment = model.UnitOfMeasurment,                    
                     Remark = model.Remark,
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Today,
                     PrintingCostEstimationId = model.PrintingCostEstimationId
-
                 };
+                entity.UnitPrice = entity.TotalPrice/entity.Quantity;
+                if(glTaxRate != null)
+                {
+                    entity.GrandTotalIncludingVAT = (entity.TotalPrice * glTaxRate.CalculatedRate) + entity.TotalPrice + entity.TransportCost;
+                }
+                else
+                {
+                    entity.GrandTotalIncludingVAT = entity.TotalPrice + entity.TransportCost;
+                }
                 db.PrintingProformaInvoiceItems.Add(entity);
                 db.SaveChanges();
                 model.PrintingProformaInvoiceItemId = entity.PrintingProformaInvoiceItemId;
+                model.GrandTotalIncludingVAT = entity.GrandTotalIncludingVAT;
+                model.TotalPrice = entity.TotalPrice;
+                model.JobTypeId = entity.JobTypeId;
             }
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
 
         }
         public ActionResult PrintingProformaItem_Update([DataSourceRequest]DataSourceRequest request, PrintingProformaInvoiceItem model)
         {
+            GLTaxRate glTaxRate = new GLTaxRate();
+            var printingEstimation = db.PrintingCostEstimations.Find(model.PrintingCostEstimationId);
+            if (printingEstimation == null) ModelState.AddModelError("", "Can't find proforma");
+
+           
+            var overAllCost = db.PrintingOverAllCosts.FirstOrDefault(x => x.PrintingCostEstimationId == printingEstimation.PrintingCostEstimationId);
+            if (overAllCost == null) ModelState.AddModelError(string.Empty, "Overall cost not found");
+            if (model.GLTaxRateID != null)
+            {
+                glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GLTaxRateID);
+                if (glTaxRate == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Tax rate not found!");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 var entity = new PrintingProformaInvoiceItem
                 {
                     PrintingProformaInvoiceId = model.PrintingProformaInvoiceId,
-                    Quantity = model.Quantity,
-                    TotalPrice = model.TotalPrice,
+                    Quantity = printingEstimation.ProductQuantity,
+                    NumberOfPages = printingEstimation.TotalTextNoPages,
+                    TotalPrice = overAllCost.SellingPrice,
                     TransportCost = model.TransportCost,
-                    JobTypeId = model.JobTypeId,
+                    JobTypeId = printingEstimation.JobTypeId,
                     GLTaxRateID = model.GLTaxRateID,
                     UnitOfMeasurment = model.UnitOfMeasurment,
-                    UnitPrice = model.UnitPrice,
                     Remark = model.Remark,
+                    ModifiedBy = User.Identity.Name,
+                    LastModified = DateTime.Today,
                     PrintingCostEstimationId = model.PrintingCostEstimationId
                 };
+                entity.UnitPrice = entity.TotalPrice / entity.Quantity;
+                if (glTaxRate != null)
+                {
+                    entity.GrandTotalIncludingVAT = (entity.TotalPrice * glTaxRate.CalculatedRate) + entity.TotalPrice + entity.TransportCost;
+                }
+                else
+                {
+                    entity.GrandTotalIncludingVAT = entity.TotalPrice + entity.TransportCost;
+                }
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
                 model.PrintingProformaInvoiceItemId = entity.PrintingProformaInvoiceItemId;
