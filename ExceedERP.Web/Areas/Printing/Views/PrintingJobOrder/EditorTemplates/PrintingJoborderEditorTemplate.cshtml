@@ -1,0 +1,78 @@
+﻿
+@model ExceedERP.Core.Domain.Printing.PrintingJobOrder
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Proforma No</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.PrintingProformaInvoiceId)
+                                            .ValuePrimitive(true)
+                                            .OptionLabel("Select Customer...")
+                                            .DataTextField("Text")
+                                            .DataValueField("Value")
+                                            .Filter("contains")
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetProformaInvoiceNoPrinting", "ManufacturingDataProvider", new { area = "Manufacturing" }).Data("filterProformaNo"))
+                                                    .ServerFiltering(true);
+                                            }).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Payment Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.PaymentType)
+                                                            .OptionLabel("Task Type...")
+                                                            .DataTextField("Text")
+                                                            .DataValueField("Value")
+
+                                                            .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.TypeOfPayment))
+                                                            )
+                )
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>CRV No</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.CRVNo).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Advance pay(%)</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.AdvancePaymentInPercent).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Start Date</label>
+            <div>
+                @(Html.Kendo().DatePickerFor(model => model.JobStartDate).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Remark</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.Remark).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>

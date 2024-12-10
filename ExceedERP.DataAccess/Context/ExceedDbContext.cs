@@ -1608,6 +1608,10 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region printing 
+            modelBuilder.Configurations.Add(new PrintingProductionLaborCostEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingProductionMaterialCostEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingJobOrderProductionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingEstimationMarginEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingJobOrderEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingJobOrderItemEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProformaInvoiceEntityTypeConfiguration());
@@ -2346,6 +2350,10 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Printing
+        public DbSet<PrintingJobOrderProduction> PrintingJobOrderProductions { get; set; }
+        public DbSet<PrintingProductionMaterialCost> PrintingProductionMaterialCosts { get; set; }
+        public DbSet<PrintingProductionLaborCost> PrintingProductionLaborCosts { get; set; }
+        public DbSet<PrintingEstimationMargin> PrintingEstimationMargins { get; set; }
         public DbSet<PrintingJobOrder> PrintingJobOrders { get; set; }
         public DbSet<PrintingJobOrderItem> PrintingJobOrderItems { get; set; }
         public DbSet<PrintingProformaInvoice> PrintingProformaInvoices { get; set; }

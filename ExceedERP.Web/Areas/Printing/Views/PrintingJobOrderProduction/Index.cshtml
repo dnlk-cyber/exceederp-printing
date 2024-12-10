@@ -1,0 +1,258 @@
+﻿@using ExceedERP.Core.Domain.Printing
+
+<label>Printing Production</label>
+@(Html.Kendo().Grid<PrintingJobOrderProduction>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(c => c.JobOrderNo);
+        columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Title("Customer");
+        columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text");
+        columns.ForeignKey(c => c.PaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text");
+        columns.ForeignKey(c => c.BindingStyleId, (IEnumerable)ViewData["BindingStyle"], "Value", "Text");
+        columns.Bound(c => c.TextNoOfColors);
+        columns.Bound(c => c.CoverNoOfColor);
+        columns.Bound(c => c.TotalTextNoPages).Title("Number Of Pages");
+
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.JobDescription);
+        columns.Bound(c => c.DateOrdered);
+        columns.Bound(c => c.DeliveryDate);
+        columns.Command(command =>
+        {
+            command.Edit().Text(" ");
+            command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+            command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+        }).Width(220);
+    })
+
+    .Editable(editable => editable.Mode(GridEditMode.PopUp)
+    .TemplateName("PrintingJoborderProductionEditorTemplate"))
+    .Filterable()
+    .Scrollable(s => s.Height(400))
+    //.Events(ev => ev.DetailExpand("detailExpand")
+    //.DataBound("dataBound"))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .Sort(sort => sort.Add(e => e.PrintingJobOrderProductionId).Descending())
+        .Events(ev => ev.Error("error_handler(\"grid\")")
+                .RequestStart("onRequestStart(\"grid\")")
+                .RequestEnd("onRequestEnd(\"grid\")"))
+        .Model(model => model.Id(p => p.PrintingJobOrderProductionId))
+        .Read(read => read.Action("PrintingJobOrderProduction_Read", "PrintingJobOrderProduction"))
+        .Update(update => update.Action("PrintingOrderProduction_Update", "PrintingJobOrderProduction"))
+    ).ClientDetailTemplateId("tabstrip")
+)
+
+
+<script id="tabstrip" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_#=PrintingJobOrderProductionId#")
+        .Items(item1 =>
+        {
+            item1.Add().Text("Material Cost").Content(
+            @<text>
+                @material()
+            </text>);
+            item1.Add().Text("Labor Cost").Content(
+            @<text>
+                @labor()
+            </text>);
+        }).ToClientTemplate())
+</script>
+
+
+@helper material()
+{
+    @(Html.Kendo().Grid<PrintingProductionMaterialCost>()
+                .Name("material_#=PrintingJobOrderProductionId#")
+                .Columns(columns =>
+                {
+                    columns.ForeignKey(c => c.PrintingMaterialCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text");
+                    columns.ForeignKey(c => c.PrintingMaterialCategoryItemId, (IEnumerable)ViewData["Item"], "Value", "Text");
+                    columns.Bound(c => c.Quantity);
+                    columns.Bound(c => c.UnitOfMeasurment);
+                    columns.Bound(c => c.UnitCost);
+                    columns.Bound(c => c.TotalCost);
+                })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Filterable()
+                .Scrollable()
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Events(ev => ev.Error("error_handler(\"material_#=PrintingJobOrderProductionId#\")")
+                            .RequestStart("onRequestStart(\"material_#=PrintingJobOrderProductionId#\")")
+                            .RequestEnd("onRequestEnd(\"material_#=PrintingJobOrderProductionId#\")"))
+                    .Model(model =>
+                    {
+                        model.Id(p => p.PrintingProductionMaterialCostId);
+                        model.Field(p => p.PrintingMaterialCategoryId).Editable(false);
+                        model.Field(p => p.Quantity).Editable(false);
+                        model.Field(p => p.PrintingMaterialCategoryItemId).Editable(false);
+                        model.Field(p => p.Quantity).Editable(false);
+                        model.Field(p => p.UnitOfMeasurment).Editable(false);
+                        model.Field(p => p.UnitCost).Editable(false);
+                        model.Field(p => p.TotalCost).Editable(false);
+                    })
+                    .Read(read => read.Action("PrintingMaterialCost_Read", "PrintingMaterialCostProduction", new { id = "#=PrintingJobOrderProductionId#" }))
+
+                ).ToClientTemplate()
+    )
+}
+
+@helper labor()
+{
+    @(Html.Kendo().Grid<PrintingProductionLaborCost>()
+                .Name("labor_#=PrintingJobOrderProductionId#")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.ProcessCategory).EditorTemplateName("PrintingCategoryDropDownTemplate");
+                    columns.ForeignKey(c => c.PrintingProcessId, (IEnumerable)ViewData["PrintingProcess"], "Value", "Text");
+                    columns.ForeignKey(c => c.PrintingMachineTypeId, (IEnumerable)ViewData["PrintingMachineType"], "Value", "Text");
+                    columns.Bound(c => c.EstimatedHours);
+                    columns.Bound(c => c.TotalCost);
+
+                })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Filterable()
+                .Scrollable()
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Events(ev => ev.Error("error_handler(\"labor_#=PrintingJobOrderProductionId#\")")
+                            .RequestStart("onRequestStart(\"labor_#=PrintingJobOrderProductionId#\")")
+                            .RequestEnd("onRequestEnd(\"labor_#=PrintingJobOrderProductionId#\")"))
+                    .Model(model =>
+                    {
+                        model.Id(p => p.PrintingProductionLaborCostId);
+                      
+                    })
+                    .Read(read => read.Action("PrintingLaborCost_Read", "PrintingMaterialCostProduction", new { id = "#=PrintingJobOrderProductionId#" }))
+
+                ).ToClientTemplate()
+    )
+}
+
+<script type="text/javascript">
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            $(this).find(".k-grid-reject").hide();
+            if (dataItem.IsOnlineApproved) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-delete").hide();
+                if (dataItem.JobClosed) {
+                    $(this).addClass("Job-Closed");
+                }
+            }
+            else if (dataItem.IsSendForApproval) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-reject").show();
+
+                $(this).find(".k-grid-approve").show();
+            }
+
+            else {
+                $(this).find(".k-grid-approve").hide();
+            }
+
+        });
+    }
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var codeid;
+    var isApproved;
+    var isChecked;
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+
+        codeid = masterDataItem.PrintingJobOrderProductionId;
+        isApproved = masterDataItem.IsOnlineApproved;
+        isChecked = masterDataItem.IsOnlineTransferred;
+        if (isChecked || isApproved) {
+            $(".k-grid-add", "#grid_" + codeid).hide();
+
+        }
+
+
+    }
+
+
+    function handleChecked(e) {
+
+        if (confirm("Are you sure you this form is checked?")) {
+            var grid = this;
+            var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            var id = dataItem.PrintingJobOrderId;
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CheckJob", "PrintingJobOrder", new { Area = "Printing" })',
+                data: { id: id},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message);
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+
+    function handleApprove(e) {
+        if (confirm("Are you sure you want to approve?")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ApproveJobOrder", "PrintingJobOrder", new { Area = "Printing" })',
+                data: { id: dataItem.PrintingJobOrderId},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+</script>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+
+    .Job-Closed {
+        background-color: #CCCCCC;
+    }
+</style>

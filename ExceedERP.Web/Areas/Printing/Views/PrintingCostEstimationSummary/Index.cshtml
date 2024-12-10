@@ -2,44 +2,44 @@
 <label>Printing Estimation Summary</label>
 
 @(Html.Kendo().Grid<PrintingEstimationSummary>()
-                          .Name("grid")
-                          .Columns(columns =>
-                          {
-                              columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(110).Title("Customer");
-                              columns.Command(command =>
+                              .Name("grid")
+                              .Columns(columns =>
                               {
-                                  command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
-                                  columns.Bound(c => c.Status).Width(120);
+                                  columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(110).Title("Customer");
+                                  columns.Command(command =>
+                                  {
+                                      command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
+                                      columns.Bound(c => c.Status).Width(120);
 
-                                  command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
-                              }).Width(200);
-                          })
-                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                          .Filterable()
-                          .Scrollable()
-                          .DataSource(dataSource => dataSource
-                              .Ajax()
-                              .Events(ev => ev.Error("error_handler(\"grid\")")
-                                .RequestStart("onRequestStart(\"grid\")")
-                                .RequestEnd("onRequestEnd(\"grid\")"))
-                              .Model(model => model.Id(p => p.PrintingEstimationSummaryId))
-                              .Read(read => read.Action("PrintingEstimationSummaries_Read", "PrintingCostEstimationSummary"))
-                          ).ClientDetailTemplateId("cost_estimation")
+                                      command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
+                                  }).Width(200);
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Filterable()
+                              .Scrollable()
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Events(ev => ev.Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+                                  .Model(model => model.Id(p => p.PrintingEstimationSummaryId))
+                                  .Read(read => read.Action("PrintingEstimationSummaries_Read", "PrintingCostEstimationSummary"))
+                              ).ClientDetailTemplateId("cost_estimation")
 
 )
 <script id="cost_estimation" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                            .Name("tab_grid_#=PrintingEstimationSummaryId#")
-                                            .Items(itemn =>
-                                            {
-                                                itemn.Add().Text("Detail").Content(@<text>@Detail()</text>);
-                                                        itemn.Add().Text("Cost Summary")
-                                .Content(
-                                    @<text>
-                                        <span class="sum"><a onclick='return calculateOverallCost("#=PrintingEstimationSummaryId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a></span>
-                                        @CostSummary()
-                                    </text>);
-                                        }).ToClientTemplate()
+                                                    .Name("tab_grid_#=PrintingEstimationSummaryId#")
+                                                    .Items(itemn =>
+                                                    {
+                                                        itemn.Add().Text("Detail").Content(@<text>@Detail()</text>);
+                                                                itemn.Add().Text("Cost Summary")
+                            .Content(
+                                @<text>
+                                    <span class="sum"><a onclick='return calculateOverallCost("#=PrintingEstimationSummaryId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a></span>
+                                    @CostSummary()
+                                </text>);
+                                                }).ToClientTemplate()
     )
 </script>
 
@@ -48,26 +48,69 @@
 
 
     @(Html.Kendo().Grid<PrintingEstimationDetail>()
-        .Name("grid_#=PrintingEstimationSummaryId#")
-        .Columns(columns =>
-        {
-            columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(130).Title("Job Type");
-            columns.Bound(c => c.Quantity).Width(120);
-            columns.Bound(c => c.MaterialCost).Width(120);
-            columns.Bound(c => c.LabourCost).Width(120);
-            columns.Bound(c => c.OverHeadCost).Width(120);
-            columns.Bound(c => c.ManufacturingCost).Width(120);
-            columns.Bound(c => c.AdministrativeCost).Width(120);
-            columns.Bound(c => c.GrandTotalCost).Width(120);
-        })
-        .Editable(editable => editable.Mode(GridEditMode.InLine))
-        .Filterable()
-        .Scrollable()
-        .DataSource(dataSource => dataSource
-            .Ajax()
-            .Model(model => model.Id(p => p.PrintingEstimationDetailId))
-            .Read(read => read.Action("PrintingEstimationDetail_Read", "PrintingCostEstimationSummary", new { id = "#=PrintingEstimationSummaryId#" }))
-        ).ToClientTemplate()
+                .Name("grid_#=PrintingEstimationSummaryId#")
+                .Columns(columns =>
+                {
+                    columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Title("Job Type");
+                    columns.Bound(c => c.Quantity);
+                    columns.Bound(c => c.MaterialCost);
+                    columns.Bound(c => c.LabourCost);
+                    columns.Bound(c => c.OverHeadCost);
+                    columns.Bound(c => c.ManufacturingCost);
+                    columns.Bound(c => c.AdministrativeCost);
+                    columns.Bound(c => c.UnitCost);
+                    columns.Bound(c => c.TotalCost);
+                    columns.Bound(c => c.ProfitMargin);
+                    columns.Bound(c => c.UnitPrice);
+                    columns.Bound(c => c.TotalPrice);
+                    columns.Command(command =>
+                          {
+                              command.Edit().Text("Add Profit Margin");
+                              command.Custom("approvemargin").Text("Approve Profit Margin").IconClass("fa fa-thumbs-up").HtmlAttributes(new { @class = "margin-approve", title = "approve margin" }).Click("approveMargin");
+                          });
+                })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Filterable()
+                .Scrollable()
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Model(model => model.Id(p => p.PrintingEstimationDetailId))
+                    .Read(read => read.Action("PrintingEstimationDetail_Read", "PrintingCostEstimationSummary", new { id = "#=PrintingEstimationSummaryId#" }))
+                ).ToClientTemplate()
+    )
+
+}
+
+@helper Margin()
+{
+    @(Html.Kendo().Grid<PrintingEstimationMargin>()
+                      .Name("grid2_#=PrintingEstimationDetailId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.TotalCost).Width(120);
+                          columns.Bound(c => c.ProfitMargin).Width(120);
+                          columns.Bound(c => c.TotalPrice).Width(120);
+                          columns.Command(command =>
+                          {
+                              command.Edit().Text("Add Profit Margin");
+                              command.Custom("approvemargin").Text("Approve Profit Margin").IconClass("fa fa-thumbs-up").HtmlAttributes(new { @class = "margin-approve", title = "approve margin" }).Click("approveDetailMargin");
+                          }).Width(350);
+
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Filterable()
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(model =>
+                          {
+                              model.Id(p => p.PrintingEstimationMarginId);
+                              model.Field(p => p.TotalPrice).Editable(false);
+                              model.Field(p => p.TotalCost).Editable(false);
+                          })
+                          .Read(read => read.Action("PrintingEstimationMargin_Read", "PrintingEstimationMargin", new { id = "#=PrintingEstimationDetailId#" }))
+                          .Update(read => read.Action("PrintingEstimationMargin_Update", "PrintingEstimationMargin"))
+                  ).ToClientTemplate()
     )
 
 }
@@ -75,33 +118,33 @@
 @helper CostSummary()
 {
     @(Html.Kendo().Grid<PrintingEstimationCostSummary>()
-              .Name("grid2_#=PrintingEstimationSummaryId#")
-              .Columns(columns =>
-              {
-                  columns.Bound(c => c.CommulativeCost).Width(120);
-                  columns.Bound(c => c.ProfitMargin).Width(120);
-                  columns.Bound(c => c.FinalPriceIncludingProfit).Width(120);
-                  columns.Command(command =>
-                  {
-                      command.Edit().Text("Add Profit Margin");
-                      command.Custom("approvemargin").Text("Approve Profit Margin").IconClass("fa fa-thumbs-up").HtmlAttributes(new { @class = "margin-approve", title = "approve margin" }).Click("approveMargin");
-                  }).Width(350);
+                      .Name("grid2_#=PrintingEstimationSummaryId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.CommulativeCost).Width(120);
+                          columns.Bound(c => c.ProfitMargin).Width(120);
+                          columns.Bound(c => c.FinalPriceIncludingProfit).Width(120);
+                          columns.Command(command =>
+                          {
+                              command.Edit().Text("Add Profit Margin");
+                              command.Custom("approvemargin").Text("Approve Profit Margin").IconClass("fa fa-thumbs-up").HtmlAttributes(new { @class = "margin-approve", title = "approve margin" }).Click("approveMargin");
+                          }).Width(350);
 
-              })
-              .Editable(editable => editable.Mode(GridEditMode.InLine))
-              .Filterable()
-              .Scrollable()
-              .DataSource(dataSource => dataSource
-                  .Ajax()
-                  .Model(model =>
-                  {
-                      model.Id(p => p.PrintingEstimationCostSummaryId);
-                      model.Field(p => p.CommulativeCost).Editable(false);
-                      model.Field(p => p.FinalPriceIncludingProfit).Editable(false);
-                  })
-                  .Read(read => read.Action("PrintingEstimationSummaries_Read", "PrintingCostSummary", new { id = "#=PrintingEstimationSummaryId#" }))
-                  .Update(read => read.Action("PrintingEstimationCostSummaries_Update", "PrintingCostSummary"))
-          ).ToClientTemplate()
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Filterable()
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(model =>
+                          {
+                              model.Id(p => p.PrintingEstimationCostSummaryId);
+                              model.Field(p => p.CommulativeCost).Editable(false);
+                              model.Field(p => p.FinalPriceIncludingProfit).Editable(false);
+                          })
+                          .Read(read => read.Action("PrintingEstimationSummaries_Read", "PrintingCostSummary", new { id = "#=PrintingEstimationSummaryId#" }))
+                          .Update(read => read.Action("PrintingEstimationCostSummaries_Update", "PrintingCostSummary"))
+                  ).ToClientTemplate()
     )
 
 }
@@ -121,7 +164,7 @@
                 $(this).find(".k-grid-reject").hide();
                 $(this).find(".k-grid-delete").hide();
             }
-            
+
         });
     }
     var masterRow;
@@ -139,7 +182,7 @@
         isApproved = masterDataItem.IsOnlineApproved;
         isChecked = masterDataItem.IsOnlineTransferred;
         sendMarginApprove = masterDataItem.IsSentForMarginApproval;
-        if (isApproved) {           
+        if (isApproved) {
             $(".sum").hide();
         }
     }
@@ -210,7 +253,7 @@
        });
       }
     }
-    
+
     function approveMargin(e) {
         if (confirm("Are you sure this estimation form is to be checked?")) {
              var grid = this,
@@ -219,6 +262,31 @@
            type: "POST",
             url: '@Url.Action("ApproveMargin", "PrintingCostSummary", new { Area = "Printing" })',
             data: { id: dataItem.PrintingEstimationCostSummaryId },
+            success: function (result) {
+                if (result.Success) {
+                    toastr.success(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read();
+                }
+                else {
+                    toastr.error(result.Message);
+
+                }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+      }
+    }
+
+    function approveDetailMargin(e) {
+        if (confirm("Are you sure this estimation form is to be checked?")) {
+             var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+            url: '@Url.Action("ApproveMargin", "PrintingEstimationMargin", new { Area = "Printing" })',
+            data: { id: dataItem.PrintingEstimationMarginId },
             success: function (result) {
                 if (result.Success) {
                     toastr.success(result.Message);

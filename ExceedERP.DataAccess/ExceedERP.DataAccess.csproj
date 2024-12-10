@@ -543,6 +543,10 @@
     <Compile Include="Migrations\202412061556368_printjoborder.Designer.cs">
       <DependentUpon>202412061556368_printjoborder.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202412100937089_printingprodestima.cs" />
+    <Compile Include="Migrations\202412100937089_printingprodestima.Designer.cs">
+      <DependentUpon>202412100937089_printingprodestima.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -903,6 +907,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202412061556368_printjoborder.resx">
       <DependentUpon>202412061556368_printjoborder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202412100937089_printingprodestima.resx">
+      <DependentUpon>202412100937089_printingprodestima.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

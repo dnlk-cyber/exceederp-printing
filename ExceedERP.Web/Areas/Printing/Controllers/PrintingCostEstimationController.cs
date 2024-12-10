@@ -340,10 +340,11 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     JobTypeId = model.JobTypeId,
                     MaterialCost = OverAllCost.MaterialCost,
                     LabourCost = OverAllCost.LaborCost,
+                    GraphicsCost = OverAllCost.GraphicsCost,
                     AdministrativeCost = OverAllCost.AdminstrativeCost,
                     OverHeadCost = OverAllCost.OverHeadCost,
                     ManufacturingCost = OverAllCost.MaterialCost,
-                    GrandTotalCost = OverAllCost.GrandTotal,
+                    TotalCost = OverAllCost.GrandTotal,
                     Quantity = model.ProductQuantity,
                     PrintingEstimationSummaryId = summary.PrintingEstimationSummaryId,
                 };
@@ -360,7 +361,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     AdministrativeCost = OverAllCost.AdminstrativeCost,
                     OverHeadCost = OverAllCost.OverHeadCost,
                     ManufacturingCost = OverAllCost.MaterialCost,
-                    GrandTotalCost = OverAllCost.GrandTotal,
+                    TotalCost = OverAllCost.GrandTotal,
                     Quantity = model.ProductQuantity,
                     PrintingEstimationSummaryId = estimationSummary.PrintingEstimationSummaryId,
                 };

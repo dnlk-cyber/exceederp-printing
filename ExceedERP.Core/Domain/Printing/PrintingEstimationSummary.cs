@@ -23,6 +23,7 @@ namespace ExceedERP.Core.Domain.Printing
         public decimal MaterialCost { get; set; }
         [Display(Name = "Direct labour Cost")]
         public decimal LabourCost { get; set; }
+        public decimal GraphicsCost { get; set; }
         [Display(Name = "OverHead Cost(%)")]
         [Required]
         public decimal OverHeadCost { get; set; }
@@ -32,12 +33,29 @@ namespace ExceedERP.Core.Domain.Printing
         [Required]
         public decimal AdministrativeCost { get; set; }
         [Display(Name = "Total Cost")]
-        public decimal GrandTotalCost { get; set; }
+        public decimal TotalCost { get; set; }
+        public decimal UnitCost { get; set; }
+        public decimal ProfitMargin { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal TotalPrice { get; set; }
+        public bool IsCalculated { get; set; }
         //Fk
         public int PrintingEstimationSummaryId { get; set; }
 
     }
+    public class PrintingEstimationMargin
+    {
+        [Key]
+        public int PrintingEstimationMarginId { get; set; }
+        public decimal TotalCost { get; set; }
+        public decimal ProfitMargin { get; set; }
+        public decimal TotalPrice { get; set; }
+        public bool IsApprovedMargin { get; set; }
 
+        //
+        public int PrintingEstimationDetailId { get; set; }
+
+    }
     public class PrintingEstimationCostSummary
     {
         [Key]

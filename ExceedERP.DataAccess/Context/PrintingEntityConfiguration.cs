@@ -15,6 +15,38 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
+    public class PrintingEstimationMarginEntityTypeConfiguration : EntityTypeConfiguration<PrintingEstimationMargin>
+    {
+        public PrintingEstimationMarginEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingEstimationMargin", "Printing");
+            this.HasKey<int>(p => p.PrintingEstimationMarginId);
+        }
+    }
+    public class PrintingJobOrderProductionEntityTypeConfiguration: EntityTypeConfiguration<PrintingJobOrderProduction>
+    {
+        public PrintingJobOrderProductionEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingJobOrderProduction", "Printing");
+            this.HasKey<int>(p => p.PrintingJobOrderProductionId);
+        }
+    }
+    public class PrintingProductionMaterialCostEntityTypeConfiguration : EntityTypeConfiguration<PrintingProductionMaterialCost>
+    {
+        public PrintingProductionMaterialCostEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingProductionMaterialCost", "Printing");
+            this.HasKey<int>(p => p.PrintingProductionMaterialCostId);
+        }
+    }
+    public class PrintingProductionLaborCostEntityTypeConfiguration : EntityTypeConfiguration<PrintingProductionLaborCost>
+    {
+        public PrintingProductionLaborCostEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingProductionLaborCost", "Printing");
+            this.HasKey<int>(p => p.PrintingProductionLaborCostId);
+        }
+    }
     public class PrintingJobOrderEntityTypeConfiguration : EntityTypeConfiguration<PrintingJobOrder>
     {
         public PrintingJobOrderEntityTypeConfiguration()

@@ -6,7 +6,6 @@
                   .Columns(columns =>
                   {
                       columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text");
-
                       columns.ForeignKey(c => c.PaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text");
                       columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text");
                       columns.ForeignKey(c => c.BindingStyleId, (IEnumerable)ViewData["BindingStyle"], "Value", "Text");
@@ -15,8 +14,7 @@
                       columns.Bound(c => c.CoverNoOfColor);
                       columns.Bound(c => c.ProductQuantity);
                       columns.Bound(c => c.TotalTextNoPages).Title("Number Of Pages");
-
-
+                      
                       columns.Command(command =>
                       {
                           command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
@@ -123,6 +121,8 @@
                       .Scrollable()
                       .DataSource(dataSource => dataSource
                           .Ajax()
+                          .Sort(sort => sort.Add(e => e.ProcessCategory).Ascending())
+
                           .Aggregates(aggregates =>
                           {
                               aggregates.Add(c => c.TotalCost).Sum();
@@ -336,19 +336,19 @@
             if (confirm("Are you sure to approve this estimation form?")) {
              var grid = this,
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
-        $.ajax({
-           type: "POST",
-            url: '@Url.Action("ApproveEstimationForm", "PrintingCostEstimation", new { Area = "Printing" })',
-            data: { id: dataItem.PrintingCostEstimationId },
-            success: function (result) {
-                if (result.Success) {
-                    toastr.success(result.Message);
-                    $("#grid").data("kendoGrid").dataSource.read();
-                }
-                else {
-                    toastr.error(result.Message);
+            $.ajax({
+               type: "POST",
+                url: '@Url.Action("ApproveEstimationForm", "PrintingCostEstimation", new { Area = "Printing" })',
+                data: { id: dataItem.PrintingCostEstimationId },
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message);
 
-                }
+                    }
            },
            error: function(result) {
                alert(result);

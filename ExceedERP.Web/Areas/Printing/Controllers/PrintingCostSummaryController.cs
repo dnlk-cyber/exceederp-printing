@@ -68,7 +68,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 var entity = new PrintingEstimationCostSummary
                 {
                     PrintingEstimationSummaryId = estimationSummary.PrintingEstimationSummaryId,
-                    CommulativeCost = estimationDetails?.Sum(x => (decimal?)x.GrandTotalCost) ?? 0
+                    CommulativeCost = estimationDetails?.Sum(x => (decimal?)x.TotalCost) ?? 0
                 };
                 db.PrintingEstimationCostSummaries.Add(entity);
                 db.SaveChanges();
