@@ -10,8 +10,6 @@ namespace ExceedERP.Core.Domain.Printing
         public int CustomerId { get; set; }
         public bool IsClosed { get; set; }
         public bool IsCalculated { get; set; }
-        // FK
-        public int PrintingCostEstimationId { get; set; }
     }
     public class PrintingEstimationDetail
     {
@@ -41,6 +39,7 @@ namespace ExceedERP.Core.Domain.Printing
         public bool IsCalculated { get; set; }
         //Fk
         public int PrintingEstimationSummaryId { get; set; }
+        public int PrintingCostEstimationId { get; set; }
 
     }
     public class PrintingEstimationMargin

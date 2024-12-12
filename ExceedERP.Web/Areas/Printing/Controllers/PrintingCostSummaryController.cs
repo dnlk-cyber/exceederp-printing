@@ -79,7 +79,6 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public JsonResult ApproveMargin(int id)
         {
-
             object response = null;
             var overAllCost = db.PrintingEstimationCostSummaries.FirstOrDefault(x => x.PrintingEstimationCostSummaryId == id);
 
@@ -90,8 +89,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 db.Entry(overAllCost).State = EntityState.Modified;
                 db.SaveChanges();
                 ExcludeOtherMargin(overAllCost.PrintingEstimationSummaryId);
+                AssignMarginToDetail(overAllCost.PrintingEstimationSummaryId, overAllCost.ProfitMargin);
                 response = new { Success = true, Message = "Margin approved successfully!" };
-
             }
             else
             {
@@ -106,6 +105,23 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 .Where(x => x.PrintingEstimationSummaryId == id && !x.IsApprovedMargin)
                 .ToList();
             db.PrintingEstimationCostSummaries.RemoveRange(overAllCosts);
+            db.SaveChanges();
+        }
+
+        private void AssignMarginToDetail(int id, decimal margin)
+        {
+
+            var estimationDetails = db.PrintingEstimationDetails
+                .Where(x => x.PrintingEstimationSummaryId == id)
+                .ToList();
+            foreach (var estimationDetail in estimationDetails)
+            {
+                estimationDetail.ProfitMargin = margin;
+                estimationDetail.TotalPrice = (estimationDetail.TotalCost * margin) + estimationDetail.TotalCost;
+                db.PrintingEstimationDetails.Attach(estimationDetail);
+                db.Entry(estimationDetail).State = EntityState.Modified;
+            }
+            
             db.SaveChanges();
         }
     }

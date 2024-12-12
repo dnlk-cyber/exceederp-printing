@@ -33,7 +33,7 @@
                     )
                   .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintingCostEstimationTemplate"))
                   .Filterable()
-                  .Scrollable()
+                  .Scrollable(s => s.Height(400))
                   .DataSource(dataSource => dataSource
                       .Ajax()
                       .Model(model => model.Id(p => p.PrintingCostEstimationId))

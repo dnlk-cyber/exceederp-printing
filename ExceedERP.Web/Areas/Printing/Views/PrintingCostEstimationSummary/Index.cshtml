@@ -16,7 +16,7 @@
                               })
                               .Editable(editable => editable.Mode(GridEditMode.InLine))
                               .Filterable()
-                              .Scrollable()
+                              .Scrollable(s => s.Height(400))
                               .DataSource(dataSource => dataSource
                                   .Ajax()
                                   .Events(ev => ev.Error("error_handler(\"grid\")")
@@ -63,28 +63,44 @@
                     columns.Bound(c => c.ProfitMargin);
                     columns.Bound(c => c.UnitPrice);
                     columns.Bound(c => c.TotalPrice);
-                    columns.Command(command =>
-                          {
-                              command.Edit().Text("Add Profit Margin");
-                              command.Custom("approvemargin").Text("Approve Profit Margin").IconClass("fa fa-thumbs-up").HtmlAttributes(new { @class = "margin-approve", title = "approve margin" }).Click("approveMargin");
-                          });
+                    //columns.Command(command =>
+                    //      {
+                    //          //command.Edit().Text("Add Profit Margin");
+                    //          command.Custom("approvemargin").Text("Approve Profit Margin").IconClass("fa fa-thumbs-up").HtmlAttributes(new { @class = "margin-approve", title = "approve margin" }).Click("approveMargin");
+                    //      }).Width(200);
                 })
                 .Editable(editable => editable.Mode(GridEditMode.InLine))
                 .Filterable()
-                .Scrollable()
+                .Scrollable(s => s.Height(400))
+                .ClientDetailTemplateId("detail_tab")
                 .DataSource(dataSource => dataSource
                     .Ajax()
                     .Model(model => model.Id(p => p.PrintingEstimationDetailId))
                     .Read(read => read.Action("PrintingEstimationDetail_Read", "PrintingCostEstimationSummary", new { id = "#=PrintingEstimationSummaryId#" }))
+
                 ).ToClientTemplate()
     )
 
 }
 
+<script id="detail_tab" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                .Name("tab_margin#=PrintingEstimationDetailId#")
+                .Items(itemn2 =>
+                {
+                    itemn2.Add().Text("Margins").Content(
+            @<text>
+                <span class="sum"><a onclick='return calculateTotalCostMargin("#=PrintingEstimationDetailId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a></span>
+                @Margin()
+            </text>);
+
+                        }).ToClientTemplate()
+    )
+</script>
 @helper Margin()
 {
     @(Html.Kendo().Grid<PrintingEstimationMargin>()
-                      .Name("grid2_#=PrintingEstimationDetailId#")
+                      .Name("margin_#=PrintingEstimationDetailId#")
                       .Columns(columns =>
                       {
                           columns.Bound(c => c.TotalCost).Width(120);
@@ -99,7 +115,7 @@
                       })
                       .Editable(editable => editable.Mode(GridEditMode.InLine))
                       .Filterable()
-                      .Scrollable()
+                      .Scrollable(s => s.Height(400))
                       .DataSource(dataSource => dataSource
                           .Ajax()
                           .Model(model =>
@@ -133,7 +149,7 @@
                       })
                       .Editable(editable => editable.Mode(GridEditMode.InLine))
                       .Filterable()
-                      .Scrollable()
+                      .Scrollable(s => s.Height(400))
                       .DataSource(dataSource => dataSource
                           .Ajax()
                           .Model(model =>
@@ -192,6 +208,24 @@
         $.ajax({
             type: "POST",
             url: '@Url.Action("CalculateOverAllCost", "PrintingCostSummary", new { area = "Printing" })',
+            data: { id: id },
+            success: function (result) {
+                //toastr.warnning(result.Message);
+                alert(result);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    function calculateTotalCostMargin(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CalculateOverAllCost", "PrintingEstimationMargin", new { area = "Printing" })',
             data: { id: id },
             success: function (result) {
                 // toastr.warnning(result.Message);

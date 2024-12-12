@@ -2025,6 +2025,7 @@
     <Compile Include="Areas\Printing\Controllers\PrintingEstimationMarginController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingEstimationMaterialCostController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobOrderController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingJobOrderDesginController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobOrderItemController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobOrderProductionController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobTypeController.cs" />
@@ -2036,6 +2037,7 @@
     <Compile Include="Areas\Printing\Controllers\PrintingOverAllCostController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingPaperSizeController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProcessController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingProductionDesginController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProductProcessController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProformaInvoiceController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProformaItemController.cs" />
@@ -7055,6 +7057,16 @@
     <Content Include="Areas\Printing\Views\PrintingJobOrder\EditorTemplates\PrintingJoborderEditorTemplate.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingJobOrder\EditorTemplates\PrintingJobOrderItemEditorTemplate.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingJobOrder\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingJobOrderProduction\EditorTemplates\backupitems.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingJobOrderProduction\EditorTemplates\InventoryPeriodSelector.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingJobOrderProduction\EditorTemplates\IsTransferRequest.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingJobOrderProduction\EditorTemplates\ItemCategory.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingJobOrderProduction\EditorTemplates\ProductionStoreRequisition.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingJobOrderProduction\EditorTemplates\QuantityEditorTemplate.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingJobOrderProduction\EditorTemplates\StoreReturn.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingJobOrderProduction\EditorTemplates\TaskCategoryTemplate.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingJobOrderProduction\EditorTemplates\Type.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingJobOrderProduction\EditorTemplates\ValidationStatus.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
@@ -9032,8 +9044,10 @@
     <Folder Include="Areas\Printing\Views\PrintingCostSummary\" />
     <Folder Include="Areas\Printing\Views\PrintingEstimationDataProvider\" />
     <Folder Include="Areas\Printing\Views\PrintingEstimationMargin\" />
+    <Folder Include="Areas\Printing\Views\PrintingJobOrderDesgin\" />
     <Folder Include="Areas\Printing\Views\PrintingJobOrderItem\" />
     <Folder Include="Areas\Printing\Views\PrintingMaterialCostProduction\" />
+    <Folder Include="Areas\Printing\Views\PrintingProductionDesgin\" />
     <Folder Include="Areas\Printing\Views\PrintingProformaItem\" />
     <Folder Include="Areas\Printing\Views\ProductionDataProvider\" />
     <Folder Include="Areas\Printing\Views\ProductionFollowUpViews\AutoJobOrder\EditorTemplates\" />

@@ -207,8 +207,12 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.JobTypeId == item.JobTypeId);
                     if (estimation != null)
                     {
-                        var materialCosts = db.PrintingEstimationMaterialCosts.Where(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId);
-                        var laborCosts = db.PrintingEstimationLaborCosts.Where(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId);
+                        var materialCosts = db.PrintingEstimationMaterialCosts
+                            .Where(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId)
+                            .ToList();
+                        var laborCosts = db.PrintingEstimationLaborCosts
+                            .Where(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId)
+                            .ToList();
 
                         if (materialCosts != null && laborCosts != null)
                         {

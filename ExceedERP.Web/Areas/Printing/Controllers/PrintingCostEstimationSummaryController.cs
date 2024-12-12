@@ -56,8 +56,14 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         {
             Object response = null;
             var summary = db.PrintingEstimationSummaries.Find(id);
-            var overAllCost = db.PrintingEstimationCostSummaries.Where(x => x.PrintingEstimationSummaryId == summary.PrintingEstimationSummaryId).ToList();
-            if (overAllCost.Any())
+            var estimationDetails = db.PrintingEstimationDetails
+                .Where(x => x.PrintingEstimationSummaryId == summary.PrintingEstimationSummaryId && x.ProfitMargin != 0)
+                .ToList();
+
+            var overAllCost = db.PrintingEstimationCostSummaries
+                .Where(x => x.PrintingEstimationSummaryId == summary.PrintingEstimationSummaryId)
+                .ToList();
+            if (estimationDetails.Any())
             {
                 summary.IsOnlineApproved = true;
                 summary.OnlineApprovedBy = User.Identity.Name;
@@ -65,15 +71,34 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 summary.Status = "Approved";
                 db.Entry(summary).State = EntityState.Modified;
                 db.SaveChanges();
-                AssignMarginToOVerallCost(summary.CustomerId, overAllCost.Single().ProfitMargin);
+                AssignMarginToEstimation(estimationDetails);
                 response = new { Success = true, Message = "Successfully Approved!" };
-            }
+            }            
             else
             {
                 response = new { Success = false, Message = "Margin not set" };
 
             }
             return Json(response);
+        }
+        private void AssignMarginToEstimation(List<PrintingEstimationDetail> models)
+        {
+            foreach (var item in models)
+            {
+                var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == item.PrintingCostEstimationId);
+                if(estimation != null)
+                {
+                    var OverAllCost = db.PrintingOverAllCosts.FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId);
+                    estimation.IsMarginAssigned = true;
+                    estimation.Status = "Approved";
+                    db.Entry(estimation).State = EntityState.Modified;
+
+                    OverAllCost.ProfitMargin = item.ProfitMargin;
+                    OverAllCost.SellingPrice = item.TotalPrice;
+                    db.Entry(OverAllCost).State = EntityState.Modified;
+                }
+                db.SaveChanges();
+            }
         }
         private void AssignMarginToOVerallCost(int customerId, decimal profitMargin)
         {
