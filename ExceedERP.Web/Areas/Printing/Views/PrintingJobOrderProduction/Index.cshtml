@@ -9,6 +9,8 @@
                             columns.Bound(c => c.JobOrderNo);
                             columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Title("Customer");
                             columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text");
+                            columns.Bound(c => c.JobDescription);
+
                             columns.ForeignKey(c => c.PaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text");
                             columns.ForeignKey(c => c.BindingStyleId, (IEnumerable)ViewData["BindingStyle"], "Value", "Text");
                             columns.Bound(c => c.TextNoOfColors);
@@ -63,7 +65,7 @@
                                     @<text>
                                         @StoreRequisition()
                                     </text>);
-                                                item1.Add().Text("Store Requisition").Content(
+                                                item1.Add().Text("Documents").Content(
                                     @<text>
                                         @BoqDocs()
                                     </text>);

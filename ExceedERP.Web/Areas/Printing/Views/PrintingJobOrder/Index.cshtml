@@ -71,6 +71,7 @@
                                               .Columns(columns =>
                                               {
                                                   columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+                                                  columns.Bound(c => c.JobDescription);
                                                   columns.Bound(c => c.Quantity);
                                                   columns.Bound(c => c.NumberOfPages);
                                                   columns.Bound(c => c.UnitPrice);

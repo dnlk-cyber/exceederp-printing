@@ -2041,6 +2041,7 @@
     <Compile Include="Areas\Printing\Controllers\PrintingProductProcessController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProformaInvoiceController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProformaItemController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingReportController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintItemCategoryController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintLaborRateController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintMachinePaperListController.cs" />
@@ -7067,6 +7068,7 @@
     <Content Include="Areas\Printing\Views\PrintingJobOrderProduction\EditorTemplates\TaskCategoryTemplate.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingJobOrderProduction\EditorTemplates\Type.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingJobOrderProduction\EditorTemplates\ValidationStatus.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingReport\ProformaPrint.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

@@ -52,6 +52,7 @@
                 .Columns(columns =>
                 {
                     columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Title("Job Type");
+                    columns.Bound(c => c.JobDescription);
                     columns.Bound(c => c.Quantity);
                     columns.Bound(c => c.MaterialCost);
                     columns.Bound(c => c.LabourCost);

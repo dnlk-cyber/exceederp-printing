@@ -31,6 +31,7 @@ namespace ExceedERP.Core.Domain.Printing
         public int PrintingJobOrderItemId { get; set; }
         [Display(Name = "Job Type")]
         public int JobTypeId { get; set; }
+        public string JobDescription { get; set; }
         public string Description { get; set; } 
         public int NumberOfPages { get; set; }
 

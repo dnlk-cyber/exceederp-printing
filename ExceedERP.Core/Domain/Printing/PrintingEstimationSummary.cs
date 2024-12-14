@@ -16,6 +16,7 @@ namespace ExceedERP.Core.Domain.Printing
         [Key]
         public int PrintingEstimationDetailId { get; set; }
         public int JobTypeId { get; set; }
+        public string JobDescription { get; set; }
         public decimal Quantity { get; set; }
         [Display(Name = "Material Cost")]
         public decimal MaterialCost { get; set; }

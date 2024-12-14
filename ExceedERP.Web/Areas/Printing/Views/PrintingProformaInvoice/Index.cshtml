@@ -46,15 +46,17 @@
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-        .Name("tab_#=PrintingProformaInvoiceId#")
-        .Items(item1 =>
-        {
-            item1.Add().Text("Proforma Item")
-            .Content(
-            @<text>
-                @ProformaItem();
-            </text>);
-        }).ToClientTemplate())
+                .Name("tab_#=PrintingProformaInvoiceId#")
+                .Items(item1 =>
+                {
+                    item1.Add().Text("Proforma Item")
+                    .Content(
+                    @<text>
+                        <a href='@Url.Action("ProformaPrint", "PrintingReport")/?id=#=PrintingProformaInvoiceId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+
+                        @ProformaItem();
+                    </text>);
+                        }).ToClientTemplate())
 </script>
 
 
@@ -65,6 +67,7 @@
                       .Columns(columns =>
                       {
                           columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+                          columns.Bound(c => c.JobDescription).Width(100);                    
                           columns.Bound(c => c.Quantity).Width(100);                    
                           columns.Bound(c => c.NumberOfPages).Width(100);                    
                           columns.Bound(c => c.UnitPrice).Width(100);

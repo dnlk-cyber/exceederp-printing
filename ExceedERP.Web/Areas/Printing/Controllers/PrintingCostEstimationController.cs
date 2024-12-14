@@ -347,7 +347,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     TotalCost = OverAllCost.GrandTotal,
                     Quantity = model.ProductQuantity,
                     PrintingEstimationSummaryId = summary.PrintingEstimationSummaryId,
-                    PrintingCostEstimationId = model.PrintingCostEstimationId
+                    PrintingCostEstimationId = model.PrintingCostEstimationId,
+                    JobDescription = model.JobDescription
 
                 };
                 db.PrintingEstimationDetails.Add(estimationDetailNew);
