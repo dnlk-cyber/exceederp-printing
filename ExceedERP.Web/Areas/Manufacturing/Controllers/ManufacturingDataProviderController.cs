@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
+using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.Core.Domain.Manufacturing.Setting;
 using ExceedERP.DataAccess.Context;
 using System;
@@ -185,6 +185,20 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetPrintingEstimation(string text)
+        {
+            var estimation = db.PrintingCostEstimations.Where(x => x.IsOnlineApproved).AsQueryable();
+            if (!string.IsNullOrEmpty(text))
+            {
+                estimation = estimation.Where(x => x.PrintingCostEstimationId == int.Parse(text)).AsQueryable();
+            }
+            var result = estimation.Select(s => new
+            {
+                Value = s.PrintingCostEstimationId,
+                Text = s.PrintingCostEstimationId + "/" + db.PrintingJobTypes.FirstOrDefault(x => x.PrintingJobTypeId == s.JobTypeId).JobTypeName
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
         public JsonResult GetEmployees(string text)
         {
@@ -221,6 +235,30 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             {
                 Value = s.FurnitureProformaInvoiceId,
                 Text = s.FurnitureProformaInvoiceId + "-" + db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == s.CustomerId)?.TradeName
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetProformaInvoiceNoPrinting(string text)
+        {
+
+            var jobOrder = db.PrintingJobOrders.ToList();
+            var proformaInvoice = db.PrintingProformaInvoices.Where(x => x.IsOnlineApproved).ToList();
+
+            foreach (var item in jobOrder)
+            {
+
+                proformaInvoice.RemoveAll(x => x.PrintingProformaInvoiceId == item.PrintingProformaInvoiceId);
+            }
+
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                proformaInvoice = proformaInvoice.Where(x => x.PrintingProformaInvoiceId == int.Parse(text)).ToList();
+            }
+            var result = proformaInvoice.Select(s => new
+            {
+                Value = s.PrintingProformaInvoiceId,
+                Text = s.PrintingProformaInvoiceId + "-" + db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == s.CustomerId)?.TradeName
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
