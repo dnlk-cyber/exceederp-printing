@@ -37,23 +37,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
             return Json(result);
         }
-        public ActionResult ReadProduction([DataSourceRequest]DataSourceRequest request, int id)
-        {
-            IQueryable<PrintingJobOrderProductionJobDesign> furnitureBoqDoc = db.PrintingJobOrderProductionJobDesigns.Where(x => x.ReferenceId == id);
-            DataSourceResult result = furnitureBoqDoc.ToDataSourceResult(request, model => new PrintingJobOrderProductionJobDesign
-            {
-                PrintingJobOrderProductionJobDesignId = model.PrintingJobOrderProductionJobDesignId,
-                Description = model.Description,
-                FileExtension = model.FileExtension,
-                FileName = model.FileName,
-                FilePath = model.FilePath,
-                ReferenceId = model.ReferenceId,
-                ShortPath = model.ShortPath
-            });
-
-            return Json(result);
-        }
-
+       
         public JsonResult UploadCompanyFile(int furnitureBoqRequestId, HttpPostedFileBase[] CompanyFile, string Description)
         {
             for (int i = 0; i < CompanyFile.Count(); i++)

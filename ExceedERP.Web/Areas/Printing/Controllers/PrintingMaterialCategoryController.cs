@@ -15,14 +15,11 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public ActionResult Index()
         {
-
             ViewData["ItemCategory"] = db.ItemCategorys.Where(x => !x.HaveParent).Select(s => new
             {
-
                 Text = s.Name,
                 Value = s.ItemCategoryCode
             });
-
             return View();
         }
 

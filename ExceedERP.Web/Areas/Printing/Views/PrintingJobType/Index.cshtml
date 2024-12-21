@@ -18,7 +18,8 @@
           toolbar.Create();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
-      .Scrollable()
+.Pageable()
+.Scrollable(s => s.Height(400))
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.PrintingJobTypeId))

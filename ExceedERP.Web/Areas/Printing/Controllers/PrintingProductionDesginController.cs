@@ -23,10 +23,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public ActionResult ReadProduction([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<PrintingJobOrderProductionJobDesign> furnitureBoqDoc = db.PrintingJobOrderProductionJobDesigns.Where(x => x.ReferenceId == id);
-            DataSourceResult result = furnitureBoqDoc.ToDataSourceResult(request, model => new PrintingJobOrderProductionJobDesign
+            IQueryable<PrintingJobOrderJobDesign> furnitureBoqDoc = db.PrintingJobOrderJobDesigns.Where(x => x.ReferenceId == id);
+            DataSourceResult result = furnitureBoqDoc.ToDataSourceResult(request, model => new PrintingJobOrderJobDesign
             {
-                PrintingJobOrderProductionJobDesignId = model.PrintingJobOrderProductionJobDesignId,
+                PrintingJobOrderJobDesignId = model.PrintingJobOrderJobDesignId,
                 Description = model.Description,
                 FileExtension = model.FileExtension,
                 FileName = model.FileName,
@@ -40,7 +40,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public ActionResult DownloadCompanyDocument(int CompanyDocumentId)
         {
-            var record = db.PrintingJobOrderProductionJobDesigns.Find(CompanyDocumentId);
+            var record = db.PrintingJobOrderJobDesigns.Find(CompanyDocumentId);
 
             return File(record.FilePath, "application/force-download", Path.GetFileName(record.FilePath));
         }

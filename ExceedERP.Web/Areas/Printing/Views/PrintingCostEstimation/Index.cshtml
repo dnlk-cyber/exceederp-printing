@@ -10,7 +10,6 @@
                       columns.ForeignKey(c => c.PaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text");
                       columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text");
                       columns.ForeignKey(c => c.BindingStyleId, (IEnumerable)ViewData["BindingStyle"], "Value", "Text");
-
                       columns.Bound(c => c.TextNoOfColors);
                       columns.Bound(c => c.CoverNoOfColor);
                       columns.Bound(c => c.ProductQuantity);
@@ -34,9 +33,11 @@
                     )
                   .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintingCostEstimationTemplate"))
                   .Filterable()
+                                .Pageable()
                   .Scrollable(s => s.Height(400))
                   .DataSource(dataSource => dataSource
                       .Ajax()
+                      .Sort(sort => sort.Add(e => e.PrintingCostEstimationId).Descending())
                       .Model(model => model.Id(p => p.PrintingCostEstimationId))
                       .Read(read => read.Action("PrintingCostEstimations_Read", "PrintingCostEstimation"))
                       .Create(create => create.Action("PrintingCostEstimations_Create", "PrintingCostEstimation"))
@@ -82,7 +83,8 @@
                                       .Events(ev => ev.DataBound("onChildDataBound"))
                                       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintMaterialEstimationTemplate"))
                                       .Filterable()
-                                      .Scrollable()
+.Pageable()
+.Scrollable()
                                       .DataSource(dataSource => dataSource
                                           .Ajax()
                                           .Aggregates(aggregates =>
@@ -119,7 +121,8 @@
                       .Events(ev => ev.DataBound("onChildDataBound"))
                       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("laborTemplate"))
                       .Filterable()
-                      .Scrollable()
+.Pageable()
+.Scrollable()
                       .DataSource(dataSource => dataSource
                           .Ajax()
                           .Sort(sort => sort.Add(e => e.ProcessCategory).Ascending())
@@ -148,26 +151,27 @@
                                   columns.Bound(c => c.MaterialCost);
                                   columns.Bound(c => c.LaborCost);
                                   columns.Bound(c => c.TotalProductionCost);
-                                  columns.Bound(c => c.AdminstrativeCost);
-                                  columns.Bound(c => c.OverHeadCost);
+                                  columns.Bound(c => c.AdminstrativeCost).Title("Adm.Cost/%");
+                                  columns.Bound(c => c.OverHeadCost).Title("Overhead.Cost/%"); ;
                                   columns.Bound(c => c.ProfitMargin);
-                                  columns.Bound(c => c.GraphicsCost);                                 
+                                  columns.Bound(c => c.GraphicsCost);
                                   columns.Bound(c => c.GrandTotal);
                                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                              })                              
+                              })
                               .Editable(editable => editable.Mode(GridEditMode.InLine))
                               .Filterable()
-                              .Scrollable()
+.Pageable()
+.Scrollable()
                               .Events(ev => ev.DataBound("onChildDataBound"))
                               .DataSource(dataSource => dataSource
                                   .Ajax()
-                                  .Model(model => 
+                                  .Model(model =>
                                   {
-                                       model.Id(p => p.PrintingOverAllCostId);
-                                       model.Field(p => p.MaterialCost).Editable(false);
-                                       model.Field(p => p.LaborCost).Editable(false);
-                                       model.Field(p => p.TotalProductionCost).Editable(false);
-                                       model.Field(p => p.GrandTotal).Editable(false);
+                                      model.Id(p => p.PrintingOverAllCostId);
+                                      model.Field(p => p.MaterialCost).Editable(false);
+                                      model.Field(p => p.LaborCost).Editable(false);
+                                      model.Field(p => p.TotalProductionCost).Editable(false);
+                                      model.Field(p => p.GrandTotal).Editable(false);
                                   })
                                   .Read(read => read.Action("PrintingOverAllCosts_Read", "PrintingOverAllCost", new { id = "#=PrintingCostEstimationId#" }))
                                   .Create(create => create.Action("PrintingOverAllCosts_Create", "PrintingOverAllCost", new { id = "#=PrintingCostEstimationId#" }))

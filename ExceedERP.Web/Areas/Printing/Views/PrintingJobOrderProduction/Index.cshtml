@@ -10,13 +10,11 @@
                             columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Title("Customer");
                             columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text");
                             columns.Bound(c => c.JobDescription);
-
                             columns.ForeignKey(c => c.PaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text");
                             columns.ForeignKey(c => c.BindingStyleId, (IEnumerable)ViewData["BindingStyle"], "Value", "Text");
                             columns.Bound(c => c.TextNoOfColors);
                             columns.Bound(c => c.CoverNoOfColor);
                             columns.Bound(c => c.TotalTextNoPages).Title("Number Of Pages");
-
                             columns.Bound(c => c.Quantity);
                             columns.Bound(c => c.JobDescription);
                             columns.Bound(c => c.DateOrdered);
@@ -152,17 +150,10 @@
                                     columns.Bound(c => c.FileName).ClientTemplate("<a href='/Printing/PrintingProductionDesgin/DownloadCompanyDocument?CompanyDocumentId=\\#=PrintingJobOrderJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>");
                                     columns.Bound(c => c.Description);
                                     columns.Template(e => { }).ClientTemplate("<a href='/Printing/PrintingProductionDesgin/DownloadCompanyDocument?CompanyDocumentId=\\#=PrintingJobOrderJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>");
-                    //columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>");
-                    columns.Command(command =>
-                                    {
-                                        command.Destroy().Text("Delete");
-                                    });
+                    
                                 })
                                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Answer").Window(window => { window.Title(""); window.Scrollable(false); }))
-                                .Events(ev =>
-                                {
-                                    ev.DataBound("onDetailDataBound");
-                                })
+                               
                                 .Scrollable(h => h.Height("auto"))
                                 .DataSource(dataSource => dataSource
                                 .Ajax()
@@ -174,8 +165,7 @@
                                     events.RequestEnd("onRequestEnd(\"CompanyDocument#=PrintingJobOrderProductionId#\")");
                                 })
                                 .Model(model => model.Id(p => p.PrintingJobOrderJobDesignId))
-                                .Read(read => read.Action("Read", "PrintingProductionDesgin", new { id = "#=PrintingJobOrderProductionId#" }))
-                                .Destroy(destroy => destroy.Action("Delete", "PrintingProductionDesgin", new { area = "Manufacturing" }))
+                                .Read(read => read.Action("ReadProduction", "PrintingProductionDesgin", new { id = "#=PrintingJobOrderId#" }))
                                 ).ToClientTemplate())
 
 }

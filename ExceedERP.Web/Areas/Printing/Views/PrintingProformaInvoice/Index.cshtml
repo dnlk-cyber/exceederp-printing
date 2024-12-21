@@ -27,7 +27,8 @@
                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintingProformaInvoiceTemplate"))
                 .Filterable()
                 .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
-                .Scrollable(s => s.Height(400))
+.Pageable()
+.Scrollable(s => s.Height(400))
 
                 .DataSource(dataSource => dataSource
                     .Ajax()
@@ -53,8 +54,7 @@
                     .Content(
                     @<text>
                         <a href='@Url.Action("ProformaPrint", "PrintingReport")/?id=#=PrintingProformaInvoiceId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
-
-                        @ProformaItem();
+                        @ProformaItem()
                     </text>);
                         }).ToClientTemplate())
 </script>
@@ -85,7 +85,8 @@
                       .Editable(editable => editable.Mode(GridEditMode.PopUp)
                       .TemplateName("PrintingProformaItemEditorTemplate"))
                       .Filterable()
-                      .Scrollable()
+.Pageable()
+.Scrollable()
                       .Events(ev => ev.DataBound("onChildDataBound"))
                       .DataSource(dataSource => dataSource
                           .Ajax()

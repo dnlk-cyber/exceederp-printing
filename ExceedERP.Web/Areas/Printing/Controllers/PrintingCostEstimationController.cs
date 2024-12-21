@@ -102,7 +102,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     DateCreated = DateTime.Today,
                     LastModified = printingCostEstimation.LastModified,
                     CreatedBy = User.Identity.Name,
-                    ModifiedBy = printingCostEstimation.ModifiedBy
+                    ModifiedBy = printingCostEstimation.ModifiedBy,
+                    JobDescription = printingCostEstimation.JobDescription
                 };
 
                 db.PrintingCostEstimations.Add(entity);
@@ -146,7 +147,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     DateCreated = printingCostEstimation.DateCreated,
                     LastModified = printingCostEstimation.LastModified,
                     CreatedBy = printingCostEstimation.CreatedBy,
-                    ModifiedBy = printingCostEstimation.ModifiedBy
+                    ModifiedBy = printingCostEstimation.ModifiedBy,
+                    JobDescription = printingCostEstimation.JobDescription
+
                 };
 
                 db.PrintingCostEstimations.Attach(entity);
@@ -190,7 +193,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     DateCreated = printingCostEstimation.DateCreated,
                     LastModified = printingCostEstimation.LastModified,
                     CreatedBy = printingCostEstimation.CreatedBy,
-                    ModifiedBy = printingCostEstimation.ModifiedBy
+                    ModifiedBy = printingCostEstimation.ModifiedBy,
+                    JobDescription = printingCostEstimation.JobDescription
+
                 };
 
                 db.PrintingCostEstimations.Attach(entity);
@@ -321,7 +326,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         private void CreateEstimationSummary(PrintingCostEstimation model)
         {
             var OverAllCost = db.PrintingOverAllCosts.FirstOrDefault(x => x.PrintingCostEstimationId == model.PrintingCostEstimationId);
-            var estimationSummary = db.PrintingEstimationSummaries.FirstOrDefault(x => x.CustomerId == model.CustomerId && !x.IsCalculated);
+            var estimationSummary = db.PrintingEstimationSummaries.FirstOrDefault(x => x.CustomerId == model.CustomerId && !x.IsOnlineApproved);
             if (estimationSummary == null)
             {
                 PrintingEstimationSummary summary = new PrintingEstimationSummary
@@ -348,7 +353,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Quantity = model.ProductQuantity,
                     PrintingEstimationSummaryId = summary.PrintingEstimationSummaryId,
                     PrintingCostEstimationId = model.PrintingCostEstimationId,
-                    JobDescription = model.JobDescription
+                    JobDescription = model.JobDescription,
+                    UnitCost = model.TotalCost/model.ProductQuantity,
+                    
 
                 };
                 db.PrintingEstimationDetails.Add(estimationDetailNew);
@@ -367,7 +374,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     TotalCost = OverAllCost.GrandTotal,
                     Quantity = model.ProductQuantity,
                     PrintingEstimationSummaryId = estimationSummary.PrintingEstimationSummaryId,
-                    PrintingCostEstimationId = model.PrintingCostEstimationId
+                    PrintingCostEstimationId = model.PrintingCostEstimationId,
+                    UnitCost = model.TotalCost / model.ProductQuantity
 
                 };
 

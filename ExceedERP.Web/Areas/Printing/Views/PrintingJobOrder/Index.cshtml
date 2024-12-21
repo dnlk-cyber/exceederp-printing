@@ -3,45 +3,45 @@
 
 <label>Printing Job Order</label>
 @(Html.Kendo().Grid<PrintingJobOrder>()
-                                      .Name("grid")
-                                      .Columns(columns =>
-                                      {
-                                          columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120).Title("Customer");
-                                          columns.Bound(c => c.JobStartDate).Width(120);
-                                          columns.Bound(c => c.DeliveryDate).Width(120);
-                                          columns.Bound(c => c.CRVNo).Width(100);
-                                          columns.Bound(c => c.AdvancePaymentInPercent).Width(90);
-                                          columns.Bound(c => c.Remark).Width(100);
-                                          columns.Command(command =>
-                                          {
-                                  //command.Edit().Text(" ");
-                                  command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
-                                              command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
-                                  //command.Destroy().Text(" ");
-                              }).Width(180);
-                                      })
-                                      .ToolBar(toolbar =>
-                                      {
-                                          toolbar.Create();
-                                      })
-                                      .Editable(editable => editable.Mode(GridEditMode.PopUp)
-                                      .TemplateName("PrintingJoborderEditorTemplate"))
-                                      .Filterable()
-                                      .Scrollable(s => s.Height(400))
-                                      .Events(ev => ev.DetailExpand("detailExpand")
-                                      .DataBound("dataBound"))
-                                      .DataSource(dataSource => dataSource
-                                          .Ajax()
-                                          .Sort(sort => sort.Add(e => e.PrintingJobOrderId).Descending())
-                                          .Events(ev => ev.Error("error_handler(\"grid\")")
-                                                    .RequestStart("onRequestStart(\"grid\")")
-                                                    .RequestEnd("onRequestEnd(\"grid\")"))
-                                          .Model(model => model.Id(p => p.PrintingJobOrderId))
-                                          .Read(read => read.Action("PrintingJobOrder_Read", "PrintingJobOrder"))
-                                          .Create(create => create.Action("PrintingJobOrder_Create", "PrintingJobOrder"))
-                                      //.Update(update => update.Action("FurnitureJobOrderForms_Update", "PrintingJobOrder"))
-                                      //.Destroy(destroy => destroy.Action("FurnitureJobOrderForms_Destroy", "PrintingJobOrder"))
-                                      ).ClientDetailTemplateId("tabstrip")
+    .Name("grid")
+    .Columns(columns =>
+    {
+    columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120).Title("Customer");
+    columns.Bound(c => c.JobStartDate).Width(120);
+    columns.Bound(c => c.DeliveryDate).Width(120);
+    columns.Bound(c => c.CRVNo).Width(100);
+    columns.Bound(c => c.AdvancePaymentInPercent).Width(90);
+    columns.Bound(c => c.Remark).Width(100);
+    columns.Command(command =>
+    {
+        command.Edit().Text(" ");
+        command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+        command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+        command.Destroy().Text(" ");
+    }).Width(180);
+    })
+    .ToolBar(toolbar =>
+    {
+    toolbar.Create();
+    })
+    .Editable(editable => editable.Mode(GridEditMode.PopUp)
+    .TemplateName("PrintingJoborderEditorTemplate"))
+    .Filterable()
+    .Scrollable(s => s.Height(400))
+    .Events(ev => ev.DetailExpand("detailExpand")
+    .DataBound("dataBound"))
+    .DataSource(dataSource => dataSource
+    .Ajax()
+    .Sort(sort => sort.Add(e => e.PrintingJobOrderId).Descending())
+    .Events(ev => ev.Error("error_handler(\"grid\")")
+            .RequestStart("onRequestStart(\"grid\")")
+            .RequestEnd("onRequestEnd(\"grid\")"))
+    .Model(model => model.Id(p => p.PrintingJobOrderId))
+    .Read(read => read.Action("PrintingJobOrder_Read", "PrintingJobOrder"))
+    .Create(create => create.Action("PrintingJobOrder_Create", "PrintingJobOrder"))
+    .Update(update => update.Action("PrintingJobOrder_Update", "PrintingJobOrder"))
+    .Destroy(destroy => destroy.Action("PrintingJobOrder_Delete", "PrintingJobOrder"))
+    ).ClientDetailTemplateId("tabstrip")
 )
 
 

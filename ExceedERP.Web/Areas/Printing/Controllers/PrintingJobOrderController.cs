@@ -49,36 +49,41 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
-        //public ActionResult PrintingJobOrder_Update([DataSourceRequest]DataSourceRequest request, PrintingJobOrder model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        var jobOrder = db.PrintingJobOrders.Find(model.PrintingJobOrderId);
-        //        if(jobOrder.CustomerId != model.CustomerId)
-        //        {
-        //            var items = db.PrintingJobOrderItems.Where(x => x.PrintingJobOrderId == jobOrder.PrintingJobOrderId).ToList();
-        //            if (items.Any())
-        //            {
-        //                db.PrintingJobOrderItems.RemoveRange(items);
-        //                db.SaveChanges();
-        //            }
-        //            var jobOrderN = new PrintingJobOrder
-        //            {
-        //                CustomerId = model.CustomerId,
-        //                JobStartDate = model.JobStartDate,
-        //                DeliveryDate = model.JobStartDate.AddDays(model.DeliveryPeriod),
-        //                PrintingProformaInvoiceId = proformaInvoice.PrintingProformaInvoiceId,
-        //                DateCreated = DateTime.Today,
-        //                CreatedBy = User.Identity.Name,
-        //                CRVNo = model.CRVNo,
-        //                PaymentType = model.PaymentType,
-        //                AdvancePaymentInPercent = model.AdvancePaymentInPercent,
-        //                Remark = model.Remark
-        //            };
-        //            jobOrder.DeliveryDate = DateTime.Today.AddDays(proformaInvoice.DeliveryPeriod);
-        //        }
-        //    }
-        //}
+        public ActionResult PrintingJobOrder_Update([DataSourceRequest]DataSourceRequest request, PrintingJobOrder model)
+        {
+            if (ModelState.IsValid)
+            {
+                var jobOrder = db.PrintingJobOrders.Find(model.PrintingJobOrderId);
+                if (jobOrder.PrintingProformaInvoiceId != model.PrintingProformaInvoiceId)
+                {
+                    var items = db.PrintingJobOrderItems.Where(x => x.PrintingJobOrderId == jobOrder.PrintingJobOrderId).ToList();
+                    if (items.Any())
+                    {
+                        db.PrintingJobOrderItems.RemoveRange(items);
+                        db.SaveChanges();
+                    }
+                    db.Entry(model).State = EntityState.Modified;
+                    GenerateDetail(model.PrintingJobOrderId);
+                    db.SaveChanges();
+                }
+            }
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
+        }
+        public ActionResult PrintingJobOrder_Delete([DataSourceRequest]DataSourceRequest request, PrintingJobOrder model)
+        {
+            if (ModelState.IsValid)
+            {
+                var printingJobOrder = db.PrintingJobOrders.Find(model.PrintingJobOrderId);
+                if(printingJobOrder != null)
+                {
+                    var items = db.PrintingJobOrderItems.Where(x => x.PrintingJobOrderId == printingJobOrder.PrintingJobOrderId).ToList();
+                    db.PrintingJobOrderItems.RemoveRange(items);
+                    db.PrintingJobOrders.Remove(printingJobOrder);
+                    db.SaveChanges();
+                }
+            }
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
+        }
         private bool GenerateJobOrder(PrintingJobOrder model)
         {
             var proformaInvoice = db.PrintingProformaInvoices.Find(model.PrintingProformaInvoiceId);
@@ -130,7 +135,31 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }
             return false;
         }
-
+        private void GenerateDetail(int id)
+        {
+            var proformaItems = db.PrintingProformaInvoiceItems
+                   .Where(x => x.PrintingProformaInvoiceId == id)
+                   .ToList();
+            foreach (var proformaItem in proformaItems)
+            {
+                var jobOrderItem = new PrintingJobOrderItem
+                {
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Today,
+                    Quantity = proformaItem.Quantity,
+                    JobTypeId = proformaItem.JobTypeId,
+                    JobDescription = proformaItem.JobDescription,
+                    Description = "",
+                    NumberOfPages = proformaItem.NumberOfPages,
+                    PrintingJobOrderId = id,
+                    Remark = "",
+                    TotalPrice = proformaItem.TotalPrice,
+                    UnitPrice = proformaItem.UnitPrice,
+                };
+                db.PrintingJobOrderItems.Add(jobOrderItem);
+                db.SaveChanges();
+            }
+        }
         public JsonResult CheckJob(int id)
         {
             object response = null;
@@ -214,7 +243,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                         var laborCosts = db.PrintingEstimationLaborCosts
                             .Where(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId)
                             .ToList();
-
+                        var designs = db.PrintingJobOrderJobDesigns
+                            .Where(x => x.ReferenceId == jobOrder.PrintingJobOrderId)
+                            .ToList();
                         if (materialCosts != null && laborCosts != null)
                         {
                             var jobOrderProduction = new PrintingJobOrderProduction
@@ -271,6 +302,19 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                                     ProcessCategory = laborCost.ProcessCategory,
                                 };
                                 db.PrintingProductionLaborCosts.Add(productionLaborCost);
+                            }
+                            foreach (var design in designs)
+                            {
+                                var entity = new PrintingJobOrderProductionJobDesign
+                                {
+                                    ReferenceId = jobOrderProduction.PrintingJobOrderProductionId,
+                                    Description = design.Description,
+                                    FileExtension = design.FileExtension,
+                                    FileName = design.FileName,
+                                    FilePath = design.FilePath,
+                                    ShortPath = design.ShortPath,                                    
+                                };
+                                db.PrintingJobOrderProductionJobDesigns.Add(entity);
                             }
                             db.SaveChanges();
                         }

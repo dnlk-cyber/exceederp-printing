@@ -99,6 +99,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             var estimationDetail = db.PrintingEstimationDetails.FirstOrDefault(x => x.PrintingEstimationDetailId == id);
             estimationDetail.ProfitMargin = model.ProfitMargin;
             estimationDetail.TotalPrice = (model.TotalCost * model.ProfitMargin) + model.TotalCost;
+            estimationDetail.UnitPrice = estimationDetail.TotalPrice / estimationDetail.Quantity;
             db.PrintingEstimationDetails.Attach(estimationDetail);
             db.Entry(estimationDetail).State = EntityState.Modified;
             db.SaveChanges();
