@@ -66,6 +66,7 @@ namespace ExceedERP.Core.Domain.Inventory
         public decimal Quantity { get; set; }
         [Display(Name = "Unit Price")]
         public decimal UnitPrice { get; set; }
+        public decimal TotalPrice { get; set; }
         public string ProductionJobNo { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

@@ -555,6 +555,10 @@
     <Compile Include="Migrations\202412140616329_printestimation.Designer.cs">
       <DependentUpon>202412140616329_printestimation.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202412211248586_storereturnmodif.cs" />
+    <Compile Include="Migrations\202412211248586_storereturnmodif.Designer.cs">
+      <DependentUpon>202412211248586_storereturnmodif.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -924,6 +928,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202412140616329_printestimation.resx">
       <DependentUpon>202412140616329_printestimation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202412211248586_storereturnmodif.resx">
+      <DependentUpon>202412211248586_storereturnmodif.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

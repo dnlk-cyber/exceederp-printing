@@ -36,6 +36,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                 ItemCode = storeReturnItems.ItemCode,
                 UnitPrice = storeReturnItems.UnitPrice,
                 Quantity = storeReturnItems.Quantity,
+                TotalPrice = storeReturnItems.Quantity * storeReturnItems.UnitPrice,
                 StoreReturnID = storeReturnItems.StoreReturnID,
                
             });
@@ -132,6 +133,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                     ItemCategoryCode = storeReturnItems.ItemCategoryCode,
                     ItemCode = storeReturnItems.ItemCode,
                     Quantity = storeReturnItems.Quantity,
+                    TotalPrice = storeReturnItems.Quantity*storeReturnItems.UnitPrice,
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Now,
                 };
@@ -166,6 +168,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                      ItemCategoryCode = storeReturnItems.ItemCategoryCode,
                      ItemCode = storeReturnItems.ItemCode,
                      Quantity = storeReturnItems.Quantity,
+                     TotalPrice = storeReturnItems.Quantity * storeReturnItems.UnitPrice,
                      ModifiedBy = User.Identity.Name,
                      LastModified = DateTime.Now,
                  };
