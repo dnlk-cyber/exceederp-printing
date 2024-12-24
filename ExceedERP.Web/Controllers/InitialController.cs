@@ -29,6 +29,7 @@ using ExceedERP.Core.Domain.Manufacturing.JobCosting;
 using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Core.Domain.Planning;
+using ExceedERP.Core.Domain.Printing;
 
 namespace ExceedERP.Web.Controllers
 {
@@ -501,8 +502,12 @@ namespace ExceedERP.Web.Controllers
 			#endregion
 				#region Printing
 				#region Printing Estimation
-					 ,new ApplicationRole(PrintingEstimationRoles.PrintingEstimationAdmin, "Printing Estimation Administrator", "Printing"),
-					 new ApplicationRole(PrintingEstimationRoles.PrintingEstimationFormUser, "Printing Estimation Form User", "Printing"),
+			, new ApplicationRole("PrintingEstimation_Officer", "", "Printing"),
+                new ApplicationRole("PrintingEstimation_TeamLead", "", "Printing"),
+                new ApplicationRole("PrintingEstimation_DepartmentHead", "", "Printing"),
+                new ApplicationRole("PrintingProduction_Head", "", "Printing"),
+                new ApplicationRole("PrintingProduction_TeamLead", "", "Printing"),
+                new ApplicationRole("PrintingProduction_Officer", "", "Printing"),
 					#endregion
 				#region Production FollowUp
 					 new ApplicationRole(ProductionFollowUpRoles.PrintingProductionAdmin, "Production FollowUp Administrator", "Printing"),
@@ -518,6 +523,7 @@ namespace ExceedERP.Web.Controllers
 					 new ApplicationRole(JobCostingRoles.JobCostingJobCostUser, "Job Costing Job Cost User", "Printing"),
 					 new ApplicationRole(JobCostingRoles.JobCostingDailyLaborRateUser, "Job Costing Daily Labor RateUser", "Printing"),
 					 new ApplicationRole(JobCostingRoles.JobCostingIdleTimeUser, "JobCosting Idle Time User", "Printing"),
+                new ApplicationRole("Printing_Admin", "", "Printing"),
 				#endregion
 			 #endregion
 			   #region Manufucturing
@@ -529,6 +535,7 @@ namespace ExceedERP.Web.Controllers
 				new ApplicationRole("FurnitureEstimation_Officer", "", "Manufacturing"),
                 new ApplicationRole("FurnitureEstimation_TeamLead", "", "Manufacturing"),
                 new ApplicationRole("FurnitureEstimation_DepartmentHead", "", "Manufacturing"),
+                new ApplicationRole("Furniture_Admin", "", "Manufacturing"),
 				#endregion
 				#region Production FollowUp
 					 new ApplicationRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionAdmin, "Production FollowUp Administrator", "Manufucturing"),
