@@ -1,24 +1,17 @@
-@using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
-@using ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp
-@using ExceedERP.Core.Domain.Manufacturing.JobCosting
+@using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
 @{
     ViewBag.Title = "_Manfucturing";
 }
 
 
-@*@if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationAdmin)
-     || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationUser)
-     || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionAdmin)
-         || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionProformaUser)
-         || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionJobOrderUser)
-         || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionDeliveryUser)
-         || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionDeliveryUser)
-         || HttpContext.Current.User.IsInRole(ManufacturingProductionFollowUpRoles.ManufacturingProductionDeliveryUser)
-         || HttpContext.Current.User.IsInRole(ManufacturingJobCostingRoles.ManufacturingJobCostingAdmin)
-         || HttpContext.Current.User.IsInRole(ManufacturingJobCostingRoles.ManufacturingJobCostingDailyLaborRateUser)
-         || HttpContext.Current.User.IsInRole(ManufacturingJobCostingRoles.ManufacturingJobCostingIdleTimeUser)
-         || HttpContext.Current.User.IsInRole(ManufacturingJobCostingRoles.ManufacturingJobCostingJobCostUser))
-{*@
+@if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationOfficer)
+         || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationTeamLead)
+         || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationDepartmentHead)
+          || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionHead)
+           || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionTeamLead)
+            || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionOfficer)
+            || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureAdmin))
+{
 
     <li class="">
         <a href="#" class="dropdown-toggle">
@@ -31,9 +24,10 @@
         <b class="arrow"></b>
         <ul class="submenu">
 
-            @*@if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationAdmin)
-            ||HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationUser))
-        {*@
+            @if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationOfficer)
+                    ||HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationTeamLead)
+                     || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationDepartmentHead))
+            {
             <li class="">
                 <a href="#" class="dropdown-toggle">
                     <i class="menu-icon fa fa-caret-right"></i>
@@ -48,7 +42,6 @@
 
                     <li id="mega-Manufacturing-002" class="actionlinlk">@Html.ActionLink("Proforma Invoice", "Index", "FurnitureProformaInvoice", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
                     <li id="mega-Manufacturing-003" class="actionlinlk">@Html.ActionLink("Estimation Cost Summary", "Index", "EstimationSummary", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-                    @*<li id="mega-Manufacturing-003" class="actionlinlk">@Html.ActionLink("Estimation Summary", "EstimationSummary", "FurnitureEstimation", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>*@
 
                     <li id="mega-Manufacturing-003" class="actionlinlk">@Html.ActionLink("Estimation Form", "Index", "FurnitureEstimation", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
                     <li id="mega-Manufacturing-003" class="actionlinlk">@Html.ActionLink("Bill of Quantity", "Index", "FurnitureBillOfQuantity", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
@@ -56,7 +49,11 @@
 
                 </ul>
             </li>
-            @*}*@
+            }
+            @if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionHead)
+           || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionTeamLead)
+            || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionOfficer))
+            {
             <li class="">
                 <a href="#" class="dropdown-toggle">
                     <i class="menu-icon fa fa-tasks"></i>
@@ -76,6 +73,7 @@
 
                 </ul>
             </li>
+            }
             <li class="">
                 <a href="#" class="dropdown-toggle">
                     <i class="menu-icon fa fa-tasks"></i>
@@ -90,13 +88,12 @@
 
                 <ul class="submenu">
                     <li id="mega-Manufacturing-001" class="actionlinlk">@Html.ActionLink("Furniture Summary Report", "FurnitureSummary", "FurniturePrint", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-                    
+
                 </ul>
             </li>
 
-            @*@if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationAdmin) ||
-               HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationUser))
-        {*@
+            @if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureAdmin))
+                {
             <li class="">
                 <a href="#" class="dropdown-toggle">
                     <i class="menu-icon fa fa-caret-right"></i>
@@ -114,10 +111,10 @@
 
 
             </li>
-            @*}*@
+            }
         </ul>
     </li>
 
 
 
-@*}*@
+    }
