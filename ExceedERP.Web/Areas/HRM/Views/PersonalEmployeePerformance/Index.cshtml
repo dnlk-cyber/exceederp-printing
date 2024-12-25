@@ -53,7 +53,7 @@
                                       .DataValueField("GlFiscalYearId")
                                        .DataSource(dataSource =>
                                        {
-                                           dataSource.Read(read => read.Action("GetFiscalYear", "PersonalEmployeePerformance", new { area = "HRM" }))
+                                           dataSource.Read(read => read.Action("GetFiscalYear", "PersonalEmployeePerformance", new { area = "HRM" }).Data("sendForgery"))
                                                 .ServerFiltering(false);
                                        })
                                        )
@@ -75,7 +75,7 @@
                                       .DataTextField("Name")
                                       .DataSource(dataSource =>
                                       {
-                                          dataSource.Read(read => read.Action("GetPeriodList", "PersonalEmployeePerformance", new { area = "HRM" }).Data("filterPeriod"))
+                                          dataSource.Read(read => read.Action("GetPeriodList", "PersonalEmployeePerformance", new { area = "HRM" }).Data("sendForgery").Data("filterPeriod"))
                                           .ServerFiltering(true);
                                       })
                                     .DataValueField("QuarterId")
@@ -99,7 +99,7 @@
 
                                          .DataSource(dataSource =>
                                          {
-                                             dataSource.Read(read => read.Action("GetMySelfForPerformanceEvaluation", "HRMDataProvider", new { area = "HRM" }))
+                                             dataSource.Read(read => read.Action("GetMySelfForPerformanceEvaluation", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                              .ServerFiltering(false);
                                          })
 
@@ -121,7 +121,7 @@
                                        .AutoBind(false)
                                        .DataSource(dataSource =>
                                        {
-                                           dataSource.Read(read => read.Action("GetSelfEvaluationCriterias", "HRMDataProvider", new { area = "HRM" }).Data("filterEvaluationCriteria"))
+                                           dataSource.Read(read => read.Action("GetSelfEvaluationCriterias", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEvaluationCriteria"))
                                            .ServerFiltering(true);
                                        })
                                        .HtmlAttributes(new { style = "width: 250px;" })
@@ -247,7 +247,7 @@
                                  model.Field(p => p.Result).Editable(false);
 
                              } )
-                        .Read(read => read.Action("EmployeeMeasurements_Read", "PersonalEmployeePerformance").Data("filterdata"))
+                        .Read(read => read.Action("EmployeeMeasurements_Read", "PersonalEmployeePerformance").Data("sendForgery").Data("filterdata"))
                             ).ClientDetailTemplateId("template"))
      
 
@@ -296,9 +296,9 @@
                                                    model.Field(p => p.PerformanceActionId).Editable(false);
                                                }
                                                )
-                                            .Read(read => read.Action("PerformanceActions_Read", "PersonalEmployeePerformance", new { empMeasurId = "#=EmpMeasurementId#" }))
-                                            .Update(update => update.Action("PerformanceActions_Update", "PersonalEmployeePerformance", new { /*defid = "#=MeasurementDefinitionId#",*/ /*mesid = "#=MeasurementId#" */}))
-                                             //.Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformance"))
+                                            .Read(read => read.Action("PerformanceActions_Read", "PersonalEmployeePerformance", new { empMeasurId = "#=EmpMeasurementId#" }).Data("sendForgery"))
+                                            .Update(update => update.Action("PerformanceActions_Update", "PersonalEmployeePerformance", new { /*defid = "#=MeasurementDefinitionId#",*/ /*mesid = "#=MeasurementId#" */}).Data("sendForgery"))
+                                             //.Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformance").Data("sendForgery"))
                                              ).ToClientTemplate()
                                     )
 

@@ -11,7 +11,7 @@
                 .DataValueField("PersonId")
                 .DataSource(dataSource =>
                 {
-                    dataSource.Read(read => read.Action("GetEmployees", "PerformanceRequestPeriods", new { area = "HRM", depId = "#=OrgStructureId#" }))
+                    dataSource.Read(read => read.Action("GetEmployees", "PerformanceRequestPeriods", new { area = "HRM", depId = "#=OrgStructureId#" }).Data("sendForgery"))
                     .ServerFiltering(false);
                 })
             .AutoBind(true)

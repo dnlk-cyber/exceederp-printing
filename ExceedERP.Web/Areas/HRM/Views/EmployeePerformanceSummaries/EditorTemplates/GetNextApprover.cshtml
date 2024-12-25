@@ -19,7 +19,7 @@
                         .Filter("contains")
                         .DataSource(dataSource =>
                         {
-                            dataSource.Read(read => read.Action("GetNextApproverList", "HRMDataProvider", new { id = ViewBag.id }))
+                            dataSource.Read(read => read.Action("GetNextApproverList", "HRMDataProvider", new { id = ViewBag.id }).Data("sendForgery"))
                                 .ServerFiltering(false);
                         })
                     )

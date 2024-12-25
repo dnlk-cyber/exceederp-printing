@@ -14,6 +14,6 @@
       .Scrollable()
       .DataSource(dataSource => dataSource
           .Ajax()
-          .Read(read => read.Action("EmployeePerformanceAction_Read", "EmployeePerformanceAction"))
+          .Read(read => read.Action("EmployeePerformanceAction_Read", "EmployeePerformanceAction").Data("sendForgery"))
       )
 )

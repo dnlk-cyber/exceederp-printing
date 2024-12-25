@@ -82,7 +82,7 @@
 
 
                 })
-                    .Read(read => read.Action("EmployeePerformanceSecondLevelSummaries_Read", "EmployeePerformanceSecondLevelSummaries"))
+                    .Read(read => read.Action("EmployeePerformanceSecondLevelSummaries_Read", "EmployeePerformanceSecondLevelSummaries").Data("sendForgery"))
                     ).ClientDetailTemplateId("employee_performance_template")
                     )
 
@@ -138,7 +138,7 @@
 
 
                      })
-                    .Read(read => read.Action("EmployeePerformanceSecondLevelSummaries_OnePerson_Read", "EmployeePerformanceSecondLevelSummaries", new { employeeId= "#=EmployeeId#", fiscalyearId= "#=GlFiscalYearId#", quarterId= "#=GlPeriodId#" }))
+                    .Read(read => read.Action("EmployeePerformanceSecondLevelSummaries_OnePerson_Read", "EmployeePerformanceSecondLevelSummaries", new { employeeId= "#=EmployeeId#", fiscalyearId= "#=GlFiscalYearId#", quarterId= "#=GlPeriodId#" }).Data("sendForgery"))
 
                     ).ClientDetailTemplateId("employee_performance_detail_template")
                     .ToClientTemplate()
@@ -199,7 +199,7 @@
 
 
                                 })
-                                .Read(read => read.Action("EmployeeMeasurements_Read", "EmployeePerformanceSecondLevelSummaries", new { performanceId = "#=EmployeePerformanceId#" })/*.Data("filterdata")*/)
+                                .Read(read => read.Action("EmployeeMeasurements_Read", "EmployeePerformanceSecondLevelSummaries", new { performanceId = "#=EmployeePerformanceId#" }).Data("sendForgery")/*.Data("filterdata")*/)
 
                                 ).ClientDetailTemplateId("template")
                                 .ToClientTemplate()
@@ -261,9 +261,9 @@
                                     model.Field(p => p.PerformanceActionId).Editable(false);
                                 }
                                 )
-                            .Read(read => read.Action("PerformanceActions_Read", "EmployeePerformanceSecondLevelSummaries", new { empMeasurId = "#=EmpMeasurementId#" }))
-                            .Update(update => update.Action("PerformanceActions_Update", "EmployeePerformanceSecondLevelSummaries", new { /*defid = "#=MeasurementDefinitionId#",*/ /*mesid = "#=MeasurementId#" */}))
-                                //.Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformance"))
+                            .Read(read => read.Action("PerformanceActions_Read", "EmployeePerformanceSecondLevelSummaries", new { empMeasurId = "#=EmpMeasurementId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("PerformanceActions_Update", "EmployeePerformanceSecondLevelSummaries", new { /*defid = "#=MeasurementDefinitionId#",*/ /*mesid = "#=MeasurementId#" */}).Data("sendForgery"))
+                                //.Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformance").Data("sendForgery"))
                                 ).ToClientTemplate()
                     )
 

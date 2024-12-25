@@ -23,7 +23,7 @@
                                                     .HtmlAttributes(new { style = "width:150px" })
                                                     .DataSource(dataSource =>
                                                     {
-                                                        dataSource.Read(read => read.Action("GetFiscalYearForPerformance", "HRMDataProvider", new { area = "HRM" }))
+                                                        dataSource.Read(read => read.Action("GetFiscalYearForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                                             .ServerFiltering(false);
                                                     })
 
@@ -47,7 +47,7 @@
                                                         .HtmlAttributes(new { style = "width:150px" })
                                                         .DataSource(dataSource =>
                                                         {
-                                                            dataSource.Read(read => read.Action("GetPeriodList", "EmployeePerformance", new { area = "HRM" }).Data("filterPeriod"))
+                                                            dataSource.Read(read => read.Action("GetPeriodList", "EmployeePerformance", new { area = "HRM" }).Data("sendForgery").Data("filterPeriod"))
                                                             .ServerFiltering(true);
                                                         })
                                                     .DataValueField("QuarterId")
@@ -100,7 +100,7 @@
                                                         .AutoBind(false)
                                                         .DataSource(dataSource =>
                                                         {
-                                                            dataSource.Read(read => read.Action("GetCorporateOrSectorEvaluationCriterias", "HRMDataProvider", new { area = "HRM" }).Data("filterEvaluationCriteria"))
+                                                            dataSource.Read(read => read.Action("GetCorporateOrSectorEvaluationCriterias", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEvaluationCriteria"))
                                                             .ServerFiltering(true);
                                                         })
                                                         .HtmlAttributes(new { style = "width: 150px;" })
@@ -125,7 +125,7 @@
 
                                     .DataSource(dataSource =>
                                     {
-                                        dataSource.Read(read => read.Action("GetAllBusinessUnits", "HRMDataProvider", new { area = "HRM" }))
+                                        dataSource.Read(read => read.Action("GetAllBusinessUnits", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                         .ServerFiltering(false);
 
                                     })
@@ -147,7 +147,7 @@
                                     .DataValueField("BranchId")
                                         .DataSource(dataSource =>
                                         {
-                                            dataSource.Read(read => read.Action("GetAllBranchByBusinessUnit", "HRMDataProvider", new { area = "HRM" }).Data("filterBranch"))
+                                            dataSource.Read(read => read.Action("GetAllBranchByBusinessUnit", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterBranch"))
                                             .ServerFiltering(true);
                                         })
 
@@ -170,7 +170,7 @@
 
                                     .DataSource(dataSource =>
                                     {
-                                        dataSource.Read(read => read.Action("GetAllWorkUnitForPerformances", "HRMDataProvider", new { area = "HRM" }).Data("filterWorkUnitEvaluationCriteria"))
+                                        dataSource.Read(read => read.Action("GetAllWorkUnitForPerformances", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterWorkUnitEvaluationCriteria"))
                                         .ServerFiltering(true);
                                     })
 
@@ -192,7 +192,7 @@
 
                                 .DataSource(dataSource =>
                                 {
-                                    dataSource.Read(read => read.Action("GetAllJobTitleForPerformances", "HRMDataProvider", new { area = "HRM" }).Data("filterJobTitleEvaluationCriteria"))
+                                    dataSource.Read(read => read.Action("GetAllJobTitleForPerformances", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterJobTitleEvaluationCriteria"))
                                     .ServerFiltering(true);
                                 })
 
@@ -294,7 +294,7 @@
 
 
                     })
-                .Read(read => read.Action("EmployeePerformanceCorporateAndSectorLevels_Read", "EmployeePerformanceCorporateAndSectorLevels"))
+                .Read(read => read.Action("EmployeePerformanceCorporateAndSectorLevels_Read", "EmployeePerformanceCorporateAndSectorLevels").Data("sendForgery"))
                 ).ClientDetailTemplateId("employee_performance_template")
 )
 
@@ -367,9 +367,9 @@
 
 
                                         })
-                                        .Read(read => read.Action("EmployeePerformanceCorporateAndSectorLevels_OnePerson_Read", "EmployeePerformanceCorporateAndSectorLevels", new { employeeId = "#=EmployeeId#", fiscalyearId = "#=GlFiscalYearId#", quarterId = "#=GlPeriodId#" }))
-                                        // .Destroy(destroy => destroy.Action("EmployeePerformanceCorporateAndSectorLevels_OnePerson_Destroy", "EmployeePerformanceCorporateAndSectorLevels", new { employeePerformanceId = "#=EmployeePerformanceId#"}))
-                                        .Destroy(destroy => destroy.Action("EmployeePerformanceCorporateAndSectorLevels_OnePerson_Destroy", "EmployeePerformanceCorporateAndSectorLevels", new { employeePerformanceId = "#=EmployeePerformanceId#" }))
+                                        .Read(read => read.Action("EmployeePerformanceCorporateAndSectorLevels_OnePerson_Read", "EmployeePerformanceCorporateAndSectorLevels", new { employeeId = "#=EmployeeId#", fiscalyearId = "#=GlFiscalYearId#", quarterId = "#=GlPeriodId#" }).Data("sendForgery"))
+                                        // .Destroy(destroy => destroy.Action("EmployeePerformanceCorporateAndSectorLevels_OnePerson_Destroy", "EmployeePerformanceCorporateAndSectorLevels", new { employeePerformanceId = "#=EmployeePerformanceId#"}).Data("sendForgery"))
+                                        .Destroy(destroy => destroy.Action("EmployeePerformanceCorporateAndSectorLevels_OnePerson_Destroy", "EmployeePerformanceCorporateAndSectorLevels", new { employeePerformanceId = "#=EmployeePerformanceId#" }).Data("sendForgery"))
 
                                         ).ClientDetailTemplateId("employee_performance_detail_template")
                                         .ToClientTemplate()
@@ -432,7 +432,7 @@
 
 
                             })
-                            .Read(read => read.Action("EmployeeMeasurements_Read", "EmployeePerformanceCorporateAndSectorLevels", new { performanceId = "#=EmployeePerformanceId#" })/*.Data("filterdata")*/)
+                            .Read(read => read.Action("EmployeeMeasurements_Read", "EmployeePerformanceCorporateAndSectorLevels", new { performanceId = "#=EmployeePerformanceId#" }).Data("sendForgery")/*.Data("filterdata")*/)
 
                             ).ClientDetailTemplateId("template")
                             .ToClientTemplate()
@@ -496,9 +496,9 @@
                                 model.Field(p => p.Score).Editable(false);
                                 model.Field(p => p.PerformanceActionId).Editable(false);
                             })
-                        .Read(read => read.Action("PerformanceActions_Read", "EmployeePerformanceCorporateAndSectorLevels", new { empMeasurId = "#=EmpMeasurementId#" }))
-                        .Update(update => update.Action("PerformanceActions_Update", "EmployeePerformanceCorporateAndSectorLevels", new { /*defid = "#=MeasurementDefinitionId#",*/ /*mesid = "#=MeasurementId#" */}))
-                        .Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformanceCorporateAndSectorLevels"))
+                        .Read(read => read.Action("PerformanceActions_Read", "EmployeePerformanceCorporateAndSectorLevels", new { empMeasurId = "#=EmpMeasurementId#" }).Data("sendForgery"))
+                        .Update(update => update.Action("PerformanceActions_Update", "EmployeePerformanceCorporateAndSectorLevels", new { /*defid = "#=MeasurementDefinitionId#",*/ /*mesid = "#=MeasurementId#" */}).Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformanceCorporateAndSectorLevels").Data("sendForgery"))
                             ).ToClientTemplate()
                                     )
 

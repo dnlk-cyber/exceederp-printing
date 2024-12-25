@@ -88,7 +88,7 @@
 
 
                 })
-                .Read(read => read.Action("EmployeePerformanceSummaries_Read", "EmployeePerformanceSummaries"))
+                .Read(read => read.Action("EmployeePerformanceSummaries_Read", "EmployeePerformanceSummaries").Data("sendForgery"))
                        
                 ).ClientDetailTemplateId("employee_performance_template")
 )
@@ -206,7 +206,7 @@
                                         aggregates.Add(p => p.Weight).Sum();
                                         aggregates.Add(p => p.Result).Sum();
                                     })
-                                    .Read(read => read.Action("EmployeePerformanceSummaries_OnePerson_Read", "EmployeePerformanceSummaries", new { employeeId = "#=EmployeeId#", fiscalyearId = "#=GlFiscalYearId#", quarterId = "#=GlPeriodId#" }))
+                                    .Read(read => read.Action("EmployeePerformanceSummaries_OnePerson_Read", "EmployeePerformanceSummaries", new { employeeId = "#=EmployeeId#", fiscalyearId = "#=GlFiscalYearId#", quarterId = "#=GlPeriodId#" }).Data("sendForgery"))
 
                                     ).ClientDetailTemplateId("employee_performance_detail_template")
                                     .ToClientTemplate()
@@ -271,7 +271,7 @@
 
 
                         })
-                        .Read(read => read.Action("EmployeeMeasurements_Read", "EmployeePerformanceSummaries", new { performanceId = "#=EmployeePerformanceId#" })/*.Data("filterdata")*/)
+                        .Read(read => read.Action("EmployeeMeasurements_Read", "EmployeePerformanceSummaries", new { performanceId = "#=EmployeePerformanceId#" }).Data("sendForgery")/*.Data("filterdata")*/)
 
                         ).ClientDetailTemplateId("template")
                         .ToClientTemplate()
@@ -332,9 +332,9 @@
                                                             model.Field(p => p.PerformanceActionId).Editable(false);
                                                         }
                                                 )
-                                            .Read(read => read.Action("PerformanceActions_Read", "EmployeePerformance", new { empMeasurId = "#=EmpMeasurementId#" }))
-                                            .Update(update => update.Action("PerformanceActions_Update", "EmployeePerformance", new { /*defid = "#=MeasurementDefinitionId#",*/ /*mesid = "#=MeasurementId#" */}))
-                                                //.Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformance"))
+                                            .Read(read => read.Action("PerformanceActions_Read", "EmployeePerformance", new { empMeasurId = "#=EmpMeasurementId#" }).Data("sendForgery"))
+                                            .Update(update => update.Action("PerformanceActions_Update", "EmployeePerformance", new { /*defid = "#=MeasurementDefinitionId#",*/ /*mesid = "#=MeasurementId#" */}).Data("sendForgery"))
+                                                //.Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformance").Data("sendForgery"))
                                                 ).ToClientTemplate()
                             )
 
@@ -547,7 +547,7 @@
                                                 .Filter("contains")
                                                 .DataSource(dataSource =>
                                                 {
-                                                    dataSource.Read(read => read.Action("GetNextApproverList", "HRMDataProvider").Data("filterEmployeeId"))
+                                                    dataSource.Read(read => read.Action("GetNextApproverList", "HRMDataProvider").Data("sendForgery").Data("filterEmployeeId"))
                                                         .ServerFiltering(false);
 
                                                 })

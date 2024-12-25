@@ -7,7 +7,7 @@
                     .DataValueField("FiscalYearId")
                     .DataSource(dataSource =>
                     {
-                        dataSource.Read(read => read.Action("GetFiscalYear", "PerformanceRequestPeriods", new { area = "HRM" }))
+                        dataSource.Read(read => read.Action("GetFiscalYear", "PerformanceRequestPeriods", new { area = "HRM" }).Data("sendForgery"))
                             .ServerFiltering(false);
                     })
 )

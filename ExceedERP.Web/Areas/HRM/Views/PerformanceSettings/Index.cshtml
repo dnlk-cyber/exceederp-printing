@@ -62,10 +62,10 @@
                       model.Field(p => p.DateCreated).Editable(false);
                       model.Field(p => p.CreatedBy).Editable(false);
                   })
-                  .Read(read => read.Action("PerformanceSettings_Read", "PerformanceSettings"))
-                  .Create(create => create.Action("PerformanceSettings_Create", "PerformanceSettings"))
-                  .Update(update => update.Action("PerformanceSettings_Update", "PerformanceSettings"))
-                  .Destroy(destroy => destroy.Action("PerformanceSettings_Destroy", "PerformanceSettings"))
+                  .Read(read => read.Action("PerformanceSettings_Read", "PerformanceSettings").Data("sendForgery"))
+                  .Create(create => create.Action("PerformanceSettings_Create", "PerformanceSettings").Data("sendForgery"))
+                  .Update(update => update.Action("PerformanceSettings_Update", "PerformanceSettings").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("PerformanceSettings_Destroy", "PerformanceSettings").Data("sendForgery"))
               )
 )
 <script>

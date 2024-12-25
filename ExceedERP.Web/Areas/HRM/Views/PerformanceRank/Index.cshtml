@@ -44,10 +44,10 @@
                                                         })
                            
           .Model(model => model.Id(p => p.PerformanceRankId))
-          .Read(read => read.Action("PerformanceRank_Read", "PerformanceRank"))
-          .Create(create => create.Action("PerformanceRank_Create", "PerformanceRank"))
-          .Update(update => update.Action("PerformanceRank_Update", "PerformanceRank"))
-          .Destroy(destroy => destroy.Action("PerformanceRank_Destroy", "PerformanceRank"))
+          .Read(read => read.Action("PerformanceRank_Read", "PerformanceRank").Data("sendForgery"))
+          .Create(create => create.Action("PerformanceRank_Create", "PerformanceRank").Data("sendForgery"))
+          .Update(update => update.Action("PerformanceRank_Update", "PerformanceRank").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("PerformanceRank_Destroy", "PerformanceRank").Data("sendForgery"))
       )
 )
 <script>

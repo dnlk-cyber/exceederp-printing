@@ -39,7 +39,7 @@
                                             .DataTextField("Name")
                                                     .DataSource(dataSource =>
                                   {
-                                      dataSource.Read(read => read.Action("GetPeriodList", "EmployeePerformance", new { area = "HRM" }))
+                                      dataSource.Read(read => read.Action("GetPeriodList", "EmployeePerformance", new { area = "HRM" }).Data("sendForgery"))
                                                             .ServerFiltering(false);
                                   })
                                                     .DataValueField("GLPeriodId")
@@ -125,10 +125,10 @@
                         model.Field(p => p.Result).Editable(false);
                                 model.Field(p => p. DefnPercentageofWeight).Editable(false);
                   })
-                                          .Read(read => read.Action("MeasurementDefinitions_Read", "EmployeePerformance"))
-                                                                  .Create(create => create.Action("MeasurementDefinitions_Create", "EmployeePerformance"))
-                                                                           .Update(update => update.Action("MeasurementDefinitions_Create", "EmployeePerformance"))
-                                 .Destroy(destroy => destroy.Action("", ""))
+                                          .Read(read => read.Action("MeasurementDefinitions_Read", "EmployeePerformance").Data("sendForgery"))
+                                                                  .Create(create => create.Action("MeasurementDefinitions_Create", "EmployeePerformance").Data("sendForgery"))
+                                                                           .Update(update => update.Action("MeasurementDefinitions_Create", "EmployeePerformance").Data("sendForgery"))
+                                 .Destroy(destroy => destroy.Action("", "").Data("sendForgery"))
                   ).ClientDetailTemplateId("template")
                 )
                 <script id="template" type="text/kendo-tmpl">
@@ -184,10 +184,10 @@
 
               }
               )
-                      .Read(read => read.Action("Measurements_Read", "EmployeePerformance", new { id = "#=MeasurementDefinitionId#" }))
-                      .Create(create => create.Action("Measurements_Create", "EmployeePerformance", new { id = "#=MeasurementDefinitionId#" }))
-                              .Update(update => update.Action("Measurements_Update", "EmployeePerformance", new { id = "#=MeasurementDefinitionId#" }))
-                      .Destroy(destroy => destroy.Action("Measurements_Destroy", "EmployeePerformance"))
+                      .Read(read => read.Action("Measurements_Read", "EmployeePerformance", new { id = "#=MeasurementDefinitionId#" }).Data("sendForgery"))
+                      .Create(create => create.Action("Measurements_Create", "EmployeePerformance", new { id = "#=MeasurementDefinitionId#" }).Data("sendForgery"))
+                              .Update(update => update.Action("Measurements_Update", "EmployeePerformance", new { id = "#=MeasurementDefinitionId#" }).Data("sendForgery"))
+                      .Destroy(destroy => destroy.Action("Measurements_Destroy", "EmployeePerformance").Data("sendForgery"))
           ).ToClientTemplate()
                     )
 
@@ -242,10 +242,10 @@ events.RequestEnd("onRequestEnd(\"PerformanceActiongrid_#=MeasurementDefinitionI
 
               }
               )
-                                     .Read(read => read.Action("PerformanceActions_Read", "EmployeePerformance", new { defid = "#=MeasurementDefinitionId#", mesId = 0 }))
-                                             .Create(create => create.Action("PerformanceActions_Create", "EmployeePerformance", new { defid = "#=MeasurementDefinitionId#", mesId = 0 }))
-                                             .Update(update => update.Action("PerformanceActions_Update", "EmployeePerformance", new { defid = "#=MeasurementDefinitionId#", mesId = 0 }))
-                                     .Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformance"))
+                                     .Read(read => read.Action("PerformanceActions_Read", "EmployeePerformance", new { defid = "#=MeasurementDefinitionId#", mesId = 0 }).Data("sendForgery"))
+                                             .Create(create => create.Action("PerformanceActions_Create", "EmployeePerformance", new { defid = "#=MeasurementDefinitionId#", mesId = 0 }).Data("sendForgery"))
+                                             .Update(update => update.Action("PerformanceActions_Update", "EmployeePerformance", new { defid = "#=MeasurementDefinitionId#", mesId = 0 }).Data("sendForgery"))
+                                     .Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformance").Data("sendForgery"))
                          ).ToClientTemplate()
                     )
 
@@ -305,10 +305,10 @@ events.RequestEnd("onRequestEnd(\"PerformanceActiongrid_#=MeasurementDefinitionI
 
               }
               )
-                                                                     .Read(read => read.Action("PerformanceActions_Read", "EmployeePerformance", new { defid = 0, mesid = "#=MeasurementId#" }))
-                                                     .Create(create => create.Action("PerformanceActions_Create", "EmployeePerformance", new { defid = 0, mesid = "#=MeasurementId#" }))
-                                             .Update(update => update.Action("PerformanceActions_Update", "EmployeePerformance", new { defid = 0, mesid = "#=MeasurementId#" }))
-                                     .Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformance"))
+                                                                     .Read(read => read.Action("PerformanceActions_Read", "EmployeePerformance", new { defid = 0, mesid = "#=MeasurementId#" }).Data("sendForgery"))
+                                                     .Create(create => create.Action("PerformanceActions_Create", "EmployeePerformance", new { defid = 0, mesid = "#=MeasurementId#" }).Data("sendForgery"))
+                                             .Update(update => update.Action("PerformanceActions_Update", "EmployeePerformance", new { defid = 0, mesid = "#=MeasurementId#" }).Data("sendForgery"))
+                                     .Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformance").Data("sendForgery"))
                          ).ToClientTemplate()
                     )
 
