@@ -15,4 +15,10 @@ namespace ExceedERP.Reporting.Procurements.ViewModel
         public string UPrice { get; set; }
         public string TPrice { get; set; }
     }
+
+    public class ProformaTeamVm
+    {
+        public string FullName { get; set; }
+        public string Title { get; set; }
+    }
 }

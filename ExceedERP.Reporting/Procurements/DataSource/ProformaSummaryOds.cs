@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Procurements.ViewModel;
 
 namespace ExceedERP.Reporting.Procurements.DataSource
@@ -28,11 +29,11 @@ namespace ExceedERP.Reporting.Procurements.DataSource
             {
                 var proformaSummary = new ProformaAndLotSummaryViewModel
                 {
-                    Description =supplierItem.ItemType==PurchaseItemType.FixedAsset? supplierItem.ItemName+"-"+supplierItem.Name + "-" + supplierItem.ModelNo : supplierItem.ItemName + "-" + supplierItem.ItemSpecification,
+                    Description = supplierItem.ItemType == PurchaseItemType.FixedAsset ? supplierItem.ItemName + "-" + supplierItem.Name + "-" + supplierItem.ModelNo : supplierItem.ItemName + "-" + supplierItem.ItemSpecification,
                     SupplierName = supplierItem.ParticipatingSupplier.SupplierName,
                     Quantity = supplierItem.Quantity,
                     Unit = supplierItem.UoM,
-                    UPrice= supplierItem.IsOutOfStock ? "Out of Stock" : (supplierItem.UPrice).ToString(),
+                    UPrice = supplierItem.IsOutOfStock ? "Out of Stock" : (supplierItem.UPrice).ToString(),
                     //TPrice = supplier.IsOutOfStock ? "Out of Stock" : (supplier.Quantity * supplier.UPrice).ToString()
                 };
                 //sub total
@@ -48,8 +49,8 @@ namespace ExceedERP.Reporting.Procurements.DataSource
         {
             List<SupplierSummaryViewModel> supplierSummaryList = new List<SupplierSummaryViewModel>();
 
-          
-            var winningSuppliers = db.WinningSuppliers.Where(x=>x.AwardGiven).Where(x => x.ProformaPurchaseID.ToString() == id).ToList();
+
+            var winningSuppliers = db.WinningSuppliers.Where(x => x.AwardGiven).Where(x => x.ProformaPurchaseID.ToString() == id).ToList();
 
             foreach (var winner in winningSuppliers)
             {
@@ -62,7 +63,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
 
 
 
-                var winnerSuppliers = db.WinningSupplierItems.Where(x=>x.WinningSupplierID == winner.WinningSupplierID ).ToList();
+                var winnerSuppliers = db.WinningSupplierItems.Where(x => x.WinningSupplierID == winner.WinningSupplierID).ToList();
                 foreach (var winnerSupplier in winnerSuppliers)
                 {
                     WinningSupplierDetailVM winnervm =
@@ -81,14 +82,41 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                 }
 
                 supplierSummaryList.Add(supplierSummary);
-            
-               
+
+
             }
 
             return supplierSummaryList;
         }
 
-        
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<ProformaTeamVm> GetProformaTeam(string id)
+        {
+            List<ProformaTeamVm> members = new List<ProformaTeamVm>();
+            if (!string.IsNullOrEmpty(id))
+            {
+                int did = int.Parse(id);
+                var proforma = db.ProformaPurchases.Find(did);
+                var team = db.ProformaTeams.Where(x => x.ProformaPurchaseID == proforma.ProformaPurchaseID).FirstOrDefault();
+                if (team != null)
+                {
+                    var proformaTeams = db.ProformaTeamMembers.Where(x => x.ProformaTeamId == team.ProformaTeamId).ToList();
+                    foreach (var m in proformaTeams)
+                    {
+
+                        var member = new ProformaTeamVm
+                        {
+                            FullName = EmployeeHelper.GetEmployeeEnglishName(m.EmployeeId),
+                            Title = m.Title
+
+                        };
+                        members.Add(member);
+                    }
+                }
+            }
+
+            return members;
+        }
 
     }
 }

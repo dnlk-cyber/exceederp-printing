@@ -756,7 +756,7 @@
                                       .Columns(columns =>
                                       {
 
-                                          columns.Bound(c => c.Description).Width(200);
+                                          columns.Bound(c => c.Description).Width(300).EditorTemplateName("DescriptionEditor");
 
                                           columns.Command(command =>
                                           {

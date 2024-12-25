@@ -330,8 +330,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                 var team = _db.ProformaTeams.FirstOrDefault(x => x.ProformaPurchaseID == did);
                 if (team != null)
                 {
-                    var teamdecision = _db.ProformaTeamDecisions.FirstOrDefault(x => x.ProformaTeamId == team.ProformaTeamId);
-                    template.ProformaNote = teamdecision?. Description;
+                    template.ProformaNote = team.Description; //teamdecision?.Description;
                 }
                 if (proformaPurchase != null)
                 {
