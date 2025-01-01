@@ -7,11 +7,10 @@
               .Columns(columns =>
               {
                   columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Width(110).Title("Customer");
+                  columns.Bound(c => c.Status);
                   columns.Command(command =>
                   {
-                      command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
-                      columns.Bound(c => c.Status).Width(120);
-
+                      command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");                     
                       command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
                   }).Width(200);
               })

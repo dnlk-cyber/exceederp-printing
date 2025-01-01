@@ -128,78 +128,113 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             });
             return Json(result);
         }
-        public ActionResult FurnitureEstimations_Create([DataSourceRequest]DataSourceRequest request, FurnitureEstimationForm estimationForm)
+        public ActionResult FurnitureEstimations_Create([DataSourceRequest]DataSourceRequest request, FurnitureEstimationForm model)
         {
             if (ModelState.IsValid)
             {
-
-                var entity = new FurnitureEstimationForm
-                {
-                    FurnitureEstimationId = estimationForm.FurnitureEstimationId,
-                    CustomerId = estimationForm.CustomerId,
-                    
-                    Quantity = estimationForm.Quantity,
-                   
-                    CreatedBy = User.Identity.Name,
-                    DateCreated = DateTime.Now,
-                    ModifiedBy = User.Identity.Name,
-                    LastModified = DateTime.Now,
-                   
-                };
-
-                db.FurnitureEstimationForms.Add(entity);
-                db.SaveChanges();
-                estimationForm.FurnitureEstimationId = entity.FurnitureEstimationId;
-                
-                db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
+                GenerateEstimation(model.JobTypeId, model.CustomerId, model.Quantity, model.Description);
             }
 
-            return Json(new[] { estimationForm }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult FurnitureEstimations_Update([DataSourceRequest]DataSourceRequest request, FurnitureEstimationForm estimationForm)
+        public ActionResult FurnitureEstimations_Update([DataSourceRequest]DataSourceRequest request, FurnitureEstimationForm model)
         {
             if (ModelState.IsValid)
             {
-                var entity = new FurnitureEstimationForm
-                {
-                    FurnitureEstimationId = estimationForm.FurnitureEstimationId,
-                    CustomerId = estimationForm.CustomerId,                    
-                    Quantity = estimationForm.Quantity,                             
-                    ModifiedBy = User.Identity.Name,
-                    LastModified = DateTime.Now,                  
-                };
+                Delete(model.FurnitureEstimationId);
+                GenerateEstimation(model.JobTypeId, model.CustomerId, model.Quantity, model.Description);
 
-                db.FurnitureEstimationForms.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
             }
-            return Json(new[] { estimationForm }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult EstimationForms_Destroy([DataSourceRequest]DataSourceRequest request, FurnitureEstimationForm estimationForm)
+        public ActionResult EstimationForms_Destroy([DataSourceRequest]DataSourceRequest request, FurnitureEstimationForm model)
         {
 
-            //if (ModelState.IsValid)
-            //{
-            var estimation = db.FurnitureEstimationForms.Find(estimationForm.FurnitureEstimationId);
-            var labor = db.FurnitureLaborCosts.Where(x => x.EstimationFormId == estimation.FurnitureEstimationId).ToList();
-            var material = db.FurnitureMaterialCosts.Where(x => x.FurnitureEstimationId == estimation.FurnitureEstimationId).ToList();
-            db.FurnitureLaborCosts.RemoveRange(labor);
-            db.FurnitureMaterialCosts.RemoveRange(material);
-            db.SaveChanges();
-            db.FurnitureEstimationForms.Remove(estimation);
-                
-            db.SaveChanges();
-            //}
+            Delete(model.FurnitureEstimationId);
 
-            return Json(new[] { estimationForm }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
+        private void Delete(int id)
+        {
+            var estimation = db.FurnitureEstimationForms.Find(id);
+            if(estimation != null)
+            {
+                var labor = db.FurnitureLaborCosts.Where(x => x.EstimationFormId == estimation.FurnitureEstimationId).ToList();
+                var material = db.FurnitureMaterialCosts.Where(x => x.FurnitureEstimationId == estimation.FurnitureEstimationId).ToList();
+                if(labor.Any() && material.Any())
+                {
+                    db.FurnitureLaborCosts.RemoveRange(labor);
+                    db.FurnitureMaterialCosts.RemoveRange(material);
+                }
+                db.FurnitureEstimationForms.Remove(estimation);
 
+                db.SaveChanges();
 
+            }
+
+        }
+        private void GenerateEstimation(int id, int customerId, decimal quantity, string description)
+        {
+            var standardob = db.FurnitureStandardJobTypes.Find(id);
+            var boqMaterial = db.StandardBillOfMaterials.Where(x => x.FurnitureStandardJobTypeId == standardob.FurnitureStandardJobTypeId).ToList();
+            var boqLabor = db.StandardBillOfLabors.Where(x => x.FurnitureStandardJobTypeId == standardob.FurnitureStandardJobTypeId).ToList();
+            if (boqMaterial.Any() && boqLabor.Any())
+            {
+                var estimation = new FurnitureEstimationForm
+                {
+                    JobTypeId = standardob.FurnitureStandardJobTypeId,
+                    CustomerId = customerId,
+                    Quantity = quantity,
+                    Description = description
+                };
+                db.FurnitureEstimationForms.Add(estimation);
+                db.SaveChanges();
+
+                foreach (var item in boqMaterial)
+                {
+                    var materialItem = db.ManufacturingMaterialCategoryItems.FirstOrDefault(x => x.ManufacturingMaterialCategoryItemId == item.ManufacturingMaterialCategoryItemId);
+                    var material = new FurnitureMaterialCost
+                    {
+                        TaskType = item.WorkshopType,
+                        ManufacturingMaterialCategoryId = item.ManufacturingMaterialCategoryId,
+                        ManufacturingMaterialCategoryItemId = item.ManufacturingMaterialCategoryItemId,
+                        UnitOfMeasurment = item.UnitOfMeasurement,
+                        Quantity = item.Quantity,
+                        UnitPrice = materialItem.UnitPrice,
+
+                        FurnitureEstimationId = estimation.FurnitureEstimationId
+                    };
+
+                    // Total Price Calculation
+                    material.TotalPrice = material.UnitPrice * material.Quantity;
+
+                    db.FurnitureMaterialCosts.Add(material);
+                    db.SaveChanges();
+                }
+
+                var groupedBoqLabor = boqLabor.GroupBy(x => x.WorkShopType).ToList();
+
+                foreach (var items in groupedBoqLabor)
+                {
+                    var taskCategory = db.ManifucturingTaskCategories.FirstOrDefault(x => x.Type == items.Key);
+
+                    var labor = new DirectLaborCost
+                    {
+                        CostPerMinute = taskCategory.HourRate,
+                        TaskType = items.Key,
+                        WorkingTime = items.Sum(x => (decimal?)x.EstimatedMinute) ?? 0,
+                        FurnitureEstimationId = estimation.FurnitureEstimationId
+                    };
+                    labor.TotalCost = labor.WorkingTime * labor.CostPerMinute;
+                    db.DirectLaborCosts.Add(labor);
+                    db.SaveChanges();
+                }
+            }
+        }
 
         public JsonResult CheckEstimation(int id)
         {

@@ -1,4 +1,4 @@
-using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
+﻿using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.Core.Domain.Manufacturing.Setting;
 using ExceedERP.DataAccess.Context;
 using System;
@@ -93,6 +93,20 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             {
                 Value = s.FurnitureJobCategoryId,
                 Text = s.JobName
+            });
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetFurnitureJobType(string text)
+        {
+            var jobTypes = db.FurnitureStandardJobTypes.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                jobTypes = jobTypes.Where(x => x.JobTypeName.Contains(text)).AsQueryable();
+            }
+            var result = jobTypes.Select(s => new
+            {
+                Value = s.FurnitureStandardJobTypeId,
+                Text = s.JobTypeName
             });
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -244,13 +258,10 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
             var jobOrder = db.PrintingJobOrders.ToList();
             var proformaInvoice = db.PrintingProformaInvoices.Where(x => x.IsOnlineApproved).ToList();
-
             foreach (var item in jobOrder)
             {
-
                 proformaInvoice.RemoveAll(x => x.PrintingProformaInvoiceId == item.PrintingProformaInvoiceId);
             }
-
             if (!string.IsNullOrWhiteSpace(text))
             {
                 proformaInvoice = proformaInvoice.Where(x => x.PrintingProformaInvoiceId == int.Parse(text)).ToList();

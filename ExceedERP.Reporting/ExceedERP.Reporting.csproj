@@ -4009,13 +4009,21 @@
     <Compile Include="Planning\ViewModel\ProjectSummaryBySectorsVM.cs" />
     <Compile Include="Planning\ViewModel\RiskFollowUpVM.cs" />
     <Compile Include="Planning\ViewModel\RiskMitgationPlanVM.cs" />
+    <Compile Include="Printing\DataSource\PrintingEstimationOds.cs" />
     <Compile Include="Printing\DataSource\PrintingProformaOds.cs" />
+    <Compile Include="Printing\Design\PrintingEstimationDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Printing\Design\PrintingEstimationDesign.Designer.cs">
+      <DependentUpon>PrintingEstimationDesign.cs</DependentUpon>
+    </Compile>
     <Compile Include="Printing\Design\PrintingProformaPrint.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Printing\Design\PrintingProformaPrint.Designer.cs">
       <DependentUpon>PrintingProformaPrint.cs</DependentUpon>
     </Compile>
+    <Compile Include="Printing\ViewModel\PrintingEstimationViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingProformaViewModel.cs" />
     <Compile Include="Procurements\AmharicAward.cs">
       <SubType>Component</SubType>
@@ -6088,6 +6096,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Planning\Design\RiskMitigationPlanDesign.resx">
       <DependentUpon>RiskMitigationPlanDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Printing\Design\PrintingEstimationDesign.resx">
+      <DependentUpon>PrintingEstimationDesign.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Printing\Design\PrintingProformaPrint.resx">
       <DependentUpon>PrintingProformaPrint.cs</DependentUpon>

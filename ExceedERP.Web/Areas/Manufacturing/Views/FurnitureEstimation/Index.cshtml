@@ -14,18 +14,17 @@
 
                         columns.Command(command =>
                         {
-                            //command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
+                            command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
                             command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "Check" }).Click("checkEstimation");
                             command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
                             //command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
-                            //command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
+                            command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
                         }).Width(200);
 
                     })
                     .ToolBar(toolbar =>
                     {
-                        toolbar.Create();
-                       
+                        toolbar.Create();                     
                     })
                     .Events(ev => ev.DetailExpand("detailExpand")
                     .DataBound("dataBound")
@@ -88,10 +87,7 @@
                                                      // escaped template expression, to be evaluated in the child/detail context
                                                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
                                                              })
-                                                     .ToolBar(toolbar =>
-                                                     {
-                                                                 toolbar.Create();
-                                                             })
+                                                     
                                                      .Events(ev => ev.DataBound("onChildDataBound"))
                                                      .Events(ev => ev.Edit("onEditMaterialCost"))
                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
@@ -139,13 +135,8 @@
                                                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
 
                                                      })
-
-                                                   .ToolBar(toolbar =>
-                                                   {
-                                                       toolbar.Create();
-
-                                                   })
-                                                   .Editable(editable => editable.Mode(GridEditMode.InCell)
+                                                     
+                                                   .Editable(editable => editable.Mode(GridEditMode.InLine)
                                                    )
                                                    .Events(ev => ev.DataBound("onChildDataBound"))
                                                    .Pageable(pageable => pageable
@@ -154,7 +145,6 @@
                                                    .ButtonCount(5))
                                                    .DataSource(dataSource => dataSource
                                                        .Ajax()
-
                                                        .Events(ev => ev.Error("error_handler(\"labor_costs_#=FurnitureEstimationId#\")")
                                                        .RequestStart("onRequestStart(\"labor_costs_#=FurnitureEstimationId#\")")
                                                        .RequestEnd("onRequestEnd(\"labor_costs_#=FurnitureEstimationId#\")"))
@@ -170,6 +160,7 @@
                                                            model.Field(p => p.WorkingTime).Editable(false);
                                                            model.Field(p => p.TaskType).Editable(false);
                                                            model.Field(p => p.DirectLaborCostId).Editable(false);
+                                                           //model.Field(p => p.CostPerMinute).Editable(false);
                                                        })
                                                        .Read(read => read.Action("DirectLaborCosts_Read", "FurnitureDirectLaborCosts", new { estimationFormId = "#=FurnitureEstimationId#" }))
                                                        .Create(create => create.Action("DirectLaborCosts_Create", "FurnitureDirectLaborCosts", new { parentId = "#=FurnitureEstimationId#" }))
@@ -183,7 +174,7 @@
                                                        .ToClientTemplate()
 
                             )
-                            @*@LaborCostBatch();*@
+                           
 
                         </text>);
 
@@ -546,61 +537,16 @@
 </script>
 
 <style>
-    .k-grid .k-grid-toolbar .k-grid-add,
-    .k-grid tbody .k-grid-edit,
-    .k-grid tbody .k-grid-update,
-    .k-grid tbody .k-grid-cancel,
-    .k-grid tbody .k-grid-delete {
-        min-width: 0;
-    }
-
-        .k-grid .k-grid-toolbar .k-grid-add .k-icon,
-        .k-grid tbody .k-grid-edit .k-icon,
-        .k-grid tbody .k-grid-update .k-icon,
-        .k-grid tbody .k-grid-cancel .k-icon,
-        .k-grid tbody .k-grid-delete .k-icon {
-            margin: 0;
-        }
-
-    .k-grid tbody .k-button {
-        min-width: 30px;
-        min-height: 30px;
-    }
-
-    .check {
-        background-color: #e68a00;
-        color: white;
-    }
-
-    .approve {
-        background-color: #077d01;
-        color: white;
-    }
-
-    .reject {
-        color: white;
-        background-color: #fc0000;
-    }
-</style>
-<style>
     div.k-edit-form-container {
         width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
     }
 
     .row {
-        margin: 10px;
-    }
-
-        .row .col-sm-3 {
-            margin: 10px;
-        }
-
-    .k-textbox,
-    .k-numerictextbox,
-    .k-dropdown,
-    .k-dropdowntree,
-    .k-datepicker,
-    .k-upload {
-        width: 80%;
+        margin: auto;
     }
 </style>

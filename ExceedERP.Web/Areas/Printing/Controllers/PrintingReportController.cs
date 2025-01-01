@@ -14,5 +14,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             ViewBag.Id = id;
             return View(); 
         }
+        public ActionResult EstimationPrint(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
     }
 }

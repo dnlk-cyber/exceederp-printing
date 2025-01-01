@@ -51,14 +51,14 @@
                                                 .Name("tab_#=PrintingJobOrderProductionId#")
                                                 .Items(item1 =>
                                                 {
-                                                    item1.Add().Text("Material Cost").Content(
+                                                    item1.Add().Text("Material").Content(
                                                     @<text>
                                                         @material()
                                                     </text>);
-                                                            item1.Add().Text("Labor Cost").Content(
+                                                            @*item1.Add().Text("Labor Cost").Content(
                                                 @<text>
                                                     @labor()
-                                                </text>);
+                                                </text>);*@
                                                 item1.Add().Text("Store Requisition").Content(
                                     @<text>
                                         @StoreRequisition()
@@ -80,9 +80,7 @@
                                                             columns.ForeignKey(c => c.PrintingMaterialCategoryId, (IEnumerable)ViewData["PrintingMaterialCategory"], "Value", "Text");
                                                             columns.ForeignKey(c => c.PrintingMaterialCategoryItemId, (IEnumerable)ViewData["PItem"], "Value", "Text");
                                                             columns.Bound(c => c.Quantity);
-                                                            columns.Bound(c => c.UnitOfMeasurment);
-                                                            columns.Bound(c => c.UnitCost);
-                                                            columns.Bound(c => c.TotalCost);
+
                                                         })
                                                         .Editable(editable => editable.Mode(GridEditMode.InLine))
                                                         .Filterable()
