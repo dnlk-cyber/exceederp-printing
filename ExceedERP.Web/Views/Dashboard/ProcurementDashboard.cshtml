@@ -8,6 +8,83 @@
 <a style="align-content:center;color:white" onclick='return refreshData()' href='#' title="Refresh Data"><i class="fa fa-refresh fa-2x"></i></a>
 
 <div class="row">
+
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="suppliers" width="400" height="400"></canvas>
+        </div>
+
+
+    </div>
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="paymentRequestAmount" width="400" height="400"></canvas>
+        </div>
+
+
+    </div>
+       
+
+
+
+</div>
+<div class="row">
+
+
+    <div class="col-sm-7 col-lg-12 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="purchasedStatus" width="400" height="400"></canvas>
+        </div>
+
+
+    </div>
+
+
+</div>
+<div class="row">
+
+
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="paymentRequest" width="400" height="400"></canvas>
+        </div>
+
+
+    </div>
+
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="procurement" width="400" height="400"></canvas>
+        </div>
+
+
+    </div>
+
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="servicereceiveStatus" width="400" height="400"></canvas>
+        </div>
+
+
+    </div>
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="contractStatus" width="400" height="400"></canvas>
+        </div>
+
+
+    </div>
+
+
+</div>
+<div class="row">
         
     <div class="col-sm-7 col-lg-3 chartcontainer">
 
@@ -43,42 +120,7 @@
     </div>
     
 </div>
-<div class="row">
-          
-    <div class="col-sm-7 col-lg-3 chartcontainer">
 
-        <div class="demo-section k-content wide">
-            <canvas id="servicereceiveStatus" width="400" height="400"></canvas>
-        </div>
-
-
-    </div>
-    <div class="col-sm-7 col-lg-3 chartcontainer">
-
-        <div class="demo-section k-content wide">
-            <canvas id="contractStatus" width="400" height="400"></canvas>
-        </div>
-
-
-    </div>
-
-    <div class="col-sm-7 col-lg-3 chartcontainer">
-
-        <div class="demo-section k-content wide">
-            <canvas id="suppliers" width="400" height="400"></canvas>
-        </div>
-
-
-    </div>
-    <div class="col-sm-7 col-lg-3 chartcontainer">
-
-        <div class="demo-section k-content wide">
-            <canvas id="procurement" width="400" height="400"></canvas>
-        </div>
-
-
-    </div>
-</div>
 
 
 
@@ -95,7 +137,54 @@
         purple: 'rgb(153, 102, 255)',
         grey: 'rgb(201, 203, 207)'
     };
+    const vibrantColors = [
+        'rgba(255, 99, 132)',   // Red
+        'rgba(54, 162, 235)',   // Blue
+        'rgba(255, 206, 86)',   // Yellow
+        'rgba(75, 192, 192)',   // Green
+        'rgba(153, 102, 255)',  // Purple
+        'rgba(255, 159, 64)',   // Orange
+        'rgba(255, 99, 71)',    // Tomato
+        'rgba(124, 252, 0)',    // Lawn Green
+        'rgba(0, 255, 255)',    // Cyan
+        'rgba(255, 20, 147)',   // Deep Pink
+        'rgba(138, 43, 226)',   // Blue Violet
+        'rgba(244, 164, 96)',   // Sandy Brown
+        'rgba(0, 128, 128)',    // Teal
+        'rgba(220, 20, 60)',    // Crimson
+        'rgba(255, 140, 0)',    // Dark Orange
+        'rgba(75, 0, 130)',     // Indigo
+        'rgba(60, 179, 113)',   // Medium Sea Green
+        'rgba(0, 191, 255)',    // Deep Sky Blue
+        'rgba(218, 112, 214)',  // Orchid
+        'rgba(210, 105, 30)'    // Chocolate
+    ];
 
+    const vibrantBorderColors = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)',
+        'rgba(255, 99, 71, 1)',
+        'rgba(124, 252, 0, 1)',
+        'rgba(0, 255, 255, 1)',
+        'rgba(255, 20, 147, 1)',
+        'rgba(138, 43, 226, 1)',
+        'rgba(244, 164, 96, 1)',
+        'rgba(0, 128, 128, 1)',
+        'rgba(220, 20, 60, 1)',
+        'rgba(255, 140, 0, 1)',
+        'rgba(75, 0, 130, 1)',
+        'rgba(60, 179, 113, 1)',
+        'rgba(0, 191, 255, 1)',
+        'rgba(218, 112, 214, 1)',
+        'rgba(210, 105, 30, 1)'
+    ];
+
+    paymentRequest();
+    paymentRequestAmount();
     procurement();
     servicereceive();
     suppliers();
@@ -104,8 +193,79 @@
     proforma();
     tender();
     contract();
-    storeReturnStatus();
+    purchasedBySector();
 
+
+     function purchasedBySector() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetPurchasedItems", "Dashboard", new {area = ""})',
+        success: function (result) {
+
+            //console.log(result.DataSet);
+
+        //render
+            var ctx = document.getElementById("purchasedStatus").getContext('2d');
+        ctx.height = 600;
+            // Prepare datasets with additional properties for better visualization
+            var datasets = result.DataSet.map((dataset, index) => ({
+                ...dataset,
+                backgroundColor: vibrantColors[index % vibrantColors.length],
+                borderColor: window.chartColors.purple,
+                borderWidth: 2,
+                tension: 0.1
+            }));
+
+            var myChart = new Chart(ctx, {
+                type: 'bar', // Change this to 'line' if you want a line chart
+                data: {
+                    labels: result.Labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: 'Purchased Item By Sectors (M ETB) - Current Year'
+                    },
+                       
+
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Sectors'
+                        },
+                        barPercentage: 0.4
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Amount (M ETB)'
+                        },
+                        barPercentage: 0.4
+                    }]
+                },
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                boxWidth: 15
+                            }
+                        }
+                    }
+                }
+            });
+
+    }, //end succ
+    error: function (result) {
+        alert(result);
+    }
+    });
+ }
 
     function suppliers() {
         $.ajax({
@@ -121,20 +281,8 @@
                     datasets: [{
                         label: 'Suppliers',
                         data: result.Data,
-                        backgroundColor: [
-                            window.chartColors.green,
-                            window.chartColors.blue,
-                            window.chartColors.red,
-                            window.chartColors.green,
-                            window.chartColors.blue
-                        ],
-                        borderColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.yellow,
-                            window.chartColors.green,
-                            window.chartColors.blue
-                        ],
+                        backgroundColor: vibrantColors,
+                        borderColor: window.chartColors.purple,
                         borderWidth: 1
                     }]
                 },
@@ -153,15 +301,28 @@
                         render: 'value',
                         fontColor: ['green', 'white', 'black'],
                         precision: 2
-                    },
+                    },                   
                     legend: {
-                        position: 'bottom',
-                        fontSize: 8,
-                        fullWidth: true,
-                        padding: 6,
-                        labels: {
-                            boxWidth:15
-                        }
+                        display: false
+                    
+                    },
+                    scales: {
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Category'
+                            },
+                            barPercentage: 0.4
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Quantity'
+                            },
+                            barPercentage: 0.4
+                        }]
                     }
 
 
@@ -176,7 +337,131 @@
     }
 
 
+     function paymentRequestAmount() {
+ $.ajax({
+     type: "GET",
+     url: '@Url.Action("GetPaymentAmountStatus", "Dashboard", new {area = ""})',
+     success: function (result) {
+     //render
+     var ctx = document.getElementById("paymentRequestAmount").getContext('2d');
+     var myChart = new Chart(ctx, {
+         type: 'bar',
+         data: {
+             labels: result.Labels,
+             datasets: [{
+                 label: 'Payment Amount Status',
+                 data: result.Data,
+                 backgroundColor: vibrantColors,
+                 borderColor: window.chartColors.purple,
+                 borderWidth: 1
+             }]
+         },
 
+         options: {
+
+             title: {
+                 display: true,
+                 text: 'Payment Amount Status'
+             },
+             gridLines: {
+                 display: false
+             },
+             pieceLabel: {
+                 render: 'value',
+                 fontColor: ['green', 'white', 'red'],
+                 precision: 2
+             },
+             legend: {
+                 display: false
+
+             }
+             ,
+             
+         scales: {
+             xAxes: [{
+                 display: true,
+                 scaleLabel: {
+                     display: true,
+                     labelString: 'Status'
+                 },
+                 barPercentage: 0.4
+             }],
+             yAxes: [{
+                 display: true,
+                 scaleLabel: {
+                     display: true,                    
+                     labelString: 'Amount (ETB)'
+                 },
+                 barPercentage: 0.4
+             }]
+         }
+
+
+         }
+     });
+
+ }, //end succ
+ error: function (result) {
+     alert(result);
+ }
+ });
+    }
+
+    function paymentRequest() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetPaymentRequestStatus", "Dashboard", new {area = ""})',
+    success: function (result) {
+        //render
+        var ctx = document.getElementById("paymentRequest").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: result.Labels,
+                datasets: [{
+                    label: 'Payment Status',
+                    data: result.Data,
+                    backgroundColor: vibrantColors,
+                    borderColor: window.chartColors.purple,
+                    borderWidth: 1
+                }]
+            },
+
+
+            options: {
+
+                title: {
+                    display: true,
+                    text: 'Payment Status'
+                },
+                gridLines: {
+                    display: false
+                },
+                pieceLabel: {
+                    render: 'value',
+                    fontColor: ['green', 'white', 'red'],
+                    precision: 2
+                },
+                legend: {
+                    position: 'bottom',
+                    fontSize: 8,
+                    fullWidth: true,
+                    padding: 6,
+                    labels: {
+                        boxWidth:15
+                    }
+                }
+
+
+            }
+        });
+
+    }, //end succ
+    error: function (result) {
+        alert(result);
+    }
+    });
+    }
 
     function procurement() {
         $.ajax({
@@ -192,20 +477,8 @@
                     datasets: [{
                         label: 'Procurement Status',
                         data: result.Data,
-                        backgroundColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.blue
-                        ],
-                        borderColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.blue
-                        ],
+                        backgroundColor: vibrantColors,
+                        borderColor: window.chartColors.purple,
                         borderWidth: 1
                     }]
                 },
@@ -260,20 +533,8 @@
                     datasets: [{
                         label: 'Purchase Requisition Status',
                         data: result.Data,
-                        backgroundColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.blue
-                        ],
-                        borderColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.blue
-                        ],
+                        backgroundColor: vibrantColors,
+                        borderColor: window.chartColors.purple,
                         borderWidth: 1
                     }]
                 },
@@ -328,20 +589,8 @@
                         datasets: [{
                             label: 'PO Status',
                             data: result.Data,
-                            backgroundColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.yellow,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
-                            borderColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.yellow,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
+                            backgroundColor: vibrantColors,
+                            borderColor: window.chartColors.purple,
                             borderWidth: 1
                         }]
                     },
@@ -391,20 +640,8 @@
                         datasets: [{
                             label: 'Proforma Status',
                             data: result.Data,
-                            backgroundColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.yellow,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
-                            borderColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.yellow,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
+                            backgroundColor: vibrantColors,
+                            borderColor: window.chartColors.purple,
                             borderWidth: 1
                         }]
                     },
@@ -455,20 +692,8 @@
                         datasets: [{
                             label: 'Tender Status',
                             data: result.Data,
-                            backgroundColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.yellow,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
-                            borderColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.yellow,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
+                            backgroundColor: vibrantColors,
+                            borderColor: window.chartColors.purple,
                             borderWidth: 1
                         }]
                     },
@@ -518,20 +743,8 @@
                         datasets: [{
                             label: 'Contract Status',
                             data: result.Data,
-                            backgroundColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.yellow,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
-                            borderColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.yellow,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
+                            backgroundColor: vibrantColors,
+                            borderColor: window.chartColors.purple,
                             borderWidth: 1
                         }]
                     },
@@ -581,20 +794,8 @@
                         datasets: [{
                             label: 'Service Receive Status',
                             data: result.Data,
-                            backgroundColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.yellow,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
-                            borderColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.yellow,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
+                            backgroundColor: vibrantColors,
+                            borderColor: window.chartColors.purple,
                             borderWidth: 1
                         }]
                     },

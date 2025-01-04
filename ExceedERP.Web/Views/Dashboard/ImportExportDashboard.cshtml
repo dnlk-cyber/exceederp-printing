@@ -1,0 +1,512 @@
+﻿<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="panel-heading">Export Import Dashboard</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-1">
+</div>
+            <div class="col-sm-2">
+                <!-- small box -->
+                <div class="small-box bg-blue">
+                    <div class="inner">
+                        <h3 id="Quotation"></h3>
+
+                        <p>Quote Orders</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-bag"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <!-- small box -->
+                <div class="small-box bg-green">
+                    <div class="inner">
+                        <h3 id="PurchaseOrder"></h3>
+
+                        <p>Purcase Orders</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-pie-graph"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <!-- small box -->
+                <div class="small-box bg-orange">
+                    <div class="inner">
+                        <h3 id="ProformaInvoice"></h3>
+
+                        <p>Proforma Invoices</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-stats-bars"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <!-- small box -->
+                <div class="small-box bg-aqua">
+                    <div class="inner">
+                        <h3 id="BillOfLading"></h3>
+
+                        <p>Bill of Lading</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-person-add"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="small-box bg-primary">
+                    <div class="inner">
+                        <h3 id="CommericialInvoice"></h3>
+
+                        <p>Commericial Invoices</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-pie-graph"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-3"></div>
+            <div class="col-sm-3">
+                <label style="font-weight:bold">Start Date</label>
+                @(Html.Kendo().DatePicker().Events(ev => ev.Change("drawBarReport")).Name("StartDate"))
+            </div>
+            <div class="col-sm-3">
+                <label style="font-weight:bold">End Date</label>
+                @(Html.Kendo().DatePicker().Events(ev => ev.Change("drawBarReport")).Name("EndDate"))
+            </div>
+
+
+        </div>
+        <div class="row">
+
+            <div class="col-md-5">
+                <div class="panel-body" id="barChartContainerDiv">
+                    <canvas id="barChartContainer"></canvas>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="panel-body" id="impExpChartContainerDiv">
+                    <canvas id="impExpChartContainer"></canvas>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="panel-body" id="impExpCapitalChartContainerDiv">
+                    <canvas id="impExpCapitalChartContainer"></canvas>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="panel-body" id="barProductChartContainerDiv">
+                    <canvas id="barProductChartContainer"></canvas>
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="panel-body" id="stackedBarChartContainerDiv">
+                    <canvas id="stackedBarChartContainer"></canvas>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+<script src="~/Scripts/Chart.bundle.js"></script>
+<script src="~/Scripts/Chart.PieceLabel.js"></script>
+
+<script type="text/javascript">
+        var b = null;
+
+        window.onload = function () {
+            
+            drawBarReport();
+            getCount();
+            
+
+    }
+    function getCount(startDate, endDate) {
+        $.ajax({
+                type: 'GET',
+            data: { "startDate": startDate, "endDate": endDate},
+                url: '@Url.Action("GetImpExpCount", "Dashboard")',
+                 async: false,
+                success: function (result) {
+                    data = result;
+                    console.log(data);
+                    document.getElementById('Quotation').innerHTML = data["Quotation"];
+                    document.getElementById('PurchaseOrder').innerHTML = data["Purchase"];
+                    document.getElementById('ProformaInvoice').innerHTML = data["Proforma"];
+                    document.getElementById('BillOfLading').innerHTML = data["BillOfLading"];
+                    document.getElementById('CommericialInvoice').innerHTML = data["Commericial"];
+            }
+            });
+    }
+    function drawBarReport() {
+        var startDateData = $("#StartDate").data("kendoDatePicker");
+        var endDateData = $("#EndDate").data("kendoDatePicker");
+        var startDate;
+        var endDate;
+        if (startDateData.value() != null) {
+            startDate = startDateData.value().toUTCString();
+        }
+        if (endDateData.value() != null) {
+            endDate = endDateData.value().toUTCString();
+
+        }
+         $.ajax({
+                type: 'GET',
+             url: '@Url.Action("getBarChartImpExpOrderDatas", "Dashboard")',
+             data: { "startDate": startDate, "endDate": endDate},
+                 async: false,
+                success: function (result) {
+                    data = result.OrderVsDate;
+                    proData = result.OrderVsDateProduct;
+                    orderStatuses = result.OrderStatuses;
+                    datas = data.datas;
+                    labels = data.labels;
+                    proDatas = proData.datas;
+                    proLabels = proData.labels;
+
+                    drawBarImpExpOrderReports();
+                    getCount(startDate, endDate);
+                    drawBarImpExpOrderProductsReports();
+                    drawStackedBarChart();
+                    drawImpExpProductReport(startDate, endDate);
+                    drawImpExpCapitalReport(startDate, endDate);
+            }
+            });
+    }
+
+
+    function drawBarImpExpOrderReports() {
+        $("#barChartContainer").remove();
+        $("#barChartContainerDiv").append('<canvas id="barChartContainer"></canvas>');
+        var ctx = document.getElementById('barChartContainer').getContext('2d');
+
+        //bar chart data
+        var data = {
+            labels: labels,
+            datasets: [
+                {
+                    label: "Orders vs Quantity's",
+                    data: datas,
+                    backgroundColor: barColors,
+                    borderColor: poolColors(labels.length),
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        //options
+        var options = {
+            responsive: true,
+            title: {
+                display: true,
+                position: "top",
+                text: "Orders vs Quantity's",
+                fontSize: 18,
+                fontColor: "#111"
+            },
+            legend: {
+                display: true,
+                position: "bottom",
+                labels: {
+                    fontColor: "#333",
+                    fontSize: 16
+                }
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0
+                    }
+                }]
+            }
+        };
+
+        //create Chart class object
+        var chart = new Chart(ctx, {
+            type: "bar",
+            data: data,
+            options: options
+        });
+
+    }
+    function drawBarImpExpOrderProductsReports() {
+        $("#barProductChartContainer").remove();
+        $("#barProductChartContainerDiv").append('<canvas id="barProductChartContainer"></canvas>');
+        var ctx = document.getElementById('barProductChartContainer').getContext('2d');
+
+        //bar chart data
+        var data = {
+            labels: labels,
+            datasets: [
+                {
+                    label: "Orders vs Product Quantity's",
+                    data: proDatas,
+                    backgroundColor: barColors,
+                    borderColor: poolColors(proLabels.length),
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        //options
+        var options = {
+            responsive: true,
+            title: {
+                display: true,
+                position: "top",
+                text: "Orders vs Product Quantity's",
+                fontSize: 18,
+                fontColor: "#111"
+            },
+            legend: {
+                display: true,
+                position: "bottom",
+                labels: {
+                    fontColor: "#333",
+                    fontSize: 16
+                }
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0
+                    }
+                }]
+            }
+        };
+
+        //create Chart class object
+        var chart = new Chart(ctx, {
+            type: "bar",
+            data: data,
+            options: options
+        });
+
+    }
+
+    function drawImpExpProductReport(startDate, endDate) {
+        $.ajax({
+                type: 'GET',
+            data: { "startDate": startDate, "endDate": endDate},
+                url: '@Url.Action("GetImportedExportedQantity", "Dashboard")',
+                 async: false,
+                success: function (result) {
+                    data = result.ImpExpProducts;
+                    impExpDatas = data.datas;
+                    impExpLabels = data.labels;
+            }
+            });
+        $("#impExpChartContainer").remove();
+        $("#impExpChartContainerDiv").append('<canvas id="impExpChartContainer"></canvas>');
+        var ctx2 = document.getElementById('impExpChartContainer').getContext('2d');
+        //pie chart data
+        var data2 = {
+            labels: impExpLabels,
+
+            datasets: [
+                {
+                    label: "Imported vs Exported Products",
+                    data: impExpDatas,
+                    backgroundColor: barColors,
+                    borderColor: poolColors(datas.length),
+                    hoverOffset: 4,
+                    borderWidth: [1, 1, 1, 1, 1]
+                }
+            ]
+        };
+
+        //doughnut chart data
+        var options = {
+            responsive: true,
+            title: {
+                display: true,
+                position: "top",
+                text: "Imported vs Exported Products",
+                fontSize: 15,
+                fontColor: "#111"
+            },
+            legend: {
+                display: true,
+                position: "right",
+
+                labels: {
+                    fontColor: "#333",
+                    fontSize: 14
+                }
+            }
+        };
+
+        //create Chart class object
+        var chart2 = new Chart(ctx2, {
+            type: "doughnut",
+            data: data2,
+            options: options
+        });
+
+
+    }
+
+    function drawImpExpCapitalReport(startDate, endDate) {
+        $.ajax({
+                type: 'GET',
+            data: { "startDate": startDate, "endDate": endDate},
+                url: '@Url.Action("GetImportedExportedCapital", "Dashboard")',
+                 async: false,
+                success: function (result) {
+                    data = result.ImpExpCapitals;
+                    impExpDatas = data.datas;
+                    impExpLabels = data.labels;
+            }
+            });
+        $("#impExpCapitalChartContainer").remove();
+        $("#impExpCapitalChartContainerDiv").append('<canvas id="impExpCapitalChartContainer"></canvas>');
+        var ctx2 = document.getElementById('impExpCapitalChartContainer').getContext('2d');
+        //pie chart data
+        var data2 = {
+            labels: impExpLabels,
+
+            datasets: [
+                {
+                    label: "Imported vs Exported Capitals",
+                    data: impExpDatas,
+                    backgroundColor: barColors,
+                    borderColor: poolColors(datas.length),
+                    hoverOffset: 4,
+                    borderWidth: [1, 1, 1, 1, 1]
+                }
+            ]
+        };
+
+        //doughnut chart data
+        var options = {
+            responsive: true,
+            title: {
+                display: true,
+                position: "top",
+                text: "Imported vs Exported Capital's",
+                fontSize: 15,
+                fontColor: "#111"
+            },
+            legend: {
+                display: true,
+                position: "right",
+
+                labels: {
+                    fontColor: "#333",
+                    fontSize: 14
+                }
+            }
+        };
+
+        //create Chart class object
+        var chart2 = new Chart(ctx2, {
+            type: "doughnut",
+            data: data2,
+            options: options
+        });
+
+
+    }
+
+
+    function drawStackedBarChart() {
+        $("#stackedBarChartContainer").remove();
+        $("#stackedBarChartContainerDiv").append('<canvas id="stackedBarChartContainer"></canvas>');
+        var ctx = document.getElementById('stackedBarChartContainer').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels, 
+                datasets: [{
+                    label: "New",
+                    backgroundColor: '#b91d47',
+                    data: orderStatuses.New,
+                }, {
+                        label: "Approved",
+                        backgroundColor: '#00aba9',
+                        data: orderStatuses.Approved,
+                    }]
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        stacked: true,
+                    
+                        ticks: {
+                            beginAtZero: true
+                        }}],
+                yAxes: [{ stacked: true,
+                    ticks: {
+                    beginAtZero: true
+                } }]
+                }
+            }
+        });
+    }
+    var barColors = [
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145",
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145",
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145"
+    ];
+    function poolColors(a) {
+        var pool = [];
+        for (i = 0; i < a; i++) {
+            pool.push(dynamicColors());
+        }
+        return pool;
+    }
+    function dynamicColors() {
+        var r = Math.floor(Math.random() * 255);
+        var g = Math.floor(Math.random() * 255);
+        var b = Math.floor(Math.random() * 255);
+        return "rgba(" + r + "," + g + "," + b + ",  0.8)";
+    }
+
+</script>
+<style>
+    .col-lg-2{
+        margin-left:25px;
+    }
+
+    .row {
+        border-bottom: 2px solid #D0D0D0;
+    }
+    .col-md-6 {
+        border-right: 2px solid #D0D0D0;
+    }
+</style>

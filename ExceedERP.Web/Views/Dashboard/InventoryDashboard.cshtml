@@ -12,107 +12,107 @@
 
 
 
-<div class="dashboard">
+    <div class="dashboard">
+        <div class="row">
+            <div class="col-sm-8 col-lg-12 chartcontainer">
+                @(Html.Kendo().DropDownList()
+                              .Name("StoreCode")
+                              .ValuePrimitive(true)
+                              .OptionLabel("All Stores")
+                              .DataTextField("Name")
+                              .DataValueField("StoreCode")
+                              .Filter("contains")
+                              .Events(e =>
+                              {
+                                  e.Change("onSelectType");
+                              })
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetAllStores", "DataProvider", new { area = "Inventory" }));
+                              })
 
-    <div class="row">
+                     )
+                <div class="demo-section k-content wide">
 
-        <div class="col-sm-7 col-lg-3 chartcontainer">
+                    <canvas id="itembalances" width="400" height="400"></canvas>
+                </div>
 
-            <div class="demo-section k-content wide">
-                <canvas id="srStatus" width="400" height="400" class="chartarea"></canvas>
+
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="srStatus" width="400" height="400" class="chartarea"></canvas>
+                </div>
+
+
+            </div>
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="issueStatus" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="itransferSendStatus" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="itransferReceiveStatus" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="storeReturnStatus" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="grnStatus" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="inventory" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="inventoryValue" width="400" height="400"></canvas>
+                </div>
+
+
             </div>
 
-
         </div>
-        <div class="col-sm-7 col-lg-3 chartcontainer">
-
-            <div class="demo-section k-content wide">
-                <canvas id="issueStatus" width="400" height="400"></canvas>
-            </div>
 
 
-        </div>
-        <div class="col-sm-7 col-lg-3 chartcontainer">
-
-            <div class="demo-section k-content wide">
-                <canvas id="itransferSendStatus" width="400" height="400"></canvas>
-            </div>
-
-
-        </div>
-        <div class="col-sm-7 col-lg-3 chartcontainer">
-
-            <div class="demo-section k-content wide">
-                <canvas id="itransferReceiveStatus" width="400" height="400"></canvas>
-            </div>
-
-
-        </div>
     </div>
-    <div class="row">
-        <div class="col-sm-7 col-lg-3 chartcontainer">
-
-            <div class="demo-section k-content wide">
-                <canvas id="storeReturnStatus" width="400" height="400"></canvas>
-            </div>
-
-
-        </div>
-        <div class="col-sm-7 col-lg-3 chartcontainer">
-
-            <div class="demo-section k-content wide">
-                <canvas id="grnStatus" width="400" height="400"></canvas>
-            </div>
-
-
-        </div>
-        <div class="col-sm-7 col-lg-3 chartcontainer">
-
-            <div class="demo-section k-content wide">
-                <canvas id="inventory" width="400" height="400"></canvas>
-            </div>
-
-
-        </div>
-        <div class="col-sm-7 col-lg-3 chartcontainer">
-
-            <div class="demo-section k-content wide">
-                <canvas id="inventoryValue" width="400" height="400"></canvas>
-            </div>
-
-
-        </div>
-
-    </div>
-    <div class="row">
-        <div class="col-sm-8 col-lg-12 chartcontainer">
-            @(Html.Kendo().DropDownList()
-                                  .Name("StoreCode")
-                                  .ValuePrimitive(true)
-                                  .OptionLabel("All Stores")
-                                  .DataTextField("Name")
-                                  .DataValueField("StoreCode")
-                                  .Filter("contains")
-                                  .Events(e =>
-                                  {
-                                      e.Change("onSelectType");
-                                  })
-                                  .DataSource(dataSource =>
-                                  {
-                                      dataSource.Read(read => read.Action("GetAllStores", "DataProvider", new { area = "Inventory" }));
-                                  })
-
-            )
-            <div class="demo-section k-content wide">
-
-                <canvas id="itembalances" width="400" height="400"></canvas>
-            </div>
-
-
-        </div>
-    </div>
-
-</div>
 
 <script src="~/Scripts/Chart.bundle.js"></script>
 <script src="~/Scripts/Chart.PieceLabel.js"></script>
@@ -199,13 +199,7 @@
                         precision: 2
                     },
                     legend: {
-                        position: 'bottom',
-                        fontSize: 8,
-                        fullWidth: true,
-                        padding: 6,
-                        labels: {
-                            boxWidth:15
-                        }
+                        display:false
                     },
                     scales: {
                         yAxes: [{

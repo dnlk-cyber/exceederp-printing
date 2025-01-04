@@ -1,0 +1,1049 @@
+@using ExceedERP.Web.Controllers
+@using ExceedERP.Core.Localization
+@{
+
+    ViewBag.Title = Resources.Dashboard;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+}
+
+<link href="~/Content/dashboard.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-sm-7 col-lg-12 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="branchProductionQty" width="300" height="300"></canvas>
+        </div>
+
+
+    </div>
+
+</div>
+<div class="row">
+
+    <div class="col-sm-7 col-lg-12 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="productionQtyByCategory" width="300" height="300"></canvas>
+        </div>
+
+
+    </div>
+
+</div>
+@(Html.Kendo().DropDownList()
+                .Name("categorySelectorDDL")
+                //.OptionLabel("Select Project Type...")
+                .DataTextField("CategoryName")
+                .DataValueField("ProductCategoryId")
+                .HtmlAttributes(new { style = "width: 100%;" })
+                .SelectedIndex(0)
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetProductCategory", "ConsProductionDataProvider", new { area = "ConsProduction" }));
+                })
+                .Events(e =>
+                {
+                    e.Change("onCategoryChange");
+                    e.DataBound("onCategoryChange");
+
+                })
+                .Filter("contains")
+                .MinLength(2)
+                .ValuePrimitive(true)
+)
+<br />
+<br />
+<div class="row">
+
+    <div class="col-sm-7 col-lg-6 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="branch_category_Production" width="300" height="300"></canvas>
+        </div>
+
+
+    </div>
+    <div class="col-sm-7 col-lg-6 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="PlanvsProduction" width="300" height="300"></canvas>
+        </div>
+
+
+    </div>
+
+
+</div>
+<div class="row">
+
+    <div class="col-sm-7 col-lg-12 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="PlantProductionCapacity" width="300" height="300"></canvas>
+        </div>
+
+
+    </div>
+
+
+
+</div>
+<div class="row">
+
+
+    <div class="col-sm-7 col-lg-12 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="ProductPlans" width="300" height="300"></canvas>
+        </div>
+
+
+    </div>
+</div>
+
+<div class="row">
+
+
+    <div class="col-sm-7 col-lg-12 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="ProductExcutionss" width="300" height="300"></canvas>
+        </div>
+
+
+    </div>
+
+
+</div>
+
+@*<div class="row">
+
+        <div class="col-sm-4 col-lg-4 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="PlantProductionCapacity" width="300" height="300"></canvas>
+            </div>
+
+
+        </div>
+        <div class="col-sm-4 col-lg-4 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="ProductPlans" width="300" height="300"></canvas>
+            </div>
+
+
+        </div>
+        <div class="col-sm-4 col-lg-4 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="ProductExcutionss" width="300" height="300"></canvas>
+            </div>
+
+
+        </div>
+
+
+    </div>*@
+
+
+
+
+
+<script src="~/Scripts/Chart.bundle.js"></script>
+<script src="~/Scripts/Chart.PieceLabel.js"></script>
+<script>
+    const vibrantColors = [
+        'rgba(255, 99, 132)',   // Red
+        'rgba(54, 162, 235)',   // Blue
+        'rgba(255, 206, 86)',   // Yellow
+        'rgba(75, 192, 192)',   // Green
+        'rgba(153, 102, 255)',  // Purple
+        'rgba(255, 159, 64)',   // Orange
+        'rgba(255, 99, 71)',    // Tomato
+        'rgba(124, 252, 0)',    // Lawn Green
+        'rgba(0, 255, 255)',    // Cyan
+        'rgba(255, 20, 147)',   // Deep Pink
+        'rgba(138, 43, 226)',   // Blue Violet
+        'rgba(244, 164, 96)',   // Sandy Brown
+        'rgba(0, 128, 128)',    // Teal
+        'rgba(220, 20, 60)',    // Crimson
+        'rgba(255, 140, 0)',    // Dark Orange
+        'rgba(75, 0, 130)',     // Indigo
+        'rgba(60, 179, 113)',   // Medium Sea Green
+        'rgba(0, 191, 255)',    // Deep Sky Blue
+        'rgba(218, 112, 214)',  // Orchid
+        'rgba(210, 105, 30)'    // Chocolate
+    ];
+    const vibrantBorderColors = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)',
+        'rgba(255, 99, 71, 1)',
+        'rgba(124, 252, 0, 1)',
+        'rgba(0, 255, 255, 1)',
+        'rgba(255, 20, 147, 1)',
+        'rgba(138, 43, 226, 1)',
+        'rgba(244, 164, 96, 1)',
+        'rgba(0, 128, 128, 1)',
+        'rgba(220, 20, 60, 1)',
+        'rgba(255, 140, 0, 1)',
+        'rgba(75, 0, 130, 1)',
+        'rgba(60, 179, 113, 1)',
+        'rgba(0, 191, 255, 1)',
+        'rgba(218, 112, 214, 1)',
+        'rgba(210, 105, 30, 1)'
+    ];
+    window.chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)',
+        fuchsia: 'rgb(255, 0, 255)'
+    };
+    productionTypeCount();
+    BranchProductionQty();
+    PlanVsProductionQty();
+    ProductionCategorQtyByCategory();
+    ProductionBranchCategorQty();
+    PlantandProductionCapacity();
+    productPlan();
+    productExcution();
+
+
+
+    function productionTypeCount() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProductionTypeCount", "Dashboard", new {area = "" })',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("totalProductionCount").getContext('2d');
+            ctx.height = 600;
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: 'Production Count',
+                        data: result.Data,
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
+                        borderWidth: 3
+                    }]
+                },
+
+
+                options: {
+
+                    title: {
+                        display: true,
+                        text: ['Production Count']
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'white', 'black'],
+                        precision: 2
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: 8,
+                        fullWidth: true,
+                        padding: 6,
+                        labels: {
+                            boxWidth:15
+                        }
+                    }
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+
+    function BranchProductionQty() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProductionByBranch", "Dashboard", new {area = ""})',
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("branchProductionQty").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Production Qty By Branch"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Production Qty By Branch'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Production Qty'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false,
+
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+
+
+    }
+    function BranchProductionQtyHorizental() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProductionByBranch", "Dashboard", new {area = "" })',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("branchProductionQty").getContext('2d');
+            ctx.height = 600;
+            var myChart = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: "Production Qty By Branch",
+                        data: result.Data,
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
+                        borderWidth: 3
+                    }]
+                },
+
+
+                options: {
+
+                    title: {
+                        display: true,
+                        text: "Production Qty By Branch"
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'white', 'red'],
+                        precision: 2
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: 8,
+                        fullWidth: true,
+                        padding: 6,
+                        labels: {
+                            boxWidth:15
+                        }
+                    }
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+    function ProductionCategorQtyByCategory() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProductionQtyByCategoryWithParam", "Dashboard", new {area = ""})',
+            data: { categoryId: $("#categorySelectorDDL").val() },
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("productionQtyByCategory").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Production Qty by Category"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Production Qty by Category'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Production Qty'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false,
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+
+
+    }
+    function ProductionBranchCategorQty() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetBranchProductionQtyByCategory", "Dashboard", new {area = ""})',
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("branch_category_Production").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Production Summary  By Branch - Category"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Production Summary  By Branch - Category'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Production Qty by Branch  Category '
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false,
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+
+
+    }
+
+    function ProductionQtyByCategoryHorizontal() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProductionQtyByCategory", "Dashboard", new {area = ""})',
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("productionQtyByCategory").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Production Qty By Category"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Production Qty By Category'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Production Qty'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        }
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+
+
+    }
+    function PlanVsProductionQty() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetPlanVsProduction", "Dashboard", new {area = ""})',
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("PlanvsProduction").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Plan Qty Vs Production Qty"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Plan Qty Vs Production Qty'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: '(Production Vs Plan) Qty'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false,
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+
+
+    }
+
+    function PlantandProductionCapacity() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetPlantandProductionCapacity", "Dashboard", new {area = ""})',
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("PlantProductionCapacity").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Plant Production Capacity"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Plant Production Capacity'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: ' Plant'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false,
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+
+
+    }
+    function productPlan() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProductPlan", "Dashboard", new {area = ""})',
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("ProductPlans").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Product Plan "
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Product Plan '
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Qty'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false,
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+
+
+    }
+    function productExcution() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProductExecution", "Dashboard", new {area = ""})',
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("ProductExcutionss").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Product  Excution"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Product Excution'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Qty'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false,
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+
+
+    }
+
+    function PlanVsProductionQtyHorizontal() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetPlanVsProduction", "Dashboard", new {area = "" })',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("PlanvsProduction").getContext('2d');
+            ctx.height = 600;
+            var myChart = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: "Plan Qty Vs Production Qty ",
+                        data: result.Data,
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
+                        borderWidth: 3
+                    }]
+                },
+
+
+                options: {
+
+                    title: {
+                        display: true,
+                        text: "Plan Qty Vs Production Qty "
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'white', 'red'],
+                        precision: 2
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: 8,
+                        fullWidth: true,
+                        padding: 6,
+                        labels: {
+                            boxWidth:15
+                        }
+                    }
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+
+      }
+
+    function ProductionQtyByCategory() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProductionQtyByCategory", "Dashboard", new {area = "" })',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("ProductionQtyByCategory").getContext('2d');
+            ctx.height = 600;
+            var myChart = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: "Production Qty By Category",
+                        data: result.Data,
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+
+                    title: {
+                        display: true,
+                        text: "Production Qty By Category"
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'white', 'red'],
+                        precision: 2
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: 8,
+                        fullWidth: true,
+                        padding: 6,
+                        labels: {
+                            boxWidth:15
+                        }
+                    }
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+    
+    $(document).on('click', '.panel-heading span.clickable', function (e) {
+        var $this = $(this);
+        if (!$this.hasClass('panel-collapsed')) {
+            $this.parents('.panel').find('.panel-body').slideUp();
+            $this.addClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+        } else {
+            $this.parents('.panel').find('.panel-body').slideDown();
+            $this.removeClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+        }
+    })
+</script>
+
+<script>
+    function onCategoryChange(e) {
+        ProductionCategorQtyByCategory();
+       
+    }
+</script>

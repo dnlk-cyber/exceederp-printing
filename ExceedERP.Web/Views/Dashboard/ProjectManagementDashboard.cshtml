@@ -1,0 +1,502 @@
+﻿
+<div class="demo-section k-content">
+
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Dashboard
+            </div>
+            <div class="col-md-4">
+                <div class="card" style="width: 100px;">
+                    <div class="card-header" style="font-size:20px; font-weight:bold">Projects</div>
+                    <div class="card-body">
+
+                        <p id="projectsCount" class="card-text" style="font-size:35px; font-weight:bold">
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card" style="width: 100px;">
+                    <div class="card-header" style="font-size:20px; font-weight:bold">Tasks</div>
+                    <div class="card-body">
+
+                        <p id="tasksCount" class="card-text" style="font-size:35px; font-weight:bold">
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card" style="width: 100px;">
+                    <div class="card-header" style="font-size:20px; font-weight:bold">Risks</div>
+                    <div class="card-body">
+
+                        <p id="risksCount" class="card-text" style="font-size:35px; font-weight:bold">
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-default">
+            
+            
+            <div class="col-md-6">
+                <div class="panel-body">
+                    <canvas id="chartContainer"></canvas>
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="panel-body" style="height: 300px;">
+                    <canvas id="projectColumnChartContainer"></canvas>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6" style="margin-top: 35px;">
+
+
+            <strong>Projects:</strong>
+            @(Html.Kendo().DropDownList()
+                                                        .Name("Project")
+                                                        .DataTextField("ProjectName")
+                                                        .DataValueField("ProjectInfoId")
+                                                        .OptionLabel(" --Select--")
+                                                        .Events(ev => ev.Change("selectProject"))
+                                                        .DataSource(d => d.Read(r => r.Action("GetProjects", "ProjectInfo"))))
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-default">
+            
+            <div class="col-md-3">
+                <div class="panel-body" style="height: 100%;" id="riskChartContainerDiv">
+                    <canvas id="riskChartContainer" style="height: 100%;"></canvas>
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="panel-body" style="height: 100%;" id="taskChartContainerDiv">
+                    <canvas id="taskChartContainer" style="height: 100%;"></canvas>
+
+                </div>
+            </div>
+            <div class="col-md-5" >
+                <div class="panel-body" style="height: 100%;" id="taskColumnChartContainerDiv">
+                    <canvas id="taskColumnChartContainer" style="height: 100%;"></canvas>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/Chart.bundle.js"></script>
+<script src="~/Scripts/Chart.PieceLabel.js"></script>
+<script type="text/javascript">
+        var b = null;
+
+        window.onload = function () {
+            getData();
+            selectProject(0);
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetPMCount", "Dashboard")',
+                 async: false,
+                success: function (result) {
+                    data = result;
+                    console.log(data);
+                    document.getElementById('tasksCount').innerHTML = data["Task"];
+                    document.getElementById('projectsCount').innerHTML = data["Project"];
+                    document.getElementById('risksCount').innerHTML = data["Risk"];
+                    //drawTaskReport();
+                    //drawTaskBarReport();
+                    selectProject(0);
+            }
+            });
+
+        }
+
+        function selectProject(b) {
+            var projectId = $("#Project").data("kendoDropDownList").value();
+            console.log(projectId);
+            if (b == 0) {
+                $("#Project").data("kendoDropDownList").value(1);
+                projectId = 1;
+            }
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetProjectTaskDetails", "Dashboard")',
+                data: {
+                    projectId: projectId,
+
+                },
+                 async: false,
+                success: function (result) {
+                    data = result["TaskProgress"];
+                    datas = result["TaskProgress"].datas;
+                    labels = result["TaskProgress"].labels;
+                    percentDatas = result["TaskPercent"].datas;
+                    percentLabels = result["TaskPercent"].labels;
+                    riskDatas = result["RiskPercent"].datas;
+                    riskLabels = result["RiskPercent"].labels;
+
+
+
+
+                    drawTaskReport();
+                    drawRiskReport();
+                    drawTaskBarReport();
+            }
+            });
+    }
+    var barColors = [
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145",
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145",
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145"
+    ];
+        function getData() {
+     $.ajax({
+                type: 'GET',
+                url: '@Url.Action("GetProjectProgress", "Dashboard")',
+                 async: false,
+         success: function (result) {
+             datas = result["ProjectProgress"].datas;
+                    labels = result["ProjectProgress"].labels;
+             dataList = result["ProjectPercent"].datas;
+             labelList = result["ProjectPercent"].labels;
+
+                    drawProjectReport();
+                    drawProjectColumnChart();
+
+            }
+            });
+        }
+        function drawProjectReport() {
+            
+
+                //get the pie chart canvas
+                var ctx1 = $("#chartContainer");
+                //var ctx2 = $("#pie-chartcanvas-2");
+
+                //pie chart data
+                var data1 = {
+                    labels: labels,
+                    
+                    datasets: [
+                        {
+                            label: "TeamA Score",
+                            data: datas,
+                            backgroundColor: barColors,
+                            borderColor: poolColors(datas.length),
+                            hoverOffset: 4,
+                            borderWidth: [1, 1, 1, 1, 1]
+                        }
+                    ]
+                };
+
+                //pie chart data
+
+                //options
+                var options = {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        position: "top",
+                        text: "Project Progress",
+                        fontSize: 15,
+                        fontColor: "#111"
+                    },
+                    legend: {
+                        display: true,
+                        position: "right",
+
+                        labels: {
+                            fontColor: "#333",
+                            fontSize: 14
+                        }
+                    }
+                };
+
+                //create Chart class object
+                var chart1 = new Chart(ctx1, {
+                    type: "pie",
+                    data: data1,
+                    options: options
+                });
+                
+            }
+        
+        function drawTaskReport() {
+            {
+                //var ctx2 = $("#taskChartContainer");
+                $("#taskChartContainer").remove();
+                $("#taskChartContainerDiv").append('<canvas id="taskChartContainer"></canvas>');
+                var ctx2 = document.getElementById('taskChartContainer').getContext('2d');
+                //pie chart data
+                var data2 = {
+                    labels: labels,
+
+                    datasets: [
+                        {
+                            label: "Task Progress",
+                            data: datas,
+                            backgroundColor: barColors,
+                            borderColor: poolColors(percentDatas.length),
+                            hoverOffset: 4,
+                            borderWidth: [1, 1, 1, 1, 1]
+                        }
+                    ]                };
+
+                //pie chart data
+
+                //options
+                var options = {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        position: "top",
+                        text: "Task Progress",
+                        fontSize: 15,
+                        fontColor: "#111"
+                    },
+                    legend: {
+                        display: true,
+                        position: "right",
+
+                        labels: {
+                            fontColor: "#333",
+                            fontSize: 14
+                        }
+                    }
+                };
+
+                //create Chart class object
+                var chart2 = new Chart(ctx2, {
+                    type: "pie",
+                    data: data2,
+                    options: options
+                });
+
+           
+            }
+    }
+    function drawRiskReport() {
+        
+            //var ctx2 = $("#riskChartContainer");
+        $("#riskChartContainer").remove();
+        $("#riskChartContainerDiv").append('<canvas id="riskChartContainer"></canvas>');
+        var ctx2 = document.getElementById('riskChartContainer').getContext('2d');
+           //pie chart data
+            var data2 = {
+                labels: riskLabels,
+
+                datasets: [
+                    {
+                        label: "Risk Progress",
+                        data: riskDatas,
+                        backgroundColor: barColors,
+                        borderColor: poolColors(percentDatas.length),
+                        hoverOffset: 4,
+                        borderWidth: [1, 1, 1, 1, 1]
+                    }
+                ]
+            };
+
+            //doughnut chart data
+
+            //options
+            var options = {
+                responsive: true,
+                title: {
+                    display: true,
+                    position: "top",
+                    text: "Risk Progress",
+                    fontSize: 15,
+                    fontColor: "#111"
+                },
+                legend: {
+                    display: true,
+                    position: "right",
+
+                    labels: {
+                        fontColor: "#333",
+                        fontSize: 14
+                    }
+                }
+            };
+
+            //create Chart class object
+            var chart2 = new Chart(ctx2, {
+                type: "doughnut",
+                data: data2,
+                options: options
+            });
+
+
+        }
+    
+
+    function dynamicColors() {
+        var r = Math.floor(Math.random() * 255);
+        var g = Math.floor(Math.random() * 255);
+        var b = Math.floor(Math.random() * 255);
+        return "rgba(" + r + "," + g + "," + b + ",  0.8)";
+    }
+    function poolColors(a) {
+        var pool = [];
+        for (i = 0; i < a; i++) {
+            pool.push(dynamicColors());
+        }
+        return pool;
+    }
+
+        function drawTaskBarReport() {
+            //var ctx = $("#taskColumnChartContainer");
+            $("#taskColumnChartContainer").remove();
+            $("#taskColumnChartContainerDiv").append('<canvas id="taskColumnChartContainer"></canvas>');
+            var ctx = document.getElementById('taskColumnChartContainer').getContext('2d');
+
+            //bar chart data
+            var data = {
+                labels: percentLabels,
+                datasets: [
+                    {
+                        label: "Progress in %",
+                        data: percentDatas,
+                        backgroundColor: barColors,
+                        borderColor: poolColors(percentDatas.length),
+                        borderWidth: 1
+                    }
+                ]
+            };
+
+            //options
+            var options = {
+                responsive: true,
+                title: {
+                    display: true,
+                    position: "top",
+                    text: "Tasks vs Progress's in %",
+                    fontSize: 18,
+                    fontColor: "#111"
+                },
+                legend: {
+                    display: true,
+                    position: "bottom",
+                    labels: {
+                        fontColor: "#333",
+                        fontSize: 16
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            min: 0
+                        }
+                    }]
+                }
+            };
+
+            //create Chart class object
+            var chart = new Chart(ctx, {
+                type: "bar",
+                data: data,
+                options: options
+            });
+
+        }
+
+
+    function drawProjectColumnChart() {
+        var ctx = $("#projectColumnChartContainer");
+
+        
+        //bar chart data
+        var data = {
+            labels: labelList,
+            datasets: [
+                {
+                    label: "Progress in %",
+                    data: dataList,
+                    backgroundColor: barColors,
+                    borderColor: poolColors(dataList.length),
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        //options
+        var options = {
+            responsive: true,
+            title: {
+                display: true,
+                position: "top",
+                text: "Project vs Progress's in %",
+                fontSize: 18,
+                fontColor: "#111"
+            },
+            legend: {
+                display: true,
+                position: "bottom",
+                labels: {
+                    fontColor: "#333",
+                    fontSize: 16
+                }
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0
+                    }
+                }]
+            }
+        };
+
+        //create Chart class object
+        var chart = new Chart(ctx, {
+            type: "bar",
+            data: data,
+            options: options
+        });
+
+        }
+</script>
+<style>
+    .canvasjs-chart-credit {
+        display: none !important;
+    }
+
+    .canvasjs-watermark {
+        display: none !important;
+    }
+
+    /*.col-md-1, .col-md-3, .col-md-4, .col-md-5, .col-md-6 {
+        border: 1px solid darkGray;
+        height: 400px;
+    }*/
+    
+</style>

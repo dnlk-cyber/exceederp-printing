@@ -8,10 +8,9 @@
 <link href="~/Content/dashboard.css" rel="stylesheet" />
 @*(HttpContext.Current.User.IsInRole("Finance_Report"))*@
 
-<a style="align-content:center;color:white" onclick='return refreshData()' href='#' title="Refresh Data"><i class="fa fa-refresh fa-2x"></i></a>
+<a style="align-content:center;color:white" onclick='return refreshRationData()' href='#' title="Refresh Data"><i class="fa fa-refresh fa-2x"></i></a>
 
-@if (true)
-{
+
     <div class="dashboard">
         <div class="row">
 
@@ -63,7 +62,7 @@
         </div>
      
        </div>
-}
+
 <script src="~/Scripts/Chart.bundle.js"></script>
 <script src="~/Scripts/Chart.PieceLabel.js"></script>
 <script>
@@ -80,6 +79,52 @@
         azure: 'rgb(0, 255, 255)'
     };
 
+     const vibrantColors = [
+     'rgba(255, 99, 132)',   // Red
+     'rgba(54, 162, 235)',   // Blue
+     'rgba(255, 206, 86)',   // Yellow
+     'rgba(75, 192, 192)',   // Green
+     'rgba(153, 102, 255)',  // Purple
+     'rgba(255, 159, 64)',   // Orange
+     'rgba(255, 99, 71)',    // Tomato
+     'rgba(124, 252, 0)',    // Lawn Green
+     'rgba(0, 255, 255)',    // Cyan
+     'rgba(255, 20, 147)',   // Deep Pink
+     'rgba(138, 43, 226)',   // Blue Violet
+     'rgba(244, 164, 96)',   // Sandy Brown
+     'rgba(0, 128, 128)',    // Teal
+     'rgba(220, 20, 60)',    // Crimson
+     'rgba(255, 140, 0)',    // Dark Orange
+     'rgba(75, 0, 130)',     // Indigo
+     'rgba(60, 179, 113)',   // Medium Sea Green
+     'rgba(0, 191, 255)',    // Deep Sky Blue
+     'rgba(218, 112, 214)',  // Orchid
+     'rgba(210, 105, 30)'    // Chocolate
+ ];
+
+    const vibrantBorderColors = [
+     'rgba(255, 99, 132, 1)',
+     'rgba(54, 162, 235, 1)',
+     'rgba(255, 206, 86, 1)',
+     'rgba(75, 192, 192, 1)',
+     'rgba(153, 102, 255, 1)',
+     'rgba(255, 159, 64, 1)',
+     'rgba(255, 99, 71, 1)',
+     'rgba(124, 252, 0, 1)',
+     'rgba(0, 255, 255, 1)',
+     'rgba(255, 20, 147, 1)',
+     'rgba(138, 43, 226, 1)',
+     'rgba(244, 164, 96, 1)',
+     'rgba(0, 128, 128, 1)',
+     'rgba(220, 20, 60, 1)',
+     'rgba(255, 140, 0, 1)',
+     'rgba(75, 0, 130, 1)',
+     'rgba(60, 179, 113, 1)',
+     'rgba(0, 191, 255, 1)',
+     'rgba(218, 112, 214, 1)',
+     'rgba(210, 105, 30, 1)'
+ ];
+
     ActivityRatio();
     LiquidityRatio();
     CapitalStructureRatio();
@@ -90,6 +135,8 @@
             type: "GET",
             url: '@Url.Action("GetActivityRatio", "Dashboard", new { area = "" })',
             success: function (result) {
+                console.log("activity")
+                console.log(result)
                 //render
                 var ctx = document.getElementById("ActivityRatio").getContext('2d');
                 ctx.height = 600;
@@ -532,7 +579,7 @@
         }
     })
 
-    function refreshData() {
+    function refreshRationData() {
 
         $.ajax({
             type: "POST",

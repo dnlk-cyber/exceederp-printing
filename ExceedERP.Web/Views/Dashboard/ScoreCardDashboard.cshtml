@@ -1,0 +1,207 @@
+﻿<div class="content-wrapper">
+    
+
+    <div class="row">
+
+        <div class="col-md-4">
+            <label>Score Card Objectives</label>
+            @(Html.Kendo().DropDownList()
+                            .Name("Objective")
+                           // .Events(ev => ev.Change("selectScoreCard"))
+                            .DataTextField("Name")
+                            .DataValueField("Code")
+                            .OptionLabel(" --Select--")
+                            .DataSource(d => d.Read(r => r.Action("GetAllSCObjectives", "ScoreCardDataProvider"))))
+        </div>
+        <div class="col-md-4">
+            <label>Score Card Indicators</label>
+            @(Html.Kendo().DropDownList()
+                            .Name("Indicator")
+                           // .Events(ev => ev.Change("selectScoreCard"))
+                            .DataTextField("Name")
+                            .DataValueField("Code")
+                            .CascadeFrom("Objective")
+                            .OptionLabel(" --Select--")
+                            .DataSource(d => d.Read(r => r.Action("GetScoreCardIndicators", "ScoreCardDataProvider")
+                            .Data("filterIndicators")).ServerFiltering(true)))
+        </div>
+        <div class="col-md-4">
+            <label>Plan Periods</label>
+            @(Html.Kendo().DropDownList()
+                            .Name("PlanPeriod")
+                            .Events(ev => ev.Change("selectScoreCard"))
+                            .DataTextField("Name")
+                            .DataValueField("Code")
+                            .CascadeFrom("Indicator")
+                            .OptionLabel(" --Select--")
+                            .DataSource(d => d.Read(r => r.Action("GetScoreCardPlanPeriods", "ScoreCardDataProvider")
+                            .Data("filterPlanPeriods")).ServerFiltering(true)))
+        </div>
+    </div>
+    <div class="row">
+
+
+        <div class="col-md-12">
+            <div class="panel-body" id="scoreCardLineChartContainerDiv">
+                <canvas id="scoreCardLineChartContainer"></canvas>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="~/Scripts/Chart.bundle.js"></script>
+<script src="~/Scripts/Chart.PieceLabel.js"></script>
+
+<script type="text/javascript">
+    var b = null;
+
+    window.onload = function () {
+
+        selectScoreCard();
+
+
+    }
+    function selectScoreCard() {
+
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("getScoreCardLineChartDatas", "Dashboard")',
+            data: {
+                objectiveId: $("#Objective").val(),
+                indicatorId: $("#Indicator").val(), 
+                periodId: $("#PlanPeriod").val()
+            },
+            async: false,
+            success: function (result) {
+                labels = result.Labels;
+                performed = result.Actuals;
+                planned = result.Plans;
+              //  iid = result.ScoreCard.ScoreCardObjectiveId
+            }
+        });
+      //  $("#Objective").data("kendoDropDownList").value(iid);
+        drawLineChart();
+
+    }
+    function drawLineChart() {
+        $("#scoreCardLineChartContainer").remove();
+        $("#scoreCardLineChartContainerDiv").append('<canvas id="scoreCardLineChartContainer"></canvas>');
+        var ctx = document.getElementById('scoreCardLineChartContainer').getContext('2d');
+        var data = {
+            labels: labels,
+            datasets: [{
+                label: "Planned",
+                data: planned,
+                borderColor: "#C82C3C",
+                lineTension: 0,
+                fill: false,
+                backgroundColor: "#EC6775",
+            },
+            {
+                label: "Performed",
+                data: performed,
+                borderColor: "#0B97CF",
+                lineTension: 0,
+                fill: false,
+                backgroundColor: "#2C9BC8",
+            }]
+        };
+
+        var chartOptions = {
+            legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                    boxWidth: 80,
+                    fontColor: 'black'
+                }
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0
+                    }
+                }]
+            }
+        };
+        var lineChart = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: chartOptions
+        });
+    }
+    
+
+
+
+    
+
+
+
+
+    var barColors = [
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145",
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145",
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145"
+    ];
+    function poolColors(a) {
+        var pool = [];
+        for (i = 0; i < a; i++) {
+            pool.push(dynamicColors());
+        }
+        return pool;
+    }
+    function dynamicColors() {
+        var r = Math.floor(Math.random() * 255);
+        var g = Math.floor(Math.random() * 255);
+        var b = Math.floor(Math.random() * 255);
+        return "rgba(" + r + "," + g + "," + b + ",  1)";
+    }
+
+    function filterPlanPeriods() {
+        return {
+            objectiveId: $("#Objective").val(),
+            indicatorId: $("#Indicator").val()
+        };
+    }
+    function filterIndicators() {
+        return {
+            objectiveId: $("#Objective").val()
+        };
+    }
+</script>
+<style>
+    .col-lg-2 {
+        margin-left: 25px;
+    }
+
+    .col-sm-2 {
+        width: 220px;
+    }
+
+    .col-sm-1 {
+        width: 16%;
+    }
+
+
+    .row {
+        border-bottom: 2px solid #D0D0D0;
+    }
+
+    .col-md-6 {
+        border-right: 2px solid #D0D0D0;
+    }
+</style>

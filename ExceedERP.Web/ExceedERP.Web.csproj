@@ -2270,6 +2270,7 @@
     <Compile Include="Controllers\Cmd\CMDPostingController.cs" />
     <Compile Include="Controllers\Cmd\CMDGeneratePeriodController.cs" />
     <Compile Include="Controllers\Cmd\CMDController.cs" />
+    <Compile Include="Controllers\DashboardFinanceController.cs" />
     <Compile Include="Controllers\GlobalReportsController.cs" />
     <Compile Include="Controllers\InitialController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
@@ -8913,6 +8914,15 @@
     <Content Include="Views\Shared\EditorTemplates\EnumWithoutDepApprove.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\TimeEditor.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\DescriptionEditor.cshtml" />
+    <Content Include="Views\Dashboard\FleetDashboard.cshtml" />
+    <Content Include="Views\Dashboard\HrDashboard - Copy.cshtml" />
+    <Content Include="Views\Dashboard\ImportExportDashboard.cshtml" />
+    <Content Include="Views\Dashboard\LegalDashboard.cshtml" />
+    <Content Include="Views\Dashboard\MaintenanceDashboard.cshtml" />
+    <Content Include="Views\Dashboard\ProductionDashboard.cshtml" />
+    <Content Include="Views\Dashboard\ProjectManagementDashboard.cshtml" />
+    <Content Include="Views\Dashboard\RealEstate.cshtml" />
+    <Content Include="Views\Dashboard\ScoreCardDashboard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Bid Cancellation\" />

@@ -1,0 +1,386 @@
+﻿@*@model ExceedERP.Core.Domain.CRM.CRMDashboardViewModel*@
+@{
+    ViewBag.Title = "Real Estate Dashboard";
+}
+<div class="content-wrapper">
+    <div class="content">
+        <div class="box box-info">
+            <div class="box-header with-border">
+                @*<h4>
+                        <i class="fa fa-money"></i>
+                        Payments in Birr vs in USD
+                    </h4>*@
+            </div>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-sm-3 col-xs-12">
+                        <div class="small-box bg-aqua">
+                            <div class="inner">
+                                <h3><label id="totalAgreements"> </label></h3>
+                                <p>Total Agreements</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fa fa-file"></i>
+                            </div>
+                            @*<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>*@
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-xs-12">
+                        <div class="small-box bg-green">
+                            <div class="inner">
+                                <h3><label id="agreementsInBirr"> </label><small>ETB</small></h3>
+                                <p>Payments in Birr</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fa fa-money"></i>
+                            </div>
+                            @*<a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>*@
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-xs-12">
+                        <div class="small-box bg-orange">
+                            <div class="inner">
+                                <h3><small>$</small><label id="agreementsInUsd"> </label></h3>
+                                <p>Payments in USD</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fa fa-money"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-xs-12">
+                        <div class="small-box bg-blue">
+                            <div class="inner">
+                                <h3><label id="totalSoldProperties"> </label></h3>
+                                <p>Sold Properties</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fa fa-building"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-3 chartcontainer">
+                        <div>
+                            <canvas class="custom-canvas" id="totalAgreementsDistributionChart" width="400" height="400"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3 chartcontainer">
+                        <div>
+                            <canvas class="custom-canvas" id="agreementsInBirrDistributionChart" width="400" height="400"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 chartcontainer">
+                        <div>
+                            <canvas class="custom-canvas" id="agreementsInUsdDistributionChart" width="400" height="400"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 chartcontainer">
+                        <div>
+                            <canvas class="custom-canvas" id="totalSoldPropertiesDistributionChartByTypology" width="100" height="100"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<link href="~/Content/crm-dashboard-styles.css" rel="stylesheet" />
+<script src="~/Scripts/Chart.bundle.js"></script>
+<script src="~/Scripts/Chart.PieceLabel.js"></script>
+<script>
+    window.chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)',
+        aqua: 'rgb(0, 255, 255)',
+        indigo: 'rgb(75, 0, 130)',
+        violet: 'rgb(238, 130, 238)',
+        brown: 'rgb(165, 42, 42)',
+        yale: 'rgb(14, 76, 146)',
+        mulberry: 'rgb(198, 75, 140)',
+        redwood: 'rgb(164, 90, 82)',
+        lemon: 'rgb(239, 253, 95)',
+        olive:'rgb(112, 130, 56)'
+    };
+    addTotalAgreementsToChartArea();
+    addAgreementsInBirrToChartArea();
+    addAgreementsInUsdToChartArea();
+    addTotalTotalSoldPropertiesToChartArea();
+
+    function addAgreementsInBirrToChartArea() {
+        $.ajax({
+            url: '@Url.Action("GetSalesAgreementInBirr", "ReEstDashboardDataProvider", new { area = "REM" })',
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#agreementsInBirr").text(result);
+            }
+        });
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetSalesAgreementInBirrDistribution", "ReEstDashboardDataProvider", new {area = "REM"})',
+            success: function (result) {
+                var ctx = document.getElementById("agreementsInBirrDistributionChart").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Displays,
+                        datasets: [{
+                            //label: 'Branch',
+                            data: result.Values,
+                            backgroundColor: [
+                                window.chartColors.green,
+                                window.chartColors.orange,
+                                window.chartColors.blue,
+                            ],
+                            borderColor: [
+                                window.chartColors.green,
+                                window.chartColors.orange,
+                                window.chartColors.blue,
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+                    options: {
+                        title: {
+                            display: true,
+                            text: 'Payments in Birr'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'percentage',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2,
+                            textShadow: true,
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6
+                        }
+                    }
+                });
+
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    function addAgreementsInUsdToChartArea() {
+        $.ajax({
+            url: '@Url.Action("GetSalesAgreementInDolar", "ReEstDashboardDataProvider", new { area = "REM" })',
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#agreementsInUsd").text(result);
+            }
+        });
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetSalesAgreementInDolarDistribution", "ReEstDashboardDataProvider", new {area = "REM"})',
+            success: function (result) {
+                var ctx = document.getElementById("agreementsInUsdDistributionChart").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Displays,
+                        datasets: [{
+                            //label: 'Branch',
+                            data: result.Values,
+                            backgroundColor: [
+                                window.chartColors.green,
+                                window.chartColors.orange,
+                                window.chartColors.blue,
+
+                            ],
+                            borderColor: [
+                                window.chartColors.green,
+                                window.chartColors.orange,
+                                window.chartColors.blue,
+
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Payments in USD'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'percentage',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2,
+                            textShadow: true,
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    function addTotalAgreementsToChartArea() {
+        $.ajax({
+            url: '@Url.Action("GetTotalSalesAgreement", "ReEstDashboardDataProvider", new { area = "REM" })',
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#totalAgreements").text(result);
+            }
+        });
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetTotalSalesAgreementDistribution", "ReEstDashboardDataProvider", new {area = "REM"})',
+            success: function (result) {
+                var ctx = document.getElementById("totalAgreementsDistributionChart").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Displays,
+                        datasets: [{
+                            //label: 'Branch',
+                            data: result.Values,
+                            backgroundColor: [
+                                window.chartColors.green,
+                                window.chartColors.orange,
+                                window.chartColors.blue,
+
+                            ],
+                            borderColor: [
+                                window.chartColors.green,
+                                window.chartColors.orange,
+                                window.chartColors.blue,
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Buyers Agreed to Pay in Birr and USD'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'percentage',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2,
+                            textShadow: true,
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    function addTotalTotalSoldPropertiesToChartArea() {
+        $.ajax({
+            url: '@Url.Action("GetTotalSalesAgreement", "ReEstDashboardDataProvider", new { area = "REM" })',
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#totalSoldProperties").text(result);
+            }
+        });
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetTotalSalesAgreementDistributionByTypology", "ReEstDashboardDataProvider", new {area = "REM"})',
+            success: function (result) {
+                var ctx = document.getElementById("totalSoldPropertiesDistributionChartByTypology").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Displays,
+                        datasets: [{
+                            //label: 'Typology',
+                            data: result.Values,
+                            backgroundColor: [
+                                window.chartColors.green,
+                                window.chartColors.orange,
+                                window.chartColors.blue,
+
+                            ],
+                            borderColor: [
+                                window.chartColors.green,
+                                window.chartColors.orange,
+                                window.chartColors.blue,
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Sold Properties by Typology'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2,
+                            textShadow: true,
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+    }
+</script>

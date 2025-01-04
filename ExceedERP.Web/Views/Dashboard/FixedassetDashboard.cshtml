@@ -10,6 +10,55 @@
 
 <div class="dashboard">
     <div class="row">
+        @*<div class="col-sm-7 col-lg-4 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="storeReturnStatus1" width="400" height="400"></canvas>
+            </div>
+
+
+        </div>*@
+
+        <div class="col-sm-7 col-lg-4 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="fixedasset" width="400" height="400"></canvas>
+            </div>
+
+
+        </div>
+        <div class="col-sm-7 col-lg-4 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="fixedassetValue" width="400" height="400"></canvas>
+            </div>
+
+
+        </div>
+      
+
+    </div>
+    <div class="row">
+        <div class="col-sm-8 col-lg-12 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="assetcount" width="400" height="400"></canvas>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-7 col-lg-12 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="assetbyCondition" width="400" height="400"></canvas>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="row">
 
         <div class="col-sm-7 col-lg-3 chartcontainer">
 
@@ -55,10 +104,10 @@
 
         </div>
 
-        <div class="col-sm-7 col-lg-3 chartcontainer">
+        @*<div class="col-sm-7 col-lg-3 chartcontainer">
 
             <div class="demo-section k-content wide">
-                <canvas id="fixedasset" width="400" height="400"></canvas>
+                <canvas id="fixedasset2" width="400" height="400"></canvas>
             </div>
 
 
@@ -66,22 +115,12 @@
         <div class="col-sm-7 col-lg-3 chartcontainer">
 
             <div class="demo-section k-content wide">
-                <canvas id="fixedassetValue" width="400" height="400"></canvas>
+                <canvas id="fixedassetValue2" width="400" height="400"></canvas>
             </div>
 
 
-        </div>
+        </div>*@
 
-    </div>
-    <div class="row">
-        <div class="col-sm-8 col-lg-12 chartcontainer">
-
-            <div class="demo-section k-content wide">
-                <canvas id="assetcount" width="400" height="400"></canvas>
-            </div>
-
-
-        </div>
     </div>
 
 </div>
@@ -100,6 +139,52 @@
         grey: 'rgb(201, 203, 207)'
     };
 
+    const vibrantColors = [
+        'rgba(255, 99, 132)',   // Red
+        'rgba(54, 162, 235)',   // Blue
+        'rgba(255, 206, 86)',   // Yellow
+        'rgba(75, 192, 192)',   // Green
+        'rgba(153, 102, 255)',  // Purple
+        'rgba(255, 159, 64)',   // Orange
+        'rgba(255, 99, 71)',    // Tomato
+        'rgba(124, 252, 0)',    // Lawn Green
+        'rgba(0, 255, 255)',    // Cyan
+        'rgba(255, 20, 147)',   // Deep Pink
+        'rgba(138, 43, 226)',   // Blue Violet
+        'rgba(244, 164, 96)',   // Sandy Brown
+        'rgba(0, 128, 128)',    // Teal
+        'rgba(220, 20, 60)',    // Crimson
+        'rgba(255, 140, 0)',    // Dark Orange
+        'rgba(75, 0, 130)',     // Indigo
+        'rgba(60, 179, 113)',   // Medium Sea Green
+        'rgba(0, 191, 255)',    // Deep Sky Blue
+        'rgba(218, 112, 214)',  // Orchid
+        'rgba(210, 105, 30)'    // Chocolate
+    ];
+
+    const vibrantBorderColors = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)',
+        'rgba(255, 99, 71, 1)',
+        'rgba(124, 252, 0, 1)',
+        'rgba(0, 255, 255, 1)',
+        'rgba(255, 20, 147, 1)',
+        'rgba(138, 43, 226, 1)',
+        'rgba(244, 164, 96, 1)',
+        'rgba(0, 128, 128, 1)',
+        'rgba(220, 20, 60, 1)',
+        'rgba(255, 140, 0, 1)',
+        'rgba(75, 0, 130, 1)',
+        'rgba(60, 179, 113, 1)',
+        'rgba(0, 191, 255, 1)',
+        'rgba(218, 112, 214, 1)',
+        'rgba(210, 105, 30, 1)'
+    ];
+
     fixedasset();
     fixedassetvalue();
     assetcount();
@@ -109,9 +194,84 @@
     machineTransfer();
     grn();
     storeReturnStatus();
+    assetByCondition();
+
+   function assetByCondition() {
+    $.ajax({
+     type: "GET",
+     url: '@Url.Action("AssetByCondition", "Dashboard", new {area = ""})',
+    success: function (result) {
+     //render
+     var ctx = document.getElementById("assetbyCondition").getContext('2d');
+     ctx.height = 600;
+     var myChart = new Chart(ctx, {
+         type: 'horizontalBar',
+         data: {
+             labels: result.Labels,
+             datasets: [{
+                 label: 'PPE QTY',
+                 data: result.Data,
+                 backgroundColor: vibrantColors,
+                 borderColor: window.chartColors.purple,
+                 borderWidth: 1
+             }]
+         },
 
 
-     function assetcount() {
+         options: {
+
+             title: {
+                 display: true,
+                 text: 'PPE Quantity By Condition'
+             },
+             gridLines: {
+                 display: false
+             },
+             pieceLabel: {
+                 render: 'value',
+                 fontColor: ['green', 'white', 'red'],
+                 precision: 2
+             },
+             legend: {
+                 display:false
+             },
+             scales: {
+                 yAxes: [{
+                     display: true,
+                     scaleLabel: {
+                         display: true,
+                         labelString: 'Quantity'
+                     },
+                     barPercentage: 0.4
+                 }],
+                 xAxes: [{
+                     display: true,
+                     scaleLabel: {
+                         display: true,
+                         labelString: 'Status'
+                     },
+                     ticks: {
+
+                         // forces step size to be 5 units
+                         stepSize: 1000
+                     }
+                 }]
+             },
+             maintainAspectRatio: false
+
+         }
+     });
+
+ }, //end succ
+ error: function (result) {
+     alert(result);
+ }
+ });
+}
+    function assetcount() {
+
+
+
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetFixedAssetItemCount", "Dashboard", new {area = ""})',
@@ -126,20 +286,8 @@
                     datasets: [{
                         label: 'PPE QTY',
                         data: result.Data,
-                        backgroundColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
-                        borderColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
+                        backgroundColor: vibrantColors,
+                        borderColor: window.chartColors.purple,
                         borderWidth: 1
                     }]
                 },
@@ -149,7 +297,7 @@
 
                     title: {
                         display: true,
-                        text: 'PPE QTY'
+                        text: 'PPE Quantity By Category'
                     },
                     gridLines: {
                         display: false
@@ -160,13 +308,7 @@
                         precision: 2
                     },
                     legend: {
-                        position: 'bottom',
-                        fontSize: 8,
-                        fullWidth: true,
-                        padding: 6,
-                        labels: {
-                            boxWidth:15
-                        }
+                        display:false
                     },
                     scales: {
                         yAxes: [{
@@ -202,7 +344,7 @@
         });
     }
 
-     function fixedassetvalue() {
+    function fixedassetvalue() {
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetFixedAssetValue", "Dashboard", new {area = ""})',
@@ -210,25 +352,17 @@
             //render
             var ctx = document.getElementById("fixedassetValue").getContext('2d');
             var myChart = new Chart(ctx, {
-                type: 'pie',
+                type: 'bar',
                 data: {
                     labels: result.Labels,
                     datasets: [{
-                        label: 'PPE Value (Birr)',
+                        label: 'PPE Value (M ETB)',
                         data: result.Data,
                         backgroundColor: [
-                            window.chartColors.green,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.red,
-                            window.chartColors.yellow
+                            window.chartColors.orange
                         ],
                         borderColor: [
-                            window.chartColors.green,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.red,
-                            window.chartColors.yellow
+                            window.chartColors.green
                         ],
                         borderWidth: 1
                     }]
@@ -239,7 +373,7 @@
 
                     title: {
                         display: true,
-                        text: 'PPE Value (Birr)'
+                        text: 'PPE Value (M ETB)'
                     },
                     gridLines: {
                         display: false
@@ -252,14 +386,30 @@
                         precision: 2
                     },
                     legend: {
-                        position: 'bottom',
-                        fontSize: 8,
-                        fullWidth: true,
-                        padding: 6,
-                        labels: {
-                            boxWidth:15
-                        }
-                    }
+                        display:false
+                    },
+                    scales: {
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'M ETB'
+                            },
+                            barPercentage: 0.4
+                        }],
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: ''
+                            },
+                            ticks: {
+
+                                // forces step size to be 5 units
+                                stepSize: 1000
+                            }
+                        }]
+                    },
 
 
                 }
@@ -280,19 +430,18 @@
             //render
             var ctx = document.getElementById("fixedasset").getContext('2d');
             var myChart = new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels: result.Labels,
                     datasets: [{
                         label: 'PPE Status',
                         fill: false,
-                        backgroundColor: window.chartColors.yellow,
-                        borderColor: window.chartColors.yellow,
                         data: result.Data,
-                        borderWidth: 4
+                        backgroundColor: vibrantColors,
+                        borderColor: window.chartColors.purple,
+                        borderWidth: 1
                     }]
                 },
-
 
                 options: {
 
@@ -309,18 +458,35 @@
                         precision: 2
                     },
                     legend: {
-                        position: 'bottom',
-                        fontSize: 8,
-                        fullWidth: true,
-                        padding: 6,
-                        labels: {
-                            boxWidth:15
-                        }
+                        display:false
                     },
                     hover: {
                         mode: 'nearest',
                         intersect: true
-                    }
+                    },
+
+                scales: {
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Quantity'
+                        },
+                        barPercentage: 0.4
+                    }],
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Type'
+                        },
+                        ticks: {
+
+                            // forces step size to be 5 units
+                            stepSize: 1000
+                        }
+                    }]
+                }
 
                 }
             });
@@ -346,20 +512,8 @@
                     datasets: [{
                         label: 'Store Requisition Status',
                         data: result.Data,
-                        backgroundColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.blue
-                        ],
-                        borderColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.blue
-                        ],
+                        backgroundColor: vibrantColors,
+                        borderColor: window.chartColors.purple,
                         borderWidth: 1
                     }]
                 },
@@ -414,20 +568,8 @@
                         datasets: [{
                             label: 'Issue Status',
                             data: result.Data,
-                            backgroundColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.green,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
-                            borderColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.green,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
+                            backgroundColor: vibrantColors,
+                            borderColor: window.chartColors.purple,
                             borderWidth: 1
                         }]
                     },
@@ -479,20 +621,8 @@
                         datasets: [{
                             label: 'Machine Transfer Status',
                             data: result.Data,
-                            backgroundColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.green,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
-                            borderColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.green,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
+                            backgroundColor: vibrantColors,
+                            borderColor: window.chartColors.purple,
                             borderWidth: 1
                         }]
                     },
@@ -542,20 +672,8 @@
                         datasets: [{
                             label: 'Good Receive Status',
                             data: result.Data,
-                            backgroundColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.green,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
-                            borderColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.green,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
+                            backgroundColor: vibrantColors,
+                            borderColor: window.chartColors.purple,
                             borderWidth: 1
                         }]
                     },
@@ -605,20 +723,8 @@
                         datasets: [{
                             label: 'Store Return Status',
                             data: result.Data,
-                            backgroundColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.green,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
-                            borderColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.green,
-                                window.chartColors.green,
-                                window.chartColors.blue
-                            ],
+                            backgroundColor: vibrantColors,
+                            borderColor: window.chartColors.purple,
                             borderWidth: 1
                         }]
                     },
@@ -671,7 +777,7 @@
     })
 
 
-    function refreshData() {       
+    function refreshData() {
 
         $.ajax({
             type: "POST",

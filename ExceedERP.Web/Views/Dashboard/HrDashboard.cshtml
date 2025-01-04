@@ -1,7 +1,7 @@
-﻿@using ExceedERP.Web.Controllers
+@using ExceedERP.Web.Controllers
 
 @{
-    ViewBag.Title = "ProcurementDashboard";
+    ViewBag.Title = "HRMDashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <link href="~/Content/dashboard.css" rel="stylesheet" />
@@ -9,7 +9,7 @@
 
 <div class="row">
 
-    <div class="col-sm-7 col-lg-3 chartcontainer">
+    <div class="col-sm-7 col-lg-4 chartcontainer">
 
         <div class="demo-section k-content wide">
             <canvas id="employeeCount" width="400" height="400" class="chartarea"></canvas>
@@ -17,29 +17,61 @@
 
 
     </div>
-    <div class="col-sm-7 col-lg-3 chartcontainer">
+    <div class="col-sm-7 col-lg-4 chartcontainer">
 
         <div class="demo-section k-content wide">
-            <canvas id="permanentEmployee" width="400" height="400"></canvas>
+            <canvas id="permanentEmployee" width="300" height="300"></canvas>
         </div>
 
 
     </div>
-    <div class="col-sm-7 col-lg-3 chartcontainer">
+    <div class="col-sm-7 col-lg-4 chartcontainer">
 
         <div class="demo-section k-content wide">
-            <canvas id="contratEmployee" width="400" height="400"></canvas>
+            <canvas id="contratEmployee" width="300" height="300"></canvas>
         </div>
 
 
     </div>
-    <div class="col-sm-7 col-lg-3 chartcontainer">
+    @*<div class="col-sm-7 col-lg-3 chartcontainer">
 
         <div class="demo-section k-content wide">
-            <canvas id="probationEmployee" width="400" height="400"></canvas>
+            <canvas id="probationEmployee" width="300" height="300"></canvas>
         </div>
 
 
+    </div>*@
+   
+
+</div>
+<div class="row">
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="otherEmployee" width="300" height="300"></canvas>
+        </div>
+
+
+    </div> 
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="employeeType" width="300" height="300"></canvas>
+        </div>
+
+
+    </div> 
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="employeeDispline" width="300" height="300"></canvas>
+        </div>
+    </div> 
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="employeeofCurrent" width="300" height="300"></canvas>
+        </div>
     </div>
 
 </div>
@@ -171,7 +203,50 @@
 <script src="~/Scripts/Chart.bundle.js"></script>
 <script src="~/Scripts/Chart.PieceLabel.js"></script>
 <script>
-
+    const vibrantColors = [
+        'rgba(255, 99, 132)',   // Red
+        'rgba(54, 162, 235)',   // Blue
+        'rgba(255, 206, 86)',   // Yellow
+        'rgba(75, 192, 192)',   // Green
+        'rgba(153, 102, 255)',  // Purple
+        'rgba(255, 159, 64)',   // Orange
+        'rgba(255, 99, 71)',    // Tomato
+        'rgba(124, 252, 0)',    // Lawn Green
+        'rgba(0, 255, 255)',    // Cyan
+        'rgba(255, 20, 147)',   // Deep Pink
+        'rgba(138, 43, 226)',   // Blue Violet
+        'rgba(244, 164, 96)',   // Sandy Brown
+        'rgba(0, 128, 128)',    // Teal
+        'rgba(220, 20, 60)',    // Crimson
+        'rgba(255, 140, 0)',    // Dark Orange
+        'rgba(75, 0, 130)',     // Indigo
+        'rgba(60, 179, 113)',   // Medium Sea Green
+        'rgba(0, 191, 255)',    // Deep Sky Blue
+        'rgba(218, 112, 214)',  // Orchid
+        'rgba(210, 105, 30)'    // Chocolate
+    ];
+    const vibrantBorderColors = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)',
+        'rgba(255, 99, 71, 1)',
+        'rgba(124, 252, 0, 1)',
+        'rgba(0, 255, 255, 1)',
+        'rgba(255, 20, 147, 1)',
+        'rgba(138, 43, 226, 1)',
+        'rgba(244, 164, 96, 1)',
+        'rgba(0, 128, 128, 1)',
+        'rgba(220, 20, 60, 1)',
+        'rgba(255, 140, 0, 1)',
+        'rgba(75, 0, 130, 1)',
+        'rgba(60, 179, 113, 1)',
+        'rgba(0, 191, 255, 1)',
+        'rgba(218, 112, 214, 1)',
+        'rgba(210, 105, 30, 1)'
+    ];
     window.chartColors = {
         red: 'rgb(255, 99, 132)',
         orange: 'rgb(255, 159, 64)',
@@ -179,12 +254,17 @@
         green: 'rgb(75, 192, 192)',
         blue: 'rgb(54, 162, 235)',
         purple: 'rgb(153, 102, 255)',
-        grey: 'rgb(201, 203, 207)'
+        grey: 'rgb(201, 203, 207)',
+        fuchsia: 'rgb(255, 0, 255)'
     };
     CountEmployee();
     PermanentEmployee();
     ContratEmployee();
     ProbationEmployee();
+    OtherEmployee();
+    employeeTypeSummary();
+    EmployeeDispline();
+    newHiredEmployee();
     EmployeeByAssignmentType();
     EmployeeResponsibilityLevel();
     Leave();
@@ -212,20 +292,8 @@
                     datasets: [{
                         label: 'Employee Count',
                         data: result.Data,
-                        backgroundColor: [
-                            window.chartColors.green,
-                            window.chartColors.blue,
-                            window.chartColors.red,
-                            window.chartColors.green,
-                            window.chartColors.blue
-                        ],
-                        //borderColor: [
-                        //    window.chartColors.red,
-                        //    window.chartColors.orange,
-                        //    window.chartColors.yellow,
-                        //    window.chartColors.green,
-                        //    window.chartColors.blue
-                        //],
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
                         borderWidth: 3
                     }]
                 },
@@ -269,7 +337,7 @@
 
 
 
-    function PermanentEmployee() {
+    function PermanentEmployeeHorizontal() {
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetPermanentEmployee", "Dashboard", new {area = ""})',
@@ -282,22 +350,10 @@
                 data: {
                     labels: result.Labels,
                     datasets: [{
-                        label: "Permanent Employee ",
+                       // label: result.Labels,
                         data: result.Data,
-                        backgroundColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
-                        borderColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
                         borderWidth: 3
                     }]
                 },
@@ -314,18 +370,21 @@
                     },
                     pieceLabel: {
                         render: 'value',
-                        fontColor: ['green', 'white', 'red'],
+                        fontColor: ['green', 'white', 'red', "yellow"],
                         precision: 2
                     },
                     legend: {
-                        position: 'bottom',
-                        fontSize: 8,
-                        fullWidth: true,
-                        padding: 6,
-                        labels: {
-                            boxWidth:15
-                        }
+                        display: false // Disable legend display
                     },
+                    //legend: {
+                    //    position: 'bottom',
+                    //    fontSize: 8,
+                    //    fullWidth: true,
+                    //    padding: 6,
+                    //    labels: {
+                    //        boxWidth:15
+                    //    }
+                    //},
                     scales: {
                         xAxes: [{
                             display: true,
@@ -339,7 +398,7 @@
                             display: true,
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Employement Type'
+                                labelString: 'Permanent Employee'
                             },
                             barPercentage: 0.4
                             //ticks: {
@@ -360,101 +419,290 @@
         }
         });
     }
-
-    function ContratEmployee() {
-        $.ajax({
-            type: "GET",
-            url: '@Url.Action("GetContratEmployee", "Dashboard", new {area = ""})',
+    function PermanentEmployee() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetPermanentEmployee", "Dashboard", new {area = ""})',
         success: function (result) {
-            //render
-            var ctx = document.getElementById("contratEmployee").getContext('2d');
+            // Render the chart
+            var ctx = document.getElementById("permanentEmployee").getContext('2d');
             ctx.height = 600;
             var myChart = new Chart(ctx, {
-                type: 'horizontalBar',
+                type: 'bar', // Change this to 'bar'
                 data: {
                     labels: result.Labels,
                     datasets: [{
-                        label: "Contrat Employee",
+                        // label: result.Labels,
                         data: result.Data,
-                        backgroundColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
-                        borderColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
                         borderWidth: 3
                     }]
                 },
-
-
                 options: {
-
                     title: {
                         display: true,
-                        text: "Contrat Employee"
+                        text: "Permanent Employee"
                     },
                     gridLines: {
                         display: false
                     },
                     pieceLabel: {
                         render: 'value',
-                        fontColor: ['green', 'white', 'red'],
+                        fontColor: ['green', 'white', 'red', 'yellow'],
                         precision: 2
                     },
                     legend: {
-                        position: 'bottom',
-                        fontSize: 8,
-                        fullWidth: true,
-                        padding: 6,
-                        labels: {
-                            boxWidth:15
-                        }
-                    }
-                    ,
+                        display: false // Disable legend display
+                    },
                     scales: {
                         xAxes: [{
                             display: true,
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Number of Employee'
+                                labelString: 'Permanent Employee'
                             },
-                            barPercentage: 0.4
+                            barPercentage: 0.4,
+                            ticks: {
+                                min: 0 // Ensure X-axis starts at 0
+                            }
                         }],
                         yAxes: [{
                             display: true,
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Employement Type'
+                                labelString: 'Number of Employees'
                             },
-                            barPercentage: 0.4
-                            //ticks: {
-
-                            //    // forces step size to be 5 units
-                            //    //stepSize: 1000
-                            //}
+                            barPercentage: 0.4,
+                            ticks: {
+                                min: 0 // Ensure Y-axis starts at 0
+                            }
                         }]
                     }
-
                 }
             });
-
-        }, //end succ
+        },
         error: function (result) {
             alert(result);
         }
+    });
+}
+
+    function ContratEmployeeHorizontal() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetContratEmployee", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("contratEmployee").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'horizontalBar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // Remove the label property
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Contrat Employee"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', "yellow"],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        //legend: {
+                        //    position: 'bottom',
+                        //    fontSize: 8,
+                        //    fullWidth: true,
+                        //    padding: 6,
+                        //    labels: {
+                        //        boxWidth: 15
+                        //    }
+                        //},
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Number of Employee'
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Contrat Employee'
+                                },
+                                barPercentage: 0.4
+                            }]
+                        }
+                    }
+                });
+            }, //end success
+            error: function (result) {
+                alert(result);
+            }
         });
+
     }
 
+    function ContratEmployee() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetContratEmployee", "Dashboard", new {area = ""})',
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("contratEmployee").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Contrat Employee"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Contrat Employee'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Number of Employees'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        }
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
 
+    }
+    //vertical
     function ProbationEmployee() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProbationEmployee", "Dashboard", new {area = ""})',
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("probationEmployee").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Proabation Employee"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Proabation Employee'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Number of Employees'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        }
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+    }
+
+    //horizontal
+    function ProbationEmployeeHorizontal() {
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetProbationEmployee", "Dashboard", new {area = ""})',
@@ -469,20 +717,8 @@
                         datasets: [{
                             label: "Probation Employee",
                             data: result.Data,
-                            backgroundColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.blue,
-                                window.chartColors.green,
-                                window.chartColors.yellow
-                            ],
-                            borderColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.blue,
-                                window.chartColors.green,
-                                window.chartColors.yellow
-                            ],
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
                             borderWidth: 3
                         }]
                     },
@@ -499,14 +735,165 @@
                         },
                         pieceLabel: {
                             render: 'value',
-                            fontColor: ['green', 'white', 'red'],
+                            fontColor: ['green', 'white', 'red', "yellow"],
                             precision: 2
                         },
                         legend: {
-                            position: 'bottom',
-                            fontSize: 8,
-                            fullWidth: true,
-                            padding:6
+                            display: false // Disable legend display
+                        },
+                        //legend: {
+                        //    position: 'bottom',
+                        //    fontSize: 8,
+                        //    fullWidth: true,
+                        //    padding:6
+                        //},
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Number of Employee'
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Probation Employee'
+                                },
+                                barPercentage: 0.4
+                                //ticks: {
+
+                                //    // forces step size to be 5 units
+                                //    //stepSize: 1000
+                                //}
+                            }]
+                        }
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    function OtherEmployee() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetOtherEmployee", "Dashboard", new {area = ""})',
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("otherEmployee").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Other Employee"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Other Employee'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Number of Employees'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        }
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+    }
+
+    function OtherEmployeeHorizental() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetOtherEmployee", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("otherEmployee").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'horizontalBar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: "Other Employee (No status or Freelance)",
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: "Other Employee"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red',"yellow"],
+                            precision: 2
+                        },
+                        //legend: {
+                        //    position: 'bottom',
+                        //    fontSize: 8,
+                        //    fullWidth: true,
+                        //    padding:6
+                        //},
+                        legend: {
+                            display: false // Disable legend display
                         },
                         scales: {
                             xAxes: [{
@@ -521,7 +908,154 @@
                                 display: true,
                                 scaleLabel: {
                                     display: true,
-                                    labelString: 'Employement Type'
+                                    labelString: 'Other Employee'
+                                },
+                                barPercentage: 0.4
+                                //ticks: {
+
+                                //    // forces step size to be 5 units
+                                //    //stepSize: 1000
+                                //}
+                            }]
+                        }
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    function employeeTypeSummary() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetEmployeeType", "Dashboard", new {area = ""})',
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("employeeType").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Employee Summary By Employee Type"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Employee Summary By Employee Type'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Number of Employees'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        }
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+    }
+     function employeeTypeSummaryHorizontal() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetEmployeeType", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("employeeType").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'horizontalBar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: "Employee Summary By Employee Type",
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: "Employee Type"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red',"yellow"],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        //legend: {
+                        //    position: 'bottom',
+                        //    fontSize: 8,
+                        //    fullWidth: true,
+                        //    padding:6
+                        //},
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Number of Employee'
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: ' Employee Type'
                                 },
                                 barPercentage: 0.4
                                 //ticks: {
@@ -542,7 +1076,219 @@
         });
     }
 
-     function EmployeeByAssignmentType() {
+    function EmployeeDispline() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetEmployeeDispline", "Dashboard", new {area = ""})',
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("employeeDispline").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Employee Displine"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Employee Displine'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Number of Employees'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        }
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+    }
+    
+    //employeeTurnOver
+    function newHiredEmployee() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetNewHiredEmployee", "Dashboard", new {area = ""})',
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("employeeofCurrent").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Employees Hired: Current and Previous Year "
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: ''
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Number of Employees'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        }
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+    }
+
+
+    function EmployeeByAssignmentType() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetEmployeeByAssignmentType", "Dashboard", new {area = ""})',
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("employeeAssignment").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Employee by Assignment Type"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Employee by Assignment Type'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Number of Employees'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        }
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+    }
+
+    function EmployeeByAssignmentTypeHorizontal() {
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetEmployeeByAssignmentType", "Dashboard", new {area = ""})',
@@ -557,26 +1303,8 @@
                     datasets: [{
                         label: "Employee by Assignment Type",
                         data: result.Data,
-                        backgroundColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow,
-                            window.chartColors.purple,
-                            window.chartColors.gray,
-                            window.chartColors.blue,
-                        ],
-                        borderColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow,
-                            window.chartColors.purple,
-                            window.chartColors.gray,
-                            window.chartColors.blue,
-                        ],
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
                         borderWidth: 3
                     }]
                 },
@@ -597,14 +1325,17 @@
                         precision: 2
                     },
                     legend: {
-                        position: 'bottom',
-                        fontSize: 8,
-                        fullWidth: true,
-                        padding: 6,
-                        labels: {
-                            boxWidth:15
-                        }
-                    }
+                        display: false // Disable legend display
+                    },
+                    //legend: {
+                    //    position: 'bottom',
+                    //    fontSize: 8,
+                    //    fullWidth: true,
+                    //    padding: 6,
+                    //    labels: {
+                    //        boxWidth:15
+                    //    }
+                    //}
 
 
                 }
@@ -617,44 +1348,27 @@
         });
     }
 
-
-
     function EmployeeResponsibilityLevel() {
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetEmployeeByResponsibilityLevel", "Dashboard", new {area = ""})',
             success: function (result) {
-                //render
+                // Render the chart
                 var ctx = document.getElementById("responsibilityLevel").getContext('2d');
                 ctx.height = 600;
                 var myChart = new Chart(ctx, {
-                    type: 'horizontalBar',
+                    type: 'bar', // Change this to 'bar'
                     data: {
                         labels: result.Labels,
                         datasets: [{
-                            label: "Employee Responsibility Level",
+                            // label: result.Labels,
                             data: result.Data,
-                            backgroundColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.blue,
-                                window.chartColors.green,
-                                window.chartColors.yellow
-                            ],
-                            borderColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.blue,
-                                window.chartColors.green,
-                                window.chartColors.yellow
-                            ],
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
                             borderWidth: 3
                         }]
                     },
-
-
                     options: {
-
                         title: {
                             display: true,
                             text: "Employee Responsibility Level"
@@ -664,49 +1378,176 @@
                         },
                         pieceLabel: {
                             render: 'value',
-                            fontColor: ['green', 'white', 'red'],
+                            fontColor: ['green', 'white', 'red', 'yellow'],
                             precision: 2
                         },
                         legend: {
-                            position: 'bottom',
-                            fontSize: 8,
-                            fullWidth: true,
-                            padding:6
+                            display: false // Disable legend display
                         },
                         scales: {
                             xAxes: [{
                                 display: true,
                                 scaleLabel: {
                                     display: true,
-                                    labelString: 'Number of Employee'
+                                    labelString: 'Employee Responsibility Level'
                                 },
-                                barPercentage: 0.4
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
                             }],
                             yAxes: [{
                                 display: true,
                                 scaleLabel: {
                                     display: true,
-                                    labelString: 'Responsibility Type'
+                                    labelString: 'Number of Employees'
                                 },
-                                barPercentage: 0.4
-                                //ticks: {
-
-                                //    // forces step size to be 5 units
-                                //    //stepSize: 1000
-                                //}
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
                             }]
                         }
                     }
                 });
-
-            }, //end succ
+            },
             error: function (result) {
                 alert(result);
             }
         });
+
+    }
+    function EmployeeResponsibilityLevelHorizontal() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetEmployeeByResponsibilityLevel", "Dashboard", new {area = ""})',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("responsibilityLevel").getContext('2d');
+            ctx.height = 600;
+            var myChart = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: "Employee Responsibility Level",
+                        data: result.Data,
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
+                        borderWidth: 3
+                    }]
+                },
+
+
+                options: {
+
+                    title: {
+                        display: true,
+                        text: "Employee Responsibility Level"
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'white', 'red'],
+                        precision: 2
+                    },
+                    legend: {
+                        display: false // Disable legend display
+                    },
+                    //legend: {
+                    //    position: 'bottom',
+                    //    fontSize: 8,
+                    //    fullWidth: true,
+                    //    padding: 6,
+                    //    labels: {
+                    //        boxWidth:15
+                    //    }
+                    //}
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
     }
 
-     function Leave() {
+    function Leave() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetlLeave", "Dashboard", new {area = ""})',
+            success: function (result) {
+                // Render the chart
+                var ctx = document.getElementById("leave").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar', // Change this to 'bar'
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            // label: result.Labels,
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Annual Leave"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red', 'yellow'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Annual Leave'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure X-axis starts at 0
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Moths'
+                                },
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0 // Ensure Y-axis starts at 0
+                                }
+                            }]
+                        }
+                    }
+                });
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+    }
+
+    function LeaveHorizontal() {
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetlLeave", "Dashboard", new {area = ""})',
@@ -721,20 +1562,8 @@
                     datasets: [{
                         label: "Annual Leave ",
                         data: result.Data,
-                        backgroundColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
-                        borderColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
                         borderWidth: 3
                     }]
                 },
@@ -755,14 +1584,17 @@
                         precision: 2
                     },
                     legend: {
-                        position: 'bottom',
-                        fontSize: 8,
-                        fullWidth: true,
-                        padding: 6,
-                        labels: {
-                            boxWidth:15
-                        }
+                        display: false // Disable legend display
                     },
+                    //legend: {
+                    //    position: 'bottom',
+                    //    fontSize: 8,
+                    //    fullWidth: true,
+                    //    padding: 6,
+                    //    labels: {
+                    //        boxWidth:15
+                    //    }
+                    //},
                     scales: {
                         xAxes: [{
                             display: true,
@@ -770,7 +1602,11 @@
                                 display: true,
                                 labelString: 'Number of Employee'
                             },
-                            barPercentage: 0.4
+                            barPercentage: 0.4,
+                            barPercentage: 0.4,
+                            ticks: {
+                                min: 0 // Ensure X-axis starts at 0
+                            }
                         }],
                         yAxes: [{
                             display: true,
@@ -778,7 +1614,11 @@
                                 display: true,
                                 labelString: 'Month'
                             },
-                            barPercentage: 0.4
+                            barPercentage: 0.4,
+                            barPercentage: 0.4,
+                            ticks: {
+                                min: 0 // Ensure y-axis starts at 0
+                            }
                             //ticks: {
 
                             //    // forces step size to be 5 units
@@ -813,20 +1653,8 @@
                         datasets: [{
                             label: "Employee Training ",
                             data: result.Data,
-                            backgroundColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.blue,
-                                window.chartColors.green,
-                                window.chartColors.yellow
-                            ],
-                            borderColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.blue,
-                                window.chartColors.green,
-                                window.chartColors.yellow
-                            ],
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
                             borderWidth: 3
                         }]
                     },
@@ -846,21 +1674,27 @@
                             fontColor: ['green', 'white', 'red'],
                             precision: 2
                         },
+                        //legend: {
+                        //    position: 'bottom',
+                        //    fontSize: 8,
+                        //    fullWidth: true,
+                        //    padding:6
+                        //}
+                        //,
                         legend: {
-                            position: 'bottom',
-                            fontSize: 8,
-                            fullWidth: true,
-                            padding:6
-                        }
-                        ,
+                            display: false // Disable legend display
+                        },
                         scales: {
                             xAxes: [{
                                 display: true,
                                 scaleLabel: {
                                     display: true,
-                                    labelString: 'Month'
+                                    labelString: 'Year'
                                 },
-                                barPercentage: 0.4
+                                 barPercentage: 0.4,
+                                 ticks: {
+                                    min: 0 // Ensure y-axis starts at 0
+                                }
                             }],
                             yAxes: [{
                                 display: true,
@@ -869,7 +1703,7 @@
                                     labelString: 'Number of Employee'
                                 },
                                 ticks: {
-
+                                    min:0
                                     // forces step size to be 5 units
                                     //stepSize: 1000
                                 }
@@ -900,20 +1734,8 @@
                     datasets: [{
                         label: "Education ",
                         data: result.Data,
-                        backgroundColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
-                        borderColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
                         borderWidth: 3
                     }]
                 },
@@ -933,32 +1755,38 @@
                         fontColor: ['green', 'white', 'red'],
                         precision: 2
                     },
+                    //legend: {
+                    //    position: 'bottom',
+                    //    fontSize: 8,
+                    //    fullWidth: true,
+                    //    padding: 6,
+                    //    labels: {
+                    //        boxWidth:15
+                    //    }
+                    //},
                     legend: {
-                        position: 'bottom',
-                        fontSize: 8,
-                        fullWidth: true,
-                        padding: 6,
-                        labels: {
-                            boxWidth:15
-                        }
+                        display: false // Disable legend display
                     },
                     scales: {
                         xAxes: [{
                             display: true,
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Month'
+                                labelString: 'Year'
                             },
-                            barPercentage: 0.4
+                            barPercentage: 0.4,
+                            ticks: {
+                                min: 0 // Ensure y-axis starts at 0
+                            }
                         }],
                         yAxes: [{
                             display: true,
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Number of Employee'
+                               labelString: 'Number of Employee'
                             },
                             ticks: {
-
+                                min:0
                                 // forces step size to be 5 units
                                 //stepSize: 1000
                             }
@@ -974,9 +1802,10 @@
             alert(result);
         }
         });
-    }
+     }
 
-     function AbsentEmployee() {
+
+    function AbsentEmployee() {
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetAbsentEmployee", "Dashboard", new {area = ""})',
@@ -989,22 +1818,10 @@
                 data: {
                     labels: result.Labels,
                     datasets: [{
-                        label: "Employee Attendance",
+                        label: "Employee Attendance this Month",
                         data: result.Data,
-                        backgroundColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
-                        borderColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
                         borderWidth: 3
                     }]
                 },
@@ -1014,7 +1831,7 @@
 
                     title: {
                         display: true,
-                        text: "Employee Attendance"
+                        text: "Employee Attendance this Month"
                     },
                     gridLines: {
                         display: false
@@ -1024,14 +1841,17 @@
                         fontColor: ['green', 'white', 'red'],
                         precision: 2
                     },
+                    //legend: {
+                    //    position: 'bottom',
+                    //    fontSize: 8,
+                    //    fullWidth: true,
+                    //    padding: 6,
+                    //    labels: {
+                    //        boxWidth:15
+                    //    }
+                    //},
                     legend: {
-                        position: 'bottom',
-                        fontSize: 8,
-                        fullWidth: true,
-                        padding: 6,
-                        labels: {
-                            boxWidth:15
-                        }
+                        display: false // Disable legend display
                     },
                     scales: {
                         xAxes: [{
@@ -1040,7 +1860,13 @@
                                 display: true,
                                 labelString: ''
                             },
-                            barPercentage: 0.4
+                            barPercentage: 0.4,
+                            ticks: {
+                                min: 0
+                                // forces step size to be 5 units
+                                //stepSize: 1000
+                            }
+
                         }],
                         yAxes: [{
                             display: true,
@@ -1049,7 +1875,7 @@
                                 labelString: 'Number of Employee'
                             },
                             ticks: {
-
+                                min: 0
                                 // forces step size to be 5 units
                                 //stepSize: 1000
                             }
@@ -1066,7 +1892,83 @@
         }
         });
     }
+    function AbsentEmployeeHorizontal() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetAbsentEmployee", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("absent").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'horizontalBar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: "Employee Attendance",
+                            data: result.Data,
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
+                            borderWidth: 3
+                        }]
+                    },
 
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: "Employee Attendance"
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            display: false // Disable legend display
+                        },
+                        //legend: {
+                        //    position: 'bottom',
+                        //    fontSize: 8,
+                        //    fullWidth: true,
+                        //    padding:6
+                        //},
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Number of Employee'
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                   // labelString: 'Employee Attendance'
+                                },
+                                barPercentage: 0.4
+                                //ticks: {
+
+                                //    // forces step size to be 5 units
+                                //    //stepSize: 1000
+                                //}
+                            }]
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
 
      function VacantByBranch() {
         $.ajax({
@@ -1083,20 +1985,8 @@
                         datasets: [{
                             label: "Vacant Position",
                             data: result.Data,
-                            backgroundColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.blue,
-                                window.chartColors.green,
-                                window.chartColors.yellow
-                            ],
-                            borderColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.blue,
-                                window.chartColors.green,
-                                window.chartColors.yellow
-                            ],
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
                             borderWidth: 3
                         }]
                     },
@@ -1132,9 +2022,95 @@
         });
     }
 
+    function EmployeeTermination() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetTermination", "Dashboard", new {area = ""})',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("termination").getContext('2d');
+            ctx.height = 600;
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: "Employee Termination",
+                        data: result.Data,
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
+                        borderWidth: 3
+                    }]
+                },
 
 
-     function EmployeeTermination() {
+                options: {
+
+                    title: {
+                        display: true,
+                        text: "Employee Termination"
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'white', 'red'],
+                        precision: 2
+                    },
+                    //legend: {
+                    //    position: 'bottom',
+                    //    fontSize: 8,
+                    //    fullWidth: true,
+                    //    padding: 6,
+                    //    labels: {
+                    //        boxWidth:15
+                    //    }
+                    //},
+                    legend: {
+                        display: false // Disable legend display
+                    },
+                    scales: {
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: ''
+                            },
+                            barPercentage: 0.4,
+                            ticks: {
+                                min: 0
+                                // forces step size to be 5 units
+                                //stepSize: 1000
+                            }
+
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Number of Employee'
+                            },
+                            ticks: {
+                                min: 0
+                                // forces step size to be 5 units
+                                //stepSize: 1000
+                            }
+                        }]
+                    }
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+
+     function EmployeeTerminationHorizontal() {
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetTermination", "Dashboard", new {area = ""})',
@@ -1149,20 +2125,8 @@
                     datasets: [{
                         label: "Employee Termination ",
                         data: result.Data,
-                        backgroundColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
-                        borderColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
                         borderWidth: 3
                     }]
                 },
@@ -1182,14 +2146,17 @@
                         fontColor: ['green', 'white', 'red'],
                         precision: 2
                     },
+                    //legend: {
+                    //    position: 'bottom',
+                    //    fontSize: 8,
+                    //    fullWidth: true,
+                    //    padding: 6,
+                    //    labels: {
+                    //        boxWidth:15
+                    //    }
+                    //},
                     legend: {
-                        position: 'bottom',
-                        fontSize: 8,
-                        fullWidth: true,
-                        padding: 6,
-                        labels: {
-                            boxWidth:15
-                        }
+                        display: false // Disable legend display
                     },
                     scales: {
                         xAxes: [{
@@ -1241,20 +2208,8 @@
                         datasets: [{
                             label: "Employee Accident Recored",
                             data: result.Data,
-                            backgroundColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.blue,
-                                window.chartColors.green,
-                                window.chartColors.yellow
-                            ],
-                            borderColor: [
-                                window.chartColors.red,
-                                window.chartColors.orange,
-                                window.chartColors.blue,
-                                window.chartColors.green,
-                                window.chartColors.yellow
-                            ],
+                            backgroundColor: vibrantColors,
+                            borderColor: vibrantBorderColors,
                             borderWidth: 3
                         }]
                     },
@@ -1274,20 +2229,27 @@
                             fontColor: ['green', 'white', 'red'],
                             precision: 2
                         },
+                        //legend: {
+                        //    position: 'bottom',
+                        //    fontSize: 8,
+                        //    fullWidth: true,
+                        //    padding:6
+                        //},
                         legend: {
-                            position: 'bottom',
-                            fontSize: 8,
-                            fullWidth: true,
-                            padding:6
+                            display: false // Disable legend display
                         },
                         scales: {
                             xAxes: [{
                                 display: true,
                                 scaleLabel: {
                                     display: true,
-                                    labelString: 'Place of Accident'
+                                    labelString: 'Before and Current Year'
                                 },
-                                barPercentage: 0.4
+                                barPercentage: 0.4,
+                                ticks: {
+                                    min: 0, // Ensure x-axis starts at 0
+                                    stepSize: 1,
+                                }
                             }],
                             yAxes: [{
                                 display: true,
@@ -1296,7 +2258,11 @@
                                     labelString: 'Number of Employee'
                                 },
                                 ticks: {
-
+                                    min: 0, // Ensure y-axis starts at 0
+                                    stepSize: 1,
+                                    callback: function (value) {
+                                        return Number.isInteger(value) ? value : null;
+                                    }
                                     // forces step size to be 5 units
                                     //stepSize: 1000
                                 }
@@ -1313,7 +2279,94 @@
     }
 
 
-     function Vacancy() {
+    function Vacancy() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetVacancy", "Dashboard", new {area = ""})',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("vacancy").getContext('2d');
+            ctx.height = 600;
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: "Vacancy",
+                        data: result.Data,
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
+                        borderWidth: 3
+                    }]
+                },
+
+
+                options: {
+
+                    title: {
+                        display: true,
+                        text: "Vacancy"
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'white', 'red'],
+                        precision: 2
+                    },
+                    //legend: {
+                    //    position: 'bottom',
+                    //    fontSize: 8,
+                    //    fullWidth: true,
+                    //    padding: 6,
+                    //    labels: {
+                    //        boxWidth:15
+                    //    }
+                    //},
+                    legend: {
+                        display: false // Disable legend display
+                    },
+                    scales: {
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Year'
+                            },
+                            barPercentage: 0.4,
+                            ticks: {
+                                min: 0
+                                // forces step size to be 5 units
+                                //stepSize: 1000
+                            }
+
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Number of Employee'
+                            },
+                            ticks: {
+                                min: 0
+                                // forces step size to be 5 units
+                                //stepSize: 1000
+                            }
+                        }]
+                    }
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+     function VacancyHorizontal() {
         $.ajax({
             type: "GET",
             url: '@Url.Action("GetVacancy", "Dashboard", new {area = ""})',
@@ -1328,20 +2381,9 @@
                     datasets: [{
                         label: "Vacancy",
                         data: result.Data,
-                        backgroundColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
-                        borderColor: [
-                            window.chartColors.red,
-                            window.chartColors.orange,
-                            window.chartColors.blue,
-                            window.chartColors.green,
-                            window.chartColors.yellow
-                        ],
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
+
                         borderWidth: 3
                     }]
                 },
@@ -1361,14 +2403,17 @@
                         fontColor: ['green', 'white', 'red'],
                         precision: 2
                     },
+                    //legend: {
+                    //    position: 'bottom',
+                    //    fontSize: 8,
+                    //    fullWidth: true,
+                    //    padding: 6,
+                    //    labels: {
+                    //        boxWidth:15
+                    //    }
+                    //},
                     legend: {
-                        position: 'bottom',
-                        fontSize: 8,
-                        fullWidth: true,
-                        padding: 6,
-                        labels: {
-                            boxWidth:15
-                        }
+                        display: false // Disable legend display
                     },
                     scales: {
                         xAxes: [{
@@ -1416,36 +2461,14 @@
                 type: 'bar',
                 data: {
                     labels: result.Labels,
-                    datasets: [{
-                        label: "Total Earn",
-                        data: result.Data,
-                        backgroundColor: window.chartColors.red,
+                    datasets: [
+                        {
+                        label: "Gross Pay",
+                            data: result.Data,
+                            backgroundColor: window.chartColors.green,
                         borderWidth: 3
                     },
-                    {
-                    label: "Total Loan",
-                    data: result.Data,
-                    backgroundColor: window.chartColors.green,
-                    borderWidth: 3
-                        },
-                        {
-                            label: "Total Allowance",
-                            data: result.Data,
-                            backgroundColor: window.chartColors.gray,
-                            borderWidth: 3
-                    },
-                        {
-                            label: "Total Deduction",
-                            data: result.Data,
-                            backgroundColor: window.chartColors.blue,
-                            borderWidth: 3
-                        },
-                    {
-                    label: "Total Addition",
-                    data: result.Data,
-                    backgroundColor: window.chartColors.purple,
-                    borderWidth: 3
-                }
+                        
                     ]
                 },
 
@@ -1464,21 +2487,24 @@
                         fontColor: ['green', 'white', 'red'],
                         precision: 2
                     },
+                    //legend: {
+                    //    position: 'bottom',
+                    //    fontSize: 8,
+                    //    fullWidth: true,
+                    //    padding: 6,
+                    //    labels: {
+                    //        boxWidth:15
+                    //    }
+                    //},
                     legend: {
-                        position: 'bottom',
-                        fontSize: 8,
-                        fullWidth: true,
-                        padding: 6,
-                        labels: {
-                            boxWidth:15
-                        }
+                        display: false // Disable legend display
                     },
                     scales: {
                         xAxes: [{
                             display: true,
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Payrol Type'
+                                labelString: 'Payroll months or periods'
                             },
                             barPercentage: 0.4
                         }],
