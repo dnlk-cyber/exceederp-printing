@@ -51,9 +51,6 @@ namespace ExceedERP.Reporting.Inventory
             this.textBox8 = new Telerik.Reporting.TextBox();
             this.textBox9 = new Telerik.Reporting.TextBox();
             this.textBox6 = new Telerik.Reporting.TextBox();
-            this.storeDs = new Telerik.Reporting.ObjectDataSource();
-            this.itemCategoryODS = new Telerik.Reporting.ObjectDataSource();
-            this.itemODS = new Telerik.Reporting.ObjectDataSource();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.table1 = new Telerik.Reporting.Table();
             this.textBox11 = new Telerik.Reporting.TextBox();
@@ -87,6 +84,9 @@ namespace ExceedERP.Reporting.Inventory
             this.textBox33 = new Telerik.Reporting.TextBox();
             this.textBox34 = new Telerik.Reporting.TextBox();
             this.GoodsReceivedObjectDataSource = new Telerik.Reporting.ObjectDataSource();
+            this.storeDs = new Telerik.Reporting.ObjectDataSource();
+            this.itemCategoryODS = new Telerik.Reporting.ObjectDataSource();
+            this.itemODS = new Telerik.Reporting.ObjectDataSource();
             this.headerComp = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -94,8 +94,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox12.Name = "textBox12";
             this.textBox12.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.43320861458778381D), Telerik.Reporting.Drawing.Unit.Inch(0.1587500274181366D));
-            this.textBox12.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
-            this.textBox12.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
+            this.textBox12.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox12.Style.Color = System.Drawing.Color.White;
             this.textBox12.Style.Font.Name = "Georgia";
             this.textBox12.StyleName = "Office.TableHeader";
             this.textBox12.Value = "S.N";
@@ -104,8 +104,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox20.Name = "textBox20";
             this.textBox20.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.816641092300415D), Telerik.Reporting.Drawing.Unit.Inch(0.1587500274181366D));
-            this.textBox20.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
-            this.textBox20.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
+            this.textBox20.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox20.Style.Color = System.Drawing.Color.White;
             this.textBox20.Style.Font.Name = "Georgia";
             this.textBox20.StyleName = "Office.TableHeader";
             this.textBox20.Value = "ID";
@@ -114,8 +114,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox26.Name = "textBox26";
             this.textBox26.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.89185857772827148D), Telerik.Reporting.Drawing.Unit.Inch(0.15875004231929779D));
-            this.textBox26.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
-            this.textBox26.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
+            this.textBox26.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox26.Style.Color = System.Drawing.Color.White;
             this.textBox26.Style.Font.Name = "Georgia";
             this.textBox26.StyleName = "Office.TableHeader";
             this.textBox26.Value = "Reference";
@@ -124,8 +124,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox28.Name = "textBox28";
             this.textBox28.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1D), Telerik.Reporting.Drawing.Unit.Inch(0.1587500274181366D));
-            this.textBox28.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
-            this.textBox28.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
+            this.textBox28.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox28.Style.Color = System.Drawing.Color.White;
             this.textBox28.Style.Font.Name = "Georgia";
             this.textBox28.StyleName = "Office.TableHeader";
             this.textBox28.Value = "Supplier";
@@ -134,8 +134,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.88983458280563354D), Telerik.Reporting.Drawing.Unit.Inch(0.1587500274181366D));
-            this.textBox3.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
-            this.textBox3.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
+            this.textBox3.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox3.Style.Color = System.Drawing.Color.White;
             this.textBox3.Style.Font.Name = "Georgia";
             this.textBox3.StyleName = "Office.TableHeader";
             this.textBox3.Value = "Date";
@@ -144,8 +144,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.030484676361084D), Telerik.Reporting.Drawing.Unit.Inch(0.15875004231929779D));
-            this.textBox2.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
-            this.textBox2.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
+            this.textBox2.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox2.Style.Color = System.Drawing.Color.White;
             this.textBox2.Style.Font.Bold = false;
             this.textBox2.Style.Font.Name = "Georgia";
             this.textBox2.StyleName = "Office.TableHeader";
@@ -155,8 +155,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.6046183705329895D), Telerik.Reporting.Drawing.Unit.Inch(0.15875004231929779D));
-            this.textBox4.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
-            this.textBox4.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
+            this.textBox4.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox4.Style.Color = System.Drawing.Color.White;
             this.textBox4.Style.Font.Bold = false;
             this.textBox4.Style.Font.Name = "Georgia";
             this.textBox4.StyleName = "Office.TableHeader";
@@ -166,8 +166,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.69272655248641968D), Telerik.Reporting.Drawing.Unit.Inch(0.15875004231929779D));
-            this.textBox5.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
-            this.textBox5.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
+            this.textBox5.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox5.Style.Color = System.Drawing.Color.White;
             this.textBox5.Style.Font.Bold = false;
             this.textBox5.Style.Font.Name = "Georgia";
             this.textBox5.StyleName = "Office.TableHeader";
@@ -177,8 +177,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox8.Name = "textBox8";
             this.textBox8.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.721702516078949D), Telerik.Reporting.Drawing.Unit.Inch(0.15875004231929779D));
-            this.textBox8.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
-            this.textBox8.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
+            this.textBox8.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox8.Style.Color = System.Drawing.Color.White;
             this.textBox8.Style.Font.Bold = false;
             this.textBox8.Style.Font.Name = "Georgia";
             this.textBox8.StyleName = "Office.TableHeader";
@@ -188,8 +188,8 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox9.Name = "textBox9";
             this.textBox9.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.9038691520690918D), Telerik.Reporting.Drawing.Unit.Inch(0.15875004231929779D));
-            this.textBox9.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
-            this.textBox9.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
+            this.textBox9.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox9.Style.Color = System.Drawing.Color.White;
             this.textBox9.Style.Font.Bold = false;
             this.textBox9.Style.Font.Name = "Georgia";
             this.textBox9.StyleName = "Office.TableHeader";
@@ -199,29 +199,11 @@ namespace ExceedERP.Reporting.Inventory
             // 
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.87812519073486328D), Telerik.Reporting.Drawing.Unit.Inch(0.1587500274181366D));
-            this.textBox6.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
-            this.textBox6.Style.Color = System.Drawing.Color.FromArgb(((int)(((byte)(228)))), ((int)(((byte)(238)))), ((int)(((byte)(243)))));
+            this.textBox6.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox6.Style.Color = System.Drawing.Color.White;
             this.textBox6.Style.Font.Name = "Georgia";
             this.textBox6.StyleName = "Office.TableHeader";
             this.textBox6.Value = "Total";
-            // 
-            // storeDs
-            // 
-            this.storeDs.DataMember = "GetStores";
-            this.storeDs.DataSource = typeof(ExceedERP.Reporting.Inventory.DataSource.Stores);
-            this.storeDs.Name = "storeDs";
-            // 
-            // itemCategoryODS
-            // 
-            this.itemCategoryODS.DataMember = "GetItemCategories";
-            this.itemCategoryODS.DataSource = typeof(ExceedERP.Reporting.Inventory.DataSource.CategoryItemCustomOds);
-            this.itemCategoryODS.Name = "itemCategoryODS";
-            // 
-            // itemODS
-            // 
-            this.itemODS.DataMember = "GetInventoryItems";
-            this.itemODS.DataSource = typeof(ExceedERP.Reporting.Inventory.DataSource.CategoryItemCustomOds);
-            this.itemODS.Name = "itemODS";
             // 
             // detailSection1
             // 
@@ -231,19 +213,19 @@ namespace ExceedERP.Reporting.Inventory
             // table1
             // 
             this.table1.Bindings.Add(new Telerik.Reporting.Binding("DataSource", "=Fields.GoodReceiveItemList"));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.43320861458778381D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.43320855498313904D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.816641092300415D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.891858696937561D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0000001192092896D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.88983452320098877D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.889834463596344D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(2.0304849147796631D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.604618489742279D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.69272661209106445D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.60461843013763428D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.692726731300354D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.7217022180557251D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.9038691520690918D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.878125011920929D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.903869092464447D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.87812495231628418D)));
             this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.1587500125169754D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.21166670322418213D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.21166671812534332D)));
             this.table1.Body.SetCellContent(0, 5, this.textBox11);
             this.table1.Body.SetCellContent(0, 6, this.textBox13);
             this.table1.Body.SetCellContent(0, 7, this.textBox14);
@@ -635,6 +617,24 @@ namespace ExceedERP.Reporting.Inventory
             new Telerik.Reporting.ObjectDataSourceParameter("category", typeof(string), "= Parameters.category.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("item", typeof(string), "= Parameters.item.Value")});
             // 
+            // storeDs
+            // 
+            this.storeDs.DataMember = "GetStores";
+            this.storeDs.DataSource = typeof(ExceedERP.Reporting.Inventory.DataSource.Stores);
+            this.storeDs.Name = "storeDs";
+            // 
+            // itemCategoryODS
+            // 
+            this.itemCategoryODS.DataMember = "GetItemCategories";
+            this.itemCategoryODS.DataSource = typeof(ExceedERP.Reporting.Inventory.DataSource.CategoryItemCustomOds);
+            this.itemCategoryODS.Name = "itemCategoryODS";
+            // 
+            // itemODS
+            // 
+            this.itemODS.DataMember = "GetInventoryItems";
+            this.itemODS.DataSource = typeof(ExceedERP.Reporting.Inventory.DataSource.CategoryItemCustomOds);
+            this.itemODS.Name = "itemODS";
+            // 
             // headerComp
             // 
             this.headerComp.DataMember = "GetOrganization";
@@ -653,15 +653,15 @@ namespace ExceedERP.Reporting.Inventory
             this.PageSettings.Landscape = true;
             this.PageSettings.Margins = new Telerik.Reporting.Drawing.MarginsU(Telerik.Reporting.Drawing.Unit.Cm(1D), Telerik.Reporting.Drawing.Unit.Cm(1D), Telerik.Reporting.Drawing.Unit.Cm(1D), Telerik.Reporting.Drawing.Unit.Cm(1D));
             this.PageSettings.PaperKind = System.Drawing.Printing.PaperKind.Letter;
+            reportParameter1.AllowBlank = false;
             reportParameter1.AllowNull = true;
-            reportParameter1.AutoRefresh = true;
             reportParameter1.Name = "from";
             reportParameter1.Text = "From";
             reportParameter1.Type = Telerik.Reporting.ReportParameterType.DateTime;
             reportParameter1.Value = "= Today()";
             reportParameter1.Visible = true;
+            reportParameter2.AllowBlank = false;
             reportParameter2.AllowNull = true;
-            reportParameter2.AutoRefresh = true;
             reportParameter2.Name = "to";
             reportParameter2.Text = "To";
             reportParameter2.Type = Telerik.Reporting.ReportParameterType.DateTime;
@@ -681,12 +681,10 @@ namespace ExceedERP.Reporting.Inventory
             reportParameter4.Name = "category";
             reportParameter4.Text = "Category";
             reportParameter4.Visible = true;
-            reportParameter5.AllowBlank = false;
             reportParameter5.AllowNull = true;
             reportParameter5.AvailableValues.DataSource = this.itemODS;
             reportParameter5.AvailableValues.DisplayMember = "= Fields.Name";
             reportParameter5.AvailableValues.Filters.Add(new Telerik.Reporting.Filter("= Fields.ItemCategoryCode", Telerik.Reporting.FilterOperator.Equal, "= Parameters.category.Value"));
-            reportParameter5.AvailableValues.Sortings.Add(new Telerik.Reporting.Sorting("= Fields.ModifiedBy", Telerik.Reporting.SortDirection.Asc));
             reportParameter5.AvailableValues.ValueMember = "= Fields.ItemCode";
             reportParameter5.Name = "item";
             reportParameter5.Text = "Item";
