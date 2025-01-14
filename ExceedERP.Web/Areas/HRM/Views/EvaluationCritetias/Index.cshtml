@@ -52,8 +52,8 @@
         model.Id(p => p.EvaluationCriteriaActionTypeId);
         model.Field(p => p.PerformanceCriteriaActionType).Editable(false);
     })
-    .Read(read => read.Action("EvaluationCriteriaActionType_Read", "EvaluationCriteriaActionType"))
-    .Update(update => update.Action("EvaluationCriteriaActionType_Update", "EvaluationCriteriaActionType"))
+    .Read(read => read.Action("EvaluationCriteriaActionType_Read", "EvaluationCriteriaActionType").Data("sendForgery"))
+    .Update(update => update.Action("EvaluationCriteriaActionType_Update", "EvaluationCriteriaActionType").Data("sendForgery"))
       )
 )
 
@@ -104,10 +104,10 @@
                })
 
           .Model(model => model.Id(p => p.MeasurementDefinitionId))
-          .Read(read => read.Action("EvaluationCritetias_Read", "EvaluationCritetias"))
-          .Create(create => create.Action("EvaluationCritetias_Create", "EvaluationCritetias"))
-          .Update(update => update.Action("EvaluationCritetias_Update", "EvaluationCritetias"))
-          .Destroy(destroy => destroy.Action("EvaluationCritetias_Destroy", "EvaluationCritetias"))
+          .Read(read => read.Action("EvaluationCritetias_Read", "EvaluationCritetias").Data("sendForgery"))
+          .Create(create => create.Action("EvaluationCritetias_Create", "EvaluationCritetias").Data("sendForgery"))
+          .Update(update => update.Action("EvaluationCritetias_Update", "EvaluationCritetias").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("EvaluationCritetias_Destroy", "EvaluationCritetias").Data("sendForgery"))
           ).ClientDetailTemplateId("template")
 )
 <script id="template" type="text/kendo-tmpl">
@@ -152,10 +152,10 @@
                                                       events.RequestEnd("onRequestEnd(\"Measurementgrid_#=MeasurementDefinitionId#\")");
                                                   })
                                               .Model(model => model.Id(p => p.MeasurementId))
-                                              .Read(read => read.Action("EvaluationCriteriaDetail_Read", "EvaluationCriteriaDetail", new { id = "#=MeasurementDefinitionId#" }))
-                                              .Create(create => create.Action("EvaluationCriteriaDetail_Create", "EvaluationCriteriaDetail", new { id = "#=MeasurementDefinitionId#" }))
-                                              .Update(update => update.Action("EvaluationCriteriaDetail_Update", "EvaluationCriteriaDetail"))
-                                              .Destroy(destroy => destroy.Action("EvaluationCriteriaDetail_Destroy", "EvaluationCriteriaDetail"))
+                                              .Read(read => read.Action("EvaluationCriteriaDetail_Read", "EvaluationCriteriaDetail", new { id = "#=MeasurementDefinitionId#" }).Data("sendForgery"))
+                                              .Create(create => create.Action("EvaluationCriteriaDetail_Create", "EvaluationCriteriaDetail", new { id = "#=MeasurementDefinitionId#" }).Data("sendForgery"))
+                                              .Update(update => update.Action("EvaluationCriteriaDetail_Update", "EvaluationCriteriaDetail").Data("sendForgery"))
+                                              .Destroy(destroy => destroy.Action("EvaluationCriteriaDetail_Destroy", "EvaluationCriteriaDetail").Data("sendForgery"))
                                           ).ToClientTemplate()
                             )
 
@@ -193,10 +193,10 @@
                                             events.RequestEnd("onRequestEnd(\"MainCompanyEvalutionSettingGrid#=MeasurementDefinitionId#\")");
                                         })
                                     .Model(model => model.Id(p => p.MainCompanyEvalutionSettingId))
-                                    .Read(read => read.Action("MainCompanyEvalutionSettings_Read", "MainCompanyEvalutionSettings", new { masterId = "#=MeasurementDefinitionId#" }))
-                                    .Create(create => create.Action("MainCompanyEvalutionSettings_Create", "MainCompanyEvalutionSettings", new { masterId = "#=MeasurementDefinitionId#" }))
-                                    .Update(update => update.Action("MainCompanyEvalutionSettings_Update", "MainCompanyEvalutionSettings"))
-                                    .Destroy(destroy => destroy.Action("MainCompanyEvalutionSettings_Destroy", "MainCompanyEvalutionSettings"))
+                                    .Read(read => read.Action("MainCompanyEvalutionSettings_Read", "MainCompanyEvalutionSettings", new { masterId = "#=MeasurementDefinitionId#" }).Data("sendForgery"))
+                                    .Create(create => create.Action("MainCompanyEvalutionSettings_Create", "MainCompanyEvalutionSettings", new { masterId = "#=MeasurementDefinitionId#" }).Data("sendForgery"))
+                                    .Update(update => update.Action("MainCompanyEvalutionSettings_Update", "MainCompanyEvalutionSettings").Data("sendForgery"))
+                                    .Destroy(destroy => destroy.Action("MainCompanyEvalutionSettings_Destroy", "MainCompanyEvalutionSettings").Data("sendForgery"))
                                 ).ToClientTemplate()
                         )
 
@@ -248,10 +248,10 @@
                                                               events.RequestEnd("onRequestEnd(\"Measurementgrid_#=MeasurementDefinitionId#\")");
                                                           })
                                                       .Model(model => model.Id(p => p.MeasurementId))
-                                                      .Read(read => read.Action("EvaluationCriteriaDetail_Read", "EvaluationCriteriaDetail", new { id = "#=MeasurementDefinitionId#" }))
-                                                      .Create(create => create.Action("EvaluationCriteriaDetail_Create", "EvaluationCriteriaDetail", new { id = "#=MeasurementDefinitionId#" }))
-                                                      .Update(update => update.Action("EvaluationCriteriaDetail_Update", "EvaluationCriteriaDetail"))
-                                                      .Destroy(destroy => destroy.Action("EvaluationCriteriaDetail_Destroy", "EvaluationCriteriaDetail"))
+                                                      .Read(read => read.Action("EvaluationCriteriaDetail_Read", "EvaluationCriteriaDetail", new { id = "#=MeasurementDefinitionId#" }).Data("sendForgery"))
+                                                      .Create(create => create.Action("EvaluationCriteriaDetail_Create", "EvaluationCriteriaDetail", new { id = "#=MeasurementDefinitionId#" }).Data("sendForgery"))
+                                                      .Update(update => update.Action("EvaluationCriteriaDetail_Update", "EvaluationCriteriaDetail").Data("sendForgery"))
+                                                      .Destroy(destroy => destroy.Action("EvaluationCriteriaDetail_Destroy", "EvaluationCriteriaDetail").Data("sendForgery"))
                                                   ).ToClientTemplate()
                                     )
 
@@ -305,10 +305,10 @@
                                   events.RequestEnd("onRequestEnd(\"PerformanceActiongrid_#=MeasurementId#\")");
                               })
                              .Model(model => model.Id(p => p.ActionId))
-                                     .Read(read => read.Action("EvaluationCriteriaSecondDetail_Read", "EvaluationCriteriaSecondDetail", new { defid = "#=MeasurementDefinitionId#", mesid = "#=MeasurementId#" }))
-                             .Create(create => create.Action("EvaluationCriteriaSecondDetail_Create", "EvaluationCriteriaSecondDetail", new { defid = "#=MeasurementDefinitionId#", mesid = "#=MeasurementId#" }))
-                             .Update(update => update.Action("EvaluationCriteriaSecondDetail_Update", "EvaluationCriteriaSecondDetail"))
-                             .Destroy(destroy => destroy.Action("EvaluationCriteriaSecondDetail_Destroy", "EvaluationCriteriaSecondDetail"))
+                                     .Read(read => read.Action("EvaluationCriteriaSecondDetail_Read", "EvaluationCriteriaSecondDetail", new { defid = "#=MeasurementDefinitionId#", mesid = "#=MeasurementId#" }).Data("sendForgery"))
+                             .Create(create => create.Action("EvaluationCriteriaSecondDetail_Create", "EvaluationCriteriaSecondDetail", new { defid = "#=MeasurementDefinitionId#", mesid = "#=MeasurementId#" }).Data("sendForgery"))
+                             .Update(update => update.Action("EvaluationCriteriaSecondDetail_Update", "EvaluationCriteriaSecondDetail").Data("sendForgery"))
+                             .Destroy(destroy => destroy.Action("EvaluationCriteriaSecondDetail_Destroy", "EvaluationCriteriaSecondDetail").Data("sendForgery"))
                          ).ToClientTemplate()
                     )
 

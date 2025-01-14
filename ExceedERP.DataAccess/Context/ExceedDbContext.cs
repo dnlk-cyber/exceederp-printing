@@ -580,6 +580,7 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region HRM
+            modelBuilder.Configurations.Add(new EmployeePerformanceSummaryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new SalarySettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new WaterMarkEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EvaluationCriteriaActionTypeEntityTypeConfiguration());
@@ -2554,7 +2555,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region HRM
-
+        public System.Data.Entity.DbSet<EmployeePerformanceSummary> EmployeePerformanceSummary { get; set; }
         public System.Data.Entity.DbSet<LeavePayableSetting> LeavePayableSettings { get; set; }
         public System.Data.Entity.DbSet<LeavePayable> LeavePayables { get; set; }
         public System.Data.Entity.DbSet<LeavePayableDetail> LeavePayableDetails { get; set; }

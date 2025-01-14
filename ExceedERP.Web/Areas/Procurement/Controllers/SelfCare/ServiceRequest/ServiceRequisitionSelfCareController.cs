@@ -4,6 +4,9 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.Common.DocumentApproval;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Finance.AP.Travel;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
@@ -82,46 +85,30 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
         
         public ActionResult PurchaseRequisitions_Read([DataSourceRequest] DataSourceRequest request)
         {
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            //int userworkunit = UserInformationHelper.GetUserReportsTo(User.Identity.Name);
+            int userEmpId = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
             List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
 
             IQueryable<PurchaseRequisition> purchaserequisitions = db.PurchaseRequisitions.Where(x => x.ItemType == PurchaseItemType.Service);//.Where(x => mybraches.Contains(x.OrgStructureId));
+                    
+           
 
-            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)
-                && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentApprover)
-                && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentUser))
+            if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService)
+                   && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
             {
-                purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || userworkunit.Contains(x.OrgStructureId) || x.CreatedBy == User.Identity.Name);
-            }
 
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentApprover)
-                && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentUser))
-            {
-                purchaserequisitions = purchaserequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) || x.CreatedBy == User.Identity.Name);
-            }
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)
-                && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentUser))
-            {
-                purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || x.CreatedBy == User.Identity.Name);
-            }
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover)
-                && System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentApprover))
-            {
-                purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || userworkunit.Contains(x.OrgStructureId));
-            }
+                purchaserequisitions = purchaserequisitions.Where(x => userworkunit.Contains(x.OrgStructureId)
+                || x.OrgStructureId == 0//if they are not vis
+                || x.ForwardedTo == User.Identity.Name
+                || x.ForwardedFrom == User.Identity.Name
+                || x.CreatedBy == User.Identity.Name
+                || x.EmployeeId == userEmpId);
 
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementServiceRequisitionSecondApprover))
-            {
-                purchaserequisitions = purchaserequisitions.Where(x => x.NextApprover == User.Identity.Name || x.CreatedBy == User.Identity.Name);
             }
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentApprover))
+            else if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService))
             {
-                purchaserequisitions = purchaserequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) || x.CreatedBy == User.Identity.Name);
-            }
-            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementRoles.ProcurementUserDepartmentUser))
-            {
-                purchaserequisitions = purchaserequisitions.Where(x => x.CreatedBy == User.Identity.Name).AsQueryable();
+                purchaserequisitions = purchaserequisitions
+                    .Where(x => x.CreatedBy == User.Identity.Name
+                    || x.EmployeeId == userEmpId);
             }
 
             var result = purchaserequisitions.ToDataSourceResult(request, purchaseRequisition => new
@@ -150,8 +137,20 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                     LastModified = purchaseRequisition.LastModified,
                     ModifiedBy = purchaseRequisition.ModifiedBy,
 
-                  
-                   Remark = purchaseRequisition.Remark,
+                IsDepartmentOnlineApproved = purchaseRequisition.IsDepartmentOnlineApproved,
+                DepartmentOnlineApprovedBy = purchaseRequisition.DepartmentOnlineApprovedBy,
+                DepartmentOnlineApprovedTime = purchaseRequisition.DepartmentOnlineApprovedTime,
+                IsDepartmentSendForApproval = purchaseRequisition.IsDepartmentSendForApproval,
+                DepartmentSendForApprovalBy = purchaseRequisition.DepartmentSendForApprovalBy,
+                DepartmentSendForApprovalTime = purchaseRequisition.DepartmentSendForApprovalTime,
+
+                ForwardedFrom = purchaseRequisition.ForwardedFrom,
+                ForwardedTo = purchaseRequisition.ForwardedTo,
+                IsFinalApproval = purchaseRequisition.IsFinalApproval,
+                CurrentApprovalStep = purchaseRequisition.CurrentApprovalStep,
+
+
+                Remark = purchaseRequisition.Remark,
                     IsVoid = purchaseRequisition.IsVoid,
                     VoidBy = purchaseRequisition.VoidBy,
                     VoidTime = purchaseRequisition.VoidTime,
@@ -217,8 +216,39 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             if (purchaseRequisition.EmployeeId == 0)
                 ModelState.AddModelError("requester", "Please choose requetster");
 
-            //if (purchaseRequisition.BranchId == 0)
-            //    ModelState.AddModelError("requester", "Please choose branch");
+
+            #endregion
+
+            #region data 
+            if (purchaseRequisition.EmployeeId == 0)
+            {
+                ModelState.AddModelError("requester", "Please select requestor");
+            }
+            if (purchaseRequisition.EmployeeId != 0)
+            {
+
+
+                var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == purchaseRequisition.EmployeeId && x.isCurrent);
+                if (placement != null)
+                {
+                    purchaseRequisition.OrgStructureId = placement.OrgStructureId;
+                    purchaseRequisition.BranchId = placement.BranchId;
+                    purchaseRequisition.BusinessUnitId = placement.BusinessUnitId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
+                }
+            }
+
+
+            #endregion
+
+            #region owner approval
+
+            bool canOwnerApprove = DocApprovalHelper.CanOwnerApprove(ApprovalDocumentType.PurchaseRequisitionSelfCare);
+            if (canOwnerApprove)
+                purchaseRequisition.ForwardedTo = User.Identity.Name;
 
             #endregion
             if (ModelState.IsValid)
@@ -226,10 +256,10 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                 var entity = new PurchaseRequisition
                 {
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
-                    BranchId = UserInformationHelper.GetUserDefaultBranchId(User.Identity.Name),
-                    BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
-                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(purchaseRequisition.EmployeeId),
-                    EmployeeId = purchaseRequisition.EmployeeId,// UserInformationHelper.GetEmployeeId(User.Identity.Name),
+                    BranchId = purchaseRequisition.BranchId,
+                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
+                    OrgStructureId = purchaseRequisition.OrgStructureId,
+                    EmployeeId = purchaseRequisition.EmployeeId,
                     ReferenceNo = purchaseRequisition.ReferenceNo,
                     ProcurementOfficer = purchaseRequisition.ProcurementOfficer,
                     RequestDate = purchaseRequisition.RequestDate,
@@ -246,6 +276,19 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                     IsVoid = purchaseRequisition.IsVoid,
                     VoidBy = purchaseRequisition.VoidBy,
                     VoidTime = purchaseRequisition.VoidTime,
+
+                    IsDepartmentOnlineApproved = purchaseRequisition.IsDepartmentOnlineApproved,
+                    DepartmentOnlineApprovedBy = purchaseRequisition.DepartmentOnlineApprovedBy,
+                    DepartmentOnlineApprovedTime = purchaseRequisition.DepartmentOnlineApprovedTime,
+                    IsDepartmentSendForApproval = purchaseRequisition.IsDepartmentSendForApproval,
+                    DepartmentSendForApprovalBy = purchaseRequisition.DepartmentSendForApprovalBy,
+                    DepartmentSendForApprovalTime = purchaseRequisition.DepartmentSendForApprovalTime,
+
+                    ForwardedFrom = purchaseRequisition.ForwardedFrom,
+                    ForwardedTo = purchaseRequisition.ForwardedTo,
+                    IsFinalApproval = purchaseRequisition.IsFinalApproval,
+                    CurrentApprovalStep = purchaseRequisition.CurrentApprovalStep,
+
                     IsOnlineApproved = purchaseRequisition.IsOnlineApproved,
                     OnlineApprovedBy = purchaseRequisition.OnlineApprovedBy,
                     OnlineApprovedTime = purchaseRequisition.OnlineApprovedTime,
@@ -302,6 +345,30 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
 
             #endregion
 
+            #region data 
+            if (purchaseRequisition.EmployeeId == 0)
+            {
+                ModelState.AddModelError("requester", "Please select requestor");
+            }
+            if (purchaseRequisition.EmployeeId != 0)
+            {
+
+
+                var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == purchaseRequisition.EmployeeId && x.isCurrent);
+                if (placement != null)
+                {
+                    purchaseRequisition.OrgStructureId = placement.OrgStructureId;
+                    purchaseRequisition.BranchId = placement.BranchId;
+                    purchaseRequisition.BusinessUnitId = placement.BusinessUnitId;
+                }
+                else
+                {
+                    ModelState.AddModelError("placement", "Employee has not current placemnt");
+                }
+            }
+
+
+            #endregion
             if (ModelState.IsValid)
             {
                 var entity = new PurchaseRequisition
@@ -309,7 +376,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                     BranchId = purchaseRequisition.BranchId,
                     BusinessUnitId = purchaseRequisition.BusinessUnitId,
-                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(purchaseRequisition.EmployeeId),
+                    OrgStructureId =purchaseRequisition.OrgStructureId,
                     EmployeeId = purchaseRequisition.EmployeeId,
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                     ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -328,6 +395,19 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                     IsVoid = purchaseRequisition.IsVoid,
                     VoidBy = purchaseRequisition.VoidBy,
                     VoidTime = purchaseRequisition.VoidTime,
+
+                    IsDepartmentOnlineApproved = purchaseRequisition.IsDepartmentOnlineApproved,
+                    DepartmentOnlineApprovedBy = purchaseRequisition.DepartmentOnlineApprovedBy,
+                    DepartmentOnlineApprovedTime = purchaseRequisition.DepartmentOnlineApprovedTime,
+                    IsDepartmentSendForApproval = purchaseRequisition.IsDepartmentSendForApproval,
+                    DepartmentSendForApprovalBy = purchaseRequisition.DepartmentSendForApprovalBy,
+                    DepartmentSendForApprovalTime = purchaseRequisition.DepartmentSendForApprovalTime,
+
+                    ForwardedFrom = purchaseRequisition.ForwardedFrom,
+                    ForwardedTo = purchaseRequisition.ForwardedTo,
+                    IsFinalApproval = purchaseRequisition.IsFinalApproval,
+                    CurrentApprovalStep = purchaseRequisition.CurrentApprovalStep,
+
                     IsOnlineApproved = purchaseRequisition.IsOnlineApproved,
                     OnlineApprovedBy = purchaseRequisition.OnlineApprovedBy,
                     OnlineApprovedTime = purchaseRequisition.OnlineApprovedTime,
@@ -382,7 +462,19 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                         IsVoid = purchaseRequisition.IsVoid,
                         VoidBy = purchaseRequisition.VoidBy,
                         VoidTime = purchaseRequisition.VoidTime,
-                        IsOnlineApproved = purchaseRequisition.IsOnlineApproved,
+
+                    IsDepartmentOnlineApproved = purchaseRequisition.IsDepartmentOnlineApproved,
+                    DepartmentOnlineApprovedBy = purchaseRequisition.DepartmentOnlineApprovedBy,
+                    DepartmentOnlineApprovedTime = purchaseRequisition.DepartmentOnlineApprovedTime,
+                    IsDepartmentSendForApproval = purchaseRequisition.IsDepartmentSendForApproval,
+                    DepartmentSendForApprovalBy = purchaseRequisition.DepartmentSendForApprovalBy,
+                    DepartmentSendForApprovalTime = purchaseRequisition.DepartmentSendForApprovalTime,
+
+                    ForwardedFrom = purchaseRequisition.ForwardedFrom,
+                    ForwardedTo = purchaseRequisition.ForwardedTo,
+                    IsFinalApproval = purchaseRequisition.IsFinalApproval,
+                    CurrentApprovalStep = purchaseRequisition.CurrentApprovalStep,
+                    IsOnlineApproved = purchaseRequisition.IsOnlineApproved,
                         OnlineApprovedBy = purchaseRequisition.OnlineApprovedBy,
                         OnlineApprovedTime = purchaseRequisition.OnlineApprovedTime,
                         IsOnlineTransferred = purchaseRequisition.IsOnlineTransferred,
@@ -402,68 +494,82 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
         }
 
 
-        
-        public JsonResult SendForApproval(int id)
+
+        public JsonResult SendforDepartmentApproval(int id)
         {
             var record = db.PurchaseRequisitions.Find(id);
-            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.PurchaseRequisitionItems.Count > 0)
+            string errMsg = "";
+
+            if (record != null && record.IsDepartmentOnlineApproved)
             {
-                record.Status = Enum.GetName(typeof(OperationStatuses), 4);
-                record.IsSendForApproval = true;
-                record.SendForApprovalBy = User.Identity.Name;
-                record.SendForApprovalTime = DateTime.Now;
-                db.PurchaseRequisitions.Attach(record);
+                errMsg = "You cannot manipulate this record,it is already approved";
+                var formattedData = new
+                {
+                    Message = errMsg,
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record != null && record.IsDepartmentSendForApproval)
+            {
+                errMsg = "This record is already sent for department approval.";
+                var formattedData = new
+                {
+                    Message = errMsg,
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            var lines = db.PurchaseRequisitionItems.Where(x => x.PurchaseRequisitionID == id);
+            if (!lines.Any())
+            {
+                errMsg = "Please add items.";
+                var formattedData = new
+                {
+                    Message = errMsg,
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            if (record != null && !record.IsDepartmentOnlineApproved && !record.IsDepartmentSendForApproval)
+            {
+
+                record.Status = Enum.GetName(typeof(OperationStatuses), 16);
+                record.IsDepartmentSendForApproval = true;
+                record.DepartmentSendForApprovalBy = User.Identity.Name;
+                record.DepartmentSendForApprovalTime = DateTime.Now;
                 db.Entry(record).State = EntityState.Modified;
                 db.SaveChanges();
+                #region approval workflow
+
+                bool isNewRecord = true;
+                var validations = record.PurchaseRequisitionUserDepartmentValidation.Where(x => x.Status == ApprovalStatuses.Approve).AsQueryable();
+                if (validations.Any())
+                    isNewRecord = false;
+                decimal docamount = 0;
+                var items = db.PurchaseRequisitionItems.Where(x => x.PurchaseRequisitionID == record.PurchaseRequisitionID).ToList();
+                if (items.Any())
+                    docamount = items.Count;//no price
+                int docid = record.PurchaseRequisitionID;
+                int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
+                DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", record.ForwardedTo, ApprovalDocumentType.PurchaseRequisitionSelfCare, isNewRecord, step);
+                #endregion
+
                 var formattedData = new
                 {
                     Message = "Successfully Sent.",
                     Status = "OK"
                 };
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
-            }
-            else if (record == null)
-            {
-                var formattedData = new
-                {
-                    Message = "The record is not found.",
-                    Status = "NOT_OK"
-                };
-                return Json(formattedData, JsonRequestBehavior.AllowGet);
-            }
 
-            else if (record.PurchaseRequisitionItems.Count == 0)
-            {
-                var formattedData = new
-                {
-                    Message = "Please add line items first.",
-                    Status = "NOT_OK"
-                };
-                return Json(formattedData, JsonRequestBehavior.AllowGet);
-            }
-            else if (record.IsSendForApproval)
-            {
-                var formattedData = new
-                {
-                    Message = "The record is already sent for approval you cannot send again.",
-                    Status = "NOT_OK"
-                };
-                return Json(formattedData, JsonRequestBehavior.AllowGet);
-            }
-
-            else if (record.IsOnlineApproved)
-            {
-                var formattedData = new
-                {
-                    Message = "The record is already approved.",
-                    Status = "NOT_OK"
-                };
-                return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
             return null;
         }
 
-        
+
         public JsonResult SendForSecondApproval(int id, string user)
         {
             var record = db.PurchaseRequisitions.Find(id);

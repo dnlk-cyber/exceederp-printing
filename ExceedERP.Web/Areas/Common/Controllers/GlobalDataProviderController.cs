@@ -218,19 +218,19 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                 FullName = p.UserName+"- ("+p.FullName +")"
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult UpdateNextApprover(int id, string type,string user)
+        public JsonResult UpdateNextApprover(int id, string type, string user)
         {
             int empid = UserInformationHelper.GetUserEmployeeId(user);
             int branchId = DocApprovalHelper.GetEmployeeBranch(empid);
             decimal docamount = 0;
             switch (type)
             {
-                case "PO":                   
+                case "PO":
                     var po = db.PurchaseOrders.Find(id);
                     var polines = db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == id);
-                    docamount = polines.Any()? polines.Sum(x => x.Total):0;
+                    docamount = polines.Any() ? polines.Sum(x => x.Total) : 0;
                     po.ForwardedTo = user;
-                    po.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user,ApprovalDocumentType.PurchaseOrder,docamount, branchId);
+                    po.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user, ApprovalDocumentType.PurchaseOrder, docamount, branchId);
                     db.PurchaseOrders.Attach(po);
                     db.Entry(po).State = EntityState.Modified;
                     db.SaveChanges();
@@ -239,7 +239,7 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                     var proforma = db.ProformaPurchases.Find(id);
                     var awardIds = db.WinningSuppliers.Where(x => x.AwardGiven).Where(x => x.ProformaPurchaseID == id).Select(x => x.WinningSupplierID).ToList();
                     var awardItems = db.WinningSupplierItems.Where(x => awardIds.Contains(x.WinningSupplierID)).ToList();
-             
+
                     docamount = awardItems.Any() ? awardItems.Sum(x => x.TPrice) : 0;
                     proforma.ForwardedTo = user;
                     proforma.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user, ApprovalDocumentType.ProformaPurchase, docamount, branchId);
@@ -260,7 +260,7 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                 case "PaymentRequestSelfCare":
                     var paymentRequest = db.PaymentRequests.Find(id);
                     var prlines = db.PaymentRequestLines.Where(x => x.PaymentRequestId == id);
-                    docamount = prlines.Any() ? prlines.Sum(x => x.TotalAmount):0;
+                    docamount = prlines.Any() ? prlines.Sum(x => x.TotalAmount) : 0;
                     paymentRequest.ForwardedTo = user;
                     paymentRequest.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user, ApprovalDocumentType.ApPaymentRequestSelfCare, docamount, branchId);
                     db.PaymentRequests.Attach(paymentRequest);
@@ -305,14 +305,25 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                     db.Entry(fund).State = EntityState.Modified;
                     db.SaveChanges();
                     break;
+              
+                case "PurchaseRequisitionSelfCare":
+                    var pr = db.PurchaseRequisitions.Find(id);
+                    var items = db.PurchaseRequisitionItems.Where(x => x.PurchaseRequisitionID == id).ToList();
+                    docamount = items.Count;
+                    pr.ForwardedTo = user;
+                    pr.IsFinalApproval = DocApprovalWorkflowHelper.CanUserGiveFinalApproval(user, ApprovalDocumentType.PurchaseRequisitionSelfCare, docamount, branchId);
+                    db.PurchaseRequisitions.Attach(pr);
+                    db.Entry(pr).State = EntityState.Modified;
+                    db.SaveChanges();
+                    break;
                 default:
                     break;
             }
-            
+
             var formattedData = new
             {
                 Message = "Update successfully",
-                Status ="OK" 
+                Status = "OK"
             };
             return Json(formattedData, JsonRequestBehavior.AllowGet);
         }

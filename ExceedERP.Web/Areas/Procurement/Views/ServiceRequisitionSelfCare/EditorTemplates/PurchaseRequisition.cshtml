@@ -20,7 +20,7 @@
                           .DataValueField("StoreRequisitionID")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetStoreRequisitionId", "DataProvider"))
+                              dataSource.Read(read => read.Action("GetStoreRequisitionId", "DataProvider").Data("sendForgery"))
                                   .ServerFiltering(true);
                           }))
                     @Html.ValidationMessageFor(model => model.StoreRequisitionID)
@@ -79,7 +79,7 @@
                       .ServerPaging(true)
                       .PageSize(20)
                       .Transport(transport => transport
-                      .Read(read => read.Action("GetEmployees","DataProvider"))
+                      .Read(read => read.Action("GetEmployees","DataProvider").Data("sendForgery"))
                       ) 
                   )
                 )

@@ -46,8 +46,8 @@
                    })
 
           .Model(model => model.Id(p => p.EvaluationCriteriaActionTypeId))
-          .Read(read => read.Action("EvaluationCriteriaActionType_Read", "EvaluationCriteriaActionType"))
-          .Update(update => update.Action("EvaluationCriteriaActionType_Update", "EvaluationCriteriaActionType"))
+          .Read(read => read.Action("EvaluationCriteriaActionType_Read", "EvaluationCriteriaActionType").Data("sendForgery"))
+          .Update(update => update.Action("EvaluationCriteriaActionType_Update", "EvaluationCriteriaActionType").Data("sendForgery"))
       )
       )
 

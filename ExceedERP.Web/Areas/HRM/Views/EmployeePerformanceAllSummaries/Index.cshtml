@@ -42,11 +42,11 @@
         .Scrollable(h => h.Height("auto"))
         .Events(ev=>ev.DataBound("onDataBound"))
         .Pageable(pageable => pageable
-            //.Input(true)
-            // .Numeric(false)
+            .Input(true)
+             .Numeric(false)
             .Refresh(true)
-            //.PageSizes(true)
-            // .ButtonCount(5)
+            .PageSizes(true)
+             .ButtonCount(5)
             )
 
         .DataSource(dataSource => dataSource
@@ -310,8 +310,12 @@
                 var grid = this;
                 grid.tbody.find("tr[role='row']").each(function (e) {
                     var model = grid.dataItem(this);
-                    if (model.IsHRApproved) {
+                    if (model.IsHRApproved && model.AreAllHRLevelApproved) {
                         $(this).find(".k-grid-cmd-approve-request").hide();
+                    }
+                    else {
+                        $(this).find(".k-grid-cmd-approve-request").show();
+
                     }
 
                 });
@@ -342,18 +346,22 @@
                     type: 'POST',
                     cache: false,
                     success: function (result) {
-                        r = result;
+                        
+                        alert(result.Message);
+
                         $('#loading-image').hide();
-                        if (r == "true") {
-                            alert("Successfully Approved");
-                            $('#loading-image').hide();
-                            grid.dataSource.read();
-                        }
-                        else {
-                            alert("not Approved");
-                            $('#loading-image').hide();
-                            grid.dataSource.read();
-                        }
+
+                        grid.dataSource.read();
+                        //if (r == "true") {
+                        //    alert("Successfully Approved");
+                        //    $('#loading-image').hide();
+                        //    grid.dataSource.read();
+                        //}
+                        //else {
+                        //    alert("not Approved");
+                        //    $('#loading-image').hide();
+                        //    grid.dataSource.read();
+                        //}
                         
                     },
                     error: function (xhr, status, error) {

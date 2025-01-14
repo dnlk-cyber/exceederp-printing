@@ -2,24 +2,16 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using ExceedERP.Web.Controllers;
-using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.HR;
-using ExceedERP.Web.Models;
 using Microsoft.Ajax.Utilities;
 using ExceedERP.Web.Hubs;
 
@@ -58,7 +50,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             var  measurments = db.MeasurementDefinitions.Select(p => new
             {
                 MeasurementDefinitionId = p.MeasurementDefinitionId,
-                Name = p.EvaluationCriteria + " - " /*+ GetEvaluationTypeName(p.LookupId) + " - " */+ p.Role.ToString()
+                Name = p.EvaluationCriteria + " - " + p.Lookup.Description + " - " + p.Role.ToString() + " " + p.DefnPercentageofWeight
             }).ToList();
             ViewData["EvalutionCrateria"] = measurments;
             ViewData["jobTitle"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
@@ -125,6 +117,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             return result;
         }
 
+        private bool GetHRLevelApprovals(int empId, int fiscalyearId, int periodId)
+        {
+            var records = db.EmployeePerformances
+                .Where(x => x.EmployeeId == empId && x.GlFiscalYearId == fiscalyearId && x.GlPeriodId == periodId && x.IsImmediateSuppurvisorApproved);
+
+            // Return true only if there are matching records and all are approved
+            return records.Any() && records.All(x => x.IsSecondLevelApproved);
+        }
 
         public ActionResult EmployeePerformanceCorporateAndSectorLevels_Read([DataSourceRequest] DataSourceRequest request)
         {
@@ -162,9 +162,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 IsHRLevelEvalution = employeePerformance.IsHRLevelEvalution,
                 Result = GetEvaluationResult(employeePerformance.EmployeePerformanceId),
                 Weight = GetWeight(employeePerformance.EmployeePerformanceId),
+                AreAllHRLevelApproved = GetHRLevelApprovals(employeePerformance.EmployeeId, employeePerformance.GlFiscalYearId, employeePerformance.GlPeriodId),
                 //Result = employeePerformance.Result,
                 ////Result = GetResult(employeePerformance.EmpMeasurementId),
-                //Remark = employeePerformance.Remark
+                Remark = employeePerformance.Remark
 
             });
 
@@ -195,6 +196,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 //Weight = employeePerformance.Weight,
                 Result = GetEvaluationResult(employeePerformance.EmployeePerformanceId),
                 Weight = GetWeight(employeePerformance.EmployeePerformanceId),
+                AreAllHRLevelApproved = GetHRLevelApprovals(employeePerformance.EmployeeId, employeePerformance.GlFiscalYearId, employeePerformance.GlPeriodId),
                 Remark = employeePerformance.Remark
             });
 
@@ -1068,6 +1070,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                     Performance.JobTitleId = placement.LookupId;
                     Performance.IsCurrent = placement.isCurrent;
                     Performance.ResponsibilityLevel = placement.ResponsibilityLevel;
+                    Performance.IsAcceptedByEmployee = true;
+                    Performance.IsApproved = true;
+                    Performance.IsSecondLevelApproved = true;
+                    Performance.IsImmediateSuppurvisorApproved = true;
                     Performance.Result = resultValue;
                     db.Entry(Performance).State = EntityState.Modified;
                     db.SaveChanges();
@@ -1079,8 +1085,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                             var checkExit = db.EmployeeMeasurement.FirstOrDefault(x => x.EmployeePerformanceId == Performance.EmployeePerformanceId);
                             if (checkExit != null)
                             {
+                                var actions = db.PerformanceActions.Where(x => x.MeasurementId == checkExit.EmpMeasurementId).ToList();
+
                                 var empMeasure = new EmployeeMeasurement();
-                                checkExit.Weight = meas.Weight;
+                                checkExit.Weight = actions.Any()?actions.Sum(x=>x.AcPercentageofWeight):meas.Weight;
                                 checkExit.Result = resultValue;
                                 db.Entry(checkExit).State = EntityState.Modified;
                                 db.SaveChanges();
@@ -1089,6 +1097,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                                 {
                                     foreach (var per in performanceActions)
                                     {
+                                        var action = db.PerformanceActions.Where(x => x.ActionId == per.PerformanceActionId).FirstOrDefault();
+
+                                        per.Weight = action !=null
+                                            &&action.AcPercentageofWeight !=per.Weight?action.AcPercentageofWeight:per.Weight;
                                         per.Score = resultValue;
                                         db.Entry(per).State = EntityState.Modified;
                                         db.SaveChanges();
@@ -1096,8 +1108,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                                 }
                                 else
                                 {
-                                    var actions = db.PerformanceActions.Where(x => x.MeasurementId == meas.MeasurmentId).ToList();
-                                    foreach (var action in actions)
+                                    var actiondetailss = db.PerformanceActions.Where(x => x.MeasurementId == meas.MeasurmentId).ToList();
+                                    foreach (var action in actiondetailss)
                                     {
                                         var performanceActionScore = new EmployeePerformanceScore
                                         {

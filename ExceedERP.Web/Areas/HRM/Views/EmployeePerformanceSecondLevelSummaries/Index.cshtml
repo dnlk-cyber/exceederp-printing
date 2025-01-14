@@ -322,11 +322,11 @@
                 var grid = this;
                 grid.tbody.find("tr[role='row']").each(function (e) {
                     var model = grid.dataItem(this);
-                    if (model.IsSecondLevelApproved) {
+                    if (model.IsSecondLevelApproved && model.AreAllHRLevelApproved) {
                         $(this).find(".k-grid-cmd-approve-request").hide();
                         $(this).find(".k-grid-cmd-reject").hide();
                     }
-                    if (model.IsSecondLevelRejected) {
+                    if (model.IsSecondLevelRejected && model.AreAllHRLevelApproved) {
                         $(this).find(".k-grid-cmd-reject").hide();
 
                     }
@@ -358,16 +358,9 @@
                     cache: false,
                     success: function (result) {
                         r = result;
+                        alert(result.Message);
                         $('#loading-image').hide();
-                        if (r == "true") {
-                            alert("Successfully Approved");
-                            grid.dataSource.read();
-                        }
-                        else {
-                            alert("Approval cannot be granted until All 1st level evaluation is approved");
-                            grid.dataSource.read();
-                        }
-                        
+                        grid.dataSource.read();
                     },
                     error: function (xhr, status, error) {
                         $('#loading-image').hide();

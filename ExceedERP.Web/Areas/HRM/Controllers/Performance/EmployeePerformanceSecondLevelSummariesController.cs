@@ -2,24 +2,17 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using ExceedERP.Web.Controllers;
-using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.HR;
-using ExceedERP.Web.Models;
 using Microsoft.Ajax.Utilities;
 using ExceedERP.Web.Hubs;
 
@@ -56,7 +49,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             var  measurments = db.MeasurementDefinitions.Select(p => new
             {
                 MeasurementDefinitionId = p.MeasurementDefinitionId,
-                Name = p.EvaluationCriteria + " - " /*+ GetEvaluationTypeName(p.LookupId) + " - " */+ p.Role.ToString()
+                Name = p.EvaluationCriteria + " - " + p.Lookup.Description + " - " + p.Role.ToString() + " " + p.DefnPercentageofWeight
             }).ToList();
             ViewData["EvalutionCrateria"] = measurments;
             ViewData["branch"] = db.Branch.ToList();
@@ -87,14 +80,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             }
             return 0;
         }
+        private bool GetHRLevelApprovals(int empId, int fiscalyearId, int periodId)
+        {
+            var records = db.EmployeePerformances
+                .Where(x => x.EmployeeId == empId && x.GlFiscalYearId == fiscalyearId && x.GlPeriodId == periodId && x.IsImmediateSuppurvisorApproved);
 
+            // Return true only if there are matching records and all are approved
+            return records.Any() && records.All(x => x.IsSecondLevelApproved);
+        }
         public ActionResult EmployeePerformanceSecondLevelSummaries_Read([DataSourceRequest] DataSourceRequest request)
         {
             var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             //var subordinates = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(id);
             var subordinates = EmployeeHelper.GetSubordinatesOfSubortinates_FilteredByHead(id);
             var employeePerformances = db.EmployeePerformances.Where(x=> subordinates.Contains(x.DirectBossId)||subordinates.Contains(x.EmployeeId)||subordinates.Contains((int)x.SecondLevelApproverId))
-                                .Where(x => x.IsApproved &&x.IsImmediateSuppurvisorApproved&&x.IsAcceptedByEmployee||x.IsRejectedByEmployee).DistinctBy(x => new
+                                .Where(x => x.IsApproved &&x.IsImmediateSuppurvisorApproved&&(x.IsAcceptedByEmployee||x.IsRejectedByEmployee)).DistinctBy(x => new
                                 {
                                     x.EmployeeId,
                                     x.GlFiscalYearId,
@@ -120,9 +120,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 ReasonFor2ndRejection = employeePerformance.ReasonFor2ndRejection,
                 Result = GetEvaluationResult(employeePerformance.EmployeePerformanceId),
                 Weight = GetWeight(employeePerformance.EmployeePerformanceId),
+                AreAllHRLevelApproved = GetHRLevelApprovals(employeePerformance.EmployeeId, employeePerformance.GlFiscalYearId, employeePerformance.GlPeriodId),
+
                 //Result = employeePerformance.Result,
                 ////Result = GetResult(employeePerformance.EmpMeasurementId),
-                //Remark = employeePerformance.Remark
+                Remark = employeePerformance.Remark
             });
 
             return Json(result);
@@ -155,6 +157,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 //Result = employeePerformance.Result,
                 Result = GetEvaluationResult(employeePerformance.EmployeePerformanceId),
                 Weight = GetWeight(employeePerformance.EmployeePerformanceId),
+                AreAllHRLevelApproved = GetHRLevelApprovals(employeePerformance.EmployeeId, employeePerformance.GlFiscalYearId, employeePerformance.GlPeriodId),
                 Remark = employeePerformance.Remark
             });
 
@@ -326,46 +329,121 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             }), JsonRequestBehavior.AllowGet);
         }
-        public string ApproveEvaluation(int year, int period, int employee)
+        public JsonResult ApproveEvaluation(int year, int period, int employee)
         {
+            // Fetch all employee performances in one query
             var employeePerformances = db.EmployeePerformances
-                                                    .Where(x => x.GlFiscalYearId == year 
-                                                    && x.GlPeriodId == period 
-                                                    && x.EmployeeId == employee
-                                                    &&x.IsApproved
-                                                    &&x.IsImmediateSuppurvisorApproved).ToList();
-            var status = "false";
-            if(db.EmployeePerformances.Where(x => x.GlFiscalYearId == year 
-                            && x.GlPeriodId == period 
-                            && x.EmployeeId == employee 
-                            && x.IsApproved 
-                            && !x.IsImmediateSuppurvisorApproved).Any())
-                            {
-                                return status;
-                            }
-            foreach ( var employeePerformance in employeePerformances)
+                .Where(x => x.IsApproved 
+                        && (x.IsAcceptedByEmployee 
+                        || x.IsRejectedByEmployee)
+                        &&  x.GlFiscalYearId == year
+                        && x.GlPeriodId == period
+                        && x.EmployeeId == employee
+                        && x.IsImmediateSuppurvisorApproved).ToList();
+
+            // Check if there are any employee performances
+            if (employeePerformances == null || !employeePerformances.Any())
+            {
+                var errorMessage = new
+                {
+                    Message = "No employee performance records found for the given criteria.",
+                    Status = "Not-OK"
+                };
+                return Json(errorMessage, JsonRequestBehavior.AllowGet);
+            }
+
+            // Calculate total performance weight, ensuring that GetPerformanceWeight is not null
+            decimal weight = employeePerformances
+                .Sum(performance => GetPerformanceWeight(performance.EmployeePerformanceId));
+            // Approve all evaluations in memory and save them in a single batch
+            foreach (var employeePerformance in employeePerformances)
             {
                 employeePerformance.IsSecondLevelApproved = true;
                 db.Entry(employeePerformance).State = EntityState.Modified;
-                db.SaveChanges();
-                status= "true";
             }
+            db.SaveChanges(); // Save changes once after all modifications
+
+            // Send notification if employee ID is not 0
             if (employee != 0)
             {
-                //var bossId = EmployeeHelper.GetSupervisor(placement.EmployeeId);
-                NotifModels notif = new NotifModels
+                var notif = new NotifModels
                 {
                     UserId = UserInformationHelper.GetEmployeeUserId(employee),
-                    Title = " Suppurvisor has approved your Performance ",
-                    Message = $" you have performance has been approved by your Second Level Approver",
-                    URL = "/HRM/EmployeePerformanceSecondLevelSummaries/"
-
+                    Title = "Performance Approved by HR",
+                    Message = "Your performance evaluation has been approved by HR.",
+                    URL = "/HRM/EmployeePerformanceAllSummaries/"
                 };
 
                 Notify.NotifyUser(notif);
             }
-            return status;
+
+            // Return success message
+            var successMessage = new
+            {
+                Message = "All evaluations have been successfully approved.",
+                Status = "OK"
+            };
+            return Json(successMessage, JsonRequestBehavior.AllowGet);
         }
+
+        public decimal GetPerformanceWeight(int empPerformanceId)
+        {
+            decimal totalweight = 0;
+
+            var empMeasurs = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == empPerformanceId).ToList();
+
+            foreach (var em in empMeasurs)
+            {
+                var scores = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == em.EmpMeasurementId).ToList();
+
+                if (scores.Any())
+                {
+                    totalweight += scores.Sum(x => x.Weight);
+                }
+            }
+
+            return totalweight;
+        }
+        //public string ApproveEvaluation(int year, int period, int employee)
+        //{
+        //    var employeePerformances = db.EmployeePerformances
+        //                                            .Where(x => x.GlFiscalYearId == year 
+        //                                            && x.GlPeriodId == period 
+        //                                            && x.EmployeeId == employee
+        //                                            &&x.IsApproved
+        //                                            &&x.IsImmediateSuppurvisorApproved).ToList();
+        //    var status = "false";
+        //    if(db.EmployeePerformances.Where(x => x.GlFiscalYearId == year 
+                                //                    && x.GlPeriodId == period 
+                                //                    && x.EmployeeId == employee 
+                                //                    && x.IsApproved 
+                                //                    && !x.IsImmediateSuppurvisorApproved ).Any())
+        //                    {
+        //                        return status;
+        //                    }
+        //    foreach ( var employeePerformance in employeePerformances)
+        //    {
+        //        employeePerformance.IsSecondLevelApproved = true;
+        //        db.Entry(employeePerformance).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //        status= "true";
+        //    }
+        //    if (employee != 0)
+        //    {
+        //        //var bossId = EmployeeHelper.GetSupervisor(placement.EmployeeId);
+        //        NotifModels notif = new NotifModels
+        //        {
+        //            UserId = UserInformationHelper.GetEmployeeUserId(employee),
+        //            Title = " Suppurvisor has approved your Performance ",
+        //            Message = $" you have performance has been approved by your Second Level Approver",
+        //            URL = "/HRM/EmployeePerformanceSecondLevelSummaries/"
+
+        //        };
+
+        //        Notify.NotifyUser(notif);
+        //    }
+        //    return status;
+        //}
         public string RejectionReason_Create(int yearId, int periodId, int employeeId, string reason)
         {
             var employeePerformances = db.EmployeePerformances.Where(x => x.GlFiscalYearId == yearId

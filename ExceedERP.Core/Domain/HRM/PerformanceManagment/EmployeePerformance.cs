@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Localization;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -74,9 +74,10 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public string Comment { get; set; }
         [NotMapped]
         public string Grade { get; set; }
+        [NotMapped]
+        public bool AreAllHRLevelApproved { get; set; }
 
     }
-
     public enum EvaluationTypeLevel
     {
         [Display(Name = "Enum_Evaluation_Type_Corporate_Result", ResourceType = typeof(Resources))]
@@ -88,4 +89,31 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         [Display(Name = "Enum_LookUpTypes_PROJECT_MANAGER", ResourceType = typeof(Resources))]
         Project_Manager=9,
     }
+
+    public class EmployeePerformanceSummary : TrackUserSettingOperation
+    {
+
+        [Key]
+        public int EmployeePerformanceSummaryId { get; set; }
+        [Display(Name = "Employee")]
+        public int EmployeeId { get; set; }
+        [Display(Name = "Fiscal Year")]
+        public int GlFiscalYearId { get; set; }
+        [Display(Name = "Period")]
+        public int GlPeriodId { get; set; }
+        [Display(Name = "Weight")]
+        public decimal Weight { get; set; }
+        [Display(Name = "Result")]
+        public decimal Result { get; set; }
+        [Display(Name = "Days Served in this Fiscal year")]
+        public decimal TotalDays { get; set; }
+        [Display(Name = "Bonus")]
+        public decimal Bonus { get; set; }
+        public string Remark { get; set; }
+       
+
+    }
+
+
+
 }

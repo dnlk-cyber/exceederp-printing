@@ -33,7 +33,7 @@ namespace ExceedERP.DataAccess
     //        this.HasKey<int>(o => o.EmpMeasurementDefinitionId);
     //    }
     //}
-    
+
 
     //public class EmployeePerformanceActionEntityTypeConfiguration : EntityTypeConfiguration<EmployeePerformanceAction>
     //{
@@ -44,8 +44,16 @@ namespace ExceedERP.DataAccess
     //        this.HasKey<int>(o => o.EmpActionId);
     //    }
     //}
-   
 
+    public class EmployeePerformanceSummaryEntityTypeConfiguration : EntityTypeConfiguration<EmployeePerformanceSummary>
+    {
+
+        public EmployeePerformanceSummaryEntityTypeConfiguration()
+        {
+            this.ToTable("EmployeePerformanceSummary", "Performance");
+            this.HasKey<int>(o => o.EmployeePerformanceSummaryId);
+        }
+    }
 
     public class EmployeeProbationSettingEntityTypeConfiguration : EntityTypeConfiguration<EmployeeProbationSetting>
     {

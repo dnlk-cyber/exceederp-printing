@@ -44,10 +44,10 @@
                   model.Id(p => p.PeriodId);
                  
               })
-                              .Read(read => read.Action("Periods_Read", "EvaluationPeriod"))
-                              .Create(create => create.Action("Periods_Create", "EvaluationPeriod"))
-                              .Update(update => update.Action("Periods_Update", "EvaluationPeriod"))
-                              .Destroy(destroy => destroy.Action("Periods_Destroy", "EvaluationPeriod"))
+                              .Read(read => read.Action("Periods_Read", "EvaluationPeriod").Data("sendForgery"))
+                              .Create(create => create.Action("Periods_Create", "EvaluationPeriod").Data("sendForgery"))
+                              .Update(update => update.Action("Periods_Update", "EvaluationPeriod").Data("sendForgery"))
+                              .Destroy(destroy => destroy.Action("Periods_Destroy", "EvaluationPeriod").Data("sendForgery"))
               
           )
           )

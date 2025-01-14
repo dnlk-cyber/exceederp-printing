@@ -7,7 +7,7 @@
                 .DataValueField("OrgStructureId")
                 .DataSource(dataSource =>
                 {
-                    dataSource.Read(read => read.Action("GetWorkUnit", "EvaluatorsRequest", new { area = "HRM" }))
+                    dataSource.Read(read => read.Action("GetWorkUnit", "EvaluatorsRequest", new { area = "HRM" }).Data("sendForgery"))
                     .ServerFiltering(false);
                 })
             .AutoBind(true)

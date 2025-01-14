@@ -9,7 +9,7 @@
         .HtmlAttributes(new {@style="width:300px"})
         .DataSource(dataSource =>
         {
-            dataSource.Read(read => read.Action("GetEmployeesInSelectedDepartment", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
+            dataSource.Read(read => read.Action("GetEmployeesInSelectedDepartment", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployees"))
                 .ServerFiltering(false);
 
         })

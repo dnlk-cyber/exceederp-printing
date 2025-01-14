@@ -17,7 +17,7 @@ namespace ExceedERP.Core.Domain.Common.DocumentApproval
     public enum ApprovalDocumentType//sync with below
     {
         ApInvoice,
-        ApPayment,       
+        ApPayment,
         ApMiscPayment,
         ApTravelOrder,
         ApTravelExpenseClaim,
@@ -35,7 +35,9 @@ namespace ExceedERP.Core.Domain.Common.DocumentApproval
         RentalPaymentRequestSelfCare,
         ApFundTransferSelfCare,
         POChangeOrder,
-        ProformaPurchase
+        ProformaPurchase,
+        ServiceReceiveSelfCare,
+        PurchaseRequisitionSelfCare,
     }
     public enum ApprovalWorkflow
     {

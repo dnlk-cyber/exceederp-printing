@@ -75,6 +75,18 @@ namespace ExceedERP.Core.Domain.Procurement.PR
         public bool IsBudgetApproved { get; set; }
         public string BudgetApprovedBy { get; set; }
         public DateTime? BudgetApprovedTime { get; set; }
+        //for departmental ..like self service
+        public bool IsDepartmentOnlineApproved { get; set; }
+        public string DepartmentOnlineApprovedBy { get; set; }
+        public DateTime? DepartmentOnlineApprovedTime { get; set; }
+        public bool IsDepartmentSendForApproval { get; set; }
+        public string DepartmentSendForApprovalBy { get; set; }
+        public DateTime? DepartmentSendForApprovalTime { get; set; }
+        //for approval workflow
+        public string ForwardedFrom { get; set; }
+        public string ForwardedTo { get; set; }
+        public bool IsFinalApproval { get; set; }
+        public int? CurrentApprovalStep { get; set; }
         public virtual ICollection<PurchaseRequisitionItem> PurchaseRequisitionItems { get; set; }
         public virtual ICollection<PurchaseRequisitionUserDepartmentValidation> PurchaseRequisitionUserDepartmentValidation { get; set; }
         public virtual ICollection<PurchaseRequisitionSecondValidation> PurchaseRequisitionSecondValidation { get; set; }
@@ -82,4 +94,6 @@ namespace ExceedERP.Core.Domain.Procurement.PR
         public virtual ICollection<PurchaseRequisitionAssignment> PurchaseRequisitionAssignments { get; set; }
         public virtual ICollection<PurchaseRequisitionAttachment> PurchaseRequisitionAttachments { get; set; }
     }
+
+
 }

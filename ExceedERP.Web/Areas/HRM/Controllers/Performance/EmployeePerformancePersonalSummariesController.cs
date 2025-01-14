@@ -54,7 +54,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             var  measurments = db.MeasurementDefinitions.Select(p => new
             {
                 MeasurementDefinitionId = p.MeasurementDefinitionId,
-                Name = p.EvaluationCriteria + " - " /*+ GetEvaluationTypeName(p.LookupId) + " - " */+ p.Role.ToString()
+                Name = p.EvaluationCriteria + " - " + p.Lookup.Description + " - " + p.Role.ToString() + " " + p.DefnPercentageofWeight
             }).ToList();
             ViewData["EvalutionCrateria"] = measurments;
             ViewData["branch"] = db.Branch.ToList();

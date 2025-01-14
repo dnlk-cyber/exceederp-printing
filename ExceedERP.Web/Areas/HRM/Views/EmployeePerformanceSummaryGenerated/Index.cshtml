@@ -1,0 +1,427 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.PerformanceManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>@Resources.NavigatorPerformance_PerformanceSummary with Bonus</legend>
+
+<div class="row">
+    <div class="col-md-12">
+           
+    <div class="cards-container">
+        <div class="k-card k-card-horizontal">
+                   
+            <div class="k-vbox k-column">
+                       
+                <div class="k-card-body">
+                           
+                    <div class="row">
+
+
+
+                        <div class="col-md-1">
+
+                            <label class="category-label" @*for="Period"*@>Year</label>
+
+                            <br />
+
+                            @(Html.Kendo().DropDownListFor(m => m)
+                                        .Name("GlFiscalYearId")
+                                        //.Placeholder("Period")
+                                        .OptionLabel(Resources.Select)
+                                        .Filter("contains")
+                                        .DataTextField("Name")
+                                        .DataValueField("GlFiscalYearId")
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetFiscalYear", "EmployeePerformance", new { area = "HRM" }).Data("sendForgery"))
+                                                .ServerFiltering(false);
+                                        })
+
+                                        .HtmlAttributes(new { style = "width: 120px;" })
+
+                            )
+
+                        </div>
+
+                        <div class="col-md-1">
+
+                            <label class="category-label" for="Period">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PeriodId</label>
+
+                            <br />
+
+                            @(Html.Kendo().DropDownListFor(m => m)
+                                        .Name("Period")
+                                        //.Placeholder("Period")
+                                        .OptionLabel(Resources.Select)
+                                        .Filter("contains")
+                                        .CascadeFrom("GlFiscalYearId")
+                                        .DataTextField("Name")
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetPeriodList", "EmployeePerformance", new { area = "HRM" }).Data("sendForgery").Data("filterPeriod"))
+                                            .ServerFiltering(true);
+                                        })
+                                    .DataValueField("QuarterId")
+                                    .AutoBind(false)
+                                    .Events(e => e.Change("Period"))
+                                    .HtmlAttributes(new { style = "width: 120px;" })
+
+                            )
+
+                        </div>
+
+                        <div class="col-md-1">
+
+                            <label class="category-label" for="EmployeeId">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PersonEmployee</label>
+                            <br />
+                            @(Html.Kendo().DropDownListFor(m => m)
+                                        .Name("EmployeeId")
+                                        .OptionLabel(Resources.Select)
+                                        .Filter("contains")
+                                        .DataTextField("FullNameaEnglish")
+                                        .DataValueField("EmployeeId")
+                                        .Events(e => e.Change("EmployeeId"))
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetAllEmployeesForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployeeBranch"))
+                                            .ServerFiltering(true);
+
+                                        })
+
+                                                .HtmlAttributes(new { style = "width: 150px;" })
+                            )
+
+                        </div>
+                        
+
+
+                        <div class="col-md-1">
+
+                            <br />
+
+                            @(Html.Kendo().Button()
+                                        .Name("btnRefresh")
+                                        .HtmlAttributes(new { type = "button", @class = "k-primary", style = "width: 150px;height:40px" })
+                                        .Events(e => e.Click("generateEmployeePerformanceSummary"))
+                                        .Content("Generate"))
+                            &nbsp; &nbsp;
+                            &nbsp; &nbsp;
+                            &nbsp;  &nbsp;
+
+                           
+
+                        </div>
+                    </div>
+                         
+                </div>
+                       
+            </div>
+        </div>
+
+    </div>
+    </div>
+    </div>
+
+      
+<br />
+
+    <div class="row">
+
+        <div class="col-md-12">
+
+            @(Html.Kendo().Grid<EmployeePerformanceSummary>()
+                  .Name("grid")
+                  .Columns(columns =>
+                  {
+                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").Width(160).EditorTemplateName("EmployeeLists").Filterable(ftb => ftb.Multi(true).Search(true));
+                      columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["fiscalYearList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(150);
+                      columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["Period"], "QuarterId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                      columns.Bound(c => c.Weight).Width(80);
+                      columns.Bound(c => c.Result).Width(80);
+                      columns.Bound(c => c.Bonus).Width(80);
+                      columns.Bound(c => c.Remark).Width(50);
+
+                  })
+
+                   .ToolBar(toolbar =>
+                   {
+                      
+                      
+                     
+                           toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                      
+
+                   })
+                   .Excel(excel => excel
+                    .FileName("EmployeePerformanceSummaryWithBonus" + ".xlsx")
+                    .Filterable(true)
+                    .AllPages(true)
+                    .ProxyURL(Url.Action("Excel_Export_Save", "EmployeePerformanceSummaryGenerated")))
+                    .Pdf(pdf => pdf
+                    .AllPages()
+                    .FileName("EmployeePerformanceSummaryWithBonus" + ".pdf")
+                    .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePerformanceSummaryGenerated")))
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Scrollable(h => h.Height(550))
+                  .Filterable()
+                  .Pageable(pageable => pageable
+                          .Input(true)
+                           .Numeric(false)
+                          .Refresh(true)
+                         .PageSizes(true)
+                          .ButtonCount(5) )
+
+                  .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Events(events =>
+                  {
+                      events.Error("error_handler(\"grid\")");
+                      events.RequestStart("onRequestStart(\"grid\")");
+                      events.RequestEnd("onRequestEnd(\"grid\")");
+
+                  })
+
+                  .Model(model =>
+                  {
+                      model.Id(p => p.EmployeePerformanceSummaryId);
+                      model.Field(p => p.Result).Editable(false);
+
+
+                  } )
+
+                  .Read(read => read.Action("EmployeePerformanceSummary_Read", "EmployeePerformanceSummaryGenerated").Data("sendForgery").Data("filterdata"))
+                            ))
+     
+
+       
+        
+
+        </div>
+      
+
+    </div>
+
+
+<script>
+ 
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+
+
+
+<style>
+    #approveButtonStyle {
+        border-radius: 5%;
+        padding-top: 1px;
+        padding-bottom: 1px;
+    }
+    /*#grid .k-grid-toolbar {
+        padding: .6em 1.3em;
+    }
+
+    .category-label {
+        vertical-align: middle;
+        padding-right: .5em;
+    }
+
+    #category {
+        vertical-align: middle;
+    }
+
+    .toolbar {
+        float: right;
+    }*/
+</style>
+
+
+<script>
+
+    var EmployeePerformanceId_Global = 0;
+
+    function generateEmployeePerformanceSummary()
+    {
+        var employeeId = $("#EmployeeId").data("kendoDropDownList").value();
+        var yearId = $("#GlFiscalYearId").data("kendoDropDownList").value();
+        var periodId = $("#Period").data("kendoDropDownList").value();
+        if (!yearId || !periodId) {
+            alert("Please select Fiscal Year, and Period.");
+            return;
+        }
+         $.ajax({
+             url: '@Url.Action("GenerateEmployeePerformanceSummary", "EmployeePerformanceSummaryGenerated",new { area="HRM"})',
+             data: { empId: employeeId, fiscalYearId: yearId, periodId: periodId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+
+                alert(result.Message);
+                var grid = $("#grid").data("kendoGrid");
+                grid.dataSource.read();
+            }
+
+        });
+
+        var grid = $("#grid").data("kendoGrid");
+
+       // grid.dataSource.transport.read();
+      grid.dataSource.read();
+
+      //  grid.refresh();
+
+
+    }
+</script>
+
+<script>
+    function filterdata() {
+
+        var empId = $("#EmployeeId").data("kendoDropDownList").value();
+        var fiscalYearId = $("#GlFiscalYearId").data("kendoDropDownList").value();
+        var periodId = $("#Period").data("kendoDropDownList").value();
+        //var evaluationCriteriaId = $("#EvaluationCriteriaId").data("kendoDropDownList").value();
+        //var criteriaCategoryId = $("#CriteriaCategoryId").data("kendoDropDownList").value();
+
+        return {
+            empId: empId,
+            fiscalYearId: fiscalYearId,
+            periodId: periodId,
+            //evaluationCriteriaId: evaluationCriteriaId,
+            //criteriaCategoryId: criteriaCategoryId
+        };
+    }
+
+</script>
+
+
+
+<script>
+    
+    function Employee() {
+        var employees = $("#EmployeeId").data("kendoComboBox");
+        var employee = employees.value();
+       
+        $.ajax({
+            url: '@Url.Action("GetEmployee", "EmployeePerformance")',
+            data: { employee: employee },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+            }
+
+        });
+
+
+        var value = this.value(),
+            grid = $("#MeasurementDefinitiongrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "EmployeeId", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+
+
+<script>
+
+    function filterPeriod() {
+        return {
+            GlFiscalYearId: $("#GlFiscalYearId").val()
+        };
+    }
+
+    //function filterEvaluationCriteria() {
+    //    return {
+    //        criteriaCategoryId: $("#CriteriaCategoryId").val(),
+    //        level: $("#Evaluation").val()
+
+    //    };
+    //}
+
+    function filterEmployeeBranch() {
+        return {
+            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+
+
+        };
+    }
+
+</script>
+
+<script>
+    function ApproveEvaluation() {
+
+        var year = $("#GlFiscalYearId").data("kendoDropDownList").value();
+        var period = $("#Period").data("kendoDropDownList").value();
+        var employee = $("#EmployeeId").data("kendoDropDownList").value();
+        //var evaluationCriteria = $("#EvaluationCriteriaId").data("kendoDropDownList").value();
+        //var criteriaCategoryId = $("#CriteriaCategoryId").data("kendoDropDownList").value();
+
+        
+        if (year == "") {
+            alert("please select the year to approve");
+        }
+        else if (period == "") {
+            alert("please select the period to approve");
+        }
+        else if (employee == "") {
+            alert("please select the employee to approve");
+        }
+        //else if (evaluationCriteria == "") {
+        //    alert("please select the evaluation criteria to approve");
+        //}
+        else {
+            var conf = confirm("Are you sure you want to Submit this quarter performance evaluation");
+            if (conf === true) {
+                $('#loading-image').show();
+
+                $.ajax({
+                    url: '@Url.Action("ApproveEvaluation", "EmployeePerformance")',
+                    //contentType: "application/json; charset=utf-8",
+                    data: { year: year, period: period, employee: employee/*, evaluationCriteria: evaluationCriteria, criteriaCategoryId: criteriaCategoryId*/},
+                    type: 'POST',
+                    cache: false,
+                    success: function (result) {
+                        r = result;
+                        alert("Successfully Summited");
+                        $('#loading-image').hide();
+
+                        if (r == "true")
+                        {
+                            document.getElementById("approval").innerHTML = "Submitted";
+                        }
+                        else {
+                            document.getElementById("approval").innerHTML = "Not Submitted";
+                        }
+                        grid.dataSource.read();
+                    }
+
+                });
+            }
+    }
+        }
+       
+</script>
+<style>
+    .col-md-1 {
+        margin-right: 50px; /* Add margin to the right of each column */
+    }
+    /* Remove margin from the last column */
+        /*.col-md-1:last-child {
+            margin-right: 0; 
+        }*/
+
+    /* You can add styles for other elements if needed */
+    .cards-container {
+        margin-top: 20px;
+    }
+</style>

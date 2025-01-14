@@ -7,7 +7,7 @@
                 .DataValueField("PeriodId")
                 .DataSource(dataSource =>
                 {
-                    dataSource.Read(read => read.Action("GetPeriodList", "EvaluatorsRequest", new { area = "HRM" }).Data("filterPeriod"))
+                    dataSource.Read(read => read.Action("GetPeriodList", "EvaluatorsRequest", new { area = "HRM" }).Data("sendForgery").Data("filterPeriod"))
                     .ServerFiltering(true);
                 })
             .AutoBind(true)

@@ -15,19 +15,19 @@
                     <br />
 
                     @(Html.Kendo().DropDownListFor(m => m)
-                                                    .Name("GlFiscalYearId")
-                                                    .OptionLabel(Resources.Select)
-                                                    .Filter("contains")
-                                                    .DataTextField("Name")
-                                                    .DataValueField("GlFiscalYearId")
-                                                    .HtmlAttributes(new { style = "width:150px" })
-                                                    .DataSource(dataSource =>
-                                                    {
-                                                        dataSource.Read(read => read.Action("GetFiscalYearForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
-                                                            .ServerFiltering(false);
-                                                    })
+                            .Name("GlFiscalYearId")
+                            .OptionLabel(Resources.Select)
+                            .Filter("contains")
+                            .DataTextField("Name")
+                            .DataValueField("GlFiscalYearId")
+                            .HtmlAttributes(new { style = "width:150px" })
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetFiscalYearForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
+                                    .ServerFiltering(false);
+                            })
 
-                                                    .HtmlAttributes(new { style = "width: 150px;" }))
+                            .HtmlAttributes(new { style = "width: 150px;" }))
 
                 </div>
 
@@ -38,22 +38,22 @@
                     <br />
 
                     @(Html.Kendo().DropDownListFor(m => m)
-                                                        .Name("Period")
-                                                        //.Placeholder("Period")
-                                                        .OptionLabel(Resources.Select)
-                                                        .Filter("contains")
-                                                        .CascadeFrom("GlFiscalYearId")
-                                                        .DataTextField("Name")
-                                                        .HtmlAttributes(new { style = "width:150px" })
-                                                        .DataSource(dataSource =>
-                                                        {
-                                                            dataSource.Read(read => read.Action("GetPeriodList", "EmployeePerformance", new { area = "HRM" }).Data("sendForgery").Data("filterPeriod"))
-                                                            .ServerFiltering(true);
-                                                        })
-                                                    .DataValueField("QuarterId")
-                                                    .AutoBind(false)
-                                                    .Events(e => e.Change("Period"))
-                                                    .HtmlAttributes(new { style = "width: 150px;" })
+                                .Name("Period")
+                                //.Placeholder("Period")
+                                .OptionLabel(Resources.Select)
+                                .Filter("contains")
+                                .CascadeFrom("GlFiscalYearId")
+                                .DataTextField("Name")
+                                .HtmlAttributes(new { style = "width:150px" })
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetPeriodList", "EmployeePerformance", new { area = "HRM" }).Data("sendForgery").Data("filterPeriod"))
+                                    .ServerFiltering(true);
+                                })
+                            .DataValueField("QuarterId")
+                            .AutoBind(false)
+                            .Events(e => e.Change("Period"))
+                            .HtmlAttributes(new { style = "width: 150px;" })
 
                     )
 
@@ -66,18 +66,18 @@
                     <br />
 
                     @(Html.Kendo().DropDownListFor(m => m)
-                                                    .Name("Evaluation")
-                                                    .OptionLabel(Resources.Select)
-                                                    //.Placeholder("Evaluation Level")
-                                                    .DataTextField("Text")
-                                                    .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.HRM.PerformanceManagment.EvaluationTypeLevel)))
-                                                    .DataValueField("Value")
-                                                    .Filter("contains")
-                                                    .Events(x => x.Change("onCriteriaChange"))
-                                                    .HtmlAttributes(new { style = "width:150px" })
-                                                    .AutoBind(false)
-                                                    //.Events(e => e.Change("Roles"))
-                                                    .HtmlAttributes(new { style = "width: 150px;" })
+                                .Name("Evaluation")
+                                .OptionLabel(Resources.Select)
+                                //.Placeholder("Evaluation Level")
+                                .DataTextField("Text")
+                                .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.HRM.PerformanceManagment.EvaluationTypeLevel)))
+                                .DataValueField("Value")
+                                .Filter("contains")
+                                .Events(x => x.Change("onCriteriaChange"))
+                                .HtmlAttributes(new { style = "width:150px" })
+                                .AutoBind(false)
+                                //.Events(e => e.Change("Roles"))
+                                .HtmlAttributes(new { style = "width: 150px;" })
 
                     )
                 </div>
@@ -88,22 +88,22 @@
 
                     <br />
                     @(Html.Kendo().DropDownListFor(m => m)
-                                                        .Name("EvaluationCriteriaId")
-                                                        .OptionLabel(Resources.Select)
-                                                        // .Placeholder("Type")
-                                                        .DataTextField("Name")
-                                                        .Filter("contains")
-                                                        //.BindTo((IEnumerable)ViewData["EvaluationTypes"])
-                                                        .DataValueField("MeasurementDefinitionId")
-                                                        .CascadeFrom("Evaluation")
-                                                        //.Events(x => x.Change("onMeasurementDefinitionChange"))
-                                                        .AutoBind(false)
-                                                        .DataSource(dataSource =>
-                                                        {
-                                                            dataSource.Read(read => read.Action("GetCorporateOrSectorEvaluationCriterias", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEvaluationCriteria"))
-                                                            .ServerFiltering(true);
-                                                        })
-                                                        .HtmlAttributes(new { style = "width: 150px;" })
+                            .Name("EvaluationCriteriaId")
+                            .OptionLabel(Resources.Select)
+                            // .Placeholder("Type")
+                            .DataTextField("Name")
+                            .Filter("contains")
+                            //.BindTo((IEnumerable)ViewData["EvaluationTypes"])
+                            .DataValueField("MeasurementDefinitionId")
+                            .CascadeFrom("Evaluation")
+                            //.Events(x => x.Change("onMeasurementDefinitionChange"))
+                            .AutoBind(false)
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetCorporateOrSectorEvaluationCriterias", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEvaluationCriteria"))
+                                .ServerFiltering(true);
+                            })
+                            .HtmlAttributes(new { style = "width: 150px;" })
                     )
 
                 </div>
@@ -271,11 +271,11 @@
                 .Scrollable(h => h.Height("auto"))
                 .Events(ev => ev.DataBound("onDataBound"))
                 .Pageable(pageable => pageable
-                    //.Input(true)
-                    // .Numeric(false)
+                    .Input(true)
+                     .Numeric(false)
                     .Refresh(true)
-                    //.PageSizes(true)
-                    // .ButtonCount(5)
+                    .PageSizes(true)
+                     .ButtonCount(5)
                     )
 
                 .DataSource(dataSource => dataSource
@@ -561,7 +561,7 @@
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function (e) {
             var model = grid.dataItem(this);
-            if (model.IsHRApproved) {
+            if (model.IsHRApproved && model.AreAllHRLevelApproved) {
                 $(this).find(".k-grid-cmd-approve-request").hide();
             }
 
@@ -622,7 +622,8 @@
 <script>
 
 
-    function GenerateProcess() {
+    function GenerateProcess()
+    {
 
 
         var evaluationCriteriaId = $("#EvaluationCriteriaId").data("kendoDropDownList").value();
@@ -710,7 +711,7 @@
             var hiddenField3 = document.querySelector('.clasToBeShow3');
             var branchField = document.querySelector('.branchClassToBeShow1');
 
-            hiddenField1.style.display = 'none';
+            hiddenField1.style.display = 'block';
             hiddenField2.style.display = 'none';
             hiddenField3.style.display = 'none';
             branchField.style.display = 'none';

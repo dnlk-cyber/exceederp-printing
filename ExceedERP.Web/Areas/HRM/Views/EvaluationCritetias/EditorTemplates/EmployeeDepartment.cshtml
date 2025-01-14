@@ -8,7 +8,7 @@
             .Filter("contains")
             .DataSource(dataSource =>
             {
-                dataSource.Read(read => read.Action("GetDepartmentForManinDepartmentSettings", "HRMDataProvider", new { area = "HRM" }))
+                dataSource.Read(read => read.Action("GetDepartmentForManinDepartmentSettings", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                     .ServerFiltering(false);
             })
     .ValuePrimitive( true)
