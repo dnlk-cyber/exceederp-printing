@@ -177,11 +177,11 @@ namespace ExceedERP.Web.Areas.Common.Controllers
             return View();
         }
 
-        public JsonResult GetNextApproverList(int id,string type)
+        public JsonResult GetNextApproverList(int id, string type)
         {
             List<UserVM> list = new List<UserVM>();
 
-            switch(type)
+            switch (type)
             {
                 case "PO":
                     list = UserInformationHelper.GetUsersInRole(ProcurementRoles.ProcurementTenderApprover);
@@ -207,15 +207,21 @@ namespace ExceedERP.Web.Areas.Common.Controllers
                 case "FundTransferSelfCare":
                     list = UserInformationHelper.GetUsersInRole(HrmConstants.HRDepartmentHead);
                     break;
+                case "ServiceReceiveSelfCare":
+                    list = UserInformationHelper.GetUsersInRole(HrmConstants.HRDepartmentHead);
+                    break;
+                case "PurchaseRequisitionSelfCare":
+                    list = UserInformationHelper.GetUsersInRole(HrmConstants.HRDepartmentHead);
+                    break;
                 default:
                     break;
             }
-          
-           
+
+
             return Json(list.Select(p => new
             {
                 UserName = p.UserName,
-                FullName = p.UserName+"- ("+p.FullName +")"
+                FullName = p.UserName + "- (" + p.FullName + ")"
             }), JsonRequestBehavior.AllowGet);
         }
         public JsonResult UpdateNextApprover(int id, string type, string user)

@@ -959,144 +959,148 @@ namespace ExceedERP.Web.Helpers
 			return orgId;
 
 		}
-	  
-		//public static List<string> GetUsersInSameCostCenter(string user)
-		//{
-		//	ExceedDbContext db = new ExceedDbContext();
-		//	List<string> usersinsameCostCenter = new List<string>();
-		//	ApplicationDbContext _dbApplication = new ApplicationDbContext();
-		//	var userInfo = _dbApplication.Users.FirstOrDefault(x => x.UserName == user);
-		//	if (userInfo != null)
-		//	{
-		//		var userWorkUnit = db.Placements.Where(x=>x.isCurrent)
-		//			.FirstOrDefault(x => x.EmployeeId == userInfo.EmployeeId);
-				   
-		//		if (userWorkUnit != null)
-		//		{
-		//			int selectedWorkUnit = userWorkUnit.ReportsTo;
-		//			usersinsameCostCenter.Add(user);
-		//			foreach (var applicationUser in _dbApplication.Users.ToList())
-		//			{
-		//				if(GetUserCostCenter(applicationUser.UserName)==selectedWorkUnit)
-		//					usersinsameCostCenter.Add(applicationUser.UserName);
-		//			}
-		//		}
-				
-		//	}
 
-		//	return usersinsameCostCenter;
-		//}
+        //public static List<string> GetUsersInSameCostCenter(string user)
+        //{
+        //	ExceedDbContext db = new ExceedDbContext();
+        //	List<string> usersinsameCostCenter = new List<string>();
+        //	ApplicationDbContext _dbApplication = new ApplicationDbContext();
+        //	var userInfo = _dbApplication.Users.FirstOrDefault(x => x.UserName == user);
+        //	if (userInfo != null)
+        //	{
+        //		var userWorkUnit = db.Placements.Where(x=>x.isCurrent)
+        //			.FirstOrDefault(x => x.EmployeeId == userInfo.EmployeeId);
 
-		//public static int GetUserCostCenter(string user)
-		//{
-		//	ExceedDbContext db = new ExceedDbContext();
-		//	ApplicationDbContext _dbApplication = new ApplicationDbContext();
-		//	var userInfo = _dbApplication.Users.FirstOrDefault(x => x.UserName == user);
-		//	if (userInfo != null)
-		//	{
-		//		var userWorkUnit = db.Placements.Where(x => x.isCurrent)
-		//			.FirstOrDefault(x => x.EmployeeId == userInfo.EmployeeId);
+        //		if (userWorkUnit != null)
+        //		{
+        //			int selectedWorkUnit = userWorkUnit.ReportsTo;
+        //			usersinsameCostCenter.Add(user);
+        //			foreach (var applicationUser in _dbApplication.Users.ToList())
+        //			{
+        //				if(GetUserCostCenter(applicationUser.UserName)==selectedWorkUnit)
+        //					usersinsameCostCenter.Add(applicationUser.UserName);
+        //			}
+        //		}
 
-		//		if (userWorkUnit != null)
-		//		{
-		//			return userWorkUnit.ReportsTo;
-		//		}
-		//	}
+        //	}
 
-		//	return 0;
-		//}
+        //	return usersinsameCostCenter;
+        //}
 
-		public static List<UserVM> GetUsersInRole(string roleName)
-		{
-			using (var _dbApplication = new ApplicationDbContext())
-			{
-				List<UserVM> userList = new List<UserVM>();
+        //public static int GetUserCostCenter(string user)
+        //{
+        //	ExceedDbContext db = new ExceedDbContext();
+        //	ApplicationDbContext _dbApplication = new ApplicationDbContext();
+        //	var userInfo = _dbApplication.Users.FirstOrDefault(x => x.UserName == user);
+        //	if (userInfo != null)
+        //	{
+        //		var userWorkUnit = db.Placements.Where(x => x.isCurrent)
+        //			.FirstOrDefault(x => x.EmployeeId == userInfo.EmployeeId);
 
-				// Fetch the role once without tracking
-				var role = _dbApplication.Roles.AsNoTracking().FirstOrDefault(x => x.Name == roleName);
-				if (role == null) return userList;
+        //		if (userWorkUnit != null)
+        //		{
+        //			return userWorkUnit.ReportsTo;
+        //		}
+        //	}
 
-				// Fetch all user roles in one go without tracking
-				var userRoleIds = _dbApplication.Users
-					.SelectMany(x => x.Roles)
-					.Where(r => r.RoleId == role.Id)
-					.AsNoTracking()
-					.Select(r => r.UserId)
-					.Distinct()
-					.ToList();
+        //	return 0;
+        //}
 
-				// Pre-fetch all users in a single query
-				var usersInRole = _dbApplication.Users
-					.Where(u => userRoleIds.Contains(u.Id))
-					.AsNoTracking()
-					.ToList();
+        public static List<UserVM> GetUsersInRole(string roleName)
+        {
+            using (var _dbApplication = new ApplicationDbContext())
+            {
+                using (var db = new ExceedDbContext())
+                {
+                    // Fetch role ID directly
+                    var role = _dbApplication.Roles
+                        .AsNoTracking()
+                        .FirstOrDefault(r => r.Name == roleName);
 
-				foreach (var user in usersInRole)
-				{
-					var fullNameBuilder = new StringBuilder();
-					fullNameBuilder.Append(user.FirstName)
-								   .Append(" ")
-								   .Append(user.MiddleName)
-								   .Append(" ")
-								   .Append(user.LastName); // Using StringBuilder for FullName
+                    if (role == null)
+                        return new List<UserVM>();
 
-					userList.Add(new UserVM
-					{
-						UserName = user.UserName,
-						UserId = user.Id,
-						FullName = fullNameBuilder.ToString()
-					});
-				}
+                    // Fetch users in the specified role
+                    var userIds = _dbApplication.Users
+                        .Where(u => u.Roles.Any(r => r.RoleId == role.Id))
+                        .AsNoTracking()
+                        .Select(u => new { u.Id, u.UserName, u.EmployeeId })
+                        .ToList();
 
-				return userList;
-			}
-		}
+                    // Fetch employee details separately
+                    var employeeIds = userIds.Select(u => u.EmployeeId).Distinct().ToList();
+                    var employees = db.Person_Employee
+                        .Where(e => employeeIds.Contains(e.EmployeeId))
+                        .AsNoTracking()
+                        .ToList();
 
-		//public static List<UserVM> GetUsersInRole_old(string roleName)
-		//{
-		//	ApplicationDbContext _dbApplication = new ApplicationDbContext();
-		//	ExceedDbContext db = new ExceedDbContext();
-		//	List<UserVM> list = new List<UserVM>();
-		//	var role = _dbApplication.Roles.FirstOrDefault(x => x.Name == roleName);
+                    // Combine data in memory
+                    var userList = userIds
+                        .Join(employees,
+                              user => user.EmployeeId,
+                              employee => employee.EmployeeId,
+                              (user, employee) => new UserVM
+                              {
+                                  UserName = user.UserName,
+                                  UserId = user.Id,
+                                  FullName = string.Concat(
+                                      employee.EmployeeCode, " ",
+                                      employee.FirstNameEnglish, " ",
+                                      employee.MiddleNameEnglish, " ",
+                                      employee.LastNameEnglish)
+                              })
+                        .ToList();
 
-		//	var userroles = _dbApplication.Users.SelectMany(x => x.Roles).ToList();
-		//	foreach (var userRole in userroles)
-		//	{
-		//		if (role != null && userRole.RoleId == role.Id)
-		//		{
-		//			var exists = list.Where(x => x.UserId == userRole.UserId);
-		//			if (!exists.Any())
-		//			{
-		//				var userobj = _dbApplication.Users.Find(userRole.UserId);
-		//				var employee = db.Person_Employee.Where(x => x.EmployeeId == userobj.EmployeeId).FirstOrDefault();
-		//				if (employee != null)
-		//				{
-		//					var user = new UserVM
-		//					{
-		//						UserName = userobj.UserName,
-		//						UserId = userobj.Id,
-		//						FullName = employee.FullNameaEnglish,
-		//					};
-		//					list.Add(user);
-		//				}
-		//				else
-		//				{
-		//					var user = new UserVM
-		//					{
-		//						UserName = userobj.UserName,
-		//						UserId = userobj.Id,
-		//						FullName = userobj.FirstName + " " + userobj.MiddleName + " " + userobj.MiddleName,
-		//					};
-		//					list.Add(user);
-		//				}
-		//			}
-		//		}
+                    return userList;
+                }
+            }
+        }
 
-		//	}
+        //public static List<UserVM> GetUsersInRole_old(string roleName)
+        //{
+        //	ApplicationDbContext _dbApplication = new ApplicationDbContext();
+        //	ExceedDbContext db = new ExceedDbContext();
+        //	List<UserVM> list = new List<UserVM>();
+        //	var role = _dbApplication.Roles.FirstOrDefault(x => x.Name == roleName);
 
-		//	return list;
-		//}
-		public static bool CheckUserRole(string userName, string roleName)
+        //	var userroles = _dbApplication.Users.SelectMany(x => x.Roles).ToList();
+        //	foreach (var userRole in userroles)
+        //	{
+        //		if (role != null && userRole.RoleId == role.Id)
+        //		{
+        //			var exists = list.Where(x => x.UserId == userRole.UserId);
+        //			if (!exists.Any())
+        //			{
+        //				var userobj = _dbApplication.Users.Find(userRole.UserId);
+        //				var employee = db.Person_Employee.Where(x => x.EmployeeId == userobj.EmployeeId).FirstOrDefault();
+        //				if (employee != null)
+        //				{
+        //					var user = new UserVM
+        //					{
+        //						UserName = userobj.UserName,
+        //						UserId = userobj.Id,
+        //						FullName = employee.FullNameaEnglish,
+        //					};
+        //					list.Add(user);
+        //				}
+        //				else
+        //				{
+        //					var user = new UserVM
+        //					{
+        //						UserName = userobj.UserName,
+        //						UserId = userobj.Id,
+        //						FullName = userobj.FirstName + " " + userobj.MiddleName + " " + userobj.MiddleName,
+        //					};
+        //					list.Add(user);
+        //				}
+        //			}
+        //		}
+
+        //	}
+
+        //	return list;
+        //}
+        public static bool CheckUserRole(string userName, string roleName)
 		{
 			using (var _dbApplication = new ApplicationDbContext())
 			{
