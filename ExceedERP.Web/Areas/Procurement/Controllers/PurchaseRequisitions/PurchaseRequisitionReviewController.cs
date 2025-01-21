@@ -95,7 +95,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
             purchaserequisitions = db.PurchaseRequisitions
                    .Where(x => x.IsOnlineApproved && x.IsManual == false && x.ItemType != PurchaseItemType.Service ||
                                x.IsMiddleOnlineApproved && x.IsManual && x.ItemType != PurchaseItemType.Service ||
-                               x.IsMiddleOnlineApproved && x.ItemType == PurchaseItemType.Service);
+                               x.IsMiddleOnlineApproved && x.ItemType == PurchaseItemType.Service ||
+                               x.IsDepartmentOnlineApproved && !x.IsManual);
 
             if (FinanceConfigurationHelper.IsPRBudgetControlEnabled())
             {

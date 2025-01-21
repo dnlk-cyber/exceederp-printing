@@ -259,18 +259,22 @@
                                               .Name("PurchaseRequisitionUserValidation_#=PurchaseRequisitionID#")
                                               .Columns(columns =>
                                               {
-                                                          columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
-                                                          columns.Bound(c => c.Remark).Width(170);
-                                                          columns.Command(command =>
-                                              {
-                                                                                                            command.Edit();
-                                                                                                //command.Destroy();
-                                                                                            });
-                                                      })
+                                                  columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                  columns.Bound(c => c.Remark).Width(170);
+                                                  columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                  columns.Bound(c => c.LastModified).Hidden(true);
+                                                  columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                                  columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                  columns.Command(command =>
+                                                  {
+                                                      command.Edit();
+                                                      //command.Destroy();
+                                                  });
+                                              })
                                               .ToolBar(toolbar =>
                                               {
-                                                          toolbar.Create();
-                                                      })
+                                                  toolbar.Create();
+                                              })
                                               .Editable(editable => editable.Mode(GridEditMode.InLine))
                                               .Scrollable()
                                               .Events(x => x.DataBound("onDataBoundValidationDepartment"))
@@ -282,9 +286,9 @@
                                                       .RequestEnd("onRequestEnd(\"PurchaseRequisitionUserValidation_#=PurchaseRequisitionID#\")"))
                                                   .Model(model =>
                                                   {
-                                                              model.Id(p => p.PurchaseRequisitionUserDepartmentValidationID);
+                                                      model.Id(p => p.PurchaseRequisitionUserDepartmentValidationID);
 
-                                                          })
+                                                  })
                                                   .Read(read => read.Action("PurchaseRequisitionUserDepartmentValidations_Read", "ServiceRequisitionDepartmentValidation", new { id = "#=PurchaseRequisitionID#" }).Data("sendForgery"))
                                                   .Create(create => create.Action("PurchaseRequisitionUserDepartmentValidations_Create", "ServiceRequisitionDepartmentValidation", new { id = "#=PurchaseRequisitionID#" }).Data("sendForgery"))
                                                   .Update(update => update.Action("PurchaseRequisitionUserDepartmentValidations_Update", "ServiceRequisitionDepartmentValidation").Data("sendForgery"))
