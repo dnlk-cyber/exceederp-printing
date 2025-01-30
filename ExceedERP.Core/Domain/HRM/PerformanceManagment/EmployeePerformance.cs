@@ -101,6 +101,12 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public int GlFiscalYearId { get; set; }
         [Display(Name = "Period")]
         public int GlPeriodId { get; set; }
+        [Display(Name = "Branch")]
+        public int BranchId { get; set; }
+        [Display(Name = "Bussiness Unit")]
+        public int BusinessUnitId { get; set; }
+        [Display(Name = "Work Unit")]
+        public int OrgStructureId { get; set; }
         [Display(Name = "Weight")]
         public decimal Weight { get; set; }
         [Display(Name = "Result")]

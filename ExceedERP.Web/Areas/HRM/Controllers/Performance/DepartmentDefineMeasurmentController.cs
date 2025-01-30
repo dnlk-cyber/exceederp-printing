@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -181,6 +181,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                     measurementDefinition.EvalutionType = departmentLevelCriteria.EvalutionType;
                     measurementDefinition.CriteriaCategoryId = departmentLevelCriteria.CriteriaCategoryId;
                     measurementDefinition.Role = departmentLevelCriteria.Role;
+                    measurementDefinition.OrgStuructureId = departmentLevelCriteria.OrgStuructureId;
                     measurementDefinition.DefnPercentageofWeight = departmentLevelCriteria.DefnPercentageofWeight;
                     measurementDefinition.IsMainCompanyLevel = departmentLevelCriteria.IsMainCompanyLevel;
                     measurementDefinition.IsDepartmentLevel = departmentLevelCriteria.IsDepartmentLevel;

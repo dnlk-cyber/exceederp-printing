@@ -36,7 +36,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                               FullNameAmharic = x.EmployeeCode+"-"+x.FirstName+" "+x.MiddleName+" "+x.LastName}).AsQueryable();
            
             ViewData["Period"] = db.Quarters.Select(x=>new { x.QuarterId,x.Name}).ToList();
-           
+            var branches = db.Branch.Select(x => new { x.BranchId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
+            ViewData["branches"] = branches;
+            var businessUnits = db.BusinessUnits.Select(x => new { x.BusinessUnitId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
+            ViewData["businessUnits"] = businessUnits;
+            var workunits = db.MainCompanyStructures.Select(x => new { x.OrgStructureId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") }).ToList();
+            ViewData["workunits"] = workunits;
+
         }
         public string GetEvaluationTypeName(int lookupId)
         {
@@ -99,6 +105,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 EmployeeId = employeePerformance.EmployeeId,
                 GlFiscalYearId = employeePerformance.GlFiscalYearId,
                 GlPeriodId = employeePerformance.GlPeriodId,
+                BranchId = employeePerformance.BranchId,
+                BusinessUnitId = employeePerformance.BusinessUnitId,
+                OrgStructureId = employeePerformance.OrgStructureId,
                 Result = employeePerformance.Result,
                 Weight = employeePerformance.Weight,
                 TotalDays = employeePerformance.TotalDays,
@@ -112,6 +121,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             return Json(result);
         }
+
         ////////////////
         ///////////////
         
@@ -199,7 +209,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             return result;
         }
-        public JsonResult GenerateEmployeePerformanceSummary(string empId, int fiscalYearId, int periodId)
+        public JsonResult GenerateEmployeePerformanceSummary(string empId, int fiscalYearId, int periodId,string branchId,string code)
         {
             decimal datesServedInThisFiscalYear = 0;
             decimal bonus = 0;
@@ -208,6 +218,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             if (!string.IsNullOrEmpty(empId)&&int.TryParse(empId,out int employeeId))
             {
                 employeePerformances = employeePerformances.Where(x => x.EmployeeId == employeeId).ToList();
+            }
+            if (!string.IsNullOrEmpty(branchId)&&int.TryParse(branchId,out int brachIdParded))
+            {
+                employeePerformances = employeePerformances.Where(x => x.BranchId == brachIdParded).ToList();
+            }
+            if (!string.IsNullOrEmpty(code)&&int.TryParse(code,out int businessUnitId))
+            {
+                employeePerformances = employeePerformances.Where(x => x.BusinessUnitId == businessUnitId).ToList();
             }
             
             if (!employeePerformances.Any())
@@ -224,7 +242,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                                    x.EmployeeId,
                                    x.GlFiscalYearId,
                                    x.GlPeriodId,
-
                                }).OrderByDescending(x => x.GlFiscalYearId).ToList();
             foreach (var empPerformance in distictemployeePerformances)
             {
@@ -283,6 +300,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                             EmployeeId = empPerformance.EmployeeId,
                             GlFiscalYearId = empPerformance.GlFiscalYearId,
                             GlPeriodId = empPerformance.GlPeriodId,
+                            OrgStructureId = empPerformance.OrgStructureId,
+                            BranchId = empPerformance.BranchId,
+                            BusinessUnitId = empPerformance.BusinessUnitId,
                             CreatedBy = User.Identity.Name,
                             DateCreated = DateTime.Now,
                             Weight = weight,
@@ -294,6 +314,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                     }
                     else
                     {
+                        employeesummary.OrgStructureId = empPerformance.OrgStructureId;
+                        employeesummary.BranchId = empPerformance.BranchId;
+                        employeesummary.BusinessUnitId = empPerformance.BusinessUnitId;
                         employeesummary.Weight = weight;
                         employeesummary.Result =Math.Round(score,2);
                         employeesummary.TotalDays = datesServedInThisFiscalYear;

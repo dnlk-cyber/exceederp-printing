@@ -96,7 +96,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         //    empPerform.Type = lookup.Description;
                         //}
                         // empPerform.EvaluationCriteria = empPerformance.EvaluationCriteria;
-                        addPerfor = addPerfor + empPerformance.Result;
+                        addPerfor = addPerfor + empPerformance.Result??0;
 
 
 

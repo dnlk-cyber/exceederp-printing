@@ -563,6 +563,10 @@
     <Compile Include="Migrations\202501141225266_performancenadpr.Designer.cs">
       <DependentUpon>202501141225266_performancenadpr.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202501300644361_employeeperformance.cs" />
+    <Compile Include="Migrations\202501300644361_employeeperformance.Designer.cs">
+      <DependentUpon>202501300644361_employeeperformance.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -938,6 +942,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202501141225266_performancenadpr.resx">
       <DependentUpon>202501141225266_performancenadpr.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202501300644361_employeeperformance.resx">
+      <DependentUpon>202501300644361_employeeperformance.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

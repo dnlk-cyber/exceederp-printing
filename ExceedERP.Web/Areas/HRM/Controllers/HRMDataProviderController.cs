@@ -586,7 +586,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         {
             return Json(db.CriteriaCategories.Select(x => new { x.CriteriaCategoryId, x.Name }).ToList(), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetEvaluationCriterias(int criteriaCategoryId, string level)
+        public JsonResult GetEvaluationCriterias(int criteriaCategoryId, string level, string workUnit = null)
         {
             var lookupIds = db.Lookups.Where(x => x.EvalutionType == EvaluationType.SelfEvaluation
                                                 || x.EvalutionType == EvaluationType.PeerEvaluation
@@ -597,16 +597,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                                                 || x.EvalutionType == EvaluationType.Project_Manager
                                                 ).Select(x => x.LookupId).ToList();
             List<MeasurementDefinition> measurments = db.MeasurementDefinitions.Where(x => !lookupIds.Contains(x.LookupId) && x.CriteriaCategoryId == criteriaCategoryId).ToList();
-
             if (level == "Global" || level == "1")
             {
                 measurments = measurments.Where(x => !x.IsDepartmentLevel).ToList();
             }
             else if (level == "Department" || level == "2")
             {
-                measurments = db.MeasurementDefinitions.Where(x => x.IsDepartmentLevel).ToList();
+                measurments = measurments.Where(x => x.IsDepartmentLevel).ToList();
+                if (!string.IsNullOrEmpty(workUnit) && int.TryParse(workUnit, out int orgId))
+                {
+                    measurments = measurments.Where(x => x.OrgStuructureId == orgId).ToList();
+                }
             }
-
             return Json(measurments.Select(p => new
             {
                 MeasurementDefinitionId = p.MeasurementDefinitionId,

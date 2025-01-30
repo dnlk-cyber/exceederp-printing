@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
@@ -20,18 +20,17 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         [Display(Name = "HR_PerformanceManagment_MeasurementDefinition_PercentageofWeight", ResourceType = typeof(Localization.Resources))]
         public decimal DefnPercentageofWeight { get; set; }
         [Display(Name = "HR_PerformanceManagment_MeasurementDefinition_Result", ResourceType = typeof(Localization.Resources))]
-        public decimal Result { get; set; }
-        public int EmployeeId { get; set; }
+        public decimal? Result { get; set; }
+        public int? EmployeeId { get; set; }
         [Display(Name = "HR_PerformanceManagment_MeasurementDefinition_Role", ResourceType = typeof(Localization.Resources))]
         public ResponsibilityLevel Role { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
-        public int OrgStuructureId { get; set; }
+        [Display(Name ="Work Unit")]
+        public int? OrgStuructureId { get; set; }
         [Display(Name ="Evalution Type")]
         public EvaluationType EvalutionType { get; set; }
         public bool IsDepartmentLevel { get; set; }
-        [NotMapped]
-        public int CheckEmp { get; set; }
         [Display(Name= "Criteria Category")]
         public int CriteriaCategoryId { get; set; }
         public bool IsMainCompanyLevel { get; set; }

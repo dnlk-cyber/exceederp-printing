@@ -135,8 +135,9 @@
                                         .DataTextField("Text")
                                         .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.EvaluationLevel)))
                                         .DataValueField("Value")
-                                        .Filter("contains")
-                                       // .AutoBind(false)
+                                        .Filter("contains") 
+                                        .Events(x => x.Change("onEvaluationChange"))
+                                        // .AutoBind(false)
                                         //.Events(e => e.Change("Roles"))
                                         .HtmlAttributes(new { style = "width: 120px;" })
 
@@ -154,17 +155,41 @@
                                                 //.BindTo((IEnumerable)ViewData["EvaluationTypes"])
                                                 .DataValueField("CriteriaCategoryId")
                                                 .Filter("contains")
-                                               // .AutoBind(false)
+                                                                             
+                                                .Events(x => x.Change("onEvaluationChange"))
+                                                // .AutoBind(false)
                                                 .DataSource(dataSource =>
                                                 {
                                                     dataSource.Read(read => read.Action("GetCriteriaCategory", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery")/*.Data("filterEvaluationCriteria")*/)
                                                     .ServerFiltering(false);
                                                 })
-                                   
-                                                //.HtmlAttributes(new { style = "width: 150px;" })
+
+                            //.HtmlAttributes(new { style = "width: 150px;" })
                             )
                         </div>
 
+                        <div class="col-md-1 clasToBeShow" style="display:none">
+                            <label class="workUnit-label" for="OrgStructureId" style="width: 150px;">@Resources.HR_EmployeeDetail_Placement_OrgStructureId</label>
+                            <br />
+                                                 
+                            @(Html.Kendo().DropDownListFor(m => m)
+                              .OptionLabel( Resources.Select)
+                              .Name("orgStructureId")
+                              .DataTextField("Name")
+                              .DataValueField("OrgStructureId")
+                              .Filter("contains")              
+                              .Events(x => x.Change("onEvaluationChange"))
+
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetAllDepartments", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
+                                      .ServerFiltering(false);
+                              })
+
+                              .ValuePrimitive( true)
+                        )
+
+                        </div>
                         <div class="col-md-1">
                             <label class="category-label" for="EvaluationCriteriaId" style="width: 150px;">@Resources.HR_PerformanceManagment_EmployeePerformance_EvaluationType</label>
                             <br />
@@ -172,8 +197,8 @@
                                                 .Name("EvaluationCriteriaId")
                                                 .OptionLabel(Resources.Select)
                                                 // .Placeholder("Type")
-                                                .CascadeFrom("Evaluation")
-                                                .CascadeFrom("CriteriaCategoryId")
+                                                //.CascadeFrom("Evaluation")
+                                                //.CascadeFrom("CriteriaCategoryId")
                                                 .DataTextField("Name")
                                                 //.BindTo((IEnumerable)ViewData["EvaluationTypes"])
                                                 .DataValueField("MeasurementDefinitionId")
@@ -479,6 +504,7 @@
 
         var evaluationCriteriaId = $("#EvaluationCriteriaId").data("kendoDropDownList").value();
         var employeeId = $("#EmployeeId").data("kendoDropDownList").value();
+        var workunitId = $("#orgStructureId").data("kendoDropDownList").value();
         var yearId = $("#GlFiscalYearId").data("kendoDropDownList").value();
         var periodId = $("#Period").data("kendoDropDownList").value();
 
@@ -577,7 +603,9 @@
     function filterEvaluationCriteria() {
         return {
             criteriaCategoryId: $("#CriteriaCategoryId").val(),
-            level: $("#Evaluation").val()
+            level: $("#Evaluation").val(),
+            workUnit: $("#orgStructureId").val(),
+
 
         };
     }
@@ -644,8 +672,36 @@
                 });
             }
     }
+
+    }
+    function onEvaluationChange(e) {
+        var evaluationType = $("#Evaluation").data("kendoDropDownList");
+        var dStatus = evaluationType.value();
+        if (dStatus == 2) {
+            var showField = document.querySelector('.clasToBeShow');
+
+            showField.style.display = 'block';
+
+
         }
-       
+        else {
+            var hiddenField = document.querySelector('.clasToBeShow');
+
+
+            hiddenField.style.display = 'none';
+            var workUnitt = $("#orgStructureId").data("kendoDropDownList");
+            if (workUnitt) {
+                workUnitt.value(null); // Reset the value
+                workUnitt.trigger("change"); // Notify changes
+               // $("#orgStructureId").data("kendoDropDownList").dataSource.read();
+                $("#EvaluationCriteriaId").data("kendoDropDownList").dataSource.read();
+
+            }
+        }
+        filterEvaluationCriteria();
+        $("#EvaluationCriteriaId").data("kendoDropDownList").dataSource.read();
+
+    }
 </script>
 <style>
     .col-md-1 {
