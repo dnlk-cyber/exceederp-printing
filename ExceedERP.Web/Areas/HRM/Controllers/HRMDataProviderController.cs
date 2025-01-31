@@ -35,6 +35,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         ExceedDbContext db = new ExceedDbContext();
         //new
         private HRMInputs inputs = new HRMInputs();
+
+        public JsonResult GetAllDepartmentsForEvalutionCriteria()
+        {
+            var orgIds = db.MeasurementDefinitions.Where(x => x.OrgStuructureId != null || x.OrgStuructureId != 0).Select(x => x.OrgStuructureId);
+            var departments = db.MainCompanyStructures
+                                            .Where(x => orgIds.Contains(x.OrgStructureId))
+                                            .Where(x => x.IsActive).ToList();
+            return Json(departments.Select(p => new
+            {
+                OrgStructureId = p.OrgStructureId,
+                Name = p.Name
+            }), JsonRequestBehavior.AllowGet);
+        }
         public ActionResult GetActiveEmployeesForDepartmentDelegation()
         {
             var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);

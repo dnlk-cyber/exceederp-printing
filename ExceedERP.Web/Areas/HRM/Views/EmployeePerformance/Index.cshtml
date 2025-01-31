@@ -182,7 +182,7 @@
 
                               .DataSource(dataSource =>
                               {
-                                  dataSource.Read(read => read.Action("GetAllDepartments", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
+                                  dataSource.Read(read => read.Action("GetAllDepartmentsForEvalutionCriteria", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
                                       .ServerFiltering(false);
                               })
 
