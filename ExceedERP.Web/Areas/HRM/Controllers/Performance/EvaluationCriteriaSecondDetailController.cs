@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -18,7 +18,12 @@ using ExceedERP.Core.Domain.Global;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
 
-    [AuthorizeRoles(HrmConstants.HRPerformanceAdmin)]
+    [AuthorizeRoles(HrmConstants.HRPerformanceAdmin,
+                        HrmConstants.HRPerformanceUser,
+                        HrmConstants.HRAdmin,
+                        HrmConstants.HRDepartmentHead,
+                        HrmConstants.HRPerformanceReport,
+                        HrmConstants.HREmployeeSelfService)]
     public class EvaluationCriteriaSecondDetailController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
