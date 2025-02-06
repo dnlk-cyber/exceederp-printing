@@ -90,7 +90,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         }
         public ActionResult DepartmentDefineMeasurment_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<MeasurementDefinition> departmentLevelCriterias = db.MeasurementDefinitions.Where(x=>x.IsDepartmentLevel);
+            var user = User.Identity.Name;
+            var orgId = UserInformationHelper.GetEmployeeDepartmentId(user);
+            IQueryable<MeasurementDefinition> departmentLevelCriterias = db.MeasurementDefinitions
+                                                                .Where(x=>x.OrgStuructureId==orgId||x.CreatedBy==user)
+                                                                .Where(x=>x.IsDepartmentLevel);
             DataSourceResult result = departmentLevelCriterias.ToDataSourceResult(request, departmentLevelCriteria => new {
                 MeasurementDefinitionId = departmentLevelCriteria.MeasurementDefinitionId,
                 EmployeeId = departmentLevelCriteria.EmployeeId,
