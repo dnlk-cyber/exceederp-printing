@@ -16,7 +16,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeInfo> GetEmployeeBirthDate(/*string branchId,*/ object[] branchId,string bussinessUnitId, string orgStructureId, int agemin, int ageMax, string status)
+        public List<EmployeeInfo> GetEmployeeBirthDate(/*string branchId,*/ object[] branchId, string orgStructureId, int agemin, int ageMax, string status)
         {
             List<EmployeeInfo> EmployeeInfoList = new List<EmployeeInfo>();
             string cultureName = GlobalHelper.GetCurrentCulture();
@@ -54,14 +54,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 HashSet<int> empIds = new HashSet<int>(placements.Where(x => x.OrgStructureId==orgId).Select(x => x.EmployeeId));
                 employeesQuery = employeesQuery.Where(x => empIds.Contains(x.EmployeeId));
             }
-            if (!string.IsNullOrEmpty(bussinessUnitId))
-            {
-                int.TryParse(bussinessUnitId, out int bUId);
-                //placements = placements.Where(x=>x.BusinessUnitId ==bUId).ToList();
-                HashSet<int> empIds = new HashSet<int>(placements.Where(x => x.BusinessUnitId == bUId).Select(x => x.EmployeeId));
-                employeesQuery = employeesQuery.Where(x => empIds.Contains(x.EmployeeId));
-
-            }
+           
             if (!string.IsNullOrEmpty(status) && status.ToLower() == "active")
             {
                 // placements = EmployeeHelper.Get_Active_EmployeesFrom_Placement(placements).Where(x => x.isCurrent).DistinctByField(x => x.EmployeeId).ToList();
