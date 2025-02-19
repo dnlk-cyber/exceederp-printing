@@ -78,11 +78,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 // placements = EmployeeHelper.Get_InActive_EmployeesFrom_Placement(placements).OrderByDescending(x => x.AssignmentDate).DistinctByField(x => x.EmployeeId).ToList();
                 employeesQuery = employeesQuery.Where(x => !x.IsActive);
             }
-            if (ageMax != 0 && agemin >= 0 && ageMax>agemin)
+            if (ageMax != 0 && agemin >= 0 && ageMax > agemin)
             {
                 DateTime minDate = DateTime.Now.AddYears(-agemin);
                 DateTime MaxDate = DateTime.Now.AddYears(-ageMax);
-                employeesQuery = employeesQuery.Where(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= agemin && (DateTime.Now.Year - x.DateOfBirth.Year)<=ageMax);
+                employeesQuery = employeesQuery.Where(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= agemin && (DateTime.Now.Year - x.DateOfBirth.Year) <= ageMax);
                 //employeesQuery = employeesQuery.Where(x => (DateTime.Now.Year - x.DateOfBirth.Year) >= agemin && (DateTime.Now.Year - x.DateOfBirth.Year)<=ageMax);
 
             }
@@ -90,8 +90,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             foreach (var employee in employeesQuery)
             {
                 EmployeeInfo EmployeeInfo = new EmployeeInfo();
-                var place = db.Placements.FirstOrDefault(x => x.EmployeeId == employee.EmployeeId&&x.isCurrent);
-                decimal diff = (decimal)(DateTime.Now - employee.DateOfBirth).TotalDays/365.25m;
+                var place = db.Placements.FirstOrDefault(x => x.EmployeeId == employee.EmployeeId && x.isCurrent);
+                decimal diff = (decimal)(DateTime.Now - employee.DateOfBirth).TotalDays / 365.25m;
                 int diffage = (int)diff;
                 //decimal diff = DateTime.Now.Year - employee.DateOfBirth.Year;
                 if (ageMax > 0 && agemin >= 0 && agemin <= ageMax)
@@ -101,15 +101,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                         EmployeeInfo.IdNumber = employee.EmployeeCode;
                         EmployeeInfo.BirthDate = employee.DateOfBirthAm;
-                           
+
                         EmployeeInfo.Sex = HrHelper.GetLocalizedGender(employee.Gender);
 
                         EmployeeInfo.FullName = employee.FullNameAmharic;
 
                         EmployeeInfo.Dob = employee.DateOfBirthAm;
-                           
-                           
-                           
+
+
+
                         EmployeeInfo.CriteriaName = GetAge(employee.DateOfBirth).ToString();
 
                         EmployeeInfoList.Add(EmployeeInfo);
@@ -117,7 +117,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 }
                 else
                 {
-                        
+
 
                     EmployeeInfo.IdNumber = employee.EmployeeCode;
                     EmployeeInfo.BirthDate = employee.DateOfBirthAm;
@@ -141,12 +141,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         }
                     }
 
-                        
+
                     EmployeeInfo.CriteriaName = GetAge(employee.DateOfBirth).ToString();
 
                     EmployeeInfoList.Add(EmployeeInfo);
                 }
-                
+
             }
 
             return EmployeeInfoList;
