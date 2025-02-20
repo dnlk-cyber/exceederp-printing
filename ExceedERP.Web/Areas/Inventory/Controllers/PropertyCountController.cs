@@ -245,9 +245,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
 				#region get balance with respect to property count date instead of CURRENT BALANCE
 				var binCardLines =
 				   db.BinCardLines.Where(b => b.Date <= countRecord.CountDate &&//added =
-				   b.StoreItemAssignmentID == item.StoreItemAssignmentID//&&
+				   b.StoreItemAssignmentID == item.StoreItemAssignmentID &&
 				   //b.ReferenceDoc != null &&
-				   //!b.ReferenceDoc.StartsWith("Count on date") // exclude count
+				   !b.ReferenceDoc.StartsWith("Count on date") // exclude count
 				   ).AsQueryable();
 				if (sortOrder == BincardSortOrderAttributes.DateOfTransaction.ToString())
 				{
