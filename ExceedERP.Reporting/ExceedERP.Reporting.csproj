@@ -2239,13 +2239,27 @@
     <Compile Include="Health\ViewModel\AccidentViewModel.cs" />
     <Compile Include="Health\ViewModel\MedicalRequestVM.cs" />
     <Compile Include="HelpDesk\DataSource\MaintenanceFormODS.cs" />
+    <Compile Include="HelpDesk\DataSource\SoftwareLicenseODS.cs" />
+    <Compile Include="HelpDesk\DataSource\SoftwareLicenseTypeODS.cs" />
+    <Compile Include="HelpDesk\DataSource\SupportGroupODS.cs" />
+    <Compile Include="HelpDesk\DataSource\TicketStatusODS.cs" />
+    <Compile Include="HelpDesk\DataSource\TicketTypeODS.cs" />
     <Compile Include="HelpDesk\Designer\MaintenanceForm.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="HelpDesk\Designer\MaintenanceForm.Designer.cs">
       <DependentUpon>MaintenanceForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="HelpDesk\Designer\SoftwareLicenseReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HelpDesk\Designer\SoftwareLicenseReport.Designer.cs">
+      <DependentUpon>SoftwareLicenseReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="HelpDesk\ViewModel\MaintenanceFormVM.cs" />
+    <Compile Include="HelpDesk\ViewModel\SoftwareLicenseVM.cs" />
+    <Compile Include="HelpDesk\ViewModel\SupportGroupVM.cs" />
+    <Compile Include="HelpDesk\ViewModel\TicketTypeVM.cs" />
     <Compile Include="HRM\HRM\AttendanceLetter.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -4383,6 +4397,7 @@
     </Compile>
     <Compile Include="SharedDataSources\AgeObjectDataSource.cs" />
     <Compile Include="SharedDataSources\AllActiveandInActiveEmployeesObjectDataSource.cs" />
+    <Compile Include="SharedDataSources\AllActiveEmployeesObjectDataSource.cs" />
     <Compile Include="SharedDataSources\AllEmployeeCodeObjectDataSource.cs" />
     <Compile Include="SharedDataSources\AllEmployeeObjectDataSource.cs" />
     <Compile Include="SharedDataSources\AssigmnetTypeObjectDataSource.cs" />
@@ -5457,6 +5472,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HelpDesk\Designer\MaintenanceForm.resx">
       <DependentUpon>MaintenanceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HelpDesk\Designer\SoftwareLicenseReport.resx">
+      <DependentUpon>SoftwareLicenseReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\AttendanceLetter.resx">
       <DependentUpon>AttendanceLetter.cs</DependentUpon>

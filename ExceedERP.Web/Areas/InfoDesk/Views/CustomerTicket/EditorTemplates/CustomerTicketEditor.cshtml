@@ -5,7 +5,7 @@
 <form>
 
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-sm-1">
 
         </div>
 
@@ -16,29 +16,21 @@
                     @Html.Label("Ticket Type")
                 </div>
                 <div>
-                    @(Html.Kendo().DropDownListFor(model => model.SpecificTicketTypeId)
+                    @(Html.Kendo().DropDownListFor(model => model.TicketType_HelpDeskId)
 
 
-                          .OptionLabel("Select Specific Ticket ...")
-                          .DataTextField("Type")
-                          .Filter("contains")
-                          .DataValueField("TicketType_HelpDeskId")
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetSpecificTicket", "InfoDeskDataProvider"));
+                                                  .OptionLabel("Select Specific Ticket ...")
+                                                  .DataTextField("Type")
+                                                  .Filter("contains")
+                                                  .DataValueField("TicketType_HelpDeskId")
+                                                  .DataSource(dataSource =>
+                                                  {
+                                                      dataSource.Read(read => read.Action("GetSpecificTicket", "InfoDeskDataProvider").Data("sendForgery"));
 
-                          }).ValuePrimitive(true))
+                                                  }).ValuePrimitive(true))
                 </div>
             </div>
         </div>
-
-
-    </div>
-    <div class="row">
-        <div class="col-md-3">
-
-        </div>
-
 
         <div class="col-md-3 employee">
 
@@ -48,150 +40,62 @@
                 </div>
                 <div>
                     @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
-                       .Name("EmployeeId")
-                       //.AutoBind(false)
-                       .OptionLabel("Select Employee ...")
-                       .DataTextField("FullNameaEnglish")
-                       .Filter("contains")
-                       .DataValueField("EmployeeId")
-                       .DataSource(dataSource =>
-                       {
-                           dataSource.Read(read => read.Action("GetAllEmployees", "HRMDataProvider", new { area = "HRM" }))
-                            .ServerFiltering(false);
-                       }).ValuePrimitive(true))
+                                               .Name("EmployeeId")
+                                               //.AutoBind(false)
+                                               .OptionLabel("Select Employee ...")
+                                               .DataTextField("FullNameaEnglish")
+                                               .Filter("contains")
+                                               .DataValueField("EmployeeId")
+                                               .DataSource(dataSource =>
+                                               {
+                                                   dataSource.Read(read => read.Action("GetAllEmployees", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
+                                                    .ServerFiltering(false);
+                                               }).ValuePrimitive(true))
                 </div>
             </div>
-        </div>
-
-
-    </div>
-
-
-
-
-    <div class="row">
-        <div class="col-md-3">
         </div>
 
         <div class="col-md-3">
 
             <div class="form-group">
                 <div class="k-label">
-                    @Html.LabelFor(model => model.Priority)
+                    @Html.LabelFor(model => model.SupportGroup_HelpDeskId)
                 </div>
                 <div>
-                    @(Html.Kendo().DropDownListFor(model => model.Priority)
-                      .AutoBind(false)
-                      .OptionLabel("Select")
-                                .DataTextField("Name")
-                                      .DataValueField("Name").DataSource(dataSource =>
-                                      {
-                                          dataSource.Read(read => read.Action("GetPriorityType", "InfoDeskDataProvider"));
+                    @(Html.Kendo().DropDownListFor(model => model.SupportGroup_HelpDeskId)
+                                                   .AutoBind(false)
+                                                   .OptionLabel("Select")
+                                                   .DataTextField("Name")
+                                                           .DataValueField("SupportGroup_HelpDeskId")
+                                                   .DataSource(dataSource =>
+                                                   {
+                                                       dataSource.Read(read => read.Action("GetSupportGroup", "InfoDeskDataProvider").Data("sendForgery"));
 
-                                      }).ValuePrimitive(true).Template("<span class=\"k-state-default\" > <p style=\"background-color:#:data.Color#;\">#: data.Name #</p></span>")
-                    )
-                    @Html.ValidationMessageFor(model => model.Priority)
+                                                   }).ValuePrimitive(true))
+                    @Html.ValidationMessageFor(model => model.SupportGroup_HelpDeskId)
                 </div>
-
             </div>
         </div>
 
-
-
+      
     </div>
 
     <div class="row">
-
-        <div class="col-md-3">
-
+        <div class="col-sm-1">
         </div>
-
-        <div class="col-md-3">
+        <div class="col-sm-9">
 
             <div class="form-group">
                 <div class="k-label">
-                    @Html.LabelFor(model => model.SupportGroupId)
+                    @Html.LabelFor(model=>model.Description)
                 </div>
                 <div>
-                    @(Html.Kendo().DropDownListFor(model => model.SupportGroupId)
-                           .AutoBind(false)
-                           .OptionLabel("Select")
-                           .DataTextField("Name")
-                                   .DataValueField("SupportGroup_HelpDeskId")
-                           .DataSource(dataSource =>
-                           {
-                               dataSource.Read(read => read.Action("GetSupportGroup", "InfoDeskDataProvider"));
-
-                           }).ValuePrimitive(true))
-                    @Html.ValidationMessageFor(model => model.SupportGroupId)
+                    @Html.TextAreaFor(model=>model.Description, new { @class ="form-control rounded",style="color:red;height:100px;font-family:arial;"  })
                 </div>
             </div>
+
         </div>
     </div>
-
-    @*<div class="row">
-
-        <div class="col-md-3">
-
-        </div>
-        <div class="col-md-3">
-
-            <div class="form-group">
-                <div class="k-label">
-                    @Html.LabelFor(model => model.StatusType)
-                </div>
-                <div>
-                    @(Html.Kendo().DropDownListFor(model => model.StatusType)
-                            .AutoBind(false)
-                            .OptionLabel("Select")
-                                      .DataTextField("Name")
-                                            .DataValueField("Name").DataSource(dataSource =>
-                            {
-                                dataSource.Read(read => read.Action("StatusAwaitingDDBind", "InfoDeskDataProvider"));
-
-                            }).ValuePrimitive(true).Template("<span class=\"k-state-default\" > <p style=\"background-color:#:data.Color#;\">  #: data.Name #</p></span>")
-                    )
-                    @Html.ValidationMessageFor(model => model.StatusType)
-                </div>
-
-            </div>
-        </div>
-
-
-
-    </div>
-    <br />*@
-
-    <div class="row">
-
-        <div class="col-md-3">
-            <p id="p"></p>
-        </div>
-
-
-        <div class="col-md-3">
-            <div class="form-group">
-                <div class="k-label">
-                    @Html.LabelFor(model => model.Description)
-                </div>
-                <div>
-                    @Html.TextAreaFor(model => model.Description, 3, 30, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Description)
-
-
-                </div>
-            </div>
-        </div>
-
-
-
-
-       
-
-  
-
-    </div>
-
 
 </form>
 <script>

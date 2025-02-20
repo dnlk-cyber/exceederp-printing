@@ -4,15 +4,13 @@ using System.Linq;
 using System.Web.Mvc;
 
 using ExceedERP.DataAccess.Context;
-using System.Data.Entity.Core.Objects;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.InfoDesk;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
-  
+
     [AllowAnonymous]
     public class InfoDeskDataProviderController : Controller
     {
@@ -48,6 +46,15 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 Value = s.UserName,
             }).ToList();
             return Json(Parts, JsonRequestBehavior.AllowGet);
+
+        }
+        public JsonResult GetAssignedUserName()
+        {
+
+          
+           var users = UserDb.Users.Select(x => new { UserId = x.Id, Name = x.UserName }).ToList();
+
+            return Json(users, JsonRequestBehavior.AllowGet);
 
         }
         public JsonResult getGroupMembers(String TicketGroup)
@@ -263,7 +270,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             return Json(employees.Select(p => new
             {
                 EmployeeId = p.EmployeeId,
-                FullNameaEnglish = p.FullNameaEnglish
+                FullNameaEnglish = p.EmployeeCode+"-"+p.FullNameaEnglish
             }), JsonRequestBehavior.AllowGet);
 
         }
@@ -274,7 +281,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             List<int> empIds = new List<int>();
             if(customer != null)
             {
-                var group = db.SupportGroup_HelpDesks.FirstOrDefault(x =>x.SupportGroup_HelpDeskId == customer.SupportGroupId);
+                var group = db.SupportGroup_HelpDesks.FirstOrDefault(x =>x.SupportGroup_HelpDeskId == customer.SupportGroup_HelpDeskId);
                 if(group != null)
                 {
                     var subGroups = db.SupportGroupDetail_HelpDesks.Where(x=>x.SupportGroupId == group.SupportGroup_HelpDeskId).ToList().Select(x=>x.EmployeeId);

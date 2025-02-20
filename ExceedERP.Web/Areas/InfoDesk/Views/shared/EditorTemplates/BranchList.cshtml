@@ -9,7 +9,7 @@
 
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("getBranches", "CRMDataProvider"))
+                              dataSource.Read(read => read.Action("getBranches", "CRMDataProvider").Data("sendForgery"))
                                         .ServerFiltering(false);
                           })
 

@@ -1,0 +1,13 @@
+@model ExceedERP.Core.Domain.InfoDesk.Support.CustomerTicket_HelpDesk
+
+@(Html.Kendo().DropDownListFor(model => model.Priority)
+                              .AutoBind(false)
+                              .OptionLabel("Select")
+                                        .DataTextField("Name")
+                                              .DataValueField("Name").DataSource(dataSource =>
+                                              {
+                                                  dataSource.Read(read => read.Action("GetPriorityType", "InfoDeskDataProvider").Data("sendForgery"));
+
+                                              }).ValuePrimitive(true).Template("<span class=\"k-state-default\" > <p style=\"background-color:#:data.Color#;\">#: data.Name #</p></span>")
+)
+@Html.ValidationMessageFor(model => model.Priority)

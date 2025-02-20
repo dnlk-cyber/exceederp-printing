@@ -7,7 +7,7 @@
                             .ValuePrimitive(true)
                       .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("GetMaterials", "Handler"))
+                          dataSource.Read(read => read.Action("GetMaterials", "Handler").Data("sendForgery"))
                                     .ServerFiltering(false);
                       })
 

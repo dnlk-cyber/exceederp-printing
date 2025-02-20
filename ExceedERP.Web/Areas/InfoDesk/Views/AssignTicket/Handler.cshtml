@@ -75,10 +75,10 @@
         .Error("error_handler(\"grid\")")
         .RequestStart("onRequestStart(\"grid\")")
         .RequestEnd("onRequestEnd(\"grid\")"))
-            .Read(read => read.Action("CustomerPendingTickets_Read", "CustomerTicket",new { val="handler"}))
-        .Create(create => create.Action("CustomerTickets_Create", "CustomerTicket"))
-        .Update(update => update.Action("CustomerTickets_Update", "CustomerTicket"))
-        .Destroy(destroy => destroy.Action("CustomerTickets_Destroy", "CustomerTicket"))
+            .Read(read => read.Action("CustomerPendingTickets_Read", "CustomerTicket",new { val="handler"}).Data("sendForgery"))
+        .Create(create => create.Action("CustomerTickets_Create", "CustomerTicket").Data("sendForgery"))
+        .Update(update => update.Action("CustomerTickets_Update", "CustomerTicket").Data("sendForgery"))
+        .Destroy(destroy => destroy.Action("CustomerTickets_Destroy", "CustomerTicket").Data("sendForgery"))
         ).ClientDetailTemplateId("template")
 )
 
@@ -138,10 +138,10 @@
                                                                                                     .Error("error_handler(\"Assigngrid_#=CustomerTicketID#\")")
                                                                                                     .RequestStart("onRequestStart(\"Assigngrid_#=CustomerTicketID#\")")
                                                                                                     .RequestEnd("onRequestEnd(\"Assigngrid_#=CustomerTicketID#\")"))
-                                              .Read(read => read.Action("AssignTickets_Read", "AssignTicket", new { Id = "#=CustomerTicketID#",val="handler" }))
-                                              .Create(create => create.Action("AssignTickets_Create", "AssignTicket", new { Id = "#=CustomerTicketID#" }))
-                              .Update(update => update.Action("AssignTickets_Update", "AssignTicket"))
-                              .Destroy(destroy => destroy.Action("AssignTickets_Destroy", "AssignTicket"))
+                                              .Read(read => read.Action("AssignTickets_Read", "AssignTicket", new { Id = "#=CustomerTicketID#",val="handler" }).Data("sendForgery"))
+                                              .Create(create => create.Action("AssignTickets_Create", "AssignTicket", new { Id = "#=CustomerTicketID#" }).Data("sendForgery"))
+                              .Update(update => update.Action("AssignTickets_Update", "AssignTicket").Data("sendForgery"))
+                              .Destroy(destroy => destroy.Action("AssignTickets_Destroy", "AssignTicket").Data("sendForgery"))
                           ).ToClientTemplate()
                             )
 
@@ -256,7 +256,7 @@
                                 .OptionLabel("Select")
                                 .DataSource(d =>
                                                 {
-                                                    d.Read(r => { r.Action("GetStatusType", "InfoDeskDataProvider"); })
+                                                    d.Read(r => { r.Action("GetStatusType", "InfoDeskDataProvider").Data("sendForgery"); })
 
                          .ServerFiltering(true);
                                                 }).AutoBind(true)

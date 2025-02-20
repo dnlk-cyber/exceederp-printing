@@ -180,6 +180,8 @@
     <Compile Include="HealthAndInsurance\HealthAndInsuranceIsoDocumentHelper.cs" />
     <Compile Include="HR\HRHelper.cs" />
     <Compile Include="HR\HRMIsoDocumentHelper.cs" />
+    <Compile Include="InfoDesk\InfoDeskIsoDocumentHelper.cs" />
+    <Compile Include="InfoDesk\InsuranceHelper.cs" />
     <Compile Include="Inventory\AccountCustomExtension.cs" />
     <Compile Include="Inventory\InventoryBalanceHelper.cs" />
     <Compile Include="Inventory\InventoryConfigurationHelper.cs" />

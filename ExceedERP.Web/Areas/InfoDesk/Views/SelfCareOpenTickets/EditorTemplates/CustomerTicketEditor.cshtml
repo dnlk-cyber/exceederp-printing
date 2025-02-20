@@ -25,7 +25,7 @@
                           .DataValueField("TicketType_HelpDeskId")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetSpecificTicket", "InfoDeskDataProvider"));
+                              dataSource.Read(read => read.Action("GetSpecificTicket", "InfoDeskDataProvider").Data("sendForgery"));
 
                           }).ValuePrimitive(true))
                 </div>
@@ -53,7 +53,7 @@
                                 .DataTextField("Name")
                                       .DataValueField("Name").DataSource(dataSource =>
                                       {
-                                          dataSource.Read(read => read.Action("GetPriorityType", "InfoDeskDataProvider"));
+                                          dataSource.Read(read => read.Action("GetPriorityType", "InfoDeskDataProvider").Data("sendForgery"));
 
                                       }).ValuePrimitive(true).Template("<span class=\"k-state-default\" > <p style=\"background-color:#:data.Color#;\">#: data.Name #</p></span>")
                     )
@@ -87,7 +87,7 @@
                                    .DataValueField("SupportGroup_HelpDeskId")
                            .DataSource(dataSource =>
                            {
-                               dataSource.Read(read => read.Action("GetSupportGroup", "InfoDeskDataProvider"));
+                               dataSource.Read(read => read.Action("GetSupportGroup", "InfoDeskDataProvider").Data("sendForgery"));
 
                            }).ValuePrimitive(true))
                     @Html.ValidationMessageFor(model => model.SupportGroupId)
@@ -114,7 +114,7 @@
                                       .DataTextField("Name")
                                             .DataValueField("Name").DataSource(dataSource =>
                             {
-                                dataSource.Read(read => read.Action("StatusAwaitingDDBind", "InfoDeskDataProvider"));
+                                dataSource.Read(read => read.Action("StatusAwaitingDDBind", "InfoDeskDataProvider").Data("sendForgery"));
 
                             }).ValuePrimitive(true).Template("<span class=\"k-state-default\" > <p style=\"background-color:#:data.Color#;\">  #: data.Name #</p></span>")
                     )

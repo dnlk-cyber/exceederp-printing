@@ -1019,9 +1019,13 @@
     <Compile Include="Domain\HRM\TrainingEducation\TrainingNeedRequest.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\TrainingStatus.cs" />
     <Compile Include="Domain\InfoDesk\Enum.cs" />
+    <Compile Include="Domain\InfoDesk\HelpDeskRoles.cs" />
     <Compile Include="Domain\InfoDesk\InfoDeskConstants.cs" />
+    <Compile Include="Domain\InfoDesk\InfoDeskKnowledgeBase.cs" />
+    <Compile Include="Domain\InfoDesk\License\SoftwareLicense.cs" />
     <Compile Include="Domain\InfoDesk\Support\AssignTicket.cs" />
     <Compile Include="Domain\InfoDesk\Support\CustomerTicket.cs" />
+    <Compile Include="Domain\InfoDesk\Support\HelpDeskTicket.cs" />
     <Compile Include="Domain\InfoDesk\Support\MaterialItems.cs" />
     <Compile Include="Domain\InfoDesk\Support\MaterialsUsed.cs" />
     <Compile Include="Domain\InfoDesk\Support\PriorityType.cs" />

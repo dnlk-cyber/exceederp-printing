@@ -1,0 +1,16 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+        .AutoBind(false)
+        .OptionLabel("--Select UserName--")
+        .DataTextField("Name")
+        .DataValueField("UserId")
+        .Filter("contains")
+        .ValuePrimitive(true)
+        .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read.Action("GetAssignedUserName", "InfoDeskDataProvider", new { area= "InfoDesk" }).Data("sendForgery"))
+                      .ServerFiltering(false);
+
+        })
+
+)
+@Html.ValidationMessageFor(m => m)

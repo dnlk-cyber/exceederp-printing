@@ -1,19 +1,12 @@
 ﻿using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.UI;
 using Kendo.Mvc.Extensions;
-using System;
 using System.Linq;
 using System.Web.Mvc;
 
 using System.Data.Entity;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Helpers;
-using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.InfoDesk.Support;
-using ExceedERP.Core.Domain.InfoDesk;
-using ExceedERP.Web.Areas.InfoDesk.Models;
-using ExceedERP.Core.Domain.Common;
-using System.Collections.Generic;
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
     [Authorize]
@@ -50,9 +43,10 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             if (ModelState.IsValid)
             {
-                var assign = db.AssignTicket_HelpDesks.FirstOrDefault(x => x.AssignTicket_HelpDeskId == id);
+                var assign = db.AssignTicket_HelpDesks.Find(id);
                 if (assign != null)
                 {
+                    material.AssignedTicketId = id;
                     material.CustomerTicketId = assign.CustomerTicketId;
                 }
                 var entity = new MaterialsUsed

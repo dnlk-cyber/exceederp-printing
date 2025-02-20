@@ -3,48 +3,77 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Core.Domain.InfoDesk;
-
 namespace ExceedERP.Core.Domain.InfoDesk.Support
 {
     public class CustomerTicket_HelpDesk : TrackUserOperation
     {
-
         public int CustomerTicket_HelpDeskId { get; set; }
-        [NotMapped]
-        [DisplayName("Customer Adress")]
-        public string CustomerAddress { get; set; }
         [DisplayName("Ticket Type")]
-        public int? SpecificTicketTypeId { get; set; }  
+        public int TicketType_HelpDeskId { get; set; }
+        //public int? Requester { get; set; }
         public string Description { get; set; }
+        [DisplayName("Priority")]
+        public TicketPriority TicketPriority { get; set; }
+        [DisplayName("Group")]
+        public int SupportGroup_HelpDeskId { get; set; }
+        [DisplayName("Status")]
+        public TicketStatus TicketStatus { get; set; }
+        [Display(Name = "HR_EmployeeDetail_Placement_Branch", ResourceType = typeof(Localization.Resources))]
+        public int? BranchId { get; set; }
+        //public virtual Branch Branch { get; set; }
+        [Display(Name = "Placement_BusinessUnit", ResourceType = typeof(Localization.Resources))]
+        public int? BusinessUnitId { get; set; }
+        [Display(Name = "HR_EmployeeDetail_Placement_OrgStructureId", ResourceType = typeof(Localization.Resources))]
+        public int? OrgStructureId { get; set; }
+        //public virtual MainCompanyStructure OrgStructure { get; set; }
+        public int Rate { get; set; }
         [DisplayName("Assigned To")]
-        public string AssignedTo { get; set; }
-        public string Ticket{get;set;}       
+        public int? AssignedTo { get; set; }
+        public string Role { get; set; }
+        [DisplayName(" Assigned Date")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
+        public DateTime? AssignedDate { get; set; }
+        [DisplayName("Material Used")]
+        public int? MaterialItemsId { get; set; }
+        public int? Quantity { get; set; }
         [DisplayName("Priority Color")]
         public string PriorityColor { get; set; }
-        public InfoDeskFinalizeType Status { get; set; }       
-        public string Priority { get; set; }
-        [DisplayName("Group")]
-        public int SupportGroupId { get; set; }
-        [DisplayName(" Due Date")]    
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd hh:mm:ss}")]
+        //public TicketStatus TicketStatus { get; set; }       
+        //public TicketPriority TicketPriority { get; set; }
+        public string Remark{ get; set; }
+        [DisplayName(" Due Date")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? DueDate { get; set; }
         [DisplayName("Closed Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? ClosedDate { get; set; }
+        [DisplayName("Over-Due")]
+        public decimal OverDue { get; set; }
+        [DisplayName("Root-Cuase")]
+        public string RootCuase { get; set; }
         [DisplayName("Solution Given")]
         public string SolutionGiven { get; set; }
-        [DisplayName("Employee")]
+        [DisplayName("Requester(Employee)")]
         public int? EmployeeId { get; set; }
-        public string Remark { get; set; }
         [DisplayName("Age In Days")]
         public string AgeOfTicket { get; set; }
+        public bool IsAssigned { get; set; }
+        public bool IsSendForApproval { get; set; }
+        public DateTime? SendApprovalTime { get; set; }
+        public string SendApprovalBy { get; set; }
         public bool IsConfirmedByTheRequester { get; set; }
-        public int Rate { get; set; }
+        public bool IsSendForClosing { get; set; }
+        //public int Rate { get; set; }
         public bool IsClosed { get; set; }
-
+        public bool IsMultipleAssign { get; set; }
+        public virtual TicketType_HelpDesk TicketType_HelpDesk { get; set; }
+        public virtual SupportGroup_HelpDesk SupportGroup_HelpDesk { get; set; }
+        public virtual MaterialItems MaterialItems { get; set; }
+        public virtual Person_Employee Person_Employee { get; set; }
     }
 
 
@@ -110,10 +139,23 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
         public string TicketActivityDefinitionID { get; set; }
         public string RoleID { get; set; }
 
-        public string TicketGroup { get; set; }
+       
         public bool NeedsPassKey { get; set; }
 
         public string Remark;
+    }
+
+    public class CustomerTicketAttachment
+    {
+        public int CustomerTicketAttachmentId { get; set; }
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+        public string ShortPath { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
+        public int CustomerTicket_HelpDeskId { get; set; }
+        public virtual CustomerTicket_HelpDesk Ticket_HelpDesk { get; set; }
+
     }
 
     //public enum TicketPriorityType
@@ -138,4 +180,40 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
     public enum SourceTicket {
 
     Direct,In_Direct}
+}
+public enum TicketStatus
+{
+    [Display(Name = "Waiting for Response")]
+    Waiting,
+    
+    [Display(Name = "Ticket Assigned")]
+    Assigned,
+    
+    [Display(Name = "Issue Resolved")]
+    Resolved,
+    
+    [Display(Name = "Ticket Closed")]
+    Closed,
+    
+    [Display(Name = "Not Solved")]
+    NOT_SOLVED,
+    
+    [Display(Name = "Waiting for Confirmation")]
+    WAITING_FOR_CONFIRMATION
+}
+//public enum TicketStatus
+//{
+//    Waiting,
+//    Assigned,
+//    Resolved,
+//    Closed,
+//    NOT_SOLVED,
+//    WAITING_FOR_CONFIRMATION
+
+//}
+public enum TicketPriority
+{
+    Low,
+    Medium,
+    High
 }

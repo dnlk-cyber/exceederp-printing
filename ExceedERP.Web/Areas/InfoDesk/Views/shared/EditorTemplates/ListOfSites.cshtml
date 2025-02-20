@@ -7,7 +7,7 @@
                          .ValuePrimitive(true)
                       .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("getAllSites", "CRMDataProvider",new { area = "CRM" }))
+                          dataSource.Read(read => read.Action("getAllSites", "CRMDataProvider",new { area = "CRM" }).Data("sendForgery"))
                                     .ServerFiltering(false);
                       })
 

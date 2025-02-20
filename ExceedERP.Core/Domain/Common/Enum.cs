@@ -4,6 +4,11 @@ using ExceedERP.Core.Localization;
 
 namespace ExceedERP.Core.Domain.Common
 {
+    public enum InfoDeskModuleReportType
+    {
+        ICT_Directorate_Maintainance_Form,
+        Software_License,
+    }
     public enum HealthAndInsuranceModuleReportType
     {
         Employee_Health_and_Value_Payment,

@@ -7,7 +7,7 @@
                                               .DataValueField("Value")
                               .DataSource(dataSource =>
                               {
-                                  dataSource.Read(read => read.Action("UserNameDDBind", "InfoDeskDataProvider"));
+                                  dataSource.Read(read => read.Action("UserNameDDBind", "InfoDeskDataProvider").Data("sendForgery"));
 
                               }).ValuePrimitive(true))
  

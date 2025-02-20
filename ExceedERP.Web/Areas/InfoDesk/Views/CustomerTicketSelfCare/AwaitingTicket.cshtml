@@ -1,0 +1,50 @@
+﻿@using ExceedERP.Core.Domain.InfoDesk.Support
+<legend>AwaitingTicket</legend>
+@(Html.Kendo().Grid<CustomerTicket>()
+          .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.CustomerID, (System.Collections.IEnumerable)ViewData["CustomerList"], "CustomerID", "CustomerName").Width(150);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.Priority).HtmlAttributes(new { style = "background-color:#:PriorityColor#;" });
+          columns.Bound(c => c.StatusType).HtmlAttributes(new { style = "background-color:#:StatusColor#;" });
+          columns.Bound(c => c.TicketGroup);
+          columns.Bound(c => c.EscalationLevel).Title("Escalation");
+          columns.Bound(c => c.Source);
+    
+          columns.Bound(c => c.DueDate);
+        
+          columns.Command(command => {   }).Width(180);
+      })
+     
+           .HtmlAttributes(new { style = "height: 520px;" })
+                                                  .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+
+                                                        .Scrollable()
+                                                        .Sortable()
+                                                        .Filterable()
+                                                        .Groupable()
+                                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.CustomerTicketID))
+              .Events(ev => ev
+                                                                        .Error("error_handler(\"grid\")")
+                                                                        .RequestStart("onRequestStart(\"grid\")")
+                                                                        .RequestEnd("onRequestEnd(\"grid\")"))
+              .Read(read => read.Action("CustomerAwaitingTickets_Read", "CustomerTicket").Data("sendForgery"))
+      )
+)
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

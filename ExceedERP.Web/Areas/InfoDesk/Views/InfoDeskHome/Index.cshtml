@@ -1,0 +1,130 @@
+
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.InfoDesk
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <nav class="navbar navbar-default">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".js-navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Help Desk </a>
+        </div>
+
+
+        <div class="collapse navbar-collapse js-navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown mega-dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i> Actions </a>
+
+                    <ul class="dropdown-menu mega-dropdown-menu row">
+                        @if (HttpContext.Current.User.IsInRole("OpenTicket")
+                            || HttpContext.Current.User.IsInRole("AssignHandler")
+                            || HttpContext.Current.User.IsInRole("Handler")
+                            || HttpContext.Current.User.IsInRole("HelpDeskAdmin")
+                            || HttpContext.Current.User.IsInRole("HelpDesk_Report"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">Support</li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">Support</li>
+
+                                    @if (HttpContext.Current.User.IsInRole("OpenTicket"))
+                                    {
+                                        <li>@Html.ActionLink("Open Ticket", "Index", "CustomerTicket", new { area = "InfoDesk" }, new { target = "_blank" })<b class="arrow"></b></li>
+
+                                    }
+
+
+                                </ul>
+                            </li>
+                        }
+                        @if (HttpContext.Current.User.IsInRole("OpenTicket")
+                            || HttpContext.Current.User.IsInRole("AssignHandler")
+                            || HttpContext.Current.User.IsInRole("Handler")
+                            || HttpContext.Current.User.IsInRole("HelpDeskAdmin")
+                            || HttpContext.Current.User.IsInRole("HelpDesk_Report"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header"> Handler</li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">Handler</li>
+                                    @if (HttpContext.Current.User.IsInRole("AssignHandler"))
+                                    {
+                                        <li>@Html.ActionLink("Assign Ticket", "Index", "AssignTicket", new { area = "InfoDesk" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    }
+
+                                    @if (HttpContext.Current.User.IsInRole("Handler"))
+                                    {
+                                        <li>@Html.ActionLink("Ticket Handler", "Index", "Handler", new { area = "InfoDesk" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    }
+
+
+                                </ul>
+                            </li>
+                        }
+                        @if (HttpContext.Current.User.IsInRole("OpenTicket")
+                            || HttpContext.Current.User.IsInRole("AssignHandler")
+                            || HttpContext.Current.User.IsInRole("Handler")
+                            || HttpContext.Current.User.IsInRole("HelpDeskAdmin")
+                            || HttpContext.Current.User.IsInRole("HelpDesk_Report"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header">@Resources.NavigatorReport_Report</li>
+                                    <li class="divider"></li>
+
+                                  
+
+                                </ul>
+                            </li>
+                        }
+                        @if (HttpContext.Current.User.IsInRole("OpenTicket")
+                             || HttpContext.Current.User.IsInRole("HelpDeskAdmin"))
+                        {
+                            <li class="col-sm-3">
+                                <ul>
+                                    <li class="dropdown-top-header"> @Resources.Settings</li>
+                                    <li class="divider"></li>
+                                    <li class="dropdown-header">  @Resources.Settings </li>
+
+                                    <li>@Html.ActionLink("Ticket Types", "Index", "TicketType", new { area = "InfoDesk" }, new { target = "_blank" })<b class="arrow"></b></li>
+
+                                    <li>@Html.ActionLink("Groups", "Index", "SupportGroup", new { area = "InfoDesk" }, new { target = "_blank" })<b class="arrow"></b></li>
+
+                                    <li>@Html.ActionLink("Priority", "Index", "PriorityType", new { area = "InfoDesk" }, new { target = "_blank" })<b class="arrow"></b></li>
+                                    <li>@Html.ActionLink("Materials", "Index", "MaterialItems", new { area = "InfoDesk" }, new { target = "_blank" })<b class="arrow"></b></li>
+
+
+
+
+                                </ul>
+                            </li>
+                        }
+
+                    </ul>
+
+                </li>
+            </ul>
+
+        </div>
+        <!-- /.nav-collapse -->
+    </nav>
+</div>
+
+
+<script>
+    jQuery(document).on('click', '.mega-dropdown', function (e) {
+        e.stopPropagation()
+    })
+</script>
+

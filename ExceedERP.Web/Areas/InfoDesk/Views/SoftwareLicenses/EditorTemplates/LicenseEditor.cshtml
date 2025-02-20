@@ -1,0 +1,261 @@
+﻿@model ExceedERP.Core.Domain.InfoDesk.License.SoftwareLicense
+
+<!-- Add CSS styles directly within the view -->
+<div class="row my-class">
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.LicenseId, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @(Html.Kendo().TextBoxFor(m => m.LicenseId)
+                )
+
+                @Html.ValidationMessageFor(model => model.LicenseId, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.SoftwareName, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @Html.TextBoxFor(model => model.SoftwareName)
+                @Html.ValidationMessageFor(model => model.SoftwareName, "", new { @class = "text-danger" })
+
+            </div>
+
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Version, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.Version)
+                @Html.ValidationMessageFor(model => model.Version, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Vendor, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.Vendor)
+                @Html.ValidationMessageFor(model => model.Vendor, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row my-class">
+    
+
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.OrgStructureId)
+                            .OptionLabel("---Select Department---")
+                            .DataTextField("Name")
+                            .DataValueField("OrgStructureId")
+                            .BindTo((System.Collections.IEnumerable)ViewData["department"]) // Initial data from ViewData
+                            .Filter("contains")
+                            .MinLength(2)
+                            .ValuePrimitive(true)
+                            //.DataSource(dataSource =>
+                            //{
+                            //    dataSource.Read(read => read.Action("GetFleet", "InsuranceDataProvider", new { Area = "Insurance" }).Data("sendForgery"))
+                            //        .ServerFiltering(true); // Enable server-side filtering for large data
+
+                            //})
+                    )               
+                @Html.ValidationMessageFor(model => model.OrgStructureId, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.LicenseType, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @Html.EnumDropDownListFor(model => model.LicenseType)
+                @Html.ValidationMessageFor(model => model.LicenseType, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.LicenseKey, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.LicenseKey)
+                @Html.ValidationMessageFor(model => model.LicenseKey, "", new { @class = "text-danger" })
+
+            </div>
+
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.PurchaseDate, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @Html.Kendo().DatePickerFor(model => model.PurchaseDate)
+                @Html.ValidationMessageFor(model => model.PurchaseDate, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+    </div>
+
+    
+
+</div>
+<div class="row my-class">
+    <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.LicenseExpiryOrRenewalDate, htmlAttributes: new { @class = "control-label col-md-8" })
+                </div>
+                <div>
+                    @Html.Kendo().DatePickerFor(model => model.LicenseExpiryOrRenewalDate)
+                    @Html.ValidationMessageFor(model => model.LicenseExpiryOrRenewalDate, "", new { @class = "text-danger" })
+
+                </div>
+            </div>
+        </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.NumberofLicenses, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.NumberofLicenses).Min(0)
+                @Html.ValidationMessageFor(model => model.NumberofLicenses, "", new { @class = "text-danger" })
+
+            </div>
+
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.NumberofUsers, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.NumberofUsers).Min(0)
+                @Html.ValidationMessageFor(model => model.NumberofUsers, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+           
+            <div>
+                @Html.Kendo().CheckBoxFor(model => model.IsRenewalNotified).HtmlAttributes(new { @onChange = "onMultipleChange(this)" })
+
+                @Html.ValidationMessageFor(model => model.IsRenewalNotified, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row my-class">
+    <div class="col-sm-2 classTobeShown1" style="display:none;" id="classTobeShown1">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.RenewalNotificationDate, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @(Html.Kendo().DatePickerFor(model => model.RenewalNotificationDate))
+                @Html.ValidationMessageFor(model => model.RenewalNotificationDate, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.CostperLicense, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.CostperLicense)
+                @Html.ValidationMessageFor(model => model.CostperLicense, "", new { @class = "text-danger" })
+
+            </div>
+
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.LicenseStatus, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @Html.EnumDropDownListFor(model => model.LicenseStatus)
+                @Html.ValidationMessageFor(model => model.LicenseStatus, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.UsageLimitations, htmlAttributes: new { @class = "control-label col-md-8" })
+                </div>
+                <div>
+                    @(Html.TextAreaFor(m => m.UsageLimitations, new { @class = "textarea-class" }))
+                    @Html.ValidationMessageFor(model => model.UsageLimitations, "", new { @class = "text-danger" })
+
+                </div>
+            </div>
+        </div>
+
+</div>
+<div class="row my-class">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.SupportContact, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @(Html.TextAreaFor(m => m.SupportContact, new { @class = "textarea-class" })
+                )
+                @Html.ValidationMessageFor(model => model.SupportContact, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.CommentsOrNotes, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @(Html.TextAreaFor(m => m.CommentsOrNotes, new { @class = "textarea-class" }))
+                               
+                    @Html.ValidationMessageFor(model => model.CommentsOrNotes, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+    </div>
+</div>

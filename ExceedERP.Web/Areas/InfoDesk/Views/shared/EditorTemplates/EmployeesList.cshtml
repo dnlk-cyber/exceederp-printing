@@ -1,15 +1,16 @@
 ﻿@(Html.Kendo().DropDownListFor(m => m)
-                      .AutoBind(false)
-                      .OptionLabel("--Select Employees--")
-                      .DataTextField("FullNameaEnglish")
-                      .DataValueField("EmployeeId")
-                        .Filter("contains")
-                            .ValuePrimitive(true)
-                      .DataSource(dataSource =>
-                      {
-                          dataSource.Read(read => read.Action("GetActiveEmployees", "InfoDeskDataProvider", new { area = "InfoDesk" }))
-                                    .ServerFiltering(false);
-                      })
+        .AutoBind(false)
+        .OptionLabel("--Select Employees--")
+        .DataTextField("FullNameaEnglish")
+        .DataValueField("EmployeeId")
+        .Filter("contains")
+            .ValuePrimitive(true)
+        .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read.Action("GetActiveEmployees", "InfoDeskDataProvider", new { area = "InfoDesk" }).Data("sendForgery"))
+                      .ServerFiltering(false);
+
+        })
 
 )
 @Html.ValidationMessageFor(m => m)

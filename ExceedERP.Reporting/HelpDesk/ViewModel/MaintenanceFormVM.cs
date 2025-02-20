@@ -15,6 +15,7 @@ namespace ExceedERP.Reporting.HelpDesk.ViewModel
         public int SatisfactionLevel { get; set; }
         public string Solution { get; set; }
         public string MaterialUsed { get; set; }
+        public string SupportGroup { get; set; }
 
     }
 }

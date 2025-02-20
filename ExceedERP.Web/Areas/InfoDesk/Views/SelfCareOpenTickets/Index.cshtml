@@ -78,10 +78,10 @@
                                      .RequestStart("onRequestStart(\"grid\")")
                                      .RequestEnd("onRequestEnd(\"grid\")"))
 
-                          .Read(read => read.Action("SelfCareOpenTickets_Read", "SelfCareOpenTickets"))
-                          .Create(create => create.Action("SelfCareOpenTickets_Create", "SelfCareOpenTickets"))
-                          .Update(update => update.Action("SelfCareOpenTickets_Update", "SelfCareOpenTickets"))
-                          .Destroy(destroy => destroy.Action("SelfCareOpenTickets_Destroy", "SelfCareOpenTickets"))
+                          .Read(read => read.Action("SelfCareOpenTickets_Read", "SelfCareOpenTickets").Data("sendForgery"))
+                          .Create(create => create.Action("SelfCareOpenTickets_Create", "SelfCareOpenTickets").Data("sendForgery"))
+                          .Update(update => update.Action("SelfCareOpenTickets_Update", "SelfCareOpenTickets").Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("SelfCareOpenTickets_Destroy", "SelfCareOpenTickets").Data("sendForgery"))
                         ).ClientDetailTemplateId("template")
 )
 
@@ -192,10 +192,10 @@
                                                                      .RequestStart("onRequestStart(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")")
                                                                      .RequestEnd("onRequestEnd(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")"))
 
-                                                              .Read(read => read.Action("AssignedHandlerForSelfCare_Read", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }))
-                                                              .Create(create => create.Action("AssignTickets_Create", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }))
-                                                              .Update(update => update.Action("Handler_Update", "Handler"))
-                                                              .Destroy(destroy => destroy.Action("AssignTickets_Destroy", "AssignTicket"))
+                                                              .Read(read => read.Action("AssignedHandlerForSelfCare_Read", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }).Data("sendForgery"))
+                                                              .Create(create => create.Action("AssignTickets_Create", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }).Data("sendForgery"))
+                                                              .Update(update => update.Action("Handler_Update", "Handler").Data("sendForgery"))
+                                                              .Destroy(destroy => destroy.Action("AssignTickets_Destroy", "AssignTicket").Data("sendForgery"))
                                                           ).ToClientTemplate()
                                     )
 
@@ -248,10 +248,10 @@
 
                                              }
                                          )
-                                                                            .Read(read => read.Action("MaterialsUseds_Read", "MaterialsUseds", new { id = "#=AssignTicket_HelpDeskId#" }))
-                                                                            .Create(create => create.Action("MaterialsUseds_Create", "MaterialsUseds", new { id = "#=AssignTicket_HelpDeskId#" }))
-                                                                            .Update(update => update.Action("MaterialsUseds_Update", "MaterialsUseds"))
-                                                                            .Destroy(destroy => destroy.Action("MaterialsUseds_Destroy", "MaterialsUseds"))
+                                                                            .Read(read => read.Action("MaterialsUseds_Read", "MaterialsUseds", new { id = "#=AssignTicket_HelpDeskId#" }).Data("sendForgery"))
+                                                                            .Create(create => create.Action("MaterialsUseds_Create", "MaterialsUseds", new { id = "#=AssignTicket_HelpDeskId#" }).Data("sendForgery"))
+                                                                            .Update(update => update.Action("MaterialsUseds_Update", "MaterialsUseds").Data("sendForgery"))
+                                                                            .Destroy(destroy => destroy.Action("MaterialsUseds_Destroy", "MaterialsUseds").Data("sendForgery"))
                                                                 ).ToClientTemplate()
                         )
 
@@ -329,31 +329,38 @@
                 $(this).find(".k-grid-confirm").hide();
             }
             if (dataItem.Status == "1") {
+                $(this).find(".k-grid-edit").show();
                 $(this).find(".k-grid-confirm").show();
                 $(this).css("background-color", "yellow");
             }
             if (dataItem.Status == "1") {
+                $(this).find(".k-grid-edit").show();
                 $(this).find(".k-grid-confirm").hide();
                 $(this).css("background-color", "yellow");
             }
             if (dataItem.Status == "2") {
+                $(this).find(".k-grid-edit").show();
                 $(this).find(".k-grid-confirm").hide();
                 $(this).css("background-color", "aqua");
             }
 
             if (dataItem.Status == "3") {
+                $(this).find(".k-grid-edit").show();
                 $(this).find(".k-grid-confirm").hide();
                 $(this).css("background-color", "gray");
             }
             if (dataItem.Status == "4") {
+                $(this).find(".k-grid-edit").show();
                 $(this).find(".k-grid-confirm").show();
                 $(this).css("background-color", "red");
             }
             if (dataItem.Status == "5") {
+                $(this).find(".k-grid-edit").show();
                 $(this).find(".k-grid-confirm").show();
                 $(this).css("background-color", "gold");
             }
             if (dataItem.IsClosed) {
+                $(this).find(".k-grid-edit").remove();
                 $(this).find(".k-grid-confirm").hide();
                 $(this).css("background-color", "gray");
             }

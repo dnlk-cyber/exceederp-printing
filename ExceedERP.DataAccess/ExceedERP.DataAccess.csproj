@@ -567,6 +567,10 @@
     <Compile Include="Migrations\202501300644361_employeeperformance.Designer.cs">
       <DependentUpon>202501300644361_employeeperformance.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202502201351253_helpdeskupgrade.cs" />
+    <Compile Include="Migrations\202502201351253_helpdeskupgrade.Designer.cs">
+      <DependentUpon>202502201351253_helpdeskupgrade.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -945,6 +949,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202501300644361_employeeperformance.resx">
       <DependentUpon>202501300644361_employeeperformance.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502201351253_helpdeskupgrade.resx">
+      <DependentUpon>202502201351253_helpdeskupgrade.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

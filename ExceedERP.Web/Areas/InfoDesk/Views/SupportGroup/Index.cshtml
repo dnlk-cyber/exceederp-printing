@@ -1,74 +1,84 @@
-﻿<legend> Group </legend>
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.InfoDesk.Support.SupportGroup_HelpDesk>()
-          .Name("grid")
-          .Columns(columns =>
-          {
-              columns.Bound(c => c.SupportGroup_HelpDeskId).Title("#").Width(100);
-              columns.Bound(c => c.Name);
-              columns.Bound(c => c.Description);
+﻿@using ExceedERP.Core.Domain.InfoDesk.Support
+<legend>Group </legend>
+@(Html.Kendo().Grid<SupportGroup_HelpDesk>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(c => c.SupportGroup_HelpDeskId).Title("#").Width(80);
+        columns.ForeignKey(c => c.BranchId, (IEnumerable<BranchVM>)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
+        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable<BussinesUnitVM>)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => 
+        {
+            command.Edit();
+            command.Destroy();
 
-              columns.Bound(c => c.Remark);
-              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-          })
-          .ToolBar(toolbar =>
-          {
-              toolbar.Create();
-          })
-                .Editable(editable => editable.Mode(GridEditMode.InLine))
-                        .HtmlAttributes(new { style = "height: 520px;" })
-                                          .Pageable(pageable => pageable
-                                                            .Input(true)
-                                                            .Numeric(false)
-                                                            .Refresh(true)
-                                                            .PageSizes(true)
-                                                            .ButtonCount(5))
+        }).Width(180);
 
-                                                .Scrollable()
-                                                .Sortable()
-                                                .Filterable()
-                                                .Groupable()
-                                                .Scrollable(h => h.Height(500))
-          .DataSource(dataSource => dataSource
-                  .Ajax().Model(model =>
-                      {
-                          model.Id(p => p.SupportGroup_HelpDeskId);
-                          model.Field(p => p.SupportGroup_HelpDeskId).Editable(false);
+    })
+    .ToolBar(toolbar =>
+    {
+        toolbar.Create();
 
+    })
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .HtmlAttributes(new { style = "height: 520px;" })
+    .Pageable(pageable => pageable
+                .Input(true)
+                .Numeric(false)
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
 
-                      })
-                        .Events(ev => ev
-                                                                   .Error("error_handler(\"grid\")")
-                                                                 .RequestStart("onRequestStart(\"grid\")")
-                                                                    .RequestEnd("onRequestEnd(\"grid\")")
-                                                                )
-                      .Read(read => read.Action("Groups_Read", "SupportGroup"))
-                      .Create(create => create.Action("Groups_Create", "SupportGroup"))
-                  .Update(update => update.Action("Groups_Update", "SupportGroup"))
-                  .Destroy(destroy => destroy.Action("Groups_Destroy", "SupportGroup"))
-              ).ClientDetailTemplateId("template")
+    .Scrollable()
+    .Sortable()
+    .Filterable()
+    .Groupable()
+    .Scrollable(h => h.Height(500))
+    .DataSource(dataSource => dataSource
+        .Ajax().Model(model =>
+        {
+            model.Id(p => p.SupportGroup_HelpDeskId);
+            model.Field(p => p.SupportGroup_HelpDeskId).Editable(false);
+            
+        })
+        .Events(ev => ev
+                    .Error("error_handler(\"grid\")")
+                    .RequestStart("onRequestStart(\"grid\")")
+                    .RequestEnd("onRequestEnd(\"grid\")"))
+        .Read(read => read.Action("Groups_Read", "SupportGroup").Data("sendForgery"))
+        .Create(create => create.Action("Groups_Create", "SupportGroup").Data("sendForgery"))
+        .Update(update => update.Action("Groups_Update", "SupportGroup").Data("sendForgery"))
+        .Destroy(destroy => destroy.Action("Groups_Destroy", "SupportGroup").Data("sendForgery"))
+    ).ClientDetailTemplateId("template")
 )
 
 
 
 <script id="template" type="text/kendo-tmpl">
-    @(Html.Kendo().TabStrip()
-                                                    .Name("tabstrip_#=SupportGroup_HelpDeskId#")
-            .SelectedIndex(0)
-            .Items(items =>
-             {
+  @(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=SupportGroup_HelpDeskId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
 
 
-                 items.Add().Text("   ").Content(
-                    @<text>
-                        <legend>Memebers</legend>
-                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.InfoDesk.Support.SupportGroupDetail_HelpDesk>()
-                                                                         .Name("Members_#=SupportGroup_HelpDeskId#")
-         .Columns(columns =>
-         {
-             columns.ForeignKey(c => c.EmployeeId, (System.Collections.IEnumerable)ViewData["Empoloyees"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeesList").Width(100);
-             columns.Bound(c => c.Remark).Width(100);
-             columns.Command(command => { command.Edit(); command.Destroy(); }).Width(100);
-         })
+            items.Add().Text("   ").Content(
+            @<text>
+                <legend>Memebers</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.InfoDesk.Support.SupportGroupDetail_HelpDesk>()                                                 .Name("Members_#=SupportGroup_HelpDeskId#")
+                 .Columns(columns =>
+                 {
+                     columns.ForeignKey(c => c.EmployeeId, (System.Collections.IEnumerable)ViewData["Empoloyees"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeesList").Width(100);
+                     columns.Bound(c => c.Remark).Width(100);
+                     columns.Command(command => {
+                         command.Edit();
+                         command.Destroy();
+                     }).Width(200);
+
+                 })
          .ToolBar(toolbar =>
          {
              toolbar.Create();
@@ -77,26 +87,27 @@
          .Scrollable()
          .DataSource(dataSource => dataSource
              .Ajax()
-                              .Sort(x => x.Add(s => s.DateCreated).Descending())
+             .Sort(x => x.Add(s => s.DateCreated).Descending())
       .Model(model =>
-        {
-            model.Id(p => p.SupportGroupDetail_HelpDeskId);
-            model.Field(p => p.LastModified).Editable(false);
+      {
+          model.Id(p => p.SupportGroupDetail_HelpDeskId);
+          model.Field(p => p.LastModified).Editable(false);
 
-            model.Field(p => p.ModifiedBy).Editable(false);
-            model.Field(p => p.DateCreated).Editable(false);
-            model.Field(p => p.CreatedBy).Editable(false);
-        }).Events(ev => ev
-               .Error("error_handler(\"Memebers_#=SupportGroup_HelpDeskId#\")")
-               .RequestStart("onRequestStart(\"Memebers_#=SupportGroup_HelpDeskId#\")")
-              // .RequestEnd("onRequestEnd(\"Memebers_#=SupportGroup_HelpDeskId#\")")
+          model.Field(p => p.ModifiedBy).Editable(false);
+          model.Field(p => p.DateCreated).Editable(false);
+          model.Field(p => p.CreatedBy).Editable(false);
+
+      }).Events(ev => ev
+             .Error("error_handler(\"Memebers_#=SupportGroup_HelpDeskId#\")")
+             .RequestStart("onRequestStart(\"Memebers_#=SupportGroup_HelpDeskId#\")")
+         // .RequestEnd("onRequestEnd(\"Memebers_#=SupportGroup_HelpDeskId#\")")
          )
 
-                                                                 
-             .Read(read => read.Action("SupportGroupDetails_Read", "SupportGroupDetail", new { Id = "#=SupportGroup_HelpDeskId#" }))
-                     .Create(create => create.Action("SupportGroupDetails_Create", "SupportGroupDetail", new { Id = "#=SupportGroup_HelpDeskId#" }))
-                                .Update(update => update.Action("SupportGroupDetails_Update", "SupportGroupDetail"))
-                                              .Destroy(update => update.Action("SupportGroupDetails_Destroy", "SupportGroupDetail"))
+
+             .Read(read => read.Action("SupportGroupDetails_Read", "SupportGroupDetail", new { Id = "#=SupportGroup_HelpDeskId#" }).Data("sendForgery"))
+                     .Create(create => create.Action("SupportGroupDetails_Create", "SupportGroupDetail", new { Id = "#=SupportGroup_HelpDeskId#" }).Data("sendForgery"))
+                                .Update(update => update.Action("SupportGroupDetails_Update", "SupportGroupDetail").Data("sendForgery"))
+                                              .Destroy(update => update.Action("SupportGroupDetails_Destroy", "SupportGroupDetail").Data("sendForgery"))
                              ).ToClientTemplate()
                         )
 

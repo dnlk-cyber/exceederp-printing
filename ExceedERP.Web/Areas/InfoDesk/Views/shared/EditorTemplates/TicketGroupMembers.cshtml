@@ -7,6 +7,6 @@
                                               .DataValueField("Value")
                               .DataSource(dataSource =>
                               {
-                                  dataSource.Read(read => read.Action("getGroupMembers", "InfoDeskDataProvider",new {TicketGroup="#=TicketGroup#" }));
+                                  dataSource.Read(read => read.Action("getGroupMembers", "InfoDeskDataProvider",new {TicketGroup="#=TicketGroup#" }).Data("sendForgery"));
 
                               }).ValuePrimitive(true))

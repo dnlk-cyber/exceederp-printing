@@ -37,7 +37,7 @@
                                                                         .Error("error_handler(\"grid\")")
                                                                         .RequestStart("onRequestStart(\"grid\")")
                                                                         .RequestEnd("onRequestEnd(\"grid\")"))
-              .Read(read => read.Action("CustomerAwaitingTickets_Read", "CustomerTicket"))
+              .Read(read => read.Action("CustomerAwaitingTickets_Read", "CustomerTicket").Data("sendForgery"))
       )
 )
 

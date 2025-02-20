@@ -10,13 +10,10 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
     {
         public int AssignTicket_HelpDeskId { get; set; }
         public int CustomerTicketId { get; set; }
-       // public int? TicketDefintion { get; set; }
+        [Display(Name ="Assigned Employee")]
         public int AssinedTo {get; set;}
-        //public bool IsTransfer { get; set; }
-       // public bool? IsActive { get; set; }
+        public TicketPriority TicketPriority { get; set; }
         public bool IsClosed { get; set; }
-      //  [DisplayName("Transfer To")]
-    //  public string TransferTo { get; set; }
         [DisplayName("Assigned Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
@@ -25,6 +22,7 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? ClosedDate { get; set; }
+        [DisplayName("Age In Days")]
         public string Age { get; set; }
         [DisplayName("Remark")]
         public string Remarked { get; set; }
@@ -34,11 +32,15 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
         public bool IsSendForClosing { get; set; }
         //uses for to sure the problem is solved 
         public bool IsSolved { get; set; }
+        [Display(Name = "Root Cause")]
+        public string RootCause { get; set; }
         public string Solution { get; set; }
         // uses to know the assined problem of the user
         public string Role { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Address { get; set; }
         //[ForeignKey("CustomerTicketId")]
         //public virtual CustomerTicket Ticket { get; set; }
-        public int MaterialItemsId { get; set; }
+        public int? MaterialItemsId { get; set; }
     }
 }

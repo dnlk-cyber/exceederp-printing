@@ -3,9 +3,16 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.Type).Title("Ticket Type");
+          columns.Bound(c => c.Type);
+          columns.Bound(c => c.TicketCode);
+          columns.Bound(c => c.TicketCategory);
+          columns.Bound(c => c.TicketPriority);
+          columns.Bound(c => c.DueDays);
           columns.Bound(c => c.Description);
-          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(480);
+          columns.Command(command => {
+              command.Edit();
+              command.Destroy();
+          }).Width(200);
       })
       .ToolBar(toolbar => {
           toolbar.Create();
@@ -19,8 +26,8 @@
                         .PageSizes(true)
                         .ButtonCount(5))
                         .Sortable(sortable => {
-          sortable.SortMode(GridSortMode.SingleColumn);
-      })
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
       .Filterable()
       .Scrollable()
       .DataSource(dataSource => dataSource
@@ -32,9 +39,9 @@
               model.Field(p => p.LastModified).Editable(false);
 
           })
-          .Read(read => read.Action("TicketTypes_Read", "TicketType"))
-          .Create(create => create.Action("TicketTypes_Create", "TicketType"))
-          .Update(update => update.Action("TicketTypes_Update", "TicketType"))
-          .Destroy(destroy => destroy.Action("TicketTypes_Destroy", "TicketType"))
+          .Read(read => read.Action("TicketTypes_Read", "TicketType").Data("sendForgery"))
+          .Create(create => create.Action("TicketTypes_Create", "TicketType").Data("sendForgery"))
+          .Update(update => update.Action("TicketTypes_Update", "TicketType").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("TicketTypes_Destroy", "TicketType").Data("sendForgery"))
       )
 )

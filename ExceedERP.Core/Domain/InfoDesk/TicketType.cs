@@ -15,11 +15,24 @@ namespace ExceedERP.Core.Domain.InfoDesk
 
         public int TicketType_HelpDeskId { get; set; }
         //  public TickeType Type { get; set; }
-
         [Required]
         [DisplayName("Ticket Type")]
-        public String Type { get; set; }
-
+        public string Type { get; set; }
+        [DisplayName("Ticket Code")]
+        public string TicketCode { get; set; }
+        [DisplayName("Due Days")]
+        public decimal DueDays { get; set; }
+        public TicketPriority TicketPriority { get; set; }
+        public TicketCategory TicketCategory { get; set; }
         public string Description { get; set; }
+
+    }
+
+    public enum TicketCategory
+    {
+        Event,
+        Problem,
+        Issue,
+        Incident
     }
 }

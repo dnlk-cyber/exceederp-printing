@@ -4,16 +4,12 @@ using Kendo.Mvc.Extensions;
 using System;
 using System.Linq;
 using System.Web.Mvc;
-
 using System.Data.Entity;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.InfoDesk.Support;
-using ExceedERP.Core.Domain.InfoDesk;
-using ExceedERP.Web.Areas.InfoDesk.Models;
-using ExceedERP.Core.Domain.Common;
 using System.Collections.Generic;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
@@ -23,32 +19,21 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
         private ExceedDbContext db = new ExceedDbContext();
         ApplicationDbContext udb = new ApplicationDbContext();
-        public ActionResult Handler()
-        {
-
-            var sysusers =
-              udb.Users.Select(
-                  o =>
-                      new
-                      {
-                          CustomerID = o.Id,
-                          CustomerName = o.FirstName
-                      });
-
-            var users = sysusers.ToList();
-            ViewData["SysUsers"] = users;
-            ViewData["TicketTypes"] = db.TicketType_HelpDesks.ToList();
-            ViewData["TicketDefActivity"] = db.TicketActivityDefinition_HelpDesks.ToList();
-            return View();
-        }
         public ActionResult Index()
         {
-            ViewData["AssignTo"] = db.Person_Employee.ToList();
-            ViewData["Employees"] = db.Person_Employee.ToList();
+            var employees = db.Person_Employee.Select(x => new { x.EmployeeId, AssinedTo = x.EmployeeId, AssignedTo = x.EmployeeId, FullNameaEnglish = x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish, FullNameAmharic = x.FirstName + " " + x.MiddleName + " " + x.LastName }).ToList();
+            ViewData["AssignTo"] = employees;
+            ViewData["Employees"] = employees;
             ViewData["Group"] = db.SupportGroup_HelpDesks.ToList();
             ViewData["Materials"] = db.MaterialItems.ToList();
             ViewData["TicketTypes"] = db.TicketType_HelpDesks.ToList();
             ViewData["TicketDefActivity"] = db.TicketActivityDefinition_HelpDesks.ToList();
+            var branches = db.Branch.Select(x => new BranchVM { BranchId = x.BranchId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
+            ViewData["branches"] = branches;
+            var businessUnits = db.BusinessUnits.Select(x => new BussinesUnitVM { BusinessUnitId = x.BusinessUnitId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
+            ViewData["businessUnits"] = businessUnits;
+            var workunits = db.MainCompanyStructures.Select(x => new OrgStructureVM { OrgStructureId = x.OrgStructureId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") }).ToList();
+            ViewData["workunits"] = workunits;
             return View();
         }
         public string GetCustomerAddress(int Id)
@@ -74,44 +59,52 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 age= day.Value.Days.ToString() + " Day " + day.Value.Hours.ToString() + " Hours";
 
             }
-            else
-            {
-                var day = DateTime.Now - CreatedDate;
-                age = day.Value.Days.ToString() + " Day " + day.Value.Hours.ToString() + " Hours";
-            }
+            
             return age;
         }
         public ActionResult AssignedHandler_Read([DataSourceRequest]DataSourceRequest request, int Id)
         {
-            var tickets = db.AssignTicket_HelpDesks.Where(x => x.CustomerTicketId == Id).ToList();
-            var userName = User.Identity.Name;
+            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var tickets = db.CustomerTicket_HelpDesks.Where(x => x.CustomerTicket_HelpDeskId == Id
+                                                                && x.AssignedTo==employeeId).ToList();
+            //var userName = User.Identity.Name;
 
-            var user = udb.Users.FirstOrDefault(x => x.UserName == userName);
-            if (user != null)
-            {
-                var empId = user.EmployeeId;
-                tickets = tickets.Where(x=>x.AssinedTo == empId).ToList();
-            }
-            else
-            {
-                tickets = new List<AssignTicket_HelpDesk>();
-            }            
+            //var user = udb.Users.FirstOrDefault(x => x.UserName == userName);
+            //if (user != null)
+            //{
+            //    var empId = user.EmployeeId;
+            //    tickets = tickets.Where(x=>x.AssignedTo == empId).ToList();
+            //}
+            //else
+            //{
+            //    tickets = new List<CustomerTicket_HelpDesk>();
+            //}            
 
 
             DataSourceResult result = tickets.ToDataSourceResult(request, s => new
             {
-                CustomerTicketId = s.CustomerTicketId,
-                AssignTicket_HelpDeskId = s.AssignTicket_HelpDeskId,
+                CustomerTicket_HelpDeskId = s.CustomerTicket_HelpDeskId,
                 Age = 0,//GetAge(s?.DateCreated, s?.ClosedDate, s.IsClosed),
+                BranchId = s.BranchId,
+                TicketType_HelpDeskId = s.TicketType_HelpDeskId,
+                TicketPriority = s.TicketPriority,
+                TicketStatus = s.TicketStatus,
+                SupportGroup_HelpDeskId = s.SupportGroup_HelpDeskId,
+                SolutionGiven = s.SolutionGiven,
+                AgeOfTicket = s.AgeOfTicket,
+                ClosedDate = s.ClosedDate,
+                Rate = s.Rate,
+                DueDate = s.DueDate,
+                BusinessUnitId = s.BusinessUnitId,
+                OrgStructureId = s.OrgStructureId,
                 AssignedDate = s.AssignedDate,
                 IsClosed = s.IsClosed,
-                AssinedTo = s.AssinedTo,
+                AssignedTo = s.AssignedTo,
                 IsAssigned = s.IsAssigned,
                 Role = s.Role,
-                Solution = s.Solution,
-                Remarked = s.Remarked,
-                IsSendForClosing = s.IsSendForClosing,
-                IsSolved = s.IsSolved,
+                Remark = s.Remark,
+                Quantity = s.Quantity,
+                //IsSolved = s.IsSolved,
                 MaterialItemsId = s.MaterialItemsId
 
             });
@@ -120,7 +113,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         }
         public ActionResult AssignedHandlerForSelfCare_Read([DataSourceRequest]DataSourceRequest request, int Id)
         {
-            var tickets = db.AssignTicket_HelpDesks.Where(x => x.CustomerTicketId == Id).ToList();
+            var tickets = db.CustomerTicket_HelpDesks.Where(x => x.CustomerTicket_HelpDeskId == Id).ToList();
             var userName = User.Identity.Name;
 
             //var user = udb.Users.FirstOrDefault(x => x.UserName == userName);
@@ -137,166 +130,235 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             DataSourceResult result = tickets.ToDataSourceResult(request, s => new
             {
-                CustomerTicketId = s.CustomerTicketId,
-                AssignTicket_HelpDeskId = s.AssignTicket_HelpDeskId,
+                CustomerTicket_HelpDeskId = s.CustomerTicket_HelpDeskId,
+                //AssignTicket_HelpDeskId = s.AssignTicket_HelpDeskId,
                 Age = 0,//GetAge(s?.DateCreated, s?.ClosedDate, s.IsClosed),
+                BranchId = s.BranchId,
+                BusinessUnitId = s.BusinessUnitId,
+                OrgStructureId = s.OrgStructureId,
                 AssignedDate = s.AssignedDate,
                 IsClosed = s.IsClosed,
-                AssinedTo = s.AssinedTo,
+                AssignedTo = s.AssignedTo,
                 IsAssigned = s.IsAssigned,
                 Role = s.Role,
-                Solution = s.Solution,
-                Remarked = s.Remarked,
-                IsSendForClosing = s.IsSendForClosing,
-                IsSolved = s.IsSolved,
+                SolutionGiven = s.SolutionGiven,
+                Remark = s.Remark,
+                //IsSendForClosing = s.IsSendForClosing,
+                //IsSolved = s.IsSolved,
                 MaterialItemsId = s.MaterialItemsId
-
             });
-
             return Json(result);
         }
-
+        public ActionResult CustomerTickets_Update([DataSourceRequest]DataSourceRequest request, CustomerTicket_HelpDesk customerTicket_HelpDesk, int Id)
+        {
+            var ticket = db.CustomerTicket_HelpDesks.FirstOrDefault(x => x.CustomerTicket_HelpDeskId == Id);
+            var isAssigned = ticket.IsAssigned;
+            if(!isAssigned)
+            {
+                if (ModelState.IsValid)
+                {
+                    ticket.AssignedTo = customerTicket_HelpDesk.AssignedTo;
+                    ticket.TicketPriority = customerTicket_HelpDesk.TicketPriority;
+                    ticket.Role = customerTicket_HelpDesk.Role;
+                    ticket.AssignedDate = DateTime.Now;
+                    ticket.SolutionGiven = customerTicket_HelpDesk.SolutionGiven;
+                    ticket.IsAssigned = true;
+                    var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == customerTicket_HelpDesk.EmployeeId && x.isCurrent);
+                    if(placement != null)
+                    {
+                        ticket.BranchId = placement.BranchId;
+                        ticket.BusinessUnitId = placement.BusinessUnitId;
+                        ticket.OrgStructureId = placement.OrgStructureId;
+                    }
+                    
+                    ticket.TicketStatus = TicketStatus.Assigned;
+                    db.Entry(ticket).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+            return Json(new[] { customerTicket_HelpDesk }.ToDataSourceResult(request, ModelState));
+        }
         public ActionResult AssignTickets_Read([DataSourceRequest]DataSourceRequest request, int Id)
         {
-          
-
-            var Tickets = db.AssignTicket_HelpDesks.Where(x => x.CustomerTicketId == Id).ToList();
-           
-
-            DataSourceResult result = Tickets.ToDataSourceResult(request, s => new
+            //var Tickets = db.CustomerTicket_HelpDesks
+            //    .Where(x => x.CustomerTicket_HelpDeskId == Id)
+            //    .Where(x=>x.IsAssigned)
+            //    .ToList();
+            var tickests = db.AssignTicket_HelpDesks.Where(x => x.CustomerTicketId == Id);
+            DataSourceResult result = tickests.ToDataSourceResult(request, assignTicket_HelpDesk => new
             {
-                CustomerTicketId = s.CustomerTicketId,
-                AssignTicket_HelpDeskId = s.AssignTicket_HelpDeskId,
-                Age = 0,//GetAge(s?.DateCreated, s?.ClosedDate, s.IsClosed),
-                AssignedDate = s.AssignedDate,
-                IsClosed = s.IsClosed,
-                AssinedTo = s.AssinedTo,
-                IsAssigned = s.IsAssigned,
-                Role = s.Role,
-                Solution = s.Solution,
-                Remarked = s.Remarked,
-                IsSendForClosing = s.IsSendForClosing,
-                IsSolved = s.IsSolved,
-                MaterialItemsId = s.MaterialItemsId
+                AssignTicket_HelpDeskId = assignTicket_HelpDesk.AssignTicket_HelpDeskId,
+                CustomerTicketId = assignTicket_HelpDesk.CustomerTicketId,
+                Age = GetAge(assignTicket_HelpDesk?.DateCreated, assignTicket_HelpDesk?.ClosedDate, assignTicket_HelpDesk.IsClosed),
+               
+                AssignedDate = assignTicket_HelpDesk.AssignedDate,
+                AssinedTo = assignTicket_HelpDesk.AssinedTo,
+                ClosedDate = assignTicket_HelpDesk.ClosedDate,
+                IsAssigned = assignTicket_HelpDesk.IsAssigned,
+                Role = assignTicket_HelpDesk.Role,
+                Status = assignTicket_HelpDesk.Status,
+                RootCause = assignTicket_HelpDesk.RootCause,
+                Solution = assignTicket_HelpDesk.Solution,
+                Address = assignTicket_HelpDesk.Address,
+                PhoneNumber = assignTicket_HelpDesk.PhoneNumber,
+                MaterialItemsId = assignTicket_HelpDesk.MaterialItemsId,
+                Remarked = assignTicket_HelpDesk.Remarked,
+                TicketPriority = assignTicket_HelpDesk.TicketPriority,
+                IsClosed = assignTicket_HelpDesk.IsClosed,
+                IsOnlineTransferred = assignTicket_HelpDesk.IsOnlineTransferred,
+                IsSendForApproval = assignTicket_HelpDesk.IsSendForApproval,
+                IsSendForClosing = assignTicket_HelpDesk.IsSendForClosing,
+                IsSolved = assignTicket_HelpDesk.IsSolved,
+                IsVoid = assignTicket_HelpDesk.IsVoid,
+                OnlineApprovedBy = assignTicket_HelpDesk.OnlineApprovedBy,
+                OnlineApprovedTime = assignTicket_HelpDesk.OnlineApprovedTime,
+                OnlineTransferredTime = assignTicket_HelpDesk.OnlineTransferredTime,
+                OrgBranchName = assignTicket_HelpDesk.OrgBranchName,
+                Remark = assignTicket_HelpDesk.Remark,
+                SendForApprovalBy = assignTicket_HelpDesk.SendForApprovalBy,
+                SendForApprovalTime = assignTicket_HelpDesk.SendForApprovalTime,
+                VoidBy = assignTicket_HelpDesk.VoidBy,
+                VoidTime = assignTicket_HelpDesk.VoidTime,
+                IsOnlineApproved = assignTicket_HelpDesk.IsOnlineApproved,
+                IsOnlineTransferredBy = assignTicket_HelpDesk.IsOnlineTransferredBy,
+                CreatedBy = assignTicket_HelpDesk.CreatedBy,
+                DateCreated = assignTicket_HelpDesk.DateCreated,
+                ModifiedBy = assignTicket_HelpDesk.ModifiedBy,
+                LastModified = assignTicket_HelpDesk.LastModified
+
 
             });
-
             return Json(result);
         }
-       
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AssignTickets_Create([DataSourceRequest]DataSourceRequest request, AssignTicket_HelpDesk assignTicket, int Id)
         {
-
+            assignTicket.Age = GetAge(assignTicket?.DateCreated, assignTicket?.ClosedDate, assignTicket.IsClosed);
+            assignTicket.CustomerTicketId = Id;
+            assignTicket.CreatedBy = User.Identity.Name;
+            assignTicket.DateCreated = DateTime.Now;
+            var person = db.Person_Employee.Find(assignTicket.AssinedTo);
+            var Address = db.Addresses.Where(x => x.ReferenceType == "Organization_Customer").FirstOrDefault();
+            assignTicket.Address = Address?.Value;
+            assignTicket.PhoneNumber = person?.PhoneNo;
             if (ModelState.IsValid)
             {
-                var entity = new AssignTicket_HelpDesk
-                {
-                    Age = assignTicket.Age,
-                    AssignedDate = assignTicket.AssignedDate,
-                    AssinedTo = assignTicket.AssinedTo,
-                    ClosedDate = DateTime.Now,
-                    IsAssigned = false,
-                    CustomerTicketId = Id,
-                    CreatedBy = User.Identity.Name,
-                    DateCreated = DateTime.Now,
-                    Role = assignTicket.Role,
-                    Solution = assignTicket.Solution,
-                    MaterialItemsId = assignTicket.MaterialItemsId,
-                    Remarked = assignTicket.Remarked
-                };
-
+                var entity = GetMappedObject(assignTicket);
                 db.AssignTicket_HelpDesks.Add(entity);
                 db.SaveChanges();
-
                 assignTicket.AssignTicket_HelpDeskId = entity.AssignTicket_HelpDeskId;
-
+                
             }
-
             return Json(new[] { assignTicket }.ToDataSourceResult(request));
         }
-       
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult AssignTickets_Update([DataSourceRequest]DataSourceRequest request, AssignTicket_HelpDesk assignTicket_HelpDesk)
+        public ActionResult AssignTickets_Update([DataSourceRequest]DataSourceRequest request, AssignTicket_HelpDesk assignTicket)
         {
-            ModelState.Clear();
-
+            assignTicket.Age = GetAge(assignTicket?.DateCreated, assignTicket?.ClosedDate, assignTicket.IsClosed);
+            assignTicket.ModifiedBy = User.Identity.Name;
+            assignTicket.LastModified = DateTime.Now;
+            var person = db.Person_Employee.Find(assignTicket.AssinedTo);
+            var Address = db.Addresses.Where(x => x.ReferenceType == "Organization_Customer").FirstOrDefault();
+            assignTicket.Address = Address?.Value;
+            assignTicket.PhoneNumber = person?.PhoneNo;
             if (ModelState.IsValid)
             {
-
-                var entity = new AssignTicket_HelpDesk
-                {
-                    AssignTicket_HelpDeskId = assignTicket_HelpDesk.AssignTicket_HelpDeskId,
-                    CustomerTicketId = assignTicket_HelpDesk.CustomerTicketId,
-                    Age = assignTicket_HelpDesk.Age,
-                    AssignedDate = assignTicket_HelpDesk.AssignedDate,
-                    AssinedTo = assignTicket_HelpDesk.AssinedTo,
-                    ClosedDate = assignTicket_HelpDesk.ClosedDate,
-                    IsAssigned = false,
-                    CreatedBy = User.Identity.Name,
-                    DateCreated = assignTicket_HelpDesk.DateCreated,
-                    Role = assignTicket_HelpDesk.Role,
-                    Solution = assignTicket_HelpDesk.Solution,
-                    MaterialItemsId = assignTicket_HelpDesk.MaterialItemsId,
-                    Remarked = assignTicket_HelpDesk.Remarked
-                };
-
-
-                db.AssignTicket_HelpDesks.Attach(entity);
+                var entity = GetMappedObject(assignTicket); db.AssignTicket_HelpDesks.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
             }
-
-            return Json(new[] { assignTicket_HelpDesk }.ToDataSourceResult(request));
+            return Json(new[] { assignTicket }.ToDataSourceResult(request));
         }
-
-      
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult AssignTickets_Destroy([DataSourceRequest]DataSourceRequest request, AssignTicket_HelpDesk AssignTicket)
+        public ActionResult AssignTickets_Destroy([DataSourceRequest]DataSourceRequest request, AssignTicket_HelpDesk assignTicket)
         {
-
-            var ticket = db.AssignTicket_HelpDesks.FirstOrDefault(x => x.AssignTicket_HelpDeskId == AssignTicket.AssignTicket_HelpDeskId);
-            if (ticket != null)
+            if (ModelState.IsValid)
             {
-                db.AssignTicket_HelpDesks.Attach(ticket);
-                db.AssignTicket_HelpDesks.Remove(ticket);
+                var entity = GetMappedObject(assignTicket);
+                db.AssignTicket_HelpDesks.Attach(entity);
+                db.AssignTicket_HelpDesks.Remove(entity);
                 db.SaveChanges();
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Priority Type number " + AssignTicket.AssignTicket_HelpDeskId);
-
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Priority Type number " + assignTicket.AssignTicket_HelpDeskId);
             }
-            return Json(new[] { AssignTicket }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { assignTicket }.ToDataSourceResult(request, ModelState));
         }
-    
-        public void Assign(string id)
+        private AssignTicket_HelpDesk GetMappedObject(AssignTicket_HelpDesk assignTicket_HelpDesk)
         {
-            var customerTicketId = int.Parse(id);
-            var assignedTickets = db.AssignTicket_HelpDesks.Where(x => x.CustomerTicketId == customerTicketId).ToList();
-            foreach (var assigned in assignedTickets)
+            var entity = new AssignTicket_HelpDesk
             {
-                // var assign = new AssignTicket();
-
-                assigned.IsAssigned = true;
-
-                db.Entry(assigned).State = EntityState.Modified;
-                db.SaveChanges();
-            }
-            var customerTicket = db.CustomerTicket_HelpDesks.FirstOrDefault(x => x.CustomerTicket_HelpDeskId == customerTicketId);
+                AssignTicket_HelpDeskId = assignTicket_HelpDesk.AssignTicket_HelpDeskId,
+                CustomerTicketId = assignTicket_HelpDesk.CustomerTicketId,
+                Age = assignTicket_HelpDesk.Age,
+                AssignedDate = assignTicket_HelpDesk.AssignedDate,
+                AssinedTo = assignTicket_HelpDesk.AssinedTo,
+                ClosedDate = assignTicket_HelpDesk.ClosedDate,
+                IsAssigned = assignTicket_HelpDesk.IsAssigned,
+                Role = assignTicket_HelpDesk.Role,
+                Status = assignTicket_HelpDesk.Status,
+                RootCause = assignTicket_HelpDesk.RootCause,
+                Solution = assignTicket_HelpDesk.Solution,
+                MaterialItemsId = assignTicket_HelpDesk.MaterialItemsId,
+                Remarked = assignTicket_HelpDesk.Remarked,
+                TicketPriority = assignTicket_HelpDesk.TicketPriority,
+                IsClosed = assignTicket_HelpDesk.IsClosed,
+                IsOnlineTransferred = assignTicket_HelpDesk.IsOnlineTransferred,
+                IsSendForApproval = assignTicket_HelpDesk.IsSendForApproval,
+                IsSendForClosing = assignTicket_HelpDesk.IsSendForClosing,
+                IsSolved = assignTicket_HelpDesk.IsSolved,
+                IsVoid = assignTicket_HelpDesk.IsVoid,
+                OnlineApprovedBy = assignTicket_HelpDesk.OnlineApprovedBy,
+                OnlineApprovedTime = assignTicket_HelpDesk.OnlineApprovedTime,
+                OnlineTransferredTime = assignTicket_HelpDesk.OnlineTransferredTime,
+                OrgBranchName = assignTicket_HelpDesk.OrgBranchName,
+                Remark = assignTicket_HelpDesk.Remark,
+                SendForApprovalBy = assignTicket_HelpDesk.SendForApprovalBy,
+                SendForApprovalTime = assignTicket_HelpDesk.SendForApprovalTime,
+                VoidBy = assignTicket_HelpDesk.VoidBy,
+                VoidTime = assignTicket_HelpDesk.VoidTime,
+                IsOnlineApproved = assignTicket_HelpDesk.IsOnlineApproved,
+                IsOnlineTransferredBy = assignTicket_HelpDesk.IsOnlineTransferredBy,
+                CreatedBy = assignTicket_HelpDesk.CreatedBy,
+                DateCreated = assignTicket_HelpDesk.DateCreated,
+                ModifiedBy = assignTicket_HelpDesk.ModifiedBy,
+                LastModified = assignTicket_HelpDesk.LastModified
+               
+            };
+            return entity;
+        }
+        public JsonResult Assign(int id)
+        {
+            var customerTicket = db.CustomerTicket_HelpDesks.Find(id);
             if (customerTicket != null)
             {
-                customerTicket.Status = InfoDeskFinalizeType.ASSIGNED;
-
+                customerTicket.TicketStatus = TicketStatus.Assigned;
+                var assignedTickets = db.AssignTicket_HelpDesks.Where(x => x.CustomerTicketId == customerTicket.CustomerTicket_HelpDeskId).ToList();
+                foreach (var assigned in assignedTickets)
+                {
+                    // var assign = new AssignTicket();
+                    assigned.IsAssigned = true;
+                    assigned.ModifiedBy = User.Identity.Name;
+                    assigned.LastModified = DateTime.Now;
+                    db.Entry(assigned).State = EntityState.Modified;
+                }
                 db.Entry(customerTicket).State = EntityState.Modified;
                 db.SaveChanges();
+                return Json("Assign successfully", JsonRequestBehavior.AllowGet);
             }
+            return Json("Record not Found", JsonRequestBehavior.AllowGet);
+
+
+
 
         }
-
         public string CheckStatus(int masterId)
         {
             var customerTicket = db.CustomerTicket_HelpDesks.FirstOrDefault(x => x.CustomerTicket_HelpDeskId == masterId);
             if (customerTicket != null)
             {
-                if (customerTicket.Status == InfoDeskFinalizeType.ASSIGNED || customerTicket.Status == InfoDeskFinalizeType.CLOSED || customerTicket.Status == InfoDeskFinalizeType.RESOLVED)
+                if (customerTicket.TicketStatus == TicketStatus.Closed 
+                    //|| customerTicket.TicketStatus == TicketStatus.Assigned 
+                    //|| customerTicket.TicketStatus == TicketStatus.Resolved
+                    )
                 {
                     return "true";
                 }
@@ -329,7 +391,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
                         if(customer != null)
                         {
-                            customer.Status = InfoDeskFinalizeType.RESOLVED;
+                            customer.TicketStatus = TicketStatus.Resolved;
 
                             db.Entry(customer).State = EntityState.Modified;
                             db.SaveChanges();
@@ -350,19 +412,28 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             var ticket = db.CustomerTicket_HelpDesks.Find(mid);
             if (ticket != null)
             {
-                if (!ticket.IsClosed)
+                if (ticket.IsAssigned&&ticket.TicketStatus==TicketStatus.Resolved)
                 {
-                    ticket.IsClosed = true;
-                    ticket.Status = InfoDeskFinalizeType.CLOSED;
+                    if (!ticket.IsClosed)
+                    {
+                        ticket.IsClosed = true;
+                        ticket.TicketStatus = TicketStatus.Closed;
+                        ticket.ClosedDate = DateTime.Now;
 
-                    db.Entry(ticket).State = EntityState.Modified;
-                    db.SaveChanges();
+                        db.Entry(ticket).State = EntityState.Modified;
+                        db.SaveChanges();
 
-                    return "Successfully Closed";
+                        return "Successfully Closed";
+                    }
+                    else
+                    {
+                        return "Closed  Once already";
+                    }
                 }
+                
                 else
                 {
-                    return "Closed Before";
+                    return "you can't close before Assigning and resolving the issue";
                 }
                
             }

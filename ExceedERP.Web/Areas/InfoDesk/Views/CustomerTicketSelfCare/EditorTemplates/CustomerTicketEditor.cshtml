@@ -1,0 +1,82 @@
+﻿@using ExceedERP.Core.Domain.InfoDesk.Support
+@using ExceedERP.Core.Domain.CRM
+@model ExceedERP.Core.Domain.InfoDesk.Support.CustomerTicket_HelpDesk
+@using ExceedERP.Core.Domain.InfoDesk
+<form>
+
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.Label("Ticket Type")
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.TicketType_HelpDeskId)
+
+
+                                          .OptionLabel("Select Specific Ticket ...")
+                                          .DataTextField("Type")
+                                          .Filter("contains")
+                                          .DataValueField("TicketType_HelpDeskId")
+                                          .DataSource(dataSource =>
+                                          {
+                                              dataSource.Read(read => read.Action("GetSpecificTicket", "InfoDeskDataProvider").Data("sendForgery"));
+
+                                          }).ValuePrimitive(true))
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.SupportGroup_HelpDeskId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.SupportGroup_HelpDeskId)
+                                           .AutoBind(false)
+                                           .OptionLabel("Select")
+                                           .DataTextField("Name")
+                                                   .DataValueField("SupportGroup_HelpDeskId")
+                                           .DataSource(dataSource =>
+                                           {
+                                               dataSource.Read(read => read.Action("GetSupportGroup", "InfoDeskDataProvider").Data("sendForgery"));
+
+                                           }).ValuePrimitive(true))
+                    @Html.ValidationMessageFor(model => model.SupportGroup_HelpDeskId)
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-9">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model=>model.Description)
+                </div>
+                <div>
+                    @Html.TextAreaFor(model=>model.Description, new { @class ="form-control rounded",style="color:red;height:100px;font-family:arial;"  })
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</form>
+<script>
+    if ($("#Source").val() == 1)
+        $(".employee").removeClass("hidden");
+        // start();
+        //  alert("hello");
+        //lert($("#Source").val());
+</script>

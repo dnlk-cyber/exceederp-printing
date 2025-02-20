@@ -7,7 +7,7 @@
                             .ValuePrimitive(true)
                       .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("GetActiveEmployeesFromGroup", "InfoDeskDataProvider", new { area = "InfoDesk" }).Data("filterEmployee"))
+                          dataSource.Read(read => read.Action("GetActiveEmployeesFromGroup", "InfoDeskDataProvider", new { area = "InfoDesk" }).Data("sendForgery").Data("filterEmployee"))
                                     .ServerFiltering(false);
                       })
 

@@ -141,6 +141,14 @@ namespace ExceedERP.Web.Controllers
 				new ApplicationRole("Dashboard_Inventory","To see dashboard reports","Global"),
 				new ApplicationRole("Dashboard_Procurement","To see dashboard reports","Global"),
 			   #endregion
+                #region info desk
+new ApplicationRole("HelpDeskAdmin", "HelpDeskAdmin", "HelpDesk"),
+new ApplicationRole("OpenTicket", "OpenTicket", "HelpDesk"),
+new ApplicationRole("AssignHandler", "AssignHandler", "HelpDesk"),
+new ApplicationRole("Handler", "Handler", "HelpDesk"),
+new ApplicationRole("HelpDesk_Report", "View Report", "HelpDesk"),
+new ApplicationRole("HelpDesk_Setting", "Add Help desk settings", "HelpDesk"),
+#endregion
 
 			   #region Finance
 			new ApplicationRole("Finance_Admin","To define common finance setup","Finance"),

@@ -7,9 +7,7 @@ using Kendo.Mvc.Extensions;
 using ExceedERP.DataAccess.Context;
 using System.Data.Entity;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.InfoDesk.Support;
-using ExceedERP.Core.Domain.InfoDesk;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {

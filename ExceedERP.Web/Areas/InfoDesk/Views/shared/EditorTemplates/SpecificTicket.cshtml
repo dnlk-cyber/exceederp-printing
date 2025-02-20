@@ -1,12 +1,10 @@
 ﻿@(Html.Kendo().DropDownListFor(m=>m)
+    .OptionLabel("Select Specific Ticket")
+    .DataTextField("Description")
+    .Filter("contains")
+    .DataValueField("TicketTypeId")
+    .DataSource(dataSource =>
+    {
+        dataSource.Read(read => read.Action("GetSpecificTicket", "InfoDeskDataProvider").Data("sendForgery"));
 
-
-                                                                                                                          .OptionLabel("Select Specific Ticket")
-                                                                                                                          .DataTextField("Description")
-                                                                                                                          .Filter("contains")
-                                                                                                                          .DataValueField("TicketTypeId")
-                                                                                                                          .DataSource(dataSource =>
-                                                                                                                          {
-                                                                                                                              dataSource.Read(read => read.Action("GetSpecificTicket", "InfoDeskDataProvider"));
-
-                                                                                                                          }).ValuePrimitive(true))
+    }).ValuePrimitive(true))

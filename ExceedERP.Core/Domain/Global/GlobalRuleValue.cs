@@ -46,7 +46,11 @@ namespace ExceedERP.Core.Domain.Global
         LegalCase = 26,
         InternalAudit = 27,
         Health = 28,
-        Insurance = 29
+        Insurance = 29,
+        CPM = 30,
+        InfoDesk = 31,
+        LabManagement = 32,
+        Common = 33,
     }
     public class GlobalRuleValue
     {

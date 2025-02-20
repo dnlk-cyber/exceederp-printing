@@ -125,6 +125,8 @@ using ExceedERP.Core.Domain.Insurance.InsuranceNew;
 using ExceedERP.Core.Domain.Health;
 using ExceedERP.Core.Domain.Insurance;
 using ExceedERP.Core.Domain.Insurance.Setting;
+using ExceedERP.Core.Domain.InfoDesk.License;
+using ExceedERP.Core.Domain.InfoDesk.Support;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -1594,19 +1596,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.WelderPerformanceQualificationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CMSTraineeCourseEntityTypeConfiguration());
             #endregion
-            #region Info Desk
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.InfoDeskEntityConfiguration.CustomerTicketEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.InfoDeskEntityConfiguration.TicketActivityDefinitionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.InfoDeskEntityConfiguration.TicketStatusLogEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.InfoDeskEntityConfiguration.SupportGroupEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.InfoDeskEntityConfiguration.StatusTypeEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.InfoDeskEntityConfiguration.PriorityTypeEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.InfoDeskEntityConfiguration.AssignTicketEntityTypeConfiguration());
-
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.InfoDeskEntityConfiguration.TicketTypeEntityTypeConfiguration());
-
-
-            #endregion
+          
 
             #region printing 
             modelBuilder.Configurations.Add(new PrintingJobOrderProductionJobDesignEntityTypeConfiguration());
@@ -1923,6 +1913,25 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new InsurancePaymentSettingEntityTypeConfiguration());
 
             #endregion
+            #endregion
+
+            #region Info Desk
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.SoftwareLicenseEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.AssignedUserEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.InfoDeskKnowledgeBaseEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.KnowledgeBaseAttachmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.CustomerTicketAttachmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.CustomerTicketEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.TicketActivityDefinitionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.TicketStatusLogEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.SupportGroupEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.StatusTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.PriorityTypeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.AssignTicketEntityTypeConfiguration());
+
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.TicketTypeEntityTypeConfiguration());
+
+
             #endregion
         }
         public DbSet<ConsProjectType> ConsProjectTypes { get; set; }
@@ -3223,30 +3232,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<MaintenanceInterval> MaintenanceIntervals { get; set; }
 
         #endregion
-        #region  InfoDesk
-
-        public DbSet<ExceedERP.Core.Domain.InfoDesk.TicketType_HelpDesk> TicketType_HelpDesks { set; get; }
-        public DbSet<ExceedERP.Core.Domain.InfoDesk.Support.TicketStatusLog_HelpDesk> TicketStatusLog_HelpDesks { get; set; }
-
-        public DbSet<ExceedERP.Core.Domain.InfoDesk.Support.SupportGroupDetail_HelpDesk> SupportGroupDetail_HelpDesks { get; set; }
-        public DbSet<ExceedERP.Core.Domain.InfoDesk.Support.CustomerTicket_HelpDesk> CustomerTicket_HelpDesks { get; set; }
-
-        public DbSet<ExceedERP.Core.Domain.InfoDesk.Support.TicketActivityDefinition_HelpDesk> TicketActivityDefinition_HelpDesks { get; set; }
-
-        public DbSet<ExceedERP.Core.Domain.InfoDesk.Support.SupportGroup_HelpDesk> SupportGroup_HelpDesks { get; set; }
-
-        public DbSet<ExceedERP.Core.Domain.InfoDesk.Support.StatusType_HelpDesk> StatusType_HelpDesks { get; set; }
-
-        public DbSet<ExceedERP.Core.Domain.InfoDesk.Support.PriorityType_HelpDesk> PriorityType_HelpDesks { get; set; }
-        public DbSet<ExceedERP.Core.Domain.InfoDesk.Support.AssignTicket_HelpDesk> AssignTicket_HelpDesks { get; set; }
-
-        //public System.Data.Entity.DbSet<ExceedERP.Core.Domain.InfoDesk.Support.CustomerTicket_HelpDesk> CustomerTickets { get; set; }
-
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.InfoDesk.Support.MaterialItems> MaterialItems { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.InfoDesk.Support.MaterialsUsed> MaterialsUseds { get; set; }
-
-
-        #endregion
+      
         #region CMS
         public DbSet<ExceedERP.Core.Domain.CMS.CMSProgram> CMSPrograms { get; set; }
         public DbSet<ExceedERP.Core.Domain.CMS.CMSCourse> CMSCourses { get; set; }
@@ -3364,9 +3350,10 @@ namespace ExceedERP.DataAccess.Context
 
         public DbSet<TicketActivityDefinition> TicketActivityDefinitions { get; set; }
 
-        public DbSet<TicketAssignment> TicketAssignments { get; set; }
+        public DbSet<Core.Domain.CRM.TicketAssignment> TicketAssignments { get; set; }
 
-        public DbSet<TicketRole> TicketRoles { get; set; }
+        public DbSet<Core.Domain.CRM.TicketRole> TicketRoles { get; set; }
+
         public DbSet<BankAccountDetail> BankAccountDetails { get; set; }
 
         public DbSet<CreditSalesInvoice> CreditSalesInvoices { get; set; }
@@ -4306,6 +4293,36 @@ namespace ExceedERP.DataAccess.Context
 
 
         #endregion
+        #endregion
+
+        #region  InfoDesk
+        public DbSet<SoftwareLicense> SoftwareLicenses { get; set; }
+        public DbSet<AssignedUser> AssignedUsers { get; set; }
+        public DbSet<InfoDeskKnowledgeBase> InfoDeskKnowledgeBases { get; set; }
+        public DbSet<KnowledgeBaseAttachment> KnowledgeBaseAttachments { get; set; }
+        public DbSet<CustomerTicketAttachment> CustomerTicketAttachments { get; set; }
+
+        public DbSet<TicketType_HelpDesk> TicketType_HelpDesks { set; get; }
+        public DbSet<Core.Domain.InfoDesk.Support.TicketStatusLog_HelpDesk> TicketStatusLog_HelpDesks { get; set; }
+
+        public DbSet<Core.Domain.InfoDesk.Support.SupportGroupDetail_HelpDesk> SupportGroupDetail_HelpDesks { get; set; }
+        public DbSet<Core.Domain.InfoDesk.Support.CustomerTicket_HelpDesk> CustomerTicket_HelpDesks { get; set; }
+
+        public DbSet<Core.Domain.InfoDesk.Support.TicketActivityDefinition_HelpDesk> TicketActivityDefinition_HelpDesks { get; set; }
+
+        public DbSet<Core.Domain.InfoDesk.Support.SupportGroup_HelpDesk> SupportGroup_HelpDesks { get; set; }
+
+        public DbSet<Core.Domain.InfoDesk.Support.StatusType_HelpDesk> StatusType_HelpDesks { get; set; }
+
+        public DbSet<Core.Domain.InfoDesk.Support.PriorityType_HelpDesk> PriorityType_HelpDesks { get; set; }
+        public DbSet<Core.Domain.InfoDesk.Support.AssignTicket_HelpDesk> AssignTicket_HelpDesks { get; set; }
+
+        //public DbSet<ExceedERP.Core.Domain.InfoDesk.Support.CustomerTicket_HelpDesk> CustomerTickets { get; set; }
+
+        public DbSet<Core.Domain.InfoDesk.Support.MaterialItems> MaterialItems { get; set; }
+        public DbSet<Core.Domain.InfoDesk.Support.MaterialsUsed> MaterialsUseds { get; set; }
+
+
         #endregion
         //#region  Estimation
         //#region Printimg Estimation

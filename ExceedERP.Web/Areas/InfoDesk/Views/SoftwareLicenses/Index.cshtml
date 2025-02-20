@@ -1,0 +1,278 @@
+﻿@using ExceedERP.Core.Domain.InfoDesk.License
+<legend>Software Licenses</legend>
+<div class="row">
+    <p>
+        <span class="fa fa-circle" style="color:deepskyblue;"></span>&nbsp;&nbsp;Active,&nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:lightgray;"></span>&nbsp;&nbsp;Expired &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:limegreen;"></span>&nbsp;&nbsp;Renewal &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:powderblue;"></span>&nbsp;&nbsp;Pending &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:olive;"></span>&nbsp;&nbsp;Retired &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:lightpink;"></span>&nbsp;&nbsp;Others &nbsp;&nbsp;
+    </p>
+</div>
+@(Html.Kendo().Grid<SoftwareLicense>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.SoftwareLicenseId).Title("#").Width(90);
+          columns.Bound(c => c.LicenseId).Width(90);
+          columns.Bound(c => c.SoftwareName).Width(130);
+          columns.Bound(c => c.Version).Width(100);
+          columns.Bound(c => c.Vendor).Width(120);
+          columns.Bound(c => c.LicenseType).Width(110);
+          columns.Bound(c => c.LicenseKey).Width(120);
+          columns.Bound(c => c.PurchaseDate).Width(120);
+          columns.Bound(c => c.LicenseExpiryOrRenewalDate).Width(130);
+          columns.Bound(c => c.NumberofLicenses).Width(120);
+          columns.Bound(c => c.NumberofUsers).Width(110);
+          columns.Bound(c => c.CostperLicense).Width(120);
+          columns.Bound(c => c.TotalCost).Width(120);
+          columns.ForeignKey(c => c.OrgStructureId, (System.Collections.IEnumerable)ViewData["department"], "OrgStructureId", "Name").Filterable(ft=>ft.Multi(true).Search(true)).Width(150);
+          columns.Bound(c => c.AssignedUsers).Width(130);
+          columns.Bound(c => c.LicenseStatus).Width(120);
+          columns.Bound(c => c.UsageLimitations).Width(140);
+          columns.Bound(c => c.SupportContact).Width(150);
+          columns.Bound(c => c.CommentsOrNotes).Width(130);
+          columns.Command(command => 
+          {
+              command.Edit();
+              command.Destroy();
+
+          }).Width(200);
+      })
+      .ToolBar(toolbar => 
+      {
+          toolbar.Create();
+
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp)
+            .TemplateName("LicenseEditor")
+            .Window(win => win.Title("Software License Form ")))
+            .Scrollable(he=>he.Height(550))
+            .Events(ev=>ev.DataBound("onDataBound"))
+       .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                        .Sortable(sortable => 
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+
+                        })
+      .Filterable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(x=>x.Add(sort=>sort.SoftwareLicenseId).Descending())
+          .Model(model => { model.Id(p => p.SoftwareLicenseId);
+              model.Field(p => p.SoftwareLicenseId).Editable(false);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+
+          })
+          .Read(read => read.Action("SoftwareLicenses_Read", "SoftwareLicenses").Data("sendForgery"))
+          .Create(create => create.Action("SoftwareLicenses_Create", "SoftwareLicenses").Data("sendForgery"))
+          .Update(update => update.Action("SoftwareLicenses_Update", "SoftwareLicenses").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("SoftwareLicenses_Destroy", "SoftwareLicenses").Data("sendForgery"))
+      ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=SoftwareLicenseId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+        items.Add().Text("Detail  ").Content(
+              @<text>
+          <dl class="dl-horizontal">
+              <dt>
+                  Created On
+              </dt>
+              <dd>
+                  #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+              </dd>
+              <dt>
+                  Created By
+              </dt>
+              <dd>
+               #= CreatedBy #
+           </dd>
+           
+                 <dt>
+                     Modified By
+                 </dt>
+           <dd>
+               #= ModifiedBy #
+           </dd>
+                 <dt>
+                     Modified Date
+                 </dt>
+           <dd>
+               #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+           </dd>
+               <dt>
+                   Software Name:
+               </dt>
+                 <dd>
+                     #= SoftwareName #
+
+                 </dd>
+                 <dt>
+                     Usage Limitations:
+                 </dt>
+                 <dd>
+                     #= UsageLimitations #
+
+                 </dd> 
+                 <dt>
+                     Support Contact:
+                 </dt>
+                 <dd>
+                     #= SupportContact #
+
+                 </dd> 
+                 <dt>
+                     Comments /Notes :
+                 </dt>
+                 <dd>
+                     #= CommentsOrNotes #
+
+                 </dd>
+         </dl>  
+            </text>);
+    
+          items.Add().Text("Assigned User").Content(
+          @<text>
+            @(Html.Kendo().Grid<AssignedUser>()
+                .Name("childGrid#=SoftwareLicenseId#")
+                .Columns(columns =>
+                {
+
+                    columns.ForeignKey(c => c.EmployeeId, (System.Collections.IEnumerable)ViewData["employees"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeesList").Filterable(ft => ft.Multi(true).Search(true)).Width(200);
+                    //columns.ForeignKey(c => c.UserId, (System.Collections.IEnumerable)ViewData["users"], "UserId", "Name").EditorTemplateName("AssignedUser").Filterable(ft => ft.Multi(true).Search(true)).Width(150);
+                    columns.Bound(c => c.UserName).Width(120);
+                    columns.Bound(c => c.Remark).Width(150);
+                    columns.Command(command =>
+                    {
+                        command.Edit();
+                        command.Destroy().Text("Delete");
+                    });
+
+
+                })
+                .ToolBar(toolBar => { toolBar.Create(); })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Scrollable(h => h.Height("auto"))
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .Sort(sort => sort.Add(c => c.AssignedUserId).Descending())
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"childGrid#=SoftwareLicenseId#\")");
+                    events.RequestStart("onRequestStart(\"childGrid#=SoftwareLicenseId#\")");
+                    events.RequestEnd("onRequestEnd(\"childGrid#=SoftwareLicenseId#\")");
+                })
+                .Model(model => 
+                {
+                    model.Id(p => p.AssignedUserId);
+                    model.Field(p => p.UserName).Editable(false);
+                })
+                .Read(read => read.Action("AssignedUsers_Read", "AssignedUsers", new { id = "#=SoftwareLicenseId#", area = "InfoDesk" }).Data("sendForgery"))
+                .Create(create => create.Action("AssignedUsers_Create", "AssignedUsers", new { id = "#=SoftwareLicenseId#", area = "InfoDesk" }).Data("sendForgery"))
+                .Update(update => update.Action("AssignedUsers_Update", "AssignedUsers").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("AssignedUsers_Destroy", "AssignedUsers").Data("sendForgery"))
+                ).ToClientTemplate())
+                </text>);
+        }).ToClientTemplate())
+</script>
+
+
+<script>
+
+</script>
+<script>
+    function onMultipleChange(obj) {
+        if ($(obj).is(":checked")) {
+            $("#classTobeShown1").show();
+            //$("#IsForOther").prop("disabled", false);
+
+        }
+        else {
+            $("#classTobeShown1").hide();
+            // $("#IsForOther").prop("disabled", false);
+        }
+    }
+</script>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+
+    .row .col-sm-3 {
+        width: 200px;
+    }
+
+    .row .col-sm-2 {
+        width: 200px;
+    }
+
+    .my-class {
+        margin-left: 30px;
+    }
+
+    .chkbx {
+        pointer-events: none;
+    }
+
+
+
+    .kendo-textbox {
+        width: 200px;
+        height: 50px;
+    }
+
+    .textarea-class {
+        width: 200px;
+        height: 50px;
+    }
+</style>
+<script>
+    function onDataBound(e) {
+        var grid = this;
+        var Checkgrid = $("#grid").data("kendoGrid");
+        var gridData = Checkgrid.dataSource.view();
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.LicenseStatus == "0" ) {
+                $(this).css("background-color", "deepskyblue");
+
+            }
+            if (dataItem.LicenseStatus == "1") {
+                $(this).css("background-color", "lightgray");
+            }
+            if (dataItem.LicenseStatus == "2") {
+                $(this).css("background-color", "limegreen");
+            }
+            if (dataItem.LicenseStatus == "3") {
+                $(this).css("background-color", "powderblue");
+            }
+
+            if (dataItem.LicenseStatus == "4") {
+                $(this).css("background-color", "olive");
+                $(this).find(".k-grid-close").remove();
+
+            }
+            if (dataItem.LicenseStatus == "5") {
+                $(this).css("background-color", "lightpink");
+                $(this).find(".k-grid-close").remove();
+
+            }
+
+        });
+    }
+
+</script>

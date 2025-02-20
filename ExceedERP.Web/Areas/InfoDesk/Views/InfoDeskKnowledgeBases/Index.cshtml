@@ -1,0 +1,189 @@
+﻿@using ExceedERP.Core.Domain.InfoDesk
+<legend>Info Desk Knowledge Bases</legend>
+@(Html.Kendo().Grid<InfoDeskKnowledgeBase>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Problem);
+          columns.Bound(c => c.Solution);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => {
+              command.Edit();
+              command.Destroy();
+          }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+          .HtmlAttributes(new { style = "height: 520px;" })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+       .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                        .Sortable(sortable => {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => { model.Id(p => p.InfoDeskKnowledgeBaseId);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+
+          })
+          .Read(read => read.Action("InfoDeskKnowledgeBases_Read", "InfoDeskKnowledgeBases").Data("sendForgery"))
+          .Create(create => create.Action("InfoDeskKnowledgeBases_Create", "InfoDeskKnowledgeBases").Data("sendForgery"))
+          .Update(update => update.Action("InfoDeskKnowledgeBases_Update", "InfoDeskKnowledgeBases").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("InfoDeskKnowledgeBases_Destroy", "InfoDeskKnowledgeBases").Data("sendForgery"))
+      ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=InfoDeskKnowledgeBaseId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+        items.Add().Text("  Detail  ").Content(
+              @<text>
+          <dl class="dl-horizontal">
+              <dt>
+                  Created On
+              </dt>
+              <dd>
+                  #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+              </dd>
+              <dt>
+                  Created By
+              </dt>
+              <dd>
+               #= CreatedBy #
+           </dd>
+           
+                 <dt>
+                     Modified By
+                 </dt>
+           <dd>
+               #= ModifiedBy #
+           </dd>
+                 <dt>
+                     Modified Date
+                 </dt>
+           <dd>
+               #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+           </dd>
+                 <dt>
+                     Remark
+                 </dt>
+                 <dd>
+                     #= Remark #
+
+                 </dd>
+         </dl>  
+            </text>);
+    
+          items.Add().Text("Attachments").Content(
+          @<text>
+
+            <button onclick='UploadFile(#=InfoDeskKnowledgeBaseId#)' class='fa fa-upload btn btn-primary'>&nbsp;Upload </button>
+
+            @(Html.Kendo().Grid<KnowledgeBaseAttachment>()
+                .Name("AttachmentGrid#=InfoDeskKnowledgeBaseId#")
+                .Columns(columns =>
+                {
+
+                    columns.Bound(c => c.FileName).ClientTemplate("<a href='/InfoDesk/KnowledgeBaseAttachments/DownloadAttachment?attachmentId=\\#=KnowledgeBaseAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+
+                    columns.Template(e => { }).ClientTemplate("<a href='/InfoDesk/KnowledgeBaseAttachments/DownloadAttachment?attachmentId=\\#=KnowledgeBaseAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
+                    columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+
+                    columns.Command(command =>
+                    {
+                        command.Destroy().Text("Delete");
+
+                    }).Width(300);
+
+
+                })
+                //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument")
+                //.Window(window =>
+                //{
+                //    window.Title("");
+                //    window.Scrollable(false);
+
+
+
+
+                //}))
+                .Scrollable(h => h.Height("auto"))
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .Sort(sort => sort.Add(c => c.KnowledgeBaseAttachmentId).Descending())
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"AttachmentGrid#=InfoDeskKnowledgeBaseId#\")");
+                    events.RequestStart("onRequestStart(\"AttachmentGrid#=InfoDeskKnowledgeBaseId#\")");
+                    events.RequestEnd("onRequestEnd(\"AttachmentGrid#=InfoDeskKnowledgeBaseId#\")");
+
+
+
+                })
+                .Model(model => model.Id(p => p.KnowledgeBaseAttachmentId))
+                .Read(read => read.Action("KnowledgeBaseAttachments_Read", "KnowledgeBaseAttachments", new { id = "#=InfoDeskKnowledgeBaseId#", area = "InfoDesk" }).Data("sendForgery"))
+                .Create(create => create.Action("KnowledgeBaseAttachments_Create", "KnowledgeBaseAttachments", new { id = "#=InfoDeskKnowledgeBaseId#", area = "InfoDesk" }).Data("sendForgery"))
+                .Update(update => update.Action("KnowledgeBaseAttachments_Update", "KnowledgeBaseAttachments").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("KnowledgeBaseAttachments_Destroy", "KnowledgeBaseAttachments").Data("sendForgery"))
+                ).ToClientTemplate())
+
+                </text>);
+        }).ToClientTemplate())
+</script>
+@(Html.Kendo().Window()
+        .Name("UploadDoc")
+        .Title("Upload File")
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(400).Content(
+        @<text>
+            <div class="form-group">
+                <form action="@Url.Action("UploadFiles", "KnowledgeBaseAttachments", new {area="InfoDesk" })" method="post" , new { enctype="multipart/form-data" }>
+                    <input type="hidden" name="masterId" id="masterId">
+                    <div class="row">
+                        <div class="col-md-10">
+                            @Html.TextBox("file", "", new { type = "file", required = "true" })
+                            <br />
+                        </div>
+                    </div>
+                    <div>
+                        <div class="editor-field">
+                            <label>Description</label>
+                            @Html.TextArea("Description", null, new { placeholder = "Description", style = "width: 90%; max-width: 90%;height:60%" })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-7"></div>
+                        <input type="submit" class="btn-primary k-button" value=" Submit " />
+                    </div>
+
+                </form>
+                <div class="pull-right">
+
+                </div>
+            </div>
+        </text>)
+)
+
+<script>
+    function UploadFile(id) {
+        $("#masterId").val(id);
+        var wnd = $("#UploadDoc").data("kendoWindow");
+        wnd.center().open();
+    }
+</script>

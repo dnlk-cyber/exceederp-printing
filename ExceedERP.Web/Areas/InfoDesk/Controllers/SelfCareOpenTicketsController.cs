@@ -1,5 +1,4 @@
 ﻿using System;
-using ExceedERP.Web.Helpers;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -10,8 +9,6 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.InfoDesk.Support;
 using System.Collections.Generic;
-using ExceedERP.Core.Domain.InfoDesk;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.Web.Areas.InfoDesk.Models;
 
 
@@ -44,10 +41,10 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return View();
         }      
-        public double GetAge(DateTime? CreatedDate, DateTime? ClosedDate, InfoDeskFinalizeType status)
+        public double GetAge(DateTime? CreatedDate, DateTime? ClosedDate, TicketStatus status)
         {
             double age = 0;
-            if (status == InfoDeskFinalizeType.CLOSED && CreatedDate != null && ClosedDate != null)
+            if (status == TicketStatus.Closed && CreatedDate != null && ClosedDate != null)
             {
                 age = ClosedDate.Value.Subtract(CreatedDate.Value).Days;
             }
@@ -83,20 +80,20 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 //  CustomerAddress = customerTicket.CustomerAddress,
 
                 Description = customerTicket.Description,
-                Priority = customerTicket.Priority,
-                SupportGroupId = customerTicket.SupportGroupId,
+                TicketPriority = customerTicket.TicketPriority,
+                SupportGroup_HelpDeskId = customerTicket.SupportGroup_HelpDeskId,
                 DueDate = customerTicket.DueDate,
                 CreatedBy = customerTicket.CreatedBy,
                 DateCreated = customerTicket.DateCreated,
                 LastModified = customerTicket.LastModified,
                 ModifiedBy = customerTicket.ModifiedBy,
                 OrgBranchName = customerTicket.OrgBranchName,
-                Status = customerTicket.Status,
+                TicketStatus = customerTicket.TicketStatus,
                 PriorityColor = customerTicket.PriorityColor,
                 Remark = customerTicket.Remark,
-                SpecificTicketTypeId = customerTicket.SpecificTicketTypeId,
+                TicketType_HelpDeskId = customerTicket.TicketType_HelpDeskId,
                 EmployeeId = customerTicket.EmployeeId,
-                AgeOfTicket = GetAge(customerTicket.DateCreated, customerTicket.ClosedDate, customerTicket.Status),
+                AgeOfTicket = GetAge(customerTicket.DateCreated, customerTicket.ClosedDate, customerTicket.TicketStatus),
                 Rate = customerTicket.Rate,
                 IsClosed = customerTicket.IsClosed
 
@@ -122,10 +119,10 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 var entity = new CustomerTicket_HelpDesk
                 {
                     Description = customerTicket_HelpDesk.Description,
-                    Priority = customerTicket_HelpDesk.Priority,
-                    SupportGroupId = customerTicket_HelpDesk.SupportGroupId,
+                    TicketPriority = customerTicket_HelpDesk.TicketPriority,
+                    SupportGroup_HelpDeskId = customerTicket_HelpDesk.SupportGroup_HelpDeskId,
                     ClosedDate = null,
-                    SpecificTicketTypeId = customerTicket_HelpDesk.SpecificTicketTypeId,
+                    TicketType_HelpDeskId = customerTicket_HelpDesk.TicketType_HelpDeskId,
                     DueDate = customerTicket_HelpDesk.DueDate,
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Now,
@@ -154,28 +151,28 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             {
 
                 ticket.Description = customerTicket_HelpDesk.Description;
-                ticket.Priority = customerTicket_HelpDesk.Priority;
-                ticket.SupportGroupId = customerTicket_HelpDesk.SupportGroupId;
+                ticket.TicketPriority = customerTicket_HelpDesk.TicketPriority;
+                ticket.SupportGroup_HelpDeskId = customerTicket_HelpDesk.SupportGroup_HelpDeskId;
                 ticket.DueDate = customerTicket_HelpDesk.DueDate;
                 ticket.CreatedBy = customerTicket_HelpDesk.CreatedBy;
                 ticket.DateCreated = customerTicket_HelpDesk.DateCreated;
                 ticket.LastModified = DateTime.Now;
-                ticket.SpecificTicketTypeId = customerTicket_HelpDesk.SpecificTicketTypeId;
+                ticket.TicketType_HelpDeskId = customerTicket_HelpDesk.TicketType_HelpDeskId;
                 ticket.ModifiedBy = User.Identity.Name;
                 ticket.Remark = customerTicket_HelpDesk.Remark;
                 ticket.SolutionGiven = customerTicket_HelpDesk.SolutionGiven;
                 ticket.EmployeeId = customerTicket_HelpDesk.EmployeeId;
 
                 //var Status = db.StatusTypes.Where(x => x.Name == customerTicket.StatusType).FirstOrDefault();
-                var Priority = db.PriorityType_HelpDesks.Where(x => x.Name == customerTicket_HelpDesk.Priority).FirstOrDefault();
-                //if (Status != null)
+                //var Priority = db.PriorityType_HelpDesks.Where(x => x.Name == customerTicket_HelpDesk.Priority).FirstOrDefault();
+                ////if (Status != null)
+                ////{
+                ////    Ticket.StatusColor = Status.Color;
+                ////}
+                //if (Priority != null)
                 //{
-                //    Ticket.StatusColor = Status.Color;
+                //    ticket.PriorityColor = Priority.Color;
                 //}
-                if (Priority != null)
-                {
-                    ticket.PriorityColor = Priority.Color;
-                }
 
 
                 //var Group = db.SupportGroup_HelpDesks.FirstOrDefault(x => x.Name == ticket.TicketGroup);
@@ -226,12 +223,12 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             if (customerTicket.IsConfirmedByTheRequester)
             {
                 customerTicket.Rate = Convert.ToInt32(model.Rate);
-                customerTicket.Status = InfoDeskFinalizeType.RESOLVED;
+                customerTicket.TicketStatus = TicketStatus.Resolved;
             }
             if (!customerTicket.IsConfirmedByTheRequester)
             {
                 customerTicket.Rate = 0;
-                customerTicket.Status = InfoDeskFinalizeType.NOT_SOLVED;
+                customerTicket.TicketStatus = TicketStatus.Waiting;
             }
 
             db.Entry(customerTicket).State = EntityState.Modified;

@@ -1,4 +1,5 @@
 using ExceedERP.Core.Domain.InfoDesk;
+using ExceedERP.Core.Domain.InfoDesk.License;
 using ExceedERP.Core.Domain.InfoDesk.Support;
 using System;
 using System.Collections.Generic;
@@ -102,6 +103,57 @@ namespace ExceedERP.DataAccess.Context
             {
                 this.ToTable("TicketType_HelpDesk", "InfoDesk");
                 this.HasKey<int>(t => t.TicketType_HelpDeskId);
+
+            }
+        }    
+        public class CustomerTicketAttachmentEntityTypeConfiguration : EntityTypeConfiguration<CustomerTicketAttachment>
+        {
+
+            public CustomerTicketAttachmentEntityTypeConfiguration()
+            {
+                this.ToTable("CustomerTicketAttachments", "InfoDesk");
+                this.HasKey<int>(t => t.CustomerTicketAttachmentId);
+
+            }
+        }    
+        public class InfoDeskKnowledgeBaseEntityTypeConfiguration : EntityTypeConfiguration<InfoDeskKnowledgeBase>
+        {
+
+            public InfoDeskKnowledgeBaseEntityTypeConfiguration()
+            {
+                this.ToTable("InfoDeskKnowledgeBases", "InfoDesk");
+                this.HasKey<int>(t => t.InfoDeskKnowledgeBaseId);
+
+            }
+        }    
+        public class KnowledgeBaseAttachmentEntityTypeConfiguration : EntityTypeConfiguration<KnowledgeBaseAttachment>
+        {
+
+            public KnowledgeBaseAttachmentEntityTypeConfiguration()
+            {
+                this.ToTable("KnowledgeBaseAttachments", "InfoDesk");
+                this.HasKey<int>(t => t.KnowledgeBaseAttachmentId);
+
+            }
+        }
+        public class SoftwareLicenseEntityTypeConfiguration : EntityTypeConfiguration<SoftwareLicense>
+        {
+
+            public SoftwareLicenseEntityTypeConfiguration()
+            {
+                this.ToTable("SoftwareLicenses", "InfoDesk");
+                this.HasKey<int>(t => t.SoftwareLicenseId);
+
+            }
+        }
+
+        public class AssignedUserEntityTypeConfiguration : EntityTypeConfiguration<AssignedUser>
+        {
+
+            public AssignedUserEntityTypeConfiguration()
+            {
+                this.ToTable("AssignedUsers", "InfoDesk");
+                this.HasKey<int>(t => t.AssignedUserId);
 
             }
         }    

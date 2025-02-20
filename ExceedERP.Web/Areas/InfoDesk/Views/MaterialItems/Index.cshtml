@@ -17,9 +17,9 @@
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.MaterialItemsId))
-          .Read(read => read.Action("MaterialItems_Read", "MaterialItems"))
-          .Create(create => create.Action("MaterialItems_Create", "MaterialItems"))
-          .Update(update => update.Action("MaterialItems_Update", "MaterialItems"))
-          .Destroy(destroy => destroy.Action("MaterialItems_Destroy", "MaterialItems"))
+          .Read(read => read.Action("MaterialItems_Read", "MaterialItems").Data("sendForgery"))
+          .Create(create => create.Action("MaterialItems_Create", "MaterialItems").Data("sendForgery"))
+          .Update(update => update.Action("MaterialItems_Update", "MaterialItems").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("MaterialItems_Destroy", "MaterialItems").Data("sendForgery"))
       )
 )

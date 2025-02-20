@@ -8,9 +8,7 @@ using System.Web.Mvc;
 
 using Kendo.Mvc.Extensions;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Models;
-using ExceedERP.Core.Domain.InfoDesk;
 using ExceedERP.Core.Domain.InfoDesk.Support;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
@@ -23,17 +21,25 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         ApplicationDbContext udb = new ApplicationDbContext();
         public ActionResult Index()
         {
+            PopulateViewData();
+            return View();
+        }
+        private void PopulateViewData()
+        {
             ViewData["Empoloyees"] = db.Person_Employee.ToList();
             ViewData["Group"] = db.SupportGroup_HelpDesks.ToList();
             var sysusers = udb.Users.Select(o => new
-                      {
-                          CustomerID = o.Id,
-                          CustomerName = o.FirstName
-                      });
-
+            {
+                CustomerID = o.Id,
+                CustomerName = o.FirstName
+            });
             var users = sysusers.ToList();
             ViewData["SysUsers"] = users;
-            return View();
+            var branches = db.Branch.Select(x => new BranchVM { BranchId= x.BranchId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
+            ViewData["branches"] = branches;
+            var businessUnits = db.BusinessUnits.Select(x => new BussinesUnitVM { BusinessUnitId = x.BusinessUnitId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
+            ViewData["businessUnits"] = businessUnits;
+          
         }
 
         public ActionResult Groups_Read([DataSourceRequest]DataSourceRequest request)
@@ -59,6 +65,8 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 var entity = new SupportGroup_HelpDesk
                 {
                     Description = model.Description,
+                    BranchId = model.BranchId,
+                    BusinessUnitId = model.BusinessUnitId,
                     Name = model.Name,
                     Remark = model.Remark,
                     CreatedBy = User.Identity.Name,
@@ -81,6 +89,8 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
 
             Groups.Description = model.Description;
+            Groups.BranchId = model.BranchId;
+            Groups.BusinessUnitId = model.BusinessUnitId;
             Groups.Name = model.Name;
             Groups.Remark = model.Remark;
             Groups.LastModified = DateTime.Now;
