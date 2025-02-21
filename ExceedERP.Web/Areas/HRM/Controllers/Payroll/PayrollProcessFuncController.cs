@@ -188,7 +188,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         payroldata.PeriodName = period;
                         payroldata.GLPeriodId = findPeriod.GLPeriodId;
                         payroldata.BranchId = branchid;
-                        employee.Age = findPeriod.DateFrom.Year - employee.DateOfBirth.Year;
+                        var timeSpan = findPeriod.DateFrom - employee.DateOfBirth;
+                        var yearDiff = timeSpan.TotalDays / 365.25;
+                        employee.Age = (int)yearDiff;
                         var employeeAccouunt =
                             db.BankReferences.Where(
                                 x =>
