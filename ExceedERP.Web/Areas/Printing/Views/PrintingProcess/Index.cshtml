@@ -5,23 +5,25 @@
       .Name("grid")
       .Columns(columns =>
       {
-        columns.Bound(c => c.PrintingCategory).EditorTemplateName("PrintingCategoryDropDownTemplate");        
-        columns.Bound(c => c.ProcessName);
-        columns.Bound(c => c.HoursRequired);
-        columns.Bound(c => c.Quantity);        
-        columns.Bound(c => c.SetupCost);
-        columns.Bound(c => c.CostPerItem);
-        columns.Bound(c => c.Remark);      
-        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          columns.Bound(c => c.PrintingCategory).EditorTemplateName("PrintingCategoryDropDownTemplate");
+          columns.Bound(c => c.PrintingProcessName).EditorTemplateName("PrintingProcessNameDropDownTemplate");
+          columns.Bound(c => c.EstProductionPerHour);
+          columns.Bound(c => c.LaborRate);
+
+          //columns.Bound(c => c.SetupCost);
+          //columns.Bound(c => c.CostPerItem);
+          //columns.Bound(c => c.Remark);
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar =>
       {
           toolbar.Create();
       })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintingProcessEditorTemplate"))
       .Filterable()
-     .Pageable()
-.Scrollable(s => s.Height(400))
+      .Pageable()
+      .Scrollable(s => s.Height(400))
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.PrintingProcessId))
@@ -31,3 +33,18 @@
           .Destroy(destroy => destroy.Action("PrintingProcesses_Destroy", "PrintingProcess"))
       )
 )
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

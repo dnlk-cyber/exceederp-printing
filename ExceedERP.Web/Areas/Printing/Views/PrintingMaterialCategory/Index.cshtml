@@ -10,7 +10,8 @@
                   columns.Bound(c => c.CostAccountCode);
                   columns.Bound(c => c.InventoryAccountCode);
                   columns.Bound(c => c.ProductionAccountCode);
-                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      //columns.Bound(c => c.IsActive);
+      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
               })
               .ToolBar(toolbar =>
               {
@@ -24,7 +25,7 @@
                   sortable.SortMode(GridSortMode.SingleColumn);
               })
               .Filterable()
-              .Scrollable(s => s.Height(400))
+              .Scrollable()
               .DataSource(dataSource => dataSource
                   .Ajax()
                   .Model(model => model.Id(p => p.PrintingMaterialCategoryId))

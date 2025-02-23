@@ -2,6 +2,22 @@
 
 
 <div class="row">
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Material Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.EstimationMaterialType)
+                           .OptionLabel("Material Type")
+                           .DataTextField("Text")
+                           .DataValueField("Value")                          
+                           .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.EstimationMaterialType))
+                           ).HtmlAttributes(new { style = "width:100%" })
+                )
+            </div>
+        </div>
+    </div>
+
     <div class="col-sm-2">
         <div class="form-group">
             <label>Material Category</label>
@@ -42,9 +58,9 @@
     </div>
     <div class="col-sm-2">
         <div class="form-group">
-            <label>Quantity</label>
+            <label>Wastage(%)</label>
             <div>
-                @(Html.Kendo().NumericTextBoxFor(model => model.Quantity).HtmlAttributes(new { style = "width:100%" }))
+                @(Html.Kendo().NumericTextBoxFor(model => model.WastageInPercentage).HtmlAttributes(new { style = "width:100%" }).Max(1).Min(0))
 
             </div>
         </div>

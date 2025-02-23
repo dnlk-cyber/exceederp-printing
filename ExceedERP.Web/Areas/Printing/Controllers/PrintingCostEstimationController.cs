@@ -9,11 +9,9 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Printing;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.Printing.Controllers
 {
-    [AuthorizeRoles(PrintingEstimationRoles.PrintingEstimationOfficer, PrintingEstimationRoles.PrintingEstimationTeamLead, PrintingEstimationRoles.PrintingEstimationDepartmentHead)]
     public class PrintingCostEstimationController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -104,8 +102,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     DateCreated = DateTime.Today,
                     LastModified = printingCostEstimation.LastModified,
                     CreatedBy = User.Identity.Name,
-                    ModifiedBy = printingCostEstimation.ModifiedBy,
-                    JobDescription = printingCostEstimation.JobDescription
+                    ModifiedBy = printingCostEstimation.ModifiedBy
                 };
 
                 db.PrintingCostEstimations.Add(entity);
@@ -149,13 +146,14 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     DateCreated = printingCostEstimation.DateCreated,
                     LastModified = printingCostEstimation.LastModified,
                     CreatedBy = printingCostEstimation.CreatedBy,
-                    ModifiedBy = printingCostEstimation.ModifiedBy,
-                    JobDescription = printingCostEstimation.JobDescription
+                    ModifiedBy = printingCostEstimation.ModifiedBy
                 };
+
                 db.PrintingCostEstimations.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
             }
+
             return Json(new[] { printingCostEstimation }.ToDataSourceResult(request, ModelState));
         }
 
@@ -192,13 +190,14 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     DateCreated = printingCostEstimation.DateCreated,
                     LastModified = printingCostEstimation.LastModified,
                     CreatedBy = printingCostEstimation.CreatedBy,
-                    ModifiedBy = printingCostEstimation.ModifiedBy,
-                    JobDescription = printingCostEstimation.JobDescription
+                    ModifiedBy = printingCostEstimation.ModifiedBy
                 };
+
                 db.PrintingCostEstimations.Attach(entity);
                 db.PrintingCostEstimations.Remove(entity);
                 db.SaveChanges();
             }
+
             return Json(new[] { printingCostEstimation }.ToDataSourceResult(request, ModelState));
         }
         public JsonResult CalculateOverAllCost(int id)
@@ -243,7 +242,6 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         }
 
         #region Approval
-        [AuthorizeRoles(PrintingEstimationRoles.PrintingEstimationTeamLead)]
         public JsonResult CheckEstimation(int id)
         {
             var estimation = db.PrintingCostEstimations.Find(id);
@@ -297,7 +295,6 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             return Json(response);
 
         }
-        //[AuthorizeRoles(PrintingEstimationRoles.PrintingEstimationDepartmentHead)]
         public JsonResult ApproveEstimationForm(int id)
         {
             Object response = null;
@@ -351,7 +348,6 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Quantity = model.ProductQuantity,
                     PrintingEstimationSummaryId = summary.PrintingEstimationSummaryId,
                     PrintingCostEstimationId = model.PrintingCostEstimationId,
-                    JobDescription = model.JobDescription,
                     UnitCost = OverAllCost.GrandTotal/model.ProductQuantity,
                     
 
@@ -372,8 +368,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     TotalCost = OverAllCost.GrandTotal,
                     Quantity = model.ProductQuantity,
                     PrintingEstimationSummaryId = estimationSummary.PrintingEstimationSummaryId,
-                    PrintingCostEstimationId = model.PrintingCostEstimationId,
-                    UnitCost = model.TotalCost / model.ProductQuantity
+                    PrintingCostEstimationId = model.PrintingCostEstimationId
 
                 };
 

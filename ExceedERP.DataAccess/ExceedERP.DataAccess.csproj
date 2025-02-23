@@ -571,6 +571,10 @@
     <Compile Include="Migrations\202502201351253_helpdeskupgrade.Designer.cs">
       <DependentUpon>202502201351253_helpdeskupgrade.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202502231128094_printingchanges.cs" />
+    <Compile Include="Migrations\202502231128094_printingchanges.Designer.cs">
+      <DependentUpon>202502231128094_printingchanges.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -952,6 +956,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202502201351253_helpdeskupgrade.resx">
       <DependentUpon>202502201351253_helpdeskupgrade.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502231128094_printingchanges.resx">
+      <DependentUpon>202502231128094_printingchanges.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

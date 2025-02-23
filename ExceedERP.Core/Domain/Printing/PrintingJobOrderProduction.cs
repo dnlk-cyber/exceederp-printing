@@ -83,16 +83,4 @@ namespace ExceedERP.Core.Domain.Printing
         //FK
         public int PrintingJobOrderProductionId { get; set; }    
     }
-    public class PrintingJobOrderProductionJobDesign
-    {
-        [Key]
-        public int PrintingJobOrderProductionJobDesignId { get; set; } 
-        public int ReferenceId { get; set; }
-
-        public string FilePath { get; set; }
-        public string FileName { get; set; }
-        public string ShortPath { get; set; }
-        public string FileExtension { get; set; }
-        public string Description { get; set; }
-    }
 }

@@ -6,9 +6,7 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.JobTypeName);
-          columns.Bound(c => c.NoOfPagesFactor);
-          columns.Bound(c => c.DefaultNoOfPages);
-          columns.Bound(c => c.IsSpinRequired).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsSpinRequired? checked='checked': checked='' #/>");
+         
           columns.Bound(c => c.IsBindingRequired).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsBindingRequired? checked='checked': checked='' #/>");
           columns.Bound(c => c.IsCoverRequired).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsCoverRequired? checked='checked': checked='' #/>");
 
@@ -17,9 +15,9 @@
       .ToolBar(toolbar => {
           toolbar.Create();
       })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-.Pageable()
-.Scrollable(s => s.Height(400))
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("printingJobTypeTemplate"))
+      .Scrollable(s => s.Height(400))
+      .Pageable()      
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.PrintingJobTypeId))
@@ -29,3 +27,17 @@
           .Destroy(destroy => destroy.Action("PrintingJobTypes_Destroy", "PrintingJobType"))
       )
 )
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

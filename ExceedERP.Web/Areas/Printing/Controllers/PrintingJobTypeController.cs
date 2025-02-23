@@ -25,22 +25,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         public ActionResult PrintingJobTypes_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PrintingJobType> printingjobtypes = db.PrintingJobTypes;
-            DataSourceResult result = printingjobtypes.ToDataSourceResult(request, printingJobType => new PrintingJobType
-            {
-                PrintingJobTypeId = printingJobType.PrintingJobTypeId,
-                JobTypeName = printingJobType.JobTypeName,
-                NoOfPagesFactor = printingJobType.NoOfPagesFactor,
-                DefaultNoOfPages = printingJobType.DefaultNoOfPages,
-                IsSpinRequired = printingJobType.IsSpinRequired,
-                IsBindingRequired = printingJobType.IsBindingRequired,
-                DateCreated = printingJobType.DateCreated,
-                LastModified = printingJobType.LastModified,
-                CreatedBy = printingJobType.CreatedBy,
-                ModifiedBy = printingJobType.ModifiedBy,
-                IsCoverRequired = printingJobType.IsCoverRequired
-            });
-
-            return Json(result);
+           
+            return Json(printingjobtypes.ToDataSourceResult(request));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -59,7 +45,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     LastModified = printingJobType.LastModified,
                     CreatedBy = User.Identity.Name,
                     ModifiedBy = printingJobType.ModifiedBy,
-                    IsCoverRequired = printingJobType.IsCoverRequired
+                    IsCoverRequired = printingJobType.IsCoverRequired,
+                    JobType = printingJobType.JobType
                 };
 
                 db.PrintingJobTypes.Add(entity);
@@ -87,7 +74,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     LastModified = DateTime.Today,
                     CreatedBy = printingJobType.CreatedBy,
                     ModifiedBy = User.Identity.Name,
-                    IsCoverRequired = printingJobType.IsCoverRequired
+                    IsCoverRequired = printingJobType.IsCoverRequired,
+                    JobType = printingJobType.JobType
                 };
 
                 db.PrintingJobTypes.Attach(entity);
@@ -115,7 +103,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     LastModified = printingJobType.LastModified,
                     CreatedBy = printingJobType.CreatedBy,
                     ModifiedBy = printingJobType.ModifiedBy,
-                    IsCoverRequired = printingJobType.IsCoverRequired
+                    IsCoverRequired = printingJobType.IsCoverRequired,
+                    JobType = printingJobType.JobType
                 };
 
                 db.PrintingJobTypes.Attach(entity);

@@ -1,151 +1,109 @@
 ﻿@using ExceedERP.Core.Domain.Printing
 
 
-<label>Printing Job Order</label>
+<label>Job Order</label>
 @(Html.Kendo().Grid<PrintingJobOrder>()
-    .Name("grid")
-    .Columns(columns =>
-    {
-    columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120).Title("Customer");
-    columns.Bound(c => c.JobStartDate).Width(120);
-    columns.Bound(c => c.DeliveryDate).Width(120);
-    columns.Bound(c => c.CRVNo).Width(100);
-    columns.Bound(c => c.AdvancePaymentInPercent).Width(90);
-    columns.Bound(c => c.Remark).Width(100);
-    columns.Command(command =>
-    {
-        command.Edit().Text(" ");
-        command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
-        command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
-        command.Destroy().Text(" ");
-    }).Width(180);
-    })
-    .ToolBar(toolbar =>
-    {
-    toolbar.Create();
-    })
-    .Editable(editable => editable.Mode(GridEditMode.PopUp)
-    .TemplateName("PrintingJoborderEditorTemplate"))
-    .Filterable()
-    .Scrollable(s => s.Height(400))
-    .Events(ev => ev.DetailExpand("detailExpand")
-    .DataBound("dataBound"))
-    .DataSource(dataSource => dataSource
-    .Ajax()
-    .Sort(sort => sort.Add(e => e.PrintingJobOrderId).Descending())
-    .Events(ev => ev.Error("error_handler(\"grid\")")
-            .RequestStart("onRequestStart(\"grid\")")
-            .RequestEnd("onRequestEnd(\"grid\")"))
-    .Model(model => model.Id(p => p.PrintingJobOrderId))
-    .Read(read => read.Action("PrintingJobOrder_Read", "PrintingJobOrder"))
-    .Create(create => create.Action("PrintingJobOrder_Create", "PrintingJobOrder"))
-    .Update(update => update.Action("PrintingJobOrder_Update", "PrintingJobOrder"))
-    .Destroy(destroy => destroy.Action("PrintingJobOrder_Delete", "PrintingJobOrder"))
-    ).ClientDetailTemplateId("tabstrip")
+                              .Name("grid")
+                              .Columns(columns =>
+                              {
+                                  columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120).Title("Customer");
+                                  columns.Bound(c => c.JobStartDate).Width(120);
+                                  columns.Bound(c => c.DeliveryDate).Width(120);
+                                  columns.Bound(c => c.CRVNo).Width(100);
+                                  columns.Bound(c => c.AdvancePaymentInPercent).Width(90);
+                                  columns.Bound(c => c.Remark).Width(100);
+                                  columns.Command(command =>
+                                  {
+                                      //command.Edit().Text(" ");
+                                      command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+                                      command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                                      //command.Destroy().Text(" ");
+                                  }).Width(180);
+                              })
+                              .ToolBar(toolbar =>
+                              {
+                                  toolbar.Create();
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                              .TemplateName("PrintingJoborderEditorTemplate"))
+                              .Filterable()
+                              .Scrollable(s => s.Height(400))
+                              .Pageable()
+                              .Events(ev => ev.DetailExpand("detailExpand")
+                              .DataBound("dataBound"))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Sort(sort => sort.Add(e => e.PrintingJobOrderId).Descending())
+                                  .Events(ev => ev.Error("error_handler(\"grid\")")
+                                            .RequestStart("onRequestStart(\"grid\")")
+                                            .RequestEnd("onRequestEnd(\"grid\")"))
+                                  .Model(model => model.Id(p => p.PrintingJobOrderId))
+                                  .Read(read => read.Action("PrintingJobOrder_Read", "PrintingJobOrder"))
+                                  .Create(create => create.Action("PrintingJobOrder_Create", "PrintingJobOrder"))
+                              //.Update(update => update.Action("FurnitureJobOrderForms_Update", "PrintingJobOrder"))
+                              //.Destroy(destroy => destroy.Action("FurnitureJobOrderForms_Destroy", "PrintingJobOrder"))
+                              ).ClientDetailTemplateId("tabstrip")
 )
 
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                                        .Name("tab_#=PrintingJobOrderId#")
-                                                        .Items(item1 =>
-                                                        {
-                                                            item1.Add().Text("job Item").Content(
-                                                            @<text>
-                                                                @JobOrderItem()
-                                                            </text>);
-                                                                    item1.Add().Text("Job Desgin").Content(
-                                                        @<text>
-                                                            <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=PrintingJobOrderId#)" />
-
-                                                            @BoqDocs()
-                                                        </text>);
-                                                    }).ToClientTemplate())
+                                .Name("tab_#=PrintingJobOrderId#")
+                                .Items(item1 =>
+                                {
+                                    item1.Add().Text("job Item").Content(
+                                    @<text>
+                                        @JobOrderItem()
+                                    </text>);
+                                        }).ToClientTemplate())
 </script>
 
 
 @helper JobOrderItem()
 {
     @(Html.Kendo().Grid<PrintingJobOrderItem>()
-                                              .Name("grid_#=PrintingJobOrderId#")
-                                              .Columns(columns =>
-                                              {
-                                                  columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
-                                                  columns.Bound(c => c.JobDescription);
-                                                  columns.Bound(c => c.Quantity);
-                                                  columns.Bound(c => c.NumberOfPages);
-                                                  columns.Bound(c => c.UnitPrice);
-                                                  columns.Bound(c => c.TotalPrice);
-                                                  columns.Bound(c => c.Remark);
+                              .Name("grid_#=PrintingJobOrderId#")
+                              .Columns(columns =>
+                              {
+                                  columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+                                  columns.Bound(c => c.Quantity);
+                                  columns.Bound(c => c.NumberOfPages);
+                                  columns.Bound(c => c.UnitPrice);
+                                  columns.Bound(c => c.TotalPrice);
+                                  columns.Bound(c => c.Remark);
                                   //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
                               })
-                                              //.ToolBar(toolbar =>
-                                              //{
-                                              //    toolbar.Create();
-                                              //})
-                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                              .Filterable()
-                                              .Events(ev => ev.DataBound("onChildDataBound"))
-                                              .Scrollable()
-                                              .DataSource(dataSource => dataSource
-                                                  .Ajax()
-                                                  .Events(ev => ev.Error("error_handler(\"grid_#=PrintingJobOrderId#\")")
-                                                            .RequestStart("onRequestStart(\"grid_#=PrintingJobOrderId#\")")
-                                                            .RequestEnd("onRequestEnd(\"grid_#=PrintingJobOrderId#\")"))
-                                                  .Model(model =>
-                                                  {
-                                                      model.Id(p => p.PrintingJobOrderItemId);
-                                                      model.Field(p => p.JobTypeId).Editable(false);
-                                                      model.Field(p => p.Quantity).Editable(false);
-                                                      model.Field(p => p.UnitPrice).Editable(false);
-                                                      model.Field(p => p.NumberOfPages).Editable(false);
-                                                      model.Field(p => p.TotalPrice).Editable(false);
-                                                  })
-                                                  .Read(read => read.Action("PrintingJobOrderItem_Read", "PrintingJobOrderItem", new { id = "#=PrintingJobOrderId#" }))
-                                              //.Create(create => create.Action("FurnitureJobOrderItems_Create", "FurnitureJobOrderItem", new { id = "#=PrintingJobOrderId#" }))
-                                              //.Update(update => update.Action("FurnitureJobOrderItems_Update", "FurnitureJobOrderItem"))
-                                              //.Destroy(destroy => destroy.Action("FurnitureJobOrderItems_Destroy", "FurnitureJobOrderItem"))
-                                              ).ToClientTemplate()
+                              //.ToolBar(toolbar =>
+                              //{
+                              //    toolbar.Create();
+                              //})
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Filterable()
+                              .Events(ev => ev.DataBound("onChildDataBound"))
+                              .Scrollable(s => s.Height(400))
+                              .Pageable()
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Events(ev => ev.Error("error_handler(\"grid_#=PrintingJobOrderId#\")")
+                                            .RequestStart("onRequestStart(\"grid_#=PrintingJobOrderId#\")")
+                                            .RequestEnd("onRequestEnd(\"grid_#=PrintingJobOrderId#\")"))
+                                  .Model(model =>
+                                  {
+                                      model.Id(p => p.PrintingJobOrderItemId);
+                                      model.Field(p => p.JobTypeId).Editable(false);
+                                      model.Field(p => p.Quantity).Editable(false);
+                                      model.Field(p => p.UnitPrice).Editable(false);
+                                      model.Field(p => p.NumberOfPages).Editable(false);
+                                      model.Field(p => p.TotalPrice).Editable(false);
+                                  })
+                                  .Read(read => read.Action("PrintingJobOrderItem_Read", "PrintingJobOrderItem", new { id = "#=PrintingJobOrderId#" }))
+                              //.Create(create => create.Action("FurnitureJobOrderItems_Create", "FurnitureJobOrderItem", new { id = "#=PrintingJobOrderId#" }))
+                              //.Update(update => update.Action("FurnitureJobOrderItems_Update", "FurnitureJobOrderItem"))
+                              //.Destroy(destroy => destroy.Action("FurnitureJobOrderItems_Destroy", "FurnitureJobOrderItem"))
+                              ).ToClientTemplate()
     )
 }
 
-
-@helper BoqDocs()
-{
-    @(Html.Kendo().Grid<PrintingJobOrderJobDesign>()
-                .Name("CompanyDocument#=PrintingJobOrderId#")
-                .Columns(columns =>
-                {
-                    columns.Bound(c => c.FileName).ClientTemplate("<a href='/Manufacturing/FurnitureBoqJobDesign/DownloadCompanyDocument?CompanyDocumentId=\\#=PrintingJobOrderJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>");
-                    columns.Bound(c => c.Description);
-                    columns.Template(e => { }).ClientTemplate("<a href='/Manufacturing/FurnitureBoqJobDesign/DownloadCompanyDocument?CompanyDocumentId=\\#=PrintingJobOrderJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>");
-    //columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>");
-    columns.Command(command =>
-                    {
-                        command.Destroy().Text("Delete");
-                    });
-                })
-                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Answer").Window(window => { window.Title(""); window.Scrollable(false); }))
-                .Events(ev =>
-                {
-                    ev.DataBound("onDetailDataBound");
-                })
-                .Scrollable(h => h.Height("auto"))
-                .DataSource(dataSource => dataSource
-                .Ajax()
-                .Sort(sort => sort.Add(c => c.PrintingJobOrderJobDesignId).Descending())
-                .Events(events =>
-                {
-                    events.Error("error_handler(\"CompanyDocument#=PrintingJobOrderId#\")");
-                    events.RequestStart("onRequestStart(\"CompanyDocument#=PrintingJobOrderId#\")");
-                    events.RequestEnd("onRequestEnd(\"CompanyDocument#=PrintingJobOrderId#\")");
-                })
-                .Model(model => model.Id(p => p.PrintingJobOrderJobDesignId))
-                .Read(read => read.Action("Read", "PrintingJobOrderDesgin", new { id = "#=PrintingJobOrderId#" }))
-                .Destroy(destroy => destroy.Action("Delete", "PrintingJobOrderDesgin", new { area = "Manufacturing" }))
-                ).ToClientTemplate())
-
-}
 
 <script type="text/javascript">
 
@@ -303,79 +261,3 @@
         background-color: #CCCCCC;
     }
 </style>
-
-
-<script>
-
-    function onDetailDataBound(e) {
-        var grid = this;
-        var gridRows = grid.tbody.find("tr");
-        for (var i = 0; i < gridRows.length; i++) {
-            var row = $(gridRows[i]);
-
-            var dataItem = grid.dataItem(row);
-            //if (dataItem.IsTransfered == true) {
-            //    row.find(".k-grid-delete").hide();
-            //}
-        }
-    }
-
-    function UploadCompanyDoc(id) {
-
-        $("#PrintingJobOrderId").val(id);
-
-        var wnd = $("#UploadCompanyFileWindow").data("kendoWindow");
-        wnd.center().open();
-    }
-
-    function UploadCompanyFile() {
-
-            $.ajax({
-                url: '@Url.Action("UploadCompanyFile", "PrintingJobOrderDesgin")',
-                //contentType: "application/json; charset=utf-8",
-                data: function () {
-                    var data = new FormData();
-                    var kk = $("#CompanyFile");//.get(0).files[0];
-
-                    $.each($("input[type=file]"), function (i, obj) {
-                        $.each(obj.files, function (j, file) {
-                            data.append('CompanyFile[' + j + ']', file);
-                        })
-                    });
-
-                   // data.append("CompanyFile", $("#CompanyFile").get(0).files[0]);
-                    data.append("furnitureBoqRequestId", $("#PrintingJobOrderId").val());
-                    data.append("Description", $("#Description").val());
-                    return data;
-                }(),
-                type: 'POST',
-                contentType: false,
-                processData: false,
-                cache: false,
-                success: function (result) {
-                    var wnd = $("#UploadCompanyFileWindow").data("kendoWindow").close();
-                    var id = $("#PrintingJobOrderId").val();
-                    alert(result);
-                    $("#CompanyDocument" + id).data("kendoGrid").dataSource.read();
-                }
-            });
-    }
-</script>
-@(Html.Kendo().Window().Name("UploadCompanyFileWindow")
-                        .Title("Upload Answer")
-                        .Visible(false)
-                        .Modal(true)
-                        .Content(@<text>
-                            <input type="hidden" id="PrintingJobOrderId" name="PrintingJobOrderId" />
-
-                            @*@Html.TextBox("CompanyFile", "", new { type = "file", @class = "form-control" })*@
-                            <input type="file" name="CompanyFile" id="CompanyFile[]" class="form-control" multiple />
-                            <br />
-                            <textarea id="Description" class="form-control"></textarea>
-                            <br />
-                            <div class="pull-right">
-                                @Html.Kendo().Button().Name("btnTo").Content("Upload").Events(e => e.Click("UploadCompanyFile"))
-                            </div>
-                        </text>)
-                                                         .Draggable(true)
-                                                         .Width(400))

@@ -1,0 +1,48 @@
+﻿@model ExceedERP.Core.Domain.Printing.PrintingProcess
+
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Printing Category</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.PrintingCategory)
+                                                    .DataTextField("Text")
+                                                    .DataValueField("Value")
+                                                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.PrintingProcessCategory))
+                                                    )
+                                                .HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Printing Process</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.PrintingProcessName)
+                                                    .DataTextField("Text")
+                                                    .DataValueField("Value")
+                                                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.PrintingProcessName))
+                                                    )
+                                                .HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Est. Production/Hour</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.EstProductionPerHour).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Labor Rate</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.LaborRate).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+

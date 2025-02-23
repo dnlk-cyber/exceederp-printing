@@ -1,0 +1,14 @@
+﻿@model ExceedERP.Core.Domain.Printing.PrintingEstimationMargin
+
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.ProfitMargin).HtmlAttributes(new { style = "width:100%" }).Max(1).Min(0))
+
+            </div>
+        </div>
+    </div>
+</div>
+

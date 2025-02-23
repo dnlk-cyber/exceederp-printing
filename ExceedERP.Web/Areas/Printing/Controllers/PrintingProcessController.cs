@@ -25,7 +25,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         public ActionResult PrintingProcesses_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PrintingProcess> printingprocesses = db.PrintingProcesses;
-            DataSourceResult result = printingprocesses.ToDataSourceResult(request, printingProcess => new {
+            DataSourceResult result = printingprocesses.ToDataSourceResult(request, printingProcess => new PrintingProcess
+            {
                 PrintingProcessId = printingProcess.PrintingProcessId,
                 PrintingCategory = printingProcess.PrintingCategory,
                
@@ -39,63 +40,73 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 DateCreated = printingProcess.DateCreated,
                 LastModified = printingProcess.LastModified,
                 CreatedBy = printingProcess.CreatedBy,
-                ModifiedBy = printingProcess.ModifiedBy
+                ModifiedBy = printingProcess.ModifiedBy,
+                EstProductionPerHour = printingProcess.EstProductionPerHour,
+                LaborRate = printingProcess.LaborRate,
+                PrintingProcessName = printingProcess.PrintingProcessName
+                
             });
 
             return Json(result);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingProcesses_Create([DataSourceRequest]DataSourceRequest request, PrintingProcess printingProcess)
+        public ActionResult PrintingProcesses_Create([DataSourceRequest]DataSourceRequest request, PrintingProcess model)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PrintingProcess
                 {
-                    PrintingCategory = printingProcess.PrintingCategory,
+                    PrintingCategory = model.PrintingCategory,
                    
-                    ProcessName = printingProcess.ProcessName,
-                    HoursRequired = printingProcess.HoursRequired,
-                    Quantity = printingProcess.Quantity,
-                    ProcessScope = printingProcess.ProcessScope,
-                    SetupCost = printingProcess.SetupCost,
-                    CostPerItem = printingProcess.CostPerItem,
-                    Remark = printingProcess.Remark,
-                    DateCreated = printingProcess.DateCreated,
-                    LastModified = printingProcess.LastModified,
-                    CreatedBy = printingProcess.CreatedBy,
-                    ModifiedBy = printingProcess.ModifiedBy
+                    ProcessName = model.ProcessName,
+                    HoursRequired = model.HoursRequired,
+                    Quantity = model.Quantity,
+                    ProcessScope = model.ProcessScope,
+                    SetupCost = model.SetupCost,
+                    CostPerItem = model.CostPerItem,
+                    Remark = model.Remark,
+                    DateCreated = model.DateCreated,
+                    LastModified = model.LastModified,
+                    CreatedBy = model.CreatedBy,
+                    ModifiedBy = model.ModifiedBy,
+                    PrintingProcessName = model.PrintingProcessName,
+                    LaborRate = model.LaborRate,
+                    EstProductionPerHour = model.EstProductionPerHour
                 };
 
                 db.PrintingProcesses.Add(entity);
                 db.SaveChanges();
-                printingProcess.PrintingProcessId = entity.PrintingProcessId;
+                model.PrintingProcessId = entity.PrintingProcessId;
             }
 
-            return Json(new[] { printingProcess }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingProcesses_Update([DataSourceRequest]DataSourceRequest request, PrintingProcess printingProcess)
+        public ActionResult PrintingProcesses_Update([DataSourceRequest]DataSourceRequest request, PrintingProcess model)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PrintingProcess
                 {
-                    PrintingProcessId = printingProcess.PrintingProcessId,
-                    PrintingCategory = printingProcess.PrintingCategory,
+                    PrintingProcessId = model.PrintingProcessId,
+                    PrintingCategory = model.PrintingCategory,
                    
-                    ProcessName = printingProcess.ProcessName,
-                    HoursRequired = printingProcess.HoursRequired,
-                    Quantity = printingProcess.Quantity,
-                    ProcessScope = printingProcess.ProcessScope,
-                    SetupCost = printingProcess.SetupCost,
-                    CostPerItem = printingProcess.CostPerItem,
-                    Remark = printingProcess.Remark,
-                    DateCreated = printingProcess.DateCreated,
-                    LastModified = printingProcess.LastModified,
-                    CreatedBy = printingProcess.CreatedBy,
-                    ModifiedBy = printingProcess.ModifiedBy
+                    ProcessName = model.ProcessName,
+                    HoursRequired = model.HoursRequired,
+                    Quantity = model.Quantity,
+                    ProcessScope = model.ProcessScope,
+                    SetupCost = model.SetupCost,
+                    CostPerItem = model.CostPerItem,
+                    Remark = model.Remark,
+                    DateCreated = model.DateCreated,
+                    LastModified = model.LastModified,
+                    CreatedBy = model.CreatedBy,
+                    ModifiedBy = model.ModifiedBy,
+                    EstProductionPerHour = model.EstProductionPerHour,
+                    LaborRate = model.LaborRate,
+                    PrintingProcessName = model.PrintingProcessName
                 };
 
                 db.PrintingProcesses.Attach(entity);
@@ -103,30 +114,33 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 db.SaveChanges();
             }
 
-            return Json(new[] { printingProcess }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingProcesses_Destroy([DataSourceRequest]DataSourceRequest request, PrintingProcess printingProcess)
+        public ActionResult PrintingProcesses_Destroy([DataSourceRequest]DataSourceRequest request, PrintingProcess model)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PrintingProcess
                 {
-                    PrintingProcessId = printingProcess.PrintingProcessId,
-                    PrintingCategory = printingProcess.PrintingCategory,
+                    PrintingProcessId = model.PrintingProcessId,
+                    PrintingCategory = model.PrintingCategory,
                    
-                    ProcessName = printingProcess.ProcessName,
-                    HoursRequired = printingProcess.HoursRequired,
-                    Quantity = printingProcess.Quantity,
-                    ProcessScope = printingProcess.ProcessScope,
-                    SetupCost = printingProcess.SetupCost,
-                    CostPerItem = printingProcess.CostPerItem,
-                    Remark = printingProcess.Remark,
-                    DateCreated = printingProcess.DateCreated,
-                    LastModified = printingProcess.LastModified,
-                    CreatedBy = printingProcess.CreatedBy,
-                    ModifiedBy = printingProcess.ModifiedBy
+                    ProcessName = model.ProcessName,
+                    HoursRequired = model.HoursRequired,
+                    Quantity = model.Quantity,
+                    ProcessScope = model.ProcessScope,
+                    SetupCost = model.SetupCost,
+                    CostPerItem = model.CostPerItem,
+                    Remark = model.Remark,
+                    DateCreated = model.DateCreated,
+                    LastModified = model.LastModified,
+                    CreatedBy = model.CreatedBy,
+                    ModifiedBy = model.ModifiedBy,
+                    PrintingProcessName = model.PrintingProcessName,
+                    LaborRate = model.LaborRate,
+                    EstProductionPerHour = model.EstProductionPerHour
                 };
 
                 db.PrintingProcesses.Attach(entity);
@@ -134,7 +148,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 db.SaveChanges();
             }
 
-            return Json(new[] { printingProcess }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         protected override void Dispose(bool disposing)

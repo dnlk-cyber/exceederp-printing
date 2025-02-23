@@ -12,6 +12,7 @@ namespace ExceedERP.Core.Domain.Printing
     {
         [Key]
         public int PrintingJobTypeId { get; set; }
+        public JobType JobType { get; set; }
         public string JobTypeName { get; set; }
         public int NoOfPagesFactor { get; set; }
         public int DefaultNoOfPages { get; set; }
@@ -19,5 +20,13 @@ namespace ExceedERP.Core.Domain.Printing
         public bool IsBindingRequired { get; set; }
         public bool IsCoverRequired { get; set; }
 
+    }
+    public enum JobType
+    {
+        Book,
+        Magazine,
+        Brochure,
+        Flyer,
+        Card
     }
 }

@@ -1,4 +1,6 @@
-@using ExceedERP.Core.Domain.Printing
+@using ExceedERP.Core.Domain.printing.PrintingEstimation;
+@using ExceedERP.Core.Domain.Printing.ProductionFollowUp;
+@using ExceedERP.Core.Domain.printing.JobCosting;
 
 
 @{
@@ -6,14 +8,18 @@
 }
 
 
-@if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationOfficer)
-     || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationTeamLead)
-     || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationDepartmentHead)
-         || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingProductionHead)
-         || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingProductionTeamLead)
-         || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingProductionOfficer)
-          || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingAdmin)
-         )
+@if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin)
+     || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationFormUser)
+     || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionAdmin)
+         || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionProformaUser)
+         || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionJobOrderUser)
+         || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionFinishedGoodUser)
+         || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionDeliveryUser)
+         || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionDeliveryUser)
+         || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingAdmin)
+         || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingDailyLaborRateUser)
+         || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingIdleTimeUser)
+         || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingJobCostUser))
 {
 
     <li class="">
@@ -27,14 +33,13 @@
         <b class="arrow"></b>
         <ul class="submenu">
 
-            @if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationOfficer)
-     || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationTeamLead)
-     || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationDepartmentHead))
+            @if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin) ||
+                HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationFormUser))
             {
                 <li class="">
                     <a href="#" class="dropdown-toggle">
                         <i class="menu-icon fa fa-caret-right"></i>
-                        Estimation
+                        Estimation 
                         <b class="arrow fa fa-angle-down"></b>
                     </a>
                     <b class="arrow"></b>
@@ -43,31 +48,24 @@
                         <li id="printingEst02" class="actionlinlk">@Html.ActionLink("Printing Cost Estimation Summary", "Index", "PrintingCostEstimationSummary", new { area = "Printing" }, null)<b class="arrow"></b></li>
                         <li id="printingEst03" class="actionlinlk">@Html.ActionLink("Printing Proforma Invoice", "Index", "PrintingProformaInvoice", new { area = "Printing" }, null)<b class="arrow"></b></li>
                         <li id="printingEst04" class="actionlinlk">@Html.ActionLink("Printing Job Order", "Index", "PrintingJobOrder", new { area = "Printing" }, null)<b class="arrow"></b></li>
-
+                        
+                    </ul>
+                </li>
+            <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Production 
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        <li id="printingProduction01" class="actionlinlk">@Html.ActionLink("Printing Production", "Index", "PrintingJobOrderProduction", new { area = "Printing" }, null)<b class="arrow"></b></li>                      
                     </ul>
                 </li>
             }
-            @if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingProductionHead)
-         || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingProductionTeamLead)
-         || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingProductionOfficer))
-            {
-                    <li class="">
-                        <a href="#" class="dropdown-toggle">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            Production
-                            <b class="arrow fa fa-angle-down"></b>
-                        </a>
-                        <b class="arrow"></b>
-                        <ul class="submenu">
-                            <li id="printingProduction01" class="actionlinlk">@Html.ActionLink("Printing Production", "Index", "PrintingJobOrderProduction", new { area = "Printing" }, null)<b class="arrow"></b></li>
-                        </ul>
-                    </li>
-                }
-
-            
-
-            @if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingAdmin)
-                 )
+           
+            @if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin) ||
+                   HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationFormUser))
             {
                 <li class="">
                     <a href="#" class="dropdown-toggle">
@@ -81,11 +79,11 @@
                         <li id="ps2" class="actionlinlk">@Html.ActionLink("Paper Size", "Index", "PrintingPaperSize", new { area = "Printing" }, null)<b class="arrow"></b></li>
                         <li id="ps3" class="actionlinlk">@Html.ActionLink("Binding Style", "Index", "PrintingBindingStyle", new { area = "Printing" }, null)<b class="arrow"></b></li>
                         <li id="ps4" class="actionlinlk">@Html.ActionLink("Printing Machine", "Index", "PrintingMachineType", new { area = "Printing" }, null)<b class="arrow"></b></li>
-                        <li id="ps5" class="actionlinlk">@Html.ActionLink("Machine-Paper list", "Index", "PrintMachinePaperList", new { area = "Printing" }, null)<b class="arrow"></b></li>
-                        <li id="ps6" class="actionlinlk">@Html.ActionLink("Printing Product Process", "Index", "PrintingProductProcess", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                        @*<li id="ps5" class="actionlinlk">@Html.ActionLink("Machine-Paper list", "Index", "PrintMachinePaperList", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                        <li id="ps6" class="actionlinlk">@Html.ActionLink("Printing Product Process", "Index", "PrintingProductProcess", new { area = "Printing" }, null)<b class="arrow"></b></li>*@
                         <li id="ps6" class="actionlinlk">@Html.ActionLink("Printing Process", "Index", "PrintingProcess", new { area = "Printing" }, null)<b class="arrow"></b></li>
                         <li id="ps6" class="actionlinlk">@Html.ActionLink("Printing Material Category", "Index", "PrintingMaterialCategory", new { area = "Printing" }, null)<b class="arrow"></b></li>
-
+                        
                     </ul>
 
 

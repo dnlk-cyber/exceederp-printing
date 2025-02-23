@@ -41,7 +41,6 @@ namespace ExceedERP.Core.Domain.Printing
 
         [Display(Name = "Item")]
         public int JobTypeId { get; set; }
-        public string JobDescription { get; set; }
         public int NumberOfPages { get; set; }
         [Display(Name = "Unit of measurment")] 
         public string UnitOfMeasurment { get; set; }

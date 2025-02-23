@@ -30,59 +30,70 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 UnitOfMeasurement = PrintingMaterialCategoryItem.UnitOfMeasurement,
                 UnitPrice = PrintingMaterialCategoryItem.UnitPrice,
                 IsActive = PrintingMaterialCategoryItem.IsActive,
-                PrintingMaterialCategoryId = PrintingMaterialCategoryItem.PrintingMaterialCategoryId
+                PrintingMaterialCategoryId = PrintingMaterialCategoryItem.PrintingMaterialCategoryId,
+                Width = PrintingMaterialCategoryItem.Width,
+                Weight = PrintingMaterialCategoryItem.Weight,
+                Length = PrintingMaterialCategoryItem.Length
             });
 
             return Json(result);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingMaterialCategoryItem_Create([DataSourceRequest]DataSourceRequest request, PrintingMaterialCategoryItem PrintingMaterialCategoryItem, int id)
+        public ActionResult PrintingMaterialCategoryItem_Create([DataSourceRequest]DataSourceRequest request, PrintingMaterialCategoryItem model, int id)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PrintingMaterialCategoryItem
                 {
-                    InventorySubCategoryCode = PrintingMaterialCategoryItem.InventorySubCategoryCode,
-                    ItemName = PrintingMaterialCategoryItem.ItemName,
-                    ItemCode = PrintingMaterialCategoryItem.ItemCode,
-                    UnitOfMeasurement = PrintingMaterialCategoryItem.UnitOfMeasurement,
-                    UnitPrice = PrintingMaterialCategoryItem.UnitPrice,
-                    IsActive = PrintingMaterialCategoryItem.IsActive,
-                    PrintingMaterialCategoryId = id
+                    InventorySubCategoryCode = model.InventorySubCategoryCode,
+                    ItemName = model.ItemName,
+                    ItemCode = model.ItemCode,
+                    UnitOfMeasurement = model.UnitOfMeasurement,
+                    UnitPrice = model.UnitPrice,
+                    IsActive = model.IsActive,
+                    PrintingMaterialCategoryId = id,
+                    Length = model.Length,
+                    Weight = model.Weight,
+                    Width = model.Width
                 };
 
                 db.PrintingMaterialCategoryItems.Add(entity);
                 db.SaveChanges();
-                PrintingMaterialCategoryItem.PrintingMaterialCategoryItemId = entity.PrintingMaterialCategoryItemId;
+                model.PrintingMaterialCategoryItemId = entity.PrintingMaterialCategoryItemId;
             }
 
-            return Json(new[] { PrintingMaterialCategoryItem }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingMaterialCategoryItem_Update([DataSourceRequest]DataSourceRequest request, PrintingMaterialCategoryItem PrintingMaterialCategoryItem)
+        public ActionResult PrintingMaterialCategoryItem_Update([DataSourceRequest]DataSourceRequest request, PrintingMaterialCategoryItem model)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PrintingMaterialCategoryItem
                 {
-                    PrintingMaterialCategoryItemId = PrintingMaterialCategoryItem.PrintingMaterialCategoryItemId,
-                    InventorySubCategoryCode = PrintingMaterialCategoryItem.InventorySubCategoryCode,
-                    ItemName = PrintingMaterialCategoryItem.ItemName,
-                    ItemCode = PrintingMaterialCategoryItem.ItemCode,
-                    UnitOfMeasurement = PrintingMaterialCategoryItem.UnitOfMeasurement,
-                    UnitPrice = PrintingMaterialCategoryItem.UnitPrice,
-                    IsActive = PrintingMaterialCategoryItem.IsActive,
-                    PrintingMaterialCategoryId = PrintingMaterialCategoryItem.PrintingMaterialCategoryId
+                    PrintingMaterialCategoryItemId = model.PrintingMaterialCategoryItemId,
+                    InventorySubCategoryCode = model.InventorySubCategoryCode,
+                    ItemName = model.ItemName,
+                    ItemCode = model.ItemCode,
+                    UnitOfMeasurement = model.UnitOfMeasurement,
+                    UnitPrice = model.UnitPrice,
+                    IsActive = model.IsActive,
+                    PrintingMaterialCategoryId = model.PrintingMaterialCategoryId,
+                    Length = model.Length,
+                    Weight = model.Weight,
+                    Width = model.Width,
+
                 };
 
                 db.PrintingMaterialCategoryItems.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                
             }
-
-            return Json(new[] { PrintingMaterialCategoryItem }.ToDataSourceResult(request, ModelState));
+           
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)] 

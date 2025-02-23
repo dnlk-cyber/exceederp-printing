@@ -19,8 +19,7 @@
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .Filterable()
-.Pageable()
-.Scrollable(s => s.Height(400))
+      .Scrollable()
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.PrintingProductProcessId))

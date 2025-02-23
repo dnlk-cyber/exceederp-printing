@@ -1,0 +1,47 @@
+﻿@model ExceedERP.Core.Domain.Printing.PrintingJobType
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Job Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.JobType)
+                                                                        .DataTextField("Text")
+                                                                        .DataValueField("Value")
+                                                                        
+                                                                        .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.JobType))
+                                                                        )
+                                                                    .HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Job Name</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.JobTypeName).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Is Binding Required</label>
+            <div>
+                @(Html.Kendo().CheckBoxFor(model => model.IsBindingRequired).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Is Cover Required</label>
+            <div>
+                @(Html.Kendo().CheckBoxFor(model => model.IsCoverRequired).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+</div>
+

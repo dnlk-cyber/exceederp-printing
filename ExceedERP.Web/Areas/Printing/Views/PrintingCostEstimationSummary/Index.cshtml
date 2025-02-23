@@ -10,17 +10,19 @@
                                   {
                                       command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
                                       columns.Bound(c => c.Status).Width(120);
+
                                       command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
                                   }).Width(200);
                               })
                               .Editable(editable => editable.Mode(GridEditMode.InLine))
                               .Filterable()
-                              .Pageable()
-                               .Events(ev => ev.DataBound("dataBound"))
+                              .Events(e => e.DataBound("dataBound"))
+                              .Events(ev => ev.DetailExpand("detailExpand"))
                               .Scrollable(s => s.Height(400))
+                              .Pageable()
                               .DataSource(dataSource => dataSource
                                   .Ajax()
-                                  .Sort(sort => sort.Add(e => e.PrintingEstimationSummaryId).Descending())
+                                  .Sort(s => s.Add(x => x.PrintingEstimationSummaryId).Descending())
                                   .Events(ev => ev.Error("error_handler(\"grid\")")
                                     .RequestStart("onRequestStart(\"grid\")")
                                     .RequestEnd("onRequestEnd(\"grid\")"))
@@ -54,7 +56,6 @@
                 .Columns(columns =>
                 {
                     columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Title("Job Type");
-                    columns.Bound(c => c.JobDescription);
                     columns.Bound(c => c.Quantity);
                     columns.Bound(c => c.MaterialCost);
                     columns.Bound(c => c.LabourCost);
@@ -66,13 +67,16 @@
                     columns.Bound(c => c.ProfitMargin);
                     columns.Bound(c => c.UnitPrice);
                     columns.Bound(c => c.TotalPrice);
-                   
+                    //columns.Command(command =>
+                    //      {
+                    //          //command.Edit().Text("Add Profit Margin");
+                    //          command.Custom("approvemargin").Text("Approve Profit Margin").IconClass("fa fa-thumbs-up").HtmlAttributes(new { @class = "margin-approve", title = "approve margin" }).Click("approveMargin");
+                    //      }).Width(200);
                 })
                 .Editable(editable => editable.Mode(GridEditMode.InLine))
                 .Filterable()
-.Pageable()
-.Scrollable()
-.Events(e => e.DetailExpand("marginDetailExpand"))
+                .Scrollable(s => s.Height(400))
+                .Pageable()
                 .ClientDetailTemplateId("detail_tab")
                 .DataSource(dataSource => dataSource
                     .Ajax()
@@ -105,7 +109,7 @@
                       .Columns(columns =>
                       {
                           columns.Bound(c => c.TotalCost).Width(120);
-                          columns.Bound(c => c.ProfitMargin).Width(120).Title("Profit Margin(%)");
+                          columns.Bound(c => c.ProfitMargin).Width(120);
                           columns.Bound(c => c.TotalPrice).Width(120);
                           columns.Command(command =>
                           {
@@ -114,11 +118,10 @@
                           }).Width(350);
 
                       })
-                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("marginEditorTemplate"))
                       .Filterable()
-.Pageable()
-.Scrollable()
-.Events(e => e.DataBound("DetailDataBound"))
+                      .Scrollable(s => s.Height(400))
+                      .Pageable()
                       .DataSource(dataSource => dataSource
                           .Ajax()
                           .Model(model =>
@@ -153,6 +156,7 @@
                       .Editable(editable => editable.Mode(GridEditMode.InLine))
                       .Filterable()
                       .Scrollable(s => s.Height(400))
+                      .Pageable()
                       .DataSource(dataSource => dataSource
                           .Ajax()
                           .Model(model =>
@@ -175,28 +179,15 @@
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
+            $(this).find(".k-grid-reject").hide();
             if (dataItem.IsOnlineApproved) {
+                $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-approve").hide();
                 $(this).find(".k-grid-reject").hide();
-            }
-            else if (dataItem.IsOnlineTransferred) {
-                $(this).find(".k-grid-check").hide();
-
+                $(this).find(".k-grid-delete").hide();
             }
 
-        });
-    }
-    function DetailDataBound() {
-        this.expandRow(this.tbody.find("tr.k-master-row").first());
-        var grid = this;
-        grid.tbody.find("tr[role='row']").each(function () {
-            var dataItem = grid.dataItem(this);
-            if (dataItem.IsApprovedMargin) {
-                $(this).find(".k-grid-approvemargin").hide();
-                $(this).find(".k-grid-edit").hide();
-            }
-            
         });
     }
     var masterRow;
@@ -208,22 +199,12 @@
     var sendMarginApprove;
     function detailExpand(e) {
         masterRow = e.masterRow;
-        masterGrid = this;
+        masterGrid = $("#grid").data("kendoGrid");
         masterDataItem = masterGrid.dataItem(masterRow);
         codeid = masterDataItem.PrintingCostEstimationId;
         isApproved = masterDataItem.IsOnlineApproved;
         isChecked = masterDataItem.IsOnlineTransferred;
         sendMarginApprove = masterDataItem.IsSentForMarginApproval;
-        if (isApproved) {
-            $(".sum").hide();
-        }
-    }
-    var id;
-    var marginApproved;
-    function marginDetailExpand(e) {
-        var row = e.masterRow;
-        var grid = this;
-        var dataItem = grid.dataItem(row);
         if (isApproved) {
             $(".sum").hide();
         }
@@ -364,3 +345,17 @@
       }
     }
 </script>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

@@ -1,6 +1,6 @@
 ﻿@(Html.Kendo().DropDownListFor(model => model)
                         .DataTextField("Text")
                         .DataValueField("Value")
-                        .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.PrintingProcessCategory))
+                        .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.PrintingProcessName))
                         )
                     .HtmlAttributes(new { style = "width:100%" }))

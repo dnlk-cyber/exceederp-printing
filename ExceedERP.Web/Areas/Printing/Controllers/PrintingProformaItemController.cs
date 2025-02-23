@@ -62,9 +62,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Remark = model.Remark,
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Today,
-                    PrintingCostEstimationId = model.PrintingCostEstimationId,
-                    JobDescription = printingEstimation.JobDescription
-                    
+                    PrintingCostEstimationId = model.PrintingCostEstimationId
                 };
                 entity.UnitPrice = entity.TotalPrice/entity.Quantity;
                 if(glTaxRate != null)

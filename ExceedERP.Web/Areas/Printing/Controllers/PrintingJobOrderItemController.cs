@@ -19,9 +19,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             return View();
         }
 
-        public ActionResult PrintingJobOrderItem_Read([DataSourceRequest]DataSourceRequest request, int id)
+        public ActionResult PrintingJobOrderItem_Read([DataSourceRequest]DataSourceRequest request)
         {
-            var jobOrders = db.PrintingJobOrderItems.Where(x => x.PrintingJobOrderId == id);
+            var jobOrders = db.PrintingJobOrderItems;
             return Json(jobOrders.ToDataSourceResult(request));
         }
 
