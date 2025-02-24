@@ -7091,6 +7091,8 @@
     <Content Include="Areas\Printing\Views\YearlyProductionPlan\EditorTemplates\YearPickerTemplate.cshtml" />
     <Content Include="Areas\Printing\Views\YearlyProductionPlan\Index.cshtml" />
     <Content Include="Areas\Printing\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveReturnStatus\EditorTemplates\EnumWithoutWaitingForApprovalAndDeptApproval.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveReturn\EditorTemplates\ReturnEmployees.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

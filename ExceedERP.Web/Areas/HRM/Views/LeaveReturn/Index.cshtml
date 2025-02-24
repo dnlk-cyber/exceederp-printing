@@ -12,12 +12,14 @@
       .Name("LeaveReturngrid")
       .Columns(columns =>
       {
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Bound(c => c.LeaveReturnId).Title("S.N").Width(100);
+          columns.Bound(c => c.LeaveRequestId).Title("Request Id").Width(100);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ReturnEmployees").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
           columns.Bound(c => c.FromAm).EditorTemplateName("Calander").Width(150);
           columns.Bound(c => c.ToAm).EditorTemplateName("Calander").Width(150);
           columns.Bound(c => c.Amount).Width(100);
-          //columns.Bound(c => c.LeaveRequestId);
+          columns.Bound(c => c.Remark).Width(120);
           columns.Command(command =>
           {
               command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
@@ -71,11 +73,15 @@
                       events.RequestEnd("onRequestEnd(\"LeaveReturngrid\")");
                   })
 
-            .Model(model => model.Id(p => p.LeaveReturnId))
-            .Read(read => read.Action("LeaveReturn_Read", "LeaveReturn"))
-            .Create(create => create.Action("LeaveReturn_Create", "LeaveReturn"))
-            .Update(update => update.Action("LeaveReturn_Update", "LeaveReturn"))
-            .Destroy(destroy => destroy.Action("LeaveReturn_Destroy", "LeaveReturn"))
+            .Model(model => {
+                model.Id(p => p.LeaveReturnId);
+                model.Field(p => p.LeaveReturnId).Editable(false);
+                model.Field(p => p.LeaveRequestId).Editable(false);
+            })
+            .Read(read => read.Action("LeaveReturn_Read", "LeaveReturn").Data("sendForgery"))
+            .Create(create => create.Action("LeaveReturn_Create", "LeaveReturn").Data("sendForgery"))
+            .Update(update => update.Action("LeaveReturn_Update", "LeaveReturn").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("LeaveReturn_Destroy", "LeaveReturn").Data("sendForgery"))
             ).ClientDetailTemplateId("template")
 )
 
@@ -102,7 +108,7 @@
                      columns.Command(command =>
                      {
                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                         command.Destroy().Text(Resources.ActionButton_Cancel);
+                        // command.Destroy().Text(Resources.ActionButton_Cancel);
 
                      }).Width(400);
                  })
@@ -134,10 +140,10 @@
                         model.Field(p => p.ApproverDepartment).Editable(false);
 
                     })
-                    .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveReturnId#", referenceType = "LeaveReturn" }))
-                    .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveReturnId#", referenceType2 = "LeaveReturn" }))
-                    .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
-                    .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                    .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveReturnId#", referenceType = "LeaveReturn" }).Data("sendForgery"))
+                    .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveReturnId#", referenceType2 = "LeaveReturn" }).Data("sendForgery"))
+                    .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus").Data("sendForgery"))
                 ).ToClientTemplate()
               )
 
@@ -297,25 +303,24 @@
             success: function (result) {
                 r = result;
                 if (r == "true") {
-                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
-                    $(".k-grid-top", gridName).hide();
-                }
-                else if (r == "approved") {
-                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
-                    $(".k-grid-top", gridName).hide();
-                    $(".k-grid-edit", gridName).hide();
-                    $(".k-grid-delete", gridName).hide();
-                }
-                else if (r == "Dapproved") {
-                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
-                    $(".k-grid-top", gridName).hide();
-                    $(".k-grid-edit", gridName).hide();
-                    $(".k-grid-delete", gridName).hide();
-                }
-                else {
                     $(gridName).find(".k-toolbar").show(); //hide toolbar
-                    $(".k-grid-top", gridName).show();
+                    $(".k-grid-top", gridName).hide();
                 }
+                if (r == "Dapproved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+
+                }
+                if (r == "approved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+                }
+               
+               
 
             }
 

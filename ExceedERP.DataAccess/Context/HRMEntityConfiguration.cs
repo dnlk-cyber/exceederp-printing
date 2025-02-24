@@ -1196,6 +1196,17 @@ namespace ExceedERP.DataAccess
             // this.HasRequired<int>(s => s.JobTitle);
         }
     }
+
+    public class WeekendExceptionEntityTypeConfiguration : EntityTypeConfiguration<WeekendException>
+    {
+
+        public WeekendExceptionEntityTypeConfiguration()
+        {
+            this.ToTable("WeekendExceptions", "HRM");
+            this.HasKey<int>(o => o.WeekendExceptionId);
+            // this.HasRequired<int>(s => s.JobTitle);
+        }
+    }
     public class JobTitleMappingEntityTypeConfiguration : EntityTypeConfiguration<JobTitleMapping>
     {
 

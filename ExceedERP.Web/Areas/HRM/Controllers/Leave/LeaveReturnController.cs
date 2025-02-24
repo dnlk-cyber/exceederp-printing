@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.LeaveManagment;
 using ExceedERP.Core.Domain.HRM.SelfCare;
@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 
@@ -219,7 +218,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         }
         public ActionResult RefreshPreviousLeaveData()
         {
-            var leaveRequests = db.LeaveRequest.ToList();
+            var leaveRequests = db.LeaveRequest.Where(x=>x.IsOnlineApproved).ToList();
 
             foreach (var leave in leaveRequests)
             {
@@ -246,7 +245,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                     }
                                 }
                             }
-                            weekDays = GetWeekDays(leave.From, leave.To);
+                            //weekDays = GetWeekDays(leave.From, leave.To);
                             var entity = new Core.Domain.HRM.LeaveManagment.Leave
                             {
                                 EmployeeId = leave.EmployeeId,
@@ -280,6 +279,68 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             return RedirectToAction("Index");
         }
+        public decimal GetHolidays(DateTime from, DateTime to, int glFiscalYearId)
+        {
+            decimal count = 0;
+
+            var holidayList = db.Holidays.Where(x => x.GlFiscalYearId == glFiscalYearId).ToList();
+            if (holidayList.Any())
+            {
+                foreach (var h in holidayList)
+                {
+                    if (h.Date.Date >= from && h.Date.Date <= to)
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+        public decimal GetLeaveDays(DateTime from, DateTime to, int glFiscalYearId, LeaveDay day, LeaveType leaveType, int empId)
+        {
+            decimal leaveDays = 0;
+            //var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+            decimal holiday = GetHolidays(from, to, glFiscalYearId);
+            var weekDays = GetWeekDays(from, to, empId);
+            if (leaveType == LeaveType.ANNUAL)
+            {
+                leaveDays = to.Subtract(from).Days + 1 - holiday;
+                leaveDays = leaveDays - Convert.ToDecimal(weekDays);
+                if (day == LeaveDay.Half_Day)
+                {
+                    decimal checkWeekEnd = to.Subtract(from).Days + 1 - holiday;
+                    double amt = GetHalf(from, to);
+                    double notHalf = GetNotHalf(from, to);
+                    bool isHalf = IsHalf(from, to);
+                    if (isHalf)
+                    {
+                        leaveDays = (checkWeekEnd - Convert.ToDecimal(notHalf)) / 2;
+                    }
+                    else
+                    {
+                        leaveDays = leaveDays / 2;
+                    }
+                }
+
+            }
+            else
+            {
+                leaveDays = to.Subtract(from).Days + 1;
+                if (day == LeaveDay.Half_Day)
+                {
+                    leaveDays = leaveDays / 2;
+                }
+            }
+
+            return leaveDays;
+        }
+        private DateTime ParseEthiopicDate(string ethiopicDate)
+        {
+            var parts = ethiopicDate.Split('/');
+            return XAPI.EthiopicDateTime.GetGregorianDate(int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]));
+        }
         public ActionResult LeaveReturn_Read([DataSourceRequest]DataSourceRequest request)
         {
             var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -295,6 +356,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             DataSourceResult result = leaveReturns.ToDataSourceResult(request, leaveReturn => new
             {
                 LeaveReturnId = leaveReturn.LeaveReturnId,
+                LeaveRequestId = leaveReturn.LeaveRequestId,
                 EmployeeId = leaveReturn.EmployeeId,
                 GlFiscalYearId = leaveReturn.GlFiscalYearId,
                 Amount = leaveReturn.Amount,
@@ -311,55 +373,107 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeaveReturn_Create([DataSourceRequest]DataSourceRequest request, LeaveReturn leaveReturn)
         {
-            ModelState.Clear();
-            double weekDays = 0;
-            if (leaveReturn.FromAm != null)
+            if (string.IsNullOrEmpty(leaveReturn.FromAm)
+              || string.IsNullOrEmpty(leaveReturn.ToAm))
             {
-                var splitDateFrom = leaveReturn.FromAm.Split('/');
-                leaveReturn.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateFrom[0]), Convert.ToInt32(splitDateFrom[1]), Convert.ToInt32(splitDateFrom[2]));
+                ModelState.AddModelError("", " Please select from and To dates ");
+                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
 
             }
-            if (leaveReturn.ToAm != null)
+            var leaveReturnexisted = db.LeaveReturns.Find(leaveReturn.LeaveReturnId);
+            if (leaveReturnexisted != null && leaveReturnexisted.IsOnlineApproved)
             {
-                var splitDateTo = leaveReturn.ToAm.Split('/');
-                leaveReturn.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateTo[0]), Convert.ToInt32(splitDateTo[1]), Convert.ToInt32(splitDateTo[2]));
+                ModelState.AddModelError("", "you can't modify returned leave ");
+                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
 
             }
+
+           
+            leaveReturn.From = ParseEthiopicDate(leaveReturn.FromAm);
+            leaveReturn.To = ParseEthiopicDate(leaveReturn.ToAm);
             var per = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom <= leaveReturn.From.Date && x.DateTo >= leaveReturn.From.Date);
             if (per == null)
             {
-                var messages = "Check your Period if it defined";
-                return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+                ModelState.AddModelError("", "Check your Period if it defined");
+                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
             }
-
             // Query to find any annual leave that covers the specified date range
-            var matchingLeave = db.LeaveRequest.FirstOrDefault(x => x.From <= leaveReturn.From 
-                                                                     && x.To >= leaveReturn.To
-                                                                     && x.IsOnlineApproved
-                                                                     &&x.Type == LeaveType.ANNUAL);
+            var leaveRequest = db.LeaveRequest
+                                .FirstOrDefault(x =>  x.From <= leaveReturn.From 
+                                                      &&x.EmployeeId==leaveReturn.EmployeeId
+                                                      && x.To >= leaveReturn.To
+                                                      && x.IsOnlineApproved
+                                                      &&!x.IsVoid
+                                                      &&x.Type == LeaveType.ANNUAL);
 
             // Check if no matching leave record is found
-            if (matchingLeave == null)
+            if (leaveRequest == null)
             {
                 // Add a model error indicating no annual leave is found for the specified date range
                 ModelState.AddModelError("", "No annual leave is recorded for the selected date range.");
-            }
-            weekDays = GetWeekDays(leaveReturn.From, leaveReturn.To);
-           // var amount = leaveReturn.To.Subtract(leaveReturn.From).Days + 1;
+                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
 
+            }
+            leaveReturn.GlFiscalYearId = per.GlFiscalYearId;
+            leaveReturn.LeaveRequestId = leaveRequest.LeaveRequestId;
+            leaveReturn.EmployeeId = leaveRequest.EmployeeId;
+            if (leaveReturn.LeaveRequestId == 0)
+            {
+                ModelState.AddModelError("", "No annual leave is recorded for the selected date range.");
+                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
+
+            }
+            
+            // If the requested leave period matches exactly
+            else if (leaveRequest.From.Date == leaveReturn.From.Date
+                   && leaveReturn.To.Date == leaveRequest.To.Date)
+            {
+                leaveReturn.Amount = leaveRequest.LeaveDays;
+            }
+            //if the retun date are not exact fit with request dates
+            else if (leaveReturn.Amount == 0 || leaveReturn.Amount > leaveRequest.LeaveDays ||
+                (leaveRequest.From.Date < leaveReturn.From.Date && leaveReturn.To.Date < leaveRequest.To.Date) 
+                ||(leaveRequest.From.Date <= leaveReturn.From.Date && leaveReturn.To.Date < leaveRequest.To.Date)
+                ||(leaveRequest.From.Date < leaveReturn.From.Date && leaveReturn.To.Date <= leaveRequest.To.Date))
+            {
+                leaveReturn.Amount = GetLeaveDays(
+                    leaveReturn.From, leaveReturn.To, leaveReturn.GlFiscalYearId,
+                    leaveRequest.Day, leaveRequest.Type, leaveRequest.EmployeeId);
+            }
+            
+
+            // Handle partial leave cases
+            else
+            {
+                leaveReturn.Amount = GetLeaveDays(
+                    leaveReturn.From, leaveReturn.To, leaveReturn.GlFiscalYearId,
+                    leaveRequest.Day, leaveRequest.Type, leaveRequest.EmployeeId);
+            }
+            //if ((leaveReturn.From.Date> leaveRequest.From.Date
+            //    && leaveReturn.To.Date< leaveRequest.To.Date)
+            //    ||(leaveReturn.From.Date > leaveRequest.From.Date
+            //    && leaveReturn.To.Date < leaveRequest.To.Date))
+            //{
+            //    leaveReturn.Amount = leaveRequest.LeaveDays;
+            //}
+            //weekDays = GetWeekDays(leaveReturn.From, leaveReturn.To);
+            // var amount = leaveReturn.To.Subtract(leaveReturn.From).Days + 1;
             if (ModelState.IsValid)
             {
 
                 var entity = new LeaveReturn
                 {
                     EmployeeId = leaveReturn.EmployeeId,
+                    LeaveRequestId = leaveReturn.LeaveRequestId,
                     GlFiscalYearId = leaveReturn.GlFiscalYearId,
-                    Amount = (decimal)weekDays,
+                    Amount = leaveReturn.Amount,
                     IsSendForApproval = true,
                     From = leaveReturn.From,
                     To = leaveReturn.To,
                     FromAm = leaveReturn.FromAm,
-                    ToAm = leaveReturn.ToAm
+                    ToAm = leaveReturn.ToAm,
+                    Remark = leaveReturn.Remark
+
                 };
 
                 db.LeaveReturns.Add(entity);
@@ -382,40 +496,70 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeaveReturn_Update([DataSourceRequest]DataSourceRequest request, LeaveReturn leaveReturn)
         {
-            ModelState.Clear();
-            double weekDays = 0;
-            if (leaveReturn.FromAm != null)
+            if(string.IsNullOrEmpty(leaveReturn.FromAm)
+                || string.IsNullOrEmpty(leaveReturn.ToAm))
             {
-                var splitDateFrom = leaveReturn.FromAm.Split('/');
-                leaveReturn.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateFrom[0]), Convert.ToInt32(splitDateFrom[1]), Convert.ToInt32(splitDateFrom[2]));
+                ModelState.AddModelError("", " Please select from and To dates ");
+                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
 
             }
-            if (leaveReturn.ToAm != null)
-            {
-                var splitDateTo = leaveReturn.ToAm.Split('/');
-                leaveReturn.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateTo[0]), Convert.ToInt32(splitDateTo[1]), Convert.ToInt32(splitDateTo[2]));
-
-            }
+            
+            leaveReturn.From = ParseEthiopicDate(leaveReturn.FromAm);
+            leaveReturn.To = ParseEthiopicDate(leaveReturn.ToAm);
             var per = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom <= leaveReturn.From.Date && x.DateTo >= leaveReturn.From.Date);
             if (per == null)
             {
-                var messages = "Check your Period if it defined";
-                return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+                ModelState.AddModelError("", "Check your Period if it defined");
+                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
+
             }
 
             // Query to find any annual leave that covers the specified date range
-            var matchingLeave = db.Leaves.FirstOrDefault(x =>
-                x.From <= leaveReturn.From &&
-                x.To >= leaveReturn.To &&
-                x.LeaveType == LeaveType.ANNUAL);
+            // Query to find any annual leave that covers the specified date range
+            var leaveRequest = db.LeaveRequest
+                                .FirstOrDefault(x => x.From <= leaveReturn.From
+                                                     && x.EmployeeId == leaveReturn.EmployeeId
+                                                      && x.To >= leaveReturn.To
+                                                      && x.IsOnlineApproved
+                                                      && !x.IsVoid
+                                                      && x.Type == LeaveType.ANNUAL);
+
 
             // Check if no matching leave record is found
-            if (matchingLeave == null)
+            if (leaveRequest == null)
             {
                 // Add a model error indicating no annual leave is found for the specified date range
-                ModelState.AddModelError("", "No annual leave is recorded for the selected date range.");
+                ModelState.AddModelError("", "No annual leave is recorded for the selected date range or the request is already returned .");
+                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
             }
-            weekDays = GetWeekDays(leaveReturn.From, leaveReturn.To);
+            if (leaveReturn.From.Date == leaveRequest.From.Date
+               && leaveReturn.To.Date == leaveRequest.To.Date)
+            {
+                leaveReturn.Amount = leaveRequest.LeaveDays;
+            }
+            // Calculate leave days if the amount is zero or exceeds the leave days available
+            if (leaveReturn.Amount == 0 || leaveReturn.Amount > leaveRequest.LeaveDays ||
+                leaveRequest.From.Date > leaveReturn.From.Date && leaveReturn.To.Date < leaveRequest.To.Date ||
+                leaveRequest.From.Date >= leaveReturn.From.Date && leaveReturn.To.Date < leaveRequest.To.Date)
+            {
+                leaveReturn.Amount = GetLeaveDays(
+                    leaveReturn.From, leaveReturn.To, leaveReturn.GlFiscalYearId,
+                    leaveRequest.Day, leaveRequest.Type, leaveRequest.EmployeeId);
+            }
+            // If the requested leave period matches exactly
+            else if (leaveRequest.From.Date == leaveReturn.From.Date
+                   && leaveReturn.To.Date == leaveRequest.To.Date)
+            {
+                leaveReturn.Amount = leaveRequest.LeaveDays;
+            }
+
+            // Handle partial leave cases
+            else
+            {
+                leaveReturn.Amount = GetLeaveDays(
+                    leaveReturn.From, leaveReturn.To, leaveReturn.GlFiscalYearId,
+                    leaveRequest.Day, leaveRequest.Type, leaveRequest.EmployeeId);
+            }
             //var amount = leaveReturn.To.Subtract(leaveReturn.From).Days + 1;
             if (ModelState.IsValid)
             {
@@ -423,9 +567,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 var entity = new LeaveReturn
                 {
                     LeaveReturnId = leaveReturn.LeaveReturnId,
+                    LeaveRequestId = leaveRequest.LeaveRequestId,
                     EmployeeId = leaveReturn.EmployeeId,
                     GlFiscalYearId = leaveReturn.GlFiscalYearId,
-                    Amount = (decimal)weekDays,
+                    Amount = leaveReturn.Amount,
                     IsSendForApproval = true,
                     From = leaveReturn.From,
                     To = leaveReturn.To,
@@ -460,6 +605,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 var entity = new LeaveReturn
                 {
                     LeaveReturnId = leaveReturn.LeaveReturnId,
+                    LeaveRequestId = leaveReturn.LeaveRequestId,
                     EmployeeId = leaveReturn.EmployeeId,
                     GlFiscalYearId = leaveReturn.GlFiscalYearId,
                     IsSendForApproval = leaveReturn.IsSendForApproval,
@@ -467,7 +613,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                     From = leaveReturn.From,
                     To = leaveReturn.To,
                     FromAm = leaveReturn.FromAm,
-                    ToAm = leaveReturn.ToAm
+                    ToAm = leaveReturn.ToAm,
+                    Remark = leaveReturn.Remark
                 };
                 #region delete log
 
@@ -480,6 +627,98 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             }
 
             return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
+        }
+        public double GetWeekDays(DateTime startDate, DateTime endDate, int empId)
+        {
+            double noOfWeek = 0;
+            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == empId && x.isCurrent);
+            var sundayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SUNDAY);
+            var saturdayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SATURDAY);
+            List<DateTime> dayList = new List<DateTime>();
+            TimeSpan diff = endDate - startDate;
+            int days = diff.Days;
+            for (var i = 0; i <= days; i++)
+            {
+                var testDate = startDate.AddDays(i);
+                switch (testDate.DayOfWeek)
+                {
+                    case DayOfWeek.Saturday:
+
+                        if (saturdayweekendSetting != null)
+                        {
+                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
+                            if (holiday == null)
+                            {
+                                var weekendExceptions = db.WeekendExceptions.ToList();
+                                if (weekendExceptions.Any())
+                                {
+                                    var weekendException = db.WeekendExceptions
+                                              .FirstOrDefault(x => x.EmployeeId == empId);
+                                    if (weekendException == null && placement != null)
+                                    {
+                                        weekendException = db.WeekendExceptions.FirstOrDefault(x => x.OrgStructureId == placement.OrgStructureId);
+
+                                    }
+                                    // Skip because this is an exception for those simple employees that have Saturday as a working day, while other workers have it as an off day.
+
+                                    if (weekendException != null)
+                                    {
+                                        noOfWeek += saturdayweekendSetting.IsHalfDay ? 0.5 : saturdayweekendSetting.IsFullDay ? 0 : 1;
+
+                                    }
+                                    else
+                                    {
+                                        // Skip because this is an exception for those simple employees that have Saturday as a working day, while other workers have it as an off day.
+                                    }
+                                }
+                                else
+                                {
+                                    if (saturdayweekendSetting.IsHalfDay)
+                                    {
+                                        noOfWeek += 0.5;
+                                    }
+                                    else if (saturdayweekendSetting.IsFullDay)
+                                    {
+                                        noOfWeek += 0;
+
+                                    }
+                                    else
+                                    {
+                                        noOfWeek += 1;
+
+                                    }
+                                }
+
+                            }
+                        }
+                        break;
+                    case DayOfWeek.Sunday:
+
+                        if (sundayweekendSetting != null)
+                        {
+                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
+                            if (holiday == null)
+                            {
+                                if (sundayweekendSetting.IsHalfDay)
+                                {
+                                    noOfWeek += 0.5;
+                                }
+                                else if (sundayweekendSetting.IsFullDay)
+                                {
+                                    noOfWeek += 0;
+                                }
+                                else
+                                {
+                                    noOfWeek += 1;
+
+                                }
+                            }
+                        }
+                        //dayList.Add(testDate);
+                        break;
+                }
+            }
+            return noOfWeek;
         }
 
         public double GetWeekDays(DateTime startDate, DateTime endDate)

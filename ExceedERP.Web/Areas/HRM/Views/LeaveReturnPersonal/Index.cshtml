@@ -11,8 +11,9 @@
     .Name("LeaveReturngrid")
     .Columns(columns =>
     {
+        columns.Bound(c => c.LeaveReturnId).Title("S.N").Width(100);
+        columns.Bound(c => c.LeaveRequestId).Title("Request Id").Width(100);
         columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-
         columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(80);
         columns.Bound(c => c.FromAm).EditorTemplateName("Calander").Width(100);
         columns.Bound(c => c.ToAm).EditorTemplateName("Calander").Width(100);
@@ -73,11 +74,13 @@
               {
                   model.Id(p => p.LeaveReturnId);
                   model.Field(p => p.Amount).Editable(false);
+                  model.Field(p => p.LeaveReturnId).Editable(false);
+                  model.Field(p => p.LeaveRequestId).Editable(false);
               })
-             .Read(read => read.Action("LeaveReturnPersonal_Read", "LeaveReturnPersonal"))
-             .Create(create => create.Action("LeaveReturnPersonal_Create", "LeaveReturnPersonal"))
-             .Update(update => update.Action("LeaveReturnPersonal_Update", "LeaveReturnPersonal"))
-             .Destroy(destroy => destroy.Action("LeaveReturnPersonal_Destroy", "LeaveReturnPersonal"))
+             .Read(read => read.Action("LeaveReturnPersonal_Read", "LeaveReturnPersonal").Data("sendForgery"))
+             .Create(create => create.Action("LeaveReturnPersonal_Create", "LeaveReturnPersonal").Data("sendForgery"))
+             .Update(update => update.Action("LeaveReturnPersonal_Update", "LeaveReturnPersonal").Data("sendForgery"))
+             .Destroy(destroy => destroy.Action("LeaveReturnPersonal_Destroy", "LeaveReturnPersonal").Data("sendForgery"))
              ).ClientDetailTemplateId("template")
 )
 
@@ -135,10 +138,10 @@
                                            model.Field(p => p.ApproverId).Editable(false);
                                            model.Field(p => p.ApproverDepartment).Editable(false);
                                        })
-                                                 .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveReturnId#", referenceType = "LeaveReturn" }))
-                                             .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveReturnId#", referenceType2 = "LeaveReturn" }))
-                                               .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
-                                               .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                                                 .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveReturnId#", referenceType = "LeaveReturn" }).Data("sendForgery"))
+                                             .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveReturnId#", referenceType2 = "LeaveReturn" }).Data("sendForgery"))
+                                               .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus").Data("sendForgery"))
+                                               .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus").Data("sendForgery"))
                                         ).ToClientTemplate()
                                 )
                                 <a onclick='return sendForApproval("#=LeaveReturnId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>&nbsp;&nbsp;&nbsp;

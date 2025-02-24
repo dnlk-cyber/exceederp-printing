@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.LeaveManagment;
 using ExceedERP.Core.Domain.HRM.SelfCare;
@@ -293,6 +293,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             DataSourceResult result = leaveReturns.ToDataSourceResult(request, leaveReturn => new
             {
                 LeaveReturnId = leaveReturn.LeaveReturnId,
+                LeaveRequestId = leaveReturn.LeaveRequestId,
                 EmployeeId = leaveReturn.EmployeeId,
                 GlFiscalYearId = leaveReturn.GlFiscalYearId,
                 Amount = leaveReturn.Amount,
@@ -339,6 +340,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 var entity = new LeaveReturn
                 {
                     EmployeeId = leaveReturn.EmployeeId,
+                    LeaveRequestId = leaveReturn.LeaveRequestId,
                     GlFiscalYearId = leaveReturn.GlFiscalYearId,
                     Amount = leaveReturn.Amount,
                     From = leaveReturn.From,
@@ -380,6 +382,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 var entity = new LeaveReturn
                 {
                     LeaveReturnId = leaveReturn.LeaveReturnId,
+                    LeaveRequestId = leaveReturn.LeaveRequestId,
                     EmployeeId = leaveReturn.EmployeeId,
                     GlFiscalYearId = leaveReturn.GlFiscalYearId,
                     Amount = leaveReturn.Amount,
@@ -408,6 +411,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 var entity = new LeaveReturn
                 {
                     LeaveReturnId = leaveReturn.LeaveReturnId,
+                    LeaveRequestId = leaveReturn.LeaveRequestId,
                     EmployeeId = leaveReturn.EmployeeId,
                     GlFiscalYearId = leaveReturn.GlFiscalYearId,
                     Amount = leaveReturn.Amount,

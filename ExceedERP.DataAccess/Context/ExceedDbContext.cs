@@ -760,10 +760,11 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new BranchCostCenterEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new HolidayEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new WeekendEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new WeekendExceptionEntityTypeConfiguration());
             #endregion
-         
+
             #region SelfCare
-           
+
             modelBuilder.Configurations.Add(new LeaveRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExperienceRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new TrainingApplicantEntityTypeConfiguration());
@@ -2564,6 +2565,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region HRM
+        public System.Data.Entity.DbSet<WeekendException> WeekendExceptions { get; set; }
         public System.Data.Entity.DbSet<EmployeePerformanceSummary> EmployeePerformanceSummary { get; set; }
         public System.Data.Entity.DbSet<LeavePayableSetting> LeavePayableSettings { get; set; }
         public System.Data.Entity.DbSet<LeavePayable> LeavePayables { get; set; }
