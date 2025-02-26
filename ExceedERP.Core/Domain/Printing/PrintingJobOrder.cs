@@ -31,16 +31,17 @@ namespace ExceedERP.Core.Domain.Printing
         public int PrintingJobOrderItemId { get; set; }
         [Display(Name = "Job Type")]
         public int JobTypeId { get; set; }
+        public string JobDescription { get; set; }
         public string Description { get; set; } 
         public int NumberOfPages { get; set; }
 
         public decimal Quantity { get; set; }
 
-        [Display(Name = "Unit Price Before VAT")]
+        [Display(Name = "Unit Price")]
         public decimal UnitPrice { get; set; }
         [Display(Name = "VAT")]
         public decimal VAT { get; set; }
-        [Display(Name = "Unit Price With VAT")]
+        [Display(Name = "Total Price")]
         public decimal TotalPrice { get; set; }
 
         public bool IsClosed { get; set; }
@@ -48,5 +49,17 @@ namespace ExceedERP.Core.Domain.Printing
 
         public int PrintingJobOrderId { get; set; }
 
+    }
+    public class PrintingJobOrderJobDesign
+    {
+        [Key]
+        public int PrintingJobOrderJobDesignId { get; set; }
+        public int ReferenceId { get; set; }
+
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+        public string ShortPath { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
     }
 }

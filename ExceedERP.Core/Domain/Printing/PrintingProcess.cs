@@ -23,12 +23,14 @@ namespace ExceedERP.Core.Domain.Printing
 
     public enum PrintingProcessCategory
     {
+        NA,
         Pre_Printing,
         Printing,
         Finishing
     }
     public enum PrintingProcessName
     {
+        NA,
         PlateMaking,
         PaperCutting,
         CoverPrinting,

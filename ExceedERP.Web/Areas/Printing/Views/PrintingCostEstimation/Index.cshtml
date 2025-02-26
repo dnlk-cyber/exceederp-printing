@@ -49,22 +49,27 @@
 
 <script id="cost_estimation" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                        .Name("tabstrip_grid_#=PrintingCostEstimationId#")
-                        .SelectedIndex(0)
-                        .Items(itemn =>
-                        {
-                            itemn.Add().Text("Estimation Material List").Content(@<text>@MaterialCost()</text>);
-                                    itemn.Add().Text("Labor Cost").Content(
-                                @<text>
-                                    <span class="labor-cost"><a onclick='return calculateLaborCost("#=PrintingCostEstimationId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a></span>
-                                    @LaborCost()
-                                </text>);
-                        itemn.Add().Text("Over All Cost").Content(
+                                        .Name("tabstrip_grid_#=PrintingCostEstimationId#")
+                                        .SelectedIndex(0)
+                                        .Items(itemn =>
+                                        {
+                                            itemn.Add().Text("Estimation Material List").Content(
                     @<text>
-                        <span class="sum"><a onclick='return calculateOverallCost("#=PrintingCostEstimationId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a></span>
-                        @OverAllCost()
+                        <a href='@Url.Action("EstimationPrint", "PrintingReport")/?id=#=PrintingCostEstimationId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+
+                        @MaterialCost()
                     </text>);
-        }).ToClientTemplate())
+                                                    itemn.Add().Text("Labor Cost").Content(
+                        @<text>
+                            <span class="labor-cost"><a onclick='return calculateLaborCost("#=PrintingCostEstimationId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a></span>
+                            @LaborCost()
+                        </text>);
+                                        itemn.Add().Text("Over All Cost").Content(
+            @<text>
+                <span class="sum"><a onclick='return calculateOverallCost("#=PrintingCostEstimationId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a></span>
+                @OverAllCost()
+            </text>);
+                                    }).ToClientTemplate())
 </script>
 
 @helper MaterialCost()
@@ -166,7 +171,7 @@
                                   columns.Bound(c => c.GrandTotal);
                                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
                               })                              
-                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("OverallCostEditorTemplate"))
                               .Filterable()
                               .Scrollable()
                               .Pageable()

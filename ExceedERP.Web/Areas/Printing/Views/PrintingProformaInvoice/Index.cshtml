@@ -26,9 +26,9 @@
                 })
                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintingProformaInvoiceTemplate"))
                 .Filterable()
-                .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
-                .Scrollable(s => s.Height(400))
+               // .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
                 .Pageable()
+                .Scrollable(s => s.Height(400))
                 .DataSource(dataSource => dataSource
                     .Ajax()
                     .Sort(sort => sort.Add(e => e.PrintingProformaInvoiceId).Descending())
@@ -46,15 +46,16 @@
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-        .Name("tab_#=PrintingProformaInvoiceId#")
-        .Items(item1 =>
-        {
-            item1.Add().Text("Proforma Item")
-            .Content(
-            @<text>
-                @ProformaItem();
-            </text>);
-        }).ToClientTemplate())
+                .Name("tab_#=PrintingProformaInvoiceId#")
+                .Items(item1 =>
+                {
+                    item1.Add().Text("Proforma Item")
+                    .Content(
+                    @<text>
+                        <a href='@Url.Action("ProformaPrint", "PrintingReport")/?id=#=PrintingProformaInvoiceId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                        @ProformaItem()
+                    </text>);
+                        }).ToClientTemplate())
 </script>
 
 
@@ -65,13 +66,15 @@
                       .Columns(columns =>
                       {
                           columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+                          columns.Bound(c => c.JobDescription).Width(100);                    
                           columns.Bound(c => c.Quantity).Width(100);                    
                           columns.Bound(c => c.NumberOfPages).Width(100);                    
                           columns.Bound(c => c.UnitPrice).Width(100);
                           columns.Bound(c => c.TotalPrice).Width(100);
                           columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Value", "Text").Title("Tax Type").Width(120);
                           columns.Bound(c => c.TransportCost).Width(100);
-                          columns.Bound(c => c.GrandTotalIncludingVAT).Title("Selling Price").Width(100);
+                          columns.Bound(c => c.GrandTotalIncludingVAT).Title("Grand Total Including VAT").Width(100);
+                          columns.Bound(c => c.GrandTotalIncludingTransport).Title("Grand Total Including Transport").Width(100);
                           columns.Bound(c => c.Remark).Width(100);
                           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
                       })
@@ -82,8 +85,8 @@
                       .Editable(editable => editable.Mode(GridEditMode.PopUp)
                       .TemplateName("PrintingProformaItemEditorTemplate"))
                       .Filterable()
-                      .Scrollable(s => s.Height(400))
-                      .Pageable()
+.Pageable()
+.Scrollable()
                       .Events(ev => ev.DataBound("onChildDataBound"))
                       .DataSource(dataSource => dataSource
                           .Ajax()

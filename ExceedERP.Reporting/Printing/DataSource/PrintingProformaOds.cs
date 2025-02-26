@@ -26,7 +26,11 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     CustomerName = customer.TradeName,
                     DeliveryPeriod = proformaHead.DeliveryPeriod,
                     ProformaNumber = proformaHead.PrintingProformaInvoiceId,
-                    Remark = proformaHead.Remark
+                    Remark = proformaHead.Remark,
+                    ApprovedBy = proformaHead.OnlineApprovedBy,
+                    ApprovedDate = proformaHead.OnlineApprovedTime,
+                    CheckedBy = proformaHead.SendForApprovalBy,
+                    CheckedDate = proformaHead.SendForApprovalTime 
                 };
 
             }
@@ -47,6 +51,7 @@ namespace ExceedERP.Reporting.Printing.DataSource
             {
                 var jobType = db.PrintingJobTypes.FirstOrDefault(x => x.PrintingJobTypeId == item.JobTypeId);
                 var glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == item.GLTaxRateID);
+                var glTaxRateTransport = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == item.GLTaxRateTransportId);
                 list.Add(new PrintingProformaItemsViewModel
                 {
                     JobType = jobType?.JobTypeName ?? "",
@@ -59,7 +64,8 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     TransportCost = item.TransportCost,
                     UnitPrice = item.UnitPrice,
                     VAT = glTaxRate?.TaxName ?? "",
-                    
+                    TransportVAT = glTaxRateTransport?.TaxName ?? "",
+                    SellingPriceIncludingTransCost = item.GrandTotalIncludingTransport
                 });
             }
             return list;

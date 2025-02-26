@@ -179,30 +179,21 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }
             else if (jobType.JobType == JobType.Brochure || jobType.JobType == JobType.Card || jobType.JobType == JobType.Card)
             {
-                CreatePlateMakingCost(estimationId);
-                CreatePaperCuttingCost(estimationId);
-                CreateCoverPrintingCost(estimationId);
-                CreateTextPrintingCost(estimationId); // *
-                CreateCoverPlateChangeCost(estimationId); // *
-                CreateTextPlateChangeCost(estimationId);
-                CreateCoverColorChange(estimationId); // *
-                CreateTextColorChangeCost(estimationId); // *
+                CreatePaperCuttingCostCard(estimationId);
+                CreateCoverPrintingCostCard(estimationId);
+                CreatePlateMakingCard(estimationId);
+                CreatePlateChangeCostCard(estimationId);
+                CreateColorChangeCostCard(estimationId);
                 CreateFoldingCost(estimationId);
                 CreateCollatingCost(estimationId);
-                CreateStitchingCost(estimationId);
-                CreateGatheringCost(estimationId);
-                CreateThread_SewingCost(estimationId);
-                CreateGlueBindingCost(estimationId);
                 CreateTrimmingCost(estimationId);
                 CreatePacking_WrappingCost(estimationId);
                 CreateDispatching_Loading_ForkliftingCost(estimationId);
             }
-
             return Json(msg.success, JsonRequestBehavior.AllowGet);
         }
 
-        #region Calculation Book
-        
+        #region Calculation Book        
         private void CreatePlateMakingCost(int estimationId)
         {
             var costEstimation = db.PrintingCostEstimations
@@ -226,7 +217,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }
             
         }
-        
+      
         private void CreatePaperCuttingCost(int estimationId)
         {
             var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == estimationId);
@@ -426,6 +417,80 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 db.PrintingEstimationLaborCosts.Add(entity);
                 db.SaveChanges();
 
+            }
+        }
+        #endregion
+        #region Card/Brochure
+        private void CreatePaperCuttingCostCard(int estimationId)
+        {
+            var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == estimationId);
+            var materialCost = db.PrintingEstimationMaterialCosts.FirstOrDefault(x => x.PrintingCostEstimationId == estimationId);
+
+            if (estimation != null && materialCost != null)
+            {
+                var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.PaperSizeId);
+
+                var paperQty = (estimation.ProductQuantity) / paperSize.NoOfPagesToA1Ratio;
+                var totalQuantity = paperQty * (1 + materialCost.WastageInPercentage);
+                CommonLaborCostSave(estimationId, PrintingProcessName.PaperCutting, PrintingProcessCategory.Pre_Printing, totalQuantity, true);
+            }
+
+        }
+        private void CreatePlateMakingCard(int estimationId)
+        {
+            var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == estimationId);
+            var materialCost = db.PrintingEstimationMaterialCosts.FirstOrDefault(x => x.PrintingCostEstimationId == estimationId);
+
+            if (estimation != null && materialCost != null)
+            {
+                var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.PaperSizeId);
+
+                var paperQty = (estimation.CoverNoOfColor) / paperSize.NoOfPagesToA1Ratio;
+                var totalQuantity = paperQty * (1 + materialCost.WastageInPercentage);
+                CommonLaborCostSave(estimationId, PrintingProcessName.PlateMaking, PrintingProcessCategory.Pre_Printing, totalQuantity, true);
+            }
+        }
+        private void CreatePlateChangeCostCard(int estimationId)
+        {
+            var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == estimationId);
+            var materialCost = db.PrintingEstimationMaterialCosts.FirstOrDefault(x => x.PrintingCostEstimationId == estimationId);
+
+            if (estimation != null && materialCost != null)
+            {
+                var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.PaperSizeId);
+
+                var paperQty = (estimation.CoverNoOfColor) / paperSize.NoOfPagesToA1Ratio;
+                var totalQuantity = paperQty * (1 + materialCost.WastageInPercentage);
+                CommonLaborCostSave(estimationId, PrintingProcessName.PlateMaking, PrintingProcessCategory.Pre_Printing, totalQuantity, false);
+            }
+        }
+        private void CreateColorChangeCostCard(int estimationId)
+        {
+            var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == estimationId);
+            var materialCost = db.PrintingEstimationMaterialCosts.FirstOrDefault(x => x.PrintingCostEstimationId == estimationId);
+
+            if (estimation != null && materialCost != null)
+            {
+                var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.PaperSizeId);
+
+                var paperQty = (estimation.CoverNoOfColor) / paperSize.NoOfPagesToA1Ratio;
+                var totalQuantity = paperQty * (1 + materialCost.WastageInPercentage);
+                CommonLaborCostSave(estimationId, PrintingProcessName.PlateMaking, PrintingProcessCategory.Pre_Printing, totalQuantity, false);
+            }
+        }
+        private void CreateCoverPrintingCostCard(int estimationId) 
+        {
+            var costEstimation = db.PrintingCostEstimations
+                .FirstOrDefault(x => x.PrintingCostEstimationId == estimationId);
+            var materialCost = db.PrintingEstimationMaterialCosts.FirstOrDefault(x => x.PrintingCostEstimationId == costEstimation.PrintingCostEstimationId);
+            if (costEstimation != null && materialCost != null)
+            {
+                var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == costEstimation.PaperSizeId);
+                if (paperSize != null)
+                {
+                    var coverPrinting = (costEstimation.ProductQuantity / paperSize.NoOfPagesToA1Ratio) * (1 + materialCost.WastageInPercentage) * costEstimation.TextNoOfColors;
+                    CommonLaborCostSave(estimationId, PrintingProcessName.CoverPrinting, PrintingProcessCategory.Printing, coverPrinting, true);
+                }
             }
         }
         #endregion

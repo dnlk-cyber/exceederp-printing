@@ -1,4 +1,5 @@
 ﻿
+using ExceedERP.Core.Domain.Printing;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Printing.ViewModel;
 using System;
@@ -26,15 +27,19 @@ namespace ExceedERP.Reporting.Printing.DataSource
                 var paperSize = db.PrintingPaperSizes.Find(estimation.PrintingCostEstimationId);               
                 return new PrintingEstimationViewModel
                 {
-                    BindingStyle = bindingStyle.BindingStyleName,
+                    BindingStyle = bindingStyle?.BindingStyleName ?? "",
                     CoverNoOfColors = estimation.PrintingCostEstimationId,
-                    CustomerName = customer.TradeName,
+                    CustomerName = customer?.TradeName ?? "",
                     JobDescription = estimation.JobDescription,
-                    JobType = jobType.JobTypeName,
+                    JobType = jobType?.JobTypeName ?? "",
                      NoOfPages = estimation.TotalTextNoPages,
-                     PaperSize = paperSize.PaperSizeName,
+                     PaperSize = paperSize?.PaperSizeName ?? "",
                      Quantity = estimation.ProductQuantity,
-                     TextNoOfColors = estimation.TextNoOfColors
+                     TextNoOfColors = estimation.TextNoOfColors,
+                     ApprovedBy = estimation.OnlineApprovedBy,
+                     ApprovedDate = estimation.OnlineApprovedTime,
+                     CheckedBy = estimation.SendForApprovalBy,
+                     CheckedDate = estimation.SendForApprovalTime
                 };
             }
             return new PrintingEstimationViewModel();
@@ -52,8 +57,9 @@ namespace ExceedERP.Reporting.Printing.DataSource
 
                 list.Add(new PrintingMaterialViewModel
                 {
-                    ItemCategory = category.CategoryName,
-                    ItemName = item.ItemName,
+                    EstimationMaterialType = material.EstimationMaterialType,
+                    ItemCategory = category?.CategoryName ?? "",
+                    ItemName = item?.ItemName ?? "",
                     Quantity = material.Quantity,
                     TotalCost = material.TotalCost,
                     UnitCost = material.UnitCost,
@@ -71,14 +77,16 @@ namespace ExceedERP.Reporting.Printing.DataSource
             foreach (var item in estimationLaborCosts)
             {
                 var printingProcess = db.PrintingProcesses.Find(item.PrintingProcessId);
-                var printingMachine = db.PrintingMachineTypes.Find(item.PrintingMachineTypeId);
+                //var printingMachine = db.PrintingMachineTypes.Find(item.PrintingMachineTypeId);
+
                 list.Add(new PrintingLaborViewModel
                 {
                     EstimatedHour = item.EstimatedHours,
                     LaborRate = item.LaborRate,
-                    PrintingProcess = printingProcess.ProcessName,
-                    ProcessCategory = item.ProcessCategory,
-                    MachineType = printingMachine.MachineTypeName,
+                    TotalCost = item.TotalCost,
+                    PrintingProcess = printingProcess?.PrintingProcessName ?? PrintingProcessName.NA,
+                    ProcessCategory = printingProcess?.PrintingCategory ?? PrintingProcessCategory.NA,
+                    //MachineType = printingMachine.MachineTypeName,
                 });
 
             }

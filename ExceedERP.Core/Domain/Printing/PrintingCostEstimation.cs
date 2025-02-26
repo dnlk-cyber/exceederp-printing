@@ -26,6 +26,7 @@ namespace ExceedERP.Core.Domain.Printing
         public int TextNoOfColors { get; set; }
         [Display(Name ="Cover No of Colors")]
         public int CoverNoOfColor { get; set; }
+        public string JobDescription { get; set; }
 
         //---------------///////////////
         public int TotalTextNoPages { get; set; }

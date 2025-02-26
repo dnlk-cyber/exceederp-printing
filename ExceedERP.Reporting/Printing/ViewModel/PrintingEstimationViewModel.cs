@@ -18,11 +18,16 @@ namespace ExceedERP.Reporting.Printing.ViewModel
         public int CoverNoOfColors { get; set; }
         public int NoOfPages { get; set; }
         public string JobDescription { get; set; }
-
+        public string CheckedBy { get; set; }
+        public DateTime? CheckedDate { get; set; }
+        public string ApprovedBy { get; set; }
+        public DateTime? ApprovedDate { get; set; }
     }
 
     public class PrintingMaterialViewModel
     {
+        public EstimationMaterialType EstimationMaterialType { get; set; }
+
         public string ItemCategory { get; set; }
         public string ItemName { get; set; }
         public string UoM { get; set; }
@@ -35,11 +40,12 @@ namespace ExceedERP.Reporting.Printing.ViewModel
 
     public class PrintingLaborViewModel
     {
-        public PrintingProcessCategory ProcessCategory { get; set; }
-        public string PrintingProcess { get; set; }
+        public PrintingProcessCategory? ProcessCategory { get; set; }
+        public PrintingProcessName? PrintingProcess { get; set; }
         public string MachineType { get; set; }
         public decimal EstimatedHour { get; set; }
         public decimal LaborRate { get; set; }
+        public decimal TotalCost { get; set; }
 
     }
     public class OverAllCostViewModel

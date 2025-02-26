@@ -77,17 +77,15 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 {
                     PrintingOverAllCostId = model.PrintingOverAllCostId,
                     MaterialCost = model.MaterialCost,
-                    LaborCost = model.LaborCost,
-                   
-                    OverHeadCost = model.LaborCost + model.OverHeadCost,
+                    LaborCost = model.LaborCost,                   
+                    OverHeadCost = model.LaborCost * model.OverHeadCost,
                     AdminstrativeCost = (model.MaterialCost + model.LaborCost + model.OverHeadCost) * model.AdminstrativeCost,
-                    TotalProductionCost = model.MaterialCost + model.LaborCost + model.OverHeadCost,
-                    ProfitMargin = model.ProfitMargin,
-                    GraphicsCost = model.GraphicsCost,
-                    
-                    GrandTotal = model.TotalProductionCost + model.AdminstrativeCost + model.GraphicsCost,
+                    GraphicsCost = model.GraphicsCost,                  
                     PrintingCostEstimationId = model.PrintingCostEstimationId
                 };
+                entity.TotalProductionCost = entity.MaterialCost + entity.LaborCost + entity.OverHeadCost;
+                entity.GrandTotal = entity.TotalProductionCost + entity.AdminstrativeCost + entity.GraphicsCost;
+
                 model.GrandTotal = entity.GrandTotal;
                 model.AdminstrativeCost = entity.AdminstrativeCost;
                 model.OverHeadCost = entity.OverHeadCost;

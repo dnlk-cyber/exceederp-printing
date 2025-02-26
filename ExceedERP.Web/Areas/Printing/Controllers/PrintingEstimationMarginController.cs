@@ -24,6 +24,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         public ActionResult PrintingEstimationMargin_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             var margin = db.PrintingEstimationMargins.Where(x => x.PrintingEstimationDetailId == id);
+
             return Json(margin.ToDataSourceResult(request));
         }
 
@@ -32,7 +33,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         {
             if (ModelState.IsValid)
             {
-                model.TotalPrice = (model.TotalCost * model.ProfitMargin) + model.TotalCost;
+                
+                model.TotalPrice = (model.TotalCost * (model.ProfitMargin/100)) + model.TotalCost;
                 db.PrintingEstimationMargins.Attach(model);
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();

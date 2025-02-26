@@ -579,6 +579,10 @@
     <Compile Include="Migrations\202502240754130_weekendexceptions.Designer.cs">
       <DependentUpon>202502240754130_weekendexceptions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202502261200065_prinintupgchanges.cs" />
+    <Compile Include="Migrations\202502261200065_prinintupgchanges.Designer.cs">
+      <DependentUpon>202502261200065_prinintupgchanges.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -966,6 +970,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202502240754130_weekendexceptions.resx">
       <DependentUpon>202502240754130_weekendexceptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202502261200065_prinintupgchanges.resx">
+      <DependentUpon>202502261200065_prinintupgchanges.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

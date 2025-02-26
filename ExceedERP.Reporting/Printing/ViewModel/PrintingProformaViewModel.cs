@@ -12,6 +12,10 @@ namespace ExceedERP.Reporting.Printing.ViewModel
         public string CustomerName { get; set; }
         public int DeliveryPeriod { get; set; }
         public string Remark { get; set; }
+        public string CheckedBy { get; set; }
+        public string ApprovedBy { get; set; }
+        public DateTime? CheckedDate { get; set; }
+        public DateTime? ApprovedDate { get; set; }
     }
     public class PrintingProformaItemsViewModel
     {
@@ -23,9 +27,10 @@ namespace ExceedERP.Reporting.Printing.ViewModel
         public decimal UnitPrice { get; set; }
         public decimal TotalPrice { get; set; }
         public string VAT { get; set; }
-
+        public string TransportVAT { get; set; }
         public decimal TransportCost { get; set; }
         public decimal SellingPrice { get; set; }
+        public decimal SellingPriceIncludingTransCost { get; set; }
         public string Remark { get; set; } 
     }
 }

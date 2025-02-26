@@ -30,22 +30,29 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public ActionResult PrintingProformaItem_Create([DataSourceRequest]DataSourceRequest request, PrintingProformaInvoiceItem model, int id)
         {
+            if (model.GLTaxRateID == null || model.GLTaxRateTransportId == null)
+            {
+                ModelState.AddModelError(string.Empty, "Please Choose Tax Rate!");
+            }
             GLTaxRate glTaxRate = new GLTaxRate();
+            GLTaxRate glTaxRateTransport = new GLTaxRate();
             var printingEstimation = db.PrintingCostEstimations.Find(model.PrintingCostEstimationId);
             if (printingEstimation == null) ModelState.AddModelError("", "Can't find proforma");
 
-         
             var overAllCost = db.PrintingOverAllCosts.FirstOrDefault(x => x.PrintingCostEstimationId == printingEstimation.PrintingCostEstimationId);
             if (overAllCost == null) ModelState.AddModelError(string.Empty, "Overall cost not found");
-            if(model.GLTaxRateID != null)
+
+            glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GLTaxRateID);
+            if (glTaxRate == null)
             {
-                glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GLTaxRateID);
-                if (glTaxRate == null)
-                {
-                    ModelState.AddModelError(string.Empty, "Tax rate not found!");
-                }
+                ModelState.AddModelError(string.Empty, "Tax rate not found!");
             }
-            
+
+            glTaxRateTransport = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GLTaxRateTransportId);
+            if (glTaxRateTransport == null)
+            {
+                ModelState.AddModelError(string.Empty, "Tax rate not found!");
+            }
 
             if (ModelState.IsValid)
             {
@@ -58,21 +65,18 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     TransportCost = model.TransportCost,
                     JobTypeId = printingEstimation.JobTypeId,
                     GLTaxRateID = model.GLTaxRateID,
-                    UnitOfMeasurment = model.UnitOfMeasurment,                    
+                    UnitOfMeasurment = model.UnitOfMeasurment,
                     Remark = model.Remark,
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Today,
-                    PrintingCostEstimationId = model.PrintingCostEstimationId
+                    PrintingCostEstimationId = model.PrintingCostEstimationId,
+                    JobDescription = printingEstimation.JobDescription,
                 };
-                entity.UnitPrice = entity.TotalPrice/entity.Quantity;
-                if(glTaxRate != null)
-                {
-                    entity.GrandTotalIncludingVAT = (entity.TotalPrice * glTaxRate.CalculatedRate) + entity.TotalPrice + entity.TransportCost;
-                }
-                else
-                {
-                    entity.GrandTotalIncludingVAT = entity.TotalPrice + entity.TransportCost;
-                }
+                entity.UnitPrice = entity.TotalPrice / entity.Quantity;
+                entity.TransportCost = entity.TransportCost + (entity.TransportCost * glTaxRateTransport.CalculatedRate);
+                entity.GrandTotalIncludingVAT = (entity.TotalPrice * glTaxRate.CalculatedRate) + entity.TotalPrice;
+                entity.GrandTotalIncludingTransport = entity.GrandTotalIncludingVAT + entity.TransportCost;
+
                 db.PrintingProformaInvoiceItems.Add(entity);
                 db.SaveChanges();
                 model.PrintingProformaInvoiceItemId = entity.PrintingProformaInvoiceItemId;
@@ -81,24 +85,30 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 model.JobTypeId = entity.JobTypeId;
             }
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
-
         }
         public ActionResult PrintingProformaItem_Update([DataSourceRequest]DataSourceRequest request, PrintingProformaInvoiceItem model)
         {
+            if (model.GLTaxRateID == null || model.GLTaxRateTransportId == null)
+            {
+                ModelState.AddModelError(string.Empty, "Please Choose Tax Rate!");
+            }
             GLTaxRate glTaxRate = new GLTaxRate();
+            GLTaxRate glTaxRateTransport = new GLTaxRate();
             var printingEstimation = db.PrintingCostEstimations.Find(model.PrintingCostEstimationId);
             if (printingEstimation == null) ModelState.AddModelError("", "Can't find proforma");
 
-           
             var overAllCost = db.PrintingOverAllCosts.FirstOrDefault(x => x.PrintingCostEstimationId == printingEstimation.PrintingCostEstimationId);
             if (overAllCost == null) ModelState.AddModelError(string.Empty, "Overall cost not found");
-            if (model.GLTaxRateID != null)
+
+            glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GLTaxRateID);
+            if (glTaxRate == null)
             {
-                glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GLTaxRateID);
-                if (glTaxRate == null)
-                {
-                    ModelState.AddModelError(string.Empty, "Tax rate not found!");
-                }
+                ModelState.AddModelError(string.Empty, "Tax rate not found!");
+            }
+            glTaxRateTransport = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GLTaxRateTransportId);
+            if (glTaxRateTransport == null)
+            {
+                ModelState.AddModelError(string.Empty, "Tax rate not found!");
             }
 
             if (ModelState.IsValid)
@@ -116,17 +126,17 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Remark = model.Remark,
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Today,
-                    PrintingCostEstimationId = model.PrintingCostEstimationId
+                    PrintingCostEstimationId = model.PrintingCostEstimationId,
+                    GLTaxRateTransportId = model.GLTaxRateTransportId,
+                    JobDescription = model.JobDescription,
+                    UnitPrice = model.UnitPrice,
+                    PrintingProformaInvoiceItemId = model.PrintingProformaInvoiceItemId
                 };
                 entity.UnitPrice = entity.TotalPrice / entity.Quantity;
-                if (glTaxRate != null)
-                {
-                    entity.GrandTotalIncludingVAT = (entity.TotalPrice * glTaxRate.CalculatedRate) + entity.TotalPrice + entity.TransportCost;
-                }
-                else
-                {
-                    entity.GrandTotalIncludingVAT = entity.TotalPrice + entity.TransportCost;
-                }
+                entity.TransportCost = entity.TransportCost + (entity.TransportCost * glTaxRateTransport.CalculatedRate);
+                entity.GrandTotalIncludingVAT = (entity.TotalPrice * glTaxRate.CalculatedRate) + entity.TotalPrice;
+                entity.GrandTotalIncludingTransport = entity.GrandTotalIncludingVAT + entity.TransportCost;
+
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
                 model.PrintingProformaInvoiceItemId = entity.PrintingProformaInvoiceItemId;

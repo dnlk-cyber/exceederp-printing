@@ -39,12 +39,12 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 Text = s.BindingStyleName
             }).ToList();
 
-            ViewData["Category"] = db.PrintingMaterialCategories.Select(s => new
+            ViewData["PrintingMaterialCategory"] = db.PrintingMaterialCategories.Select(s => new
             {
                 Value = s.PrintingMaterialCategoryId,
                 Text = s.CategoryName
             }).ToList();
-            ViewData["Item"] = db.PrintingMaterialCategoryItems.Select(s => new
+            ViewData["PItem"] = db.PrintingMaterialCategoryItems.Select(s => new
             {
                 Value = s.PrintingMaterialCategoryItemId,
                 Text = s.ItemName
@@ -59,9 +59,87 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 Value = s.PrintingMachineTypeId,
                 Text = s.MachineTypeName
             }).ToList();
+
+            //
+            var categories = db.ItemCategorys;
+            var items = db.InventoryItems;
+            var costCenter = db.BranchCostCenter;
+            var branches = db.Branch;
+
+            var inventoryPeriods = db.InventoryPeriods;
+            var selectedinventoryPeriods = inventoryPeriods.Select(
+             i => new
+             {
+                 Name = i.Name,
+                 GLPeriodId = i.InventoryPeriodId
+             }).AsQueryable();
+            ViewData["inventoryPeriods"] = selectedinventoryPeriods;
+
+            ViewData["Branches"] = branches;
+
+            var selecteditems = items.Select(
+                i => new
+                {
+                    Name = i.ItemCode + "_" + i.Name,
+                    ItemCode = i.ItemCode
+                }).ToList();
+            ViewData["Items"] = selecteditems;
+            ViewData["Category"] = categories;
+            ViewData["defaultCategory"] = categories.FirstOrDefault();
+
+
+
+            var employee = db.Person_Employee;
+            var selectedEmployee = employee.Select(
+                i => new
+                {
+                    Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+                    Code = i.EmployeeId
+                }).AsQueryable();
+            ViewData["personEmployees"] = selectedEmployee;
+
+            var selectedcostCenter = costCenter.Select(
+                i => new
+                {
+                    Name = i.MainCompanyStructure.Name,
+                    Code = i.OrgStructureId
+                }).AsQueryable();
+
+            ViewData["costCenters"] = selectedcostCenter;
+            PopulateViewData();
             return View();
         }
+        private void PopulateViewData()
+        {
+            var categories = db.ItemCategorys;
+            var items = db.InventoryItems;
+            var stores = db.InventoryStores;
+            var branches = db.Branch;
+            var costCenter = db.BranchCostCenter;
+            var selectedcostCenter = costCenter.Select(
+              i => new
+              {
+                  Name = i.MainCompanyStructure.Name,
+                  Code = i.OrgStructureId
+              }).AsQueryable();
 
+            var inventoryPeriods = db.InventoryPeriods;
+
+
+            ViewData["costCenters"] = selectedcostCenter;
+            ViewData["stores"] = stores;
+            ViewData["Branches"] = branches;
+            var selecteditems = items.Select(
+                i => new
+                {
+                    Name = i.ItemCode + "_" + i.Name,
+                    ItemCode = i.ItemCode
+                }).ToList();
+            ViewData["Items"] = selecteditems;
+            ViewData["Category"] = categories;
+
+            ViewData["defaultCategory"] = categories.FirstOrDefault();
+        }
         public ActionResult PrintingJobOrderProduction_Read([DataSourceRequest]DataSourceRequest request)
         {
             var entity = db.PrintingJobOrderProductions;

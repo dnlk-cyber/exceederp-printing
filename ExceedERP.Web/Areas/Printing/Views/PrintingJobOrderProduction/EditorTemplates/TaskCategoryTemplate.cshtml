@@ -1,0 +1,14 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+                                 .ValuePrimitive(true)
+                                 .OptionLabel("Select task category...")
+                                 .DataTextField("Text")
+                                 .DataValueField("Value")
+                                 .Filter("contains")
+                                 .DataSource(dataSource =>
+                                 {
+                                     dataSource.Read(read => read.Action("GetTaskCategory", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterTaskCategory")
+                                     )
+                                     .ServerFiltering(true);
+                                 }).CascadeFrom("Type")
+
+)

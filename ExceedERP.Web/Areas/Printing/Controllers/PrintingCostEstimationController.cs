@@ -102,7 +102,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     DateCreated = DateTime.Today,
                     LastModified = printingCostEstimation.LastModified,
                     CreatedBy = User.Identity.Name,
-                    ModifiedBy = printingCostEstimation.ModifiedBy
+                    ModifiedBy = printingCostEstimation.ModifiedBy,
+                    JobDescription = printingCostEstimation.JobDescription
                 };
 
                 db.PrintingCostEstimations.Add(entity);
@@ -146,7 +147,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     DateCreated = printingCostEstimation.DateCreated,
                     LastModified = printingCostEstimation.LastModified,
                     CreatedBy = printingCostEstimation.CreatedBy,
-                    ModifiedBy = printingCostEstimation.ModifiedBy
+                    ModifiedBy = printingCostEstimation.ModifiedBy,
+                    JobDescription = printingCostEstimation.JobDescription
                 };
 
                 db.PrintingCostEstimations.Attach(entity);
@@ -190,7 +192,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     DateCreated = printingCostEstimation.DateCreated,
                     LastModified = printingCostEstimation.LastModified,
                     CreatedBy = printingCostEstimation.CreatedBy,
-                    ModifiedBy = printingCostEstimation.ModifiedBy
+                    ModifiedBy = printingCostEstimation.ModifiedBy,
+                     JobDescription = printingCostEstimation.JobDescription
                 };
 
                 db.PrintingCostEstimations.Attach(entity);
@@ -349,8 +352,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     PrintingEstimationSummaryId = summary.PrintingEstimationSummaryId,
                     PrintingCostEstimationId = model.PrintingCostEstimationId,
                     UnitCost = OverAllCost.GrandTotal/model.ProductQuantity,
+                    JobDescription = model.JobDescription,
                     
-
                 };
                 db.PrintingEstimationDetails.Add(estimationDetailNew);
                 db.SaveChanges();
@@ -368,8 +371,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     TotalCost = OverAllCost.GrandTotal,
                     Quantity = model.ProductQuantity,
                     PrintingEstimationSummaryId = estimationSummary.PrintingEstimationSummaryId,
-                    PrintingCostEstimationId = model.PrintingCostEstimationId
-
+                    PrintingCostEstimationId = model.PrintingCostEstimationId,
+                    JobDescription = model.JobDescription,
+                    GraphicsCost = OverAllCost.GraphicsCost,
+                    UnitCost = OverAllCost.GrandTotal / model.ProductQuantity,
                 };
 
                 db.PrintingEstimationDetails.Add(estimationDetail);
