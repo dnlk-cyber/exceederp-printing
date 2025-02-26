@@ -247737,3 +247737,141 @@
 2025-02-26 14:52:58.1398|INFO|Hangfire.Server.BackgroundServerProcess|Server xps:2792:1be60658 successfully reported itself as stopped in 12.4269 ms
 2025-02-26 14:52:58.1549|INFO|Hangfire.Server.BackgroundServerProcess|Server xps:2792:1be60658 has been stopped in total 130.9396 ms
 2025-02-26 14:52:58.1549|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:4e2a8e2e stopped in 132.0711 ms
+2025-02-26 15:34:14.5266|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Start installing Hangfire SQL objects...
+2025-02-26 15:34:15.4311|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Hangfire SQL objects installed.
+2025-02-26 15:34:15.5736|INFO|Hangfire.BackgroundJobServer|Starting Hangfire Server using job storage: 'SQL Server: localhost@ExceedERP2021-MPE-PRO'
+2025-02-26 15:34:15.5736|INFO|Hangfire.BackgroundJobServer|Using the following options for SQL Server job storage: Queue poll interval: 00:00:15.
+2025-02-26 15:34:15.5736|INFO|Hangfire.BackgroundJobServer|Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-02-26 15:34:15.7054|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:f01b36ab has started in 97.2576 ms
+2025-02-26 15:34:15.8836|INFO|Hangfire.Server.BackgroundServerProcess|Server xps:2792:056731a3 successfully announced in 67.3638 ms
+2025-02-26 15:34:15.9863|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:eb70b84f has started in 101.1319 ms
+2025-02-26 15:34:15.9863|INFO|Hangfire.Server.BackgroundServerProcess|Server xps:2792:056731a3 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-02-26 15:34:16.0080|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:5b7c3916 has started in 5.4477 ms
+2025-02-26 15:34:16.0201|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:8e23b606 has started in 12.1782 ms
+2025-02-26 15:34:16.0420|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:63ef3518 has started in 8.1237 ms
+2025-02-26 15:34:16.0725|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2025-02-26 15:34:16.1073|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:019d0115 has started in 62.4482 ms
+2025-02-26 15:34:16.1263|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-02-26 15:34:16.1506|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:c88ae45f has started in 30.8051 ms
+2025-02-26 15:34:16.1571|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f70f2fb5 has started in 37.6708 ms
+2025-02-26 15:34:16.1571|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:40a2b0ac has started in 44.8427 ms
+2025-02-26 15:34:16.1571|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f1f18cf6 has started in 48.8658 ms
+2025-02-26 15:34:16.1710|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2025-02-26 15:34:16.1710|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e1c47186 has started in 53.055 ms
+2025-02-26 15:34:16.1710|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d707f54d has started in 55.7906 ms
+2025-02-26 15:34:16.1710|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fd39a3b7 has started in 64.2889 ms
+2025-02-26 15:34:16.1907|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:8ae95ac5 has started in 70.8542 ms
+2025-02-26 15:34:16.2871|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:6b7d74db has started in 167.3674 ms
+2025-02-26 15:34:16.3365|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3a69a2cf has started in 217.474 ms
+2025-02-26 15:34:16.4249|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:50763b32 has started in 305.4701 ms
+2025-02-26 15:34:16.4445|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b0a4fc85 has started in 324.7034 ms
+2025-02-26 15:34:16.4535|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9d535ce5 has started in 334.681 ms
+2025-02-26 15:34:16.4535|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4adc8a39 has started in 340.7129 ms
+2025-02-26 15:34:16.4535|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:7c6345ec has started in 345.7052 ms
+2025-02-26 15:34:16.4762|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:79948309 has started in 356.5722 ms
+2025-02-26 15:34:16.4762|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2025-02-26 15:34:16.4883|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:609a5562 has started in 368.5292 ms
+2025-02-26 15:34:16.5919|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:90107d07 has started in 472.8796 ms
+2025-02-26 15:34:16.6105|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:c0672ca2 has started in 490.8371 ms
+2025-02-26 15:34:16.6105|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:905eb814 has started in 500.6054 ms
+2025-02-26 15:34:16.6272|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:1ae297cb has started in 6.1309 ms
+2025-02-26 15:34:16.6272|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:55d2075e has started in 3.2736 ms
+2025-02-26 15:34:16.6272|INFO|Hangfire.Server.BackgroundServerProcess|Server xps:2792:056731a3 all the dispatchers started
+2025-02-26 15:34:16.6593|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2025-02-26 15:34:16.6593|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2025-02-26 15:34:46.1277|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:35:16.1418|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:35:46.1510|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:36:16.1815|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:36:46.1969|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:37:16.2646|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:37:46.2714|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:38:16.2963|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:38:46.3116|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:39:16.1937|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-02-26 15:39:16.3354|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:39:46.3561|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:40:16.3681|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:40:46.3915|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:41:16.4014|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:41:46.4347|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:42:16.4608|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:42:46.5218|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:43:16.5364|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:43:46.5586|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:44:16.2644|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-02-26 15:44:16.5702|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:44:46.5866|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:45:16.6090|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:45:46.6246|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:46:16.6418|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:46:46.6599|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:47:16.6817|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:47:46.6942|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:48:16.7199|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 15:48:46.7339|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:2792:056731a3 heartbeat successfully sent
+2025-02-26 16:49:37.1446|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Start installing Hangfire SQL objects...
+2025-02-26 16:49:37.6155|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Hangfire SQL objects installed.
+2025-02-26 16:49:37.6471|INFO|Hangfire.BackgroundJobServer|Starting Hangfire Server using job storage: 'SQL Server: localhost@ExceedERP2021-MPE-PRO'
+2025-02-26 16:49:37.6471|INFO|Hangfire.BackgroundJobServer|Using the following options for SQL Server job storage: Queue poll interval: 00:00:15.
+2025-02-26 16:49:37.6471|INFO|Hangfire.BackgroundJobServer|Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-02-26 16:49:37.6663|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:65975e2d has started in 5.9684 ms
+2025-02-26 16:49:38.0437|INFO|Hangfire.Server.BackgroundServerProcess|Server xps:36144:7cb1bb0a successfully announced in 372.1389 ms
+2025-02-26 16:49:38.0477|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:c3be21d3 has started in 1.2181 ms
+2025-02-26 16:49:38.0477|INFO|Hangfire.Server.BackgroundServerProcess|Server xps:36144:7cb1bb0a is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-02-26 16:49:38.0477|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:0c7954b7 has started in 0.5169 ms
+2025-02-26 16:49:38.0477|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:9d26f648 has started in 0.607 ms
+2025-02-26 16:49:38.0477|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:222be203 has started in 1.248 ms
+2025-02-26 16:49:38.0477|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2025-02-26 16:49:38.0477|INFO|Hangfire.Server.ServerWatchdog|1 servers were removed due to timeout
+2025-02-26 16:49:38.0477|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:b99a7c42 has started in 2.0648 ms
+2025-02-26 16:49:38.0477|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-02-26 16:49:38.0635|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:c9e083f8 has started in 5.9042 ms
+2025-02-26 16:49:38.0635|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:80c9b17c has started in 13.5574 ms
+2025-02-26 16:49:38.1392|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f49ce974 has started in 82.0226 ms
+2025-02-26 16:49:38.1689|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d9fcdda1 has started in 111.6443 ms
+2025-02-26 16:49:38.1867|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5760028b has started in 129.1539 ms
+2025-02-26 16:49:38.1867|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:35b36d9c has started in 143.5876 ms
+2025-02-26 16:49:38.2157|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:dd881a4d has started in 158.1033 ms
+2025-02-26 16:49:38.2177|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:7e05d327 has started in 160.556 ms
+2025-02-26 16:49:38.2177|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:ab96517f has started in 166.0407 ms
+2025-02-26 16:49:38.2177|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2025-02-26 16:49:38.2177|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3810ae1e has started in 171.8614 ms
+2025-02-26 16:49:38.2351|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4ccc9aca has started in 177.9644 ms
+2025-02-26 16:49:38.2351|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1c338ba3 has started in 182.8512 ms
+2025-02-26 16:49:38.2531|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:32bbf52f has started in 196.2068 ms
+2025-02-26 16:49:38.3096|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:715e4300 has started in 252.5855 ms
+2025-02-26 16:49:38.3539|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4f4c4ea9 has started in 296.4977 ms
+2025-02-26 16:49:38.3539|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fef51e79 has started in 298.504 ms
+2025-02-26 16:49:38.4295|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e4e03c05 has started in 372.9833 ms
+2025-02-26 16:49:38.4378|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:86df4d88 has started in 380.8977 ms
+2025-02-26 16:49:38.4517|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4a1cc5fa has started in 394.3728 ms
+2025-02-26 16:49:38.4517|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1136cd4c has started in 405.689 ms
+2025-02-26 16:49:38.4712|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:b76054f8 has started in 6.5233 ms
+2025-02-26 16:49:38.4834|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:fc95cd26 has started in 9.7567 ms
+2025-02-26 16:49:38.4834|INFO|Hangfire.Server.BackgroundServerProcess|Server xps:36144:7cb1bb0a all the dispatchers started
+2025-02-26 16:49:38.5706|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2025-02-26 16:49:38.6236|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2025-02-26 16:49:38.6236|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2025-02-26 16:50:08.0588|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:36144:7cb1bb0a heartbeat successfully sent
+2025-02-26 16:50:38.0918|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:36144:7cb1bb0a heartbeat successfully sent
+2025-02-26 16:51:08.1555|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:36144:7cb1bb0a heartbeat successfully sent
+2025-02-26 16:51:38.1696|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:36144:7cb1bb0a heartbeat successfully sent
+2025-02-26 16:52:08.2298|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:36144:7cb1bb0a heartbeat successfully sent
+2025-02-26 16:52:38.2599|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:36144:7cb1bb0a heartbeat successfully sent
+2025-02-26 16:53:08.2809|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:36144:7cb1bb0a heartbeat successfully sent
+2025-02-26 16:53:38.3016|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:36144:7cb1bb0a heartbeat successfully sent
+2025-02-26 16:54:08.3333|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:36144:7cb1bb0a heartbeat successfully sent
+2025-02-26 16:54:38.2537|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-02-26 16:54:38.3607|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:36144:7cb1bb0a heartbeat successfully sent
+2025-02-26 16:55:08.3857|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:36144:7cb1bb0a heartbeat successfully sent
+2025-02-26 16:55:38.3930|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:36144:7cb1bb0a heartbeat successfully sent
+2025-02-26 16:56:08.4057|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server xps:36144:7cb1bb0a heartbeat successfully sent

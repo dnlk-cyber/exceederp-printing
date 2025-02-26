@@ -116,13 +116,7 @@ namespace ExceedERP.Web.Controllers
 				new ApplicationRole("User","User", "Global"),
 
 				#endregion
-				#region APTS Roles
-				new ApplicationRole("Admin_Module","Module Admin","APTS"),
-				new ApplicationRole("Admin_Regional","Branch Admin","APTS"),
-				new ApplicationRole("APTS_Laboratory","User of APTS Laboratory","APTS"),
-				new ApplicationRole("APTS_Emergency","User of APTS Emergency","APTS"),
-
-				#endregion
+			
 				#region APTS Roles
 				new ApplicationRole("APTS_Admin","Approve and see","APTS"),
 				new ApplicationRole("APTS_Despensary","Request Drugs","APTS"),
@@ -133,6 +127,7 @@ namespace ExceedERP.Web.Controllers
 
 				#region dashboard
 				new ApplicationRole("Admin_Regional","To see dashboard reports","Administrator"),
+                new ApplicationRole("Admin_Global_Setting","To to manage global settings","Administrator"),
 				#endregion
 
 				#region dashboard
