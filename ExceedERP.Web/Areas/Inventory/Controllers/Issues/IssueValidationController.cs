@@ -101,6 +101,31 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                             #endregion
                             
                         }
+
+                        #region validation for same items in single transaction
+                        var groupedItems = items
+                                .Where(i => i.IssuedQuantity > 0)
+                                .GroupBy(i => i.ItemCode);
+
+                        foreach (var group in groupedItems)
+                        {
+                            string itemCode = group.Key;
+
+                            var storeItem = db.StoreItemAssignments.FirstOrDefault(
+                                x => x.StoreCode == record.StoreCode && x.ItemCode == itemCode);
+
+                            if (storeItem != null)
+                            {
+                                decimal remainingBalance = storeItem.Balance;
+                                decimal totalIssueQty = group.Sum(x=>x.IssuedQuantity);
+
+                                if(totalIssueQty>remainingBalance)
+                                    ModelState.AddModelError("enoughQuant", "No enough quantity To Issue for total item " + itemCode);
+                            }
+                        }
+                        #endregion
+
+
                     }
                     if (issueValidation.Status == ApprovalStatuses.Reject)
                     {
@@ -133,102 +158,169 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                        // db.SaveChanges();
                         #region update stock based on the issue
                         string storecode = record.StoreCode;
-                        foreach (var i in items)
+                        #region new grouped
+                        var groupedItems = items
+                        .Where(i => i.IssuedQuantity > 0)
+                        .GroupBy(i => i.ItemCode);
+
+                        foreach (var group in groupedItems)
                         {
-                            if (i.IssuedQuantity > 0)
+                            string itemCode = group.Key;
+                            decimal avgPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(itemCode, storecode);
+
+                            var storeItem = db.StoreItemAssignments.FirstOrDefault(
+                                x => x.StoreCode == storecode && x.ItemCode == itemCode);
+
+                            if (storeItem != null)
                             {
-                                string itemCode = i.ItemCode;
-                                decimal avgPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(i.ItemCode, storecode);
-                                i.UnitPrice = avgPrice;
-                                #region stock
+                                decimal remainingBalance = storeItem.Balance;
 
-                                var storeItem =db.StoreItemAssignments.FirstOrDefault(
-                                            x => x.StoreCode == storecode && x.ItemCode == itemCode);
-
-                                if (storeItem != null)
+                                foreach (var i in group)
                                 {
-                                    if (i.IssuedQuantity > storeItem.Balance)
+                                    i.UnitPrice = avgPrice;
+
+                                    if (i.IssuedQuantity > remainingBalance)
                                     {
-                                        i.IssuedQuantity = storeItem.Balance;
-                                        storeItem.Balance = 0;
-                                               
+                                        i.IssuedQuantity = remainingBalance;  // Assign max possible quantity
+                                        remainingBalance = 0; // Balance is now zero
                                     }
-                                    else if (i.IssuedQuantity <= storeItem.Balance)
+                                    else
                                     {
-                                        storeItem.Balance = storeItem.Balance - i.IssuedQuantity;
+                                        remainingBalance -= i.IssuedQuantity;
                                     }
 
                                     i.Total = i.IssuedQuantity * i.UnitPrice;
                                     db.Entry(i).State = EntityState.Modified;
-                                   // db.SaveChanges();
 
-                                    db.Entry(storeItem).State = EntityState.Modified;
-                                   // db.SaveChanges();
-                                    #region update bin card
-
-                                    #region bin card line
-
-                                    var binCardLine = new BinCardLine
-                                    {
-                                        StoreItemAssignment = storeItem,
-                                        ReferenceDoc = "Issue " + record.IssueID.ToString(),
-                                        Reference = record.Reference+" "+record.Remark,
-                                        Date = record.IssueDate,
-                                        IssuedQTY = i.IssuedQuantity,
-                                        IssuedUPrice = i.UnitPrice,
-                                        IssuedTPrice = i.Total,
-                                        BalanceQTY = storeItem.Balance,
-                                        BalanceUPrice = i.UnitPrice,
-                                        BalanceTPrice = i.UnitPrice * storeItem.Balance,
-                                        IssuedTo = record.OrgStructureId.ToString(),
-                                        //new    
-                                        StoreCode=record.StoreCode,
-                                        GLPeriodId = record.GLPeriodId,
-                                        TransactionType = BinCardTransactionTypes.Issue,
-                                        StatusType = BinCardTransactionStatus.Regular,
-                                        TransactionOrder = BinCardTransactionOrder.Issue
-
-                                    };
-                                    db.BinCardLines.Add(binCardLine);
-                                    // db.SaveChanges();
-
-                                    #endregion
-
-                                    #endregion
-                                    var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID,record.IssueDate));
+                                    if (remainingBalance == 0)
+                                        break;  // Stop processing once balance is depleted
                                 }
 
-                                if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerBranch)
+                                storeItem.Balance = remainingBalance;
+                                db.Entry(storeItem).State = EntityState.Modified;
+
+                                var binCardLine = new BinCardLine
                                 {
-                                    int storeBranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storecode);
-                                    var branchItem = db.BranchItemAssignments.Where(x => x.BranchId == storeBranchId)
-                                        .FirstOrDefault(x => x.ItemCode == i.ItemCode);
-                                    if (branchItem != null)
-                                    {
-                                        branchItem.Balance = branchItem.Balance - i.IssuedQuantity;
-                                        db.Entry(branchItem).State = EntityState.Modified;
-                                       // db.SaveChanges();
-                                    }
-                                }
+                                    StoreItemAssignment = storeItem,
+                                    ReferenceDoc = "Issue " + record.IssueID.ToString(),
+                                    Reference = record.Reference + " " + record.Remark,
+                                    Date = (DateTime)record.IssueDate,
+                                    IssuedQTY = group.Sum(i => i.IssuedQuantity), 
+                                    IssuedUPrice = avgPrice,
+                                    IssuedTPrice = group.Sum(i => i.IssuedQuantity)*avgPrice,
+                                    BalanceQTY = storeItem.Balance,
+                                    BalanceUPrice = avgPrice,
+                                    BalanceTPrice = avgPrice * storeItem.Balance,
+                                    IssuedTo = record.OrgStructureId.ToString(),
+                                    StoreCode = record.StoreCode,
+                                    GLPeriodId = record.GLPeriodId,
+                                    TransactionType = BinCardTransactionTypes.Issue,
+                                    StatusType = BinCardTransactionStatus.Regular,
+                                    TransactionOrder = BinCardTransactionOrder.Issue
+                                };
+                                db.BinCardLines.Add(binCardLine);
 
-                                if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerCompany)
-                                {
-                                    var stockItem = db.InventoryItems.Find(itemCode);
-                                    if (stockItem != null)
-                                    {
-                                        stockItem.Balance = stockItem.Balance - i.IssuedQuantity;
-                                        db.Entry(stockItem).State = EntityState.Modified;
-                                       // db.SaveChanges();
-                                    }
-                                }
-
-                                #endregion
+                                var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(
+                                    storeItem.StoreItemAssignmentID, (DateTime)record.IssueDate));
                             }
                         }
                         #endregion
+                        //foreach (var i in items)
+                        //{
+                        //    if (i.IssuedQuantity > 0)
+                        //    {
+                        //        string itemCode = i.ItemCode;
+                        //        decimal avgPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(i.ItemCode, storecode);
+                        //        i.UnitPrice = avgPrice;
+                        //        #region stock
+
+                        //        var storeItem =db.StoreItemAssignments.FirstOrDefault(
+                        //                    x => x.StoreCode == storecode && x.ItemCode == itemCode);
+
+                        //        if (storeItem != null)
+                        //        {
+                        //            if (i.IssuedQuantity > storeItem.Balance)
+                        //            {
+                        //                i.IssuedQuantity = storeItem.Balance;
+                        //                storeItem.Balance = 0;
+
+                        //            }
+                        //            else if (i.IssuedQuantity <= storeItem.Balance)
+                        //            {
+                        //                storeItem.Balance = storeItem.Balance - i.IssuedQuantity;
+                        //            }
+
+                        //            i.Total = i.IssuedQuantity * i.UnitPrice;
+                        //            db.Entry(i).State = EntityState.Modified;
+                        //           // db.SaveChanges();
+
+                        //            db.Entry(storeItem).State = EntityState.Modified;
+                        //           // db.SaveChanges();
+                        //            #region update bin card
+
+                        //            #region bin card line
+
+                        //            var binCardLine = new BinCardLine
+                        //            {
+                        //                StoreItemAssignment = storeItem,
+                        //                ReferenceDoc = "Issue " + record.IssueID.ToString(),
+                        //                Reference = record.Reference+" "+record.Remark,
+                        //                Date = record.IssueDate,
+                        //                IssuedQTY = i.IssuedQuantity,
+                        //                IssuedUPrice = i.UnitPrice,
+                        //                IssuedTPrice = i.Total,
+                        //                BalanceQTY = storeItem.Balance,
+                        //                BalanceUPrice = i.UnitPrice,
+                        //                BalanceTPrice = i.UnitPrice * storeItem.Balance,
+                        //                IssuedTo = record.OrgStructureId.ToString(),
+                        //                //new    
+                        //                StoreCode=record.StoreCode,
+                        //                GLPeriodId = record.GLPeriodId,
+                        //                TransactionType = BinCardTransactionTypes.Issue,
+                        //                StatusType = BinCardTransactionStatus.Regular,
+                        //                TransactionOrder = BinCardTransactionOrder.Issue
+
+                        //            };
+                        //            db.BinCardLines.Add(binCardLine);
+                        //            // db.SaveChanges();
+
+                        //            #endregion
+
+                        //            #endregion
+                        //            var jobId = BackgroundJob.Enqueue(() => InventoryBalanceHelper.UpdateSigleItemBinCardTransactions(storeItem.StoreItemAssignmentID,record.IssueDate));
+                        //        }
+
+                        //        //if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerBranch)
+                        //        //{
+                        //        //    int storeBranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storecode);
+                        //        //    var branchItem = db.BranchItemAssignments.Where(x => x.BranchId == storeBranchId)
+                        //        //        .FirstOrDefault(x => x.ItemCode == i.ItemCode);
+                        //        //    if (branchItem != null)
+                        //        //    {
+                        //        //        branchItem.Balance = branchItem.Balance - i.IssuedQuantity;
+                        //        //        db.Entry(branchItem).State = EntityState.Modified;
+                        //        //       // db.SaveChanges();
+                        //        //    }
+                        //        //}
+
+                        //        //if (pricesetting != null && pricesetting.Level == AveragePriceLvel.PerCompany)
+                        //        //{
+                        //        //    var stockItem = db.InventoryItems.Find(itemCode);
+                        //        //    if (stockItem != null)
+                        //        //    {
+                        //        //        stockItem.Balance = stockItem.Balance - i.IssuedQuantity;
+                        //        //        db.Entry(stockItem).State = EntityState.Modified;
+                        //        //       // db.SaveChanges();
+                        //        //    }
+                        //        //}
+
+                        //        #endregion
+                        //    }
+                        //}
+                        #endregion
 
                         #region add to asset value
-                        if(record.AssetRegistrationId!=null)
+                        if (record.AssetRegistrationId!=null)
                         {
                             if (items.Any())
                             {
