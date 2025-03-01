@@ -1630,43 +1630,38 @@ namespace ExceedERP.Web.Controllers
 			return Json(formattedData, JsonRequestBehavior.AllowGet);
 		}
 
-		public JsonResult GetNewHiredEmployee()
-		{
-			var today = DateTime.Now.Date;
-			var fiscalYearId = _fiscalYearHelper.GetCurrentFYearId();
-
-			var fiscalYear = _db.GLFiscalYears.Find(fiscalYearId);
-			var currentYearStartDate = fiscalYear?.DateFrom ?? new DateTime(today.Year, 7, 1);
-			var currentYearEndDate = fiscalYear?.DateTo ?? new DateTime(today.Year + 1, 6, 30);
-			var lastYearStartDate = currentYearStartDate.AddYears(-1);
-			var lastYearEndDate = currentYearEndDate.AddYears(-1);
-
-			var employeeIds = _db.Placements
-								 .Where(x => x.isCurrent)
-								 .Select(x => x.EmployeeId).ToList();
-
-			var employeesQuery = _db.Person_Employee
-									.Where(x => employeeIds.Contains(x.EmployeeId));
-
-			// Current year hires
-			var hiredCurrentYear = employeesQuery
-								   .Count(x => x.HiredDate >= currentYearStartDate && x.HiredDate <= currentYearEndDate);
-
-			// Last year hires
-			var hiredLastYear = employeesQuery
-								.Count(x => x.HiredDate >= lastYearStartDate && x.HiredDate <= lastYearEndDate);
-
-			var formattedData = new
-			{
-				Data = new[] { hiredLastYear, hiredCurrentYear },
-				Labels = new[] { "Last Year", "Current Year" }
-			};
-
-			return Json(formattedData, JsonRequestBehavior.AllowGet);
-		}
+        public JsonResult GetNewHiredEmployee()
+        {
+            var today = DateTime.Now.Date;
+            var fiscalYearId = _fiscalYearHelper.GetCurrentFYearId();
+            var fiscalYear = _db.GLFiscalYears.Find(fiscalYearId);
+            var currentYearStartDate = fiscalYear?.DateFrom ?? new DateTime(today.Year, 7, 1);
+            var currentYearEndDate = fiscalYear?.DateTo ?? new DateTime(today.Year + 1, 6, 30);
+            var lastYearStartDate = currentYearStartDate.AddYears(-1);
+            var lastYearEndDate = currentYearEndDate.AddYears(-1);
+            //var employeeIds = _db.Placements
+            //                     .Where(x => x.isCurrent)
+            //                     .Select(x => x.EmployeeId).ToList();
+            var employeesQuery = _db.Person_Employee.AsQueryable();
+            /* .Where(x => employeeIds.Contains(x.EmployeeId))*/
+            ;
+            // Current year hires
+            var hiredCurrentYear = employeesQuery.Where(x => x.IsPlaced)
+                                   .Count(x => x.HiredDate >= currentYearStartDate
+                                                && x.HiredDate <= currentYearEndDate);
+            // Last year hires
+            var hiredLastYear = employeesQuery.Where(x => x.IsPlaced)
+                                .Count(x => x.HiredDate >= lastYearStartDate && x.HiredDate <= lastYearEndDate);
+            var formattedData = new
+            {
+                Data = new[] { hiredLastYear, hiredCurrentYear },
+                Labels = new[] { "Last Year", "Current Year" }
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
 
 
-		[AcceptVerbs(HttpVerbs.Get)]
+        [AcceptVerbs(HttpVerbs.Get)]
 		public JsonResult GetPayrollPerMonth()
 		{
 			List<PayrollDashboardViewModel> payrollProcess = new List<PayrollDashboardViewModel>();

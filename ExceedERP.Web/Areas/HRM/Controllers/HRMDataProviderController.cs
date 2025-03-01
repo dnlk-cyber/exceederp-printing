@@ -2807,7 +2807,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         public JsonResult GetEmployeesByUser()
         {
             var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-
             var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(id);
             //var subordinates1 = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(id);
             var employees = db.Person_Employee.Where(x => x.IsActive).Where(x => subordinates.Contains(x.EmployeeId)).ToList();
@@ -2821,7 +2820,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         public JsonResult GetEmployeesByUserForPerformanceEvaluation()
         {
             var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var subordinates = EmployeeHelper.GetSubordinates_FilteredByBranchAlso(id);
+            var subordinates = EmployeeHelper.GetSubordinates_FilteredByHead(id);
             var config = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == PerformanceSelfEvaluation.Enable_Self_Evaluation.ToString());
             if (config != null)
             {
