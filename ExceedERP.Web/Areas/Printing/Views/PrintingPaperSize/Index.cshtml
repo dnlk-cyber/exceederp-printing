@@ -6,10 +6,10 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.PaperSizeName);
-          columns.Bound(c => c.NoOfPagesPerSheet);
-          columns.Bound(c => c.NoOfPagesPerPlate);
-          columns.Bound(c => c.Width);
-          columns.Bound(c => c.Length);
+          //columns.Bound(c => c.NoOfPagesPerSheet);
+          //columns.Bound(c => c.NoOfPagesPerPlate);
+          columns.Bound(c => c.Length).Title("length(cm)");
+          columns.Bound(c => c.Width).Title("width(cm)");
           columns.Bound(c => c.NoOfPagesToA1Ratio);
           columns.Bound(c => c.Remark);
           //columns.Bound(c => c.PrintingMachineTypeId);

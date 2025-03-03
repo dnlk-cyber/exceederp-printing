@@ -59,7 +59,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
                 var paperQtyWithWastage = paperQty * (1 + model.WastageInPercentage);
 
-                return (paperQtyWithWastage * categoryItem.Length * categoryItem.Width * categoryItem.Weight) / 10000000;
+                return (paperQtyWithWastage * paperSize.Length * paperSize.Width * categoryItem.Weight) / 10000000;
             }
             return 0;
         }
