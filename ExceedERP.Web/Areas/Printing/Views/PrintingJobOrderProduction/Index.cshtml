@@ -30,6 +30,7 @@
                         .Editable(editable => editable.Mode(GridEditMode.PopUp)
                         .TemplateName("PrintingJoborderProductionEditorTemplate"))
                         .Filterable()
+                        .Pageable()
                         .Scrollable(s => s.Height(400))
                         .Events(ev => ev.DetailExpand("MasterOnExpand")
                         .DataBound("dataBound"))
@@ -85,6 +86,7 @@
                                                         .Editable(editable => editable.Mode(GridEditMode.InLine))
                                                         .Filterable()
                                                         .Scrollable()
+                                                        .Pageable()
                                                         .DataSource(dataSource => dataSource
                                                             .Ajax()
                                                             .Events(ev => ev.Error("error_handler(\"material_#=PrintingJobOrderProductionId#\")")

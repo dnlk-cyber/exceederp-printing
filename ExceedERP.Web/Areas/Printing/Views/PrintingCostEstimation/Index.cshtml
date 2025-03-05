@@ -5,6 +5,7 @@
                   .Name("grid")
                   .Columns(columns =>
                   {
+                      columns.Bound(c => c.PrintingCostEstimationId);
                       columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text");
                       columns.ForeignKey(c => c.PaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text");
                       columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text");

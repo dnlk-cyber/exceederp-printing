@@ -17,7 +17,6 @@
                         command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
                         command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
                         command.Destroy().Text(" ");
-
                     }).Width(200);
                 })
                 .ToolBar(toolbar =>
@@ -26,7 +25,7 @@
                 })
                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintingProformaInvoiceTemplate"))
                 .Filterable()
-               // .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
+                .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
                 .Pageable()
                 .Scrollable(s => s.Height(400))
                 .DataSource(dataSource => dataSource

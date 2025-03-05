@@ -27,6 +27,7 @@
     .Editable(editable => editable.Mode(GridEditMode.PopUp)
     .TemplateName("PrintingJoborderEditorTemplate"))
     .Filterable()
+    .Pageable()
     .Scrollable(s => s.Height(400))
     .Events(ev => ev.DetailExpand("detailExpand")
     .DataBound("dataBound"))
@@ -67,18 +68,18 @@
 @helper JobOrderItem()
 {
     @(Html.Kendo().Grid<PrintingJobOrderItem>()
-                                              .Name("grid_#=PrintingJobOrderId#")
-                                              .Columns(columns =>
-                                              {
-                                                  columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
-                                                  columns.Bound(c => c.JobDescription);
-                                                  columns.Bound(c => c.Quantity);
-                                                  columns.Bound(c => c.NumberOfPages);
-                                                  columns.Bound(c => c.UnitPrice);
-                                                  columns.Bound(c => c.TotalPrice);
-                                                  columns.Bound(c => c.Remark);
+                            .Name("grid_#=PrintingJobOrderId#")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+                                columns.Bound(c => c.JobDescription);
+                                columns.Bound(c => c.Quantity);
+                                columns.Bound(c => c.NumberOfPages);
+                                columns.Bound(c => c.UnitPrice);
+                                columns.Bound(c => c.TotalPrice);
+                                columns.Bound(c => c.Remark);
                                   //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                              })
+                             })
                                               //.ToolBar(toolbar =>
                                               //{
                                               //    toolbar.Create();
@@ -87,6 +88,7 @@
                                               .Filterable()
                                               .Events(ev => ev.DataBound("onChildDataBound"))
                                               .Scrollable()
+                                              .Pageable()
                                               .DataSource(dataSource => dataSource
                                                   .Ajax()
                                                   .Events(ev => ev.Error("error_handler(\"grid_#=PrintingJobOrderId#\")")
