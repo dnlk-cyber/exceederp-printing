@@ -1823,6 +1823,7 @@
     <Compile Include="Areas\Manufacturing\Controllers\EstimationSummaryController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\Estimation\EstimationCostSummaryController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\Estimation\EstimationDetailController.cs" />
+    <Compile Include="Areas\Manufacturing\Controllers\Estimation\FurnitureBoqDocumentCommentController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\Estimation\FurnitureBoqDocumentController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\Estimation\FurnitureBoqJobDesignController.cs" />
     <Compile Include="Areas\Manufacturing\Controllers\Estimation\FurnitureBoqRequestController.cs" />
@@ -2036,6 +2037,7 @@
     <Compile Include="Areas\Printing\Controllers\PrintingEstimationLaborCostController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingEstimationMarginController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingEstimationMaterialCostController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingJobOrderController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobOrderItemController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobOrderProductionController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobTypeController.cs" />
@@ -7106,6 +7108,9 @@
     <Content Include="Areas\Printing\Views\PrintingReport\EstimationPrint.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingReport\EstimationSummaryPrint.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingReport\ProformaPrint.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureBoqRequest\EditorTemplates\CommentEditorTemplate.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureBoqRequest\IndexEst.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureBoqRequest\IndexOp.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
@@ -9041,6 +9046,7 @@
     <Folder Include="Areas\Maintenance\Views\MaintenancePlanDetail\" />
     <Folder Include="Areas\Maintenance\Views\MaintenanceSummary\" />
     <Folder Include="Areas\Maintenance\Views\ServiceCenterSetting\" />
+    <Folder Include="Areas\Manufacturing\Views\FurnitureBoqDocumentComment\" />
     <Folder Include="Areas\Manufacturing\Views\FurnitureBoqDocument\" />
     <Folder Include="Areas\Manufacturing\Views\FurnitureBoqJobDesign\" />
     <Folder Include="Areas\Manufacturing\Views\FurnitureIdleTime\EditorTemplates\" />

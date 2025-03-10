@@ -583,6 +583,10 @@
     <Compile Include="Migrations\202502261200065_prinintupgchanges.Designer.cs">
       <DependentUpon>202502261200065_prinintupgchanges.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202503101138117_furnitureboq1.cs" />
+    <Compile Include="Migrations\202503101138117_furnitureboq1.Designer.cs">
+      <DependentUpon>202503101138117_furnitureboq1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -973,6 +977,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202502261200065_prinintupgchanges.resx">
       <DependentUpon>202502261200065_prinintupgchanges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503101138117_furnitureboq1.resx">
+      <DependentUpon>202503101138117_furnitureboq1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

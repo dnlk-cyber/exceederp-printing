@@ -1707,6 +1707,7 @@ namespace ExceedERP.DataAccess.Context
             #endregion
             #region Manufucturing 
             #region  Estimation
+            modelBuilder.Configurations.Add(new Context.FurnitureBoqDocumentCommentEntityTypeConfiguration());
             #region Furniture Estimation
             modelBuilder.Configurations.Add(new FurnitureProformaInvoiceEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FurnitureProformaInvoiceItemEntityTypeConfiguration());
@@ -2463,6 +2464,8 @@ namespace ExceedERP.DataAccess.Context
         #endregion
         #endregion
         #region Manufucturing
+        public DbSet<FurnitureBoqDocumentComment> FurnitureBoqDocumentComments { get; set; }
+
         #region  Estimation
         #region Furniture Estimation
         public DbSet<FurnitureProformaInvoice> FurnitureProformaInvoices { get; set; }

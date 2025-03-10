@@ -1,0 +1,29 @@
+﻿
+@model ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.FurnitureBoqDocumentComment
+
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="form-group">
+            <label>Comment</label>
+            <div>
+               @(Html.TextAreaFor(model => model.Comment))
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

@@ -9,6 +9,14 @@ using System.Data.Entity.ModelConfiguration;
 
 namespace ExceedERP.DataAccess.Context
 {
+    class FurnitureBoqDocumentCommentEntityTypeConfiguration : EntityTypeConfiguration<FurnitureBoqDocumentComment>
+    {
+        public FurnitureBoqDocumentCommentEntityTypeConfiguration()
+        {
+            this.ToTable("FurnitureBoqDocumentComment", "Manufacturing");
+            this.HasKey<int>(p => p.FurnitureBoqDocumentCommentId);
+        }
+    }
     class EstimationSummaryEntityTypeConfiguration : EntityTypeConfiguration<EstimationSummary>
     {
         public EstimationSummaryEntityTypeConfiguration()

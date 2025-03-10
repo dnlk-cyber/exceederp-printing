@@ -243,9 +243,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                         var laborCosts = db.PrintingEstimationLaborCosts
                             .Where(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId)
                             .ToList();
-                        var designs = db.PrintingJobOrderJobDesigns
-                            .Where(x => x.ReferenceId == jobOrder.PrintingJobOrderId)
-                            .ToList();
+                        //var designs = db.PrintingJobOrderJobDesigns
+                        //    .Where(x => x.ReferenceId == jobOrder.PrintingJobOrderId)
+                        //    .ToList();
                         if (materialCosts != null && laborCosts != null)
                         {
                             var jobOrderProduction = new PrintingJobOrderProduction
@@ -303,20 +303,20 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                                 };
                                 db.PrintingProductionLaborCosts.Add(productionLaborCost);
                             }
-                            foreach (var design in designs)
-                            {
-                                var entity = new PrintingJobOrderProductionJobDesign
-                                {
-                                    ReferenceId = jobOrderProduction.PrintingJobOrderProductionId,
-                                    Description = design.Description,
-                                    FileExtension = design.FileExtension,
-                                    FileName = design.FileName,
-                                    FilePath = design.FilePath,
-                                    ShortPath = design.ShortPath,                                    
-                                };
-                                db.PrintingJobOrderProductionJobDesigns.Add(entity);
-                            }
-                            db.SaveChanges();
+                            //foreach (var design in designs)
+                            //{
+                            //    var entity = new PrintingJobOrderProductionJobDesign
+                            //    {
+                            //        ReferenceId = jobOrderProduction.PrintingJobOrderProductionId,
+                            //        Description = design.Description,
+                            //        FileExtension = design.FileExtension,
+                            //        FileName = design.FileName,
+                            //        FilePath = design.FilePath,
+                            //        ShortPath = design.ShortPath,                                    
+                            //    };
+                            //    db.PrintingJobOrderProductionJobDesigns.Add(entity);
+                            //}
+                            //db.SaveChanges();
                         }
                     }
                 }
