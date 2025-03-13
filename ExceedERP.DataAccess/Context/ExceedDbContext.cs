@@ -2364,8 +2364,8 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Printing
-       // public DbSet<PrintingJobOrderJobDesign> PrintingJobOrderJobDesigns { get; set; }
-        //public DbSet<PrintingJobOrderProductionJobDesign> PrintingJobOrderProductionJobDesigns { get; set; }
+        public DbSet<PrintingJobOrderJobDesign> PrintingJobOrderJobDesigns { get; set; }
+        public DbSet<PrintingJobOrderProductionJobDesign> PrintingJobOrderProductionJobDesigns { get; set; }
         public DbSet<PrintingJobOrderProduction> PrintingJobOrderProductions { get; set; }
         public DbSet<PrintingProductionMaterialCost> PrintingProductionMaterialCosts { get; set; }
         public DbSet<PrintingProductionLaborCost> PrintingProductionLaborCosts { get; set; }
