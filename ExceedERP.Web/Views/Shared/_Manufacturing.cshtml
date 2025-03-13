@@ -23,56 +23,92 @@
         </a>
         <b class="arrow"></b>
         <ul class="submenu">
-
-            @if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationOfficer)
-                    ||HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationTeamLead)
-                     || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationDepartmentHead))
-            {
             <li class="">
                 <a href="#" class="dropdown-toggle">
                     <i class="menu-icon fa fa-caret-right"></i>
-                    Estimation
+                    Furniture Production Common
                     <b class="arrow fa fa-angle-down"></b>
                 </a>
                 <b class="arrow"></b>
                 <ul class="submenu">
-
-
-                    <li id="mega-Manufacturing-001" class="actionlinlk">@Html.ActionLink("Job Order Form", "Index", "FurnitureJobOrderForm", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-
-                    <li id="mega-Manufacturing-002" class="actionlinlk">@Html.ActionLink("Proforma Invoice", "Index", "FurnitureProformaInvoice", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-                    <li id="mega-Manufacturing-003" class="actionlinlk">@Html.ActionLink("Estimation Cost Summary", "Index", "EstimationSummary", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-
-                    <li id="mega-Manufacturing-003" class="actionlinlk">@Html.ActionLink("Estimation Form", "Index", "FurnitureEstimation", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-                    <li id="mega-Manufacturing-003" class="actionlinlk">@Html.ActionLink("Bill of Quantity", "Index", "FurnitureBillOfQuantity", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-                    <li id="mega-Manufacturing-003" class="actionlinlk">@Html.ActionLink("Boq Request", "Index", "FurnitureBoqRequest", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                    @if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationOfficer)
+                    || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionHead))
+                    {
+                        <li id="mega-Manufacturing-003" class="actionlinlk">@Html.ActionLink("Bill of Quantity", "Index", "FurnitureBillOfQuantity", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                    }
+                    @if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationOfficer)                   
+                    || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureAdmin)
+                    || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationDepartmentHead)
+                    || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationTeamLead))
+                    {
+                        <li id="mega-Manufacturing-004" class="actionlinlk">@Html.ActionLink("Boq Request", "IndexEst", "FurnitureBoqRequest", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                    }
+                    @if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionHead)
+                    || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureAdmin))
+                    {
+                        <li id="mega-Manufacturing-005" class="actionlinlk">@Html.ActionLink("Boq Request", "Index", "FurnitureBoqRequest", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                    }
+                    @if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionOfficer)
+                        || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionTeamLead)
+                    || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureAdmin))
+                    {
+                        <li id="mega-Manufacturing-006" class="actionlinlk">@Html.ActionLink("Boq Request Operations", "IndexOp", "FurnitureBoqRequest", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                    }
 
                 </ul>
             </li>
+            @if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationOfficer)
+                    || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationTeamLead)
+                     || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureEstimationDepartmentHead))
+            {
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Estimation
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+
+
+                        <li id="mega-Manufacturing-001" class="actionlinlk">@Html.ActionLink("Job Order Form", "Index", "FurnitureJobOrderForm", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+
+                        <li id="mega-Manufacturing-002" class="actionlinlk">@Html.ActionLink("Proforma Invoice", "Index", "FurnitureProformaInvoice", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                        <li id="mega-Manufacturing-003" class="actionlinlk">@Html.ActionLink("Estimation Cost Summary", "Index", "EstimationSummary", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+
+                        <li id="mega-Manufacturing-003" class="actionlinlk">@Html.ActionLink("Estimation Form", "Index", "FurnitureEstimation", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                        @*<li id="mega-Manufacturing-003" class="actionlinlk">@Html.ActionLink("Bill of Quantity", "Index", "FurnitureBillOfQuantity", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+
+                        <li id="mega-Manufacturing-003" class="actionlinlk">@Html.ActionLink("Boq Request", "Index", "FurnitureBoqRequest", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                        <li id="mega-Manufacturing-003" class="actionlinlk">@Html.ActionLink("Boq Request Operation", "IndexOp", "FurnitureBoqRequest", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>*@
+
+                    </ul>
+                </li>
+
             }
             @if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionHead)
            || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionTeamLead)
             || HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureProductionOfficer))
             {
-            <li class="">
-                <a href="#" class="dropdown-toggle">
-                    <i class="menu-icon fa fa-tasks"></i>
-                    <span class="menu-text">
-                        Production
-                    </span>
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-tasks"></i>
+                        <span class="menu-text">
+                            Production
+                        </span>
 
-                    <b class="arrow fa fa-angle-down"></b>
-                </a>
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
 
-                <b class="arrow"></b>
+                    <b class="arrow"></b>
 
-                <ul class="submenu">
-                    <li id="mega-Manufacturing-001" class="actionlinlk">@Html.ActionLink("Assembly/Finishing", "Index", "FurnitureFinishing", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-                    <li id="mega-Manufacturing-001" class="actionlinlk">@Html.ActionLink("Daily Follow-up", "Index", "FurnitureProductionDailyFollowUp", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-                    <li id="mega-Manufacturing-001" class="actionlinlk">@Html.ActionLink("Production Job-Order", "Index", "FurnitureJobOrderProduction", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                    <ul class="submenu">
+                        <li id="mega-Manufacturing-001" class="actionlinlk">@Html.ActionLink("Assembly/Finishing", "Index", "FurnitureFinishing", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                        <li id="mega-Manufacturing-001" class="actionlinlk">@Html.ActionLink("Daily Follow-up", "Index", "FurnitureProductionDailyFollowUp", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                        <li id="mega-Manufacturing-001" class="actionlinlk">@Html.ActionLink("Production Job-Order", "Index", "FurnitureJobOrderProduction", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
 
-                </ul>
-            </li>
+                    </ul>
+                </li>
             }
             <li class="">
                 <a href="#" class="dropdown-toggle">
@@ -93,24 +129,24 @@
             </li>
 
             @if (HttpContext.Current.User.IsInRole(FurnitureEstimationRoles.FurnitureAdmin))
-                {
-            <li class="">
-                <a href="#" class="dropdown-toggle">
-                    <i class="menu-icon fa fa-caret-right"></i>
-                    Settings
-                    <b class="arrow fa fa-angle-down"></b>
-                </a>
-                <b class="arrow"></b>
-                <ul class="submenu">
+            {
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Settings
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
 
-                    <li id="setting002" class="actionlinlk">@Html.ActionLink("Standard Jobtype", "Index", "FurnitureStandardJobType", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-                    <li id="setting002" class="actionlinlk">@Html.ActionLink("Task Category", "Index", "ManufucturingTaskCategory", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-                    <li id="setting002" class="actionlinlk">@Html.ActionLink("Material Category", "Index", "ManufacturingMaterialCategory", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
-                </ul>
+                        <li id="setting002" class="actionlinlk">@Html.ActionLink("Standard Jobtype", "Index", "FurnitureStandardJobType", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                        <li id="setting002" class="actionlinlk">@Html.ActionLink("Task Category", "Index", "ManufucturingTaskCategory", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                        <li id="setting002" class="actionlinlk">@Html.ActionLink("Material Category", "Index", "ManufacturingMaterialCategory", new { area = "Manufacturing" }, null)<b class="arrow"></b></li>
+                    </ul>
 
 
 
-            </li>
+                </li>
             }
         </ul>
     </li>

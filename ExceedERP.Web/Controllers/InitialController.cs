@@ -505,7 +505,9 @@ new ApplicationRole("HelpDesk_Setting", "Add Help desk settings", "HelpDesk"),
 			#endregion
 				#region Printing
 				#region Printing Estimation
-			, new ApplicationRole("PrintingEstimation_Officer", "", "Printing"),
+                ,
+                new ApplicationRole("Printing_Admin", "", "Printing"),
+                new ApplicationRole("PrintingEstimation_Officer", "", "Printing"),
                 new ApplicationRole("PrintingEstimation_TeamLead", "", "Printing"),
                 new ApplicationRole("PrintingEstimation_DepartmentHead", "", "Printing"),
                 new ApplicationRole("PrintingProduction_Head", "", "Printing"),
@@ -537,7 +539,11 @@ new ApplicationRole("HelpDesk_Setting", "Add Help desk settings", "HelpDesk"),
                      #region Furniture
 				new ApplicationRole("FurnitureEstimation_Officer", "", "Manufacturing"),
                 new ApplicationRole("FurnitureEstimation_TeamLead", "", "Manufacturing"),
-                new ApplicationRole("FurnitureEstimation_DepartmentHead", "", "Manufacturing"),
+                new ApplicationRole("FurnitureEstimation_DepartmentHead", "", "Manufacturing"),              
+            
+                new ApplicationRole("FurnitureProduction_Head", "", "Manufacturing"),
+                new ApplicationRole("FurnitureProduction_TeamLead", "", "Manufacturing"),
+                new ApplicationRole("FurnitureProduction_Officer", "", "Manufacturing"),
                 new ApplicationRole("Furniture_Admin", "", "Manufacturing"),
 				#endregion
 				#region Production FollowUp
