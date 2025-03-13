@@ -591,6 +591,10 @@
     <Compile Include="Migrations\202503130933292_estimation.Designer.cs">
       <DependentUpon>202503130933292_estimation.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202503131002045_esimationdesign.cs" />
+    <Compile Include="Migrations\202503131002045_esimationdesign.Designer.cs">
+      <DependentUpon>202503131002045_esimationdesign.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -987,6 +991,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202503130933292_estimation.resx">
       <DependentUpon>202503130933292_estimation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202503131002045_esimationdesign.resx">
+      <DependentUpon>202503131002045_esimationdesign.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
