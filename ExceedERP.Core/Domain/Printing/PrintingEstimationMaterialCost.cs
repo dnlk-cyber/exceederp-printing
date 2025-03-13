@@ -32,6 +32,13 @@ namespace ExceedERP.Core.Domain.Printing
         TextPaper,
         CoverPaper,
         TextPlate,
-        CoverPlate
+        CoverPlate,
+        Ink,
+        Ink_100CoverageOnA4Cover,
+        Ink_Other,
+        StitchingWire,
+        Sewing_Thread,
+        HotMelt_Glue,
+        Wrapping_Paper
     }
 }

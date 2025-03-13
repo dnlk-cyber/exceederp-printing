@@ -18,6 +18,11 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public ActionResult Index()
         {
+            ViewData["Taxes"] = db.GLTaxRates.Select(s => new
+            {
+                Value = s.GLTaxRateID,
+                Text = s.TaxName
+            }).ToList();
             ViewData["Customer"] = db.OrganizationCustomers.Select(s => new
             {
                 Value = s.OrganizationCustomerID,
@@ -227,6 +232,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     {
                        PrintingCostEstimationId = estimation.PrintingCostEstimationId,
                        AdminstrativeCost = 0,
+                       IndirectMaterialCost = totalMaterialCost * 0.03m,
+                       
                        GrandTotal = 0,
                        GraphicsCost = 0,
                        LaborCost = totalLabourCost,
@@ -344,8 +351,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     MaterialCost = OverAllCost.MaterialCost,
                     LabourCost = OverAllCost.LaborCost,
                     GraphicsCost = OverAllCost.GraphicsCost,
-                    AdministrativeCost = OverAllCost.AdminstrativeCost,
-                    OverHeadCost = OverAllCost.OverHeadCost,
+                    AdministrativeCost = (decimal)OverAllCost.AdminstrativeCost,
+                    OverHeadCost = (decimal)OverAllCost.OverHeadCost,
                     ManufacturingCost = OverAllCost.MaterialCost,
                     TotalCost = OverAllCost.GrandTotal,
                     Quantity = model.ProductQuantity,
@@ -365,8 +372,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     JobTypeId = model.JobTypeId,
                     MaterialCost = OverAllCost.MaterialCost,
                     LabourCost = OverAllCost.LaborCost,
-                    AdministrativeCost = OverAllCost.AdminstrativeCost,
-                    OverHeadCost = OverAllCost.OverHeadCost,
+                    AdministrativeCost = (decimal)OverAllCost.AdminstrativeCost,
+                    OverHeadCost = (decimal)OverAllCost.OverHeadCost,
                     ManufacturingCost = OverAllCost.MaterialCost,
                     TotalCost = OverAllCost.GrandTotal,
                     Quantity = model.ProductQuantity,

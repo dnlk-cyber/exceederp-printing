@@ -125,6 +125,95 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             return plateQuantity * (1 + model.WastageInPercentage);
         }
         #endregion  
+
+        private double CalculateInk(PrintingEstimationMaterialCost model, int printingCostEstimationId)
+        {
+            var costEstimation = db.PrintingCostEstimations
+               .FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
+            var materialCost = db.PrintingEstimationMaterialCosts.FirstOrDefault(x => x.PrintingCostEstimationId == costEstimation.PrintingCostEstimationId);
+            if (costEstimation != null && materialCost != null)
+            {
+                var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == costEstimation.PaperSizeId);
+                if (paperSize != null)
+                {
+                    var textPrinting = ((costEstimation.ProductQuantity * costEstimation.TotalTextNoPages) / paperSize.NoOfPagesToA1Ratio) * (1 + materialCost.WastageInPercentage) * costEstimation.TextNoOfColors;
+                    return textPrinting / 7500; 
+                }
+            }
+            return 0;
+        }
+        private double CalculateCoverPaper(PrintingEstimationMaterialCost model, int printingCostEstimationId)
+        {
+            var costEstimation = db.PrintingCostEstimations
+                .FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
+            var materialCost = db.PrintingEstimationMaterialCosts.FirstOrDefault(x => x.PrintingCostEstimationId == costEstimation.PrintingCostEstimationId);
+            if (costEstimation != null && materialCost != null)
+            {
+                var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == costEstimation.PaperSizeId);
+                if (paperSize != null)
+                {
+                    return (costEstimation.ProductQuantity / paperSize.NoOfPagesToA1Ratio) * (1 + materialCost.WastageInPercentage) * costEstimation.TextNoOfColors;
+                    
+                }
+            }
+            return 0;
+        }
+        private double CalculateInk100Cover(PrintingEstimationMaterialCost model, int printingCostEstimationId)
+        {
+            return CalculateCoverPaper(model, printingCostEstimationId) / 1200;
+        }
+        private double CalculateInkOther(PrintingEstimationMaterialCost model, int printingCostEstimationId)
+        {
+            return (CalculateCoverPaper(model, printingCostEstimationId) / 1200) * 3;
+        }
+        private double CalculateStitchingWire(int printingCostEstimationId)
+        {
+            var costEstimation = db.PrintingCostEstimations
+               .FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
+            if(costEstimation != null)
+            {
+                return costEstimation.ProductQuantity / (12500 * 96 / costEstimation.TotalTextNoPages);
+            }
+            return 0;
+        }
+        private double CalculateSewingThread(int printingCostEstimationId)
+        {
+            var costEstimation = db.PrintingCostEstimations
+               .FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
+            if (costEstimation != null)
+            {
+                return costEstimation.ProductQuantity / 100;
+            }
+            return 0;
+        }
+        private double CalculateHotMeltGlue(int printingCostEstimationId)
+        {
+            var costEstimation = db.PrintingCostEstimations
+               .FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
+            if (costEstimation != null)
+            {
+                var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == costEstimation.PaperSizeId);
+
+                var page = costEstimation.TotalTextNoPages;
+                var length = paperSize.Length;
+                return costEstimation.ProductQuantity / (296*180/page*29.7/length);
+            }
+            return 0;
+        }
+        private double CalculateWrappingPaper(int printingCostEstimationId)
+        {
+            var costEstimation = db.PrintingCostEstimations
+               .FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
+            if (costEstimation != null)
+            {
+                var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == costEstimation.PaperSizeId);
+
+                var page = costEstimation.TotalTextNoPages;
+                var length = paperSize.Length;
+                return costEstimation.ProductQuantity / (30 * 132 / page * 29.7 /length);
+            }
+            return 0;
+        }
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PrintingEstimationMaterialCosts_Create([DataSourceRequest]DataSourceRequest request, PrintingEstimationMaterialCost model, int estId)
         {            
@@ -158,6 +247,27 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                             break;
                         case EstimationMaterialType.TextPlate:
                             entity.Quantity = (decimal)CalculateTextPlate(model, estId);
+                            break;
+                        case EstimationMaterialType.Ink:
+                            entity.Quantity = (decimal)CalculateInk(model, estId);
+                            break;
+                        case EstimationMaterialType.Ink_100CoverageOnA4Cover:
+                            entity.Quantity = (decimal)CalculateInk100Cover(model, estId);
+                            break;
+                        case EstimationMaterialType.Ink_Other:
+                            entity.Quantity = (decimal)CalculateInkOther(model, estId);
+                            break;
+                        case EstimationMaterialType.StitchingWire:
+                            entity.Quantity = (decimal)CalculateStitchingWire(estId);
+                            break;
+                        case EstimationMaterialType.Sewing_Thread:
+                            entity.Quantity = (decimal)CalculateSewingThread(estId);
+                            break;
+                        case EstimationMaterialType.HotMelt_Glue:
+                            entity.Quantity = (decimal)CalculateHotMeltGlue(estId);
+                            break;
+                        case EstimationMaterialType.Wrapping_Paper:
+                            entity.Quantity = (decimal)CalculateWrappingPaper(estId);
                             break;
                         default:
                             entity.Quantity = (decimal)CalculateCoverPlate(model, estId);
