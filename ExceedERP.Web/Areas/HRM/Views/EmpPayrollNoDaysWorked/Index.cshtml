@@ -64,11 +64,11 @@
                          .Events(e => e.Click("Refresh"))
                          .Content("Generate Days Absent"))
 
-    @(Html.Kendo().Button()
+    @*@(Html.Kendo().Button()
                         .Name("btnBiometric")
                         .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
                         .Events(e => e.Click("Biometric"))
-                        .Content("Generate Days Absent from Biometric"))
+                        .Content("Generate Days Absent from Biometric"))*@
 
 
     @(Html.Kendo().Button()
@@ -86,7 +86,7 @@
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
           .Scrollable(h => h.Height(500))
-                         .Groupable()
+                         
                                   .Sortable(sortable =>
                                   {
                                       sortable.SortMode(GridSortMode.SingleColumn);
