@@ -338,9 +338,10 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                     template.EvaluationDate = proformaPurchase.EvaluationDate.ToShortDateString();
                     #region prepared checker approver
 
-                    template.PreparedBy =EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(proformaPurchase.CreatedBy));
+                    template.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(proformaPurchase.CreatedBy));
+                    template.PreparedSignature = SignatureHelper.GetUserSignature(proformaPurchase.CreatedBy);
                     if (proformaPurchase.DateCreated != null)
-                        template.PreparedDate = proformaPurchase.DateCreated!=null ? proformaPurchase.DateCreated.ToString():"";
+                        template.PreparedDate = proformaPurchase.DateCreated;
 
                     var purchaseValidations = _db.PurchaseValidations
                         .Where(x => x.ProformaPurchaseID == proformaPurchase.ProformaPurchaseID).ToList();
@@ -354,7 +355,8 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                         {
                             template.ApprovedBy =
                                 EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(approver.CreatedBy));
-                              template.ApprovedDate =approver.DateCreated!=null? approver.DateCreated.ToString():"";
+                            template.ApprovedDate = approver.DateCreated;
+                            template.ApprovedSignature = SignatureHelper.GetUserSignature(approver.CreatedBy);
 
                             var checker = purchaseValidations.OrderByDescending(x => x.PurchaseValidationID)
                                 .FirstOrDefault(x => x.PurchaseValidationID < maxid);
@@ -364,14 +366,16 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                                 template.CheckedBy =
                                     EmployeeHelper.GetEmployeeEnglishName(
                                         UserHelper.GetUserEmployeeId(checker.CreatedBy));
-                                template.CheckedDate =checker.DateCreated!=null? checker.DateCreated.ToString():"";
+                                template.CheckedDate = checker.DateCreated;
+                                template.CheckerSignature = SignatureHelper.GetUserSignature(checker.CreatedBy);
                             }
                             else
                             {
                                 template.CheckedBy =
                                     EmployeeHelper.GetEmployeeEnglishName(
                                         UserHelper.GetUserEmployeeId(proformaPurchase.SendForApprovalBy));
-                                template.CheckedDate = proformaPurchase.SendForApprovalTime!=null? proformaPurchase.SendForApprovalTime.ToString():"";
+                                template.CheckedDate = proformaPurchase.SendForApprovalTime;
+                                template.CheckerSignature = SignatureHelper.GetUserSignature(proformaPurchase.SendForApprovalBy);
 
                             }
                         }
@@ -385,12 +389,12 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                     template.WinnerSupplier = winnerSupplier.SupplierName;
 
                 }
-               
+
             }
 
             return template;
         }
-       
+
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<SupplierListViewModel> GetPartcipantSupplier(string id)

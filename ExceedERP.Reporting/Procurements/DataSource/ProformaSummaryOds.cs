@@ -107,7 +107,8 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                         var member = new ProformaTeamVm
                         {
                             FullName = EmployeeHelper.GetEmployeeEnglishName(m.EmployeeId),
-                            Title = m.Title
+                            Title = m.Title,
+                            Signature = SignatureHelper.GetUserSignature(UserHelper.GetEmployeeUserName(m.EmployeeId))
 
                         };
                         members.Add(member);

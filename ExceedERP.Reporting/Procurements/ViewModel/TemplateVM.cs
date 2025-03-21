@@ -1,5 +1,7 @@
 ﻿using ExceedERP.Reporting.SharedDataSources;
 using ExceedERP.Reporting.SharedDataSources.ViewModel;
+using System;
+using System.Drawing;
 
 namespace ExceedERP.Reporting.Procurements.ViewModel
 {
@@ -29,11 +31,14 @@ namespace ExceedERP.Reporting.Procurements.ViewModel
         public string TenderReference { get; set; }
         public string Description { get; set; }
         public string PreparedBy { get; set; }
-        public string PreparedDate { get; set; }
+        public DateTime? PreparedDate { get; set; }
+        public Image PreparedSignature { get; set; }
         public string CheckedBy { get; set; }
-        public string CheckedDate { get; set; }
+        public DateTime? CheckedDate { get; set; }
+        public Image CheckerSignature { get; set; }
         public string ApprovedBy { get; set; }
-        public string ApprovedDate { get; set; }
+        public DateTime? ApprovedDate { get; set; }
+        public Image ApprovedSignature { get; set; }
         public string SupplierName { get; set; }
     }
 }

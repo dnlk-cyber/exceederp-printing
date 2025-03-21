@@ -158,7 +158,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
 
                     template.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(lot.CreatedBy));
                     if (lot.DateCreated != null)
-                        template.PreparedDate = lot.DateCreated != null ? lot.DateCreated.ToString() : "";
+                        template.PreparedDate = lot.DateCreated;
 
                     var purchaseValidations = _db.TenderValidations
                         .Where(x => x.TenderID == lot.TenderID).ToList();
@@ -172,7 +172,7 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                         {
                             template.ApprovedBy =
                                 EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(approver.CreatedBy));
-                            template.ApprovedDate = approver.DateCreated != null ? approver.DateCreated.ToString() : "";
+                            template.ApprovedDate = approver.DateCreated;
 
                             var checker = purchaseValidations.OrderByDescending(x => x.TenderID)
                                 .FirstOrDefault(x => x.TenderID < maxid);
@@ -182,14 +182,14 @@ namespace ExceedERP.Reporting.Procurements.DataSource
                                 template.CheckedBy =
                                     EmployeeHelper.GetEmployeeEnglishName(
                                         UserHelper.GetUserEmployeeId(checker.CreatedBy));
-                                template.CheckedDate = checker.DateCreated != null ? checker.DateCreated.ToString() : "";
+                                template.CheckedDate = checker.DateCreated;
                             }
                             else
                             {
                                 template.CheckedBy =
                                     EmployeeHelper.GetEmployeeEnglishName(
                                         UserHelper.GetUserEmployeeId(lot.Tender.SendForApprovalBy));
-                                template.CheckedDate = lot.Tender.SendForApprovalTime != null ? lot.Tender.SendForApprovalTime.ToString() : "";
+                                template.CheckedDate = lot.Tender.SendForApprovalTime;
 
                             }
                         }
