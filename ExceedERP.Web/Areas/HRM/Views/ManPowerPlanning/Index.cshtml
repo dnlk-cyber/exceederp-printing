@@ -3,7 +3,6 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-
 }
 @(Html.Kendo().TabStrip()
      .Name("tabstrip")
@@ -13,12 +12,12 @@
         tabstrip.Add().Text(Resources.ManPowerPlanning)
           .Selected(true)
           .Content(@<text>
-                  @ManPowerPlanning()
-                 </text>);
-                 tabstrip.Add().Text(Resources.Navigator_Company_JobTitleMappingTemp)
-                    .Content(
+                 @ManPowerPlanning()
+              </text>);
+              tabstrip.Add().Text(Resources.Navigator_Company_JobTitleMappingTemp)
+                 .Content(
                   @<text>
-                        @ManPowerPlanningTemplate()
+                    @ManPowerPlanningTemplate()
                   </text>);
 
             })
@@ -27,10 +26,14 @@
 
 @helper ManPowerPlanning()
 {
+    <div class="row">
+
+    </div>
     @(Html.Kendo().Grid<JobTitleMapping>()
           .Name("JobTitleMappinggrid")
           .Columns(columns =>
           {
+              columns.Bound(c => c.JobTitleMappingId).Title("#").Width(80);
               columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "AmharicName").EditorTemplateName("BranchSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
               columns.ForeignKey(c => c.WorkUnitId, (IEnumerable)ViewData["parent"], "WorkUnitId", "Name").EditorTemplateName("JobTitleMapping").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);//.Filterable(filterable=>filterable.UI("titleFilter")).Width(150);
               columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["orgstructure"], "OrgStructureId", "Name").EditorTemplateName("Organization").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
@@ -42,8 +45,7 @@
                                         "# if (IsActive) { #" +
                                         "checked='checked'" +
                                         "# } #" +
-                                        "/>"
-                                        ).Width(120);
+                                        "/>").Width(120);
               columns.Bound(c => c.PlanType).EditorTemplateName("PlanType").Width(120);
               columns.Bound(c => c.Remark).Width(100);
               columns.Command(command =>
@@ -52,29 +54,30 @@
                   {
                       command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
                       command.Custom("").Click("enableOrDisableActive").Text(" Enable Or Disable").IconClass("fa fa-check fa2x").HtmlAttributes(new { @class = "btn btn-success", @title = "Approve Placement ", @id = "approveplacement" });
-                      
+
                   }
               }).Width(200);
           })
           .ToolBar(toolbar =>
           {
-              toolbar.Template(@<text>
+          toolbar.Template(@<text>
                 <div class="toolbar">
                 @if (HttpContext.Current.User.IsInRole("HR_Company_User"))
                 {
                     @item.CreateButton(Resources.ActionButton_AddNewRecord);
 
                 }
-                <label class="category-label">@Resources.HR_RecruitmentManagment_Vacancy_BranchId</label>
+                @*<label class="category-label">@Resources.HR_RecruitmentManagment_Vacancy_BranchId</label>*@
                 @(Html.Kendo().ComboBox()
                         .Placeholder(Resources.HR_RecruitmentManagment_Vacancy_BranchId)
                         .Name("BranchIdd")
                         .BindTo((IEnumerable)ViewData["Branches"])
                         .DataTextField("AmharicName")
                         .DataValueField("BranchId")
-                                //  .Events(x => x.Change("Branch"))
+                        .Events(e => e.Change("onChangeGrid"))
+                        .Filter("contains")
                                     .AutoBind(false)
-                                    .HtmlAttributes(new { style = "width: 200px;" })
+                                    .HtmlAttributes(new { style = "width: 160px;" })
 
                                     )
                 @(Html.Kendo().ComboBox()
@@ -83,19 +86,69 @@
                             .BindTo((IEnumerable)ViewData["projects"])
                             .DataTextField("Description")
                             .DataValueField("LookupId")
+                            .Filter("contains")
                             .AutoBind(false)
-                            .HtmlAttributes(new { style = "width: 200px;" })
+                            .HtmlAttributes(new { style = "width: 160px;" })
 
                 )
                 @(Html.Kendo().ComboBox()
                         .Placeholder(Resources.BussinessUnit)
-                        .Name("BusinessUnittId")
+                        .Name("BusinessUnittIdd")
                         .BindTo((IEnumerable)ViewData["businessUnits"])
                         .DataTextField("Name")
                         .DataValueField("BusinessUnitId")
+                        .Events(e => e.Change("onChangeGrid"))
+                        .Filter("contains")
                         .AutoBind(false)
-                        .HtmlAttributes(new { style = "width: 200px;" })
+                        .HtmlAttributes(new { style = "width: 160px;" })
 
+                )
+                      @(Html.Kendo().DropDownListFor(model => model)
+                                .Name("WorkUnitIdd")
+                                    .OptionLabel("-select Parent-")
+                                    .Filter("contains")
+                                    .MinLength(2)
+                                    //.HtmlAttributes(new { @class = "kendo-control" })
+                                    .DataTextField("Name")
+                                    .DataValueField("WorkUnitId")
+                                    .Events(e => e.Change("onChangeGrid"))
+                                    .CascadeFrom("BusinessUnittIdd")
+                                    .DataSource(source =>
+                                    {
+                                        source.Read(read =>
+                                        {
+                                            read.Action("GetParentWorkUnitFilter", "JobTitleMapping")
+                                                .Data("filterBranchForGrid")/*.Data("sendForgery")*/;
+
+                                        })
+                                    .ServerFiltering(true);
+                                        //source.Read(read => read.Action("GetParentWorkUnit", "JobTitleMapping").Data("filterBranch").Data("sendForgery"))
+                                        //    .ServerFiltering(true);
+                                    })
+                                    .ValuePrimitive(true)
+                )
+                     @(Html.Kendo().DropDownListFor(model => model)
+                           .Name("OrgStructureIdd")
+                           .OptionLabel("-select Structure-")
+                            .OptionLabel(Resources.Select)
+                            .Filter("contains")
+                            .MinLength(2)
+                            //.HtmlAttributes(new { @class = "kendo-control" })
+                            .DataTextField("Name")
+                            .DataValueField("OrgStructureId")
+                            .Events(e => e.Change("onChangeGrid"))
+                            .CascadeFrom("WorkUnitIdd")
+                            .DataSource(source =>
+                            {
+                                source.Read(read =>
+                                {
+                                    read.Action("GetStructureFilter", "JobTitleMapping")
+                                        .Data("filterStructureForGrid");
+                                })
+                                .ServerFiltering(true);
+
+                            })
+                            .ValuePrimitive(true)
                 )
                 @if (HttpContext.Current.User.IsInRole("HR_Company_User"))
                     {
@@ -110,7 +163,7 @@
                  @if (HttpContext.Current.User.IsInRole("HR_Company_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
                   {
                     @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "JobTitleMapping", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" });
-                    @item.CustomCommandToolBarButton("PDF", "<span class='k-icon k-i-pdf'></span>" + Resources.ActionButton_ExportPDF, "Pdf_Export_Save", "JobTitleMapping", "", new { @class = "k-button k-button-icontext k-grid-pdf  btn btn-primary btn-xs pull-right" });
+                    @*@item.CustomCommandToolBarButton("PDF", "<span class='k-icon k-i-pdf'></span>" + Resources.ActionButton_ExportPDF, "Pdf_Export_Save", "JobTitleMapping", "", new { @class = "k-button k-button-icontext k-grid-pdf  btn btn-primary btn-xs pull-right" });*@
 
 
                  }
@@ -144,7 +197,7 @@
                 .ButtonCount(5))
           .DataSource(dataSource => dataSource
             .Ajax()
-            .Sort(sort => sort.Add("DateCreated").Descending())
+            .Sort(sort => sort.Add(x=>x.JobTitleMappingId).Descending())
             .Events(events =>
             {
 
@@ -158,13 +211,14 @@
             .Model(model =>
             {
                 model.Id(p => p.JobTitleMappingId);
+                model.Field(p => p.JobTitleMappingId).Editable(true);
                 model.Field(p => p.IsActive).Editable(true);
 
             })
-            .Read(read => read.Action("JobTitleMapping_Read", "JobTitleMapping"))
-            .Create(create => create.Action("JobTitleMapping_Create", "JobTitleMapping"))
-            .Update(update => update.Action("JobTitleMapping_Update", "JobTitleMapping"))
-            .Destroy(destroy => destroy.Action("JobTitleMapping_Destroy", "JobTitleMapping"))
+            .Read(read => read.Action("JobTitleMapping_Read", "JobTitleMapping")/*.Data("sendForgery")*/.Data("filterParam"))
+            .Create(create => create.Action("JobTitleMapping_Create", "JobTitleMapping").Data("sendForgery"))
+            .Update(update => update.Action("JobTitleMapping_Update", "JobTitleMapping").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("JobTitleMapping_Destroy", "JobTitleMapping").Data("sendForgery"))
             ).ClientDetailTemplateId("template")
     )
 
@@ -212,10 +266,10 @@
                         })
 
                         .Model(model => model.Id(p => p.JobTitleMappingMianId))
-                        .Read(read => read.Action("JobTitleMappingMian_Read", "JobTitleMappingMain", new { id = "#=JobTitleMappingId#" }))
-                        .Create(create => create.Action("JobTitleMappingMian_Create", "JobTitleMappingMain", new { idTwo = "#=JobTitleMappingId#" }))
-                        .Update(update => update.Action("JobTitleMappingMian_Update", "JobTitleMappingMain"))
-                        .Destroy(destroy => destroy.Action("JobTitleMappingMian_Destroy", "JobTitleMappingMain"))
+                        .Read(read => read.Action("JobTitleMappingMian_Read", "JobTitleMappingMain", new { id = "#=JobTitleMappingId#" }).Data("sendForgery"))
+                        .Create(create => create.Action("JobTitleMappingMian_Create", "JobTitleMappingMain", new { idTwo = "#=JobTitleMappingId#" }).Data("sendForgery"))
+                        .Update(update => update.Action("JobTitleMappingMian_Update", "JobTitleMappingMain").Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("JobTitleMappingMian_Destroy", "JobTitleMappingMain").Data("sendForgery"))
 
                 ).ToClientTemplate()
                 )
@@ -267,10 +321,10 @@
                     })
 
                     .Model(model => model.Id(p => p.JobTitleMappingDetailId))
-                    .Read(read => read.Action("JobTitleMappingDetail_Read", "JobTitleMappingDetail", new { id = "#=JobTitleMappingId#" }))
-                    .Create(create => create.Action("JobTitleMappingDetail_Create", "JobTitleMappingDetail", new { idTwo = "#=JobTitleMappingId#" }))
-                    .Update(update => update.Action("JobTitleMappingDetail_Update", "JobTitleMappingDetail"))
-                    .Destroy(destroy => destroy.Action("JobTitleMappingDetail_Destroy", "JobTitleMappingDetail"))
+                    .Read(read => read.Action("JobTitleMappingDetail_Read", "JobTitleMappingDetail", new { id = "#=JobTitleMappingId#" }).Data("sendForgery"))
+                    .Create(create => create.Action("JobTitleMappingDetail_Create", "JobTitleMappingDetail", new { idTwo = "#=JobTitleMappingId#" }).Data("sendForgery"))
+                    .Update(update => update.Action("JobTitleMappingDetail_Update", "JobTitleMappingDetail").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("JobTitleMappingDetail_Destroy", "JobTitleMappingDetail").Data("sendForgery"))
                 ).ToClientTemplate()
             )
 
@@ -291,6 +345,7 @@
         .Name("JobTitleMappinggridTemp")
         .Columns(columns =>
         {
+
             columns.ForeignKey(c => c.ProjectType, (IEnumerable)ViewData["projects"], "LookupId", "Description").EditorTemplateName("Project").Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
             columns.ForeignKey(c => c.WorkUnitId, (IEnumerable)ViewData["parent"], "WorkUnitId", "Name").EditorTemplateName("OrgSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
             columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["orgstructure"], "OrgStructureId", "Name").EditorTemplateName("Organization").Filterable(ftb => ftb.Multi(true).Search(true)).Width(170);
@@ -310,17 +365,14 @@
                 {
                     command.Destroy().Text(Resources.ActionButton_Cancel);//
                 }
+
             }).Width(180);
 
         })
         .ToolBar(toolbar =>
         {
-
             toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-
-
         })
-
         .Excel(excel => excel
             .FileName(Resources.Navigator_Company_JobTitleMapping + ".xlsx")
             .Filterable(true)
@@ -355,12 +407,11 @@
                 events.RequestEnd("onRequestEnd(\"JobTitleMappinggrid\")");
 
             })
-
             .Model(model => model.Id(p => p.JobTitleMappingId))
-                .Read(read => read.Action("JobTitleMapping_Read", "JobTitleMappingTemp"))
-                .Create(create => create.Action("JobTitleMapping_Create", "JobTitleMappingTemp"))
-                .Update(update => update.Action("JobTitleMapping_Update", "JobTitleMappingTemp"))
-                .Destroy(destroy => destroy.Action("JobTitleMapping_Destroy", "JobTitleMappingTemp"))
+                .Read(read => read.Action("JobTitleMapping_Read", "JobTitleMappingTemp").Data("sendForgery"))
+                .Create(create => create.Action("JobTitleMapping_Create", "JobTitleMappingTemp").Data("sendForgery"))
+                .Update(update => update.Action("JobTitleMapping_Update", "JobTitleMappingTemp").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("JobTitleMapping_Destroy", "JobTitleMappingTemp").Data("sendForgery"))
             ).ClientDetailTemplateId("mappingtemplate")
     )
     <script id="mappingtemplate" type="text/kendo-tmpl">
@@ -403,10 +454,10 @@
                             })
 
                             .Model(model => model.Id(p => p.JobTitleMappingMianId))
-                            .Read(read => read.Action("JobTitleMappingMian_Read", "JobTitleMappingMainTemp", new { id = "#=JobTitleMappingId#" }))
-                            .Create(create => create.Action("JobTitleMappingMian_Create", "JobTitleMappingMainTemp", new { idTwo = "#=JobTitleMappingId#" }))
-                            .Update(update => update.Action("JobTitleMappingMian_Update", "JobTitleMappingMainTemp"))
-                            .Destroy(destroy => destroy.Action("JobTitleMappingMian_Destroy", "JobTitleMappingMainTemp"))
+                            .Read(read => read.Action("JobTitleMappingMian_Read", "JobTitleMappingMainTemp", new { id = "#=JobTitleMappingId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("JobTitleMappingMian_Create", "JobTitleMappingMainTemp", new { idTwo = "#=JobTitleMappingId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("JobTitleMappingMian_Update", "JobTitleMappingMainTemp").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("JobTitleMappingMian_Destroy", "JobTitleMappingMainTemp").Data("sendForgery"))
                         ).ToClientTemplate()
                     )
                     </text>);
@@ -448,10 +499,10 @@
                                         })
 
                                 .Model(model => model.Id(p => p.JobTitleMappingDetailId))
-                                        .Read(read => read.Action("JobTitleMappingDetail_Read", "JobTitleMappingDetailTemp", new { id = "#=JobTitleMappingId#" }))
-                                        .Create(create => create.Action("JobTitleMappingDetail_Create", "JobTitleMappingDetailTemp", new { idTwo = "#=JobTitleMappingId#" }))
-                                        .Update(update => update.Action("JobTitleMappingDetail_Update", "JobTitleMappingDetailTemp"))
-                                        .Destroy(destroy => destroy.Action("JobTitleMappingDetail_Destroy", "JobTitleMappingDetailTemp"))
+                                        .Read(read => read.Action("JobTitleMappingDetail_Read", "JobTitleMappingDetailTemp", new { id = "#=JobTitleMappingId#" }).Data("sendForgery"))
+                                        .Create(create => create.Action("JobTitleMappingDetail_Create", "JobTitleMappingDetailTemp", new { idTwo = "#=JobTitleMappingId#" }).Data("sendForgery"))
+                                        .Update(update => update.Action("JobTitleMappingDetail_Update", "JobTitleMappingDetailTemp").Data("sendForgery"))
+                                        .Destroy(destroy => destroy.Action("JobTitleMappingDetail_Destroy", "JobTitleMappingDetailTemp").Data("sendForgery"))
                             ).ToClientTemplate()
                 )
 
@@ -482,12 +533,57 @@
     }
 </style>
 <script>
-    function filterStructure() {
+    //function filterStructure() {
+    //    return {
+    //        WorkUnitId: $("#WorkUnitId").val(),
+    //        searchText: $("#OrgStructureId").data("kendoDropDownList").filterInput.val()
+
+    //    };
+    //}
+
+    
+    
+</script>
+<script>
+    function filterBranch() {
         return {
-            WorkUnitId: $("#WorkUnitId").val()
+            businessUnitId: $("#BusinessUnitId").val(),
+            text: $("#WorkUnitId").data("kendoDropDownList").filterInput.val()
+
         };
     }
+    function filterBranchForGrid() {
+        return {
+            branchId: $("#BranchIdd").val(),
+            businessUnitId: $("#BusinessUnittIdd").val(),
+            text: $("#WorkUnitIdd").data("kendoDropDownList").filterInput.val()
 
+        };
+    }
+    function filterParam() {
+        return {
+            branchIdd: $("#BranchIdd").val(),
+            businessUnitIdd: $("#BusinessUnittIdd").val(),
+            parentIdd: $("#WorkUnitIdd").val(),
+            orgStructureIdd: $("#OrgStructureIdd").val(),
+        };
+    }
+    function filterStructure() {
+        return {
+            WorkUnitId: $("#WorkUnitId").val(),
+            searchText: $("#OrgStructureId").data("kendoDropDownList").filterInput.val()
+
+        };
+    }
+    function filterStructureForGrid() {
+        return {
+            branchId: $("#BranchIdd").val(),
+            businessUnitId: $("#BusinessUnittIdd").val(),
+            WorkUnitId: $("#WorkUnitIdd").val(),
+            searchText: $("#OrgStructureIdd").data("kendoDropDownList").filterInput.val()
+
+        };
+    }
     function filterJobTitle() {
         return {
             OrgStructureId: $("#OrgStructureId").val()
@@ -502,14 +598,17 @@
         var typeId = type.value();
         var branch = $("#BranchIdd").data("kendoComboBox");
         var branchId = branch.value();
-        var businessUnit = $("#BusinessUnittId").data("kendoComboBox");
+        var businessUnit = $("#BusinessUnittIdd").data("kendoComboBox");
         var businessUnitId = businessUnit.value();
 
         if (typeId == "") {
             alert("Please select the project type first!!");
         }
         if (branchId == "") {
-            alert("Please select project first!!");
+            alert("Please select project or Branch first!!");
+        }
+        if (businessUnitId == "") {
+            alert("Please select business Unit first!!");
         }
         $.ajax({
             url: '@Url.Action("CreateJobTitleMapping", "JobTitleMapping")',
@@ -537,20 +636,14 @@
 </script>
 
 <script>
-    function filterStructure() {
-        return {
-            WorkUnitId: $("#WorkUnitId").val()
-        };
-    }
-    function filterJobTitle() {
-        return {
-            OrgStructureId: $("#OrgStructureId").val()
-        };
-    }
+   
 </script>
 <script>
 
-
+    function onChangeGrid(e) {
+        var grid = $("#JobTitleMappinggrid").data("kendoGrid");
+        grid.dataSource.read();
+    }
   function enableOrDisableActive(e) {
     var row = $(e.target).closest("tr");
     var grid = $("#JobTitleMappinggrid").data("kendoGrid");
@@ -580,3 +673,36 @@
     }
 
  </script>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+
+    .row .col-md-3, .row .col-md-2 {
+        width: 240px;
+        margin-bottom: 0px;
+    }
+
+    .my-class {
+        margin-left: 30px;
+    }
+
+    .chkbx {
+        pointer-events: none;
+    }
+
+    .kendo-control {
+        width: 200px;
+        height: 50px;
+    }
+
+    .textarea-class {
+        width: 200px;
+        height: 50px;
+    }
+
+    .text-danger {
+        color: red;
+        font-size: 0.9em;
+    }
+</style>

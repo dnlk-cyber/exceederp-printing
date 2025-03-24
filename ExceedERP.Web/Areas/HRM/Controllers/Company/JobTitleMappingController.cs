@@ -2,15 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.Company;
 using ExceedERP.DataAccess.Context;
@@ -83,16 +80,111 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         //    }), JsonRequestBehavior.AllowGet);
 
         //}
-        public JsonResult GetParentWorkUnit()
+        public JsonResult GetParentWorkUnit(string businessUnitId,string text)
         {
-            
-            return Json(db.MainCompanyStructures.Where(x=>x.IsActive).Select(p => new
+            // Start with a base query to filter active company structures
+            var query = db.MainCompanyStructures.Where(x => x.IsActive).ToList();
+            // Check if the businessUnitId is not null, can be parsed, and is not zero
+            if (!string.IsNullOrEmpty(businessUnitId) &&
+                int.TryParse(businessUnitId, out int businessUnitIdParsed) &&
+                businessUnitIdParsed != 0)
+            {
+                //query = query.Where(x => x.BusinessUnitId == businessUnitIdParsed).ToList();
+            }
+            if (!string.IsNullOrEmpty(text))
+            {
+                query = query.Where(x => x.Name.ToUpper().Contains(text.ToUpper())).ToList();
+
+            }
+            if (query.Any()&& string.IsNullOrEmpty(text))
+            {
+                var parentIds = query.Select(x => x.Parent).Distinct();
+                if (parentIds.Any())
+                {
+                    query = query.Where(x => parentIds.Contains(x.OrgStructureId) || x.Parent == 0).ToList();
+                }
+            }
+
+            // Return the result as JSON
+            return Json(query.Select(p => new
+            {
+                OrgStructureId = p.OrgStructureId,
+                WorkUnitId = p.OrgStructureId,
+                Name = p.Name
+            }).ToList(), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetStructure(int WorkUnitId, string searchText)
+        {
+
+            var companyStructures = db.MainCompanyStructures.Where(x => x.Parent == WorkUnitId && x.IsActive).ToList();
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                companyStructures = companyStructures.Where(x => x.Name.ToUpper().Contains(searchText.ToUpper())).ToList();
+
+            }
+            return Json(companyStructures.Select(p => new
             {
                 OrgStructureId = p.OrgStructureId,
                 Name = p.Name
-            }).ToList(), JsonRequestBehavior.AllowGet);
+            }), JsonRequestBehavior.AllowGet);
+
 
         }
+        public JsonResult GetParentWorkUnitFilter(int branchId, int businessUnitId, string text)
+        {
+            // Start with a base query to filter active company structures
+            var JobTitleMapping = db.JobTitleMapping
+                            .Where(x=>x.BranchId==branchId
+                              &&x.BusinessUnitId==businessUnitId)
+                            .Where(x => x.IsActive).ToList();
+            // Check if the businessUnitId is not null, can be parsed, and is not zero
+            HashSet<int> ids = new HashSet<int>(JobTitleMapping.Select(x => x.WorkUnitId).Distinct());
+
+            var query = db.MainCompanyStructures.Where(x =>ids.Contains(x.OrgStructureId)).ToList();
+           
+
+            if (!string.IsNullOrEmpty(text))
+            {
+                query = query.Where(x => x.Name.ToUpper().Contains(text.ToUpper())).ToList();
+
+            }
+           
+
+            // Return the result as JSON
+            return Json(query.Select(p => new
+            {
+                OrgStructureId = p.OrgStructureId,
+                WorkUnitId = p.OrgStructureId,
+                Name = p.Name
+            }).ToList(), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetStructureFilter(int branchId, int businessUnitId, int WorkUnitId, string searchText)
+        {
+
+            var jobTitleMappings = db.JobTitleMapping.Where(x =>x.BranchId==branchId
+                                                                &&x.BusinessUnitId==businessUnitId
+                                                                && x.WorkUnitId == WorkUnitId 
+                                                                && x.IsActive).ToList();
+            HashSet<int> ids = new HashSet<int>(jobTitleMappings.Select(x => x.OrgStructureId).Distinct());
+
+            var query = db.MainCompanyStructures.Where(x => ids.Contains(x.OrgStructureId)).ToList();
+
+
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                query = query.Where(x => x.Name.ToUpper().Contains(searchText.ToUpper())).ToList();
+
+            }
+            return Json(query.Select(p => new
+            {
+                OrgStructureId = p.OrgStructureId,
+                Name = p.Name
+            }), JsonRequestBehavior.AllowGet);
+
+
+        }
+
+
         public JsonResult GetJobTitleList()
         {
             var orgs = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE && x.IsActive).ToList();
@@ -141,10 +233,31 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             return true;
         }
         [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
-        public ActionResult JobTitleMapping_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult JobTitleMapping_Read([DataSourceRequest]DataSourceRequest request,string branchIdd, string businessUnitIdd, string parentIdd, string orgStructureIdd)
         {
-           var jobtitlemapping = db.JobTitleMapping.ToList();
-            DataSourceResult result = jobtitlemapping.ToDataSourceResult(request, jobTitleMapping => new
+
+            var jobtitlemappings = db.JobTitleMapping.ToList();
+            if (!string.IsNullOrEmpty(branchIdd))
+            {
+                int.TryParse(branchIdd, out int branchId);
+                jobtitlemappings = jobtitlemappings.Where(x => x.BranchId == branchId).ToList();
+            }
+            if (!string.IsNullOrEmpty(businessUnitIdd))
+            {
+                int.TryParse(businessUnitIdd, out int businessUnitId);
+                jobtitlemappings = jobtitlemappings.Where(x => x.BusinessUnitId == businessUnitId).ToList();
+            }
+            if (!string.IsNullOrEmpty(parentIdd))
+            {
+                int.TryParse(parentIdd, out int parentId);
+                jobtitlemappings = jobtitlemappings.Where(x => x.WorkUnitId == parentId).ToList();
+            }
+            if (!string.IsNullOrEmpty(orgStructureIdd))
+            {
+                int.TryParse(orgStructureIdd, out int orgStructureId);
+                jobtitlemappings = jobtitlemappings.Where(x => x.OrgStructureId == orgStructureId).ToList();
+            }
+            DataSourceResult result = jobtitlemappings.ToDataSourceResult(request, jobTitleMapping => new
             {
                 JobTitleMappingId = jobTitleMapping.JobTitleMappingId,
                 OrgStructureId = jobTitleMapping.OrgStructureId,
@@ -171,10 +284,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult JobTitleMapping_Create([DataSourceRequest]DataSourceRequest request, JobTitleMapping jobTitleMapping)
         {
-            var mappings = db.JobTitleMapping.Where(x => x.LookupId == jobTitleMapping.LookupId && x.OrgStructureId == jobTitleMapping.OrgStructureId && x.BranchId == jobTitleMapping.BranchId).FirstOrDefault();
+            var mappings = db.JobTitleMapping.Where(x => x.LookupId == jobTitleMapping.LookupId && x.OrgStructureId == jobTitleMapping.OrgStructureId && x.BranchId == jobTitleMapping.BranchId/*&&x.WorkUnitId==jobTitleMapping.WorkUnitId*/).FirstOrDefault();
             if (mappings != null)
             {
                 ModelState.AddModelError("Please Check", "This Mapping is already exist");
+                return Json(new[] { jobTitleMapping }.ToDataSourceResult(request, ModelState));
+
             }
             if (ModelState.IsValid)
             {
@@ -257,7 +372,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 manpower.ModifiedBy = User.Identity.Name;
                 manpower.OrgStructureId = jobTitleMapping.OrgStructureId;
                 manpower.LookupId = jobTitleMapping.LookupId;
-                manpower.BusinessUnitId = jobTitleMapping.BusinessUnitId;
                 manpower.Quntity = jobTitleMapping.Quntity;
                 manpower.Remark = jobTitleMapping.Remark;
                 manpower.PlanType = jobTitleMapping.PlanType;
@@ -265,7 +379,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 manpower.WorkUnitId = jobTitleMapping.WorkUnitId;
                 manpower.IsActive = jobTitleMapping.IsActive;
                 manpower.OrgBranchName = jobTitleMapping.OrgBranchName;
-
                 // Check if BusinessUnitId has changed
                 if (manpower.BusinessUnitId != jobTitleMapping.BusinessUnitId)
                 {
@@ -276,7 +389,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                                  && x.BusinessUnitId == manpower.BusinessUnitId
                                  && x.isCurrent)
                         .ToList();
-
                     foreach (var placement in placements)
                     {
                         placement.BusinessUnitId = jobTitleMapping.BusinessUnitId ?? 0;
@@ -284,9 +396,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     }
                 }
 
+                manpower.BusinessUnitId = jobTitleMapping.BusinessUnitId;
+                db.Entry(manpower).State = EntityState.Modified;
                 // Save changes
                 db.SaveChanges();
-
                 // Log operation if necessary
                 var branch = db.Branch.FirstOrDefault(x => x.BranchId == manpower.BranchId);
                 if (branch != null)
@@ -450,19 +563,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
 
         }
-        public JsonResult GetStructure(int WorkUnitId)
-        {
-            
-            var companyStructures = db.MainCompanyStructures.Where(x => x.Parent == WorkUnitId&&x.IsActive).ToList();
-           
-            return Json(companyStructures.Select(p => new
-            {
-                OrgStructureId = p.OrgStructureId,
-                Name = p.Name
-            }), JsonRequestBehavior.AllowGet);
-
-
-        }
         public ActionResult FilterMenuCustomization_WorkUnit()
         {
             List<MainCompanyStructure> workUnits = new List<MainCompanyStructure>();
@@ -530,6 +630,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
                             dbE.JobTitleMappingMian.Add(entityy);
                             dbE.SaveChanges();
+
                             //jobTitleMappingMian.JobTitleMappingMianId = entityy.JobTitleMappingMianId;
                         }
                         ExceedDbContext dbm = new ExceedDbContext();
