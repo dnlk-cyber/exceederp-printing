@@ -6,21 +6,22 @@
 }
 <legend>@Resources.NavigatorPayroll_OverTimeTransferMaintain </legend>
 @(Html.Kendo().Grid<OverTimeTransfer>()
-          .Name("OverTimeTransfergrid")
+          
+        .Name("OverTimeTransfergrid")
       .Columns(columns =>
       {
           //columns.Bound(c => c.Check).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
           //          .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(200);
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employees"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeLists").Width(260);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameEnglish").EditorTemplateName("EmployeeLists").Width(260);
           columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriod").Width(150);
           columns.Bound(c => c.NormalHours).Width(150);
           columns.Bound(c => c.NightHours).Width(150);
           columns.Bound(c => c.HolidayHours).Width(150);
           columns.Bound(c => c.RestdayHours).Width(150);
-          columns.Bound(c => c.IsSendForApproval).Width(150);
-
-          columns.Command( command => {
-              command.Custom("").Text("Send For Approval").Click("sendforapproval");
+          // columns.Bound(c => c.IsSendForApproval).Width(150);
+          columns.Command( command => 
+          {
+              command.Custom("cmd-request").Text("Send For Approval").Click("sendforapproval");
               command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);  command.Destroy().Text(Resources.ActionButton_Cancel);
           }).Width(300);
       })
@@ -30,18 +31,19 @@
       })
          .Editable(editable => editable.Mode(GridEditMode.InLine))
             .Scrollable(h => h.Height(500))
-                                                 .Groupable()
-                                                 //.Sortable(sortable =>
-                                                 //{
-                                                 //    sortable.SortMode(GridSortMode.SingleColumn);
-                                                 //})
-                                                 // .Filterable()
-                                                 .Pageable(pageable => pageable
-                                                                            .Input(true)
-                                                                            .Numeric(false)
-                                                                            .Refresh(true)
-                                                                            .PageSizes(true)
-                                                                            .ButtonCount(5))
+            //.Groupable()
+            //.Sortable(sortable =>
+            //{
+            //    sortable.SortMode(GridSortMode.SingleColumn);
+            //})
+            // .Filterable()
+            .Events(ev=>ev.DataBound("onDataBound"))
+            .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
                 .Events(events =>
@@ -53,10 +55,10 @@
           // .Batch(true)
 
           .Model(model => model.Id(p => p.OverTimeTransferId))
-              .Read(read => read.Action("OverTimeTransfers_Read", "OverTimeTransferMaintain"))
-                      .Create(create => create.Action("OverTimeTransfers_Create", "OverTimeTransferMaintain"))
-                      .Update(update => update.Action("OverTimeTransfers_Update", "OverTimeTransferMaintain"))
-              .Destroy(destroy => destroy.Action("OverTimeTransfers_Destroy", "OverTimeTransferMaintain"))
+              .Read(read => read.Action("OverTimeTransfers_Read", "OverTimeTransferMaintain").Data("sendForgery"))
+                      .Create(create => create.Action("OverTimeTransfers_Create", "OverTimeTransferMaintain").Data("sendForgery"))
+                      .Update(update => update.Action("OverTimeTransfers_Update", "OverTimeTransferMaintain").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("OverTimeTransfers_Destroy", "OverTimeTransferMaintain").Data("sendForgery"))
           )//.ClientDetailTemplateId("template")
       )
 
@@ -99,10 +101,10 @@
         }) 
               
           .Model(model => model.Id(p => p.OverTimeId))
-              .Read(read => read.Action("OverTimes_Read", "OverTimeTrasferDetail", new { id = "#=EmployeeId#", period = "#=GLPeriodId#", tId = "#=OverTimeTransferId#" }))
-                                  .Create(create => create.Action("OverTimes_Create", "OverTimeTrasferDetail", new { idTwo = "#=EmployeeId#", periodTwo = "#=GLPeriodId#", tIdTwo = "#=OverTimeTransferId#" }))
-                  .Update(update => update.Action("OverTimes_Update", "OverTimeTrasferDetail"))
-                  .Destroy(destroy => destroy.Action("OverTimes_Destroy", "OverTimeTrasferDetail"))
+              .Read(read => read.Action("OverTimes_Read", "OverTimeTrasferDetail", new { id = "#=EmployeeId#", period = "#=GLPeriodId#", tId = "#=OverTimeTransferId#" }).Data("sendForgery"))
+                                  .Create(create => create.Action("OverTimes_Create", "OverTimeTrasferDetail", new { idTwo = "#=EmployeeId#", periodTwo = "#=GLPeriodId#", tIdTwo = "#=OverTimeTransferId#" }).Data("sendForgery"))
+                  .Update(update => update.Action("OverTimes_Update", "OverTimeTrasferDetail").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("OverTimes_Destroy", "OverTimeTrasferDetail").Data("sendForgery"))
       ).ToClientTemplate()
                 )
 
@@ -147,6 +149,23 @@
         });
         grid.refresh();
     }
+    function onDataBound(e) {
+
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            if (dataItem.IsSendForApproval) {
+               row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+                row.find(".k-grid-cmd-request").remove();
+
+            }
+          
+        }
+    }
+
 </script>
 
 <style>
@@ -201,11 +220,9 @@
 
 
         var row = $(e.target).closest("tr");
-        var grid = $("#grid").data("kendoGrid");
+        var grid = $("#OverTimeTransfergrid").data("kendoGrid");
         var dataItem = grid.dataItem(row);
         var id = dataItem.OverTimeTransferId;
-
-
         if (id.length !== 0 )
         {
 
@@ -216,7 +233,7 @@
                 type: 'POST',
                 cache: false,
                 success: function (result) {
-                    r = result;
+                    alert(result.Message);
 
                 }
 

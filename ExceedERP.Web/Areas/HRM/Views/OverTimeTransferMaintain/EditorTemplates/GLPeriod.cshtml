@@ -1,14 +1,15 @@
-﻿@using System.Collections
-@using ExceedERP.Core.Localization
-@using ExceedERP.Core.Domain.Common
+﻿@using ExceedERP.Core.Localization
 @(Html.Kendo().DropDownListFor(m => m)
-.OptionLabel( Resources.Select)
-         .DataTextField("Name")
-                    .DataValueField("GLPeriodId")
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetPeriodForOvertime", "HRMDataProvider", new { area = "HRM" }))
-                                                    .ServerFiltering(false);
-                          })
-                         .ValuePrimitive(true)
+        .OptionLabel( Resources.Select)
+        .DataTextField("Name")
+        .DataValueField("GLPeriodId")
+        .Filter("contains")
+        .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read.Action("GetCurrentYearPeriodsForOvertime", "OverTimeTransferMaintain", new { area = "HRM" }).Data("sendForgery"))
+                                  .ServerFiltering(false);
+
+
+        })   
+        .ValuePrimitive(true)
 )

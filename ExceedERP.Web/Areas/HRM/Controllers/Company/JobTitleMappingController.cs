@@ -80,6 +80,25 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         //    }), JsonRequestBehavior.AllowGet);
 
         //}
+
+        public JsonResult GetPeriodForOvertime()
+        {
+            var periodList = db.PayrollPeriods.Where(x => x.Status == ExceedERP.Core.Domain.Finance.GL.FiscalYearStatus.Open);
+            var list = from p in periodList
+                       join g in db.GLPeriods
+                           on p.Name equals g.Name
+                       select (new
+                       {
+                           g
+                       });
+            ViewData["PeriodList"] = periodList.Select(x => x.Name).ToList(); //!= null ? list.ToList() : new List<PayrollPeriod>();
+
+            return Json(periodList.Select(p => new
+            {
+                GLPeriodId = p.GLPeriodId,
+                Name = p.Name
+            }), JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetParentWorkUnit(string businessUnitId,string text)
         {
             // Start with a base query to filter active company structures

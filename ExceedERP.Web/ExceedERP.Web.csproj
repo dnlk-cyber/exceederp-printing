@@ -1368,9 +1368,7 @@
     <Compile Include="Areas\HRM\Controllers\Payroll\OverTimeTransferController.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Areas\HRM\Controllers\Payroll\OverTimeTransferMaintain.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Areas\HRM\Controllers\Payroll\OverTimeTransferMaintainController.cs" />
     <Compile Include="Areas\HRM\Controllers\Payroll\OverTimeTrasferDetailController.cs">
       <SubType>Code</SubType>
     </Compile>

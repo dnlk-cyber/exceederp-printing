@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
@@ -35,34 +33,51 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
             PopulateViewData();
 
-            var periodList = db.PayrollPeriods.Where(x => x.Status == FiscalYearStatus.Open);
-            var lists = from p in periodList
-                        join g in db.GLPeriods
-                            on p.Name equals g.Name
-                        select (new
-                        {
-                            g
-                        });
-            ViewData["PeriodList"] = lists.Select(x => x.g).ToList(); ;
-            List<EmployeeIdView> employeeList = new List<EmployeeIdView>();
-            var list = inputs.GetPayrollPlacmentEmployees(User.Identity.Name);
-            var requested = db.OverTimeRequest.ToList();
-            foreach (var r in requested)
-            {
-                var check = db.RequestesStatus.Where(x => x.RequestId == r.OverTimeRequestId && x.ReferenceType == "OverTime" && x.Status == RequestStatus.APPROVE).FirstOrDefault();
-                if (check != null)
-                {
-                    var detail = db.OverTimeRequestEmployee.Where(x => x.OverTimeRequestId == r.OverTimeRequestId).Select(x => x.EmployeeId);
-                    var existance = list.Where(x => detail.Contains(x.PersonId)).ToList();
-                    if (existance.Any())
-                    {
-                        employeeList.AddRange(existance);
-                    }
-                }
-            }
-            ViewData["EmployeeList"] = employeeList.Where(x => x.IsActive);
+            var periodList = db.GLPeriods.Where(x => x.Status == FiscalYearStatus.Open).ToList();
+
+            var list = from p in periodList
+                       join g in db.GLPeriods
+                           on p.Name equals g.Name
+                       select (new
+                       {
+                           g.GLPeriodId,
+                           g.Name
+                       });
+
+            ViewData["PeriodList"] = list.ToList().Select(x => new {
+                GLPeriodId = x.GLPeriodId,
+                Name = x.Name
+            }).ToList(); ;
+
+            //ViewData["EmployeeList"] = db.Person_Employee
+            //                                .Where(x => x.IsActive)
+            //                                .Select(x=>new { x.EmployeeId, FullNameEnglish = x.EmployeeCode+"-"+x.FirstNameEnglish+" "+x.MiddleNameEnglish+" "+x.LastNameEnglish});
+
             return View();
         }
+        public JsonResult GetCurrentYearPeriodsForOvertime()
+        {
+            List<GLPeriod> gLPeriods = new List<GLPeriod>();
+
+            var periodList = db.GLPeriods.Where(x => x.Status == FiscalYearStatus.Open).ToList();
+
+            var list = from p in periodList
+                       join g in db.GLPeriods
+                           on p.Name equals g.Name
+                       select (new
+                       {
+                           g
+                       });
+
+
+
+            return Json(list.OrderByDescending(x => x.g.DateFrom).Select(p => new
+            {
+                GLPeriodId = p.g.GLPeriodId,
+                Name = p.g.Name
+            }), JsonRequestBehavior.AllowGet);
+        }
+
         public void PopulateViewData()
         {
             List<Person_Employee> empList = new List<Person_Employee>();
@@ -75,10 +90,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     empList.Add(emp);
                 }
             }
-            ViewData["Employees"] = empList;
+            ViewData["EmployeeList"] = db.Person_Employee
+                                            .Where(x => x.IsActive)
+                                            .Select(x => new { x.EmployeeId, FullNameEnglish = x.EmployeeCode + "-" + x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish });
         }
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Editing_Create([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")]IEnumerable<OverTimeTransfer> products)
+        public ActionResult Editing_Create([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")] IEnumerable<OverTimeTransfer> products)
         {
             var results = new List<OverTimeTransfer>();
 
@@ -112,7 +129,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                             {
                                 overTime = new OverTime();
                                 overTime.EmployeeId = product.EmployeeId;
-                              
+
                                 overTime.OverTimeId = check.OverTimeId;
                                 overTime.GLPeriodId = product.GLPeriodId;
                                 overTime.NormalHours = product.NormalHours;
@@ -189,12 +206,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
             return Json(results.ToDataSourceResult(request, ModelState));
         }
-        public ActionResult OverTimeTransfers_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult OverTimeTransfers_Read([DataSourceRequest] DataSourceRequest request)
         {
             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+            List<int> employees = inputs.GetUserBranchAndBusinessUnitEmployees(User.Identity.Name); //inputs.GetUserBranchEmployees(User.Identity.Name);
             //IQueryable<OverTimeTransfer> overtimetransfers = db.OverTimeTransfers.Where(x => employees.Contains(x.EmployeeId.ToString()));
-            IQueryable<OverTimeTransfer> overtimetransfers = db.OverTimeTransfers.Where(x => employees.Contains(x.EmployeeId.ToString()));
+            IQueryable<OverTimeTransfer> overtimetransfers = db.OverTimeTransfers.Where(x => employees.Contains(x.EmployeeId));
 
             DataSourceResult result = overtimetransfers.ToDataSourceResult(request, overTimeTransfer => new
             {
@@ -218,7 +235,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult OverTimeTransfers_Create([DataSourceRequest]DataSourceRequest request, OverTimeTransfer overTimeTransfer)
+        public ActionResult OverTimeTransfers_Create([DataSourceRequest] DataSourceRequest request, OverTimeTransfer overTimeTransfer)
         {
             ModelState.Clear();
             if (ModelState.IsValid)
@@ -253,7 +270,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult OverTimeTransfers_Update([DataSourceRequest]DataSourceRequest request, OverTimeTransfer overTimeTransfer)
+        public ActionResult OverTimeTransfers_Update([DataSourceRequest] DataSourceRequest request, OverTimeTransfer overTimeTransfer)
         {
             ModelState.Clear();
             var over = db.OverTimeTransfers.FirstOrDefault(x => x.OverTimeTransferId == overTimeTransfer.OverTimeTransferId && x.IsSendForApproval);
@@ -294,13 +311,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult OverTimeTransfers_Destroy([DataSourceRequest]DataSourceRequest request, OverTimeTransfer overTimeTransfer)
+        public ActionResult OverTimeTransfers_Destroy([DataSourceRequest] DataSourceRequest request, OverTimeTransfer overTimeTransfer)
         {
             ModelState.Clear();
-            var over = db.OverTimeTransfers.FirstOrDefault(x=>x.OverTimeTransferId == overTimeTransfer.OverTimeTransferId && x.IsSendForApproval);
-            if(over != null)
+            var over = db.OverTimeTransfers.FirstOrDefault(x => x.OverTimeTransferId == overTimeTransfer.OverTimeTransferId && x.IsSendForApproval);
+            if (over != null)
             {
-                ModelState.AddModelError("","Cannot delete approved requests");
+                ModelState.AddModelError("", "Cannot delete approved requests");
             }
             if (ModelState.IsValid)
             {
@@ -315,7 +332,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     {
                         OverTimeTransferId = overTimeTransfer.OverTimeTransferId,
                         EmployeeId = overTimeTransfer.EmployeeId,
-                        IsSendForApproval=overTimeTransfer.IsSendForApproval,
+                        IsSendForApproval = overTimeTransfer.IsSendForApproval,
                         Date = overTimeTransfer.Date,
                         GLPeriodId = overTimeTransfer.GLPeriodId,
                         NormalHours = overTimeTransfer.NormalHours,
@@ -329,7 +346,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         OrgBranchName = overTimeTransfer.OrgBranchName,
                     };
                     #region delete log
-                    UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted employee over time transfer information of employee " + overTimeTransfer.EmployeeId + " and period " + overTimeTransfer.GLPeriodId,Modules.Payroll);
+                    UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted employee over time transfer information of employee " + overTimeTransfer.EmployeeId + " and period " + overTimeTransfer.GLPeriodId, Modules.Payroll);
                     #endregion
                     db.OverTimeTransfers.Attach(entity);
                     db.OverTimeTransfers.Remove(entity);
@@ -339,16 +356,25 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
             return Json(new[] { overTimeTransfer }.ToDataSourceResult(request, ModelState));
         }
-        public void SendForApproval(int id)
+        public JsonResult SendForApproval(int id)
         {
             var transfer = db.OverTimeTransfers.FirstOrDefault(x => x.OverTimeTransferId == id);
-            if (transfer != null)
+            if (transfer == null)
             {
-                transfer.IsSendForApproval = true;
-
-                db.Entry(transfer).State = EntityState.Modified;
-                db.SaveChanges();
+                return Json(new
+                {
+                    Message = "record not Found.",
+                    Status = "Not-Ok"
+                }, JsonRequestBehavior.AllowGet);
             }
+            transfer.IsSendForApproval = true;
+            db.Entry(transfer).State = EntityState.Modified;
+            db.SaveChanges();
+            return Json(new
+            {
+                Message = "successfully sent for approval.",
+                Status = "Ok"
+            }, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)
