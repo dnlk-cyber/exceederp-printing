@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+
+using System.Net;
+
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.DataAccess.Context;
@@ -20,29 +23,31 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
         [DataObjectMethod(DataObjectMethodType.Select)]
         public PurchaseRequistionHeader GetPurchaseRequistions(int id)
         {
-            PurchaseRequisition purchaseRequisition = _db.PurchaseRequisitions.Find(id);
+            var record = _db.PurchaseRequisitions.Find(id);
+
+            
             var organization = _db.Companies.FirstOrDefault(x => x.Category == "0");
 
             PurchaseRequistionHeader headerDs = new PurchaseRequistionHeader
             {
-                PurchaseRequistionNo = InventoryPrintHelper.GetId(purchaseRequisition.PurchaseRequisitionID),
-                RequestingDate = purchaseRequisition.RequestDate.ToShortDateString(),
-                Requestor = EmployeeHelper.GetEmployeeEnglishName(purchaseRequisition.EmployeeId),
-                ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(purchaseRequisition.OnlineApprovedBy)),
-                AuthorizerName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(purchaseRequisition.MiddleOnlineApprovedBy)),
-                RequestingDepartment = InventoryPrintHelper.WorkUnitName(purchaseRequisition.OrgStructureId)
+                PurchaseRequistionNo = InventoryPrintHelper.GetId(record.PurchaseRequisitionID),
+                RequestingDate = record.RequestDate.ToShortDateString(),
+                Requestor = EmployeeHelper.GetEmployeeEnglishName(record.EmployeeId),
+                ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.DepartmentOnlineApprovedBy)),
+                AuthorizerName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.OnlineApprovedBy)),
+                RequestingDepartment = InventoryPrintHelper.WorkUnitName(record.OrgStructureId)
             };
 
-            if (purchaseRequisition.DateCreated != null)
-                headerDs.CreatedDate = (DateTime)purchaseRequisition.DateCreated;
+            if (record.DateCreated != null)
+                headerDs.CreatedDate = (DateTime)record.DateCreated;
 
            
-            if (purchaseRequisition.OnlineApprovedTime != null)
-                headerDs.ApprovalDate = (DateTime)purchaseRequisition.OnlineApprovedTime;
+            if (record.DepartmentOnlineApprovedTime != null)
+                headerDs.ApprovalDate = (DateTime)record.DepartmentOnlineApprovedTime;
 
            
-            if (purchaseRequisition.MiddleOnlineApprovedTime != null)
-                headerDs.AuthorizationDate = (DateTime)purchaseRequisition.MiddleOnlineApprovedTime;
+            if (record.OnlineApprovedTime != null)
+                headerDs.AuthorizationDate = (DateTime)record.OnlineApprovedTime;
             
             if (organization != null)
             {
@@ -83,6 +88,9 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<PurchaseRequisitionItem> RequisitionItems(int id)
         {
+            var record = _db.PurchaseRequisitions.Find(id);
+
+            
             List<PurchaseRequisitionItem> requisitionItems = _db.PurchaseRequisitionItems.Where(x => x.PurchaseRequisitionID == id).ToList();
             return requisitionItems;
         }
