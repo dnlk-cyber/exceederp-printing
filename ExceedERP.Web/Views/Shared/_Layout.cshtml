@@ -558,13 +558,13 @@
 
             <ul class="nav nav-list">
                 @*<li id="link300" class="actionlinlk">
-                        <a href="~/UserProfile/MyBranches">
-                            <i class="menu-icon fa fa-key"></i>
-                            <span class="menu-text"> User Profile </span>
-                        </a>
+            <a href="~/UserProfile/MyBranches">
+                <i class="menu-icon fa fa-key"></i>
+                <span class="menu-text"> User Profile </span>
+            </a>
 
-                        <b class="arrow"></b>
-                    </li>*@
+            <b class="arrow"></b>
+        </li>*@
 
 
                 @Html.Partial("_Dashboard")
@@ -702,9 +702,9 @@
                 }
 
                 @*@if (HttpContext.Current.User.IsInRole("Purchase") ||
-                    HttpContext.Current.User.IsInRole("Purchase_Report") ||
-                    HttpContext.Current.User.IsInRole("Purchase_Admin")
-                    )*@
+        HttpContext.Current.User.IsInRole("Purchase_Report") ||
+        HttpContext.Current.User.IsInRole("Purchase_Admin")
+        )*@
 
                 @Html.Partial("_Procurement")
 
@@ -718,12 +718,13 @@
                 @Html.Partial("_SelfService")
                 @*@Html.Partial("_PrintingEstimation")*@
                 @*@Html.Partial("_ProductionFollowUp")
-                    @Html.Partial("_JobCosting")
+        @Html.Partial("_JobCosting")
 
-                    @Html.Partial("_CMS")
-                    @Html.Partial("_InformationDesk")*@
+        @Html.Partial("_CMS")
+        @Html.Partial("_InformationDesk")*@
                 @Html.Partial("_Printing")
                 @Html.Partial("_Manufacturing")
+                @Html.Partial("_JobCosting")
 
 
 

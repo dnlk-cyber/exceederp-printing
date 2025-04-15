@@ -185,6 +185,17 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                     SecondVoidBy = purchaseRequisition.SecondVoidBy,
                     SecondVoidTime = purchaseRequisition.SecondVoidTime,
 
+                IsDepartmentOnlineApproved = purchaseRequisition.IsDepartmentOnlineApproved,
+                DepartmentOnlineApprovedBy = purchaseRequisition.DepartmentOnlineApprovedBy,
+                DepartmentOnlineApprovedTime = purchaseRequisition.DepartmentOnlineApprovedTime,
+                IsDepartmentSendForApproval = purchaseRequisition.IsDepartmentSendForApproval,
+                DepartmentSendForApprovalBy = purchaseRequisition.DepartmentSendForApprovalBy,
+                DepartmentSendForApprovalTime = purchaseRequisition.DepartmentSendForApprovalTime,
+
+                ForwardedFrom = purchaseRequisition.ForwardedFrom,
+                ForwardedTo = purchaseRequisition.ForwardedTo,
+                IsFinalApproval = purchaseRequisition.IsFinalApproval,
+                CurrentApprovalStep = purchaseRequisition.CurrentApprovalStep,
 
                 IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
                 BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
@@ -273,6 +284,18 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                         IsSecondOnlineApproved = purchaseRequisition.IsSecondOnlineApproved,
                         SecondOnlineApprovedBy = purchaseRequisition.SecondOnlineApprovedBy,
                         SecondOnlineApprovedTime = purchaseRequisition.SecondOnlineApprovedTime,
+
+                        IsDepartmentOnlineApproved = purchaseRequisition.IsDepartmentOnlineApproved,
+                        DepartmentOnlineApprovedBy = purchaseRequisition.DepartmentOnlineApprovedBy,
+                        DepartmentOnlineApprovedTime = purchaseRequisition.DepartmentOnlineApprovedTime,
+                        IsDepartmentSendForApproval = purchaseRequisition.IsDepartmentSendForApproval,
+                        DepartmentSendForApprovalBy = purchaseRequisition.DepartmentSendForApprovalBy,
+                        DepartmentSendForApprovalTime = purchaseRequisition.DepartmentSendForApprovalTime,
+
+                        ForwardedFrom = purchaseRequisition.ForwardedFrom,
+                        ForwardedTo = purchaseRequisition.ForwardedTo,
+                        IsFinalApproval = purchaseRequisition.IsFinalApproval,
+                        CurrentApprovalStep = purchaseRequisition.CurrentApprovalStep,
 
                         IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
                         BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,
@@ -390,6 +413,17 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PurchaseRequisitions
                         SecondOnlineApprovedBy = purchaseRequisition.SecondOnlineApprovedBy,
                         SecondOnlineApprovedTime = purchaseRequisition.SecondOnlineApprovedTime,
 
+                        IsDepartmentOnlineApproved = purchaseRequisition.IsDepartmentOnlineApproved,
+                        DepartmentOnlineApprovedBy = purchaseRequisition.DepartmentOnlineApprovedBy,
+                        DepartmentOnlineApprovedTime = purchaseRequisition.DepartmentOnlineApprovedTime,
+                        IsDepartmentSendForApproval = purchaseRequisition.IsDepartmentSendForApproval,
+                        DepartmentSendForApprovalBy = purchaseRequisition.DepartmentSendForApprovalBy,
+                        DepartmentSendForApprovalTime = purchaseRequisition.DepartmentSendForApprovalTime,
+
+                        ForwardedFrom = purchaseRequisition.ForwardedFrom,
+                        ForwardedTo = purchaseRequisition.ForwardedTo,
+                        IsFinalApproval = purchaseRequisition.IsFinalApproval,
+                        CurrentApprovalStep = purchaseRequisition.CurrentApprovalStep,
 
                         IsBudgetApproved = purchaseRequisition.IsBudgetApproved,
                         BudgetApprovedBy = purchaseRequisition.BudgetApprovedBy,

@@ -80,6 +80,19 @@
               model.Field(p => p.SecondOnlineApprovedBy).Editable(false);
               model.Field(p => p.SecondOnlineApprovedTime).Editable(false);
 
+              model.Field(p => p.IsDepartmentOnlineApproved).Editable(false);
+              model.Field(p => p.DepartmentOnlineApprovedBy).Editable(false);
+              model.Field(p => p.DepartmentOnlineApprovedTime).Editable(false);
+
+              model.Field(p => p.IsDepartmentSendForApproval).Editable(false);
+              model.Field(p => p.DepartmentSendForApprovalBy).Editable(false);
+              model.Field(p => p.DepartmentSendForApprovalTime).Editable(false);
+
+              model.Field(p => p.ForwardedFrom).Editable(false);
+              model.Field(p => p.ForwardedTo).Editable(false);
+              model.Field(p => p.IsFinalApproval).Editable(false);
+              model.Field(p => p.CurrentApprovalStep).Editable(false);
+
               model.Field(p => p.VoidBy).Editable(false);
               model.Field(p => p.VoidTime).Editable(false);
               model.Field(p => p.IsVoid).Editable(false);
@@ -93,326 +106,329 @@
 
 <script id="purchaserequsitiontemplate" type="text/Kendo-tmpl">
     @(Html.Kendo().TabStrip().Name("tabStrip_#=PurchaseRequisitionID#").SelectedIndex(0).Items(itemn =>
-      {
-          itemn.Add().Text("Detail").Content(
-              @<text>
-                                                        <hr />
-                                                        # if (!IsSecondOnlineApproved&&!IsSecondSendForApproval)
-                                                        {#
+                              {
+                                  itemn.Add().Text("Detail").Content(
+                                    @<text>
+                                        <hr />
+                                        # if (!IsSecondOnlineApproved&&!IsSecondSendForApproval)
+                                        {#
 
-                                                        <a onclick='return sendForApproval("#=PurchaseRequisitionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                                        <br />
-                                                        # } #
+                                        <a onclick='return sendForApproval("#=PurchaseRequisitionID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                        <br />
+                                        # } #
 
-                                                       # if (IsOnlineApproved)
-                                                        {#
-                                                          <a href='@Url.Action("PurchaseRequistionReviewPrint", "ProcurementPrint")/#=PurchaseRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                                        <br />
-                                                        # } #
-                                                        <div>
-                                                            <hr>
-                                                            <dl class="dl-horizontal">
+                                        # if (IsOnlineApproved || IsDepartmentOnlineApproved)
+                                        {#
+                                        <a href='@Url.Action("PurchaseRequistionReviewPrint", "ProcurementPrint")/#=PurchaseRequisitionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                        <br />
+                                        # } #
+                                        <div>
+                                            <hr>
+                                            <dl class="dl-horizontal">
 
-                                                                <dt>
-                                                                    Store Requisition Number
-                                                                </dt>
-                                                                <dd>
-                                                                    #= StoreRequisitionID #
-                                                                </dd>
-                                                                @*<dt>
-                                                                        Requester
-                                                                    </dt>
-                                                                    <dd>
-                                                                        #= EmployeeId #
-                                                                    </dd>
+                                                <dt>
+                                                    Store Requisition Number
+                                                </dt>
+                                                <dd>
+                                                    #= StoreRequisitionID #
+                                                </dd>
+                                                @*<dt>
+                                                        Requester
+                                                    </dt>
+                                                    <dd>
+                                                        #= EmployeeId #
+                                                    </dd>
 
-                                                                    <dt>
-                                                                        Procurement Officer
-                                                                    </dt>
-                                                                    <dd>
-                                                                        #= ProcurementOfficer #
+                                                    <dt>
+                                                        Procurement Officer
+                                                    </dt>
+                                                    <dd>
+                                                        #= ProcurementOfficer #
 
-                                                                    </dd>*@
-                                                                <dt>
-                                                                    Request Date
-                                                                </dt>
-                                                                <dd>
+                                                    </dd>*@
+                                                <dt>
+                                                    Request Date
+                                                </dt>
+                                                <dd>
 
-                                                                    #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy hh:mm tt') #
-
-
-                                                                </dd>
-                                                                <dt>
-                                                                    Status
-                                                                </dt>
-                                                                <dd>
-                                                                    #= Status #
-
-                                                                </dd>
-                                                                <dt>
-                                                                    CreatedOn
-                                                                </dt>
-                                                                <dd>
-                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
-                                                                </dd>
-                                                                <dt>
-                                                                    CreatedBy
-                                                                </dt>
-                                                                <dd>
-                                                                    #= CreatedBy #
-
-                                                                </dd>
-                                                                <dt>
-                                                                    Modified By
-                                                                </dt>
-                                                                <dd>
-                                                                    #= ModifiedBy #s
-                                                                </dd>
-                                                                <dt>
-                                                                    Modified Date
-                                                                </dt>
-                                                                <dd>
-                                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
-                                                                </dd>
-                                                                <dt>
-                                                                   Approved By
-                                                                </dt>
-                                                                <dd>
-                                                                    #= OnlineApprovedBy #s
-                                                                </dd>
-                                                                <dt>
-                                                                    Approval Time
-                                                                </dt>
-                                                                <dd>
-                                                                    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
-                                                                </dd>
-                                                                <dt>
-                                                                   Second Approved By
-                                                                </dt>
-                                                                <dd>
-                                                                    #= MiddleOnlineApprovedBy #s
-                                                                </dd>
-                                                                <dt>
-                                                                    Approval Time
-                                                                </dt>
-                                                                <dd>
-                                                                    #=kendo.toString(kendo.parseDate(MiddleOnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
-                                                                </dd>
-                                                                 <dt>
-                                                                   Approved By -Procurement
-                                                                </dt>
-                                                                <dd>
-                                                                    #= SecondOnlineApprovedBy #s
-                                                                </dd>
-                                                                <dt>
-                                                                    Approval Time
-                                                                </dt>
-                                                                <dd>
-                                                                    #=kendo.toString(kendo.parseDate(SecondOnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
-                                                                </dd>
-                                                            </dl>
-
-                                                        </div>
-
-                                                        <hr>
-
-                                                        # if (IsSecondOnlineApproved && !IsSecondVoid)
-                                                        {#
-                                                        @if (HttpContext.Current.User.IsInRole("Procurement_Void"))
-                                                        {
-                                                            <a onclick='return voidRecord("#=PurchaseRequisitionID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
-                                                        }
-                                                        # } #
-
-                                                    </text>);
+                                                    #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy hh:mm tt') #
 
 
+                                                </dd>
+                                                <dt>
+                                                    Status
+                                                </dt>
+                                                <dd>
+                                                    #= Status #
 
-          itemn.Add().Text("Items").Content(
-              @<text>
-                                                                                                        @(Html.Kendo().Grid<PurchaseRequisitionItem>()
-                                                                                                              .Name("PurchaseRequisitionItem_#=PurchaseRequisitionID#")
-                                                                                                              .Columns(columns =>
-                                                                                                              {
-                                                                                                                  columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category");
-                                                                                                                  columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items");
+                                                </dd>
+                                                <dt>
+                                                    CreatedOn
+                                                </dt>
+                                                <dd>
+                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
+                                                </dd>
+                                                <dt>
+                                                    CreatedBy
+                                                </dt>
+                                                <dd>
+                                                    #= CreatedBy #
 
-                                                                                                                  columns.Bound(c => c.Name).Width(120);
-                                                                                                                  columns.Bound(c => c.PartNo).Width(120);
-                                                                                                                  columns.Bound(c => c.ModelNo).Width(120);
-                                                                                                                  columns.Bound(c => c.SerialNo).Width(100);
-                                                                                                                  columns.Bound(c => c.ChasisNo).Width(100);
-                                                                                                                  columns.Bound(c => c.UoM).Width(100);
-                                                                                                                  columns.Bound(c => c.Quantity).Width(100);
-                                                                                                                  columns.Bound(c => c.ItemSpecification).Width(150);
-                                                                                                                  columns.Bound(c => c.ProductionJobNo).Width(110);
-                                                                                                                  columns.Bound(c => c.BudgetCode).Width(70);
-                                                                                                                  columns.Command(command =>
-                                                                                                                  {
-                                                                                                                      //command.Edit();
-                                                                                                                      //command.Destroy();
-                                                                                                                  }).Width(480);
-                                                                                                              })
-                                                                                                              .Events(ev => ev.Edit("onItemEdit"))
-                                                                                                              .Events(x => x.DataBound("onDataBoundPurchaseLines"))
-                                                                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                              .Scrollable()
-                                                                                                              .ClientDetailTemplateId("itemDetail")
-                                                                                                              .HtmlAttributes(new { style = "height: 550px;" })
-                                                                                                              .DataSource(dataSource => dataSource
-                                                                                                                  .Ajax()
+                                                </dd>
+                                                <dt>
+                                                    Modified By
+                                                </dt>
+                                                <dd>
+                                                    #= ModifiedBy #s
+                                                </dd>
+                                                <dt>
+                                                    Modified Date
+                                                </dt>
+                                                <dd>
+                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
+                                                </dd>
+                                                <dt>
+                                                    Approved By
+                                                </dt>
+                                                <dd>
+                                                    #= OnlineApprovedBy #s
+                                                </dd>
+                                                <dt>
+                                                    Approval Time
+                                                </dt>
+                                                <dd>
+                                                    #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
+                                                </dd>
+                                                <dt>
+                                                    Second Approved By
+                                                </dt>
+                                                <dd>
+                                                    #= MiddleOnlineApprovedBy #s
+                                                </dd>
+                                                <dt>
+                                                    Approval Time
+                                                </dt>
+                                                <dd>
+                                                    #=kendo.toString(kendo.parseDate(MiddleOnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
+                                                </dd>
+                                                <dt>
+                                                    Approved By -Procurement
+                                                </dt>
+                                                <dd>
+                                                    #= SecondOnlineApprovedBy #s
+                                                </dd>
+                                                <dt>
+                                                    Approval Time
+                                                </dt>
+                                                <dd>
+                                                    #=kendo.toString(kendo.parseDate(SecondOnlineApprovedTime), 'dd/MM/yyyy hh:mm tt') #
+                                                </dd>
+                                            </dl>
 
-                                                                                                                  .Events(ev => ev
-                                                                                                                      .Error("error_handler(\"PurchaseRequisitionItem_#=PurchaseRequisitionID#\")")
-                                                                                                                      .RequestStart("onRequestStart(\"PurchaseRequisitionItem_#=PurchaseRequisitionID#\")")
-                                                                                                                      .RequestEnd("onRequestEnd(\"PurchaseRequisitionItem_#=PurchaseRequisitionID#\")"))
-                                                                                                                  .Model(model =>
-                                                                                                                  {
-                                                                                                                      model.Id(p => p.PurchaseRequisitionItemID);
-                                                                                                                      model.Field(p => p.CatCode).Editable(false);
-                                                                                                                      model.Field(p => p.ItmCode).Editable(false);
-                                                                                                                      model.Field(p => p.Name).Editable(false);
-                                                                                                                      model.Field(p => p.UoM).Editable(false);
-                                                                                                                      model.Field(p => p.PartNo).Editable(false);
-                                                                                                                      model.Field(p => p.ModelNo).Editable(false);
-                                                                                                                      model.Field(p => p.SerialNo).Editable(false);
-                                                                                                                      model.Field(p => p.ChasisNo).Editable(false);
-                                                                                                                      model.Field(p => p.ItemSpecification).Editable(false);
+                                        </div>
 
-                                                                                                                      model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                                      model.Field(p => p.DateCreated).Editable(false);
-                                                                                                                      model.Field(p => p.ModifiedBy).Editable(false);
-                                                                                                                      model.Field(p => p.LastModified).Editable(false);
+                                        <hr>
+
+                                        # if (IsSecondOnlineApproved && !IsSecondVoid)
+                                        {#
+                                        @if (HttpContext.Current.User.IsInRole("Procurement_Void"))
+                                                    {
+                                            <a onclick='return voidRecord("#=PurchaseRequisitionID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                                    }
+                                        /**/
+                                        /**/
+                                        /**/
+                                        # } #
+
+                                    </text>);
 
 
-                                                                                                                  })
-                                                                                                                  .Read(read => read.Action("PurchaseRequisitionItemReviews_Read", "PurchaseRequisitionItemReview", new { id = "#=PurchaseRequisitionID#" }))
-                                                                                                                  .Create(create => create.Action("PurchaseRequisitionItemReviews_Create", "PurchaseRequisitionItemReview", new { id = "#=PurchaseRequisitionID#" }))
-                                                                                                                  .Update(update => update.Action("PurchaseRequisitionItemReviews_Update", "PurchaseRequisitionItemReview"))
-                                                                                                                  .Destroy(destroy => destroy.Action("PurchaseRequisitionItemReviews_Destroy", "PurchaseRequisitionItemReview"))
-                                                                                                              ).ToClientTemplate())
+
+                                          itemn.Add().Text("Items").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<PurchaseRequisitionItem>()
+                                                      .Name("PurchaseRequisitionItem_#=PurchaseRequisitionID#")
+                                                      .Columns(columns =>
+                                                      {
+                                                                  columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category");
+                                                                  columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items");
+
+                                                                  columns.Bound(c => c.Name).Width(120);
+                                                                  columns.Bound(c => c.PartNo).Width(120);
+                                                                  columns.Bound(c => c.ModelNo).Width(120);
+                                                                  columns.Bound(c => c.SerialNo).Width(100);
+                                                                  columns.Bound(c => c.ChasisNo).Width(100);
+                                                                  columns.Bound(c => c.UoM).Width(100);
+                                                                  columns.Bound(c => c.Quantity).Width(100);
+                                                                  columns.Bound(c => c.ItemSpecification).Width(150);
+                                                                  columns.Bound(c => c.ProductionJobNo).Width(110);
+                                                                  columns.Bound(c => c.BudgetCode).Width(70);
+                                                                  columns.Command(command =>
+                                          {
+                                                      //command.Edit();
+                                                      //command.Destroy();
+                                                  }).Width(480);
+                                                              })
+                                                      .Events(ev => ev.Edit("onItemEdit"))
+                                                      .Events(x => x.DataBound("onDataBoundPurchaseLines"))
+                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                      .Scrollable()
+                                                      .ClientDetailTemplateId("itemDetail")
+                                                      .HtmlAttributes(new { style = "height: 550px;" })
+                                                      .DataSource(dataSource => dataSource
+                                                          .Ajax()
+
+                                                          .Events(ev => ev
+                                                              .Error("error_handler(\"PurchaseRequisitionItem_#=PurchaseRequisitionID#\")")
+                                                              .RequestStart("onRequestStart(\"PurchaseRequisitionItem_#=PurchaseRequisitionID#\")")
+                                                              .RequestEnd("onRequestEnd(\"PurchaseRequisitionItem_#=PurchaseRequisitionID#\")"))
+                                                          .Model(model =>
+                                                          {
+                                                                      model.Id(p => p.PurchaseRequisitionItemID);
+                                                                      model.Field(p => p.CatCode).Editable(false);
+                                                                      model.Field(p => p.ItmCode).Editable(false);
+                                                                      model.Field(p => p.Name).Editable(false);
+                                                                      model.Field(p => p.UoM).Editable(false);
+                                                                      model.Field(p => p.PartNo).Editable(false);
+                                                                      model.Field(p => p.ModelNo).Editable(false);
+                                                                      model.Field(p => p.SerialNo).Editable(false);
+                                                                      model.Field(p => p.ChasisNo).Editable(false);
+                                                                      model.Field(p => p.ItemSpecification).Editable(false);
+
+                                                                      model.Field(p => p.CreatedBy).Editable(false);
+                                                                      model.Field(p => p.DateCreated).Editable(false);
+                                                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                                                      model.Field(p => p.LastModified).Editable(false);
 
 
-                                                                                                    </text>);
+                                                                  })
+                                                          .Read(read => read.Action("PurchaseRequisitionItemReviews_Read", "PurchaseRequisitionItemReview", new { id = "#=PurchaseRequisitionID#" }))
+                                                          .Create(create => create.Action("PurchaseRequisitionItemReviews_Create", "PurchaseRequisitionItemReview", new { id = "#=PurchaseRequisitionID#" }))
+                                                          .Update(update => update.Action("PurchaseRequisitionItemReviews_Update", "PurchaseRequisitionItemReview"))
+                                                          .Destroy(destroy => destroy.Action("PurchaseRequisitionItemReviews_Destroy", "PurchaseRequisitionItemReview"))
+                                                      ).ToClientTemplate())
 
-                                                     itemn.Add().Text("Attachment").Content(@<text>
-
-                        @PrFileUpload()
 
                     </text>);
 
-          itemn.Add().Text("Validation").Content(
+                              itemn.Add().Text("Attachment").Content(@<text>
 
-              @<text>
+                                @PrFileUpload()
 
-                                                                                                                            @(Html.Kendo().Grid<PurchaseRequisitionPurchaseDepartmentValidation>()
-                                                                                                                                  .Name("PurchaseRequisitionDepartmentValidation_#=PurchaseRequisitionID#")
-                                                                                                                                  .Columns(columns =>
-                                                                                                                                  {
-                                                                                                                                      columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
-                                                                                                                                      columns.Bound(c => c.Remark).Width(170);
-                                                                                                                                      columns.Command(command =>
-                                                                                                                                      {
-                                                                                                                                          command.Edit();
-                                                                                                                                          //command.Destroy();
-                                                                                                                                      });
-                                                                                                                                  })
-                                                                                                                                  .ToolBar(toolbar =>
-                                                                                                                                  {
-                                                                                                                                      toolbar.Create();
-                                                                                                                                  })
-                                                                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                                  .Scrollable()
-                                                                                                                                  .Events(x => x.DataBound("onDataBoundPurchaseValidation"))
-                                                                                                                                  .DataSource(dataSource => dataSource
-                                                                                                                                      .Ajax()
-                                                                                                                                      .Events(ev => ev
-                                                                                                                                          .Error("error_handler(\"PurchaseRequisitionDepartmentValidation_#=PurchaseRequisitionID#\")")
-                                                                                                                                          .RequestStart("onRequestStart(\"PurchaseRequisitionDepartmentValidation_#=PurchaseRequisitionID#\")")
-                                                                                                                                          .RequestEnd("onRequestEnd(\"PurchaseRequisitionDepartmentValidation_#=PurchaseRequisitionID#\")"))
-                                                                                                                                      .Model(model =>
-                                                                                                                                      {
-                                                                                                                                          model.Id(p => p.PurchaseRequisitionPurchaseDepartmentValidationID);
-                                                                                                                                          model.Field(p => p.Approver).Editable(false);
-                                                                                                                                      })
-                                                                                                                                      .Read(read => read.Action("PurchaseRequisitionPurchaseDepartmentValidations_Read", "PurchaseRequisitionPurchaseDepartmentValidationReview", new { id = "#=PurchaseRequisitionID#" }))
-                                                                                                                                      .Create(create => create.Action("PurchaseRequisitionPurchaseDepartmentValidations_Create", "PurchaseRequisitionPurchaseDepartmentValidationReview", new { id = "#=PurchaseRequisitionID#" }))
-                                                                                                                                      .Update(update => update.Action("PurchaseRequisitionPurchaseDepartmentValidations_Update", "PurchaseRequisitionPurchaseDepartmentValidationReview", new { id = "#=PurchaseRequisitionID#" }))
-                                                                                                                                      .Destroy(destroy => destroy.Action("PurchaseRequisitionPurchaseDepartmentValidations_Destroy", "PurchaseRequisitionPurchaseDepartmentValidationReview", new { id = "#=PurchaseRequisitionID#" }))
-                                                                                                                                  ).ToClientTemplate())
+                            </text>);
 
+                                    itemn.Add().Text("Validation").Content(
 
-                                                                                                                        </text>);
+                @<text>
 
-          itemn.Add().Text("Reassignment").Content(
-              @<text>
-                                                                                                            @(Html.Kendo().Grid<PurchaseRequisitionAssignment>()
-                                                                                                                  .Name("PurchaseRequisitionAssignment#=PurchaseRequisitionID#")
-                                                                                                                  .Columns(columns =>
-                                                                                                                  {
-                                                                                                                      columns.Bound(c => c.PurchaseRequisitionAssignmentId).Title("ID").Width(30);
-                                                                                                                      columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(140).EditorTemplateName("SubordinatePurchaserSelector");
-                                                                                                                      columns.Bound(c => c.PurchaseCategory).EditorTemplateName("PurchaseCategory").Width(110);
-                                                                                                                      columns.Bound(c => c.ProcurementMethod).EditorTemplateName("ProcurementMethod").Width(110);
-                                                                                                                      columns.Bound(c => c.TenderType).EditorTemplateName("TenderType").Width(110);
-                                                                                                                      columns.Command(command =>
-                                                                                                                      {
-                                                                                                                          if (HttpContext.Current.User.IsInRole("Procurement_TeamLeader"))
-                                                                                                                          {
-                                                                                                                              command.Edit();
-                                                                                                                              command.Destroy();
-                                                                                                                          }
-                                                                                                                      }).Width(480);
-                                                                                                                  })
-                                                                                                                  .ToolBar(toolbar =>
-                                                                                                                  {
-                                                                                                                      if(HttpContext.Current.User.IsInRole("Procurement_TeamLeader"))
-                                                                                                                      { toolbar.Create();}
-                                                                                                                  })
-                                                                                                                  .HtmlAttributes(new { style = "height: 500px;" })
-
-                                                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                  .Scrollable()
-                                                                                                                  .Events(x=>x.DetailExpand("detailExpandPurchaseAssignment")
-                                                                                                                      .DataBound("onDataBoundMasterPurchaseAssignment"))
-                                                                                                                  .ClientDetailTemplateId("asseignmentDetail")
-                                                                                                                  .DataSource(dataSource => dataSource
-                                                                                                                      .Ajax()
-
-                                                                                                                      .Events(ev => ev
-                                                                                                                          .Error("error_handler(\"PurchaseRequisitionAssignment#=PurchaseRequisitionID#\")")
-                                                                                                                          .RequestStart("onRequestStart(\"PurchaseRequisitionAssignment#=PurchaseRequisitionID#\")")
-                                                                                                                          .RequestEnd("onRequestEnd(\"PurchaseRequisitionAssignment#=PurchaseRequisitionID#\")"))
-                                                                                                                      .Model(model =>
-                                                                                                                      {
-                                                                                                                          model.Id(p => p.PurchaseRequisitionAssignmentId);
-                                                                                                                          model.Field(p => p.PurchaseRequisitionAssignmentId).Editable(false);
-                                                                                                                          model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                                          model.Field(p => p.DateCreated).Editable(false);
-                                                                                                                          model.Field(p => p.ModifiedBy).Editable(false);
-                                                                                                                          model.Field(p => p.LastModified).Editable(false);
-
-                                                                                                                          model.Field(p => p.Status).Editable(false);
-
-                                                                                                                          model.Field(p => p.IsOnlineApproved).Editable(false);
-                                                                                                                          model.Field(p => p.OnlineApprovedBy).Editable(false);
-                                                                                                                          model.Field(p => p.OnlineApprovedTime).Editable(false);
-
-                                                                                                                          model.Field(p => p.VoidBy).Editable(false);
-                                                                                                                          model.Field(p => p.VoidTime).Editable(false);
-                                                                                                                          model.Field(p => p.IsVoid).Editable(false);
+                    @(Html.Kendo().Grid<PurchaseRequisitionPurchaseDepartmentValidation>()
+                                                  .Name("PurchaseRequisitionDepartmentValidation_#=PurchaseRequisitionID#")
+                                                  .Columns(columns =>
+                                                  {
+                                                              columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                              columns.Bound(c => c.Remark).Width(170);
+                                                              columns.Command(command =>
+                                      {
+                                                              command.Edit();
+                                                  //command.Destroy();
+                                              });
+                                                          })
+                                                  .ToolBar(toolbar =>
+                                                  {
+                                                              toolbar.Create();
+                                                          })
+                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                  .Scrollable()
+                                                  .Events(x => x.DataBound("onDataBoundPurchaseValidation"))
+                                                  .DataSource(dataSource => dataSource
+                                                      .Ajax()
+                                                      .Events(ev => ev
+                                                          .Error("error_handler(\"PurchaseRequisitionDepartmentValidation_#=PurchaseRequisitionID#\")")
+                                                          .RequestStart("onRequestStart(\"PurchaseRequisitionDepartmentValidation_#=PurchaseRequisitionID#\")")
+                                                          .RequestEnd("onRequestEnd(\"PurchaseRequisitionDepartmentValidation_#=PurchaseRequisitionID#\")"))
+                                                      .Model(model =>
+                                                      {
+                                                                  model.Id(p => p.PurchaseRequisitionPurchaseDepartmentValidationID);
+                                                                  model.Field(p => p.Approver).Editable(false);
+                                                              })
+                                                      .Read(read => read.Action("PurchaseRequisitionPurchaseDepartmentValidations_Read", "PurchaseRequisitionPurchaseDepartmentValidationReview", new { id = "#=PurchaseRequisitionID#" }))
+                                                      .Create(create => create.Action("PurchaseRequisitionPurchaseDepartmentValidations_Create", "PurchaseRequisitionPurchaseDepartmentValidationReview", new { id = "#=PurchaseRequisitionID#" }))
+                                                      .Update(update => update.Action("PurchaseRequisitionPurchaseDepartmentValidations_Update", "PurchaseRequisitionPurchaseDepartmentValidationReview", new { id = "#=PurchaseRequisitionID#" }))
+                                                      .Destroy(destroy => destroy.Action("PurchaseRequisitionPurchaseDepartmentValidations_Destroy", "PurchaseRequisitionPurchaseDepartmentValidationReview", new { id = "#=PurchaseRequisitionID#" }))
+                                                  ).ToClientTemplate())
 
 
-                                                                                                                      })
-                                                                                                                      .Read(read => read.Action("PurchaseRequisitionAssignments_Read", "PurchaseRequsitionReassignment", new { id = "#=PurchaseRequisitionID#" }))
-                                                                                                                      .Create(create => create.Action("PurchaseRequisitionAssignments_Create", "PurchaseRequsitionReassignment", new { id = "#=PurchaseRequisitionID#" }))
-                                                                                                                      .Update(update => update.Action("PurchaseRequisitionAssignments_Update", "PurchaseRequsitionReassignment"))
-                                                                                                                      .Destroy(destroy => destroy.Action("PurchaseRequisitionAssignments_Destroy", "PurchaseRequsitionReassignment"))
-                                                                                                                  ).ToClientTemplate())
+                </text>);
+
+                              itemn.Add().Text("Reassignment").Content(
+    @<text>
+        @(Html.Kendo().Grid<PurchaseRequisitionAssignment>()
+                                      .Name("PurchaseRequisitionAssignment#=PurchaseRequisitionID#")
+                                      .Columns(columns =>
+                                      {
+                                                  columns.Bound(c => c.PurchaseRequisitionAssignmentId).Title("ID").Width(30);
+                                                  columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(140).EditorTemplateName("SubordinatePurchaserSelector");
+                                                  columns.Bound(c => c.PurchaseCategory).EditorTemplateName("PurchaseCategory").Width(110);
+                                                  columns.Bound(c => c.ProcurementMethod).EditorTemplateName("ProcurementMethod").Width(110);
+                                                  columns.Bound(c => c.TenderType).EditorTemplateName("TenderType").Width(110);
+                                                  columns.Command(command =>
+                          {
+                                                  if (HttpContext.Current.User.IsInRole("Procurement_TeamLeader"))
+                                                  {
+                                                      command.Edit();
+                                                      command.Destroy();
+                                                  }
+                                              }).Width(480);
+                                              })
+                                      .ToolBar(toolbar =>
+                                      {
+                                                  if (HttpContext.Current.User.IsInRole("Procurement_TeamLeader"))
+                                                  { toolbar.Create(); }
+                                              })
+                                      .HtmlAttributes(new { style = "height: 500px;" })
+
+                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                      .Scrollable()
+                                      .Events(x => x.DetailExpand("detailExpandPurchaseAssignment")
+                                          .DataBound("onDataBoundMasterPurchaseAssignment"))
+                                      .ClientDetailTemplateId("asseignmentDetail")
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+
+                                          .Events(ev => ev
+                                              .Error("error_handler(\"PurchaseRequisitionAssignment#=PurchaseRequisitionID#\")")
+                                              .RequestStart("onRequestStart(\"PurchaseRequisitionAssignment#=PurchaseRequisitionID#\")")
+                                              .RequestEnd("onRequestEnd(\"PurchaseRequisitionAssignment#=PurchaseRequisitionID#\")"))
+                                          .Model(model =>
+                                          {
+                                                      model.Id(p => p.PurchaseRequisitionAssignmentId);
+                                                      model.Field(p => p.PurchaseRequisitionAssignmentId).Editable(false);
+                                                      model.Field(p => p.CreatedBy).Editable(false);
+                                                      model.Field(p => p.DateCreated).Editable(false);
+                                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                                      model.Field(p => p.LastModified).Editable(false);
+
+                                                      model.Field(p => p.Status).Editable(false);
+
+                                                      model.Field(p => p.IsOnlineApproved).Editable(false);
+                                                      model.Field(p => p.OnlineApprovedBy).Editable(false);
+                                                      model.Field(p => p.OnlineApprovedTime).Editable(false);
+
+                                                      model.Field(p => p.VoidBy).Editable(false);
+                                                      model.Field(p => p.VoidTime).Editable(false);
+                                                      model.Field(p => p.IsVoid).Editable(false);
 
 
-                                                                                                        </text>);
-      }).ToClientTemplate())
+                                                  })
+                                          .Read(read => read.Action("PurchaseRequisitionAssignments_Read", "PurchaseRequsitionReassignment", new { id = "#=PurchaseRequisitionID#" }))
+                                          .Create(create => create.Action("PurchaseRequisitionAssignments_Create", "PurchaseRequsitionReassignment", new { id = "#=PurchaseRequisitionID#" }))
+                                          .Update(update => update.Action("PurchaseRequisitionAssignments_Update", "PurchaseRequsitionReassignment"))
+                                          .Destroy(destroy => destroy.Action("PurchaseRequisitionAssignments_Destroy", "PurchaseRequsitionReassignment"))
+                                      ).ToClientTemplate())
+
+
+    </text>);
+                                  }).ToClientTemplate())
 </script>
 
 <script id="asseignmentDetail" type="text/Kendo-tmpl">

@@ -33,8 +33,7 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                 PurchaseRequistionNo = InventoryPrintHelper.GetId(record.PurchaseRequisitionID),
                 RequestingDate = record.RequestDate.ToShortDateString(),
                 Requestor = EmployeeHelper.GetEmployeeEnglishName(record.EmployeeId),
-                ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.DepartmentOnlineApprovedBy)),
-                AuthorizerName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.OnlineApprovedBy)),
+                ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.DepartmentOnlineApprovedBy)),               
                 RequestingDepartment = InventoryPrintHelper.WorkUnitName(record.OrgStructureId)
             };
 
@@ -45,10 +44,22 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
             if (record.DepartmentOnlineApprovedTime != null)
                 headerDs.ApprovalDate = (DateTime)record.DepartmentOnlineApprovedTime;
 
-           
-            if (record.OnlineApprovedTime != null)
-                headerDs.AuthorizationDate = (DateTime)record.OnlineApprovedTime;
-            
+
+            if (record.ItemType == PurchaseItemType.Service)
+            {
+                headerDs.AuthorizerName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.SecondOnlineApprovedBy));
+                if (record.SecondOnlineApprovedTime != null)
+                    headerDs.AuthorizationDate = (DateTime)record.SecondOnlineApprovedTime;
+            }
+
+            else
+            {
+                headerDs.AuthorizerName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.OnlineApprovedBy));
+
+                if (record.OnlineApprovedTime != null)
+                    headerDs.AuthorizationDate = (DateTime)record.OnlineApprovedTime;
+            }
+
             if (organization != null)
             {
                 headerDs.Name = organization.TradeName;

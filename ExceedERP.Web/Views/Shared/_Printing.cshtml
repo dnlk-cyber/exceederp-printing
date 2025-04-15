@@ -1,6 +1,6 @@
 @using ExceedERP.Core.Domain.printing.PrintingEstimation;
 @using ExceedERP.Core.Domain.Printing.ProductionFollowUp;
-@using ExceedERP.Core.Domain.printing.JobCosting;
+@*@using ExceedERP.Core.Domain.printing.JobCosting;*@
 
 
 @{
@@ -16,10 +16,11 @@
          || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionFinishedGoodUser)
          || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionDeliveryUser)
          || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.PrintingProductionDeliveryUser)
-         || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingAdmin)
-         || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingDailyLaborRateUser)
-         || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingIdleTimeUser)
-         || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingJobCostUser))
+         //|| HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingAdmin)
+         //|| HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingDailyLaborRateUser)
+         //|| HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingIdleTimeUser)
+         //|| HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingJobCostUser))
+         )
 {
 
     <li class="">
