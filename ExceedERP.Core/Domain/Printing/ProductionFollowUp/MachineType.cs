@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ExceedERP.Core.Domain.printing.JobCosting;
+
 //using ExceedERP.Core.Domain.printing.ProductionFollowUp;
 
 namespace ExceedERP.Core.Domain.Printing.ProductionFollowUp

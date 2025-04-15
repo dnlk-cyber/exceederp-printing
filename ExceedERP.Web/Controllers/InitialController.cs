@@ -22,7 +22,7 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.CMS;
 using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Core.Domain.Printing.ProductionFollowUp;
-using ExceedERP.Core.Domain.printing.JobCosting;
+
 using ExceedERP.Core.Domain.printing.PrintingEstimation;
 using ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp;
 using ExceedERP.Core.Domain.Manufacturing.JobCosting;
@@ -524,11 +524,11 @@ new ApplicationRole("HelpDesk_Setting", "Add Help desk settings", "HelpDesk"),
 					 new ApplicationRole(ProductionFollowUpRoles.PrintingProductionDeliveryUser, "Production FollowUp Delivery User", "Printing"),
 					#endregion
 				#region Job Costing FollowUp
-					 new ApplicationRole(JobCostingRoles.JobCostingAdmin, "Job Costing Administrator", "Printing"),
-					 new ApplicationRole(JobCostingRoles.JobCostingJobCostUser, "Job Costing Job Cost User", "Printing"),
-					 new ApplicationRole(JobCostingRoles.JobCostingDailyLaborRateUser, "Job Costing Daily Labor RateUser", "Printing"),
-					 new ApplicationRole(JobCostingRoles.JobCostingIdleTimeUser, "JobCosting Idle Time User", "Printing"),
-                new ApplicationRole("Printing_Admin", "", "Printing"),
+					 //new ApplicationRole(JobCostingRoles.JobCostingAdmin, "Job Costing Administrator", "Printing"),
+					 //new ApplicationRole(JobCostingRoles.JobCostingJobCostUser, "Job Costing Job Cost User", "Printing"),
+					 //new ApplicationRole(JobCostingRoles.JobCostingDailyLaborRateUser, "Job Costing Daily Labor RateUser", "Printing"),
+					 //new ApplicationRole(JobCostingRoles.JobCostingIdleTimeUser, "JobCosting Idle Time User", "Printing"),
+      //          new ApplicationRole("Printing_Admin", "", "Printing"),
 				#endregion
 			 #endregion
 			   #region Manufucturing

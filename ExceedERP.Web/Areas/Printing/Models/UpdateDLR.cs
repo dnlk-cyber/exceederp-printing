@@ -1,5 +1,6 @@
 ﻿
-using ExceedERP.Core.Domain.printing.JobCosting;
+using ExceedERP.Core.Domain.JobCosting;
+
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;

@@ -25,5 +25,29 @@ namespace ExceedERP.Reporting.JobCosting.DataSource
 
             return jobOrders;
         }
+
+
+
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<SelectJobCost> GetJobCost()// project status 
+        {
+            var jobOrdersCost = db.JobCosts.ToList()
+
+                .Select(s => new SelectJobCost
+                {
+                    JobCostId = s.JobCostId,
+                    JobId = s.JobId,
+                }).ToList();
+
+            return jobOrdersCost;
+        }
+    }
+    public class SelectJobCost
+    {
+        public int JobCostId { get; set; }
+        public int JobId { get; set; }
+
+    public string jobName { get; set; }
     }
 }
+

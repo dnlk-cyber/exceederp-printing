@@ -79,6 +79,7 @@
     <Compile Include="Context\InfoDeskEntityConfiguration.cs" />
     <Compile Include="Context\InsuranceEntityConfiguration.cs" />
     <Compile Include="Context\InventoryEntityConfiguration.cs" />
+    <Compile Include="Context\JobCostingEntityConfiguration.cs" />
     <Compile Include="Context\MaintenanceEntityTypeConfiguration.cs" />
     <Compile Include="Context\ManufacturingEntityConfiguration.cs" />
     <Compile Include="Context\PayrollEntityConfiguration.cs" />
@@ -595,6 +596,10 @@
     <Compile Include="Migrations\202503131002045_esimationdesign.Designer.cs">
       <DependentUpon>202503131002045_esimationdesign.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202504151250397_costingmerge.cs" />
+    <Compile Include="Migrations\202504151250397_costingmerge.Designer.cs">
+      <DependentUpon>202504151250397_costingmerge.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -994,6 +999,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202503131002045_esimationdesign.resx">
       <DependentUpon>202503131002045_esimationdesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504151250397_costingmerge.resx">
+      <DependentUpon>202504151250397_costingmerge.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

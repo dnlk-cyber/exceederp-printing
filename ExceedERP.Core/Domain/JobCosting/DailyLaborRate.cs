@@ -1,5 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.PrintingEstimation.Setting;
+using ExceedERP.Core.Domain.printing.PrintingEstimation.Setting;
 using System;
 using System.Collections.Generic;
 using System.Linq;

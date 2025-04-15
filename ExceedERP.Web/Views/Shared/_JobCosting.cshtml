@@ -1,4 +1,4 @@
-@using ExceedERP.Core.Domain.JobCosting
+﻿@using ExceedERP.Core.Domain.JobCosting
 @if (HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingAdmin)
              || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingDailyLaborRateUser)
              || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingIdleTimeUser)
@@ -81,7 +81,7 @@
             <b class="arrow"></b>
             <ul class="submenu">
                 <li id="JobCosting00100100831" class="actionlinlk">
-                    @Html.ActionLink("Job Order Card", "GetJobOrderCard", "JobCostingReport", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                    @Html.ActionLink("Job Order Card", "JobCostReportForAll", "JobCostingReport", new { area = "JobCosting" }, null)<b class="arrow"></b>
                 </li>
             </ul>
         </li>

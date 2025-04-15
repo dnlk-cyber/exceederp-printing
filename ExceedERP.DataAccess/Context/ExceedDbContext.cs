@@ -93,8 +93,6 @@ using ExceedERP.Core.Domain.Procurement.PaymentRequest;
 using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
 using ExceedERP.Core.Domain.printing.PrintingEstimation;
 using ExceedERP.Core.Domain.Printing.ProductionFollowUp;
-using ExceedERP.Core.Domain.printing.JobCosting.Setting;
-using ExceedERP.Core.Domain.printing.JobCosting;
 using ExceedERP.Core.Domain.Manufacturing.JobCosting;
 using ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting;
 using ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp;
@@ -127,6 +125,9 @@ using ExceedERP.Core.Domain.Insurance;
 using ExceedERP.Core.Domain.Insurance.Setting;
 using ExceedERP.Core.Domain.InfoDesk.License;
 using ExceedERP.Core.Domain.InfoDesk.Support;
+using ExceedERP.Core.Domain.JobCosting;
+using ExceedERP.Core.Domain.JobCosting.Setting;
+using static ExceedERP.DataAccess.Context.JobCostingEntityConfiguration;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -1679,31 +1680,31 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.PFProformaItemsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobStatusLineItemEntityTypeConfiguration());
             #endregion
-            #region Job Costing Entity ConfiguraExceedERP.DataAccess.Contexttion
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JcPensionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.IdleTimeCategoryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobOrderTimeSheetEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobOrderTimeRegistrationEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobOrderSummaryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.YearlyOverHeadRateEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.MachineEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.IdleTimeEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.IdleTimeProductiveEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.IdleTimeOTEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.IdleTimeNonProductiveControllableEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.IdleTimeNonProductiveNonControllableEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobChangeOfOrderEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobMaterialCostEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobMaterialreturnEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobLaborCostEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FinishedJobEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.DeliveredJobEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.DailyLaborRateEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.DLRSalaryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.DLRHourEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobOrderSummaryCostCenterDetailEntityTypeConfiguration());
-            #endregion
+            //#region Job Costing Entity ConfiguraExceedERP.DataAccess.Contexttion
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JcPensionEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.IdleTimeCategoryEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobOrderTimeSheetEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobOrderTimeRegistrationEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobOrderSummaryEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.YearlyOverHeadRateEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.MachineEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.IdleTimeEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.IdleTimeProductiveEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.IdleTimeOTEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.IdleTimeNonProductiveControllableEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new IdleTimeNonProductiveNonControllableEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobChangeOfOrderEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobMaterialCostEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobMaterialreturnEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobLaborCostEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FinishedJobEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.DeliveredJobEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.DailyLaborRateEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.DLRSalaryEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.DLRHourEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobOrderSummaryCostCenterDetailEntityTypeConfiguration());
+            //#endregion
             #endregion
             #region Manufucturing 
             #region  Estimation
@@ -1803,6 +1804,33 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobOrderSummaryCostCenterDetailEntityTypeConfiguration());
             #endregion
             #endregion
+
+            #region Job Costing Entity Configuration
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JcPensionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.IdleTimeCategoryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobOrderTimeSheetEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobOrderTimeRegistrationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobOrderSummaryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.YearlyOverHeadRateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.MachineEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.IdleTimeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.IdleTimeProductiveEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.IdleTimeOTEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.IdleTimeNonProductiveControllableEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.IdleTimeNonProductiveNonControllableEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobCostEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobChangeOfOrderEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobMaterialCostEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobMaterialreturnEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobLaborCostEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.FinishedJobEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DeliveredJobEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DailyLaborRateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DLRSalaryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DLRHourEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobOrderSummaryCostCenterDetailEntityTypeConfiguration());
+            #endregion
+
             #region Planning
             modelBuilder.Configurations.Add(new Context.GlobalIndicatorEntityTypeConfiguration());
             #region Bussiness Plan
@@ -2433,32 +2461,32 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<JobStatusLineItem> JobStatusLineItems { get; set; }
         #endregion
         #region Job Costing
-        public DbSet<IdleTimeCategory> IdleTimeCategories { get; set; }
-        public DbSet<JcPension> JcPensions { get; set; }
-        public DbSet<YearlyOverHeadRate> YearlyOverHeadRates { get; set; }
-        public DbSet<Machine> Machines { get; set; }
-        public DbSet<Unit> Units { get; set; }
-        public DbSet<IdleTime> IdleTimes { get; set; }
-        public DbSet<IdleTimeOT> IdleTimeOTs { get; set; }
-        public DbSet<IdleTimeProductive> IdleTimeProductives { get; set; }
-        public DbSet<IdleTimeNonProductiveControllable> IdleTimeNonProductiveControllables { get; set; }
-        public DbSet<PrintingIdleTimeNonProductiveNonControllable> PrintingIdleTimeNonProductiveNonControllables { get; set; }
-        public DbSet<JobCost> JobCosts { get; set; }
-        public DbSet<JobChangeOfOrder> JobChangeOfOrders { get; set; }
-        public DbSet<JobLaborCost> JobLaborCosts { get; set; }
-        public DbSet<JobMaterialCost> JobMaterialCosts { get; set; }
-        public DbSet<JobMaterialReturn> JobMaterialReturns { get; set; }
-        public DbSet<FinishedJob> FinishedJobs { get; set; }
-        public DbSet<DeliveredJob> DeliveredJobs { get; set; }
-        public DbSet<DailyLaborRate> DailyLaborRates { get; set; }
-        public DbSet<DLRSalary> DLRSalaries { get; set; }
-        public DbSet<DLRHour> DLRHours { get; set; }
-        public DbSet<JobOrderTimeSheet> JobOrderTimeSheets { get; set; }
-        public DbSet<JobOrderTimeRegistration> JobOrderTimeRegistrations { get; set; }
-        public DbSet<JobOrderSummary> JobOrderSummarys { get; set; }
-        public DbSet<JobOrderSummaryCostCenter> JobOrderSummaryCostCenters { get; set; }
-        public DbSet<JobOrderSummaryCostCenterDetail> JobOrderSummaryCostCenterDetails { get; set; }
-        //public DbSet<PrintingIdleTimeNonProductiveNonControllable> PrintingIdleTimeNonProductiveNonControllable { get; set; }
+        //public DbSet<IdleTimeCategory> IdleTimeCategories { get; set; }
+        //public DbSet<JcPension> JcPensions { get; set; }
+        //public DbSet<YearlyOverHeadRate> YearlyOverHeadRates { get; set; }
+        //public DbSet<Machine> Machines { get; set; }
+        //public DbSet<Unit> Units { get; set; }
+        //public DbSet<IdleTime> IdleTimes { get; set; }
+        //public DbSet<IdleTimeOT> IdleTimeOTs { get; set; }
+        //public DbSet<IdleTimeProductive> IdleTimeProductives { get; set; }
+        //public DbSet<IdleTimeNonProductiveControllable> IdleTimeNonProductiveControllables { get; set; }
+        //public DbSet<PrintingIdleTimeNonProductiveNonControllable> PrintingIdleTimeNonProductiveNonControllables { get; set; }
+        //public DbSet<JobCost> JobCosts { get; set; }
+        //public DbSet<JobChangeOfOrder> JobChangeOfOrders { get; set; }
+        //public DbSet<JobLaborCost> JobLaborCosts { get; set; }
+        //public DbSet<JobMaterialCost> JobMaterialCosts { get; set; }
+        //public DbSet<JobMaterialReturn> JobMaterialReturns { get; set; }
+        //public DbSet<FinishedJob> FinishedJobs { get; set; }
+        //public DbSet<DeliveredJob> DeliveredJobs { get; set; }
+        //public DbSet<DailyLaborRate> DailyLaborRates { get; set; }
+        //public DbSet<DLRSalary> DLRSalaries { get; set; }
+        //public DbSet<DLRHour> DLRHours { get; set; }
+        //public DbSet<JobOrderTimeSheet> JobOrderTimeSheets { get; set; }
+        //public DbSet<JobOrderTimeRegistration> JobOrderTimeRegistrations { get; set; }
+        //public DbSet<JobOrderSummary> JobOrderSummarys { get; set; }
+        //public DbSet<JobOrderSummaryCostCenter> JobOrderSummaryCostCenters { get; set; }
+        //public DbSet<JobOrderSummaryCostCenterDetail> JobOrderSummaryCostCenterDetails { get; set; }
+        ////public DbSet<PrintingIdleTimeNonProductiveNonControllable> PrintingIdleTimeNonProductiveNonControllable { get; set; }
 
 
         #endregion
@@ -2565,6 +2593,34 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<FurnitureJobOrderSummaryCostCenterDetail> FurnitureJobOrderSummaryCostCenterDetails { get; set; }
 
         #endregion
+        #endregion
+        #region Job Costing
+        public DbSet<IdleTimeCategory> IdleTimeCategories { get; set; }
+        public DbSet<JcPension> JcPensions { get; set; }
+        public DbSet<YearlyOverHeadRate> YearlyOverHeadRates { get; set; }
+        public DbSet<Machine> Machines { get; set; }
+        public DbSet<Unit> Units { get; set; }
+        public DbSet<IdleTime> IdleTimes { get; set; }
+        public DbSet<IdleTimeOT> IdleTimeOTs { get; set; }
+        public DbSet<IdleTimeProductive> IdleTimeProductives { get; set; }
+        public DbSet<IdleTimeNonProductiveControllable> IdleTimeNonProductiveControllables { get; set; }
+        public DbSet<IdleTimeNonProductiveNonControllable> IdleTimeNonProductiveNonControllables { get; set; }
+        public DbSet<JobCost> JobCosts { get; set; }
+        public DbSet<JobChangeOfOrder> JobChangeOfOrders { get; set; }
+        public DbSet<JobLaborCost> JobLaborCosts { get; set; }
+        public DbSet<JobMaterialCost> JobMaterialCosts { get; set; }
+        public DbSet<JobMaterialReturn> JobMaterialReturns { get; set; }
+        public DbSet<FinishedJob> FinishedJobs { get; set; }
+        public DbSet<DeliveredJob> DeliveredJobs { get; set; }
+        public DbSet<DailyLaborRate> DailyLaborRates { get; set; }
+        public DbSet<DLRSalary> DLRSalaries { get; set; }
+        public DbSet<DLRHour> DLRHours { get; set; }
+        public DbSet<JobOrderTimeSheet> JobOrderTimeSheets { get; set; }
+        public DbSet<JobOrderTimeRegistration> JobOrderTimeRegistrations { get; set; }
+        public DbSet<JobOrderSummary> JobOrderSummarys { get; set; }
+        public DbSet<JobOrderSummaryCostCenter> JobOrderSummaryCostCenters { get; set; }
+        public DbSet<JobOrderSummaryCostCenterDetail> JobOrderSummaryCostCenterDetails { get; set; }
+
         #endregion
 
         #region HRM
@@ -4389,7 +4445,7 @@ namespace ExceedERP.DataAccess.Context
         //public DbSet<JobLaborCost> JobLaborCosts { get; set; }
         //public DbSet<JobMaterialCost> JobMaterialCosts { get; set; }
         //public DbSet<JobMaterialReturn> JobMaterialReturns { get; set; }
-        //public DbSet<FinishedJob> FinishedJobs { get; set; }
+       // public DbSet<FinishedJob> FinishedJobs { get; set; }
         //public DbSet<DeliveredJob> DeliveredJobs { get; set; }
         //public DbSet<DailyLaborRate> DailyLaborRates { get; set; }
         //public DbSet<DLRSalary> DLRSalaries { get; set; }

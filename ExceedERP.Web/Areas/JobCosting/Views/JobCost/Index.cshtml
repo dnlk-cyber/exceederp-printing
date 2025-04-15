@@ -1,0 +1,474 @@
+﻿<legend>Job Cost Setup</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.JobCost>()
+                .Name("grid")
+                .Columns(columns =>
+                {
+                columns.ForeignKey(c => c.JobId, (IEnumerable)ViewData["JobOrders"], "JobId", "JobNo").EditorTemplateName("JobOrders").Title("Job No").Width(100);
+                columns.ForeignKey(c => c.JobCategoryId, (IEnumerable)ViewData["JobCategories"], "JobCategoryId", "JobName").Width(120).Title("Job Category");
+                columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "OrganizationCustomerID", "TradeName")
+                .Width(110)
+                .Title("Customer");
+                columns.Bound(c => c.JobReceivedDate).Width(100).Format("{0:yyyy-MM-dd}");
+                // columns.Bound(c => c.Date);
+                columns.Bound(c => c.ReciptNo).Width(100);
+                columns.Bound(c => c.Quantity).Width(100);
+                columns.Bound(c => c.SellingPrice).Width(100);
+                columns.Bound(c => c.OrderSize).Width(100);
+                // columns.Bound(c => c.Void).Width(100);
+                //columns.Bound(c => c.Description).Width(110);
+                columns.Bound(c => c.Status).Width(100);
+
+
+                columns.Command(command =>
+                {
+                command.Edit();
+                command.Destroy();
+                }).Width(180);
+                })
+                .ToolBar(toolbar =>
+                {
+                toolbar.Create();
+                })
+                .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                .TemplateName("JobCostTemplate")
+                .Window(w=>w.Width(600).Title("Job Cost Form")))
+                .Pageable(pageable => pageable
+                .Input(true)
+                .Numeric(false)
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+                .Filterable()
+                .Scrollable(h => h.Height(500))
+                .Events(ev=>ev.DataBound("onDataBound"))
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .Sort(se=>se.Add(s=>s.JobCostId).Descending())
+                .Model(model => model.Id(p => p.JobCostId))
+                .Read(read => read.Action("JobCosts_Read", "JobCost"))
+                .Create(create => create.Action("JobCosts_Create", "JobCost"))
+                .Update(update => update.Action("JobCosts_Update", "JobCost"))
+                .Destroy(destroy => destroy.Action("JobCosts_Destroy", "JobCost"))
+                ).ClientDetailTemplateId("DetailTemplate")
+                )
+<script id="DetailTemplate" type="text/x-kendo-template">
+
+    @(Html.Kendo().TabStrip().Name("DocumentTabstrip_#=JobCostId#").SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(itemn =>
+            {
+
+                itemn.Add().Text("Details").Content(@<text>
+                    <a href='@Url.Action("GetJobOrderCard", "JobCostingReport")/#=JobCostId#' target="_blank" title="Print Job Order"><i class="fa fa-print fa-2x"></i></a>
+                    @*<a href='@Url.Action("GetJobOrderCard", "JobCostingReport")/id=#=JobId#' target="_blank" title="Print Job Order"><i class="fa fa-print fa-2x"></i></a>*@
+
+
+                    <div class='row'>
+                        <div class='col-sm-6' id='details'>
+                            <ul>
+                                <li><label>Date:</label> #= kendo.toString(Date, "yyyy-MM-dd") #</li>
+                                <li><label>SellingPrice:</label>#= SellingPrice #</li>
+                                <li><label>OrderSize:</label>#= OrderSize #</li>
+                                <li><label>Void:</label>#= Void #</li>
+                                <li><label>Description:</label>#= Description #</li>
+
+                            </ul>
+                        </div>
+                    </div>
+                </text>
+
+
+            );
+            itemn.Add().Text("Change Of Orders").Content(@<text>
+
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.JobChangeOfOrder>()
+                            .Name("ChangeOfOrder#=JobCostId#")
+                            .Columns(columns =>
+                            {
+                    //columns.Bound(c => c.ChangeOrderId);
+                    columns.Bound(c => c.AdditionalChange).ClientFooterTemplate("\\#=sum\\#");
+                                columns.Bound(c => c.ChargeAmount).ClientFooterTemplate("\\#=sum\\#");
+                                columns.Bound(c => c.Reason);
+                                columns.Command(command =>
+        {
+                            // command.Edit();
+                            //  command.Destroy();
+                        }).Width(200);
+
+                            })
+                        //.ToolBar(toolbar =>
+                        // {
+                        //      toolbar.Create();
+
+                        // })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Sort(se => se.Add(s => s.ChangeOrderId).Descending())
+                        .Events(ev => ev.Error("error_handler(\"ChangeOfOrder#=JobCostId#\")")
+                        .RequestStart("onRequestStart(\"ChangeOfOrder#=JobCostId#\")")
+                        .RequestEnd("onRequestEnd(\"ChangeOfOrder#=JobCostId#\")"))
+                        .Aggregates(ag =>
+                            {
+                                ag.Add(a => a.AdditionalChange).Sum();
+                                ag.Add(a => a.ChargeAmount).Sum();
+                            })
+                        .PageSize(5)
+                        .Model(model => model.Id(p => p.JobChangeOfOrderId))
+                        .Read(read => read.Action("JobChangeOfOrders_Read", "JobChangeOfOrder", new { id = "#=JobCostId #" }))
+                        .Create(create => create.Action("JobChangeOfOrders_Create", "JobChangeOfOrder", new { id = "#=JobCostId #" }))
+                        .Update(update => update.Action("JobChangeOfOrders_Update", "JobChangeOfOrder"))
+                        .Destroy(destroy => destroy.Action("JobChangeOfOrders_Destroy", "JobChangeOfOrder"))
+                        .PageSize(10))
+
+                        .Pageable(p => p.Refresh(true))
+
+                        .Sortable()
+                        .ToClientTemplate())
+            </text>);
+        itemn.Add().Text("Labor Cost ").Content(@<text>
+
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.JobLaborCost>()
+                        .Name("LaborCost#=JobCostId#")
+                            .Columns(columns =>
+            {
+
+                columns.ForeignKey(c => c.CostCenter, (IEnumerable)ViewData["CostCenters"], "Values", "Values")
+.Title("Cost Center").Width(200);
+                columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name")
+.Title("Fiscal Year").Width(75);
+                columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "Name")
+.EditorTemplateName("YearCascading").Title("Month").Width(80);
+                columns.Bound(c => c.Reference);
+                columns.Bound(c => c.PermanetNormalHour).ClientFooterTemplate("\\#=sum\\#").Width(100);
+                columns.Bound(c => c.PermanetLaborCost).ClientFooterTemplate("\\#=sum\\#").Width(100);
+                columns.Bound(c => c.PermanetOverHeadCost).ClientFooterTemplate("\\#=sum\\#").Width(100);
+                columns.Bound(c => c.ContractNormalHour).ClientFooterTemplate("\\#=sum\\#").Width(100);
+                columns.Bound(c => c.ContractLaborCost).ClientFooterTemplate("\\#=sum\\#").Width(100);
+                columns.Bound(c => c.ContractOverHeadCost).ClientFooterTemplate("\\#=sum\\#").Width(100);
+                columns.Command(command =>
+{
+
+                                command.Edit();
+                                command.Destroy();
+                            }).Width(200);
+
+            })
+        .ToolBar(toolbar =>
+        {
+            toolbar.Create();
+
+        })
+        .Editable(editable => editable.Mode(GridEditMode.PopUp)
+        .TemplateName("LaborCostTemplate")
+        .Window(w => w.Width(600).Title("Labor Cost Form")))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+            .Sort(se => se.Add(s => s.JobLaborCostId).Descending())
+
+        .Events(ev => ev.Error("error_handler(\"LaborCost#=JobCostId#\")")
+        .RequestStart("onRequestStart(\"LaborCost#=JobCostId#\")")
+        .RequestEnd("onRequestEnd(\"LaborCost#=JobCostId#\")"))
+        .Aggregates(ag =>
+                        {
+                            ag.Add(a => a.PermanetLaborCost).Sum();
+                            ag.Add(a => a.PermanetNormalHour).Sum();
+                            ag.Add(a => a.PermanetOverHeadCost).Sum();
+                            ag.Add(a => a.ContractLaborCost).Sum();
+                            ag.Add(a => a.ContractNormalHour).Sum();
+                            ag.Add(a => a.ContractOverHeadCost).Sum();
+                        })
+        .PageSize(5)
+        .Model(model => model.Id(p => p.JobLaborCostId))
+        .Read(read => read.Action("JobLaborCosts_Read", "JobLaborCost", new { id = "#=JobCostId #" }))
+        .Create(create => create.Action("JobLaborCosts_Create", "JobLaborCost", new { id = "#=JobCostId #" }))
+        .Update(update => update.Action("JobLaborCosts_Update", "JobLaborCost"))
+        .Destroy(destroy => destroy.Action("JobLaborCosts_Destroy", "JobLaborCost"))
+        .PageSize(10))
+
+        .Pageable(p => p.Refresh(true))
+
+        .Sortable()
+        .ToClientTemplate())
+        </text>);
+    itemn.Add().Text("Material Cost ").Content(@<text>
+
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.JobMaterialCost>()
+                        .Name("MaterialCost#=JobCostId#")
+                            .Columns(columns =>
+                            {
+
+                                columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "Code", "Name").Width(75);
+                                columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "Code", "Name").Width(75); columns.Bound(c => c.Reference);
+                                columns.Bound(c => c.Date);
+                                columns.Bound(c => c.Reference);
+                                columns.Bound(c => c.Quantity).ClientFooterTemplate("\\#=sum\\#");
+                                columns.Bound(c => c.UnitPrice);
+                                columns.Bound(c => c.TaxAmount).ClientFooterTemplate("\\#=sum\\#");
+                                columns.Bound(c => c.SubTotal).ClientFooterTemplate("\\#=sum\\#");
+                                columns.Bound(c => c.Cost).ClientFooterTemplate("\\#=sum\\#");
+                                columns.Bound(c => c.ItemDescription);
+                            })
+                        //.ToolBar(toolbar =>
+                        //{
+                        //    toolbar.Custom().Text("Update");
+
+                        //})
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        //.TemplateName("LaborCostTemplate")
+                        //.Window(w => w.Width(600).Title("Labor Cost Form")))
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                            .Sort(se => se.Add(s => s.JobMaterialCostId).Descending())
+
+                        .Events(ev => ev.Error("error_handler(\"MaterialCost#=JobCostId#\")")
+                        .RequestStart("onRequestStart(\"MaterialCost#=JobCostId#\")")
+                        .RequestEnd("onRequestEnd(\"MaterialCost#=JobCostId#\")"))
+                        .Aggregates(ag =>
+                        {
+                            ag.Add(a => a.Cost).Sum();
+                            ag.Add(a => a.Quantity).Sum();
+                            ag.Add(a => a.SubTotal).Sum();
+                            ag.Add(a => a.TaxAmount).Sum();
+                        })
+                        .PageSize(5)
+                        .Model(model => model.Id(p => p.JobMaterialCostId))
+                        .Read(read => read.Action("JobMaterialCosts_Read", "JobMaterialCost", new { id = "#=JobCostId #" }))
+                        //.Create(create => create.Action("JobMaterialCosts_Create", "JobMaterialCost", new { id = "#=JobCostId #" }))
+                        //.Update(update => update.Action("JobMaterialCosts_Update", "JobMaterialCost"))
+                        //.Destroy(destroy => destroy.Action("JobMaterialCosts_Destroy", "JobMaterialCost"))
+                        .PageSize(10))
+
+                        .Pageable(p => p.Refresh(true))
+
+                        .Sortable()
+                        .ToClientTemplate())
+    </text>);
+
+itemn.Add().Text("Material Return ").Content(@<text>
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.JobMaterialReturn>()
+                            .Name("MaterialReturn#=JobCostId#")
+                                .Columns(columns =>
+                                {
+
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "Code", "Name").Width(75);
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "Code", "Name").Width(75); columns.Bound(c => c.Reference);
+                                    columns.Bound(c => c.Date);
+                                    columns.Bound(c => c.Reference);
+                                    columns.Bound(c => c.Quantity).ClientFooterTemplate("\\#=sum\\#");
+                                    columns.Bound(c => c.UnitPrice);
+                                    columns.Bound(c => c.TaxAmount).ClientFooterTemplate("\\#=sum\\#");
+                                    columns.Bound(c => c.SubTotal).ClientFooterTemplate("\\#=sum\\#");
+                                    columns.Bound(c => c.Cost).ClientFooterTemplate("\\#=sum\\#");
+                                    columns.Bound(c => c.ItemDescription);
+
+
+                                })
+                            // .ToolBar(toolbar =>
+                            //  {
+                            //toolbar.Custom().Text("Update");
+
+                            //  })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            //.TemplateName("LaborCostTemplate")
+                            //.Window(w => w.Width(600).Title("Labor Cost Form")))
+                            .DataSource(dataSource => dataSource
+                            .Ajax()
+                                .Sort(se => se.Add(s => s.JobMaterialReturnId).Descending())
+
+                            .Events(ev => ev.Error("error_handler(\"MaterialReturn#=JobCostId#\")")
+                            .RequestStart("onRequestStart(\"MaterialReturn#=JobCostId#\")")
+                            .RequestEnd("onRequestEnd(\"MaterialReturn#=JobCostId#\")"))
+                            .Aggregates(ag =>
+                                                            {
+                                                                ag.Add(a => a.Quantity).Sum();
+                                                                ag.Add(a => a.TaxAmount).Sum();
+                                                                ag.Add(a => a.Cost).Sum();
+                                                                ag.Add(a => a.SubTotal).Sum();
+                                                            })
+                            .PageSize(5)
+                            .Model(model => model.Id(p => p.JobMaterialReturnId))
+                            .Read(read => read.Action("JobMaterialReturns_Read", "JobMaterialReturn", new { id = "#=JobCostId #" }))
+                            .PageSize(10))
+
+                            .Pageable(p => p.Refresh(true))
+
+                            .Sortable()
+                            .ToClientTemplate())
+</text>);
+itemn.Add().Text("Finished Jobs").Content(@<text>
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.FinishedJob>()
+                                            .Name("FinishedJob#=JobCostId#")
+                                                .Columns(columns =>
+                                                {
+
+                                                    columns.Bound(c => c.FgrNo);
+                                                    columns.Bound(c => c.Date).Format("{0:yyyy-MM-dd}");
+                                                    columns.Bound(c => c.Quantity);
+                                                    columns.Command(command =>
+                {
+
+                                                    command.Edit();
+                                                    command.Destroy();
+                                                }).Width(200);
+
+                                                })
+                                                .ToolBar(toolbar =>
+                                                {
+                                                    toolbar.Create();
+
+                                                })
+                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                //.TemplateName("LaborCostTemplate")
+                                                //.Window(w => w.Width(600).Title("Labor Cost Form")))
+                                                .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .ServerOperation(false)
+                                                .Events(ev => ev.Error("error_handler(\"FinishedJob#=JobCostId#\")")
+                                                .RequestStart("onRequestStart(\"FinishedJob#=JobCostId#\")")
+                                                .RequestEnd("onRequestEnd(\"FinishedJob#=JobCostId#\")"))
+
+                                                .PageSize(5)
+                                                .Model(model => model.Id(p => p.FinishedJobId))
+                                                .Read(read => read.Action("FinishedJobs_Read", "FinishedJob", new { id = "#=JobCostId #" }))
+                                                .Create(create => create.Action("FinishedJobs_Create", "FinishedJob", new { id = "#=JobCostId #" }))
+                                                .Update(update => update.Action("FinishedJobs_Update", "FinishedJob"))
+                                                .Destroy(destroy => destroy.Action("FinishedJobs_Destroy", "FinishedJob"))
+                                                .PageSize(10))
+
+                                                .Pageable(p => p.Refresh(true))
+
+                                                .Sortable()
+                                                .ToClientTemplate())
+</text>);
+
+itemn.Add().Text("Delivered Job ").Content(@<text>
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.DeliveredJob>()
+                                                    .Name("DeliveredJob#=JobCostId#")
+                                                        .Columns(columns =>
+            {
+
+                columns.Bound(c => c.DoNo);
+                columns.Bound(c => c.Date).Format("{0:yyyy-MM-dd}");
+                columns.Bound(c => c.Quantity);
+                columns.Command(command =>
+{
+
+                                                                command.Edit();
+                                                                command.Destroy();
+                                                            }).Width(200);
+
+            })
+                                                        .ToolBar(toolbar =>
+                                                        {
+                                                            toolbar.Create();
+
+                                                        })
+                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                        //.TemplateName("LaborCostTemplate")
+                                                        //.Window(w => w.Width(600).Title("Labor Cost Form")))
+                                                        .DataSource(dataSource => dataSource
+                                                        .Ajax()
+                                                        .ServerOperation(false)
+                                                        .Events(ev => ev.Error("error_handler(\"DeliveredJob#=JobCostId#\")")
+                                                        .RequestStart("onRequestStart(\"DeliveredJob#=JobCostId#\")")
+                                                        .RequestEnd("onRequestEnd(\"DeliveredJob#=JobCostId#\")"))
+
+                                                        .PageSize(5)
+                                                        .Model(model => model.Id(p => p.DeliveredJobId))
+                                                        .Read(read => read.Action("DeliveredJobs_Read", "DeliveredJob", new { id = "#=JobCostId #" }))
+                                                        .Create(create => create.Action("DeliveredJobs_Create", "DeliveredJob", new { id = "#=JobCostId #" }))
+                                                        .Update(update => update.Action("DeliveredJobs_Update", "DeliveredJob"))
+                                                        .Destroy(destroy => destroy.Action("DeliveredJobs_Destroy", "DeliveredJob"))
+                                                        .PageSize(10))
+
+                                                        .Pageable(p => p.Refresh(true))
+
+                                                        .Sortable()
+                                                        .ToClientTemplate())
+</text>);
+})
+
+                                                        .ToClientTemplate())
+</script>
+<script>
+function onDataBound() {
+this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+
+}
+function onChangeJobOrder() {
+var id = $("#JobId").val();
+$.ajax({
+url: '@Url.Action("GetJobOrder", "JobCostingDataProvider", new { area = "JobCosting" })',
+
+data: { jobId: id },
+type: 'GET',
+cache: false,
+success: function (data) {
+
+var quantDDL = $("#Quantity").data("kendoNumericTextBox");
+var sellingPriceDDL = $("#SellingPrice").data("kendoNumericTextBox");
+var jobReceiveDTP  = $("#JobReceivedDate").data("kendoDatePicker");
+quantDDL.value(data.Quantity);
+sellingPriceDDL.value(data.UnitPrice);
+jobReceiveDTP.value(data.Date);
+quantDDL.trigger("change");
+sellingPriceDDL.trigger("change");
+jobReceiveDTP.trigger("change");
+
+
+}
+
+});
+
+}
+
+function onSave() {
+masterGrid = $("#grid").data("kendoGrid").dataSource.read();
+
+}
+function filterPeriods() {
+return {
+YearId: $("#GlFiscalYearId").val()
+
+};
+}
+</script>
+
+<style>
+div.k-edit-form-container {
+width: auto;
+}
+
+.row {
+margin-bottom: 5px;
+}
+
+.k-textbox,
+.k-numerictextbox,
+.k-dropdown,
+.k-dropdowntree,
+.k-datepicker,
+.k-upload {
+width: 90%;
+}
+
+.k-picker-wrap .k-input,
+.k-dropdown .k-dropdown-wrap,
+.k-dropdowntree .k-dropdown-wrap,
+.k-numerictextbox .k-input {
+height: 2.70em;
+}
+
+input.k-textbox {
+height: 2.80em;
+}
+
+.k-editor .k-content {
+height: 70px;
+}
+</style>

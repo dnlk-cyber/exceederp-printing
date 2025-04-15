@@ -1,7 +1,7 @@
+using ExceedERP.Core.Domain.JobCosting;
+using ExceedERP.Core.Domain.JobCosting.Setting;
 using ExceedERP.Core.Domain.Manufacturing;
 using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
-using ExceedERP.Core.Domain.printing.JobCosting;
-using ExceedERP.Core.Domain.printing.JobCosting.Setting;
 using ExceedERP.Core.Domain.printing.PrintingEstimation;
 using ExceedERP.Core.Domain.Printing;
 using ExceedERP.Core.Domain.Printing.PrintingEstimation;
@@ -407,14 +407,14 @@ namespace ExceedERP.DataAccess.Context
             this.HasKey<int>(t => t.IdleTimeNonProductiveControllableID);
         }
     }
-    public class IdleTimeNonProductiveNonControllableEntityTypeConfiguration : EntityTypeConfiguration<PrintingIdleTimeNonProductiveNonControllable>
-    {
-        public IdleTimeNonProductiveNonControllableEntityTypeConfiguration()
-        {
-            this.ToTable("IdleTimeNonProductiveNonControllables", "Printing");
-            this.HasKey<int>(t => t.PrintingIdleTimeNonProductiveNonControllableID);
-        }
-    }
+    //public class IdleTimeNonProductiveNonControllableEntityTypeConfiguration : EntityTypeConfiguration<PrintingIdleTimeNonProductiveNonControllable>
+    //{
+    //    public IdleTimeNonProductiveNonControllableEntityTypeConfiguration()
+    //    {
+    //        this.ToTable("IdleTimeNonProductiveNonControllables", "Printing");
+    //        this.HasKey<int>(t => t.PrintingIdleTimeNonProductiveNonControllableID);
+    //    }
+    //}
     public class YearlyOverHeadRateEntityTypeConfiguration : EntityTypeConfiguration<YearlyOverHeadRate>
     {
         public YearlyOverHeadRateEntityTypeConfiguration()

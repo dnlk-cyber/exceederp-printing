@@ -1,8 +1,8 @@
-using ExceedERP.Core.Domain.Common.HRM;
+﻿using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.JobCosting;
 using ExceedERP.Core.Domain.JobCosting.Setting;
-using ExceedERP.Core.Domain.ProductionFollowUp;
+using ExceedERP.Core.Domain.Printing.ProductionFollowUp;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.ModelConfiguration;

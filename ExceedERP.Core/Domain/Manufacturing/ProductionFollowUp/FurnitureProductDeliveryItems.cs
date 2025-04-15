@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;

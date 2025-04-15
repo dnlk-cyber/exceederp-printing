@@ -1,5 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.printing.JobCosting;
+using ExceedERP.Core.Domain.JobCosting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

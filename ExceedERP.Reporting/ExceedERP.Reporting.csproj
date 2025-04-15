@@ -3752,8 +3752,24 @@
     <Compile Include="Inventory\ViewModel\StoreRequisitionItemViewModel.cs" />
     <Compile Include="Inventory\ViewModel\StoreReturnItemViewModel.cs" />
     <Compile Include="Inventory\ViewModel\VariationVm.cs" />
+    <Compile Include="JobCosting\DataSource\JobCostingOds.cs" />
     <Compile Include="JobCosting\DataSource\JobCostingParameterOds.cs" />
-    <Compile Include="JobCosting\ViewModel\JobOrderCardVM.cs" />
+    <Compile Include="JobCosting\DataSource\JobOrderCardOds.cs" />
+    <Compile Include="JobCosting\DataSource\JobOrderReportOds.cs" />
+    <Compile Include="JobCosting\Design\JobCostingDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="JobCosting\Design\JobCostingDesign.Designer.cs">
+      <DependentUpon>JobCostingDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JobCosting\Design\JobCostingReportdes.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="JobCosting\Design\JobCostingReportdes.Designer.cs">
+      <DependentUpon>JobCostingReportdes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JobCosting\ViewModel\JobCostingVM.cs" />
+    <Compile Include="JobCosting\ViewModel\JobOrderCardVm.cs" />
     <Compile Include="Maintenance\DataSource\DailyMaintenanceReport.cs" />
     <Compile Include="Maintenance\DataSource\InternalMaintenanceReportImproved.cs" />
     <Compile Include="Maintenance\DataSource\JobOrderOds.cs" />
@@ -4511,7 +4527,6 @@
     <Folder Include="Construction\ReportDesign\Payment\" />
     <Folder Include="Construction\ReportDesign\PerformanceEvaluation\" />
     <Folder Include="HRM\CustomExpression\bin\Debug\en-US\" />
-    <Folder Include="JobCosting\Design\" />
     <Folder Include="obj\" />
   </ItemGroup>
   <ItemGroup>
@@ -6020,6 +6035,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Inventory\VariationSummary.resx">
       <DependentUpon>VariationSummary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JobCosting\Design\JobCostingDesign.resx">
+      <DependentUpon>JobCostingDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="JobCosting\Design\JobCostingReportdes.resx">
+      <DependentUpon>JobCostingReportdes.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\DailyMaintenanceReport.resx">
       <DependentUpon>DailyMaintenanceReport.cs</DependentUpon>
