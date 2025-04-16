@@ -222,7 +222,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     EmployeeMasterViewModel.FullName = e.FullNameAmharic; //HrHelper.GetEmployeeFullName(e.EmployeeId);
                     EmployeeMasterViewModel.Gender = HrHelper.GetGender(e.Gender);
                     EmployeeMasterViewModel.Religion = HrHelper.GetReligion(e.Religion);
-                    EmployeeMasterViewModel.Age = DateTime.Now.Year - e.DateOfBirth.Year;
+                    EmployeeMasterViewModel.Age = GetAge(e.DateOfBirth);
 
                     EmployeeMasterViewModel.Education = new List<EmployeeEductaionList>();
                     EmployeeMasterViewModel.Training = new List<Training>();
@@ -1111,6 +1111,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 numbers.Add(i);
             }
             return numbers;
+        }
+
+        private static int GetAge(DateTime dateOfBirth)
+        {
+            decimal diff = (decimal)(DateTime.Now - dateOfBirth).TotalDays / 365.25m;
+            return (int)diff;
         }
     }
 
