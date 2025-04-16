@@ -517,6 +517,47 @@ namespace ExceedERP.Helpers.HR
             return emplist;
         }
 
+        public static decimal GetLeaveDays(DateTime from, DateTime to, int glFiscalYearId, LeaveDay day, LeaveType leaveType, int empId)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            decimal leaveDays = 0;
+            //var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+            decimal holiday = GetHolidays(from, to, glFiscalYearId);
+            var weekDays = GetWeekDays(from, to, empId);
+            if (leaveType == LeaveType.ANNUAL)
+            {
+                leaveDays = to.Subtract(from).Days + 1 - holiday;
+                leaveDays = leaveDays - Convert.ToDecimal(weekDays);
+                if (day == LeaveDay.Half_Day)
+                {
+                    decimal checkWeekEnd = to.Subtract(from).Days + 1 - holiday;
+                    double amt = GetHalf(from, to);
+                    double notHalf = GetNotHalf(from, to);
+                    bool isHalf = IsHalf(from, to);
+                    if (isHalf)
+                    {
+                        leaveDays = (checkWeekEnd - Convert.ToDecimal(notHalf)) / 2;
+                    }
+                    else
+                    {
+                        leaveDays = leaveDays / 2;
+                    }
+                }
+
+            }
+            else
+            {
+                leaveDays = to.Subtract(from).Days + 1;
+                if (day == LeaveDay.Half_Day)
+                {
+                    leaveDays = leaveDays / 2;
+                }
+            }
+
+            return leaveDays;
+        }
+
         public static decimal GetWorkingDays(DateTime from, DateTime to)
         {
             decimal days = 0;
@@ -529,8 +570,68 @@ namespace ExceedERP.Helpers.HR
         }
         public static double GetWeekDays(DateTime startDate, DateTime endDate)
         {
+            using (ExceedDbContext db = new ExceedDbContext())
+            {
+                double noOfWeek = 0;
+                var sundayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SUNDAY);
+                var saturdayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SATURDAY);
+                List<DateTime> dayList = new List<DateTime>();
+                TimeSpan diff = endDate - startDate;
+                int days = diff.Days;
+                for (var i = 0; i <= days; i++)
+                {
+                    var testDate = startDate.AddDays(i);
+                    switch (testDate.DayOfWeek)
+                    {
+                        case DayOfWeek.Saturday:
+
+                            if (saturdayweekendSetting != null)
+                            {
+                                var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
+                                if (holiday == null)
+                                {
+                                    if (saturdayweekendSetting.IsHalfDay)
+                                    {
+                                        noOfWeek += 0.5;
+                                    }
+                                    else
+                                    {
+                                        noOfWeek += 1;
+
+                                    }
+                                }
+                            }
+                            break;
+                        case DayOfWeek.Sunday:
+
+                            if (sundayweekendSetting != null)
+                            {
+                                var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
+                                if (holiday == null)
+                                {
+                                    if (sundayweekendSetting.IsHalfDay)
+                                    {
+                                        noOfWeek += 0.5;
+                                    }
+                                    else
+                                    {
+                                        noOfWeek += 1;
+
+                                    }
+                                }
+                            }
+                            //dayList.Add(testDate);
+                            break;
+                    }
+                }
+                return noOfWeek;
+            }
+        }
+        public static double GetWeekDays(DateTime startDate, DateTime endDate, int empId)
+        {
             ExceedDbContext db = new ExceedDbContext();
             double noOfWeek = 0;
+            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == empId && x.isCurrent);
             var sundayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SUNDAY);
             var saturdayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SATURDAY);
             List<DateTime> dayList = new List<DateTime>();
@@ -548,15 +649,47 @@ namespace ExceedERP.Helpers.HR
                             var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
                             if (holiday == null)
                             {
-                                if (saturdayweekendSetting.IsHalfDay)
+                                var weekendExceptions = db.WeekendExceptions.ToList();
+                                if (weekendExceptions.Any())
                                 {
-                                    noOfWeek += 0.5;
+                                    var weekendException = db.WeekendExceptions
+                                              .FirstOrDefault(x => x.EmployeeId == empId);
+                                    if (weekendException == null && placement != null)
+                                    {
+                                        weekendException = db.WeekendExceptions.FirstOrDefault(x => x.OrgStructureId == placement.OrgStructureId);
+
+                                    }
+                                    // Skip because this is an exception for those simple employees that have Saturday as a working day, while other workers have it as an off day.
+
+                                    if (weekendException != null)
+                                    {
+                                        noOfWeek += saturdayweekendSetting.IsHalfDay ? 0.5 : saturdayweekendSetting.IsFullDay ? 0 : 1;
+
+                                    }
+                                    else
+                                    {
+                                        // Skip because this is an exception for those simple employees that have Saturday as a working day, while other workers have it as an off day.
+                                        noOfWeek += 1;
+                                    }
                                 }
                                 else
                                 {
-                                    noOfWeek += 1;
+                                    if (saturdayweekendSetting.IsHalfDay)
+                                    {
+                                        noOfWeek += 0.5;
+                                    }
+                                    else if (saturdayweekendSetting.IsFullDay)
+                                    {
+                                        noOfWeek += 0;
 
+                                    }
+                                    else
+                                    {
+                                        noOfWeek += 1;
+
+                                    }
                                 }
+
                             }
                         }
                         break;
@@ -570,6 +703,10 @@ namespace ExceedERP.Helpers.HR
                                 if (sundayweekendSetting.IsHalfDay)
                                 {
                                     noOfWeek += 0.5;
+                                }
+                                else if (sundayweekendSetting.IsFullDay)
+                                {
+                                    noOfWeek += 0;
                                 }
                                 else
                                 {
@@ -602,7 +739,24 @@ namespace ExceedERP.Helpers.HR
 
             return count;
         }
+        public static decimal GetHolidays(DateTime from, DateTime to, int glFiscalYearId)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            decimal count = 0;
 
+            var holidayList = db.Holidays.Where(x => x.GlFiscalYearId == glFiscalYearId).ToList();
+            if (holidayList.Any())
+            {
+                foreach (var h in holidayList)
+                {
+                    if (h.Date >= from && h.Date <= to)
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
         public static string GetAmharicMonthOfGergorian(int month)
         {
             var mon = "";
@@ -755,6 +909,150 @@ namespace ExceedERP.Helpers.HR
             }
 
             return id;
+        }
+        public static double GetNotHalf(DateTime startDate, DateTime endDate)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            double noOfWeek = 0;
+            var sundayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SUNDAY);
+            var saturdayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SATURDAY);
+            List<DateTime> dayList = new List<DateTime>();
+            TimeSpan diff = endDate - startDate;
+            int days = diff.Days;
+            for (var i = 0; i <= days; i++)
+            {
+
+                var testDate = startDate.AddDays(i);
+                switch (testDate.DayOfWeek)
+                {
+                    case DayOfWeek.Saturday:
+
+                        if (saturdayweekendSetting != null && !saturdayweekendSetting.IsHalfDay)
+                        {
+                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
+                            if (holiday == null)
+                            {
+                                noOfWeek = noOfWeek + 1;
+                            }
+
+                        }
+
+                        break;
+                    case DayOfWeek.Sunday:
+
+
+                        if (sundayweekendSetting != null && !sundayweekendSetting.IsHalfDay)
+                        {
+                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
+                            if (holiday == null)
+                            {
+                                noOfWeek = noOfWeek + 1;
+                            }
+                        }
+
+
+                        break;
+                }
+            }
+            return noOfWeek;
+        }
+        public static bool IsHalf(DateTime startDate, DateTime endDate)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            bool isHalf = false;
+            var sundayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SUNDAY);
+            var saturdayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SATURDAY);
+            List<DateTime> dayList = new List<DateTime>();
+            TimeSpan diff = endDate - startDate;
+            int days = diff.Days;
+            for (var i = 0; i <= days; i++)
+            {
+
+                var testDate = startDate.AddDays(i);
+                switch (testDate.DayOfWeek)
+                {
+                    case DayOfWeek.Saturday:
+
+                        if (saturdayweekendSetting != null && saturdayweekendSetting.IsHalfDay)
+                        {
+                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
+                            if (holiday == null)
+                            {
+                                isHalf = true;
+                            }
+
+                        }
+
+                        break;
+                    case DayOfWeek.Sunday:
+
+
+                        if (sundayweekendSetting != null && sundayweekendSetting.IsHalfDay)
+                        {
+                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
+                            if (holiday == null)
+                            {
+                                isHalf = true;
+                            }
+                        }
+
+
+                        break;
+                }
+            }
+            return isHalf;
+        }
+        public static double GetHalf(DateTime startDate, DateTime endDate)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            double noOfWeek = 0;
+            var sundayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SUNDAY);
+            var saturdayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SATURDAY);
+            List<DateTime> dayList = new List<DateTime>();
+            TimeSpan diff = endDate - startDate;
+            int days = diff.Days;
+            for (var i = 0; i <= days; i++)
+            {
+
+                var testDate = startDate.AddDays(i);
+                switch (testDate.DayOfWeek)
+                {
+                    case DayOfWeek.Saturday:
+
+                        if (saturdayweekendSetting != null && saturdayweekendSetting.IsHalfDay)
+                        {
+                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
+                            if (holiday == null)
+                            {
+                                noOfWeek = noOfWeek + 1;
+                            }
+                        }
+                        break;
+                    case DayOfWeek.Sunday:
+
+
+                        if (sundayweekendSetting != null && sundayweekendSetting.IsHalfDay)
+                        {
+                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
+                            if (holiday == null)
+                            {
+                                noOfWeek = noOfWeek + 1;
+                            }
+                        }
+
+                        break;
+                }
+            }
+            return noOfWeek;
+        }
+        public static DateTime ParseEthiopicDate(string ethiopicDate)
+        {
+            var parts = ethiopicDate.Split('/');
+            return XAPI.EthiopicDateTime.GetGregorianDate(int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]));
+        }
+        public static string GetECDate(DateTime gcDate)
+        {
+            return XAPI.EthiopicDateTime.GetEthiopicDate(gcDate.Day, gcDate.Month, gcDate.Year);
         }
     }
 }

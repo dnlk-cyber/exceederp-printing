@@ -1,4 +1,4 @@
-using ExceedERP.Core.Domain.Common;
+﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.LeaveManagment;
 using ExceedERP.Core.Domain.HRM.SelfCare;
@@ -17,6 +17,7 @@ using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Core.Domain;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
@@ -28,10 +29,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         private ExceedDbContext db = new ExceedDbContext();
         static ApplicationDbContext dbApplication = new ApplicationDbContext();
 
-        public static DateTime To { get; set; }
-        public static string ToAmharic { get; set; }
-        public static DateTime From { get; set; }
-        public static string FromAmharic { get; set; }
+      
         HRMInputs inputs = new HRMInputs();
         public static int EmployeeId { get; set; }
         public static bool IsForOther { get; set; }
@@ -60,23 +58,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             ViewData["UserName"] = dbApplication.Users.ToList();
             ViewData["Department"] = db.MainCompanyStructures.AsQueryable();
-
-        }
-        public void SetDate(string name, string value)
-        {
-            if (name == "FromAmharic")
-            {
-                FromAmharic = value;
-                var splitDate = FromAmharic.Split('/');
-                From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            else if (name == "ToAmharic")
-            {
-                ToAmharic = value;
-                var splitDate = ToAmharic.Split('/');
-                To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-
 
         }
         public int SetEmployee(string x)
@@ -247,7 +228,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                     }
                                 }
                             }
-                            weekDays = GetWeekDays(leave.From, leave.To);
+                            weekDays = HrHelper.GetWeekDays(leave.From, leave.To);
                             var entity = new Core.Domain.HRM.LeaveManagment.Leave
                             {
                                 EmployeeId = leave.EmployeeId,
@@ -319,20 +300,31 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeaveReturnStatus_Create([DataSourceRequest]DataSourceRequest request, LeaveReturn leaveReturn)
         {
-            ModelState.Clear();
-            if (leaveReturn.FromAm != null)
+            var leaveRequest = db.LeaveRequest.FirstOrDefault(x => x.LeaveRequestId == leaveReturn.LeaveRequestId && x.IsOnlineApproved);
+            if (string.IsNullOrEmpty(leaveReturn.FromAm)
+                || string.IsNullOrEmpty(leaveReturn.ToAm))
             {
-                var splitDateFrom = leaveReturn.FromAm.Split('/');
-                leaveReturn.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateFrom[0]), Convert.ToInt32(splitDateFrom[1]), Convert.ToInt32(splitDateFrom[2]));
+                ModelState.AddModelError("", " Please select from and to dates ");
+                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
 
             }
-            if (leaveReturn.ToAm != null)
+            if (leaveRequest == null)
             {
-                var splitDateTo = leaveReturn.ToAm.Split('/');
-                leaveReturn.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateTo[0]), Convert.ToInt32(splitDateTo[1]), Convert.ToInt32(splitDateTo[2]));
+                ModelState.AddModelError("", " No Leave Request ");
+                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
 
             }
-            leaveReturn.Amount = (decimal)GetWeekDays(leaveReturn.From, leaveReturn.To);
+            if (leaveRequest.IsVoid)
+            {
+                ModelState.AddModelError("", "Leave is already Retuned ");
+                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
+
+            }
+            leaveReturn.From = HrHelper.ParseEthiopicDate(leaveReturn.FromAm);
+            leaveReturn.To = HrHelper.ParseEthiopicDate(leaveReturn.ToAm);
+            leaveReturn.Amount = HrHelper.GetLeaveDays(
+                    leaveReturn.From, leaveReturn.To, leaveReturn.GlFiscalYearId,
+                    leaveRequest.Day, leaveRequest.Type, leaveRequest.EmployeeId);
 
             if (ModelState.IsValid)
             {
@@ -359,26 +351,35 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeaveReturnStatus_Update([DataSourceRequest]DataSourceRequest request, LeaveReturn leaveReturn)
         {
-
-            ModelState.Clear();
-            if (leaveReturn.FromAm != null)
+            var leaveRequest = db.LeaveRequest.FirstOrDefault(x=>x.LeaveRequestId==leaveReturn.LeaveRequestId&&x.IsOnlineApproved);
+            if (string.IsNullOrEmpty(leaveReturn.FromAm)
+                || string.IsNullOrEmpty(leaveReturn.ToAm))
             {
-                var splitDateFrom = leaveReturn.FromAm.Split('/');
-                leaveReturn.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateFrom[0]), Convert.ToInt32(splitDateFrom[1]), Convert.ToInt32(splitDateFrom[2]));
+                ModelState.AddModelError("", " Please select from and to dates ");
+                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
 
             }
-            if (leaveReturn.ToAm != null)
+            if (leaveRequest == null)
             {
-                var splitDateTo = leaveReturn.ToAm.Split('/');
-                leaveReturn.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateTo[0]), Convert.ToInt32(splitDateTo[1]), Convert.ToInt32(splitDateTo[2]));
+                ModelState.AddModelError("", " No Leave Request ");
+                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
 
             }
+            if (leaveRequest.IsVoid)
+            {
+                ModelState.AddModelError("", "Leave is already Retuned ");
+                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
 
-            leaveReturn.Amount = (decimal)GetWeekDays(leaveReturn.From, leaveReturn.To);
+            }
+            leaveReturn.From = HrHelper.ParseEthiopicDate(leaveReturn.FromAm);
+            leaveReturn.To = HrHelper.ParseEthiopicDate(leaveReturn.ToAm);
+            leaveReturn.Amount = HrHelper.GetLeaveDays(
+                    leaveReturn.From, leaveReturn.To, leaveReturn.GlFiscalYearId,
+                    leaveRequest.Day, leaveRequest.Type, leaveRequest.EmployeeId);
+
             if (ModelState.IsValid)
             {
-
-
+                
                 var entity = new LeaveReturn
                 {
                     LeaveReturnId = leaveReturn.LeaveReturnId,
@@ -433,75 +434,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
         }
 
-        public double GetWeekDays(DateTime startDate, DateTime endDate)
-        {
-            double numberOfWeekDays = 0;
-
-            // Fetch weekend settings and holidays once
-            var sundayWeekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SUNDAY);
-            var saturdayWeekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SATURDAY);
-            var holidays = db.Holidays.Where(x => x.Date >= startDate && x.Date <= endDate).ToList();
-
-            TimeSpan diff = endDate - startDate;
-            int days = diff.Days;
-
-            for (var i = 0; i <= days; i++)
-            {
-                var testDate = startDate.AddDays(i);
-
-                // Check if the date is a holiday
-                if (holidays.Any(h => h.Date == testDate))
-                {
-                    continue;
-                }
-
-                // Check if the date is a weekend
-                if (testDate.DayOfWeek == DayOfWeek.Saturday)
-                {
-                    if (saturdayWeekendSetting != null)
-                    {
-                        if (saturdayWeekendSetting.IsHalfDay)
-                        {
-                            numberOfWeekDays += 0.5;
-                        }
-                        // else it's a full day off, do nothing
-                    }
-                    continue;
-                }
-                else if (testDate.DayOfWeek == DayOfWeek.Sunday)
-                {
-                    if (sundayWeekendSetting != null)
-                    {
-                        if (sundayWeekendSetting.IsHalfDay)
-                        {
-                            numberOfWeekDays += 0.5;
-                        }
-                        // else it's a full day off, do nothing
-                    }
-                    continue;
-                }
-
-                // If not a weekend and not a holiday, it's a weekday
-                numberOfWeekDays += 1;
-            }
-
-            return numberOfWeekDays;
-        }
         public decimal GetLeaveDays(string from, string to, string half, int hour)
         {
 
             decimal days = 0;
 
-            if (from != "" && to != "")
+            if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to ))
             {
 
 
-                FromAmharic = from;
-                var splitDatefrom = FromAmharic.Split('/');
+                var splitDatefrom = from.Split('/');
                 DateTime f = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDatefrom[0]), Convert.ToInt32(splitDatefrom[1]), Convert.ToInt32(splitDatefrom[2]));
 
-                ToAmharic = to;
-                var splitDateto = ToAmharic.Split('/');
+                var splitDateto = to.Split('/');
                 DateTime t = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateto[0]), Convert.ToInt32(splitDateto[1]), Convert.ToInt32(splitDateto[2]));
                 var count = 0;
                 double weekDays = 0;
@@ -519,7 +464,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                             }
                         }
                     }
-                    weekDays = GetWeekDays(f, t);
+                    weekDays = HrHelper.GetWeekDays(f, t);
                 }
 
 

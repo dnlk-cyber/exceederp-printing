@@ -1,4 +1,4 @@
-using ExceedERP.Core.Domain.Common;
+﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.LeaveManagment;
 using ExceedERP.Core.Domain.HRM.SelfCare;
@@ -15,6 +15,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
@@ -26,10 +27,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         private ExceedDbContext db = new ExceedDbContext();
         static ApplicationDbContext dbApplication = new ApplicationDbContext();
 
-        public static DateTime To { get; set; }
-        public static string ToAmharic { get; set; }
-        public static DateTime From { get; set; }
-        public static string FromAmharic { get; set; }
+      
         HRMInputs inputs = new HRMInputs();
         public static int EmployeeId { get; set; }
         public static bool IsForOther { get; set; }
@@ -58,23 +56,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             ViewData["UserName"] = dbApplication.Users.ToList();
             ViewData["Department"] = db.MainCompanyStructures.AsQueryable();
-
-        }
-        public void SetDate(string name, string value)
-        {
-            if (name == "FromAmharic")
-            {
-                FromAmharic = value;
-                var splitDate = FromAmharic.Split('/');
-                From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            else if (name == "ToAmharic")
-            {
-                ToAmharic = value;
-                var splitDate = ToAmharic.Split('/');
-                To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-
 
         }
         public int SetEmployee(string x)
@@ -409,7 +390,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                     }
                                 }
                             }
-                            weekDays = GetWeekDays(leave.From, leave.To);
                             var entity = new Core.Domain.HRM.LeaveManagment.Leave
                             {
                                 EmployeeId = leave.EmployeeId,
@@ -553,50 +533,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             return noOfWeek;
         }
 
-        public decimal GetLeaveDays(DateTime from, DateTime to, int glFiscalYearId, LeaveDay day, LeaveType leaveType, int empId)
-        {
-            decimal leaveDays = 0;
-            //var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-
-            decimal holiday = GetHolidays(from, to, glFiscalYearId);
-            var weekDays = GetWeekDays(from, to, empId);
-            if (leaveType == LeaveType.ANNUAL)
-            {
-                leaveDays = to.Subtract(from).Days + 1 - holiday;
-                leaveDays = leaveDays - Convert.ToDecimal(weekDays);
-                if (day == LeaveDay.Half_Day)
-                {
-                    decimal checkWeekEnd = to.Subtract(from).Days + 1 - holiday;
-                    double amt = GetHalf(from, to);
-                    double notHalf = GetNotHalf(from, to);
-                    bool isHalf = IsHalf(from, to);
-                    if (isHalf)
-                    {
-                        leaveDays = (checkWeekEnd - Convert.ToDecimal(notHalf)) / 2;
-                    }
-                    else
-                    {
-                        leaveDays = leaveDays / 2;
-                    }
-                }
-
-            }
-            else
-            {
-                leaveDays = to.Subtract(from).Days + 1;
-                if (day == LeaveDay.Half_Day)
-                {
-                    leaveDays = leaveDays / 2;
-                }
-            }
-
-            return leaveDays;
-        }
-        private DateTime ParseEthiopicDate(string ethiopicDate)
-        {
-            var parts = ethiopicDate.Split('/');
-            return XAPI.EthiopicDateTime.GetGregorianDate(int.Parse(parts[0]), int.Parse(parts[1]), int.Parse(parts[2]));
-        }
         public ActionResult LeaveReturnPersonal_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -643,8 +579,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             }
 
-            leaveReturn.From = ParseEthiopicDate(leaveReturn.FromAm);
-            leaveReturn.To = ParseEthiopicDate(leaveReturn.ToAm);
+            leaveReturn.From = HrHelper.ParseEthiopicDate(leaveReturn.FromAm);
+            leaveReturn.To = HrHelper.ParseEthiopicDate(leaveReturn.ToAm);
             var leaveRequest = db.LeaveRequest
              .Where(x => x.LeaveRequestId == id
              && x.Type == LeaveType.ANNUAL
@@ -683,7 +619,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 leaveRequest.From.Date > leaveReturn.From.Date && leaveReturn.To.Date < leaveRequest.To.Date ||
                 leaveRequest.From.Date >= leaveReturn.From.Date && leaveReturn.To.Date < leaveRequest.To.Date)
             {
-                leaveReturn.Amount = GetLeaveDays(
+                leaveReturn.Amount = HrHelper.GetLeaveDays(
                     leaveReturn.From, leaveReturn.To, leaveReturn.GlFiscalYearId,
                     leaveRequest.Day, leaveRequest.Type, leaveRequest.EmployeeId);
             }
@@ -697,7 +633,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             // Handle partial leave cases
             else
             {
-                leaveReturn.Amount = GetLeaveDays(
+                leaveReturn.Amount = HrHelper.GetLeaveDays(
                     leaveReturn.From, leaveReturn.To, leaveReturn.GlFiscalYearId,
                     leaveRequest.Day, leaveRequest.Type, leaveRequest.EmployeeId);
             }
@@ -756,8 +692,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             }
          
-            leaveReturn.From = ParseEthiopicDate(leaveReturn.FromAm);
-            leaveReturn.To = ParseEthiopicDate(leaveReturn.ToAm);
+            leaveReturn.From = HrHelper.ParseEthiopicDate(leaveReturn.FromAm);
+            leaveReturn.To = HrHelper.ParseEthiopicDate(leaveReturn.ToAm);
             var per = db.GLFiscalYears
                 .FirstOrDefault(x => x.DateFrom <= leaveReturn.From.Date
                 && x.DateTo >= leaveReturn.From.Date);
@@ -784,7 +720,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 leaveRequest.From.Date > leaveReturn.From.Date && leaveReturn.To.Date < leaveRequest.To.Date ||
                 leaveRequest.From.Date >= leaveReturn.From.Date && leaveReturn.To.Date < leaveRequest.To.Date)
             {
-                leaveReturn.Amount = GetLeaveDays(
+                leaveReturn.Amount = HrHelper.GetLeaveDays(
                     leaveReturn.From, leaveReturn.To, leaveReturn.GlFiscalYearId,
                     leaveRequest.Day, leaveRequest.Type, leaveRequest.EmployeeId);
             }
@@ -914,7 +850,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             decimal leaveDays = 0;
 
             decimal holiday = GetHolidays(from, to, glFiscalYearId);
-            var weekDays = GetWeekDays(from, to);
+            var weekDays = HrHelper.GetWeekDays(from, to);
             if (leaveType == LeaveType.ANNUAL)
             {
                 leaveDays = to.Subtract(from).Days + 1 - holiday;
@@ -922,9 +858,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 if (day == LeaveDay.Half_Day)
                 {
                     decimal checkWeekEnd = to.Subtract(from).Days + 1 - holiday;
-                    double amt = GetHalf(from, to);
-                    double notHalf = GetNotHalf(from, to);
-                    bool isHalf = IsHalf(from, to);
+                    double amt = HrHelper.GetHalf(from, to);
+                    double notHalf = HrHelper.GetNotHalf(from, to);
+                    bool isHalf = HrHelper.IsHalf(from, to);
                     if (isHalf)
                     {
                         leaveDays = (checkWeekEnd - Convert.ToDecimal(notHalf)) / 2;
@@ -948,76 +884,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             return leaveDays;
         }
 
-        public double GetWeekDays(DateTime startDate, DateTime endDate)
-        {
-            double numberOfWeekDays = 0;
-
-            // Fetch weekend settings and holidays once
-            var sundayWeekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SUNDAY);
-            var saturdayWeekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SATURDAY);
-            var holidays = db.Holidays.Where(x => x.Date >= startDate && x.Date <= endDate).ToList();
-
-            TimeSpan diff = endDate - startDate;
-            int days = diff.Days;
-
-            for (var i = 0; i <= days; i++)
-            {
-                var testDate = startDate.AddDays(i);
-
-                // Check if the date is a holiday
-                if (holidays.Any(h => h.Date == testDate))
-                {
-                    continue;
-                }
-
-                // Check if the date is a weekend
-                if (testDate.DayOfWeek == DayOfWeek.Saturday)
-                {
-                    if (saturdayWeekendSetting != null)
-                    {
-                        if (saturdayWeekendSetting.IsHalfDay)
-                        {
-                            numberOfWeekDays += 0.5;
-                        }
-                        // else it's a full day off, do nothing
-                    }
-                    continue;
-                }
-                else if (testDate.DayOfWeek == DayOfWeek.Sunday)
-                {
-                    if (sundayWeekendSetting != null)
-                    {
-                        if (sundayWeekendSetting.IsHalfDay)
-                        {
-                            numberOfWeekDays += 0.5;
-                        }
-                        // else it's a full day off, do nothing
-                    }
-                    continue;
-                }
-
-                // If not a weekend and not a holiday, it's a weekday
-                numberOfWeekDays += 1;
-            }
-
-            return numberOfWeekDays;
-        }
 
         public decimal GetLeaveDays(string from, string to, string half, int hour)
         {
 
             decimal days = 0;
 
-            if (from != "" && to != "")
+            if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty( to))
             {
 
 
-                FromAmharic = from;
-                var splitDatefrom = FromAmharic.Split('/');
+                var splitDatefrom = from.Split('/');
                 DateTime f = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDatefrom[0]), Convert.ToInt32(splitDatefrom[1]), Convert.ToInt32(splitDatefrom[2]));
 
-                ToAmharic = to;
-                var splitDateto = ToAmharic.Split('/');
+                var splitDateto = to.Split('/');
                 DateTime t = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateto[0]), Convert.ToInt32(splitDateto[1]), Convert.ToInt32(splitDateto[2]));
                 var count = 0;
                 double weekDays = 0;
@@ -1035,7 +915,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                             }
                         }
                     }
-                    weekDays = GetWeekDays(f, t);
+                    weekDays = HrHelper.GetWeekDays(f, t);
                 }
 
 
@@ -1046,9 +926,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 if (half == "1")
                 {
                     decimal checkWeekEnd = t.Subtract(f).Days + 1 - count;
-                    double amt = GetHalf(f, t);
-                    double notHalf = GetNotHalf(f, t);
-                    bool isHalf = IsHalf(f, t);
+                    double amt = HrHelper.GetHalf(f, t);
+                    double notHalf = HrHelper.GetNotHalf(f, t);
+                    bool isHalf = HrHelper.IsHalf(f, t);
                     if (isHalf)
                     {
                         days = (checkWeekEnd - Convert.ToDecimal(notHalf)) / 2;
@@ -1126,138 +1006,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             }
 
             return "0";
-        }
-        public double GetHalf(DateTime startDate, DateTime endDate)
-        {
-            double noOfWeek = 0;
-            var sundayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SUNDAY);
-            var saturdayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SATURDAY);
-            List<DateTime> dayList = new List<DateTime>();
-            TimeSpan diff = endDate - startDate;
-            int days = diff.Days;
-            for (var i = 0; i <= days; i++)
-            {
-
-                var testDate = startDate.AddDays(i);
-                switch (testDate.DayOfWeek)
-                {
-                    case DayOfWeek.Saturday:
-
-                        if (saturdayweekendSetting != null && saturdayweekendSetting.IsHalfDay)
-                        {
-                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
-                            if (holiday == null)
-                            {
-                                noOfWeek = noOfWeek + 1;
-                            }
-                        }
-                        break;
-                    case DayOfWeek.Sunday:
-
-
-                        if (sundayweekendSetting != null && sundayweekendSetting.IsHalfDay)
-                        {
-                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
-                            if (holiday == null)
-                            {
-                                noOfWeek = noOfWeek + 1;
-                            }
-                        }
-
-                        break;
-                }
-            }
-            return noOfWeek;
-        }
-        public double GetNotHalf(DateTime startDate, DateTime endDate)
-        {
-            double noOfWeek = 0;
-            var sundayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SUNDAY);
-            var saturdayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SATURDAY);
-            List<DateTime> dayList = new List<DateTime>();
-            TimeSpan diff = endDate - startDate;
-            int days = diff.Days;
-            for (var i = 0; i <= days; i++)
-            {
-
-                var testDate = startDate.AddDays(i);
-                switch (testDate.DayOfWeek)
-                {
-                    case DayOfWeek.Saturday:
-
-                        if (saturdayweekendSetting != null && !saturdayweekendSetting.IsHalfDay)
-                        {
-                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
-                            if (holiday == null)
-                            {
-                                noOfWeek = noOfWeek + 1;
-                            }
-
-                        }
-
-                        break;
-                    case DayOfWeek.Sunday:
-
-
-                        if (sundayweekendSetting != null && !sundayweekendSetting.IsHalfDay)
-                        {
-                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
-                            if (holiday == null)
-                            {
-                                noOfWeek = noOfWeek + 1;
-                            }
-                        }
-
-
-                        break;
-                }
-            }
-            return noOfWeek;
-        }
-        public bool IsHalf(DateTime startDate, DateTime endDate)
-        {
-            bool isHalf = false;
-            var sundayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SUNDAY);
-            var saturdayweekendSetting = db.Weekends.FirstOrDefault(x => x.Name == WeekendName.SATURDAY);
-            List<DateTime> dayList = new List<DateTime>();
-            TimeSpan diff = endDate - startDate;
-            int days = diff.Days;
-            for (var i = 0; i <= days; i++)
-            {
-
-                var testDate = startDate.AddDays(i);
-                switch (testDate.DayOfWeek)
-                {
-                    case DayOfWeek.Saturday:
-
-                        if (saturdayweekendSetting != null && saturdayweekendSetting.IsHalfDay)
-                        {
-                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
-                            if (holiday == null)
-                            {
-                                isHalf = true;
-                            }
-
-                        }
-
-                        break;
-                    case DayOfWeek.Sunday:
-
-
-                        if (sundayweekendSetting != null && sundayweekendSetting.IsHalfDay)
-                        {
-                            var holiday = db.Holidays.FirstOrDefault(x => x.Date == testDate);
-                            if (holiday == null)
-                            {
-                                isHalf = true;
-                            }
-                        }
-
-
-                        break;
-                }
-            }
-            return isHalf;
         }
         public decimal GetAmount(/*int period,*/ int empId)
         {

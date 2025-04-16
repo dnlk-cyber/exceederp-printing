@@ -15,7 +15,7 @@
           columns.Bound(c => c.LeaveReturnId).Title("S.N").Width(100);
           columns.Bound(c => c.LeaveRequestId).Title("Request Id").Width(100);
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ReturnEmployees").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
           columns.Bound(c => c.FromAm).EditorTemplateName("Calander").Width(150);
           columns.Bound(c => c.ToAm).EditorTemplateName("Calander").Width(150);
           columns.Bound(c => c.Amount).Width(100);
@@ -303,8 +303,10 @@
             success: function (result) {
                 r = result;
                 if (r == "true") {
-                    $(gridName).find(".k-toolbar").show(); //hide toolbar
-                    $(".k-grid-top", gridName).hide();
+                    //$(gridName).find(".k-toolbar").show(); //hide toolbar
+                    //$(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
                 }
                 if (r == "Dapproved") {
                     $(gridName).find(".k-toolbar").hide(); //hide toolbar
