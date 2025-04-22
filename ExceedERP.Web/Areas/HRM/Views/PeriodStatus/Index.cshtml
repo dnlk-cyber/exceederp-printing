@@ -12,10 +12,7 @@
                         columns.Bound(c => c.PeriodStatusId).Title("#").Width(60);
                         columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Period"], "GLPeriodId", "Name").Title("Period").Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
                         columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Title("Branch").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                        if (GlobalHelper.IsPayrollModebranchAndBusinessUnit())
-                        {
-                            columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnit"], "BusinessUnitId", "Name").Title("Business Unit").Width(150);
-                        }
+                       
                         columns.Bound(c => c.Status).Title("Status").Width(120);
                         columns.Bound(c => c.Remark).Title("Remark").Width(100);
                         columns.Bound(c => c.IsLocked).Width(90).Title("Locked ?").ClientTemplate(
@@ -34,20 +31,21 @@
                     .Scrollable(s => s.Height(550))
                     .DataSource(dataSource => dataSource
                         .Ajax()
+                        .Sort(sort => sort.Add("PeriodStatusId").Descending())
                         .Model(model =>
                         {
                             model.Id(p => p.PeriodStatusId);
                             model.Field(p => p.PeriodStatusId).Editable(false);
                             model.Field(p => p.GLPeriodId).Editable(false);
                             model.Field(p => p.BranchId).Editable(false);
-                            model.Field(p => p.BusinessUnitId).Editable(false);
+                           
                             model.Field(p => p.Status).Editable(false);
                         })
                         .Events(ev => ev
                         .Error("error_handler(\"grid\")")
                         .RequestStart("onRequestStart(\"grid\")")
                         .RequestEnd("onRequestEnd(\"grid\")"))
-                        .Read(read => read.Action("PeriodStatus_Read", "PeriodStatus"))
+                        .Read(read => read.Action("PeriodStatus_Read", "PeriodStatus").Data("sendForgery"))
                        
                     )
 )

@@ -12,6 +12,10 @@ namespace ExceedERP.Helpers.Common
 {
     public class GlobalHelper
     {
+        public static bool IsProcessAllBranchPayroll()
+        {
+            return false;
+        }
         public static bool IsMultipleBusinessUnit()
         {
             ExceedDbContext db = new ExceedDbContext();

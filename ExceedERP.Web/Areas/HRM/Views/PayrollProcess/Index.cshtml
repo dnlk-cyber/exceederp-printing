@@ -67,7 +67,7 @@
                       .Events(x => x.Change("Enable"))
 
                       )
-                @if (HttpContext.Current.User.IsInRole("All_Branch_Payroll_Process"))
+                @if (HttpContext.Current.User.IsInRole("All_Branch_Payroll_Process") && GlobalHelper.IsProcessAllBranchPayroll())
                 {
                     @(Html.Kendo().Button()
                       .Name("btnAllProcess")
@@ -131,7 +131,7 @@
 
               .Editable(editable => editable.Mode(GridEditMode.InLine))
                      .Scrollable(h => h.Height(500))
-                     .Groupable()
+                     
                               .Sortable(sortable =>
                               {
                                   sortable.SortMode(GridSortMode.SingleColumn);

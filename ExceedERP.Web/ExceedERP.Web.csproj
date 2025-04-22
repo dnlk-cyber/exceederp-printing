@@ -1401,6 +1401,7 @@
     <Compile Include="Areas\HRM\Controllers\Payroll\PerdimeSettingController.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Areas\HRM\Controllers\Payroll\PeriodStatusController.cs" />
     <Compile Include="Areas\HRM\Controllers\Payroll\ProvidentFundController.cs" />
     <Compile Include="Areas\HRM\Controllers\Payroll\RankController.cs">
       <SubType>Code</SubType>

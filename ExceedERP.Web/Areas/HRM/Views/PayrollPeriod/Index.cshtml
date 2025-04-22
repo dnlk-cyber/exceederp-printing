@@ -24,9 +24,31 @@
               command.Custom("Open").Click("OpenPeriod");
           }).Width(180);
       })
+       .ToolBar(toolbar =>
+ {
+
+ toolbar.Template(@<text>
+                          <div class="toolbar row">
+                             
+                              <div class="">
+                                 
+
+
+                                  @(Html.Kendo().Button()
+                                        .Name("btnRefresh")
+                                        .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                        .Events(e => e.Click("refreshPeriodStatus"))
+                                        .Content("Update Period Status"))
+
+                              </div>
+
+                          </div>
+
+                       </text>);
+ })
       .HtmlAttributes(new { style = "height: 550px;" })
          .Scrollable(h => h.Height(500))
-                             .Groupable()
+
                                       .Sortable(sortable =>
                                       {
                                           sortable.SortMode(GridSortMode.SingleColumn);
@@ -39,7 +61,7 @@
                                                         .PageSizes(true)
                                                         .ButtonCount(5))
       .Selectable()
-     
+
       .Selectable(selectable =>
       {
           selectable.Mode(GridSelectionMode.Single);
@@ -50,7 +72,7 @@
           sortable.SortMode(GridSortMode.SingleColumn);
       })
       .Filterable()
-      .Groupable()
+     
     //  .Events(ev => ev.DetailExpand("detailExpand"))
      // .Events(x => x.DataBound("onDataBoundMaster"))
 
@@ -72,7 +94,7 @@
                                     .Error("error_handler(\"PayrollPeriod\")")
                                     .RequestStart("onRequestStart(\"PayrollPeriod\")")
                                     .RequestEnd("onRequestEnd(\"PayrollPeriod\")"))
-            .Read(read => read.Action("InventoryPeriods_Read", "PayrollPeriod"))
+            .Read(read => read.Action("InventoryPeriods_Read", "PayrollPeriod").Data("sendForgery"))
       )
     //.Events(events => events.DataBound("onDataBoundLines"))
       )
@@ -81,6 +103,29 @@
 
 <script>
 
+    function refreshPeriodStatus() {    
+
+     $.ajax({
+         type: "POST",
+         url: '@Url.Action("UpdatePeriodStatus", "PayrollPeriod", new { area = "HRM" })',
+         data: {  },
+         success: function (result) {           
+             alert(result.Message);
+             location.reload(true);
+         },
+         beforeSend: function () {
+             // Show image container
+             $("#loading-image").show();
+         },
+         complete: function (data) {
+             // Hide image container
+             $("#loading-image").hide();
+         },
+         error: function (result) {
+             alert(result);
+         }
+     });
+ }
 
     function ClosePeriods(e) {
         var dataItem = this.dataItem($(e.currentTarget).closest("tr"));

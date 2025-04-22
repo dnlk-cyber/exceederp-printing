@@ -7,19 +7,28 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.Payroll;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Finance;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 {
-     [Authorize(Roles =  Payroll_Admin)]
+    [Authorize(Roles = Payroll_Admin)]
     public class PayrollPeriodController : Controller
     {
         private ExceedDbContext _db = new ExceedDbContext();
         private const string Payroll_Admin = "Payroll_Admin";
         public ActionResult Index()
         {
-            var glperiods = _db.GLPeriods.ToList();
+            //UpdatePeriodStatus();
+            return View();
+        }
+
+        public JsonResult UpdatePeriodStatus()
+        {
+            FiscalYearHelper helper = new FiscalYearHelper();
+            int year = helper.GetCurrentFYearId();
+            var glperiods = _db.GLPeriods.Where(x => x.GlFiscalYearId == year).ToList();
             foreach (var period in glperiods)
             {
                 var exist = _db.PayrollPeriods.FirstOrDefault(x => x.Name == period.Name);
@@ -42,26 +51,57 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     };
                     _db.PayrollPeriods.Add(entity);
                     _db.SaveChanges();
-                   
+
                     _db = new ExceedDbContext();
+
+
                     var branchs = _db.Branch;
                     foreach (var b in branchs)
                     {
                         var entitye = new PeriodStatus
                         {
-                           BranchId = b.BranchId,
+                            BranchId = b.BranchId,
                             Status = PeriodStatusList.NEW,
-
                             GLPeriodId = period.GLPeriodId
                         };
                         _db = new ExceedDbContext();
                         _db.PeriodStatuses.Add(entitye);
                         _db.SaveChanges();
                     }
+
+                }
+                else
+                {
+
+                    var branchs = _db.Branch;
+                    foreach (var b in branchs)
+                    {
+                        var statusExist = _db.PeriodStatuses.Where(x => x.BranchId == b.BranchId && x.GLPeriodId == period.GLPeriodId).FirstOrDefault();
+                        if (statusExist == null)
+                        {
+                            var entitye = new PeriodStatus
+                            {
+                                BranchId = b.BranchId,
+                                Status = PeriodStatusList.NEW,
+                                GLPeriodId = period.GLPeriodId
+                            };
+                            _db = new ExceedDbContext();
+                            _db.PeriodStatuses.Add(entitye);
+                            _db.SaveChanges();
+                        }
+                    }
+
+
                 }
 
             }
-            return View();
+
+            var formattedData = new
+            {
+                Message = "Completed Successfuly.",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult InventoryPeriods_Read([DataSourceRequest]DataSourceRequest request)
@@ -96,7 +136,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 var glPeriod = _db.PayrollPeriods.Find(int.Parse(id));
                 if (glPeriod != null && glPeriod.Status == FiscalYearStatus.Open)
                 {
-                    var glPeriods = _db.PayrollPeriods.Where(x=> x.DateTo<=glPeriod.DateFrom && x.Status ==FiscalYearStatus.Open);
+                    var glPeriods = _db.PayrollPeriods.Where(x => x.DateTo <= glPeriod.DateFrom && x.Status == FiscalYearStatus.Open);
                     if (!glPeriods.Any())
                     {
                         glPeriod.Status = FiscalYearStatus.Close;
@@ -114,7 +154,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     }
 
                     #region  log
-                 //   UserHelper.MiscLog(Request.UserHostAddress, "Inventory Period Close", "Success", User.Identity.Name, "Period " + glPeriod.Name);
+                    //   UserHelper.MiscLog(Request.UserHostAddress, "Inventory Period Close", "Success", User.Identity.Name, "Period " + glPeriod.Name);
                     #endregion
                 }
 
