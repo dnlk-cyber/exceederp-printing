@@ -60,10 +60,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 {
                     PrintingProformaInvoiceId = id,
                     Quantity = printingEstimation.ProductQuantity,
-                    NumberOfPages = printingEstimation.TotalTextNoPages,
+                    NumberOfPages = printingEstimation.Pages,
                     TotalPrice = overAllCost.SellingPrice,
                     TransportCost = model.TransportCost,
-                    JobTypeId = printingEstimation.JobTypeId,
+                    PrintJobType = printingEstimation.PrintJobType,
                     GLTaxRateID = model.GLTaxRateID,
                     UnitOfMeasurment = model.UnitOfMeasurment,
                     Remark = model.Remark,
@@ -117,10 +117,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 {
                     PrintingProformaInvoiceId = model.PrintingProformaInvoiceId,
                     Quantity = printingEstimation.ProductQuantity,
-                    NumberOfPages = printingEstimation.TotalTextNoPages,
+                    NumberOfPages = printingEstimation.Pages,
                     TotalPrice = overAllCost.SellingPrice,
                     TransportCost = model.TransportCost,
-                    JobTypeId = printingEstimation.JobTypeId,
+                    
                     GLTaxRateID = model.GLTaxRateID,
                     UnitOfMeasurment = model.UnitOfMeasurment,
                     Remark = model.Remark,
@@ -130,7 +130,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     GLTaxRateTransportId = model.GLTaxRateTransportId,
                     JobDescription = model.JobDescription,
                     UnitPrice = model.UnitPrice,
-                    PrintingProformaInvoiceItemId = model.PrintingProformaInvoiceItemId
+                    PrintingProformaInvoiceItemId = model.PrintingProformaInvoiceItemId,
+                    PrintJobType = printingEstimation.PrintJobType
                 };
                 entity.UnitPrice = entity.TotalPrice / entity.Quantity;
                 entity.TransportCost = entity.TransportCost + (entity.TransportCost * glTaxRateTransport.CalculatedRate);

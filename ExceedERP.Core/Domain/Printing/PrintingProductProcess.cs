@@ -20,7 +20,7 @@ namespace ExceedERP.Core.Domain.Printing
         [Display(Name ="Printing Process")]
         public int PrintingProcessId { get; set; }
         [Display(Name ="Printing Process Category")]
-        public PrintingProcessCategory PrintingProcessCategory { get; set; }
+        public PressCategory PrintingProcessCategory { get; set; }
         [Display(Name ="Process Name")]
         public string ProcessName { get; set; }
         [Display(Name ="Hrs Req")]

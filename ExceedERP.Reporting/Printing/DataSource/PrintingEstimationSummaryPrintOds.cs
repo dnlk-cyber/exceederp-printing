@@ -41,10 +41,9 @@ namespace ExceedERP.Reporting.Printing.DataSource
             var details = db.PrintingEstimationDetails.Where(x => x.PrintingEstimationSummaryId == id).ToList();
             foreach (var item in details)
             {
-                var jobType = db.PrintingJobTypes.FirstOrDefault(x => x.PrintingJobTypeId == item.JobTypeId);
                 list.Add(new PrintSummaryDetailVM
                 {
-                   JobType = jobType?.JobTypeName ?? "",
+                   PrintJobType = item.PrintJobType,
                    JobDesc = item.JobDescription,
                    AdminCost = item.AdministrativeCost,
                    LaborCost = item.LabourCost,

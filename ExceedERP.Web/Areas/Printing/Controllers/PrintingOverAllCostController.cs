@@ -72,9 +72,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         public ActionResult PrintingOverAllCosts_Update([DataSourceRequest]DataSourceRequest request, PrintingOverAllCost model)
         {
             var estimation = db.PrintingCostEstimations.Find(model.PrintingCostEstimationId);
-            var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.PaperSizeId);
+            var textPaperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.TextPaperSizeId);
             var glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GLTaxRateID);
-            if (estimation == null || paperSize == null)
+            if (estimation == null || textPaperSize == null)
             {
                 ModelState.AddModelError(string.Empty, " Somethings wrong! Estimation or paper size is missing");
             }
@@ -91,7 +91,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     GraphicsCost = model.GraphicsCost,                  
                     PrintingCostEstimationId = model.PrintingCostEstimationId
                 };
-                entity.GraphicsCost = (entity.GraphicsRate * (decimal)paperSize.Length * (decimal)paperSize.Width * estimation.TotalTextNoPages) * 1 + glTaxRate.CalculatedRate;
+                entity.GraphicsCost = (entity.GraphicsRate * (decimal)textPaperSize.Length * (decimal)textPaperSize.Width * estimation.Pages) * 1 + glTaxRate.CalculatedRate;
                 entity.TotalProductionCost = entity.MaterialCost + entity.LaborCost + entity.OverHeadCost;
                 entity.MaterialHandlingStorageWaste = entity.TotalProductionCost * 0.025m;
                 entity.GrandTotal = entity.TotalProductionCost + entity.AdminstrativeCost + entity.GraphicsCost + entity.MaterialHandlingStorageWaste;

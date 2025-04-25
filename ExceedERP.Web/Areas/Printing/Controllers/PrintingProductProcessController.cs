@@ -19,15 +19,11 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         public ActionResult Index()
         {
 
-            ViewData["JobType"] = db.PrintingJobTypes.Select(s => new
-            {
-                Text = s.JobTypeName,
-                Value = s.PrintingJobTypeId
-            }).ToList();
+         
 
             ViewData["PrintingProcess"] = db.PrintingProcesses.Select(s => new
             {
-                Text = s.ProcessName,
+                Text = s.LabourActivity,
                 Value = s.PrintingProcessId
             }).ToList();
 

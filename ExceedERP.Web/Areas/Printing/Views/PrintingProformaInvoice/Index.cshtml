@@ -64,7 +64,7 @@
                       .Name("grid_#=PrintingProformaInvoiceId#")
                       .Columns(columns =>
                       {
-                          columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+                          columns.Bound(c => c.PrintJobType).Width(100);                    
                           columns.Bound(c => c.JobDescription).Width(100);                    
                           columns.Bound(c => c.Quantity).Width(100);                    
                           columns.Bound(c => c.NumberOfPages).Width(100);                    

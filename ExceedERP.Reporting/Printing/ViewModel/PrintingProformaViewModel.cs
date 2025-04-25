@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExceedERP.Core.Domain.Printing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,7 +21,7 @@ namespace ExceedERP.Reporting.Printing.ViewModel
     public class PrintingProformaItemsViewModel
     {
 
-        public string JobType { get; set; }
+        public PrintJobType JobType { get; set; }
         public string JobDescription { get; set; }
         public decimal Quantity { get; set; }
         public int NoOfPage { get; set; }

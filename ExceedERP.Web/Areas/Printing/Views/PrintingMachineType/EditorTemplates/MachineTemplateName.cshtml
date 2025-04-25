@@ -1,0 +1,91 @@
+﻿
+@model ExceedERP.Core.Domain.Printing.PrintingMachineType
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Machine Name</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.MachineTypeName).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Paper Size</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.PaperSizeId)
+                                                           .ValuePrimitive(true)
+                                                           .OptionLabel("Select ...")
+                                                           .DataTextField("Text")
+                                                           .DataValueField("Value")
+                                                           .Filter("contains")
+                                                           .DataSource(dataSource =>
+                                                           {
+                                                               dataSource.Read(read => read.Action("PaperSizeFilterable", "PrintDataProvider", new { area = "Printing" }).Data("filterPaperSize"))
+                                                                   .ServerFiltering(true);
+                                                           }).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>No of Color</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.NumberOfColors).HtmlAttributes(new { style = "width:100%" }).Value(null))
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Output</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.OutputRate).HtmlAttributes(new { style = "width:100%" }).Value(null))
+
+            </div>
+        </div>
+    </div>
+</div>
+    
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Print Side</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.PrintSide).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+    @*<div class="col-sm-12">
+        <div class="form-group">
+            <label>Hourly Rate</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.PrintingHourlyChargeRate).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>*@
+</div>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-12 {
+        width: 300px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

@@ -2,6 +2,7 @@ using ExceedERP.Core.Domain.JobCosting;
 using ExceedERP.Core.Domain.JobCosting.Setting;
 using ExceedERP.Core.Domain.Manufacturing;
 using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
+
 using ExceedERP.Core.Domain.printing.PrintingEstimation;
 using ExceedERP.Core.Domain.Printing;
 using ExceedERP.Core.Domain.Printing.PrintingEstimation;
@@ -15,6 +16,38 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
+    public class PrintingJobTypeEntityTypeConfiguration : EntityTypeConfiguration<PrintingJobType>
+    {
+        public PrintingJobTypeEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingJobType", "Printing");
+            this.HasKey<int>(p => p.PrintingJobTypeId);
+        }
+    }
+    public class PrintingMachineDetailEntityTypeConfiguration : EntityTypeConfiguration<PrintingMachineDetail>
+    {
+        public PrintingMachineDetailEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingMachineDetail", "Printing");
+            this.HasKey<int>(p => p.PrintingMachineDetailId);
+        }
+    }
+    public class PrintingJobOrderJobDesignEntityTypeConfiguration : EntityTypeConfiguration<PrintingJobOrderJobDesign>
+    {
+        public PrintingJobOrderJobDesignEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingJobOrderJobDesign", "Printing");
+            this.HasKey<int>(p => p.PrintingJobOrderJobDesignId);
+        }
+    }
+    public class PrintingJobOrderProductionJobDesignEntityTypeConfiguration : EntityTypeConfiguration<PrintingJobOrderProductionJobDesign>
+    {
+        public PrintingJobOrderProductionJobDesignEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingJobOrderProductionJobDesign", "Printing");
+            this.HasKey<int>(p => p.PrintingJobOrderProductionJobDesignId);
+        }
+    }
     public class PrintingEstimationMarginEntityTypeConfiguration : EntityTypeConfiguration<PrintingEstimationMargin>
     {
         public PrintingEstimationMarginEntityTypeConfiguration()
@@ -151,14 +184,7 @@ namespace ExceedERP.DataAccess.Context
             this.HasKey<int>(p => p.PrintingBindingStyleId);
         }
     }
-    public class PrintingJobTypeEntityTypeConfiguration : EntityTypeConfiguration<PrintingJobType>
-    {
-        public PrintingJobTypeEntityTypeConfiguration()
-        {
-            this.ToTable("PrintingJobType", "Printing");
-            this.HasKey<int>(p => p.PrintingJobTypeId);
-        }
-    }
+   
     public class PrintingPaperSizeEntityTypeConfiguration : EntityTypeConfiguration<PrintingPaperSize>
     {
         public PrintingPaperSizeEntityTypeConfiguration()

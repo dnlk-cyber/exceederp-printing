@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExceedERP.Core.Domain.Printing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,7 @@ namespace ExceedERP.Reporting.Printing.ViewModel
 
     public class PrintSummaryDetailVM
     {
-        public string JobType { get; set; }
+        public PrintJobType PrintJobType { get; set; } 
         public string JobDesc { get; set; }
         public decimal Quantity { get; set; }
         public decimal MaterialCost { get; set; }

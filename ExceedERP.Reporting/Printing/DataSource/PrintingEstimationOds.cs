@@ -17,29 +17,27 @@ namespace ExceedERP.Reporting.Printing.DataSource
         private readonly ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
         public PrintingEstimationViewModel GetEstimation(int id)
-        {           
+        {
             var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == id);
-            if(estimation != null)
+            if (estimation != null)
             {
-                var bindingStyle = db.PrintingBindingStyles.Find(estimation.BindingStyleId);
-                var jobType = db.PrintingJobTypes.FirstOrDefault(x => x.PrintingJobTypeId == estimation.JobTypeId);
                 var customer = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == estimation.CustomerId);
-                var paperSize = db.PrintingPaperSizes.Find(estimation.PrintingCostEstimationId);               
+                var paperSize = db.PrintingPaperSizes.Find(estimation.PrintingCostEstimationId);
                 return new PrintingEstimationViewModel
                 {
-                    BindingStyle = bindingStyle?.BindingStyleName ?? "",
+                    BindingStyle = estimation.BindingStyle.ToString(),
                     CoverNoOfColors = estimation.PrintingCostEstimationId,
                     CustomerName = customer?.TradeName ?? "",
                     JobDescription = estimation.JobDescription,
-                    JobType = jobType?.JobTypeName ?? "",
-                     NoOfPages = estimation.TotalTextNoPages,
-                     PaperSize = paperSize?.PaperSizeName ?? "",
-                     Quantity = estimation.ProductQuantity,
-                     TextNoOfColors = estimation.TextNoOfColors,
-                     ApprovedBy = estimation.OnlineApprovedBy,
-                     ApprovedDate = estimation.OnlineApprovedTime,
-                     CheckedBy = estimation.SendForApprovalBy,
-                     CheckedDate = estimation.SendForApprovalTime
+                    JobType = estimation.PrintJobType,
+                    NoOfPages = estimation.Pages,
+                    PaperSize = paperSize?.PaperSizeName ?? "",
+                    Quantity = estimation.ProductQuantity,
+                    TextNoOfColors = estimation.TextNoOfColors,
+                    ApprovedBy = estimation.OnlineApprovedBy,
+                    ApprovedDate = estimation.OnlineApprovedTime,
+                    CheckedBy = estimation.SendForApprovalBy,
+                    CheckedDate = estimation.SendForApprovalTime
                 };
             }
             return new PrintingEstimationViewModel();
@@ -49,7 +47,7 @@ namespace ExceedERP.Reporting.Printing.DataSource
         {
             List<PrintingMaterialViewModel> list = new List<PrintingMaterialViewModel>();
             var materialEstimations = db.PrintingEstimationMaterialCosts.Where(x => x.PrintingCostEstimationId == id).ToList();
-            
+
             foreach (var material in materialEstimations)
             {
                 var category = db.PrintingMaterialCategories.Find(material.PrintingMaterialCategoryId);
@@ -81,22 +79,20 @@ namespace ExceedERP.Reporting.Printing.DataSource
 
                 list.Add(new PrintingLaborViewModel
                 {
-                    EstimatedHour = item.EstimatedHours,
                     LaborRate = item.LaborRate,
                     TotalCost = item.TotalCost,
-                    PrintingProcess = printingProcess?.PrintingProcessName ?? PrintingProcessName.NA,
-                    ProcessCategory = printingProcess?.PrintingCategory ?? PrintingProcessCategory.NA,
-                    //MachineType = printingMachine.MachineTypeName,
+                    PrintingProcess = printingProcess.LabourActivity,
+                    ProcessCategory = printingProcess.PressCategory
                 });
 
             }
-            return list;            
+            return list;
         }
         [DataObjectMethod(DataObjectMethodType.Select)]
         public OverAllCostViewModel GetOverAllCost(int id)
         {
             var overAllCost = db.PrintingOverAllCosts.FirstOrDefault(x => x.PrintingCostEstimationId == id);
-            if(overAllCost != null)
+            if (overAllCost != null)
             {
                 return new OverAllCostViewModel
                 {

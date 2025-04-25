@@ -1,131 +1,276 @@
 ﻿
 @model ExceedERP.Core.Domain.Printing.PrintingCostEstimation
-<div class="row">
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>Job Type</label>
-            <div>
-                @(Html.Kendo().DropDownListFor(m => m.JobTypeId)
-                                            .ValuePrimitive(true)
-                                            .OptionLabel("Select Job...")
-                                            .DataTextField("Text")
-                                            .DataValueField("Value")
-                                            .Filter("contains")
-                                            .DataSource(dataSource =>
-                                            {
-                                                dataSource.Read(read => read.Action("JobType", "PrintDataProvider", new { area = "Printing" }).Data("filterJobType"))
-                                                    .ServerFiltering(true);
-                                            }).HtmlAttributes(new { style = "width:100%" }))
-                
+@(Html.Kendo().PanelBar()
+    .Name("panelbar")
+    .ExpandMode(PanelBarExpandMode.Single)
+    .Items(panelbar =>
+    {
+        panelbar.Add().Text("General Info").Expanded(true).Selected(true).Content(@<div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Customer Name</label>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.CustomerId)
+                                                        .ValuePrimitive(true)
+                                                        .OptionLabel("Customer")
+                                                        .DataTextField("Text")
+                                                        .DataValueField("Value")
+                                                        .Filter("contains")
+                                                        .DataSource(dataSource =>
+                                                        {
+                                                                            dataSource.Read(read => read.Action("GetACustomers", "PrintDataProvider", new { area = "Printing" }).Data("filterCustomer")).ServerFiltering(true);
+                                                                        }).HtmlAttributes(new { style = "width:100%" }))
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>Customer</label>
-            <div>
-                @(Html.Kendo().DropDownListFor(m => m.CustomerId)
-                                            .ValuePrimitive(true)
-                                            .OptionLabel("Select ...")
-                                            .DataTextField("Text")
-                                            .DataValueField("Value")
-                                            .Filter("contains")
-                                            .DataSource(dataSource =>
-                                            {
-                                                dataSource.Read(read => read.Action("GetACustomers", "PrintDataProvider", new { area = "Printing" }).Data("filterCustomer"))
-                                                    .ServerFiltering(true);
-                                            }).HtmlAttributes(new { style = "width:100%" }))
-               
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Job Type</label>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.PrintJobType)
+                                                        .OptionLabel("Job Type")
+                                                        .DataTextField("Text")
+                                                        .DataValueField("Value")
+                                                        .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.PrintJobType)))
+                                                        .HtmlAttributes(new { style = "width:100%" }))
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>PaperSize</label>
-            <div>
-                @(Html.Kendo().DropDownListFor(m => m.PaperSizeId)
-                                            .ValuePrimitive(true)
-                                            .OptionLabel("Select ...")
-                                            .DataTextField("Text")
-                                            .DataValueField("Value")
-                                            .Filter("contains")
-                                            .DataSource(dataSource =>
-                                            {
-                                                dataSource.Read(read => read.Action("PaperSizeFilterable", "PrintDataProvider", new { area = "Printing" }).Data("filterPaperSize"))
-                                                    .ServerFiltering(true);
-                                            }).HtmlAttributes(new { style = "width:100%" }))
-                
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Quantity</label>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.ProductQuantity).HtmlAttributes(new { style = "width:100%" }).Min(1).Placeholder("Quantity"))
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>Binding Style</label>
-            <div>
-                @(Html.Kendo().DropDownListFor(m => m.BindingStyleId)
-                                            .ValuePrimitive(true)
-                                            .OptionLabel("Select ...")
-                                            .DataTextField("Text")
-                                            .DataValueField("Value")
-                                            .Filter("contains")
-                                            .DataSource(dataSource =>
-                                            {
-                                                dataSource.Read(read => read.Action("BindingStyleFilterable", "PrintDataProvider", new { area = "Printing" }).Data("filterBindingStyle"))
-                                                    .ServerFiltering(true);
-                                            }).HtmlAttributes(new { style = "width:100%" }))
-                
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>No of pages</label>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Pages).HtmlAttributes(new { style = "width:100%" }).Min(0).Placeholder("Pages"))
+                </div>
             </div>
         </div>
     </div>
-</div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Job Description</label>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.JobDescription).HtmlAttributes(new { style = "width:100%" }))
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="row">
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>Quantity</label>
-            <div>
-                @(Html.Kendo().TextBoxFor(model => model.ProductQuantity).HtmlAttributes(new { style = "width:100%" }))
+</div>);
 
+        panelbar.Add().Text("Paper Setup").Content(@<div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label>Text Paper</label>
+                        <div>
+                            @(Html.Kendo().DropDownListFor(m => m.TextPaperSizeId)
+                                .ValuePrimitive(true)
+                                .OptionLabel("Text Paper Size")
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .Filter("contains")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("PaperSizeFilterable", "PrintDataProvider", new { area = "Printing" }).Data("filterTextPaperSize")).ServerFiltering(true);
+                                }).HtmlAttributes(new { style = "width:100%" }))
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label>Cover Paper</label>
+                        <div>
+                            @(Html.Kendo().DropDownListFor(m => m.CoverPaperSizeId)
+                                .ValuePrimitive(true)
+                                .OptionLabel("Cover Paper Size")
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .Filter("contains")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("PaperSizeFilterable", "PrintDataProvider", new { area = "Printing" }).Data("filterCoverPaperSize")).ServerFiltering(true);
+                                }).HtmlAttributes(new { style = "width:100%" }))
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>);
+
+        panelbar.Add().Text("Printing Specs").Content(@<div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Text No Of Colors</label>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.TextNoOfColors).HtmlAttributes(new { style = "width:100%" }).Min(1).Max(4).Placeholder("Text Color"))
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>Text No Of Colors</label>
-            <div>
-                @(Html.Kendo().TextBoxFor(model => model.TextNoOfColors).HtmlAttributes(new { style = "width:100%" }))
-
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Cover No Of Color</label>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.CoverNoOfColor).HtmlAttributes(new { style = "width:100%" }).Min(1).Max(4).Placeholder("Cover Color"))
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>Cover No Of Color</label>
-            <div>
-                @(Html.Kendo().TextBoxFor(model => model.CoverNoOfColor).HtmlAttributes(new { style = "width:100%" }))
-
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Binding Type</label>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.BindingStyle)
+                                .OptionLabel("Binding Type")
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.BindingStyle)))
+                                .HtmlAttributes(new { style = "width:100%" }))
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>No of pages</label>
-            <div>
-                @(Html.Kendo().TextBoxFor(model => model.TotalTextNoPages).HtmlAttributes(new { style = "width:100%" }))
-
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label></label>
+                <div>
+                    @(Html.Kendo().CheckBoxFor(c => c.UseLength).HtmlAttributes(new { style = "width:100%" }).Checked(true).Label("Binding Paper Side(Length)"))
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-<div class="row">
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>Job Description</label>
-            <div>
-                @(Html.Kendo().TextBoxFor(model => model.JobDescription).HtmlAttributes(new { style = "width:100%" }))
-
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Text Print Side</label>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(c => c.TextPrintSide).HtmlAttributes(new { style = "width:100%" }).Min(1).Max(2).RestrictDecimals(true).Placeholder("print side text").Decimals(0))
+                </div>
             </div>
         </div>
     </div>
-</div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Cover Print Side</label>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(c => c.CoverPrintSide).HtmlAttributes(new { style = "width:100%" }).Min(1).Max(2).RestrictDecimals(true).Placeholder("print side Cover").Decimals(0))
+                </div>
+            </div>
+        </div>
+    </div>
+</div>);
+
+        panelbar.Add().Text("Machine Setup").Content(@<div>
+           
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label>Machine for Text</label>
+                        <div>
+                            @(Html.Kendo().DropDownListFor(m => m.TextMachineTypeId)
+                                .ValuePrimitive(true)
+                                .OptionLabel("Machine for Text")
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .Filter("contains")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("PrintMachineType", "PrintDataProvider", new { area = "Printing" }).Data("filterTextMachine")).ServerFiltering(true);
+                                }).HtmlAttributes(new { style = "width:100%" }))
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label>Machine for Cover</label>
+                        <div>
+                            @(Html.Kendo().DropDownListFor(m => m.CoverMachineTypeId)
+                                .ValuePrimitive(true)
+                                .OptionLabel("Machine for Cover")
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .Filter("contains")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("PrintMachineType", "PrintDataProvider", new { area = "Printing" }).Data("filterCoverMachine")).ServerFiltering(true);
+                                }).HtmlAttributes(new { style = "width:100%" }))
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>);
+
+        panelbar.Add().Text("Packing Setup").Content(@<div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Pack</label>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Pack).HtmlAttributes(new { style = "width:100%" }).Min(0).Placeholder("Pack"))
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>);
+    })
+)
+
+
+<style>
+    #panelbar {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-12 {
+        width: 350px;
+    }
+
+    .row {
+        margin: auto;
+    }
+    ul{
+        padding: 10px;
+    }
+    /*li{
+        padding:10px;
+    }*/
+    .k-content{
+        padding: 10px 0;
+        margin:10px 0;
+    }
+    /*.k-item{
+        padding: 20px 0;
+    }*/
+</style>

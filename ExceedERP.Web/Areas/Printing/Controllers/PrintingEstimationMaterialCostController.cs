@@ -9,13 +9,14 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Printing;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Printing;
 
 namespace ExceedERP.Web.Areas.Printing.Controllers
 {
     public class PrintingEstimationMaterialCostController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
-
+        
         public ActionResult Index()
         {
             return View();
@@ -24,196 +25,11 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         public ActionResult PrintingEstimationMaterialCosts_Read([DataSourceRequest]DataSourceRequest request, int estId)
         {
             IQueryable<PrintingEstimationMaterialCost> printingestimationmaterialcosts = db.PrintingEstimationMaterialCosts.Where(x => x.PrintingCostEstimationId == estId);
-            DataSourceResult result = printingestimationmaterialcosts.ToDataSourceResult(request, printingEstimationMaterialCost => new PrintingEstimationMaterialCost
-            {
-                
-                PrintingEstimationMaterialCostId = printingEstimationMaterialCost.PrintingEstimationMaterialCostId,
-                PrintingMaterialCategoryId = printingEstimationMaterialCost.PrintingMaterialCategoryId,
-                PrintingMaterialCategoryItemId = printingEstimationMaterialCost.PrintingMaterialCategoryItemId,
-                Quantity = printingEstimationMaterialCost.Quantity,
-                UnitCost = printingEstimationMaterialCost.UnitCost,
-                TotalCost = printingEstimationMaterialCost.TotalCost,
-                UnitOfMeasurment = printingEstimationMaterialCost.UnitOfMeasurment,
-                DateCreated = printingEstimationMaterialCost.DateCreated,
-                LastModified = printingEstimationMaterialCost.LastModified,
-                CreatedBy = printingEstimationMaterialCost.CreatedBy,
-                ModifiedBy = printingEstimationMaterialCost.ModifiedBy,
-                PrintingCostEstimationId = printingEstimationMaterialCost.PrintingCostEstimationId,
-                EstimationMaterialType = printingEstimationMaterialCost.EstimationMaterialType,
-                PaperWeight = printingEstimationMaterialCost.PaperWeight,
-                WastageInPercentage = printingEstimationMaterialCost.WastageInPercentage,
-                
-            });
-
-            return Json(result);
+            
+            return Json(printingestimationmaterialcosts.ToDataSourceResult(request));
         }
 
-        private double CalculateTextPaperQuantity(PrintingEstimationMaterialCost model, int printingCostEstimationId)
-        {
-            var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
-            if (estimation != null)
-            {
-                var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.PaperSizeId);
-                var categoryItem = db.PrintingMaterialCategoryItems.FirstOrDefault(x => x.PrintingMaterialCategoryItemId == model.PrintingMaterialCategoryItemId);
-                var paperQty = (estimation.ProductQuantity * estimation.TotalTextNoPages) / (paperSize.NoOfPagesToA1Ratio * 2);
-
-                var paperQtyWithWastage = paperQty * (1 + model.WastageInPercentage);
-
-                return (paperQtyWithWastage * paperSize.Length * paperSize.Width * categoryItem.Weight) / 10000000;
-            }
-            return 0;
-        }
-        private double CalculateCoverPaperQuantity(PrintingEstimationMaterialCost model, int printingCostEstimationId)
-        {
-            var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
-            if(estimation == null)
-            {
-                return 0;
-            }
-            var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.PaperSizeId);
-
-            var paperQty = (estimation.ProductQuantity) / paperSize.NoOfPagesToA1Ratio;
-            return paperQty * 2 * (1 + model.WastageInPercentage);
-        }
-        private double CalculateTextPlate(PrintingEstimationMaterialCost model, int printingCostEstimationId)
-        {
-            var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
-            if(estimation == null)
-            {
-                return 0;
-            }
-            var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.PaperSizeId);
-
-            var plateQuantity = (estimation.TotalTextNoPages * estimation.TextNoOfColors) / paperSize.NoOfPagesToA1Ratio;
-            return plateQuantity * (1 + model.WastageInPercentage);
-        }
-        private double CalculateCoverPlate(PrintingEstimationMaterialCost model, int printingCostEstimationId)
-        {
-            var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
-            if(estimation == null)
-            {
-                return 0;
-            }
-            var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.PaperSizeId);
-
-            var plateQuantity = (estimation.CoverNoOfColor) / paperSize.NoOfPagesToA1Ratio;
-            return plateQuantity * (1 + model.WastageInPercentage);
-        }
-        #region Card, Brochure, Flyer
-        private double CalculateTextPaperQuantityCard(PrintingEstimationMaterialCost model, int printingCostEstimationId)
-        {
-            var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
-            if (estimation == null)
-            {
-                return 0;
-            }
-            var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.PaperSizeId);
-
-            var paperQty = (estimation.ProductQuantity) / paperSize.NoOfPagesToA1Ratio;
-            return paperQty * (1 + model.WastageInPercentage);
-        }
-        private double CalculateTextPlateCard(PrintingEstimationMaterialCost model, int printingCostEstimationId)
-        {
-            var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
-            if (estimation == null)
-            {
-                return 0;
-            }
-            var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.PaperSizeId);
-
-            var plateQuantity = (estimation.CoverNoOfColor) / paperSize.NoOfPagesToA1Ratio;
-            return plateQuantity * (1 + model.WastageInPercentage);
-        }
-        #endregion  
-
-        private double CalculateInk(PrintingEstimationMaterialCost model, int printingCostEstimationId)
-        {
-            var costEstimation = db.PrintingCostEstimations
-               .FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
-            var materialCost = db.PrintingEstimationMaterialCosts.FirstOrDefault(x => x.PrintingCostEstimationId == costEstimation.PrintingCostEstimationId);
-            if (costEstimation != null && materialCost != null)
-            {
-                var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == costEstimation.PaperSizeId);
-                if (paperSize != null)
-                {
-                    var textPrinting = ((costEstimation.ProductQuantity * costEstimation.TotalTextNoPages) / paperSize.NoOfPagesToA1Ratio) * (1 + materialCost.WastageInPercentage) * costEstimation.TextNoOfColors;
-                    return textPrinting / 7500; 
-                }
-            }
-            return 0;
-        }
-        private double CalculateCoverPaper(PrintingEstimationMaterialCost model, int printingCostEstimationId)
-        {
-            var costEstimation = db.PrintingCostEstimations
-                .FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
-            var materialCost = db.PrintingEstimationMaterialCosts.FirstOrDefault(x => x.PrintingCostEstimationId == costEstimation.PrintingCostEstimationId);
-            if (costEstimation != null && materialCost != null)
-            {
-                var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == costEstimation.PaperSizeId);
-                if (paperSize != null)
-                {
-                    return (costEstimation.ProductQuantity / paperSize.NoOfPagesToA1Ratio) * (1 + materialCost.WastageInPercentage) * costEstimation.TextNoOfColors;
-                    
-                }
-            }
-            return 0;
-        }
-        private double CalculateInk100Cover(PrintingEstimationMaterialCost model, int printingCostEstimationId)
-        {
-            return CalculateCoverPaper(model, printingCostEstimationId) / 1200;
-        }
-        private double CalculateInkOther(PrintingEstimationMaterialCost model, int printingCostEstimationId)
-        {
-            return (CalculateCoverPaper(model, printingCostEstimationId) / 1200) * 3;
-        }
-        private double CalculateStitchingWire(int printingCostEstimationId)
-        {
-            var costEstimation = db.PrintingCostEstimations
-               .FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
-            if(costEstimation != null)
-            {
-                return costEstimation.ProductQuantity / (12500 * 96 / costEstimation.TotalTextNoPages);
-            }
-            return 0;
-        }
-        private double CalculateSewingThread(int printingCostEstimationId)
-        {
-            var costEstimation = db.PrintingCostEstimations
-               .FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
-            if (costEstimation != null)
-            {
-                return costEstimation.ProductQuantity / 100;
-            }
-            return 0;
-        }
-        private double CalculateHotMeltGlue(int printingCostEstimationId)
-        {
-            var costEstimation = db.PrintingCostEstimations
-               .FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
-            if (costEstimation != null)
-            {
-                var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == costEstimation.PaperSizeId);
-
-                var page = costEstimation.TotalTextNoPages;
-                var length = paperSize.Length;
-                return costEstimation.ProductQuantity / (296*180/page*29.7/length);
-            }
-            return 0;
-        }
-        private double CalculateWrappingPaper(int printingCostEstimationId)
-        {
-            var costEstimation = db.PrintingCostEstimations
-               .FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
-            if (costEstimation != null)
-            {
-                var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == costEstimation.PaperSizeId);
-
-                var page = costEstimation.TotalTextNoPages;
-                var length = paperSize.Length;
-                return costEstimation.ProductQuantity / (30 * 132 / page * 29.7 /length);
-            }
-            return 0;
-        }
+        
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PrintingEstimationMaterialCosts_Create([DataSourceRequest]DataSourceRequest request, PrintingEstimationMaterialCost model, int estId)
         {            
@@ -234,67 +50,62 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     EstimationMaterialType = model.EstimationMaterialType
                 };
                 var costEstimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == estId);
-                var jobType = db.PrintingJobTypes.FirstOrDefault(x => x.PrintingJobTypeId == costEstimation.JobTypeId);
-                if (jobType.JobType == JobType.Book || jobType.JobType == JobType.Magazine)
+                if (costEstimation.PrintJobType == PrintJobType.Book || costEstimation.PrintJobType == PrintJobType.Magazine)
                 {
                     switch (model.EstimationMaterialType)
                     {
                         case EstimationMaterialType.TextPaper:
-                            entity.Quantity = (decimal)CalculateTextPaperQuantity(model, estId);
+                            entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculateTextPaperQuantity(model, estId);
                             break;
                         case EstimationMaterialType.CoverPaper:
-                            entity.Quantity = (decimal)CalculateCoverPaperQuantity(model, estId);
+                            entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculateCoverPaperQuantity(model, estId);
                             break;
                         case EstimationMaterialType.TextPlate:
-                            entity.Quantity = (decimal)CalculateTextPlate(model, estId);
+                            entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculateTextPlate(model, estId);
                             break;
-                        case EstimationMaterialType.Ink:
-                            entity.Quantity = (decimal)CalculateInk(model, estId);
+                        case EstimationMaterialType.CoverPlate:
+                            entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculateCoverPlate(model, estId);
                             break;
-                        case EstimationMaterialType.Ink_100CoverageOnA4Cover:
-                            entity.Quantity = (decimal)CalculateInk100Cover(model, estId);
+                        case EstimationMaterialType.Glue:
+                            entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculateGlue(model, estId);
                             break;
-                        case EstimationMaterialType.Ink_Other:
-                            entity.Quantity = (decimal)CalculateInkOther(model, estId);
+                        case EstimationMaterialType.InkText:
+                            entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculateInkText(model, estId);
                             break;
-                        case EstimationMaterialType.StitchingWire:
-                            entity.Quantity = (decimal)CalculateStitchingWire(estId);
-                            break;
-                        case EstimationMaterialType.Sewing_Thread:
-                            entity.Quantity = (decimal)CalculateSewingThread(estId);
-                            break;
-                        case EstimationMaterialType.HotMelt_Glue:
-                            entity.Quantity = (decimal)CalculateHotMeltGlue(estId);
-                            break;
-                        case EstimationMaterialType.Wrapping_Paper:
-                            entity.Quantity = (decimal)CalculateWrappingPaper(estId);
+                        case EstimationMaterialType.InkCover:
+                            entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculateInkCover(model, estId);
                             break;
                         default:
-                            entity.Quantity = (decimal)CalculateCoverPlate(model, estId);
+                            entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculatePackagingPaper(model, estId);
                             break;
                     }
                 }
-                else if (jobType.JobType == JobType.Brochure || jobType.JobType == JobType.Card || jobType.JobType == JobType.Card)
+                else if (costEstimation.PrintJobType == PrintJobType.Brochure || costEstimation.PrintJobType == PrintJobType.Card || costEstimation.PrintJobType == PrintJobType.Card)
                 {
-                    switch (model.EstimationMaterialType)
-                    {
-                        case EstimationMaterialType.TextPaper:
-                            entity.Quantity = (decimal)CalculateTextPaperQuantityCard(model, estId);
-                            break;                       
-                        case EstimationMaterialType.TextPlate:
-                            entity.Quantity = (decimal)CalculateTextPlateCard(model, estId);
-                            break;                        
-                    }
+                    //switch (model.EstimationMaterialType)
+                    //{
+                    //    case EstimationMaterialType.TextPaper:
+                    //        entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculateTextPaperQuantityCard(model, estId);
+                    //        break;                       
+                    //    case EstimationMaterialType.TextPlate:
+                    //        entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculateTextPlateCard(model, estId);
+                    //        break;                        
+                    //}
                 }
-                
+                if(entity.Quantity == -1)
+                {
+                    ModelState.AddModelError(string.Empty, "Something went wrong! missing data on setting");
+                    return Json(new[] { model }.ToDataSourceResult(request, ModelState));
+                }
                 entity.UnitCost = item.UnitPrice;
                 entity.UnitOfMeasurment = item.UnitOfMeasurement;
                 entity.TotalCost = entity.UnitCost * entity.Quantity;
 
+                model.Quantity = entity.Quantity;
                 model.UnitCost = entity.UnitCost;
                 model.UnitOfMeasurment = entity.UnitOfMeasurment;
                 model.TotalCost = entity.TotalCost;
-
+              
                 db.PrintingEstimationMaterialCosts.Add(entity);
                 db.SaveChanges();
                 model.PrintingEstimationMaterialCostId = entity.PrintingEstimationMaterialCostId;
@@ -323,35 +134,34 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     PrintingEstimationMaterialCostId = model.PrintingEstimationMaterialCostId
                 };
                 var costEstimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == model.PrintingCostEstimationId);
-                var jobType = db.PrintingJobTypes.FirstOrDefault(x => x.PrintingJobTypeId == costEstimation.JobTypeId);
-                if (jobType.JobType == JobType.Book || jobType.JobType == JobType.Magazine)
+                if (costEstimation.PrintJobType == PrintJobType.Book || costEstimation.PrintJobType == PrintJobType.Magazine)
                 {
                     switch (model.EstimationMaterialType)
                     {
                         case EstimationMaterialType.TextPaper:
-                            entity.Quantity = (decimal)CalculateTextPaperQuantity(model, model.PrintingCostEstimationId);
+                            entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculateTextPaperQuantity(model, model.PrintingCostEstimationId);
                             break;
                         case EstimationMaterialType.CoverPaper:
-                            entity.Quantity = (decimal)CalculateCoverPaperQuantity(model, model.PrintingCostEstimationId);
+                            entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculateCoverPaperQuantity(model, model.PrintingCostEstimationId);
                             break;
                         case EstimationMaterialType.TextPlate:
-                            entity.Quantity = (decimal)CalculateTextPlate(model, model.PrintingCostEstimationId);
+                            entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculateTextPlate(model, model.PrintingCostEstimationId);
                             break;
                         default:
-                            entity.Quantity = (decimal)CalculateCoverPlate(model, model.PrintingCostEstimationId);
+                            entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculateCoverPlate(model, model.PrintingCostEstimationId);
                             break;
                     }
                 }
-                else if (jobType.JobType == JobType.Brochure || jobType.JobType == JobType.Card || jobType.JobType == JobType.Card)
+                else if (costEstimation.PrintJobType == PrintJobType.Brochure || costEstimation.PrintJobType == PrintJobType.Card || costEstimation.PrintJobType == PrintJobType.Card)
                 {
                     switch (model.EstimationMaterialType)
                     {
-                        case EstimationMaterialType.TextPaper:
-                            entity.Quantity = (decimal)CalculateTextPaperQuantityCard(model, model.PrintingCostEstimationId);
-                            break;
-                        case EstimationMaterialType.TextPlate:
-                            entity.Quantity = (decimal)CalculateTextPlateCard(model, model.PrintingCostEstimationId);
-                            break;
+                        //case EstimationMaterialType.TextPaper:
+                        //    entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculateTextPaperQuantityCard(model, model.PrintingCostEstimationId);
+                        //    break;
+                        //case EstimationMaterialType.TextPlate:
+                        //    entity.Quantity = (decimal)BookMagazineMaterialCostEstimation.CalculateTextPlateCard(model, model.PrintingCostEstimationId);
+                        //    break;
                     }
                 }
 

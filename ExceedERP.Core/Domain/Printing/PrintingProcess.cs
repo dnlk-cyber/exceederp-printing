@@ -3,51 +3,127 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.Printing
 {
+
     public class PrintingProcess : TrackUserSettingOperation
     {
         [Key]
         public int PrintingProcessId { get; set; }
-        public PrintingProcessCategory PrintingCategory { get; set; }
-        public PrintingProcessName PrintingProcessName { get; set; }
-        public decimal EstProductionPerHour { get; set; } // est. prod. target per hour
+        [Required]
+        public PressCategory PressCategory { get; set; }
+        [Required]
+        public LabourActivity LabourActivity { get; set; }
+        [Display(Name = "Machine Type")]
+        public int? PrintingMachineTypeId { get; set; }
+        [Required]
+        public string UOM { get; set; }
+        [Required]
         public decimal LaborRate { get; set; } // chargeable hours rate in birr
-        // not useful for now
-        public string ProcessName { get; set; }
-        public double HoursRequired { get; set; }
-        public int Quantity { get; set; }
-        public string ProcessScope { get; set; }
-        public double SetupCost { get; set; }
-        public double CostPerItem { get; set; }
-        public string Remark { get; set; }         
+
     }
 
-    public enum PrintingProcessCategory
+    public enum PressCategory
     {
-        NA,
-        Pre_Printing,
-        Printing,
-        Finishing
+        [Display(Name = "Pre Press")]
+        PrePress = 1,
+        [Display(Name = "Press")]
+        Press = 2,
+        [Display(Name = "Post Press")]
+        PostPress = 3
     }
-    public enum PrintingProcessName
+
+    public enum LabourActivity
     {
-        NA,
-        PlateMaking,
-        PaperCutting,
-        CoverPrinting,
-        TextPrinting,
-        CoverPlateChange,
-        TextPlateChange,
-        CoverColorChange,
-        TextColorChange,
-        Folding_FourPage_Sec,
-        Collating_Manual_Gatering,
-        Stitching_Manual_Side_Saddle, 
-        Gathering,
-        Thread_Sewing,
-        GlueBinding,
+        // Pre Press
+        [Display(Name = "Design")]
+        Design = 101,
+        [Display(Name = "Art Work")]
+        ArtWork,
+        [Display(Name = "Camera Work")]
+        CameraWork,
+        [Display(Name = "Color Separation")]
+        ColorSeparation,
+        [Display(Name = "Composition")]
+        Composition,
+        [Display(Name = "Cliche")]
+        Cliche,
+        [Display(Name = "Text Plate Making")]
+        TextPlateMaking,
+        [Display(Name = "Cover Plate Making")]
+        CoverPlateMaking,
+        [Display(Name = "CTP")]
+        CTP,
+        [Display(Name = "Proofing")]
+        Proofing,
+
+        // Press
+        [Display(Name = "Make Ready Text")]
+        MakeReadyText = 201,
+        [Display(Name = "Make Ready Cover")]
+        MakeReadyCover,
+        [Display(Name = "Text Print")]
+        TextPrint,
+        [Display(Name = "Cover Print")]
+        CoverPrint,
+
+        // Post Press
+        [Display(Name = "Cutting For Text")]
+        CuttingForText = 301,
+        [Display(Name = "Cutting For Cover")]
+        CuttingForCover,
+        [Display(Name = "Die Cutting")]
+        DieCutting,
+        [Display(Name = "Drilling")]
+        Drilling,
+        [Display(Name = "Punching")]
+        Punching,
+        [Display(Name = "Machine Folding")]
+        MachineFolding,
+        [Display(Name = "Manual Folding")]
+        ManualFolding,
+        [Display(Name = "Collating")]
+        Collating,
+        [Display(Name = "Perforation")]
+        Perforation,
+        [Display(Name = "Inserting")]
+        inserting,
+        [Display(Name = "Side Stitching")]
+        SideStitching,
+        [Display(Name = "Thread Sewing")]
+        ThreadSewing,
+        [Display(Name = "Creasing")]
+        Creasing,
+        [Display(Name = "Peeling")]
+        Peeling,
+        [Display(Name = "Hand Work")]
+        HandWork,
+        [Display(Name = "Counting")]
+        Counting,
+        [Display(Name = "Padding")]
+        Padding,
+        [Display(Name = "Stitching")]
+        Stitching,
+        [Display(Name = "Gluing")]
+        Gluing,
+        [Display(Name = "Hard Cover Making Manual")]
+        HardCoverMakingManual,
+        [Display(Name = "Gilding")]
+        Gilding,
+        [Display(Name = "Perfect Binding")]
+        PerfectBinding,
+        [Display(Name = "Spiral Binding")]
+        SpiralBinding,
+        [Display(Name = "Trimming")]
         Trimming,
-        Packing_Wrapping,
-        Dispatching_Loading_Forklifting
-        
+        [Display(Name = "Corner Cutting")]
+        CornerCutting,
+        [Display(Name = "Eyeleting")]
+        Eyeleting,
+        [Display(Name = "Checking And Packing")]
+        CheckingAndPacking,
+        [Display(Name ="Loading/Unloading")]
+        LoadingAndUnloading,
+        [Display(Name ="Dispatching/Transporting")]
+        DispatchingAndTransport,
     }
+
 }

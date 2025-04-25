@@ -71,7 +71,7 @@
                             .Name("grid_#=PrintingJobOrderId#")
                             .Columns(columns =>
                             {
-                                columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
+                                columns.Bound(c => c.PrintJobType);
                                 columns.Bound(c => c.JobDescription);
                                 columns.Bound(c => c.Quantity);
                                 columns.Bound(c => c.NumberOfPages);

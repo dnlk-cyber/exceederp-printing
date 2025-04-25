@@ -18,8 +18,7 @@ namespace ExceedERP.Core.Domain.Printing
         public int JobTypeId { get; set; }
         [Display(Name = "Paper Size")]
         public int PaperSizeId { get; set; }
-        [Display(Name = "Binding style")]
-        public int BindingStyleId { get; set; }
+       
         [Display(Name = "Text No of Colors")]
         public int TextNoOfColors { get; set; }
         [Display(Name = "Cover No of Colors")]
@@ -68,7 +67,7 @@ namespace ExceedERP.Core.Domain.Printing
     {
         public int PrintingProductionLaborCostId { get; set; }
         [Display(Name = "Process Category")]
-        public PrintingProcessCategory ProcessCategory { get; set; }
+        public PressCategory PressCategory { get; set; } 
         [Display(Name = "Process Name")]
         public int? PrintingProcessId { get; set; }
         [Display(Name = "Machine Type")]

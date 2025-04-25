@@ -62,8 +62,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 var printingPaperSize = db.PrintingPaperSizes.Find(printMachinePaperList.PrintingPaperSizeId);
                 printMachinePaperList.Width = printingPaperSize.Width;
                 printMachinePaperList.Length = printingPaperSize.Length;
-                printMachinePaperList.NumberOfPagesPerSheet = printingPaperSize.NoOfPagesPerSheet;
-                printMachinePaperList.NumberOfPagesPerPlate = printingPaperSize.NoOfPagesPerPlate;
+              
                 var entity = new PrintMachinePaperList
                 {
                     PrintMachineTypeId = printMachinePaperList.PrintMachineTypeId,
@@ -71,9 +70,6 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     
                     Width = printingPaperSize.Width,
                     Length = printingPaperSize.Length,
-                    
-                    NumberOfPagesPerSheet = printingPaperSize.NoOfPagesPerSheet,
-                    NumberOfPagesPerPlate = printingPaperSize.NoOfPagesPerPlate,
                     DateCreated = DateTime.Today,
                     LastModified = printMachinePaperList.LastModified,
                     CreatedBy = User.Identity.Name,
@@ -96,8 +92,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 var printingPaperSize = db.PrintingPaperSizes.Find(printMachinePaperList.PrintingPaperSizeId);
                 printMachinePaperList.Width = printingPaperSize.Width;
                 printMachinePaperList.Length = printingPaperSize.Length;
-                printMachinePaperList.NumberOfPagesPerSheet = printingPaperSize.NoOfPagesPerSheet;
-                printMachinePaperList.NumberOfPagesPerPlate = printingPaperSize.NoOfPagesPerPlate;
+             
                 var entity = new PrintMachinePaperList
                 {
                     PrintMachinePaperListId = printMachinePaperList.PrintMachinePaperListId,
@@ -106,8 +101,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Width = printingPaperSize.Width,
                     Length = printingPaperSize.Length,
 
-                    NumberOfPagesPerSheet = printingPaperSize.NoOfPagesPerSheet,
-                    NumberOfPagesPerPlate = printingPaperSize.NoOfPagesPerPlate,
+                  
                     DateCreated = printMachinePaperList.DateCreated,
                     LastModified = DateTime.Today,
                     CreatedBy = printMachinePaperList.CreatedBy,

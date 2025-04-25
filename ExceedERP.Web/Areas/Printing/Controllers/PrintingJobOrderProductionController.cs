@@ -22,11 +22,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 Value = s.OrganizationCustomerID,
                 Text = s.TradeName
             }).ToList();
-            ViewData["JobType"] = db.PrintingJobTypes.Select(s => new
-            {
-                Value = s.PrintingJobTypeId,
-                Text = s.JobTypeName
-            }).ToList();
+          
            
             ViewData["PaperSize"] = db.PrintingPaperSizes.Select(s => new
             {
@@ -52,7 +48,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             ViewData["PrintingProcess"] = db.PrintingProcesses.Select(s => new
             {
                 Value = s.PrintingProcessId,
-                Text = s.ProcessName
+                Text = s.LabourActivity
             }).ToList();
             ViewData["PrintingMachineType"] = db.PrintingMachineTypes.Select(s => new
             {

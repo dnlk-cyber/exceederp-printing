@@ -23,11 +23,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 Value = s.OrganizationCustomerID,
                 Text = s.TradeName
             }).ToList();
-            ViewData["JobType"] = db.PrintingJobTypes.Select(s => new
-            {
-                Value = s.PrintingJobTypeId,
-                Text = s.JobTypeName
-            }).ToList();
+           
             ViewData["Category"] = db.PrintingMaterialCategories.Select(s => new
             {
                 Value = s.PrintingMaterialCategoryId,

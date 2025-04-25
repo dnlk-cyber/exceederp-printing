@@ -24,62 +24,47 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         public ActionResult PrintingPaperSizes_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PrintingPaperSize> printingpapersizes = db.PrintingPaperSizes;
-            DataSourceResult result = printingpapersizes.ToDataSourceResult(request, printingPaperSize => new {
-                PrintingPaperSizeId = printingPaperSize.PrintingPaperSizeId,
-                PaperSizeName = printingPaperSize.PaperSizeName,
-                NoOfPagesPerSheet = printingPaperSize.NoOfPagesPerSheet,
-                NoOfPagesPerPlate = printingPaperSize.NoOfPagesPerPlate,
-                Width = printingPaperSize.Width,
-                Length = printingPaperSize.Length,
-                NoOfPagesToA1Ratio = printingPaperSize.NoOfPagesToA1Ratio,
-                Remark = printingPaperSize.Remark,
-                PrintingMachineTypeId = printingPaperSize.PrintingMachineTypeId
-            });
-
-            return Json(result);
+            
+            return Json(printingpapersizes.ToDataSourceResult(request));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingPaperSizes_Create([DataSourceRequest]DataSourceRequest request, PrintingPaperSize printingPaperSize)
+        public ActionResult PrintingPaperSizes_Create([DataSourceRequest]DataSourceRequest request, PrintingPaperSize model)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PrintingPaperSize
                 {
-                    PaperSizeName = printingPaperSize.PaperSizeName,
-                    NoOfPagesPerSheet = printingPaperSize.NoOfPagesPerSheet,
-                    NoOfPagesPerPlate = printingPaperSize.NoOfPagesPerPlate,
-                    Width = printingPaperSize.Width,
-                    Length = printingPaperSize.Length,
-                    NoOfPagesToA1Ratio = printingPaperSize.NoOfPagesToA1Ratio,
-                    Remark = printingPaperSize.Remark,
-                    PrintingMachineTypeId = printingPaperSize.PrintingMachineTypeId
+                    PaperSizeName = model.PaperSizeName,
+                    PrintPaperSize = model.PrintPaperSize,
+                    Width = model.Width,
+                    Length = model.Length,
+                    NoOfPagesToA1Ratio = model.NoOfPagesToA1Ratio,
+                    Remark = model.Remark,
                 };
 
                 db.PrintingPaperSizes.Add(entity);
                 db.SaveChanges();
-                printingPaperSize.PrintingPaperSizeId = entity.PrintingPaperSizeId;
+                model.PrintingPaperSizeId = entity.PrintingPaperSizeId;
             }
 
-            return Json(new[] { printingPaperSize }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingPaperSizes_Update([DataSourceRequest]DataSourceRequest request, PrintingPaperSize printingPaperSize)
+        public ActionResult PrintingPaperSizes_Update([DataSourceRequest]DataSourceRequest request, PrintingPaperSize model)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PrintingPaperSize
                 {
-                    PrintingPaperSizeId = printingPaperSize.PrintingPaperSizeId,
-                    PaperSizeName = printingPaperSize.PaperSizeName,
-                    NoOfPagesPerSheet = printingPaperSize.NoOfPagesPerSheet,
-                    NoOfPagesPerPlate = printingPaperSize.NoOfPagesPerPlate,
-                    Width = printingPaperSize.Width,
-                    Length = printingPaperSize.Length,
-                    NoOfPagesToA1Ratio = printingPaperSize.NoOfPagesToA1Ratio,
-                    Remark = printingPaperSize.Remark,
-                    PrintingMachineTypeId = printingPaperSize.PrintingMachineTypeId
+                    PrintingPaperSizeId = model.PrintingPaperSizeId,
+                    PaperSizeName = model.PaperSizeName,
+                    Width = model.Width,
+                    Length = model.Length,
+                    NoOfPagesToA1Ratio = model.NoOfPagesToA1Ratio,
+                    Remark = model.Remark,
+                    PrintPaperSize = model.PrintPaperSize,
                 };
 
                 db.PrintingPaperSizes.Attach(entity);
@@ -87,25 +72,23 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 db.SaveChanges();
             }
 
-            return Json(new[] { printingPaperSize }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingPaperSizes_Destroy([DataSourceRequest]DataSourceRequest request, PrintingPaperSize printingPaperSize)
+        public ActionResult PrintingPaperSizes_Destroy([DataSourceRequest]DataSourceRequest request, PrintingPaperSize model)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PrintingPaperSize
                 {
-                    PrintingPaperSizeId = printingPaperSize.PrintingPaperSizeId,
-                    PaperSizeName = printingPaperSize.PaperSizeName,
-                    NoOfPagesPerSheet = printingPaperSize.NoOfPagesPerSheet,
-                    NoOfPagesPerPlate = printingPaperSize.NoOfPagesPerPlate,
-                    Width = printingPaperSize.Width,
-                    Length = printingPaperSize.Length,
-                    NoOfPagesToA1Ratio = printingPaperSize.NoOfPagesToA1Ratio,
-                    Remark = printingPaperSize.Remark,
-                    PrintingMachineTypeId = printingPaperSize.PrintingMachineTypeId
+                    PrintingPaperSizeId = model.PrintingPaperSizeId,
+                    PaperSizeName = model.PaperSizeName,
+                    Width = model.Width,
+                    Length = model.Length,
+                    NoOfPagesToA1Ratio = model.NoOfPagesToA1Ratio,
+                    Remark = model.Remark,
+                    PrintPaperSize = model.PrintPaperSize,
                 };
 
                 db.PrintingPaperSizes.Attach(entity);
@@ -113,7 +96,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 db.SaveChanges();
             }
 
-            return Json(new[] { printingPaperSize }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         protected override void Dispose(bool disposing)

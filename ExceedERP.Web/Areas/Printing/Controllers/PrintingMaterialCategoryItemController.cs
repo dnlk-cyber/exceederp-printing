@@ -40,7 +40,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     PrintingMaterialCategoryId = id,
                     Length = model.Length,
                     Width = model.Width,
-                    Weight = model.Weight
+                    Weight = model.Weight,
+                    PaperType = model.PaperType
                 };
 
                 db.PrintingMaterialCategoryItems.Add(entity);
@@ -68,8 +69,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     PrintingMaterialCategoryId = model.PrintingMaterialCategoryId,
                     Length = model.Length,
                     Width = model.Width,
-                    Weight = model.Weight
-
+                    Weight = model.Weight,
+                    PaperType = model.PaperType
                 };
 
                 db.PrintingMaterialCategoryItems.Attach(entity);
@@ -80,9 +81,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
-        [AcceptVerbs(HttpVerbs.Post)] 
+        [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PrintingMaterialCategoryItem_Delete([DataSourceRequest]DataSourceRequest request, PrintingMaterialCategoryItem model)
-        { 
+        {
             if (ModelState.IsValid)
             {
                 var entity = new PrintingMaterialCategoryItem
@@ -97,7 +98,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     PrintingMaterialCategoryId = model.PrintingMaterialCategoryId,
                     Length = model.Length,
                     Width = model.Width,
-                    Weight = model.Weight
+                    Weight = model.Weight,
+                    PaperType = model.PaperType
                 };
 
                 db.PrintingMaterialCategoryItems.Attach(entity);

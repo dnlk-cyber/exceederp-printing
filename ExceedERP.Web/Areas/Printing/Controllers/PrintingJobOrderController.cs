@@ -23,11 +23,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 Value = s.OrganizationCustomerID,
                 Text = s.TradeName
             }).ToList();
-            ViewData["JobType"] = db.PrintingJobTypes.Select(s => new
-            {
-                Value = s.PrintingJobTypeId,
-                Text = s.JobTypeName
-            }).ToList();
+        
             return View();
         }
 
@@ -39,6 +35,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public ActionResult PrintingJobOrder_Create([DataSourceRequest]DataSourceRequest request, PrintingJobOrder model)
         {
+
             if (ModelState.IsValid)
             {
                 if (!GenerateJobOrder(model))
@@ -96,6 +93,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 {
                     var jobOrder = new PrintingJobOrder
                     {
+
                         CustomerId = proformaInvoice.CustomerId,
                         JobStartDate = model.JobStartDate,
                         DeliveryDate = model.JobStartDate.AddDays(proformaInvoice.DeliveryPeriod),
@@ -118,6 +116,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                             DateCreated = DateTime.Today,
                             Quantity = proformaItem.Quantity,
                             JobTypeId = proformaItem.JobTypeId,
+                            PrintJobType = proformaItem.PrintJobType,
                             JobDescription = proformaItem.JobDescription,
                             Description = "",
                             NumberOfPages = proformaItem.NumberOfPages,
@@ -148,6 +147,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     DateCreated = DateTime.Today,
                     Quantity = proformaItem.Quantity,
                     JobTypeId = proformaItem.JobTypeId,
+                    PrintJobType = proformaItem.PrintJobType,
                     JobDescription = proformaItem.JobDescription,
                     Description = "",
                     NumberOfPages = proformaItem.NumberOfPages,
@@ -234,7 +234,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             {
                 foreach (var item in jobItems)
                 {
-                    var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.JobTypeId == item.JobTypeId);
+                    var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintJobType == item.PrintJobType);
                     if (estimation != null)
                     {
                         var materialCosts = db.PrintingEstimationMaterialCosts
@@ -260,11 +260,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                                 DateCreated = DateTime.Today,
                                 Status = "Pending",
                                 JobDescription = item.JobDescription,
-                                BindingStyleId = estimation.BindingStyleId,
                                 CoverNoOfColor = estimation.CoverNoOfColor,
-                                PaperSizeId = estimation.PaperSizeId,
+                                PaperSizeId = estimation.TextPaperSizeId,
                                 TextNoOfColors = estimation.TextNoOfColors,
-                                TotalTextNoPages = estimation.TotalTextNoPages,
+                                TotalTextNoPages = estimation.Pages,
                                 
                                 PrintingJobOrderId = jobOrder.PrintingJobOrderId
                             };
@@ -295,11 +294,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                                     TotalCost = laborCost.TotalCost,
                                     CreatedBy = User.Identity.Name,
                                     DateCreated = DateTime.Today,
-                                    EstimatedHours = laborCost.EstimatedHours,
-                                    PrintingMachineTypeId = laborCost.PrintingMachineTypeId,
+                                    
                                     PrintingProcessId = laborCost.PrintingProcessId,
                                     PrintingJobOrderProductionId = jobOrderProduction.PrintingJobOrderProductionId,
-                                    ProcessCategory = laborCost.ProcessCategory,
+                                    PressCategory = laborCost.PressCategory,
                                 };
                                 db.PrintingProductionLaborCosts.Add(productionLaborCost);
                             }

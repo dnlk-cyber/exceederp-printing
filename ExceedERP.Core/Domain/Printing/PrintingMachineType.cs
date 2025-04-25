@@ -7,20 +7,27 @@ namespace ExceedERP.Core.Domain.Printing
     {
         [Key]
         public int PrintingMachineTypeId { get; set; }
+        [Display(Name ="Machine Name"), Required]
         public string MachineTypeName { get; set; }
+        [Display(Name = "Paper Size"), Required]
+        public int PaperSizeId { get; set; }
         public int NumberOfColors { get; set; }
+        [Display(Name = "Output Rate"), Required]
         public double OutputRate { get; set; }
-        public string PaperFeedStyle { get; set; }
-        public int NumberUnits { get; set; }
-       
-        public decimal PrintingHourlyChargeRate { get; set; }
-        public decimal MakeReadyHours { get; set; }
-        public string MachineStatus { get; set; }
-       
-        public string Remark { get; set; }
+        public int PrintSide { get; set; }
+        //public decimal PrintingRate { get; set; } //
+        //public decimal MakeReadyRate { get; set; } // Remove if you put the rate on the LaborActivity
 
-        // Fk
-        public int PrintingCostCenterId { get; set; }
+    }
+    public class PrintingMachineDetail
+    {
+        [Key]
+        public int PrintingMachineDetailId { get; set; }
+        [Display(Name ="Paper Size"), Required]
+        public int PaperSizeId { get; set; }
+        [Display(Name ="Section/Up"), Required]
+        public int SectionUp { get; set; }
+        public int PrintingMachineTypeId { get; set; }
 
     }
 }

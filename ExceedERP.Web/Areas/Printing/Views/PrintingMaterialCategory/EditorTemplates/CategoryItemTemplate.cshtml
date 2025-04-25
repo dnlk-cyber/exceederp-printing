@@ -1,0 +1,100 @@
+﻿
+@model ExceedERP.Core.Domain.Printing.PrintingMaterialCategoryItem
+@using ExceedERP.Core.Domain.Printing
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Paper Type (For Paper Only)</label>
+            <div>
+                @(Html.Kendo().RadioButtonFor(m => m.PaperType)
+                                                           .Value(0)
+                                                           .Label("N/A")
+                                                           .HtmlAttributes(new { style = "width:100%" })
+
+                )
+                @(Html.Kendo().RadioButtonFor(m => m.PaperType)
+                                                            .Value(1)
+                                                            .Label("Sheet-fed")
+                                                            .HtmlAttributes(new { style = "width:100%" })
+
+                )
+
+                @(Html.Kendo().RadioButtonFor(m => m.PaperType)
+                                                .Value(2)
+                                                .Label("Continuous Roll")
+
+                                                .HtmlAttributes(new { style = "width:100%" })
+                )
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>UOM</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.UnitOfMeasurement)
+                    .ValuePrimitive(true)
+                    .OptionLabel("Select unit...")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Filter("contains")
+                    .AutoBind(true)
+                    
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetUoM", "PrintDataProvider", new { area = "Printing" }).Data("filterUoM"))
+                            .ServerFiltering(true);
+                    }).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>       
+    </div>
+</div>
+<div class="row">
+
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Paper Length(cm) (For Paper Only)</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.Length).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Paper Width(cm) (For Paper Only)</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.Width).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Paper Weight(g) (For Paper Only)</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.Weight).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+    </div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Unit Cost*</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.UnitPrice).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+
+</div>

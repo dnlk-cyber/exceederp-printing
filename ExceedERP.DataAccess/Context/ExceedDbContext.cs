@@ -1023,6 +1023,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.VehicleReturnEntityTypeConfiguration());
 
             #endregion
+
             #region Maintenance
             modelBuilder.Configurations.Add(new MaintenanceCompanyDocumentTypeEntityTypeConfiguration()); // 
             modelBuilder.Configurations.Add(new MaintenanceCompanyDocumentEntityTypeConfiguration()); // 
@@ -1598,12 +1599,13 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.WelderPerformanceQualificationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CMSTraineeCourseEntityTypeConfiguration());
             #endregion
-          
+
 
             #region printing 
-           // modelBuilder.Configurations.Add(new PrintingJobOrderProductionJobDesignEntityTypeConfiguration());
-            //modelBuilder.Configurations.Add(new PrintingJobOrderJobDesignEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PrintingProductionLaborCostEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingMachineDetailEntityTypeConfiguration());       
+        // modelBuilder.Configurations.Add(new PrintingJobOrderProductionJobDesignEntityTypeConfiguration());
+        //modelBuilder.Configurations.Add(new PrintingJobOrderJobDesignEntityTypeConfiguration());
+        modelBuilder.Configurations.Add(new PrintingProductionLaborCostEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionMaterialCostEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingJobOrderProductionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingEstimationMarginEntityTypeConfiguration());
@@ -2392,6 +2394,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Printing
+        public DbSet<PrintingMachineDetail> PrintingMachineDetails { get; set; }
         public DbSet<PrintingJobOrderJobDesign> PrintingJobOrderJobDesigns { get; set; }
         public DbSet<PrintingJobOrderProductionJobDesign> PrintingJobOrderProductionJobDesigns { get; set; }
         public DbSet<PrintingJobOrderProduction> PrintingJobOrderProductions { get; set; }

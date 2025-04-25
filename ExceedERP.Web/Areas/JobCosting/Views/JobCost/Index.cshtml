@@ -54,15 +54,13 @@
 <script id="DetailTemplate" type="text/x-kendo-template">
 
     @(Html.Kendo().TabStrip().Name("DocumentTabstrip_#=JobCostId#").SelectedIndex(0)
-            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            //.Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
             .Items(itemn =>
             {
 
                 itemn.Add().Text("Details").Content(@<text>
                     <a href='@Url.Action("GetJobOrderCard", "JobCostingReport")/#=JobCostId#' target="_blank" title="Print Job Order"><i class="fa fa-print fa-2x"></i></a>
                     @*<a href='@Url.Action("GetJobOrderCard", "JobCostingReport")/id=#=JobId#' target="_blank" title="Print Job Order"><i class="fa fa-print fa-2x"></i></a>*@
-
-
                     <div class='row'>
                         <div class='col-sm-6' id='details'>
                             <ul>
@@ -90,7 +88,7 @@
                                 columns.Bound(c => c.ChargeAmount).ClientFooterTemplate("\\#=sum\\#");
                                 columns.Bound(c => c.Reason);
                                 columns.Command(command =>
-        {
+                            {
                             // command.Edit();
                             //  command.Destroy();
                         }).Width(200);
@@ -133,12 +131,9 @@
                             .Columns(columns =>
             {
 
-                columns.ForeignKey(c => c.CostCenter, (IEnumerable)ViewData["CostCenters"], "Values", "Values")
-.Title("Cost Center").Width(200);
-                columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name")
-.Title("Fiscal Year").Width(75);
-                columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "Name")
-.EditorTemplateName("YearCascading").Title("Month").Width(80);
+                columns.ForeignKey(c => c.CostCenter, (IEnumerable)ViewData["CostCenters"], "Values", "Values").Title("Cost Center").Width(200);
+                columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").Title("Fiscal Year").Width(75);
+                columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "Name").EditorTemplateName("YearCascading").Title("Month").Width(80);
                 columns.Bound(c => c.Reference);
                 columns.Bound(c => c.PermanetNormalHour).ClientFooterTemplate("\\#=sum\\#").Width(100);
                 columns.Bound(c => c.PermanetLaborCost).ClientFooterTemplate("\\#=sum\\#").Width(100);

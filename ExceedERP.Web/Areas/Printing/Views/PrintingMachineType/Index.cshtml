@@ -2,34 +2,106 @@
 <label>Printing Machines</label>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingMachineType>()
-      .Name("grid")
-      .Columns(columns =>
-      {
+          .Name("grid")
+          .Columns(columns =>
+          {
 
-          //columns.Bound(c => c.PaperFeedStyle);
-          columns.Bound(c => c.MachineTypeName);
-          //columns.Bound(c => c.NumberUnits);
-          columns.Bound(c => c.NumberOfColors);
-          columns.Bound(c => c.OutputRate);
-          //columns.Bound(c => c.PrintingHourlyChargeRate);
-          //columns.Bound(c => c.MakeReadyHours);
-          //columns.Bound(c => c.MachineStatus);
+              columns.Bound(c => c.MachineTypeName);
+              columns.ForeignKey(c => c.PaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text").Title("Paper Size");
+              columns.Bound(c => c.NumberOfColors);
+              columns.Bound(c => c.OutputRate);
 
-          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-      })
-      .ToolBar(toolbar => {
-          toolbar.Create();
-      })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-      .Filterable()
-.Pageable()
-.Scrollable(s => s.Height(400))
-      .DataSource(dataSource => dataSource
-          .Ajax()
-          .Model(model => model.Id(p => p.PrintingMachineTypeId))
-          .Read(read => read.Action("PrintingMachineType_Read", "PrintingMachineType"))
-          .Create(create => create.Action("PrintingMachineType_Create", "PrintingMachineType"))
-          .Update(update => update.Action("PrintingMachineType_Update", "PrintingMachineType"))
-          .Destroy(destroy => destroy.Action("PrintingMachineType_Delete", "PrintingMachineType"))
-      )
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("MachineTemplateName"))
+          .Filterable()
+    .Pageable()
+    .Scrollable(s => s.Height(400))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+                .Events(ev => ev.Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+              .Model(model => model.Id(p => p.PrintingMachineTypeId))
+              .Read(read => read.Action("PrintingMachineType_Read", "PrintingMachineType"))
+              .Create(create => create.Action("PrintingMachineType_Create", "PrintingMachineType"))
+              .Update(update => update.Action("PrintingMachineType_Update", "PrintingMachineType"))
+              .Destroy(destroy => destroy.Action("PrintingMachineType_Delete", "PrintingMachineType"))
+          ).ClientDetailTemplateId("machineDetail")
 )
+<script id="machineDetail" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                                                .Name("tabstrip_grid_#=PrintingMachineTypeId#")
+                                                .SelectedIndex(0)
+                                                .Items(itemn =>
+                                                {
+                                                    itemn.Add().Text("Machine Detail").Content(
+                            @<text>
+                                
+                                @Detail()
+                            </text>);
+                                                            
+                                            }).ToClientTemplate())
+</script>
+
+@helper Detail()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingMachineDetail>()
+              .Name("detail#=PrintingMachineTypeId#")
+              .Columns(columns =>
+              {
+
+                  columns.ForeignKey(c => c.PaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text").Title("Paper Size");
+                  columns.Bound(c => c.SectionUp);
+
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("MachineDetailTemplateName"))
+              .Filterable()
+              .Pageable()
+              .Scrollable(s => s.Height(400))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Events(ev => ev.Error("error_handler(\"detail#=PrintingMachineTypeId#\")")
+                                    .RequestStart("onRequestStart(\"detail#=PrintingMachineTypeId#\")")
+                                    .RequestEnd("onRequestEnd(\"detail#=PrintingMachineTypeId#\")"))
+                  .Model(model => model.Id(p => p.PrintingMachineDetailId))
+                  .Read(read => read.Action("Read", "PrintingMachineTypeDetail", new { id = "#=PrintingMachineTypeId#" }))
+                  .Create(create => create.Action("Create", "PrintingMachineTypeDetail", new { id = "#=PrintingMachineTypeId#" }))
+                  .Update(update => update.Action("Update", "PrintingMachineTypeDetail"))
+                  .Destroy(destroy => destroy.Action("Delete", "PrintingMachineTypeDetail"))
+              ).ToClientTemplate()
+    )
+
+}
+
+<script type="text/javascript">
+    function filterPaperSize() {
+        return {
+            text: $("#PaperSizeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+</script>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

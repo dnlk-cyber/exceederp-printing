@@ -5,23 +5,21 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.PaperSizeName);
-          //columns.Bound(c => c.NoOfPagesPerSheet);
-          //columns.Bound(c => c.NoOfPagesPerPlate);
-          columns.Bound(c => c.Length).Title("length(cm)");
+          columns.Bound(c => c.PrintPaperSize);
           columns.Bound(c => c.Width).Title("width(cm)");
+          columns.Bound(c => c.Length).Title("length(cm)");
+
           columns.Bound(c => c.NoOfPagesToA1Ratio);
           columns.Bound(c => c.Remark);
-          //columns.Bound(c => c.PrintingMachineTypeId);
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar => {
           toolbar.Create();
       })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PaperSizeTemplate"))
       .Filterable()
-.Pageable()
-.Scrollable(s => s.Height(400))
+      .Pageable()
+      .Scrollable(s => s.Height(400))
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.PrintingPaperSizeId))

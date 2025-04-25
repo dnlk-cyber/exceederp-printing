@@ -26,11 +26,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 Value = s.GLTaxRateID,
                 Text = s.TaxName
             }).ToList();
-            ViewData["JobType"] = db.PrintingJobTypes.Select(s => new
-            {
-                Value = s.PrintingJobTypeId,
-                Text = s.JobTypeName
-            }).ToList();
+           
             return View();
         }
 

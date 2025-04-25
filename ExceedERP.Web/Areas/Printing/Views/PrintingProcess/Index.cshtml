@@ -1,50 +1,140 @@
-﻿
+﻿@using Newtonsoft.Json
+
 
 <label>Printing Process</label>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingProcess>()
-      .Name("grid")
-      .Columns(columns =>
-      {
-          columns.Bound(c => c.PrintingCategory).EditorTemplateName("PrintingCategoryDropDownTemplate");
-          columns.Bound(c => c.PrintingProcessName).EditorTemplateName("PrintingProcessNameDropDownTemplate");
-          columns.Bound(c => c.EstProductionPerHour);
-          columns.Bound(c => c.LaborRate);
-
-          //columns.Bound(c => c.SetupCost);
-          //columns.Bound(c => c.CostPerItem);
-          //columns.Bound(c => c.Remark);
-
-          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-      })
-      .ToolBar(toolbar =>
-      {
-          toolbar.Create();
-      })
-      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintingProcessEditorTemplate"))
-      .Filterable()
-      .Pageable()
-      .Scrollable(s => s.Height(400))
-      .DataSource(dataSource => dataSource
-          .Ajax()
-          .Model(model => model.Id(p => p.PrintingProcessId))
-          .Read(read => read.Action("PrintingProcesses_Read", "PrintingProcess"))
-          .Create(create => create.Action("PrintingProcesses_Create", "PrintingProcess"))
-          .Update(update => update.Action("PrintingProcesses_Update", "PrintingProcess"))
-          .Destroy(destroy => destroy.Action("PrintingProcesses_Destroy", "PrintingProcess"))
-      )
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.PressCategory);
+                  columns.Bound(c => c.LabourActivity);
+                  columns.ForeignKey(s => s.PrintingMachineTypeId, (IEnumerable)ViewData["Machine"], "Value", "Text");
+                  columns.Bound(c => c.UOM);
+                  columns.Bound(c => c.LaborRate);
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Events(e => e.Edit("onGridEdit"))
+              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintingProcessEditorTemplate"))
+              .Filterable()
+              .Pageable()
+              .Scrollable(s => s.Height(400))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                   .Events(ev => ev.Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+                  .Model(model => model.Id(p => p.PrintingProcessId))
+                  .Read(read => read.Action("PrintingProcesses_Read", "PrintingProcess"))
+                  .Create(create => create.Action("PrintingProcesses_Create", "PrintingProcess"))
+                  .Update(update => update.Action("PrintingProcesses_Update", "PrintingProcess"))
+                  .Destroy(destroy => destroy.Action("PrintingProcesses_Destroy", "PrintingProcess"))
+              )
 )
 
+
+<script type="text/javascript">
+    function filterMachine() {
+        return {
+            text: $("#PrintingMachineTypeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterUoM() {
+        return {
+            text: $("#UOM").data("kendoDropDownList").filterInput.val()
+        }
+    }
+    function onPressCategoryChange(e) {
+        var pressCategoryValue = this.value(); // Get selected value (1, 2, or 3)
+        var labourDropdown = $("#LabourActivity").data("kendoDropDownList");
+
+        // Map PressCategory to LabourActivity ranges
+        var ranges = {
+            1: [101, 199], // PrePress
+            2: [201, 299], // Press
+            3: [301, 399]  // PostPress
+        };
+
+        var selectedRange = ranges[pressCategoryValue];
+        var allOptions = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+            ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.LabourActivity))
+        ));
+
+        // Filter options
+        var filteredOptions = allOptions.filter(function (item) {
+            var val = parseInt(item.Value);
+            return val >= selectedRange[0] && val <= selectedRange[1];
+        });
+
+        labourDropdown.setDataSource(new kendo.data.DataSource({ data: filteredOptions }));
+        labourDropdown.select(0); // Optionally select the first item
+    }
+</script>
 <style>
     div.k-edit-form-container {
         width: auto;
         height: auto;
     }
 
-    .row .col-sm-2 {
-        width: 150px;
+    .row .col-sm-12 {
+        width: 300px;
     }
 
     .row {
         margin: auto;
     }
 </style>
+<script>
+    function onGridEdit(e) {
+    var model = e.model;
+    var isNew = model.isNew();
+
+    var popup = e.container;
+    var pressCategoryDropDown = popup.find("[name='PressCategory']").data("kendoDropDownList");
+    var labourDropDown = popup.find("[name='LabourActivity']").data("kendoDropDownList");
+
+    if (pressCategoryDropDown && labourDropDown) {
+        var selectedPressCategory = pressCategoryDropDown.value();
+
+        var ranges = {
+            1: [101, 199],  // PrePress
+            2: [201, 299],  // Press
+            3: [301, 399]   // PostPress
+        };
+
+        var selectedRange = ranges[selectedPressCategory];
+
+        if (!selectedRange) {
+            labourDropDown.setDataSource(new kendo.data.DataSource({ data: [] }));
+            labourDropDown.value(null);
+            return;
+        }
+
+        // Full list of LabourActivity options
+       var allOptions = @Html.Raw(JsonConvert.SerializeObject(
+        ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.LabourActivity))
+    ));
+
+        var filteredOptions = allOptions.filter(function (item) {
+            var val = parseInt(item.Value);
+            return val >= selectedRange[0] && val <= selectedRange[1];
+        });
+
+        labourDropDown.setDataSource(new kendo.data.DataSource({ data: filteredOptions }));
+
+        if (!isNew) {
+            // Set the correct value only during EDIT
+            setTimeout(function () {
+                labourDropDown.value(model.LabourActivity);
+            }, 100);
+        } else {
+            // Optional: reset value on create
+            labourDropDown.value(null);
+        }
+    }
+}
+
+</script>

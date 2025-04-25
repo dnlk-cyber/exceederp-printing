@@ -25,93 +25,86 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public ActionResult Read([DataSourceRequest]DataSourceRequest request)
         {
-            var PrintingMaterialCategories = db.PrintingMaterialCategories;
-            DataSourceResult result = PrintingMaterialCategories.ToDataSourceResult(request, PrintingMaterialCategory => new
-            {
-                PrintingMaterialCategoryId = PrintingMaterialCategory.PrintingMaterialCategoryId,
-                InventoryCategoryCode = PrintingMaterialCategory.InventoryCategoryCode,
-                CategoryName = PrintingMaterialCategory.CategoryName,
-                CostAccountCode = PrintingMaterialCategory.CostAccountCode,
-                InventoryAccountCode = PrintingMaterialCategory.InventoryAccountCode,
-                ProductionAccountCode = PrintingMaterialCategory.ProductionAccountCode,
-                IsActive = PrintingMaterialCategory.IsActive
-            });
-
-            return Json(result);
+            var printingMaterialCategories = db.PrintingMaterialCategories;
+            return Json(printingMaterialCategories.ToDataSourceResult(request));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Create([DataSourceRequest]DataSourceRequest request, PrintingMaterialCategory PrintingMaterialCategory)
+        public ActionResult Create([DataSourceRequest]DataSourceRequest request, PrintingMaterialCategory model)
         {
             if (ModelState.IsValid)
             {
+                var itemCategory = db.ItemCategorys.FirstOrDefault(x => x.ItemCategoryCode == model.InventoryCategoryCode);
+
                 var entity = new PrintingMaterialCategory
                 {
-                    InventoryCategoryCode = PrintingMaterialCategory.InventoryCategoryCode,
-                    CategoryName = PrintingMaterialCategory.CategoryName,
-                    CostAccountCode = PrintingMaterialCategory.CostAccountCode,
-                    InventoryAccountCode = PrintingMaterialCategory.InventoryAccountCode,
-                    ProductionAccountCode = PrintingMaterialCategory.ProductionAccountCode,
-                    IsActive = PrintingMaterialCategory.IsActive
+                    InventoryCategoryCode = model.InventoryCategoryCode,
+                    CategoryName = itemCategory.Name,
+                    CostAccountCode = itemCategory.AccountCode,
+                    InventoryAccountCode = itemCategory.IssueAccountCode,
+                    ProductionAccountCode = model.ProductionAccountCode,
+                    IsActive = model.IsActive
                 };
-
+                
                 db.PrintingMaterialCategories.Add(entity);
                 db.SaveChanges();
                 GenerateManufactureCategoryDetail(entity);
-                PrintingMaterialCategory.PrintingMaterialCategoryId = entity.PrintingMaterialCategoryId;
+                model.PrintingMaterialCategoryId = entity.PrintingMaterialCategoryId;
+                model.CategoryName = entity.CategoryName;
+                model.CostAccountCode = entity.CostAccountCode;
+                model.InventoryAccountCode = entity.InventoryAccountCode;
             }
 
-            return Json(new[] { PrintingMaterialCategory }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Update([DataSourceRequest]DataSourceRequest request, PrintingMaterialCategory PrintingMaterialCategory)
+        public ActionResult Update([DataSourceRequest]DataSourceRequest request, PrintingMaterialCategory model)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PrintingMaterialCategory
                 {
-                    PrintingMaterialCategoryId = PrintingMaterialCategory.PrintingMaterialCategoryId,
-                    InventoryCategoryCode = PrintingMaterialCategory.InventoryCategoryCode,
-                     CategoryName = PrintingMaterialCategory.CategoryName,
-                    CostAccountCode = PrintingMaterialCategory.CostAccountCode,
-                    InventoryAccountCode = PrintingMaterialCategory.InventoryAccountCode,
-                    ProductionAccountCode = PrintingMaterialCategory.ProductionAccountCode,
-                    IsActive = PrintingMaterialCategory.IsActive
+                    PrintingMaterialCategoryId = model.PrintingMaterialCategoryId,
+                    InventoryCategoryCode = model.InventoryCategoryCode,
+                     CategoryName = model.CategoryName,
+                    CostAccountCode = model.CostAccountCode,
+                    InventoryAccountCode = model.InventoryAccountCode,
+                    ProductionAccountCode = model.ProductionAccountCode,
+                    IsActive = model.IsActive
                 };
-
+                DeleteItems(entity.PrintingMaterialCategoryId);
                 db.PrintingMaterialCategories.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                GenerateManufactureCategoryDetail(entity);
+
             }
 
-            return Json(new[] { PrintingMaterialCategory }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Delete([DataSourceRequest]DataSourceRequest request, PrintingMaterialCategory PrintingMaterialCategory)
+        public ActionResult Delete([DataSourceRequest]DataSourceRequest request, PrintingMaterialCategory model)
         {
             if (ModelState.IsValid)
             {
-                var entity = new PrintingMaterialCategory
-                {
-                    PrintingMaterialCategoryId = PrintingMaterialCategory.PrintingMaterialCategoryId,
-                    InventoryCategoryCode = PrintingMaterialCategory.InventoryCategoryCode,
-                     CategoryName = PrintingMaterialCategory.CategoryName,
-                    CostAccountCode = PrintingMaterialCategory.CostAccountCode,
-                    InventoryAccountCode = PrintingMaterialCategory.InventoryAccountCode,
-                    ProductionAccountCode = PrintingMaterialCategory.ProductionAccountCode,
-                    IsActive = PrintingMaterialCategory.IsActive
-                };
+                var category = db.PrintingMaterialCategories.Find(model.PrintingMaterialCategoryId);
 
-                db.PrintingMaterialCategories.Attach(entity);
-                db.PrintingMaterialCategories.Remove(entity);
+                DeleteItems(category.PrintingMaterialCategoryId);
+                db.PrintingMaterialCategories.Attach(category);
+                db.PrintingMaterialCategories.Remove(category);
                 db.SaveChanges();
             }
 
-            return Json(new[] { PrintingMaterialCategory }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
-
+        private void DeleteItems(int id)
+        {
+            var items = db.PrintingMaterialCategoryItems.Where(x => x.PrintingMaterialCategoryId == id).ToList();
+            db.PrintingMaterialCategoryItems.RemoveRange(items);
+            db.SaveChanges();
+        }
         private void GenerateManufactureCategoryDetail(PrintingMaterialCategory materialCategory)
         {
             var itemCategory = db.ItemCategorys.FirstOrDefault(x => x.ItemCategoryCode == materialCategory.InventoryCategoryCode);
@@ -121,6 +114,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             {
                 var entity = new PrintingMaterialCategoryItem
                 {
+                    
                     ItemName = item.Name,
                     ItemCode = item.ItemCode,
                     UnitOfMeasurement = item.UoMName,

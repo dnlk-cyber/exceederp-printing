@@ -5,7 +5,7 @@
         <div class="form-group">
             <label>Process Category</label>
             <div>
-                @(Html.Kendo().DropDownListFor(model => model.ProcessCategory)
+                @(Html.Kendo().DropDownListFor(model => model.PressCategory)
                                         .DataTextField("Text")
                                         .DataValueField("Value")
                                         .Events(e =>
@@ -13,7 +13,7 @@
                                             e.Change("showMachineType");
                                             e.DataBound("showMachineType");
                                         })
-                                        .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.PrintingProcessCategory))
+                                        .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.PressCategory))
                                         )
                                     .HtmlAttributes(new { style = "width:100%" }))
             </div>
@@ -38,34 +38,8 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-2 machine-type">
-        <div class="form-group">
-            <label>Machine Type</label>
-            <div>
-                @(Html.Kendo().DropDownListFor(model => model.PrintingMachineTypeId)
-                                   .ValuePrimitive(true)
-                                   .OptionLabel("Select Item...")
-                                   .DataTextField("Text")
-                                   .DataValueField("Value")
-                                   .Filter("contains")
-                                  
-                                   .DataSource(dataSource =>
-                                   {
-                                       dataSource.Read(read => read.Action("PrintMachineType", "PrintDataProvider", new { area = "Printing" }))
-                                           .ServerFiltering(false);
-                                   }).HtmlAttributes(new { style = "width:100%" }))
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>Estimated Hour</label>
-            <div>
-                @(Html.Kendo().NumericTextBoxFor(model => model.EstimatedHours).HtmlAttributes(new { style = "width:100%" }))
-
-            </div>
-        </div>
-    </div>
+  
+   
     
 </div>
 <div class="row">

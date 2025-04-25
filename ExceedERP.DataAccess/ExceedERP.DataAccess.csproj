@@ -600,6 +600,10 @@
     <Compile Include="Migrations\202504151250397_costingmerge.Designer.cs">
       <DependentUpon>202504151250397_costingmerge.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202504251309299_printingest.cs" />
+    <Compile Include="Migrations\202504251309299_printingest.Designer.cs">
+      <DependentUpon>202504251309299_printingest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1002,6 +1006,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202504151250397_costingmerge.resx">
       <DependentUpon>202504151250397_costingmerge.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504251309299_printingest.resx">
+      <DependentUpon>202504251309299_printingest.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

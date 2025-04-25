@@ -28,11 +28,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 Value = s.OrganizationCustomerID,
                 Text = s.TradeName
             }).ToList();
-            ViewData["JobType"] = db.PrintingJobTypes.Select(s => new
-            {
-                Value = s.PrintingJobTypeId,
-                Text = s.JobTypeName
-            }).ToList();
+            
             ViewData["PaperSize"] = db.PrintingPaperSizes.Select(s => new
             {
                 Value = s.PrintingPaperSizeId,
@@ -57,7 +53,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             ViewData["PrintingProcess"] = db.PrintingProcesses.Select(s => new
             {
                 Value = s.PrintingProcessId,
-                Text = s.ProcessName
+                Text = s.LabourActivity
             }).ToList();
             ViewData["PrintingMachineType"] = db.PrintingMachineTypes.Select(s => new
             {
@@ -71,89 +67,87 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         public ActionResult PrintingCostEstimations_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<PrintingCostEstimation> printingcostestimations = db.PrintingCostEstimations;
-            
+
             return Json(printingcostestimations.ToDataSourceResult(request));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingCostEstimations_Create([DataSourceRequest]DataSourceRequest request, PrintingCostEstimation printingCostEstimation)
+        public ActionResult PrintingCostEstimations_Create([DataSourceRequest]DataSourceRequest request, PrintingCostEstimation model)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PrintingCostEstimation
                 {
-                    PaperSizeId = printingCostEstimation.PaperSizeId,
-                    CustomerId = printingCostEstimation.CustomerId,
-                    JobTypeId = printingCostEstimation.JobTypeId,
-                    ProductQuantity = printingCostEstimation.ProductQuantity,
-                    TotalTextNoPages = printingCostEstimation.TotalTextNoPages,
-                    BindingStyleId = printingCostEstimation.BindingStyleId,
-                    Width = printingCostEstimation.Width,
-                    Length = printingCostEstimation.Length,
-                    TextNoOfColors = printingCostEstimation.TextNoOfColors,
-                    CoverNoOfColor = printingCostEstimation.CoverNoOfColor,
-                    CoverPaperSize = printingCostEstimation.CoverPaperSize,
-                    CoverRequired = printingCostEstimation.CoverRequired,
-                    OnlyOneSideCover = printingCostEstimation.OnlyOneSideCover,
-                    NoUpPagesPerA1 = printingCostEstimation.NoUpPagesPerA1,
-                    ProcessCategoryId = printingCostEstimation.ProcessCategoryId,
-                    TypeOfWorkId = printingCostEstimation.TypeOfWorkId,
-                    EstimatedHrs = printingCostEstimation.EstimatedHrs,
-                    DLaborRate = printingCostEstimation.DLaborRate,
-                    TotalCost = printingCostEstimation.TotalCost,
-                    OverHeadRate = printingCostEstimation.OverHeadRate,
-                    OverHeadCost = printingCostEstimation.OverHeadCost,
-                    TotalLaborCost = printingCostEstimation.TotalLaborCost,
+                    PrintJobType = model.PrintJobType,
+                    TextPaperSizeId = model.TextPaperSizeId,
+                    CustomerId = model.CustomerId,
+                    
+                    ProductQuantity = model.ProductQuantity,
+                    Width = model.Width,
+                    Length = model.Length,
+                    TextNoOfColors = model.TextNoOfColors,
+                    CoverNoOfColor = model.CoverNoOfColor,
+                    CoverRequired = model.CoverRequired,
+                    OnlyOneSideCover = model.OnlyOneSideCover,
+                    
                     DateCreated = DateTime.Today,
-                    LastModified = printingCostEstimation.LastModified,
+                    LastModified = model.LastModified,
                     CreatedBy = User.Identity.Name,
-                    ModifiedBy = printingCostEstimation.ModifiedBy,
-                    JobDescription = printingCostEstimation.JobDescription
+                    ModifiedBy = model.ModifiedBy,
+                    JobDescription = model.JobDescription,
+                    CoverMachineTypeId = model.CoverMachineTypeId,
+                    TextMachineTypeId = model.TextMachineTypeId,
+                    CoverPaperSizeId = model.CoverPaperSizeId,
+                    Pages = model.Pages,
+                    Pack = model.Pack,
+                    UseLength = model.UseLength,
+                    BindingStyle = model.BindingStyle,
+                    TextPrintSide = model.TextPrintSide,
+                    CoverPrintSide = model.CoverPrintSide
                 };
 
                 db.PrintingCostEstimations.Add(entity);
                 db.SaveChanges();
-                printingCostEstimation.PrintingCostEstimationId = entity.PrintingCostEstimationId;
+                model.PrintingCostEstimationId = entity.PrintingCostEstimationId;
             }
 
-            return Json(new[] { printingCostEstimation }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingCostEstimations_Update([DataSourceRequest]DataSourceRequest request, PrintingCostEstimation printingCostEstimation)
+        public ActionResult PrintingCostEstimations_Update([DataSourceRequest]DataSourceRequest request, PrintingCostEstimation model)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PrintingCostEstimation
                 {
-                    PrintingCostEstimationId = printingCostEstimation.PrintingCostEstimationId,
-                    PaperSizeId = printingCostEstimation.PaperSizeId,
-                    CustomerId = printingCostEstimation.CustomerId,
-                    JobTypeId = printingCostEstimation.JobTypeId,
-                    ProductQuantity = printingCostEstimation.ProductQuantity,
-                    TotalTextNoPages = printingCostEstimation.TotalTextNoPages,
-                    BindingStyleId = printingCostEstimation.BindingStyleId,
-                    Width = printingCostEstimation.Width,
-                    Length = printingCostEstimation.Length,
-                    TextNoOfColors = printingCostEstimation.TextNoOfColors,
-                    CoverNoOfColor = printingCostEstimation.CoverNoOfColor,
-                    CoverPaperSize = printingCostEstimation.CoverPaperSize,
-                    CoverRequired = printingCostEstimation.CoverRequired,
-                    OnlyOneSideCover = printingCostEstimation.OnlyOneSideCover,
-                    NoUpPagesPerA1 = printingCostEstimation.NoUpPagesPerA1,
-                    ProcessCategoryId = printingCostEstimation.ProcessCategoryId,
-                    TypeOfWorkId = printingCostEstimation.TypeOfWorkId,
-                    EstimatedHrs = printingCostEstimation.EstimatedHrs,
-                    DLaborRate = printingCostEstimation.DLaborRate,
-                    TotalCost = printingCostEstimation.TotalCost,
-                    OverHeadRate = printingCostEstimation.OverHeadRate,
-                    OverHeadCost = printingCostEstimation.OverHeadCost,
-                    TotalLaborCost = printingCostEstimation.TotalLaborCost,
-                    DateCreated = printingCostEstimation.DateCreated,
-                    LastModified = printingCostEstimation.LastModified,
-                    CreatedBy = printingCostEstimation.CreatedBy,
-                    ModifiedBy = printingCostEstimation.ModifiedBy,
-                    JobDescription = printingCostEstimation.JobDescription
+                    PrintJobType = model.PrintJobType,
+                    PrintingCostEstimationId = model.PrintingCostEstimationId,
+                    TextPaperSizeId = model.TextPaperSizeId,
+                    CustomerId = model.CustomerId,
+                    
+                    ProductQuantity = model.ProductQuantity,
+                    Width = model.Width,
+                    Length = model.Length,
+                    TextNoOfColors = model.TextNoOfColors,
+                    CoverNoOfColor = model.CoverNoOfColor,
+                    CoverRequired = model.CoverRequired,
+                    OnlyOneSideCover = model.OnlyOneSideCover,
+                   
+                    DateCreated = model.DateCreated,
+                    LastModified = model.LastModified,
+                    CreatedBy = model.CreatedBy,
+                    ModifiedBy = model.ModifiedBy,
+                    JobDescription = model.JobDescription,
+                    TextMachineTypeId = model.TextMachineTypeId,
+                    CoverMachineTypeId = model.CoverMachineTypeId,
+                    CoverPaperSizeId = model.CoverPaperSizeId,
+                    Pages = model.Pages,
+                    Pack = model.Pack,
+                    UseLength = model.UseLength,
+                    BindingStyle = model.BindingStyle,
+                    TextPrintSide = model.TextPrintSide,
+                    CoverPrintSide = model.CoverPrintSide
                 };
 
                 db.PrintingCostEstimations.Attach(entity);
@@ -161,44 +155,43 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 db.SaveChanges();
             }
 
-            return Json(new[] { printingCostEstimation }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingCostEstimations_Destroy([DataSourceRequest]DataSourceRequest request, PrintingCostEstimation printingCostEstimation)
+        public ActionResult PrintingCostEstimations_Destroy([DataSourceRequest]DataSourceRequest request, PrintingCostEstimation model)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PrintingCostEstimation
                 {
-                    PrintingCostEstimationId = printingCostEstimation.PrintingCostEstimationId,
-                    PaperSizeId = printingCostEstimation.PaperSizeId,
-                    CustomerId = printingCostEstimation.CustomerId,
-                    JobTypeId = printingCostEstimation.JobTypeId,
-                    ProductQuantity = printingCostEstimation.ProductQuantity,
-                    TotalTextNoPages = printingCostEstimation.TotalTextNoPages,
-                    BindingStyleId = printingCostEstimation.BindingStyleId,
-                    Width = printingCostEstimation.Width,
-                    Length = printingCostEstimation.Length,
-                    TextNoOfColors = printingCostEstimation.TextNoOfColors,
-                    CoverNoOfColor = printingCostEstimation.CoverNoOfColor,
-                    CoverPaperSize = printingCostEstimation.CoverPaperSize,
-                    CoverRequired = printingCostEstimation.CoverRequired,
-                    OnlyOneSideCover = printingCostEstimation.OnlyOneSideCover,
-                    NoUpPagesPerA1 = printingCostEstimation.NoUpPagesPerA1,
-                    ProcessCategoryId = printingCostEstimation.ProcessCategoryId,
-                    TypeOfWorkId = printingCostEstimation.TypeOfWorkId,
-                    EstimatedHrs = printingCostEstimation.EstimatedHrs,
-                    DLaborRate = printingCostEstimation.DLaborRate,
-                    TotalCost = printingCostEstimation.TotalCost,
-                    OverHeadRate = printingCostEstimation.OverHeadRate,
-                    OverHeadCost = printingCostEstimation.OverHeadCost,
-                    TotalLaborCost = printingCostEstimation.TotalLaborCost,
-                    DateCreated = printingCostEstimation.DateCreated,
-                    LastModified = printingCostEstimation.LastModified,
-                    CreatedBy = printingCostEstimation.CreatedBy,
-                    ModifiedBy = printingCostEstimation.ModifiedBy,
-                     JobDescription = printingCostEstimation.JobDescription
+                    PrintJobType = model.PrintJobType,
+                    PrintingCostEstimationId = model.PrintingCostEstimationId,
+                    TextPaperSizeId = model.TextPaperSizeId,
+                    CustomerId = model.CustomerId,
+                    
+                    ProductQuantity = model.ProductQuantity,
+                    Width = model.Width,
+                    Length = model.Length,
+                    TextNoOfColors = model.TextNoOfColors,
+                    CoverNoOfColor = model.CoverNoOfColor,
+                    CoverRequired = model.CoverRequired,
+                    OnlyOneSideCover = model.OnlyOneSideCover,
+                    
+                    DateCreated = model.DateCreated,
+                    LastModified = model.LastModified,
+                    CreatedBy = model.CreatedBy,
+                    ModifiedBy = model.ModifiedBy,
+                    JobDescription = model.JobDescription,
+                    TextMachineTypeId = model.TextMachineTypeId,
+                    CoverMachineTypeId = model.CoverMachineTypeId,
+                    CoverPaperSizeId = model.CoverPaperSizeId,
+                    Pages = model.Pages,
+                    Pack = model.Pack,
+                    UseLength = model.UseLength,
+                    BindingStyle = model.BindingStyle,
+                    TextPrintSide = model.TextPrintSide,
+                    CoverPrintSide = model.CoverPrintSide
                 };
 
                 db.PrintingCostEstimations.Attach(entity);
@@ -206,7 +199,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 db.SaveChanges();
             }
 
-            return Json(new[] { printingCostEstimation }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
         public JsonResult CalculateOverAllCost(int id)
         {
@@ -230,16 +223,16 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     var totalMaterialCost = materialCosts.Sum(s => (decimal?)s.TotalCost) ?? 0;
                     var entity = new PrintingOverAllCost
                     {
-                       PrintingCostEstimationId = estimation.PrintingCostEstimationId,
-                       AdminstrativeCost = 0,
-                       IndirectMaterialCost = totalMaterialCost * 0.03m,
-                       
-                       GrandTotal = 0,
-                       GraphicsCost = 0,
-                       LaborCost = totalLabourCost,
-                       MaterialCost = totalMaterialCost,
-                       ProfitMargin = 0,
-                       TotalProductionCost = totalMaterialCost + totalLabourCost,                      
+                        PrintingCostEstimationId = estimation.PrintingCostEstimationId,
+                        AdminstrativeCost = 0,
+                        IndirectMaterialCost = totalMaterialCost * 0.03m,
+
+                        GrandTotal = 0,
+                        GraphicsCost = 0,
+                        LaborCost = totalLabourCost,
+                        MaterialCost = totalMaterialCost,
+                        ProfitMargin = 0,
+                        TotalProductionCost = totalMaterialCost + totalLabourCost,
                     };
                     db.PrintingOverAllCosts.Add(entity);
                     db.SaveChanges();
@@ -347,7 +340,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
                 PrintingEstimationDetail estimationDetailNew = new PrintingEstimationDetail
                 {
-                    JobTypeId = model.JobTypeId,
+                    PrintJobType = model.PrintJobType,
                     MaterialCost = OverAllCost.MaterialCost,
                     LabourCost = OverAllCost.LaborCost,
                     GraphicsCost = OverAllCost.GraphicsCost,
@@ -358,9 +351,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Quantity = model.ProductQuantity,
                     PrintingEstimationSummaryId = summary.PrintingEstimationSummaryId,
                     PrintingCostEstimationId = model.PrintingCostEstimationId,
-                    UnitCost = OverAllCost.GrandTotal/model.ProductQuantity,
+                    UnitCost = OverAllCost.GrandTotal / model.ProductQuantity,
                     JobDescription = model.JobDescription,
-                    
+
                 };
                 db.PrintingEstimationDetails.Add(estimationDetailNew);
                 db.SaveChanges();
@@ -369,7 +362,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             {
                 PrintingEstimationDetail estimationDetail = new PrintingEstimationDetail
                 {
-                    JobTypeId = model.JobTypeId,
+                    PrintJobType = model.PrintJobType,
                     MaterialCost = OverAllCost.MaterialCost,
                     LabourCost = OverAllCost.LaborCost,
                     AdministrativeCost = (decimal)OverAllCost.AdminstrativeCost,

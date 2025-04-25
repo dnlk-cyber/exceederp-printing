@@ -43,9 +43,18 @@ namespace ExceedERP.Core.Domain.Printing
         public double Length { get; set; }
         public double Weight { get; set; }
 
-
+        public PaperType? PaperType { get; set; } 
         //Fk
         public int PrintingMaterialCategoryId { get; set; }
 
+    }
+    public enum PaperType
+    {
+        [Display(Name ="N/A")]
+        NA = 0,
+        [Display(Name = "Sheet-Fed")]
+        SheetFed = 1,
+        [Display(Name ="Continuous Roll")]
+        ContinuousRoll = 2
     }
 }

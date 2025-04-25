@@ -27,19 +27,44 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             var costcenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == glsegment.GLSegmentSetupId).AsQueryable();
             ViewData["CostCenters"] = costcenters.ToList();
             ViewData["Periods"] = db.GLPeriods.ToList();
-            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
-                 s.OrganizationCustomerID,
-               s.TradeName
-            }).ToList();
-            ViewData["JobOrders"] = db.Jobs.ToList();
-            ViewData["JobCategories"] = db.JobCategories.ToList();
-            var itemCategorys = db.ItemCategorys.Select(s => new { Code = s.ItemCategoryCode, NAme = s.Name }).ToList();
-            ViewData["ItemCategorys"] = itemCategorys;
-            var items = db.InventoryItems.Select(s => new { Code = s.ItemCode, Name=s.Name }).ToList();
-            ViewData["Items"] = items;
+
+            var customers = db.OrganizationCustomers.Select(s => new {s.OrganizationCustomerID,s.TradeName}).ToList();
+            var JobOrders = db.Jobs.ToList();
+            var JobCategory= db.JobCategories.ToList();
+            //var itemCategorys = db.ItemCategorys.Select(s => new { Code = s.ItemCategoryCode, NAme = s.Name }).ToList();
+            //ViewData["ItemCategorys"] = itemCategorys;
+            //var items = db.InventoryItems.Select(s => new { Code = s.ItemCode, Name = s.Name }).ToList();
+            //ViewData["Items"] = items;
+
+            ViewData["Customers"] = customers.Select(s => new{s.OrganizationCustomerID,TradeName = ValidateInput(s.TradeName)}).ToList();
+
+            
+            ViewData["JobOrders"] = JobOrders.Select(j => new{j.JobId,JobNo = ValidateInput(j.JobNo)}).ToList();
+
+            ViewData["JobCategories"] = JobCategory
+                              .Select(c => new {c.JobCategoryId,JobName = ValidateInput(c.JobName)}).ToList();
+
+              var itemCategorys = db.ItemCategorys.Select(s => new { Code = s.ItemCategoryCode,Name = ValidateInput(s.Name)}).ToList();
+
+               ViewData["ItemCategorys"] = itemCategorys;
+
+               var items = db.InventoryItems.Select(s => new { Code = s.ItemCode, Name = ValidateInput(s.Name) }).ToList();
+                 ViewData["Items"] = items;
             return View();
         }
-        public JsonResult GetAllCostCenters()
+
+        private string ValidateInput(string input)
+        {
+            return string.IsNullOrWhiteSpace(input)
+                ? string.Empty
+                : input.Replace("\n", "")
+                       .Replace("\r", "")
+                       .Replace("#", "")
+                       .Replace("+", " ")
+                       .Trim();
+        }
+    
+    public JsonResult GetAllCostCenters()
         {
             var glsegment = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.CostCenter);
             var costcenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == glsegment.GLSegmentSetupId).AsQueryable();

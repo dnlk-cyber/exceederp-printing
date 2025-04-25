@@ -2019,6 +2019,7 @@
     <Compile Include="Areas\Printing\Controllers\PrintingJobOrderProductionController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobTypeController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingMachineTypeController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingMachineTypeDetailController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingMaterialCategoryController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingMaterialCategoryItemController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingMaterialCostProductionController.cs" />
@@ -3452,7 +3453,6 @@
     <Content Include="Areas\HRM\Views\PrintableLetter\TrainingRequestLetter.cshtml" />
     <Content Include="Areas\Inventory\Views\PurchaseRequisition\EditorTemplates\ItemDetail.cshtml" />
     <Content Include="Areas\APTS\Views\DrugReceivalModel19\EditorTemplates\DrugStores.cshtml" />
-    <Content Include="Areas\APTS\Views\DrugStore.zip" />
     <Content Include="Areas\APTS\Views\LaboratoryDrugRequest\EditorTemplates\Branch.cshtml" />
     <Content Include="Areas\APTS\Views\LaboratoryDrugRequest\EditorTemplates\DrugLists.cshtml" />
     <Content Include="Areas\APTS\Views\LaboratoryDrugRequest\EditorTemplates\DrugUnits.cshtml" />
@@ -3822,7 +3822,6 @@
     <Content Include="Areas\HRM\Views\MilitarySalary\EditorTemplates\Allowance.cshtml" />
     <Content Include="Areas\HRM\Views\MilitarySalary\Index.cshtml" />
     <Content Include="Areas\HRM\Views\WaterMark\Index.cshtml" />
-    <Content Include="Areas\HRM\Views\Views.rar" />
     <Content Include="Areas\CRM\Views\AccountMap\Index.cshtml" />
     <Content Include="Areas\CRM\Views\AccountRequirement\Index.cshtml" />
     <Content Include="Areas\CRM\Views\Accounts\EditorTemplates\AccountParent.cshtml" />
@@ -3877,7 +3876,6 @@
     <Content Include="Areas\CRM\Views\CRMDeposit\EditorTemplates\UserSelector.cshtml" />
     <Content Include="Areas\CRM\Views\CRMDeposit\Index.cshtml" />
     <Content Include="Areas\CRM\Views\CRMPeriods\Index.cshtml" />
-    <Content Include="Areas\CRM\Views\CRMReport.rar" />
     <Content Include="Areas\CRM\Views\CRMReport\CampaignPerformanceReport.cshtml" />
     <Content Include="Areas\CRM\Views\CRMReport\CashSalesInvoiceListReport.cshtml" />
     <Content Include="Areas\CRM\Views\CRMReport\CashSalesInvoiceReportViewer.cshtml" />
@@ -5221,7 +5219,6 @@
     <Content Include="Areas\Archive\Views\LettersSentForEmployee\EditorTemplates\Answer.cshtml" />
     <Content Include="Areas\Archive\Views\LettersSentForEmployee\EditorTemplates\AttachAnswer.cshtml" />
     <Content Include="Areas\Archive\Views\LettersSentForEmployee\Index.cshtml" />
-    <Content Include="Areas\Archive\Views\OutGoing_DepartmentToDepartments.zip" />
     <Content Include="Areas\Archive\Views\OutGoing_DepartmentToDepartments\EditorTemplates\AnswerOne.cshtml" />
     <Content Include="Areas\Archive\Views\OutGoing_DepartmentToDepartments\EditorTemplates\Answer_MasterIdPassedByDefault.cshtml" />
     <Content Include="Areas\Archive\Views\OutGoing_DepartmentToDepartments\EditorTemplates\AttachAnswer.cshtml" />
@@ -5229,7 +5226,6 @@
     <Content Include="Areas\Archive\Views\OutGoing_DepartmentToDepartments\EditorTemplates\Send.cshtml" />
     <Content Include="Areas\Archive\Views\OutGoing_DepartmentToDepartments\Index.cshtml" />
     <Content Include="Areas\Archive\Views\OutGoing_DepartmentToDepartments\Index_Receiver.cshtml" />
-    <Content Include="Areas\Archive\Views\OutGoing_DepartmentToStaff.zip" />
     <Content Include="Areas\Archive\Views\OutGoing_DepartmentToStaff\EditorTemplates\Answer.cshtml" />
     <Content Include="Areas\Archive\Views\OutGoing_DepartmentToStaff\EditorTemplates\AttachAnswer.cshtml" />
     <Content Include="Areas\Archive\Views\OutGoing_DepartmentToStaff\EditorTemplates\EmployeeList.cshtml" />
@@ -6205,7 +6201,6 @@
     <Content Include="Areas\Insurance\Views\FixedAssetAccidentRecord\EditorTemplates\Branch.cshtml" />
     <Content Include="Areas\Insurance\Views\FixedAssetAccidentRecord\EditorTemplates\GLFPeriod.cshtml" />
     <Content Include="Areas\Insurance\Views\FixedAssetAccidentRecord\Index.cshtml" />
-    <Content Include="Areas\Insurance\Views\Insurance.rar" />
     <Content Include="Areas\Insurance\Views\InsuranceCategory\Index.cshtml" />
     <Content Include="Areas\Insurance\Views\InsuranceGroup\EditorTemplates\InsuranceGroup.cshtml" />
     <Content Include="Areas\Insurance\Views\InsuranceGroup\EditorTemplates\Organization.cshtml" />
@@ -7131,6 +7126,10 @@
     <Content Include="Areas\Manufacturing\Views\FurnitureBoqRequest\EditorTemplates\CommentEditorTemplate.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurnitureBoqRequest\IndexEst.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurnitureBoqRequest\IndexOp.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingMachineType\EditorTemplates\MachineDetailTemplateName.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingMachineType\EditorTemplates\MachineTemplateName.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingMaterialCategory\EditorTemplates\CategoryItemTemplate.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingPaperSize\EditorTemplates\PaperSizeTemplate.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
@@ -9123,6 +9122,7 @@
     <Folder Include="Areas\Printing\Views\PrintingEstimationMargin\" />
     <Folder Include="Areas\Printing\Views\PrintingJobOrderDesgin\" />
     <Folder Include="Areas\Printing\Views\PrintingJobOrderItem\" />
+    <Folder Include="Areas\Printing\Views\PrintingMachineTypeDetail\" />
     <Folder Include="Areas\Printing\Views\PrintingMaterialCostProduction\" />
     <Folder Include="Areas\Printing\Views\PrintingProductionDesgin\" />
     <Folder Include="Areas\Printing\Views\PrintingProformaItem\" />

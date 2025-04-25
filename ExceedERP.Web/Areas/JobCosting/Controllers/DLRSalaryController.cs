@@ -11,7 +11,6 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.JobCosting;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Areas.JobCosting.Models;
-using ExceedERP.Core.Domain.printing.PrintingEstimation.Setting;
 
 namespace ExceedERP.Web.Areas.JobCosting.Controllers
 {
@@ -68,7 +67,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
                 {
                     dLRSalary.Pension = 0;
                 }
-                if(dlrRec != null && dlrRec.EmployeeType==EmployementType.Permanent)
+                if(dlrRec != null && dlrRec.EmployeeType==Core.Domain.printing.PrintingEstimation.Setting.EmployementType.Permanent)
                 {
                     dLRSalary.TotalSalary = dLRSalary.Pension + dLRSalary.Total;
 

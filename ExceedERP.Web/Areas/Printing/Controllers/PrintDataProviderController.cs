@@ -1,5 +1,8 @@
 ﻿using ExceedERP.Core.Domain.Printing;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +16,13 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         ExceedDbContext db = new ExceedDbContext();
         
 
-        public JsonResult PrintMachineType()
+        public JsonResult PrintMachineType(string text)
         {
-            var printMachine = db.PrintingMachineTypes;
+            var printMachine = db.PrintingMachineTypes.ToList();
+            if (!string.IsNullOrEmpty(text))
+            {
+                printMachine = printMachine.Where(x => x.MachineTypeName.Contains(text)).ToList();
+            }
             var result = printMachine.Select(s => new
             {
                 Text = s.MachineTypeName,
@@ -35,39 +42,14 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-        public JsonResult JobType()
+      
+     
+        public JsonResult PrintingProcess(PressCategory processCategory)
         {
-            var jobType = db.PrintingJobTypes;
-            var result = jobType.Select(s => new
-            {
-                Text = s.JobTypeName,
-                Value = s.PrintingJobTypeId
-            }).ToList();
-
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-        public JsonResult JobTypeFilterable(string text)
-        {
-            var jobType = db.PrintingJobTypes.AsQueryable();
-            if (!string.IsNullOrWhiteSpace(text))
-            {
-                jobType = jobType.Where(x => x.JobTypeName.ToLower().Contains(text.ToLower())).AsQueryable();
-            }
-            var result = jobType.Select(s => new
-            {
-                Text = s.JobTypeName,
-                Value = s.PrintingJobTypeId
-            }).ToList();
-
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
-
-        public JsonResult PrintingProcess(PrintingProcessCategory processCategory)
-        {
-            var printingProcess = db.PrintingProcesses.Where(x => x.PrintingCategory == processCategory);
+            var printingProcess = db.PrintingProcesses.Where(x => x.PressCategory == processCategory);
             var result = printingProcess.Select(s => new
             {
-                Text = s.ProcessName,
+                Text = s.PressCategory,
                 Value = s.PrintingProcessId
             }).ToList();
 
@@ -99,7 +81,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             var result = paper.Select(s => new
             {
                 Value = s.PrintingPaperSizeId,
-                Text = s.PaperSizeName
+                Text = s.PrintPaperSize.ToString()
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -162,19 +144,36 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet); 
         }
-        public JsonResult GetPrintingProcess(string text, PrintingProcessCategory printingProcessCategory)
+        public JsonResult GetPrintingProcess(string text, PressCategory printingProcessCategory)
         {
-            var printingProcess = db.PrintingProcesses.Where(x => x.PrintingCategory == printingProcessCategory).AsQueryable();
-            if (!string.IsNullOrWhiteSpace(text))
-            {
-                printingProcess = printingProcess.Where(x => x.ProcessName.ToLower().Contains(text.ToLower())).AsQueryable();
-            }
+            var printingProcess = db.PrintingProcesses.Where(x => x.PressCategory == printingProcessCategory).AsQueryable();
+            //if (!string.IsNullOrWhiteSpace(text))
+            //{
+            //    printingProcess = printingProcess.Where(x => x.LabourActivity.ToLower().Contains(text.ToLower())).AsQueryable();
+            //}
             var result = printingProcess.Select(s => new
             {
                 Value = s.PrintingProcessId,
-                Text = s.ProcessName
+                Text = s.LabourActivity
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        public JsonResult GetUoM(string text) 
+        {
+            var unitOfm = db.UoMs.AsQueryable();
+            if (!string.IsNullOrEmpty(text))
+            {
+                unitOfm = unitOfm.Where(x => x.UoMName.Contains(text));
+            }
+            return Json(unitOfm.Select(i => new
+            {
+                Text = i.UoMName,
+                Value = i.UoMName
+            })
+            , JsonRequestBehavior.AllowGet);
+        }
+
+
     }
 }

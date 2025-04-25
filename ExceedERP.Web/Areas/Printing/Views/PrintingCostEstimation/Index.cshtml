@@ -2,155 +2,178 @@
 <label>Printing Cost Estimation</label>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingCostEstimation>()
-                  .Name("grid")
-                  .Columns(columns =>
-                  {
-                      columns.Bound(c => c.PrintingCostEstimationId);
-                      columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text");
-                      columns.ForeignKey(c => c.PaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text");
-                      columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text");
-                      columns.ForeignKey(c => c.BindingStyleId, (IEnumerable)ViewData["BindingStyle"], "Value", "Text");
-
-                      columns.Bound(c => c.TextNoOfColors);
-                      columns.Bound(c => c.CoverNoOfColor);
-                      columns.Bound(c => c.ProductQuantity);
-                      columns.Bound(c => c.TotalTextNoPages).Title("Number Of Pages");
-                      
-                      columns.Command(command =>
+                      .Name("grid")
+                      .Columns(columns =>
                       {
-                          command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
-                          command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "Check" }).Click("checkEstimation");
-                          command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
-                          //command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
-                          command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
-                      }).Width(180);
-                  })
-                  .ToolBar(toolbar =>
-                  {
-                      toolbar.Create();
-                  })
-                  .Events(ev => ev.DetailExpand("detailExpand")
-                    .DataBound("dataBound")
-                    )
-                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintingCostEstimationTemplate"))
-                  .Filterable()
-                  .Pageable()
-                  .Scrollable(s => s.Height(400))
-                  
-                  .DataSource(dataSource => dataSource
-                      .Ajax()
-                      .Sort(x => x.Add(s => s.PrintingCostEstimationId).Descending())
-                      .Model(model => model.Id(p => p.PrintingCostEstimationId))
-                      .Read(read => read.Action("PrintingCostEstimations_Read", "PrintingCostEstimation"))
-                      .Create(create => create.Action("PrintingCostEstimations_Create", "PrintingCostEstimation"))
-                      .Update(update => update.Action("PrintingCostEstimations_Update", "PrintingCostEstimation"))
-                      .Destroy(destroy => destroy.Action("PrintingCostEstimations_Destroy", "PrintingCostEstimation"))
-                  ).ClientDetailTemplateId("cost_estimation")
+                          columns.Bound(c => c.PrintingCostEstimationId).Title("Est. No");
+                          columns.Bound(c => c.PrintJobType).Title("Job Type");
+                          columns.ForeignKey(c => c.TextPaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text").Title("Paper Size");
+                          columns.ForeignKey(c => c.CoverPaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text").Title("Paper Size");
+                          columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text");
+                          columns.ForeignKey(c => c.TextMachineTypeId, (IEnumerable)ViewData["PrintingMachineType"], "Value", "Text");
+                          columns.ForeignKey(c => c.CoverMachineTypeId, (IEnumerable)ViewData["PrintingMachineType"], "Value", "Text");
+                          columns.Bound(c => c.TextNoOfColors);
+                          columns.Bound(c => c.CoverNoOfColor);
+                          columns.Bound(c => c.ProductQuantity);
+                          columns.Bound(c => c.Pages).Title("Pages");
+                          columns.Bound(c => c.Pack).Title("Pack");
+                          columns.Command(command =>
+                          {
+                              command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
+                              command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "Check" }).Click("checkEstimation");
+                              command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
+                              //command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
+                              command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Events(ev => ev.DetailExpand("detailExpand")
+                        .DataBound("dataBound")
+                        )
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintingCostEstimationTemplate"))
+                      .Filterable()
+                      .Pageable()
+                      .Scrollable(s => s.Height(400))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                            .Events(ev => ev.Error("error_handler(\"grid\")")
+                                        .RequestStart("onRequestStart(\"grid\")")
+                                        .RequestEnd("onRequestEnd(\"grid\")"))
+                          .Sort(x => x.Add(s => s.PrintingCostEstimationId).Descending())
+                          .Model(model => model.Id(p => p.PrintingCostEstimationId))
+                          .Read(read => read.Action("PrintingCostEstimations_Read", "PrintingCostEstimation"))
+                          .Create(create => create.Action("PrintingCostEstimations_Create", "PrintingCostEstimation"))
+                          .Update(update => update.Action("PrintingCostEstimations_Update", "PrintingCostEstimation"))
+                          .Destroy(destroy => destroy.Action("PrintingCostEstimations_Destroy", "PrintingCostEstimation"))
+                      ).ClientDetailTemplateId("cost_estimation")
 )
 
 <script id="cost_estimation" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                        .Name("tabstrip_grid_#=PrintingCostEstimationId#")
-                                        .SelectedIndex(0)
-                                        .Items(itemn =>
-                                        {
-                                            itemn.Add().Text("Estimation Material List").Content(
-                    @<text>
-                        <a href='@Url.Action("EstimationPrint", "PrintingReport")/?id=#=PrintingCostEstimationId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                                                                .Name("tabstrip_grid_#=PrintingCostEstimationId#")
+                                                                .SelectedIndex(0)
+                                                                .Items(itemn =>
+                                                                {
+                                                                    itemn.Add().Text("Estimation Material List").Content(
+                                            @<text>
+                                                <a href='@Url.Action("EstimationPrint", "PrintingReport")/?id=#=PrintingCostEstimationId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
 
-                        @MaterialCost()
-                    </text>);
-                                                    itemn.Add().Text("Labor Cost").Content(
-                        @<text>
-                            <span class="labor-cost"><a onclick='return calculateLaborCost("#=PrintingCostEstimationId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a></span>
-                            @LaborCost()
-                        </text>);
-                                        itemn.Add().Text("Over All Cost").Content(
+                                                @MaterialCost()
+                                            </text>);
+                                                                            itemn.Add().Text("Labor Cost").Content(
             @<text>
-                <span class="sum"><a onclick='return calculateOverallCost("#=PrintingCostEstimationId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a></span>
-                @OverAllCost()
+                @*<span class="labor-cost"><a onclick='return calculateLaborCost("#=PrintingCostEstimationId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a></span>*@
+                <button type="button"
+                        class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        title="Calculate labor cost for this estimation"
+                        onclick='return calculateLaborCost("#=PrintingCostEstimationId#")'>
+                    <i class="fa fa-calculator"></i> Generate Labor Cost
+                </button>
+
+                @LaborCost()
             </text>);
-                                    }).ToClientTemplate())
+                                                                itemn.Add().Text("Over All Cost").Content(
+@<text>
+    <button type="button"
+            class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            title="Calculate overall cost for this estimation"
+            onclick='return calculateOverallCost("#=PrintingCostEstimationId#")'>
+        <i class="fa fa-calculator"></i> Generate Total Cost
+    </button>
+    @OverAllCost()
+</text>);
+                                                            }).ToClientTemplate())
 </script>
 
 @helper MaterialCost()
 {
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingEstimationMaterialCost>()
-                                      .Name("material_#=PrintingCostEstimationId#")
-                                      .Columns(columns =>
-                                      {
-                                          columns.Bound(c => c.EstimationMaterialType);
-                                          columns.ForeignKey(c => c.PrintingMaterialCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text");
-                                          columns.ForeignKey(c => c.PrintingMaterialCategoryItemId, (IEnumerable)ViewData["Item"], "Value", "Text");
-                                          columns.Bound(c => c.UnitOfMeasurment);
-                                          columns.Bound(c => c.Quantity);
-                                          columns.Bound(c => c.UnitCost);
-                                          columns.Bound(c => c.TotalCost).Format("{0:n4}").Width(130).ClientFooterTemplate("Material Cost: \\#=sum\\# "); ;
-                                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                                      })
-                                      .ToolBar(toolbar =>
-                                      {
-                                          toolbar.Create();
-                                      })
-                                      .Events(ev => ev.DataBound("onChildDataBound"))
-                                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintMaterialEstimationTemplate"))
-                                      .Filterable()
-                                      .Scrollable()
-                                      .Pageable()
-                                      .DataSource(dataSource => dataSource
-                                          .Ajax()
-                                          .Aggregates(aggregates =>
-                                          {
-                                              aggregates.Add(c => c.TotalCost).Sum(); 
-                                          })
-                                          .Model(model => model.Id(p => p.PrintingEstimationMaterialCostId))
-                                          .Read(read => read.Action("PrintingEstimationMaterialCosts_Read", "PrintingEstimationMaterialCost", new { estId = "#=PrintingCostEstimationId#" }))
-                                          .Create(create => create.Action("PrintingEstimationMaterialCosts_Create", "PrintingEstimationMaterialCost", new { estId = "#=PrintingCostEstimationId#" }))
-                                          .Update(update => update.Action("PrintingEstimationMaterialCosts_Update", "PrintingEstimationMaterialCost"))
-                                          .Destroy(destroy => destroy.Action("PrintingEstimationMaterialCosts_Destroy", "PrintingEstimationMaterialCost"))
-                                      ).ToClientTemplate()
+                                              .Name("material_#=PrintingCostEstimationId#")
+                                              .Columns(columns =>
+                                              {
+                                                  columns.Bound(c => c.EstimationMaterialType);
+                                                  columns.ForeignKey(c => c.PrintingMaterialCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text");
+                                                  columns.ForeignKey(c => c.PrintingMaterialCategoryItemId, (IEnumerable)ViewData["Item"], "Value", "Text");
+                                                  columns.Bound(c => c.UnitOfMeasurment);
+                                                  columns.Bound(c => c.Quantity);
+                                                  columns.Bound(c => c.UnitCost);
+                                                  columns.Bound(c => c.TotalCost).Format("{0:n2}").Width(130).ClientFooterTemplate("Material Cost: \\#=sum\\# "); ;
+                                                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                              })
+                                              .ToolBar(toolbar =>
+                                              {
+                                                  toolbar.Create();
+                                              })
+                                              .Events(ev => ev.DataBound("onChildDataBound"))
+                                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintMaterialEstimationTemplate"))
+                                              .Filterable()
+                                              .Scrollable()
+                                              .Pageable()
+                                              .DataSource(dataSource => dataSource
+                                                  .Ajax()
+                                                  .Events(ev => ev.Error("error_handler(\"material_#=PrintingCostEstimationId#\")")
+                                            .RequestStart("onRequestStart(\"material_#=PrintingCostEstimationId#\")")
+                                            .RequestEnd("onRequestEnd(\"material_#=PrintingCostEstimationId#\")"))
+
+                                                  .Aggregates(aggregates =>
+                                                  {
+                                                      aggregates.Add(c => c.TotalCost).Sum();
+                                                  })
+                                                  .Model(model => model.Id(p => p.PrintingEstimationMaterialCostId))
+                                                  .Read(read => read.Action("PrintingEstimationMaterialCosts_Read", "PrintingEstimationMaterialCost", new { estId = "#=PrintingCostEstimationId#" }))
+                                                  .Create(create => create.Action("PrintingEstimationMaterialCosts_Create", "PrintingEstimationMaterialCost", new { estId = "#=PrintingCostEstimationId#" }))
+                                                  .Update(update => update.Action("PrintingEstimationMaterialCosts_Update", "PrintingEstimationMaterialCost"))
+                                                  .Destroy(destroy => destroy.Action("PrintingEstimationMaterialCosts_Destroy", "PrintingEstimationMaterialCost"))
+                                              ).ToClientTemplate()
     )
 }
 @helper LaborCost()
 {
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingEstimationLaborCost>()
-                      .Name("labor_#=PrintingCostEstimationId#")
-                      .Columns(columns =>
-                      {
-                          columns.Bound(c => c.ProcessCategory).EditorTemplateName("PrintingCategoryDropDownTemplate");
-                          columns.Bound(c => c.PrintingProcessName);
-                          //columns.ForeignKey(c => c.PrintingMachineTypeId, (IEnumerable)ViewData["PrintingMachineType"], "Value", "Text");
-                          columns.Bound(c => c.EstProductionPerHour);
-                          columns.Bound(c => c.EstimatedHours);
-                          columns.Bound(c => c.Quantity);
-                          columns.Bound(c => c.LaborRate);
-                          columns.Bound(c => c.TotalCost).Format("{0:n4}").Width(130).ClientFooterTemplate("Total Cost: \\#=sum\\# "); ;
+                              .Name("labor_#=PrintingCostEstimationId#")
+                              .Columns(columns =>
+                              {
+                                  columns.Bound(c => c.PressCategory)/*.EditorTemplateName("PrintingCategoryDropDownTemplate")*/;
+                                  columns.Bound(c => c.LabourActivity);
+                                  columns.Bound(c => c.Quantity);
+                                  columns.Bound(c => c.LaborRate);
+                                  columns.Bound(c => c.TotalCost).Format("{0:n2}").Width(130).ClientFooterTemplate("Total Cost: \\#=sum\\# "); ;
 
-                          columns.Command(command => { command.Destroy(); }).Width(180);
-                      })
-                      //.ToolBar(toolbar =>
-                      //{
-                      //    toolbar.Create();
-                      //})
-                      .Events(ev => ev.DataBound("onChildDataBound"))
-                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("laborTemplate"))
-                      .Filterable()
-                      .Scrollable()
-                      .Pageable()
-                      .DataSource(dataSource => dataSource
-                          .Ajax()
-                          .Sort(sort => sort.Add(e => e.ProcessCategory).Ascending())
+                                  columns.Command(command => { command.Destroy(); }).Width(180);
+                              })
+                              //.ToolBar(toolbar =>
+                              //{
+                              //    toolbar.Create();
+                              //})
+                              .Events(ev => ev.DataBound("onChildDataBound"))
+                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("laborTemplate"))
+                              .Filterable()
+                              .Scrollable()
+                              .Pageable()
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Events(ev => ev.Error("error_handler(\"material_#=PrintingCostEstimationId#\")")
+                                            .RequestStart("onRequestStart(\"material_#=PrintingCostEstimationId#\")")
+                                            .RequestEnd("onRequestEnd(\"material_#=PrintingCostEstimationId#\")"))
+                                  .Sort(sort => sort.Add(e => e.PressCategory).Ascending())
 
-                          .Aggregates(aggregates =>
-                          {
-                              aggregates.Add(c => c.TotalCost).Sum();
-                          })
-                          .Model(model => model.Id(p => p.PrintingEstimationLaborCostId))
-                          .Read(read => read.Action("PrintingEstimationLaborCosts_Read", "PrintingEstimationLaborCost", new { estId = "#=PrintingCostEstimationId#" }))
-                          //.Create(create => create.Action("PrintingEstimationLaborCosts_Create", "PrintingEstimationLaborCost", new { estId = "#=PrintingCostEstimationId#" }))
-                          //.Update(update => update.Action("PrintingEstimationLaborCosts_Update", "PrintingEstimationLaborCost"))
-                          .Destroy(delete => delete.Action("PrintingEstimationLaborCosts_Delete", "PrintingEstimationLaborCost"))
-                      ).ToClientTemplate()
+                                  .Aggregates(aggregates =>
+                                  {
+                                      aggregates.Add(c => c.TotalCost).Sum();
+                                  })
+                                  .Model(model => model.Id(p => p.PrintingEstimationLaborCostId))
+                                  .Read(read => read.Action("PrintingEstimationLaborCosts_Read", "PrintingEstimationLaborCost", new { estId = "#=PrintingCostEstimationId#" }))
+                                  //.Create(create => create.Action("PrintingEstimationLaborCosts_Create", "PrintingEstimationLaborCost", new { estId = "#=PrintingCostEstimationId#" }))
+                                  //.Update(update => update.Action("PrintingEstimationLaborCosts_Update", "PrintingEstimationLaborCost"))
+                                  .Destroy(delete => delete.Action("PrintingEstimationLaborCosts_Delete", "PrintingEstimationLaborCost"))
+                              ).ToClientTemplate()
     )
 
 }
@@ -159,46 +182,55 @@
 @helper OverAllCost()
 {
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Printing.PrintingOverAllCost>()
-                              .Name("overall_#=PrintingCostEstimationId#")
-                              .Columns(columns =>
-                              {
-                                  columns.Bound(c => c.MaterialCost);
-                                  columns.Bound(c => c.LaborCost);
-                                  columns.Bound(c => c.TotalProductionCost);
-                                  columns.Bound(c => c.AdminstrativeCost);
-                                  columns.Bound(c => c.OverHeadCost);
-                                  columns.Bound(c => c.ProfitMargin);
-                                  columns.Bound(c => c.GraphicsCost);
-                                  
-                                  columns.Bound(c => c.GrandTotal);
-                                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
-                              })                              
-                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("OverallCostEditorTemplate"))
-                              .Filterable()
-                              .Scrollable()
-                              .Pageable()
-                              .Events(ev => ev.DataBound("onChildDataBound"))
-                              .DataSource(dataSource => dataSource
-                                  .Ajax()
-                                  .Model(model => 
-                                  {
-                                       model.Id(p => p.PrintingOverAllCostId);
-                                       model.Field(p => p.MaterialCost).Editable(false);
-                                       model.Field(p => p.LaborCost).Editable(false);
-                                       model.Field(p => p.TotalProductionCost).Editable(false);
-                                       model.Field(p => p.GrandTotal).Editable(false);
-                                  })
-                                  .Read(read => read.Action("PrintingOverAllCosts_Read", "PrintingOverAllCost", new { id = "#=PrintingCostEstimationId#" }))
-                                  .Create(create => create.Action("PrintingOverAllCosts_Create", "PrintingOverAllCost", new { id = "#=PrintingCostEstimationId#" }))
-                                  .Update(update => update.Action("PrintingOverAllCosts_Update", "PrintingOverAllCost"))
-                                  .Destroy(destroy => destroy.Action("PrintingOverAllCosts_Destroy", "PrintingOverAllCost"))
-                              ).ToClientTemplate()
+                                      .Name("overall_#=PrintingCostEstimationId#")
+                                      .Columns(columns =>
+                                      {
+                                          columns.Bound(c => c.MaterialCost);
+                                          columns.Bound(c => c.LaborCost);
+                                          columns.Bound(c => c.TotalProductionCost);
+                                          columns.Bound(c => c.AdminstrativeCost);
+                                          columns.Bound(c => c.OverHeadCost);
+                                          columns.Bound(c => c.ProfitMargin);
+                                          columns.Bound(c => c.GraphicsCost);
+
+                                          columns.Bound(c => c.GrandTotal);
+                                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                      })
+                                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("OverallCostEditorTemplate"))
+                                      .Filterable()
+                                      .Scrollable()
+                                      .Pageable()
+                                      .Events(ev => ev.DataBound("onChildDataBound"))
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Events(ev => ev.Error("error_handler(\"material_#=PrintingCostEstimationId#\")")
+                                            .RequestStart("onRequestStart(\"material_#=PrintingCostEstimationId#\")")
+                                            .RequestEnd("onRequestEnd(\"material_#=PrintingCostEstimationId#\")"))
+                                          .Model(model =>
+                                          {
+                                              model.Id(p => p.PrintingOverAllCostId);
+                                              model.Field(p => p.MaterialCost).Editable(false);
+                                              model.Field(p => p.LaborCost).Editable(false);
+                                              model.Field(p => p.TotalProductionCost).Editable(false);
+                                              model.Field(p => p.GrandTotal).Editable(false);
+                                          })
+                                          .Read(read => read.Action("PrintingOverAllCosts_Read", "PrintingOverAllCost", new { id = "#=PrintingCostEstimationId#" }))
+                                          .Create(create => create.Action("PrintingOverAllCosts_Create", "PrintingOverAllCost", new { id = "#=PrintingCostEstimationId#" }))
+                                          .Update(update => update.Action("PrintingOverAllCosts_Update", "PrintingOverAllCost"))
+                                          .Destroy(destroy => destroy.Action("PrintingOverAllCosts_Destroy", "PrintingOverAllCost"))
+                                      ).ToClientTemplate()
     )
 
 }
+<script>
+    $(function () {
+        $('[data-bs-toggle="tooltip"]').tooltip();
+    });
+</script>
 
 
 <script type="text/javascript">
+
     function dataBound() {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
         var grid = this;
@@ -269,9 +301,14 @@
         }
     }
 
-    function filterPaperSize() {
+    function filterTextPaperSize() {
         return {
-            text: $("#PaperSizeId").data("kendoDropDownList").filterInput.val(),
+            text: $("#TextPaperSizeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterCoverPaperSize() {
+        return {
+            text: $("#CoverPaperSizeId").data("kendoDropDownList").filterInput.val(),
         }
     }
 
@@ -281,7 +318,16 @@
             text: $("#BindingStyleId").data("kendoDropDownList").filterInput.val(),
         }
     }
-
+    function filterTextMachine() {
+        return {
+            text: $("#TextMachineTypeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterCoverMachine() {
+        return {
+            text: $("#CoverMachineTypeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
     function filterCategory() {
         return {
             text: $("#PrintingMaterialCategoryId").data("kendoDropDownList").filterInput.val(),
@@ -332,7 +378,7 @@
 
         $.ajax({
             type: "POST",
-            url: '@Url.Action("CalculateLaborCost", "PrintingEstimationLaborCost", new { area = "Printing" })',
+            url: '@Url.Action("Create_LaborCost", "PrintingEstimationLaborCost", new { area = "Printing" })',
             data: { estimationId: id },
             success: function (result) {
                 // toastr.warnning(result.Message);
@@ -369,7 +415,7 @@
        });
       }
     }
-   
+
         function approveEstimation(e) {
             if (confirm("Are you sure to approve this estimation form?")) {
              var grid = this,
@@ -396,17 +442,3 @@
     }
 </script>
 
-<style>
-    div.k-edit-form-container {
-        width: auto;
-        height: auto;
-    }
-
-    .row .col-sm-2 {
-        width: 150px;
-    }
-
-    .row {
-        margin: auto;
-    }
-</style>

@@ -1,0 +1,63 @@
+﻿@model ExceedERP.Core.Domain.Printing.PrintingPaperSize
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Paper Size</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.PrintPaperSize)                                     
+                                      .DataTextField("Text")
+                                      .DataValueField("Value")
+                                      .OptionLabel("Select Print Size")
+                                      .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.PrintPaperSize)))
+                                      .HtmlAttributes(new { style = "width:100%" })
+                                      
+                )
+            </div>
+        </div>
+    </div>
+    </div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Width</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(m => m.Width).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Length</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(m => m.Length).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Pages to A1 Ratio</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(m => m.NoOfPagesToA1Ratio).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-12 {
+        width: 300px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

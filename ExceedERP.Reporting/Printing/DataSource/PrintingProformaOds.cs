@@ -49,12 +49,11 @@ namespace ExceedERP.Reporting.Printing.DataSource
             var proformaItems = db.PrintingProformaInvoiceItems.Where(x => x.PrintingProformaInvoiceId == proformaHead.PrintingProformaInvoiceId).ToList();
             foreach (var item in proformaItems)
             {
-                var jobType = db.PrintingJobTypes.FirstOrDefault(x => x.PrintingJobTypeId == item.JobTypeId);
                 var glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == item.GLTaxRateID);
                 var glTaxRateTransport = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == item.GLTaxRateTransportId);
                 list.Add(new PrintingProformaItemsViewModel
                 {
-                    JobType = jobType?.JobTypeName ?? "",
+                    JobType = item.PrintJobType,
                     JobDescription = item.JobDescription,
                     NoOfPage = item.NumberOfPages,
                     Quantity = item.Quantity,

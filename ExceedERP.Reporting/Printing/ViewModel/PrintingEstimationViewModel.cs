@@ -9,7 +9,7 @@ namespace ExceedERP.Reporting.Printing.ViewModel
 {
     public class PrintingEstimationViewModel
     {
-        public string JobType { get; set; }
+        public PrintJobType JobType { get; set; }
         public string CustomerName { get; set; }
         public string PaperSize { get; set; }
         public string BindingStyle { get; set; }
@@ -40,8 +40,8 @@ namespace ExceedERP.Reporting.Printing.ViewModel
 
     public class PrintingLaborViewModel
     {
-        public PrintingProcessCategory? ProcessCategory { get; set; }
-        public PrintingProcessName? PrintingProcess { get; set; }
+        public PressCategory? ProcessCategory { get; set; }
+        public LabourActivity? PrintingProcess { get; set; }
         public string MachineType { get; set; }
         public decimal EstimatedHour { get; set; }
         public decimal LaborRate { get; set; }

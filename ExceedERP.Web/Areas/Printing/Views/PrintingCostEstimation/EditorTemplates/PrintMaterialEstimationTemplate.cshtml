@@ -3,60 +3,65 @@
 
 <div class="row">
 
-    <div class="col-sm-2">
+    <div class="col-sm-12">
         <div class="form-group">
             <label>Material Type</label>
             <div>
                 @(Html.Kendo().DropDownListFor(m => m.EstimationMaterialType)
-                           .OptionLabel("Material Type")
-                           .DataTextField("Text")
-                           .DataValueField("Value")                          
-                           .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.EstimationMaterialType))
-                           ).HtmlAttributes(new { style = "width:100%" })
+                                   .OptionLabel("Material Type")
+                                   .DataTextField("Text")
+                                   .DataValueField("Value")
+                                   .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.EstimationMaterialType))
+                                   ).HtmlAttributes(new { style = "width:100%" })
                 )
             </div>
         </div>
     </div>
-
-    <div class="col-sm-2">
+</div>
+<div class="row">
+    <div class="col-sm-12">
         <div class="form-group">
             <label>Material Category</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.PrintingMaterialCategoryId)
-                            .ValuePrimitive(true)
-                            .OptionLabel("Select Item...")
-                            .DataTextField("Text")
-                            .DataValueField("Value")
-                            .Filter("contains")
+                                            .ValuePrimitive(true)
+                                            .OptionLabel("Select Item...")
+                                            .DataTextField("Text")
+                                            .DataValueField("Value")
+                                            .Filter("contains")
 
-                            .DataSource(dataSource =>
-                            {
-                                dataSource.Read(read => read.Action("GetPrintingMaterialCategory", "PrintDataProvider", new { area = "Printing" }).Data("filterCategory"))
-                                    .ServerFiltering(true);
-                            }).HtmlAttributes(new { style = "width:100%" }))
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetPrintingMaterialCategory", "PrintDataProvider", new { area = "Printing" }).Data("filterCategory"))
+                                                    .ServerFiltering(true);
+                                            }).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
+</div>
+<div class="row">
+    <div class="col-sm-12">
         <div class="form-group">
             <label>Material Item</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.PrintingMaterialCategoryItemId)
-                            .ValuePrimitive(true)
-                            .OptionLabel("Select Item...")
-                            .DataTextField("Text")
-                            .DataValueField("Value")
-                            .Filter("contains")
-                            .CascadeFrom("PrintingMaterialCategoryId")
-                            .DataSource(dataSource =>
-                            {
-                                dataSource.Read(read => read.Action("GetPrintingMaterialCategoryItem", "PrintDataProvider", new { area = "Printing" }).Data("filterCategoryItem"))
-                                    .ServerFiltering(true);
-                            }).HtmlAttributes(new { style = "width:100%" }))
+                                                    .ValuePrimitive(true)
+                                                    .OptionLabel("Select Item...")
+                                                    .DataTextField("Text")
+                                                    .DataValueField("Value")
+                                                    .Filter("contains")
+                                                    .CascadeFrom("PrintingMaterialCategoryId")
+                                                    .DataSource(dataSource =>
+                                                    {
+                                                        dataSource.Read(read => read.Action("GetPrintingMaterialCategoryItem", "PrintDataProvider", new { area = "Printing" }).Data("filterCategoryItem"))
+                                                            .ServerFiltering(true);
+                                                    }).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
+</div>
+<div class="row">
+    <div class="col-sm-12">
         <div class="form-group">
             <label>Wastage(%)</label>
             <div>
@@ -65,6 +70,20 @@
             </div>
         </div>
     </div>
-    
+
 </div>
 
+<style>
+        div.k-edit-form-container {
+            width: auto;
+            height: auto;
+        }
+
+        .row .col-sm-12 {
+            width: 300px;
+        }
+
+        .row {
+            margin: auto;
+        }
+</style>

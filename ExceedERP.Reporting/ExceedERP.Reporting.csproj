@@ -4651,7 +4651,6 @@
     <None Include="Fleet\ViewModel\EquipmentInspectionViewModel.cs~RFa0320e3.TMP" />
     <None Include="HRM\CustomExpression\bin\Debug\ExceedERP.Reporting.dll.config" />
     <None Include="HRM\CustomExpression\bin\Release\ExceedERP.Reporting.dll.config" />
-    <None Include="HRM\HRM\Letters\ExperienceLetter.zip" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
