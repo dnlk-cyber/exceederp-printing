@@ -93,8 +93,6 @@ using ExceedERP.Core.Domain.Procurement.PaymentRequest;
 using ExceedERP.Core.Domain.Finance.AP.FundTransfer;
 using ExceedERP.Core.Domain.printing.PrintingEstimation;
 using ExceedERP.Core.Domain.Printing.ProductionFollowUp;
-using ExceedERP.Core.Domain.Manufacturing.JobCosting;
-using ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting;
 using ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp;
 using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.Core.Domain.Printing.PrintingEstimation;
@@ -128,6 +126,8 @@ using ExceedERP.Core.Domain.InfoDesk.Support;
 using ExceedERP.Core.Domain.JobCosting;
 using ExceedERP.Core.Domain.JobCosting.Setting;
 using static ExceedERP.DataAccess.Context.JobCostingEntityConfiguration;
+using ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting;
+using ExceedERP.Core.Domain.Manufacturing.JobCosting;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -1622,7 +1622,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new PrintingMaterialCategoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingMaterialCategoryItemEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingBindingStyleEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PrintingJobTypeEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new PrintingJobTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintCostCenterEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingMachineTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintItemCategoryEntityTypeConfiguration());
@@ -1670,7 +1670,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.GraphicEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobStatusEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.SettingsEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.SettingsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobOrderMaterialEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.PrintingProductionFinishedGoodsStoreReceiveEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.PrintingProductionFinishedGoodsStoreReceiveItemEntityTypeConfiguration());
@@ -1678,7 +1678,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.PrintingProductionFinishedGoodsStoreReceiveDistributionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FinishedGoodsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductDeliveryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductDeliveryItemsEntityTypeConfiguration());
+           // modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductDeliveryItemsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.PFProformaItemsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobStatusLineItemEntityTypeConfiguration());
             #endregion
@@ -1781,29 +1781,29 @@ namespace ExceedERP.DataAccess.Context
             #endregion                                  Furniture
 
             #region Job Costing 
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJcPensionEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureIdleTimeCategoryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobOrderTimeSheetEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobOrderTimeRegistrationEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobOrderSummaryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureYearlyOverHeadRateEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJcPensionEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureIdleTimeCategoryEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobOrderTimeSheetEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobOrderTimeRegistrationEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobOrderSummaryEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureYearlyOverHeadRateEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureMachineEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureIdleTimeEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureIdleTimeProductiveEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureIdleTimeOTEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureIdleTimeNonProductiveControllableEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureIdleTimeNonProductiveNonControllableEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobCostEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobChangeOfOrderEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobMaterialCostEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobMaterialreturnEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobLaborCostEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureFinishedJobEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureDeliveredJobEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureDailyLaborRateEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureDLRSalaryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureDLRHourEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobOrderSummaryCostCenterDetailEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureIdleTimeEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureIdleTimeProductiveEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureIdleTimeOTEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureIdleTimeNonProductiveControllableEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureIdleTimeNonProductiveNonControllableEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobCostEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobChangeOfOrderEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobMaterialCostEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobMaterialreturnEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobLaborCostEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureFinishedJobEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureDeliveredJobEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureDailyLaborRateEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureDLRSalaryEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureDLRHourEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.FurnitureJobOrderSummaryCostCenterDetailEntityTypeConfiguration());
             #endregion
             #endregion
 

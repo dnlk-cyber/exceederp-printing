@@ -1,7 +1,5 @@
 using ExceedERP.Core.Domain.Manufacturing;
 using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
-using ExceedERP.Core.Domain.Manufacturing.JobCosting;
-using ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting;
 using ExceedERP.Core.Domain.Manufacturing.Production;
 using ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp;
 using ExceedERP.Core.Domain.Manufacturing.Setting;
@@ -276,142 +274,8 @@ namespace ExceedERP.DataAccess.Context
     #endregion
     #region JobCosting
 
-    public class FurnitureDailyLaborRateEntityTypeConfiguration : EntityTypeConfiguration<FurnitureDailyLaborRate>
-    {
-        public FurnitureDailyLaborRateEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureDailyLaborRates", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureDailyLaborRateId);
-        }
-    }
-    public class FurnitureDLRSalaryEntityTypeConfiguration : EntityTypeConfiguration<FurnitureDLRSalary>
-    {
-        public FurnitureDLRSalaryEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureDLRSalaries", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureDLRSalaryId);
-        }
-    }
-    public class FurnitureDLRHourEntityTypeConfiguration : EntityTypeConfiguration<FurnitureDLRHour>
-    {
-        public FurnitureDLRHourEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureDLRHours", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureDLRHourId);
-        }
-    }
-    public class FurnitureJobCostEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJobCost>
-    {
-        public FurnitureJobCostEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureJobCosts", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureJobCostId);
-        }
-    }
-    public class FurnitureJobChangeOfOrderEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJobChangeOfOrder>
-    {
-        public FurnitureJobChangeOfOrderEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureJobChangeOfOrders", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureJobChangeOfOrderId);
-        }
-    }
-    public class FurnitureJobLaborCostEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJobLaborCost>
-    {
-        public FurnitureJobLaborCostEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureJobLaborCosts", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureJobLaborCostId);
-        }
-    }
-    public class FurnitureJobMaterialCostEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJobMaterialCost>
-    {
-        public FurnitureJobMaterialCostEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureJobMaterialCosts", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureJobMaterialCostId);
-        }
-    }
-    public class FurnitureJobMaterialreturnEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJobMaterialReturn>
-    {
-        public FurnitureJobMaterialreturnEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureJobMaterialReturns", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureJobMaterialReturnId);
-        }
-    }
-    public class FurnitureFinishedJobEntityTypeConfiguration : EntityTypeConfiguration<FurnitureFinishedJob>
-    {
-        public FurnitureFinishedJobEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureFinishedJobs", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureFinishedJobId);
-        }
-    }
-    public class FurnitureDeliveredJobEntityTypeConfiguration : EntityTypeConfiguration<FurnitureDeliveredJob>
-    {
-        public FurnitureDeliveredJobEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureDeliveredJobs", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureDeliveredJobId);
-        }
-    }
-    public class FurnitureIdleTimeEntityTypeConfiguration : EntityTypeConfiguration<FurnitureIdleTime>
-    {
-        public FurnitureIdleTimeEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureIdleTimes", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureIdleTimeID);
-        }
-    }
-    public class FurnitureIdleTimeOTEntityTypeConfiguration : EntityTypeConfiguration<FurnitureIdleTimeOT>
-    {
-        public FurnitureIdleTimeOTEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureIdleTimeOTs", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureIdleTimeOTID);
-        }
-    }
-    public class FurnitureIdleTimeProductiveEntityTypeConfiguration : EntityTypeConfiguration<FurnitureIdleTimeProductive>
-    {
-        public FurnitureIdleTimeProductiveEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureIdleTimeProductives", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureIdleTimeProductiveID);
-        }
-    }
-    public class FurnitureIdleTimeNonProductiveControllableEntityTypeConfiguration : EntityTypeConfiguration<FurnitureIdleTimeNonProductiveControllable>
-    {
-        public FurnitureIdleTimeNonProductiveControllableEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureIdleTimeNonProductives", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureIdleTimeNonProductiveControllableID);
-        }
-    }
-    public class FurnitureIdleTimeNonProductiveNonControllableEntityTypeConfiguration : EntityTypeConfiguration<FurnitureIdleTimeNonProductiveNonControllable>
-    {
-        public FurnitureIdleTimeNonProductiveNonControllableEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureIdleTimeNonProductiveNonControllables", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureIdleTimeNonProductiveNonControllableID);
-        }
-    }
-    public class FurnitureYearlyOverHeadRateEntityTypeConfiguration : EntityTypeConfiguration<FurnitureYearlyOverHeadRate>
-    {
-        public FurnitureYearlyOverHeadRateEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureYearlyOverHeadRates", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureYearlyOverHeadRateId);
-        }
-    }
-    //public class MachineTypeEntityTypeConfiguration : EntityTypeConfiguration<MachineType>
-    //{
-    //    public MachineTypeEntityTypeConfiguration()
-    //    {
-    //        this.ToTable("MachineTypes", "JobCosting");
-    //        this.HasKey<int>(t => t.MachineTypeId);
-    //    }
-    //}
+    
+   
     public class FurnitureMachineEntityTypeConfiguration : EntityTypeConfiguration<FurnitureMachine>
     {
         public FurnitureMachineEntityTypeConfiguration()
@@ -422,62 +286,7 @@ namespace ExceedERP.DataAccess.Context
     }
 
 
-    public class FurnitureIdleTimeCategoryEntityTypeConfiguration : EntityTypeConfiguration<FurnitureIdleTimeCategory>
-    {
-        public FurnitureIdleTimeCategoryEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureIdleTimeCategories", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureIdleTimeCategoryId);
-        }
-    }
-    public class FurnitureJcPensionEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJcPension>
-    {
-        public FurnitureJcPensionEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureJcPensions", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureJcPensionId);
-        }
-    }
-    public class FurnitureJobOrderTimeRegistrationEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJobOrderTimeRegistration>
-    {
-        public FurnitureJobOrderTimeRegistrationEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureJobOrderTimeRegistration", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureJobOrderTimeRegistrationId);
-        }
-    }
-    public class FurnitureJobOrderTimeSheetEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJobOrderTimeSheet>
-    {
-        public FurnitureJobOrderTimeSheetEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureJobOrderTimeSheet", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureJobOrderTimeSheetId);
-        }
-    }
-    public class FurnitureJobOrderSummaryEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJobOrderSummary>
-    {
-        public FurnitureJobOrderSummaryEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureJobOrderSummary", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureJobOrderSummaryId);
-        }
-    }
-    public class FurnitureJobOrderSummaryCostCenterEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJobOrderSummaryCostCenter>
-    {
-        public FurnitureJobOrderSummaryCostCenterEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureJobOrderSummaryCostCenter", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureJobOrderSummaryCostCenterId);
-        }
-    }
-    public class FurnitureJobOrderSummaryCostCenterDetailEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJobOrderSummaryCostCenterDetail>
-    {
-        public FurnitureJobOrderSummaryCostCenterDetailEntityTypeConfiguration()
-        {
-            this.ToTable("FurnitureJobOrderSummaryCostCenterDetail", "Manufacturing");
-            this.HasKey<int>(t => t.FurnitureJobOrderSummaryCostCenterDetailId);
-        }
-    }
+    
     #endregion
     #region Product Felow Up
     public class FurnitureYearlyProductionPlanEntityTypeConfiguration : EntityTypeConfiguration<FurnitureJobProcuctionPlan>

@@ -6,7 +6,7 @@
                     .Name("grid")
                     .Columns(columns =>
                     {
-                        columns.Bound(c => c.FurnitureEstimationId).Width(70);
+                        columns.Bound(c => c.FurnitureEstimationId).Width(70); // i want to see what happpens
                         columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(130);
                         columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Width(110).Title("Customer");
                         columns.Bound(c => c.Quantity).Width(100);
@@ -74,20 +74,20 @@
                                                      .Name("material_costs_#=FurnitureEstimationId#") // template expression, to be evaluated in the master context
                                                      .Columns(columns =>
                                                      {
-                                                                 columns.Bound(c => c.FurnitureMaterialCostId).Hidden(true).Filterable(false);
-                                                                 columns.Bound(c => c.TaskType).Width(90).EditorTemplateName("TaskTypeTemplate").Width(120);
-                                                                 columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text").Width(100).EditorTemplateName("MaterialCategoryTemplate").Width(130);
-                                                                 columns.ForeignKey(c => c.ManufacturingMaterialCategoryItemId, (IEnumerable)ViewData["MaterialItem"], "Value", "Text").Width(100).EditorTemplateName("MaterialItemTemplate").Width(130);
+                                                         columns.Bound(c => c.FurnitureMaterialCostId).Hidden(true).Filterable(false);
+                                                         columns.Bound(c => c.TaskType).Width(90).EditorTemplateName("TaskTypeTemplate").Width(120);
+                                                         columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text").Width(100).EditorTemplateName("MaterialCategoryTemplate").Width(130);
+                                                         columns.ForeignKey(c => c.ManufacturingMaterialCategoryItemId, (IEnumerable)ViewData["MaterialItem"], "Value", "Text").Width(100).EditorTemplateName("MaterialItemTemplate").Width(130);
 
-                                                                 columns.Bound(c => c.UnitOfMeasurment).Title("UoM").Width(100);
+                                                         columns.Bound(c => c.UnitOfMeasurment).Title("UoM").Width(100);
 
-                                                                 columns.Bound(c => c.Quantity).Format("{0:n2}").Width(80);
-                                                                 columns.Bound(c => c.UnitPrice).Width(100);
-                                                                 columns.Bound(c => c.TotalPrice).Format("{0:n2}").Width(130).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
-                                                     // escaped template expression, to be evaluated in the child/detail context
-                                                     columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
-                                                             })
-                                                     
+                                                         columns.Bound(c => c.Quantity).Format("{0:n2}").Width(80);
+                                                         columns.Bound(c => c.UnitPrice).Width(100);
+                                                         columns.Bound(c => c.TotalPrice).Format("{0:n2}").Width(130).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
+                                                         // escaped template expression, to be evaluated in the child/detail context
+                                                         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+                                                     })
+
                                                      .Events(ev => ev.DataBound("onChildDataBound"))
                                                      .Events(ev => ev.Edit("onEditMaterialCost"))
                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
@@ -104,18 +104,26 @@
                                                          .Aggregates(aggregates =>
 
                                                          {
-                                                                     aggregates.Add(c => c.TotalPrice).Sum();
-                                                                 })
-                                                         .Model(model => model.Id(p => p.FurnitureMaterialCostId))
+                                                             aggregates.Add(c => c.TotalPrice).Sum();
+                                                         })
+                                                         .Model(model => 
+                                                         {
+                                                             model.Id(p => p.FurnitureMaterialCostId);
+                                                             model.Field(p => p.TaskType).Editable(false);
+                                                             model.Field(p => p.ManufacturingMaterialCategoryId).Editable(false);
+                                                             model.Field(p => p.ManufacturingMaterialCategoryItemId).Editable(false);
+                                                             model.Field(p => p.UnitOfMeasurment).Editable(false);
+                                                             model.Field(p => p.Quantity).Editable(false);
+                                                             })
                                                          .Read(read => read.Action("FurnitureMaterialCosts_Read", "FurnitureMaterialCosts", new { estimationFormId = "#=FurnitureEstimationId#" }))
                                                          .Create(create => create.Action("FurnitureMaterialCosts_Create", "FurnitureMaterialCosts", new { parentId = "#=FurnitureEstimationId#" }))
                                                          .Update(update => update.Action("FurnitureMaterialCosts_Update", "FurnitureMaterialCosts"))
                                                          .Destroy(destroy => destroy.Action("FurnitureMaterialCosts_Destroy", "FurnitureMaterialCosts"))
                                                          .Sort(sort =>
                                                          {
-                                                                     sort.Add(m => m.LastModified).Descending();
+                                                             sort.Add(m => m.LastModified).Descending();
 
-                                                                 })
+                                                         })
                                                          .PageSize(5))
                                                          .ToClientTemplate())
                             </text>);
@@ -132,7 +140,7 @@
                                                          columns.Bound(o => o.WorkingTime).Width(80);
                                                          columns.Bound(o => o.CostPerMinute).Width(80).Title("Cost Per Minute");
                                                          columns.Bound(o => o.TotalCost).Width(150).ClientFooterTemplate("Labor Cost: \\#=sum\\# ");
-                                                         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+                                                         //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
 
                                                      })
                                                      

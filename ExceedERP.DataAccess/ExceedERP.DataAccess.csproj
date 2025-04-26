@@ -604,6 +604,10 @@
     <Compile Include="Migrations\202504251309299_printingest.Designer.cs">
       <DependentUpon>202504251309299_printingest.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202504261247038_printingupdate.cs" />
+    <Compile Include="Migrations\202504261247038_printingupdate.Designer.cs">
+      <DependentUpon>202504261247038_printingupdate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1009,6 +1013,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202504251309299_printingest.resx">
       <DependentUpon>202504251309299_printingest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202504261247038_printingupdate.resx">
+      <DependentUpon>202504261247038_printingupdate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

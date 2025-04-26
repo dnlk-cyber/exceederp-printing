@@ -11,7 +11,7 @@
                             columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text");
                             columns.Bound(c => c.JobDescription);
                             columns.ForeignKey(c => c.PaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text");
-                            columns.ForeignKey(c => c.BindingStyleId, (IEnumerable)ViewData["BindingStyle"], "Value", "Text");
+                            //columns.ForeignKey(c => c.BindingStyleId, (IEnumerable)ViewData["BindingStyle"], "Value", "Text");
                             columns.Bound(c => c.TextNoOfColors);
                             columns.Bound(c => c.CoverNoOfColor);
                             columns.Bound(c => c.TotalTextNoPages).Title("Number Of Pages");

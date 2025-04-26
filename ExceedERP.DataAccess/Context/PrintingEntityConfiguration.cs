@@ -1,29 +1,11 @@
-using ExceedERP.Core.Domain.JobCosting;
-using ExceedERP.Core.Domain.JobCosting.Setting;
-using ExceedERP.Core.Domain.Manufacturing;
-using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
-
 using ExceedERP.Core.Domain.printing.PrintingEstimation;
 using ExceedERP.Core.Domain.Printing;
 using ExceedERP.Core.Domain.Printing.PrintingEstimation;
 using ExceedERP.Core.Domain.Printing.ProductionFollowUp;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity.ModelConfiguration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
-    public class PrintingJobTypeEntityTypeConfiguration : EntityTypeConfiguration<PrintingJobType>
-    {
-        public PrintingJobTypeEntityTypeConfiguration()
-        {
-            this.ToTable("PrintingJobType", "Printing");
-            this.HasKey<int>(p => p.PrintingJobTypeId);
-        }
-    }
     public class PrintingMachineDetailEntityTypeConfiguration : EntityTypeConfiguration<PrintingMachineDetail>
     {
         public PrintingMachineDetailEntityTypeConfiguration()
@@ -319,211 +301,7 @@ namespace ExceedERP.DataAccess.Context
         }
     }
     #endregion
-    #region JobCosting
-
-    public class DailyLaborRateEntityTypeConfiguration : EntityTypeConfiguration<DailyLaborRate>
-    {
-        public DailyLaborRateEntityTypeConfiguration()
-        {
-            this.ToTable("DailyLaborRates", "Printing");
-            this.HasKey<int>(t => t.DailyLaborRateId);
-        }
-    }
-    public class DLRSalaryEntityTypeConfiguration : EntityTypeConfiguration<DLRSalary>
-    {
-        public DLRSalaryEntityTypeConfiguration()
-        {
-            this.ToTable("DLRSalaries", "Printing");
-            this.HasKey<int>(t => t.DLRSalaryId);
-        }
-    }
-    public class DLRHourEntityTypeConfiguration : EntityTypeConfiguration<DLRHour>
-    {
-        public DLRHourEntityTypeConfiguration()
-        {
-            this.ToTable("DLRHours", "Printing");
-            this.HasKey<int>(t => t.DLRHourId);
-        }
-    }
-    public class JobCostEntityTypeConfiguration : EntityTypeConfiguration<JobCost>
-    {
-        public JobCostEntityTypeConfiguration()
-        {
-            this.ToTable("JobCosts", "Printing");
-            this.HasKey<int>(t => t.JobCostId);
-        }
-    }
-    public class JobChangeOfOrderEntityTypeConfiguration : EntityTypeConfiguration<JobChangeOfOrder>
-    {
-        public JobChangeOfOrderEntityTypeConfiguration()
-        {
-            this.ToTable("JobChangeOfOrders", "Printing");
-            this.HasKey<int>(t => t.JobChangeOfOrderId);
-        }
-    }
-    public class JobLaborCostEntityTypeConfiguration : EntityTypeConfiguration<JobLaborCost>
-    {
-        public JobLaborCostEntityTypeConfiguration()
-        {
-            this.ToTable("JobLaborCosts", "Printing");
-            this.HasKey<int>(t => t.JobLaborCostId);
-        }
-    }
-    public class JobMaterialCostEntityTypeConfiguration : EntityTypeConfiguration<JobMaterialCost>
-    {
-        public JobMaterialCostEntityTypeConfiguration()
-        {
-            this.ToTable("JobMaterialCosts", "Printing");
-            this.HasKey<int>(t => t.JobMaterialCostId);
-        }
-    }
-    public class JobMaterialreturnEntityTypeConfiguration : EntityTypeConfiguration<JobMaterialReturn>
-    {
-        public JobMaterialreturnEntityTypeConfiguration()
-        {
-            this.ToTable("JobMaterialReturns", "Printing");
-            this.HasKey<int>(t => t.JobMaterialReturnId);
-        }
-    }
-    public class FinishedJobEntityTypeConfiguration : EntityTypeConfiguration<FinishedJob>
-    {
-        public FinishedJobEntityTypeConfiguration()
-        {
-            this.ToTable("FinishedJobs", "Printing");
-            this.HasKey<int>(t => t.FinishedJobId);
-        }
-    }
-    public class DeliveredJobEntityTypeConfiguration : EntityTypeConfiguration<DeliveredJob>
-    {
-        public DeliveredJobEntityTypeConfiguration()
-        {
-            this.ToTable("DeliveredJobs", "Printing");
-            this.HasKey<int>(t => t.DeliveredJobId);
-        }
-    }
-    public class IdleTimeEntityTypeConfiguration : EntityTypeConfiguration<IdleTime>
-    {
-        public IdleTimeEntityTypeConfiguration()
-        {
-            this.ToTable("IdleTimes", "Printing");
-            this.HasKey<int>(t => t.IdleTimeID);
-        }
-    }
-    public class IdleTimeOTEntityTypeConfiguration : EntityTypeConfiguration<IdleTimeOT>
-    {
-        public IdleTimeOTEntityTypeConfiguration()
-        {
-            this.ToTable("IdleTimeOTs", "Printing");
-            this.HasKey<int>(t => t.IdleTimeOTID);
-        }
-    }
-    public class IdleTimeProductiveEntityTypeConfiguration : EntityTypeConfiguration<IdleTimeProductive>
-    {
-        public IdleTimeProductiveEntityTypeConfiguration()
-        {
-            this.ToTable("IdleTimeProductives", "Printing");
-            this.HasKey<int>(t => t.IdleTimeProductiveID);
-        }
-    }
-    public class IdleTimeNonProductiveControllableEntityTypeConfiguration : EntityTypeConfiguration<IdleTimeNonProductiveControllable>
-    {
-        public IdleTimeNonProductiveControllableEntityTypeConfiguration()
-        {
-            this.ToTable("IdleTimeNonProductives", "Printing");
-            this.HasKey<int>(t => t.IdleTimeNonProductiveControllableID);
-        }
-    }
-    //public class IdleTimeNonProductiveNonControllableEntityTypeConfiguration : EntityTypeConfiguration<PrintingIdleTimeNonProductiveNonControllable>
-    //{
-    //    public IdleTimeNonProductiveNonControllableEntityTypeConfiguration()
-    //    {
-    //        this.ToTable("IdleTimeNonProductiveNonControllables", "Printing");
-    //        this.HasKey<int>(t => t.PrintingIdleTimeNonProductiveNonControllableID);
-    //    }
-    //}
-    public class YearlyOverHeadRateEntityTypeConfiguration : EntityTypeConfiguration<YearlyOverHeadRate>
-    {
-        public YearlyOverHeadRateEntityTypeConfiguration()
-        {
-            this.ToTable("YearlyOverHeadRates", "Printing");
-            this.HasKey<int>(t => t.YearlyOverHeadRateId);
-        }
-    }
-    //public class MachineTypeEntityTypeConfiguration : EntityTypeConfiguration<MachineType>
-    //{
-    //    public MachineTypeEntityTypeConfiguration()
-    //    {
-    //        this.ToTable("MachineTypes", "JobCosting");
-    //        this.HasKey<int>(t => t.MachineTypeId);
-    //    }
-    //}
-    public class MachineEntityTypeConfiguration : EntityTypeConfiguration<Machine>
-    {
-        public MachineEntityTypeConfiguration()
-        {
-            this.ToTable("Machines", "Printing");
-            this.HasKey<int>(t => t.MachineId);
-        }
-    }
-
-
-    public class IdleTimeCategoryEntityTypeConfiguration : EntityTypeConfiguration<IdleTimeCategory>
-    {
-        public IdleTimeCategoryEntityTypeConfiguration()
-        {
-            this.ToTable("IdleTimeCategories", "Printing");
-            this.HasKey<int>(t => t.IdleTimeCategoryId);
-        }
-    }
-    public class JcPensionEntityTypeConfiguration : EntityTypeConfiguration<JcPension>
-    {
-        public JcPensionEntityTypeConfiguration()
-        {
-            this.ToTable("JcPensions", "Printing");
-            this.HasKey<int>(t => t.JcPensionId);
-        }
-    }
-    public class JobOrderTimeRegistrationEntityTypeConfiguration : EntityTypeConfiguration<JobOrderTimeRegistration>
-    {
-        public JobOrderTimeRegistrationEntityTypeConfiguration()
-        {
-            this.ToTable("JobOrderTimeRegistration", "Printing");
-            this.HasKey<int>(t => t.JobOrderTimeRegistrationId);
-        }
-    }
-    public class JobOrderTimeSheetEntityTypeConfiguration : EntityTypeConfiguration<JobOrderTimeSheet>
-    {
-        public JobOrderTimeSheetEntityTypeConfiguration()
-        {
-            this.ToTable("JobOrderTimeSheet", "Printing");
-            this.HasKey<int>(t => t.JobOrderTimeSheetId);
-        }
-    }
-    public class JobOrderSummaryEntityTypeConfiguration : EntityTypeConfiguration<JobOrderSummary>
-    {
-        public JobOrderSummaryEntityTypeConfiguration()
-        {
-            this.ToTable("JobOrderSummary", "Printing");
-            this.HasKey<int>(t => t.JobOrderSummaryId);
-        }
-    }
-    public class JobOrderSummaryCostCenterEntityTypeConfiguration : EntityTypeConfiguration<JobOrderSummaryCostCenter>
-    {
-        public JobOrderSummaryCostCenterEntityTypeConfiguration()
-        {
-            this.ToTable("JobOrderSummaryCostCenter", "Printing");
-            this.HasKey<int>(t => t.JobOrderSummaryCostCenterId);
-        }
-    }
-    public class JobOrderSummaryCostCenterDetailEntityTypeConfiguration : EntityTypeConfiguration<JobOrderSummaryCostCenterDetail>
-    {
-        public JobOrderSummaryCostCenterDetailEntityTypeConfiguration()
-        {
-            this.ToTable("JobOrderSummaryCostCenterDetail", "Printing");
-            this.HasKey<int>(t => t.JobOrderSummaryCostCenterDetailId);
-        }
-    }
-    #endregion
+   
     #region Product Felow Up
     public class YearlyProductionPlanEntityTypeConfiguration : EntityTypeConfiguration<YearlyProductionPlan>
     {
@@ -625,14 +403,7 @@ namespace ExceedERP.DataAccess.Context
             this.HasKey<int>(t => t.JobStatusLineItemId);
         }
     }
-    public class MachineTypeEntityTypeConfiguration : EntityTypeConfiguration<Machine>
-    {
-        public MachineTypeEntityTypeConfiguration()
-        {
-            this.ToTable("MachineTypes", "Printing");
-            this.HasKey<int>(t => t.MachineId);
-        }
-    }
+    
     public class JobCategoryEntityTypeConfiguration : EntityTypeConfiguration<JobCategory>
     {
         public JobCategoryEntityTypeConfiguration()
@@ -690,15 +461,7 @@ namespace ExceedERP.DataAccess.Context
 
 
 
-    public class SettingsEntityTypeConfiguration : EntityTypeConfiguration<Settings>
-    {
-        public SettingsEntityTypeConfiguration()
-        {
-            this.ToTable("Settings", "Printing");
-            this.HasKey<int>(t => t.SettingsId);
-        }
-    }
-
+   
 
 
     public class JobOrderMaterialEntityTypeConfiguration : EntityTypeConfiguration<JobOrderMaterial>
@@ -761,14 +524,7 @@ namespace ExceedERP.DataAccess.Context
         }
     }
 
-    public class ProductDeliveryItemsEntityTypeConfiguration : EntityTypeConfiguration<ProductDeliveryItems>
-    {
-        public ProductDeliveryItemsEntityTypeConfiguration()
-        {
-            this.ToTable("ProductDeliveryItems", "Printing");
-            this.HasKey<int>(t => t.ProductDeliveryItemsId);
-        }
-    }
+   
   
     #endregion
 

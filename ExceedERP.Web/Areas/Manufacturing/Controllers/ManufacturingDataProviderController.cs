@@ -209,7 +209,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             var result = estimation.Select(s => new
             {
                 Value = s.PrintingCostEstimationId,
-                Text = s.PrintingCostEstimationId //+ "/" + db.PrintingJobTypes.FirstOrDefault(x => x.PrintingJobTypeId == s.JobTypeId).JobTypeName
+                Text = s.PrintJobType
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }

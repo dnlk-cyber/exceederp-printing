@@ -58,7 +58,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         }
         public ActionResult FurnitureBoqRequest_ReadEst([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<FurnitureBoqRequest> furnitureBoqRequest = db.FurnitureBoqRequests;
+            IQueryable<FurnitureBoqRequest> furnitureBoqRequest = db.FurnitureBoqRequests.Where(x => x.IsApproved || x.IsRejected);
             return Json(furnitureBoqRequest.ToDataSourceResult(request));
         }
         [AcceptVerbs(HttpVerbs.Post)]
