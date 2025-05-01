@@ -75,6 +75,8 @@
                                 columns.Bound(c => c.JobDescription);
                                 columns.Bound(c => c.Quantity);
                                 columns.Bound(c => c.NumberOfPages);
+                                columns.Bound(c => c.BindingStyle);
+                                columns.ForeignKey(c => c.TextPaperSizeId, (IEnumerable)ViewData["TextPaper"], "Value", "Text");
                                 columns.Bound(c => c.UnitPrice);
                                 columns.Bound(c => c.TotalPrice);
                                 columns.Bound(c => c.Remark);

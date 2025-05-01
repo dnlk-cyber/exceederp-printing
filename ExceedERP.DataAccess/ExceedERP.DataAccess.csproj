@@ -608,6 +608,10 @@
     <Compile Include="Migrations\202504261247038_printingupdate.Designer.cs">
       <DependentUpon>202504261247038_printingupdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202505010559190_printingestimation.cs" />
+    <Compile Include="Migrations\202505010559190_printingestimation.Designer.cs">
+      <DependentUpon>202505010559190_printingestimation.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1016,6 +1020,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202504261247038_printingupdate.resx">
       <DependentUpon>202504261247038_printingupdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202505010559190_printingestimation.resx">
+      <DependentUpon>202505010559190_printingestimation.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

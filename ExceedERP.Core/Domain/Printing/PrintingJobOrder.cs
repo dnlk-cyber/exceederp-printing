@@ -37,7 +37,11 @@ namespace ExceedERP.Core.Domain.Printing
         public int NumberOfPages { get; set; }
 
         public decimal Quantity { get; set; }
-
+        public BindingStyle BindingStyle { get; set; }
+        [Display(Name = "Paper for text")]
+        public int TextPaperSizeId { get; set; }
+        [Display(Name = "Paper for cover")]
+        public int CoverPaperSizeId { get; set; }
         [Display(Name = "Unit Price")]
         public decimal UnitPrice { get; set; }
         [Display(Name = "VAT")]
@@ -49,7 +53,7 @@ namespace ExceedERP.Core.Domain.Printing
         public string Remark { get; set; }
 
         public int PrintingJobOrderId { get; set; }
-
+        public int PrintingCostEstimationId { get; set; }
     }
     public class PrintingJobOrderJobDesign
     {

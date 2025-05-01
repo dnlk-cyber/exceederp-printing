@@ -46,9 +46,12 @@ namespace ExceedERP.Core.Domain.Printing
         public int NumberOfPages { get; set; }
         [Display(Name = "Unit of measurment")] 
         public string UnitOfMeasurment { get; set; }
-        
+        public BindingStyle BindingStyle { get; set; }
         public decimal Quantity { get; set; }
-
+        [Display(Name = "Paper for text")]
+        public int TextPaperSizeId { get; set; }
+        [Display(Name = "Paper for cover")]
+        public int CoverPaperSizeId { get; set; }
         public decimal UnitPrice { get; set; } //totalprice/quantity
         public decimal TotalPrice { get; set; }
         public decimal TransportCost { get; set; }        

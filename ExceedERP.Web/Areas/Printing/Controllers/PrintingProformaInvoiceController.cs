@@ -26,7 +26,11 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 Value = s.GLTaxRateID,
                 Text = s.TaxName
             }).ToList();
-           
+            ViewData["TextPaper"] = db.PrintingPaperSizes.Select(s => new
+            {
+                Value = s.PrintingPaperSizeId,
+                Text = s.PrintPaperSize.ToString()
+            }).ToList();
             return View();
         }
 

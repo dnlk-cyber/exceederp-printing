@@ -14,11 +14,14 @@ namespace ExceedERP.Core.Domain.Printing
         public int PrintingJobOrderProductionId { get; set; }
         [Display(Name = "Customer")]
         public int CustomerId { get; set; }
-        [Display(Name = "Job Name")]
-        public int JobTypeId { get; set; }
-        [Display(Name = "Paper Size")]
-        public int PaperSizeId { get; set; }
        
+        public PrintJobType PrintJobType { get; set; }
+        public BindingStyle BindingStyle { get; set; }
+        [Display(Name = "Paper for text")]
+        public int TextPaperSizeId { get; set; }
+        [Display(Name = "Paper for cover")]
+        public int CoverPaperSizeId { get; set; }
+
         [Display(Name = "Text No of Colors")]
         public int TextNoOfColors { get; set; }
         [Display(Name = "Cover No of Colors")]

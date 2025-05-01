@@ -23,7 +23,11 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 Value = s.OrganizationCustomerID,
                 Text = s.TradeName
             }).ToList();
-        
+            ViewData["TextPaper"] = db.PrintingPaperSizes.Select(s => new
+            {
+                Value = s.PrintingPaperSizeId,
+                Text = s.PrintPaperSize
+            }).ToList();
             return View();
         }
 
@@ -118,12 +122,16 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                             JobTypeId = proformaItem.JobTypeId,
                             PrintJobType = proformaItem.PrintJobType,
                             JobDescription = proformaItem.JobDescription,
+                            BindingStyle = proformaItem.BindingStyle,
+                            CoverPaperSizeId = proformaItem.CoverPaperSizeId,
+                            TextPaperSizeId = proformaItem.TextPaperSizeId,
                             Description = "",
                             NumberOfPages = proformaItem.NumberOfPages,
                             PrintingJobOrderId = jobOrder.PrintingJobOrderId,
                             Remark = "",
                             TotalPrice = proformaItem.TotalPrice,
-                            UnitPrice = proformaItem.UnitPrice,                            
+                            UnitPrice = proformaItem.UnitPrice,
+                            PrintingCostEstimationId = proformaItem.PrintingCostEstimationId
                         };
                         db.PrintingJobOrderItems.Add(jobOrderItem);
                         db.SaveChanges();
@@ -149,12 +157,16 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     JobTypeId = proformaItem.JobTypeId,
                     PrintJobType = proformaItem.PrintJobType,
                     JobDescription = proformaItem.JobDescription,
+                    TextPaperSizeId = proformaItem.TextPaperSizeId,
+                    CoverPaperSizeId = proformaItem.CoverPaperSizeId,
+                    BindingStyle = proformaItem.BindingStyle,
                     Description = "",
                     NumberOfPages = proformaItem.NumberOfPages,
                     PrintingJobOrderId = id,
                     Remark = "",
                     TotalPrice = proformaItem.TotalPrice,
                     UnitPrice = proformaItem.UnitPrice,
+                    PrintingCostEstimationId = proformaItem.PrintingCostEstimationId
                 };
                 db.PrintingJobOrderItems.Add(jobOrderItem);
                 db.SaveChanges();
@@ -234,7 +246,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             {
                 foreach (var item in jobItems)
                 {
-                    var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintJobType == item.PrintJobType);
+                    var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == item.PrintingCostEstimationId);
                     if (estimation != null)
                     {
                         var materialCosts = db.PrintingEstimationMaterialCosts
@@ -254,17 +266,18 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                                 DeliveryDate = jobOrder.DeliveryDate,
                                 DateOrdered = jobOrder.JobStartDate,
                                 JobOrderNo = "",
-                                JobTypeId = item.JobTypeId,
+                                PrintJobType = item.PrintJobType,
                                 Quantity = item.Quantity,
                                 CreatedBy = User.Identity.Name,
                                 DateCreated = DateTime.Today,
                                 Status = "Pending",
                                 JobDescription = item.JobDescription,
                                 CoverNoOfColor = estimation.CoverNoOfColor,
-                                PaperSizeId = estimation.TextPaperSizeId,
+                                TextPaperSizeId = estimation.TextPaperSizeId,
+                                BindingStyle = estimation.BindingStyle,
+                                CoverPaperSizeId = estimation.CoverPaperSizeId,
                                 TextNoOfColors = estimation.TextNoOfColors,
-                                TotalTextNoPages = estimation.Pages,
-                                
+                                TotalTextNoPages = estimation.Pages,                                
                                 PrintingJobOrderId = jobOrder.PrintingJobOrderId
                             };
                             db.PrintingJobOrderProductions.Add(jobOrderProduction);

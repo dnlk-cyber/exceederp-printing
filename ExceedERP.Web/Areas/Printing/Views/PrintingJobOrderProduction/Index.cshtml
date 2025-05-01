@@ -8,10 +8,9 @@
                         {
                             columns.Bound(c => c.JobOrderNo);
                             columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Title("Customer");
-                            columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text");
+                            columns.Bound(c => c.PrintJobType);
                             columns.Bound(c => c.JobDescription);
                             columns.ForeignKey(c => c.PaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text");
-                            //columns.ForeignKey(c => c.BindingStyleId, (IEnumerable)ViewData["BindingStyle"], "Value", "Text");
                             columns.Bound(c => c.TextNoOfColors);
                             columns.Bound(c => c.CoverNoOfColor);
                             columns.Bound(c => c.TotalTextNoPages).Title("Number Of Pages");
@@ -115,7 +114,7 @@
                                                         .Name("labor_#=PrintingJobOrderProductionId#")
                                                         .Columns(columns =>
                                                         {
-                                                            columns.Bound(c => c.ProcessCategory).EditorTemplateName("PrintingCategoryDropDownTemplate");
+                                                            columns.Bound(c => c.PressCategory);
                                                             columns.ForeignKey(c => c.PrintingProcessId, (IEnumerable)ViewData["PrintingProcess"], "Value", "Text");
                                                             columns.ForeignKey(c => c.PrintingMachineTypeId, (IEnumerable)ViewData["PrintingMachineType"], "Value", "Text");
                                                             columns.Bound(c => c.EstimatedHours);
