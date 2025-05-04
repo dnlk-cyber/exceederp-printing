@@ -230,6 +230,17 @@
                         save.enable(true);
                     }
                     $('#divWaitingPanel').hide();
+                } ,
+                beforeSend: function () {
+                    // Show image container
+                    $("#loading-image").show();
+                },
+                complete: function (data) {
+                    // Hide image container
+                    $("#loading-image").hide();
+                },
+                error: function (result) {
+                    alert(result);
                 }
                  
             });
@@ -259,6 +270,17 @@
                     $("#PayrollDistributiongrid").data("kendoGrid").refresh();
 
                     $("#regenerate-distribution-button").attr("disabled", false);
+                },
+                beforeSend: function () {
+                    // Show image container
+                    $("#loading-image").show();
+                },
+                complete: function (data) {
+                    // Hide image container
+                    $("#loading-image").hide();
+                },
+                error: function (result) {
+                    alert(result);
                 }
             });
         }
@@ -297,6 +319,17 @@
                         save.enable(true);
                     }
                     //passProgress.value(100);
+                },
+                beforeSend: function () {
+                    // Show image container
+                    $("#loading-image").show();
+                },
+                complete: function (data) {
+                    // Hide image container
+                    $("#loading-image").hide();
+                },
+                error: function (result) {
+                    alert(result);
                 }
 
             });
@@ -397,6 +430,17 @@
                             save.enable(true);
                         }
                         passProgress.value(100);
+                    },
+                    beforeSend: function () {
+                        // Show image container
+                        $("#loading-image").show();
+                    },
+                    complete: function (data) {
+                        // Hide image container
+                        $("#loading-image").hide();
+                    },
+                    error: function (result) {
+                        alert(result);
                     }
 
                 });
@@ -450,6 +494,17 @@
                          save.enable(true);
                      }
                      passProgress.value(100);
+                },
+                beforeSend: function () {
+                    // Show image container
+                    $("#loading-image").show();
+                },
+                complete: function (data) {
+                    // Hide image container
+                    $("#loading-image").hide();
+                },
+                error: function (result) {
+                    alert(result);
                 }
 
             });

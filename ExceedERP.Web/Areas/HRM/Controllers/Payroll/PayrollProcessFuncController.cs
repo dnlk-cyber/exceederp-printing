@@ -72,7 +72,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                             join p in db.Placements
                                 on e.EmployeeId equals p.EmployeeId
                             where e.IsActive && p.isCurrent && !p.IsPend
-                            //where e.EmployeeId==814
+                            //where e.EmployeeCode== "MP-00302"
                             select (new
                             {
                                 e.EmployeeId,
@@ -1720,7 +1720,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
                         #endregion
 
-                        employee.Age = findPeriod.DateFrom.Year - employee.DateOfBirth.Year;
+                        //employee.Age = findPeriod.DateFrom.Year - employee.DateOfBirth.Year;
                         if (employee.Age < RetirementAge && enableContractpension)
                         {
                             var newPlacmenet =

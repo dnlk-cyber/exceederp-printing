@@ -250658,3 +250658,49 @@
 2025-04-26 15:57:09.1115|INFO|Hangfire.Server.BackgroundServerProcess|Server xps:28608:8f829454 successfully reported itself as stopped in 5.4268 ms
 2025-04-26 15:57:09.1115|INFO|Hangfire.Server.BackgroundServerProcess|Server xps:28608:8f829454 has been stopped in total 53.5416 ms
 2025-04-26 15:57:09.1256|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:40092e07 stopped in 56.688 ms
+2025-05-04 13:27:53.3565|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Start installing Hangfire SQL objects...
+2025-05-04 13:27:53.4214|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Hangfire SQL objects installed.
+2025-05-04 13:27:53.4531|INFO|Hangfire.BackgroundJobServer|Starting Hangfire Server using job storage: 'SQL Server: localhost@ExceedERP2021-MPE-PRO'
+2025-05-04 13:27:53.4531|INFO|Hangfire.BackgroundJobServer|Using the following options for SQL Server job storage: Queue poll interval: 00:00:15.
+2025-05-04 13:27:53.4531|INFO|Hangfire.BackgroundJobServer|Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-05-04 13:27:53.4803|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:ccd06d01 has started in 6.9493 ms
+2025-05-04 13:27:53.5128|INFO|Hangfire.Server.BackgroundServerProcess|Server xps:36312:acb4a5e8 successfully announced in 26.9086 ms
+2025-05-04 13:27:53.5128|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:05201b47 has started in 2.2253 ms
+2025-05-04 13:27:53.5192|INFO|Hangfire.Server.BackgroundServerProcess|Server xps:36312:acb4a5e8 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2025-05-04 13:27:53.5192|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:8da488f5 has started in 0.9093 ms
+2025-05-04 13:27:53.5192|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:e5c0ebd2 has started in 1.4003 ms
+2025-05-04 13:27:53.5192|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:28009dc4 has started in 1.6173 ms
+2025-05-04 13:27:53.5192|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:75d251ef has started in 0.8186 ms
+2025-05-04 13:27:53.5192|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2025-05-04 13:27:53.5192|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e179438c has started in 1.4052 ms
+2025-05-04 13:27:53.5192|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2025-05-04 13:27:53.5192|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b498ac11 has started in 3.6119 ms
+2025-05-04 13:27:53.5192|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4778f83d has started in 4.3962 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d5e5e975 has started in 5.8123 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e47b253f has started in 7.2658 ms
+2025-05-04 13:27:53.5192|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:a8a817bc has started in 5.0323 ms
+2025-05-04 13:27:53.5192|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:7a98660e has started in 2.3091 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:77e62362 has started in 10.9948 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fe50aa06 has started in 9.2164 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:707d53db has started in 7.9024 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:14aa4f8c has started in 13.5394 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:0bb644e9 has started in 14.7785 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:636564a1 has started in 8.4907 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:a2c6a177 has started in 0.9815 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:a8885dda has started in 10.1424 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d3d174a1 has started in 14.1432 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:d8b1cbd9 has started in 1.0418 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:42e1b4e5 has started in 6.4573 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:35f61bf0 has started in 12.8978 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e9b235ae has started in 12.3968 ms
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:13b6e0e0 has started in 15.5899 ms
+2025-05-04 13:27:53.5348|INFO|Hangfire.Server.BackgroundServerProcess|Server xps:36312:acb4a5e8 all the dispatchers started
+2025-05-04 13:27:53.5574|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2025-05-04 13:27:53.5348|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1269b725 has started in 10.6195 ms
+2025-05-04 13:27:53.6221|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2025-05-04 13:27:53.6221|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2025-05-04 13:27:53.6221|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
