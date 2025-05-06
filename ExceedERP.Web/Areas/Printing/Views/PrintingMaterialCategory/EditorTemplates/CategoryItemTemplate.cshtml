@@ -6,6 +6,28 @@
 <div class="row">
     <div class="col-sm-12">
         <div class="form-group">
+            <label>Item Code/Name</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.ItemCode)
+                            .ValuePrimitive(true)
+                            .OptionLabel("Select Item...")
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .Filter("contains")
+                            .AutoBind(true)
+                            
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("InventoryItems", "PrintDataProvider", new { area = "Printing" }).Data("filterItemCode"))
+                                    .ServerFiltering(true);
+                            }).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
             <label>Paper Type (For Paper Only)</label>
             <div>
                 @(Html.Kendo().RadioButtonFor(m => m.PaperType)
@@ -32,7 +54,7 @@
         </div>
     </div>
 </div>
-<div class="row">
+@*<div class="row">
     <div class="col-sm-12">
         <div class="form-group">
             <label>UOM</label>
@@ -53,7 +75,7 @@
             </div>
         </div>       
     </div>
-</div>
+</div>*@
 <div class="row">
 
     <div class="col-sm-12">

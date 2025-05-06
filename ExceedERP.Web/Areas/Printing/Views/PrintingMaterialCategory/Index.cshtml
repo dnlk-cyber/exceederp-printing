@@ -20,6 +20,7 @@
                   .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("InventoryCategoryTemplate"))
                   .Pageable()
                   .Navigatable()
+                  .Events(e => e.DetailExpand("detailExpand"))
                   .Sortable(sortable =>
                   {
                       sortable.SortMode(GridSortMode.SingleColumn);
@@ -28,6 +29,10 @@
                   .Scrollable(s => s.Height(400))
                   .DataSource(dataSource => dataSource
                       .Ajax()
+                      .Sort(sort => sort.Add(e => e.PrintingMaterialCategoryId).Descending())
+                        .Events(ev => ev.Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
                       .Model(model =>
                       {
                           model.Id(p => p.PrintingMaterialCategoryId);
@@ -52,7 +57,7 @@
                     {
                         items.Add().Text("Detail").Content(
                     @<text>
-                        @Detail();
+                        @Detail()
                     </text>);
                             }).ToClientTemplate())
 </script>
@@ -67,28 +72,33 @@
                                   columns.Bound(c => c.ItemName);
                                   columns.Bound(c => c.ItemCode);
                                   columns.Bound(c => c.UnitOfMeasurement);
-                                  columns.Bound(c => c.UnitPrice);
+                                  columns.Bound(c => c.UnitPrice).Title("Unit Price (Birr)");
                                   columns.Bound(c => c.Width);
                                   columns.Bound(c => c.Length);
                                   columns.Bound(c => c.Weight).Title("Weight(g)");
-                  //columns.Bound(c => c.IsActive);
-                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
                               })
                               .ToolBar(toolbar =>
                               {
-                  //toolbar.Create();
-              })
+                                  toolbar.Create();
+                              })
                               .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CategoryItemTemplate"))
                               .Filterable()
-                              .Scrollable()
+                              .Pageable()
+                              .Scrollable(s => s.Height(400))
+
                               .DataSource(dataSource => dataSource
-                                  .Ajax()
+                                   .Ajax()
+                                    .Sort(sort => sort.Add(e => e.PrintingMaterialCategoryItemId).Descending())
+                                    .Events(ev => ev.Error("error_handler(\"grid_#=PrintingMaterialCategoryId#\")")
+                                    .RequestStart("onRequestStart(\"grid_#=PrintingMaterialCategoryId#\")")
+                                    .RequestEnd("onRequestEnd(\"grid_#=PrintingMaterialCategoryId#\")"))
                                   .Model(model =>
                                   {
                                       model.Id(p => p.PrintingMaterialCategoryItemId);
                                       model.Field(p => p.InventorySubCategoryCode).Editable(false);
                                       model.Field(p => p.ItemName).Editable(false);
-                                      model.Field(p => p.ItemCode).Editable(false);
+                                      model.Field(p => p.ItemCode).Editable(true);
 
                                   })
                                   .Read(read => read.Action("PrintingMaterialCategoryItem_Read", "PrintingMaterialCategoryItem", new { id = "#=PrintingMaterialCategoryId#" }))
@@ -100,7 +110,17 @@
 }
 
 <script type="text/javascript">
+    var inventoryCategoryCode;
+    var materialCatId;
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
 
+        materialCatId = masterDataItem.PrintingMaterialCategoryId;
+        inventoryCategoryCode = masterDataItem.InventoryCategoryCode;
+        
+    }
     function filterCategory() {
         return {
             text: $("#InventoryCategoryCode").data("kendoDropDownList").filterInput.val(),
@@ -117,6 +137,12 @@
     function filterUoM() {
         return {
             text: $("#UnitOfMeasurement").data("kendoDropDownList").filterInput.val()
+        }
+    }
+    function filterItemCode() {
+        return {
+            text: $("#ItemCode").data("kendoDropDownList").filterInput.val(),
+            itemCode: inventoryCategoryCode
         }
     }
 </script>

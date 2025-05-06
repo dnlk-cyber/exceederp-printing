@@ -39,8 +39,8 @@ namespace ExceedERP.Helpers.Printing
             var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.CoverPaperSizeId);
 
             var paperQty = (estimation.ProductQuantity) / paperSize.NoOfPagesToA1Ratio;
-            if(estimation.CoverPrintSide == 2m)
-                return paperQty * 2 * (1 + model.WastageInPercentage);
+            //if(estimation.CoverPrintSide == 2)
+            //    return paperQty * 2 * (1 + model.WastageInPercentage);
             return paperQty * (1 + model.WastageInPercentage);
         }
         public static double CalculateTextPlate(PrintingEstimationMaterialCost model, int printingCostEstimationId)

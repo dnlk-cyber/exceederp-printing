@@ -78,14 +78,14 @@ namespace ExceedERP.Core.Domain.Printing
         Punching,
         [Display(Name = "Machine Folding")]
         MachineFolding,
-        [Display(Name = "Manual Folding")]
-        ManualFolding,
+        [Display(Name = "Folding Cover")]
+        FoldingCover,
         [Display(Name = "Collating")]
         Collating,
         [Display(Name = "Perforation")]
         Perforation,
         [Display(Name = "Inserting")]
-        inserting,
+        Inserting,
         [Display(Name = "Side Stitching")]
         SideStitching,
         [Display(Name = "Thread Sewing")]
@@ -124,6 +124,8 @@ namespace ExceedERP.Core.Domain.Printing
         LoadingAndUnloading,
         [Display(Name ="Dispatching/Transporting")]
         DispatchingAndTransport,
+        [Display(Name = "Manual Folding Cover")]
+        ManualFoldingCover
     }
 
 }

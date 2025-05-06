@@ -32,6 +32,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Create([DataSourceRequest]DataSourceRequest request, PrintingMaterialCategory model)
         {
+            var exsistingCategoryCode = db.PrintingMaterialCategories
+                .Where(x => x.InventoryCategoryCode == model.InventoryCategoryCode);
+            if (exsistingCategoryCode.Any())
+                ModelState.AddModelError("", "Exsisting Category Code");
             if (ModelState.IsValid)
             {
                 var itemCategory = db.ItemCategorys.FirstOrDefault(x => x.ItemCategoryCode == model.InventoryCategoryCode);
@@ -48,7 +52,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 
                 db.PrintingMaterialCategories.Add(entity);
                 db.SaveChanges();
-                GenerateManufactureCategoryDetail(entity);
+                //GenerateItemCategoryDetail(entity);
                 model.PrintingMaterialCategoryId = entity.PrintingMaterialCategoryId;
                 model.CategoryName = entity.CategoryName;
                 model.CostAccountCode = entity.CostAccountCode;
@@ -61,6 +65,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Update([DataSourceRequest]DataSourceRequest request, PrintingMaterialCategory model)
         {
+            var exsistingCategoryCode = db.PrintingMaterialCategories
+                .Where(x => x.InventoryCategoryCode == model.InventoryCategoryCode);
+            if (exsistingCategoryCode.Any())
+                ModelState.AddModelError("", "Exsisting Category Code");
             if (ModelState.IsValid)
             {
                 var entity = new PrintingMaterialCategory
@@ -77,7 +85,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 db.PrintingMaterialCategories.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
-                GenerateManufactureCategoryDetail(entity);
+                //GenerateItemCategoryDetail(entity);
 
             }
 
@@ -105,16 +113,14 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             db.PrintingMaterialCategoryItems.RemoveRange(items);
             db.SaveChanges();
         }
-        private void GenerateManufactureCategoryDetail(PrintingMaterialCategory materialCategory)
+        private void GenerateItemCategoryDetail(PrintingMaterialCategory materialCategory)
         {
             var itemCategory = db.ItemCategorys.FirstOrDefault(x => x.ItemCategoryCode == materialCategory.InventoryCategoryCode);
-
             var items = db.InventoryItems.Where(x => x.ItemCategoryCode == itemCategory.ItemCategoryCode).ToList();
             foreach (var item in items)
             {
                 var entity = new PrintingMaterialCategoryItem
-                {
-                    
+                {                    
                     ItemName = item.Name,
                     ItemCode = item.ItemCode,
                     UnitOfMeasurement = item.UoMName,
@@ -126,7 +132,6 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 db.PrintingMaterialCategoryItems.Add(entity);
                 db.SaveChanges();
             }
-
         }
 
         protected override void Dispose(bool disposing)

@@ -15,7 +15,20 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
     {
         ExceedDbContext db = new ExceedDbContext();
         
-
+        public JsonResult InventoryItems(string text, string itemCode)
+        {
+            var inventoryItems = db.InventoryItems.Where(x => x.ItemCategoryCode == itemCode);
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                inventoryItems = inventoryItems.Where(x => x.ItemCode.Contains(text) || x.Name.Contains(text));
+            }
+            var result = inventoryItems.Select(s => new
+            {
+                Text = s.Name + "-" + s.ItemCode,
+                Value = s.ItemCode
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
         public JsonResult PrintMachineType(string text)
         {
             var printMachine = db.PrintingMachineTypes.ToList();

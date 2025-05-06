@@ -83,9 +83,19 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                             break;                      
                         case LabourActivity.CuttingForCover:
                             BookMagazineLaborCostEstimation.CuttingCoverCost(costEstimation, item);
-                            break;                       
-                        case LabourActivity.ManualFolding:
+                            break;
+                        case LabourActivity.CuttingForText:
+                            BookMagazineLaborCostEstimation.CuttingTextCost(costEstimation, item);
+                            break; 
+                        
+                        case LabourActivity.FoldingCover:
                             BookMagazineLaborCostEstimation.FoldingCoverCost(costEstimation, item);
+                            break;
+                        case LabourActivity.Inserting:
+                            BookMagazineLaborCostEstimation.InsertingCost(costEstimation, item);
+                            break;
+                        case LabourActivity.Stitching:
+                            BookMagazineLaborCostEstimation.StitchingCost(costEstimation, item);
                             break;
                         case LabourActivity.Collating:
                             BookMagazineLaborCostEstimation.CollatingCost(costEstimation, item);
