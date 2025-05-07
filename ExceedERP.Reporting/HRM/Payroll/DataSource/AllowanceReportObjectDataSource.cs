@@ -31,25 +31,31 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                 var payrolldatas =
                     db.PayrollProcessViewModel.Where(x => x.PeriodName == period).ToList();
 
-                if (string.IsNullOrEmpty(costcenter))
+                if (!string.IsNullOrEmpty(costcenter))
                 {
                     payrolldatas = payrolldatas.Where(x =>x.CostCenterAccountCode==costcenter).ToList();
                 }
 
-                if (branchId != null)
+                if (!string.IsNullOrEmpty(branchId))
                 {
-                    List<string> branchs = branchId.Split('-').ToList();
-                    payrolldatas = payrolldatas.Where(x => branchs.Contains(x.BranchId.ToString())).ToList();
+                    int did = int.Parse(branchId);
+                    payrolldatas = payrolldatas.Where(x => x.BranchId == did).ToList();
                 }
-                else if (UserHelper.CheckUserRole(user, "All_Branch_Payroll_Report"))
-                {
-                    List<string> branchs = UserHelper.GetUserBranchId(user);
-                    payrolldatas = payrolldatas.Where(x => branchs.Contains(x.BranchId.ToString())).ToList();
-                }
-                else
-                {
-                    payrolldatas = null;
-                }
+
+                //if (branchId != null)
+                //{
+                //    List<string> branchs = branchId.Split('-').ToList();
+                //    payrolldatas = payrolldatas.Where(x => branchs.Contains(x.BranchId.ToString())).ToList();
+                //}
+                //else if (UserHelper.CheckUserRole(user, "All_Branch_Payroll_Report"))
+                //{
+                //    List<string> branchs = UserHelper.GetUserBranchId(user);
+                //    payrolldatas = payrolldatas.Where(x => branchs.Contains(x.BranchId.ToString())).ToList();
+                //}
+                //else
+                //{
+                //    payrolldatas = null;
+                //}
                 if (payrolldatas != null)
                 {
                     foreach (PayrollProcessViewModel payrolldata in payrolldatas)
