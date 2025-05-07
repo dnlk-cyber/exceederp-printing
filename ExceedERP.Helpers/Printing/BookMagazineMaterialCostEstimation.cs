@@ -41,7 +41,7 @@ namespace ExceedERP.Helpers.Printing
             var paperQty = (estimation.ProductQuantity) / paperSize.NoOfPagesToA1Ratio;
             //if(estimation.CoverPrintSide == 2)
             //    return paperQty * 2 * (1 + model.WastageInPercentage);
-            return paperQty * (1 + model.WastageInPercentage);
+            return Math.Round(paperQty * (1 + model.WastageInPercentage) + 0.5);
         }
         public static double CalculateTextPlate(PrintingEstimationMaterialCost model, int printingCostEstimationId)
         {
@@ -63,7 +63,7 @@ namespace ExceedERP.Helpers.Printing
             }
             
             var plateQuantity = ((estimation.Pages * estimation.TextNoOfColors)/machineDetail.SectionUp) * Math.Round((estimation.ProductQuantity / machine.OutputRate) + 0.5); // Rounds to the next whole number
-            return plateQuantity * (1 + model.WastageInPercentage);
+            return Math.Round(plateQuantity * (1 + model.WastageInPercentage) + 0.5);
         }
         public static double CalculateCoverPlate(PrintingEstimationMaterialCost model, int printingCostEstimationId)
         {
@@ -85,7 +85,7 @@ namespace ExceedERP.Helpers.Printing
             }
             
             var plateQuantity = (estimation.CoverNoOfColor / machineDetail.SectionUp) * Math.Round(estimation.ProductQuantity / machine.OutputRate + 0.5); // Rounds to the next whole number
-            return plateQuantity * (1 + model.WastageInPercentage);
+            return Math.Round(plateQuantity * (1 + model.WastageInPercentage) + 0.5);
         }
 
         public static double CalculatePackagingPaper(PrintingEstimationMaterialCost model, int printingCostEstimationId)

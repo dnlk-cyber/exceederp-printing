@@ -23,23 +23,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public ActionResult PrintingOverAllCosts_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<PrintingOverAllCost> printingoverallcosts = db.PrintingOverAllCosts.Where(x => x.PrintingCostEstimationId == id);
-            DataSourceResult result = printingoverallcosts.ToDataSourceResult(request, printingOverAllCost => new PrintingOverAllCost
-            {
-                PrintingOverAllCostId = printingOverAllCost.PrintingOverAllCostId,
-                MaterialCost = printingOverAllCost.MaterialCost,
-                LaborCost = printingOverAllCost.LaborCost,
-                TotalProductionCost = printingOverAllCost.TotalProductionCost,
-                AdminstrativeCost = printingOverAllCost.AdminstrativeCost,
-                ProfitMargin = printingOverAllCost.ProfitMargin,
-                GraphicsCost = printingOverAllCost.GraphicsCost,
-                OverHeadCost = printingOverAllCost.OverHeadCost,
-                SellingPrice = printingOverAllCost.SellingPrice,
-                GrandTotal = printingOverAllCost.GrandTotal,
-                PrintingCostEstimationId = printingOverAllCost.PrintingCostEstimationId
-            });
-
-            return Json(result);
+            IQueryable<PrintingOverAllCost> printingoverallcosts = db.PrintingOverAllCosts.Where(x => x.PrintingCostEstimationId == id);        
+            return Json(printingoverallcosts.ToDataSourceResult(request));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]

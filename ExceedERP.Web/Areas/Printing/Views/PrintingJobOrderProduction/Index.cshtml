@@ -10,7 +10,7 @@
                             columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Title("Customer");
                             columns.Bound(c => c.PrintJobType);
                             columns.Bound(c => c.JobDescription);
-                            columns.ForeignKey(c => c.PaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text");
+                            columns.ForeignKey(c => c.TextPaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text");
                             columns.Bound(c => c.TextNoOfColors);
                             columns.Bound(c => c.CoverNoOfColor);
                             columns.Bound(c => c.TotalTextNoPages).Title("Number Of Pages");

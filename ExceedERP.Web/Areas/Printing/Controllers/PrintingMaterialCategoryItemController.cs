@@ -30,7 +30,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             var item = db.InventoryItems.FirstOrDefault(x => x.ItemCode == model.ItemCode);
             if (item == null)
                 ModelState.AddModelError(string.Empty, "Inventory Item Not Found");
-            var exsitingItems = db.PrintingMaterialCategoryItems.Where(x => x.ItemCode == model.ItemCode);
+            var exsitingItems = db.PrintingMaterialCategoryItems
+                .Where(x => x.ItemCode == model.ItemCode && x.PrintingMaterialCategoryId == id);
             if (exsitingItems.Any())
                 ModelState.AddModelError("", "Item Exists");
             if (ModelState.IsValid)
@@ -67,9 +68,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             var item = db.InventoryItems.FirstOrDefault(x => x.ItemCode == model.ItemCode);
             if (item == null)
                 ModelState.AddModelError(string.Empty, "Inventory Item Not Found");
-            var exsitingItems = db.PrintingMaterialCategoryItems.Where(x => x.ItemCode == model.ItemCode);
-            if (exsitingItems.Any())
-                ModelState.AddModelError("", "Item Exists");
+            var exsitingItems = db.PrintingMaterialCategoryItems
+                .Where(x => x.ItemCode == model.ItemCode && x.PrintingMaterialCategoryId == model.PrintingMaterialCategoryId);
+            //if (exsitingItems.Any())
+            //    ModelState.AddModelError("", "Item Exists");
             if (ModelState.IsValid)
             {
                 
