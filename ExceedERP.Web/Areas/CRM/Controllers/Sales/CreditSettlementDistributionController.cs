@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.Finance;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Helpers.HR;
@@ -12,7 +13,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.CRM.Controllers
 {
-    [AuthorizeRoles(CRMRoles.CreditSettlementUser)]
+    [AuthorizeRoles(CRMRoles.CreditSettlementUser, FinanceConstants.GeneralSubLedgerTransfer)]
     public class CreditSettlementDistributionController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.Finance;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
@@ -8,7 +9,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.CRM.Controllers
 {
-    [AuthorizeRoles(CRMRoles.AdvancePaymentUser, CRMRoles.AdvancePaymentApprover)]
+    [AuthorizeRoles(CRMRoles.AdvancePaymentUser, CRMRoles.AdvancePaymentApprover, FinanceConstants.GeneralSubLedgerTransfer)]
     public class AdvancePaymentDistibutionController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

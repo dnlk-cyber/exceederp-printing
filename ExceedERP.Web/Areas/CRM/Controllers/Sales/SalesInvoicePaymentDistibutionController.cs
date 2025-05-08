@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.Finance;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.CRM;
 using ExceedERP.Helpers.Finance;
@@ -13,7 +14,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.CRM.Controllers
 {
-    [AuthorizeRoles(CRMRoles.CashSalesApprover, CRMRoles.CashSalesUser)]
+    [AuthorizeRoles(CRMRoles.CashSalesApprover, CRMRoles.CashSalesUser, FinanceConstants.GeneralSubLedgerTransfer)]
     public class SalesInvoicePaymentDistibutionController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
