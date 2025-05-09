@@ -11,6 +11,9 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print.ViewModel
         public string PurchaseRequistionNo { get; set; }
         public string StoreRequistionNo { get; set; }
         public string Requestor { get; set; }
+        public string RequestedBy { get; set; }
+        public Image RequestedBySignature { get; set; }
+        public DateTime RequestDate { get; set; }
         public string ApproverName { get; set; }//sr
         public Image ApprovedBySignature { get; set; }
         public DateTime ApprovalDate { get; set; }//sr
@@ -33,5 +36,8 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print.ViewModel
         public string Model { get; set; }
         public string PlateNo { get; set; }
         public string Remark { get; set; }
+        public string BudgetAuthorizerName { get; set; }
+        public DateTime BudgetAuthorizationDate { get; set; }
+        public Image BudgetAuthorizationSignature { get; set; }
     }
 }

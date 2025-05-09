@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.DataAccess.Context;
@@ -9,6 +10,8 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Inventory.DataSource.Print;
 using ExceedERP.Reporting.Inventory.DataSource.Print.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
+using ExceedERP.DataAccess.Migrations;
+using System.Data.Entity;
 
 namespace ExceedERP.Reporting.Procurements.Print.Print
 {
@@ -20,67 +23,121 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
         [DataObjectMethod(DataObjectMethodType.Select)]
         public PurchaseRequistionHeader GetPurchaseRequistions(int id)
         {
-            PurchaseRequisition pr = db.PurchaseRequisitions.Find(id);
+            var record = db.PurchaseRequisitions.Find(id);
+
+            //if (record == null || !record.IsDepartmentOnlineApproved || !record.IsOnlineApproved || record.IsVoid)
+            //{
+            //    throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized)
+            //    {
+            //        Content = new StringContent("You are not authorized to access this resource."),
+            //        ReasonPhrase = "Unauthorized"
+            //    });
+            //}
             var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
           
             PurchaseRequistionHeader headerDs = new PurchaseRequistionHeader();
-            if (pr != null)
+            if (record != null)
             {
-                var storeRequisition = db.StoreRequisitions.Find(pr.StoreRequisitionID);
-                var fixedRequisition = db.FixedAssetRequisitions.Find(pr.StoreRequisitionID);
-                headerDs.PurchaseRequistionNo = InventoryPrintHelper.GetId(pr.PurchaseRequisitionID);
-                headerDs.RequestingDate = pr.RequestDate.ToShortDateString();
-                headerDs.Model = pr.ModelNo;
-                headerDs.PlateNo = pr.PlateNo;
-                headerDs.Remark = pr.Remark;
-                //for non service
-                if (storeRequisition != null)
+               // var storeRequisition = db.StoreRequisitions.Find(record.StoreRequisitionID);
+               // var fixedRequisition = db.FixedAssetRequisitions.Find(record.StoreRequisitionID);
+                headerDs.PurchaseRequistionNo = InventoryPrintHelper.GetId(record.PurchaseRequisitionID);
+                headerDs.RequestingDate = record.RequestDate.ToShortDateString();
+                headerDs.Model = record.ModelNo;
+                headerDs.PlateNo = record.PlateNo;
+                headerDs.Remark = record.Remark;
+                
+
+                //if (record == null || !record.IsOnlineApproved || record.IsVoid)
+                //{
+                //    throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized)
+                //    {
+                //        Content = new StringContent("You are not authorized to access this resource."),
+                //        ReasonPhrase = "Unauthorized"
+                //    });
+                //}
+                if (record != null && record.ItemType == PurchaseItemType.Stock)
                 {
-                    headerDs.RequestingStore = InventoryPrintHelper.StoreName(storeRequisition.StoreCode);
+                    var sr = db.StoreRequisitions
+                        .FirstOrDefault(x => x.StoreRequisitionID == record.StoreRequisitionID);
+                    if (sr != null)
+                    {
+                        headerDs.RequestingStore = InventoryPrintHelper.StoreName(sr.StoreCode);
+                    }
+                }
+                else if (record != null && record.ItemType == PurchaseItemType.FixedAsset)
+                {
+                    var fsr = db.FixedAssetRequisitions
+                        .FirstOrDefault(x => x.FixedAssetRequisitionId == record.StoreRequisitionID);
+                    if (fsr != null)
+                    {
+                        headerDs.RequestingStore = InventoryPrintHelper.StoreName(fsr.StoreCode);
+                    }
+                }
+                else if (record != null && record.ItemType == PurchaseItemType.Service)
+                {
+                    //requetserid = record.EmployeeId;
                 }
 
-                headerDs.Requestor = InventoryPrintHelper.EmployeeName(pr.EmployeeId);
-                headerDs.RequestingProject = InventoryPrintHelper.BranchName(pr.BranchId);
-                if(pr.ForBranchId!=null)
-                    headerDs.ForProject = InventoryPrintHelper.BranchName((int)pr.ForBranchId);
+                headerDs.Requestor = InventoryPrintHelper.EmployeeName(record.EmployeeId);
+                headerDs.RequestingProject = InventoryPrintHelper.BranchName(record.BranchId);
+                if(record.ForBranchId!=null)
+                    headerDs.ForProject = InventoryPrintHelper.BranchName((int)record.ForBranchId);
 
-                if (pr.IsManual)
+                if (record.IsManual)
                 {
                     #region manual pr
 
                     headerDs.CreatedBy =
                         EmployeeHelper.GetEmployeeEnglishName(
-                            UserHelper.GetUserEmployeeId(pr.CreatedBy));
-                    headerDs.CreatedBySignature = SignatureHelper.GetUserSignature(pr.CreatedBy);
-                    if (pr.DateCreated != null)
-                        headerDs.CreatedDate = (DateTime) pr.DateCreated;
+                            UserHelper.GetUserEmployeeId(record.CreatedBy));
+                    headerDs.CreatedBySignature = SignatureHelper.GetUserSignature(record.CreatedBy);
+                    if (record.DateCreated != null)
+                        headerDs.CreatedDate = (DateTime) record.DateCreated;
 
-                  
+                    headerDs.RequestedBy =
+                      EmployeeHelper.GetEmployeeEnglishName(record.EmployeeId);
+                    headerDs.RequestedBySignature = SignatureHelper.GetUserSignature(UserHelper.GetEmployeeUserName(record.EmployeeId));
+                    if (record.RequestDate != null)
+                        headerDs.RequestDate = record.RequestDate;
 
-                    headerDs.ApproverName =
-                        EmployeeHelper.GetEmployeeEnglishName(
-                            UserHelper.GetUserEmployeeId(pr.OnlineApprovedBy));
-                    headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(pr.OnlineApprovedBy);
 
-                    if (pr.OnlineApprovedTime != null)
-                        headerDs.ApprovalDate = (DateTime) pr.OnlineApprovedTime;
+                    if (record.ItemType == PurchaseItemType.Service)
+                    {
+                        headerDs.ApproverName =
+                                                  EmployeeHelper.GetEmployeeEnglishName(
+                                                      UserHelper.GetUserEmployeeId(record.DepartmentOnlineApprovedBy));
+                        headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(record.DepartmentOnlineApprovedBy);
+
+                        if (record.DepartmentOnlineApprovedTime != null)
+                            headerDs.ApprovalDate = (DateTime)record.DepartmentOnlineApprovedTime;
+                    }
+                    else
+                    {
+                        headerDs.ApproverName =
+                            EmployeeHelper.GetEmployeeEnglishName(
+                                UserHelper.GetUserEmployeeId(record.OnlineApprovedBy));
+                        headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(record.OnlineApprovedBy);
+
+                        if (record.OnlineApprovedTime != null)
+                            headerDs.ApprovalDate = (DateTime)record.OnlineApprovedTime;
+                    }
 
                     headerDs.AuthorizerName =
                         EmployeeHelper.GetEmployeeEnglishName(
-                            UserHelper.GetUserEmployeeId(pr.SecondOnlineApprovedBy));
-                    headerDs.AuthorizedBySignature = SignatureHelper.GetUserSignature(pr.SecondOnlineApprovedBy);
+                            UserHelper.GetUserEmployeeId(record.SecondOnlineApprovedBy));
+                    headerDs.AuthorizedBySignature = SignatureHelper.GetUserSignature(record.SecondOnlineApprovedBy);
 
-                    if (pr.SecondOnlineApprovedTime != null)
-                        headerDs.AuthorizationDate = (DateTime) pr.SecondOnlineApprovedTime;
+                    if (record.SecondOnlineApprovedTime != null)
+                        headerDs.AuthorizationDate = (DateTime) record.SecondOnlineApprovedTime;
 
                     // added
                     headerDs.PrApproverName =
                         EmployeeHelper.GetEmployeeEnglishName(
-                            UserHelper.GetUserEmployeeId(pr.MiddleOnlineApprovedBy));
-                    headerDs.PrApprovedBySignature = SignatureHelper.GetUserSignature(pr.MiddleOnlineApprovedBy);
+                            UserHelper.GetUserEmployeeId(record.MiddleOnlineApprovedBy));
+                    headerDs.PrApprovedBySignature = SignatureHelper.GetUserSignature(record.MiddleOnlineApprovedBy);
 
-                    if (pr.MiddleOnlineApprovedTime != null)
-                        headerDs.PrApprovalDate = (DateTime)pr.MiddleOnlineApprovedTime;
+                    if (record.MiddleOnlineApprovedTime != null)
+                        headerDs.PrApprovalDate = (DateTime)record.MiddleOnlineApprovedTime;
 
                     
                     #endregion
@@ -89,8 +146,10 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                 {
                     #region auto pr
 
-                    if (pr.ItemType == PurchaseItemType.Stock)
+                    if (record.ItemType == PurchaseItemType.Stock)
                     {
+                        var storeRequisition = db.StoreRequisitions.Find(record.StoreRequisitionID);
+
                         if (storeRequisition != null)
                         {
                             headerDs.CreatedBy =
@@ -101,35 +160,51 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                             if (storeRequisition.DateCreated != null)
                                 headerDs.CreatedDate = (DateTime)storeRequisition.DateCreated;
 
+                            headerDs.RequestedBy =
+                              EmployeeHelper.GetEmployeeEnglishName(storeRequisition.EmployeeId);
+                            headerDs.RequestedBySignature = SignatureHelper.GetUserSignature(UserHelper.GetEmployeeUserName(storeRequisition.EmployeeId));
+                            if (storeRequisition.RequestDate != null)
+                                headerDs.RequestDate = storeRequisition.RequestDate;
+
+                            //headerDs.ApproverName =
+                            //    EmployeeHelper.GetEmployeeEnglishName(
+                            //        UserHelper.GetUserEmployeeId(storeRequisition.SecondOnlineApprovedBy));
+                            //headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(storeRequisition.SecondOnlineApprovedBy);
+
+                            //if (storeRequisition.SecondOnlineApprovedTime != null)
+                            //    headerDs.ApprovalDate = (DateTime)storeRequisition.SecondOnlineApprovedTime;
+
                             headerDs.ApproverName =
-                                EmployeeHelper.GetEmployeeEnglishName(
-                                    UserHelper.GetUserEmployeeId(storeRequisition.SecondOnlineApprovedBy));
-                            headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(storeRequisition.SecondOnlineApprovedBy);
+                              EmployeeHelper.GetEmployeeEnglishName(
+                                  UserHelper.GetUserEmployeeId(storeRequisition.OnlineApprovedBy));
+                            headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(storeRequisition.OnlineApprovedBy);
 
-                            if (storeRequisition.SecondOnlineApprovedTime != null)
-                                headerDs.ApprovalDate = (DateTime)storeRequisition.SecondOnlineApprovedTime;
+                            if (storeRequisition.OnlineApprovedTime != null)
+                                headerDs.ApprovalDate = (DateTime)storeRequisition.OnlineApprovedTime;
 
-                            //
+
                             headerDs.PrApproverName =
                                 EmployeeHelper.GetEmployeeEnglishName(
-                                    UserHelper.GetUserEmployeeId(pr.OnlineApprovedBy));
-                            headerDs.PrApprovedBySignature = SignatureHelper.GetUserSignature(pr.OnlineApprovedBy);
+                                    UserHelper.GetUserEmployeeId(record.OnlineApprovedBy));
+                            headerDs.PrApprovedBySignature = SignatureHelper.GetUserSignature(record.OnlineApprovedBy);
 
-                            if (pr.OnlineApprovedTime != null)
-                                headerDs.PrApprovalDate = (DateTime)pr.OnlineApprovedTime;
+                            if (record.OnlineApprovedTime != null)
+                                headerDs.PrApprovalDate = (DateTime)record.OnlineApprovedTime;
 
                             headerDs.AuthorizerName =
                                 EmployeeHelper.GetEmployeeEnglishName(
-                                    UserHelper.GetUserEmployeeId(pr.SecondOnlineApprovedBy));
-                            headerDs.AuthorizedBySignature = SignatureHelper.GetUserSignature(pr.SecondOnlineApprovedBy);
+                                    UserHelper.GetUserEmployeeId(record.SecondOnlineApprovedBy));
+                            headerDs.AuthorizedBySignature = SignatureHelper.GetUserSignature(record.SecondOnlineApprovedBy);
 
-                            if (pr.SecondOnlineApprovedTime != null)
-                                headerDs.AuthorizationDate = (DateTime)pr.SecondOnlineApprovedTime;
+                            if (record.SecondOnlineApprovedTime != null)
+                                headerDs.AuthorizationDate = (DateTime)record.SecondOnlineApprovedTime;
                         }
 
                     }
-                    else if (pr.ItemType == PurchaseItemType.FixedAsset)
+                    else if (record.ItemType == PurchaseItemType.FixedAsset)
                     {
+                        var fixedRequisition = db.FixedAssetRequisitions.Find(record.StoreRequisitionID);
+
                         if (fixedRequisition != null)
                         {
                             headerDs.CreatedBy =
@@ -140,66 +215,93 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                             if (fixedRequisition.DateCreated != null)
                                 headerDs.CreatedDate = (DateTime)fixedRequisition.DateCreated;
 
-                            headerDs.ApproverName =
-                                EmployeeHelper.GetEmployeeEnglishName(
-                                    UserHelper.GetUserEmployeeId(fixedRequisition.SecondOnlineApprovedBy));
-                            headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(fixedRequisition.SecondOnlineApprovedBy);
+                            headerDs.RequestedBy =
+                             EmployeeHelper.GetEmployeeEnglishName(fixedRequisition.EmployeeId);
+                            headerDs.RequestedBySignature = SignatureHelper.GetUserSignature(UserHelper.GetEmployeeUserName(fixedRequisition.EmployeeId));
+                            if (fixedRequisition.RequestDate != null)
+                                headerDs.RequestDate = fixedRequisition.RequestDate;
+                            //headerDs.ApproverName =
+                            //    EmployeeHelper.GetEmployeeEnglishName(
+                            //        UserHelper.GetUserEmployeeId(fixedRequisition.SecondOnlineApprovedBy));
+                            //headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(fixedRequisition.SecondOnlineApprovedBy);
 
-                            if (fixedRequisition.SecondOnlineApprovedTime != null)
-                                headerDs.ApprovalDate = (DateTime)fixedRequisition.SecondOnlineApprovedTime;
+                            //if (fixedRequisition.SecondOnlineApprovedTime != null)
+                            //    headerDs.ApprovalDate = (DateTime)fixedRequisition.SecondOnlineApprovedTime;
+
+                            headerDs.ApproverName =
+                             EmployeeHelper.GetEmployeeEnglishName(
+                                 UserHelper.GetUserEmployeeId(fixedRequisition.OnlineApprovedBy));
+                            headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(fixedRequisition.OnlineApprovedBy);
+
+                            if (fixedRequisition.OnlineApprovedTime != null)
+                                headerDs.ApprovalDate = (DateTime)fixedRequisition.OnlineApprovedTime;
 
                             //
                             headerDs.PrApproverName =
                                 EmployeeHelper.GetEmployeeEnglishName(
-                                    UserHelper.GetUserEmployeeId(pr.OnlineApprovedBy));
-                            headerDs.PrApprovedBySignature = SignatureHelper.GetUserSignature(pr.OnlineApprovedBy);
+                                    UserHelper.GetUserEmployeeId(record.OnlineApprovedBy));
+                            headerDs.PrApprovedBySignature = SignatureHelper.GetUserSignature(record.OnlineApprovedBy);
 
-                            if (pr.OnlineApprovedTime != null)
-                                headerDs.PrApprovalDate = (DateTime)pr.OnlineApprovedTime;
+                            if (record.OnlineApprovedTime != null)
+                                headerDs.PrApprovalDate = (DateTime)record.OnlineApprovedTime;
 
                             headerDs.AuthorizerName =
                                 EmployeeHelper.GetEmployeeEnglishName(
-                                    UserHelper.GetUserEmployeeId(pr.SecondOnlineApprovedBy));
-                            headerDs.AuthorizedBySignature = SignatureHelper.GetUserSignature(pr.SecondOnlineApprovedBy);
+                                    UserHelper.GetUserEmployeeId(record.SecondOnlineApprovedBy));
+                            headerDs.AuthorizedBySignature = SignatureHelper.GetUserSignature(record.SecondOnlineApprovedBy);
 
-                            if (pr.SecondOnlineApprovedTime != null)
-                                headerDs.AuthorizationDate = (DateTime)pr.SecondOnlineApprovedTime;
+                            if (record.SecondOnlineApprovedTime != null)
+                                headerDs.AuthorizationDate = (DateTime)record.SecondOnlineApprovedTime;
                         }
 
                     }
-                    else if (pr.ItemType == PurchaseItemType.Service)
+                    else if (record.ItemType == PurchaseItemType.Service)
                     {
                         headerDs.CreatedBy =
                             EmployeeHelper.GetEmployeeEnglishName(
-                                UserHelper.GetUserEmployeeId(pr.CreatedBy));
-                        headerDs.CreatedBySignature = SignatureHelper.GetUserSignature(pr.CreatedBy);
+                                UserHelper.GetUserEmployeeId(record.CreatedBy));
+                        headerDs.CreatedBySignature = SignatureHelper.GetUserSignature(record.CreatedBy);
 
-                        if (pr.DateCreated != null)
-                            headerDs.CreatedDate = (DateTime)pr.DateCreated;
+                        if (record.DateCreated != null)
+                            headerDs.CreatedDate = (DateTime)record.DateCreated;
+
+                        //headerDs.ApproverName =
+                        //    EmployeeHelper.GetEmployeeEnglishName(
+                        //        UserHelper.GetUserEmployeeId(record.OnlineApprovedBy));
+                        //headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(record.OnlineApprovedBy);
+
+                        //if (record.OnlineApprovedTime != null)
+                        //    headerDs.ApprovalDate = (DateTime)record.OnlineApprovedTime;
+
+                        headerDs.RequestedBy =
+                          EmployeeHelper.GetEmployeeEnglishName(record.EmployeeId);
+                        headerDs.RequestedBySignature = SignatureHelper.GetUserSignature(UserHelper.GetEmployeeUserName(record.EmployeeId));
+                        if (record.RequestDate != null)
+                            headerDs.RequestDate = record.RequestDate;
 
                         headerDs.ApproverName =
-                            EmployeeHelper.GetEmployeeEnglishName(
-                                UserHelper.GetUserEmployeeId(pr.OnlineApprovedBy));
-                        headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(pr.OnlineApprovedBy);
+                                                   EmployeeHelper.GetEmployeeEnglishName(
+                                                       UserHelper.GetUserEmployeeId(record.DepartmentOnlineApprovedBy));
+                        headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(record.DepartmentOnlineApprovedBy);
 
-                        if (pr.OnlineApprovedTime != null)
-                            headerDs.ApprovalDate = (DateTime)pr.OnlineApprovedTime;
+                        if (record.DepartmentOnlineApprovedTime != null)
+                            headerDs.ApprovalDate = (DateTime)record.DepartmentOnlineApprovedTime;
 
                         headerDs.PrApproverName =
                             EmployeeHelper.GetEmployeeEnglishName(
-                                UserHelper.GetUserEmployeeId(pr.MiddleOnlineApprovedBy));
-                        headerDs.PrApprovedBySignature = SignatureHelper.GetUserSignature(pr.MiddleOnlineApprovedBy);
+                                UserHelper.GetUserEmployeeId(record.MiddleOnlineApprovedBy));
+                        headerDs.PrApprovedBySignature = SignatureHelper.GetUserSignature(record.MiddleOnlineApprovedBy);
 
-                        if (pr.MiddleOnlineApprovedTime != null)
-                            headerDs.PrApprovalDate = (DateTime)pr.MiddleOnlineApprovedTime;
+                        if (record.MiddleOnlineApprovedTime != null)
+                            headerDs.PrApprovalDate = (DateTime)record.MiddleOnlineApprovedTime;
 
                         headerDs.AuthorizerName =
                             EmployeeHelper.GetEmployeeEnglishName(
-                                UserHelper.GetUserEmployeeId(pr.SecondOnlineApprovedBy));
-                        headerDs.AuthorizedBySignature = SignatureHelper.GetUserSignature(pr.SecondOnlineApprovedBy);
+                                UserHelper.GetUserEmployeeId(record.SecondOnlineApprovedBy));
+                        headerDs.AuthorizedBySignature = SignatureHelper.GetUserSignature(record.SecondOnlineApprovedBy);
 
-                        if (pr.SecondOnlineApprovedTime != null)
-                            headerDs.AuthorizationDate = (DateTime)pr.SecondOnlineApprovedTime;
+                        if (record.SecondOnlineApprovedTime != null)
+                            headerDs.AuthorizationDate = (DateTime)record.SecondOnlineApprovedTime;
 
                     }
                    
@@ -208,9 +310,17 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                     #endregion
                 }
 
-                headerDs.PRDate = pr.DateCreated.GetValueOrDefault().ToShortDateString();
-                headerDs.StoreRequistionNo = InventoryPrintHelper.GetId(pr.StoreRequisitionID);
-                headerDs.RequestingDepartment = InventoryPrintHelper.WorkUnitName(pr.OrgStructureId);
+                headerDs.BudgetAuthorizerName =
+                       EmployeeHelper.GetEmployeeEnglishName(
+                           UserHelper.GetUserEmployeeId(record.BudgetApprovedBy));
+                if (record.BudgetApprovedTime != null)
+                    headerDs.BudgetAuthorizationDate = (DateTime)record.BudgetApprovedTime;
+
+                headerDs.BudgetAuthorizationSignature = SignatureHelper.GetUserSignature(record.BudgetApprovedBy);
+                
+                headerDs.PRDate = record.DateCreated.GetValueOrDefault().ToShortDateString();
+                headerDs.StoreRequistionNo = InventoryPrintHelper.GetId(record.StoreRequisitionID);
+                headerDs.RequestingDepartment = InventoryPrintHelper.WorkUnitName(record.OrgStructureId);
 
                
             }
@@ -256,6 +366,16 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<PurchaseRequisitionItem> RequisitionItems(int id)
         {
+            var record = db.PurchaseRequisitions.Find(id);
+
+            //if (record == null || !record.IsDepartmentOnlineApproved || !record.IsOnlineApproved || record.IsVoid)
+            //{
+            //    throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized)
+            //    {
+            //        Content = new StringContent("You are not authorized to access this resource."),
+            //        ReasonPhrase = "Unauthorized"
+            //    });
+            //}
             List<PurchaseRequisitionItem> requisitionItems = db.PurchaseRequisitionItems.Where(x => x.PurchaseRequisitionID == id).ToList();
             
             return requisitionItems;
