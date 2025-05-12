@@ -47,10 +47,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }
             var costEstimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == estimationId);
             var printingProcesses = db.PrintingProcesses.ToList();
-            
-            if (costEstimation.PrintJobType == PrintJobType.Book || costEstimation.PrintJobType == PrintJobType.Magazine)
+
+            if (costEstimation.PrintJobType == PrintJobType.Book || costEstimation.PrintJobType == PrintJobType.Magazine || costEstimation.PrintJobType == PrintJobType.Newsletter)
             {
-                foreach (var item in printingProcesses) 
+                foreach (var item in printingProcesses)
                 {
                     switch (item.LabourActivity)
                     {
@@ -59,13 +59,13 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                             break;
                         case LabourActivity.Composition:
                             BookMagazineLaborCostEstimation.CompositionCost(costEstimation, item);
-                            break;                       
+                            break;
                         case LabourActivity.TextPlateMaking:
                             BookMagazineLaborCostEstimation.TextPlateMakingCost(costEstimation, item);
                             break;
                         case LabourActivity.CoverPlateMaking:
                             BookMagazineLaborCostEstimation.CoverPlateMakingCost(costEstimation, item);
-                            break;                        
+                            break;
                         case LabourActivity.Proofing:
                             BookMagazineLaborCostEstimation.ProofingCost(costEstimation, item);
                             break;
@@ -80,14 +80,14 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                             break;
                         case LabourActivity.CoverPrint:
                             BookMagazineLaborCostEstimation.CoverPrintCost(costEstimation, item);
-                            break;                      
+                            break;
                         case LabourActivity.CuttingForCover:
                             BookMagazineLaborCostEstimation.CuttingCoverCost(costEstimation, item);
                             break;
                         case LabourActivity.CuttingForText:
                             BookMagazineLaborCostEstimation.CuttingTextCost(costEstimation, item);
-                            break; 
-                        
+                            break;
+
                         case LabourActivity.FoldingCover:
                             BookMagazineLaborCostEstimation.FoldingCoverCost(costEstimation, item);
                             break;
@@ -120,9 +120,127 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     }
                 }
             }
-            else if (costEstimation.PrintJobType == PrintJobType.Brochure || costEstimation.PrintJobType == PrintJobType.Card || costEstimation.PrintJobType == PrintJobType.Card)
+            else if (costEstimation.PrintJobType == PrintJobType.Brochure || costEstimation.PrintJobType == PrintJobType.Card || costEstimation.PrintJobType == PrintJobType.Flyer ||
+                    costEstimation.PrintJobType == PrintJobType.Format || costEstimation.PrintJobType == PrintJobType.Poster || costEstimation.PrintJobType == PrintJobType.Sticker)
             {
+                foreach (var item in printingProcesses)
+                {
+                    switch (item.LabourActivity)
+                    {
+                        case LabourActivity.Design:
+                            CardFlyerLaborCost.DesignCost(costEstimation, item);
+                            break;
+                        case LabourActivity.Composition:
+                            CardFlyerLaborCost.CompositionCost(costEstimation, item);
+                            break;
+                        case LabourActivity.TextPlateMaking:
+                            CardFlyerLaborCost.PlateMakingCost(costEstimation, item);
+                            break;
+                       
+                        case LabourActivity.Proofing:
+                            CardFlyerLaborCost.ProofingCost(costEstimation, item);
+                            break;
+                        case LabourActivity.MakeReadyText:
+                            CardFlyerLaborCost.TextMakeReadyCost(costEstimation, item);
+                            break;
+                       
+                        case LabourActivity.TextPrint:
+                            CardFlyerLaborCost.TextPrintCost(costEstimation, item);
+                            break;
+                       
+                        case LabourActivity.CuttingForText:
+                            CardFlyerLaborCost.CuttingTextCost(costEstimation, item);
+                            break;
 
+                        case LabourActivity.Trimming:
+                            CardFlyerLaborCost.TrimmingCost(costEstimation, item);
+                            break;
+                        case LabourActivity.CheckingAndPacking:
+                            CardFlyerLaborCost.CheckingPackingCost(costEstimation, item);
+                            break;
+                        case LabourActivity.LoadingAndUnloading:
+                            CardFlyerLaborCost.LoadingUnloadingCost(costEstimation, item);
+                            break;
+                        case LabourActivity.DispatchingAndTransport:
+                            CardFlyerLaborCost.DispatchingTransportingCost(costEstimation, item);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            else if (costEstimation.PrintJobType == PrintJobType.Voucher)
+            {
+                foreach (var item in printingProcesses)
+                {
+                    switch (item.LabourActivity)
+                    {
+                        case LabourActivity.Design:
+                            VoucherLaborCost.DesignCost(costEstimation, item);
+                            break;
+                        case LabourActivity.Composition:
+                            VoucherLaborCost.CompositionCost(costEstimation, item);
+                            break;
+                        case LabourActivity.TextPlateMaking:
+                            VoucherLaborCost.TextPlateMakingCost(costEstimation, item);
+                            break;
+                        case LabourActivity.CoverPlateMaking:
+                            VoucherLaborCost.CoverPlateMakingCost(costEstimation, item);
+                            break;
+                        case LabourActivity.Proofing:
+                            VoucherLaborCost.ProofingCost(costEstimation, item);
+                            break;
+                        case LabourActivity.MakeReadyText:
+                            VoucherLaborCost.TextMakeReadyCost(costEstimation, item);
+                            break;
+                        case LabourActivity.MakeReadyNumbering:
+                            VoucherLaborCost.MakeReadyNumberingCost(costEstimation, item);
+                            break;
+                        case LabourActivity.MakeReadyCover:
+                            VoucherLaborCost.CoverMakeReadyCost(costEstimation, item);
+                            break;
+                        case LabourActivity.TextPrint:
+                            VoucherLaborCost.OffsetPrint(costEstimation, item);
+                            break;
+                        case LabourActivity.LetterPressPrint:
+                            VoucherLaborCost.LetterPressPrint(costEstimation, item);
+                            break;
+                        case LabourActivity.CuttingForCover:
+                            VoucherLaborCost.CuttingCoverCost(costEstimation, item);
+                            break;
+                        case LabourActivity.CuttingForText:
+                            VoucherLaborCost.CuttingTextCost(costEstimation, item);
+                            break;
+
+                        case LabourActivity.Perforation:
+                            VoucherLaborCost.PerforationCost(costEstimation, item);
+                            break;
+                        case LabourActivity.CuttingForNumbering:
+                            VoucherLaborCost.CuttingForNumberingCost(costEstimation, item);
+                            break;
+                        case LabourActivity.Stitching:
+                            VoucherLaborCost.SideStitchingCost(costEstimation, item);
+                            break;
+                        case LabourActivity.Collating:
+                            VoucherLaborCost.CollatingCost(costEstimation, item);
+                            break;
+                        
+                        case LabourActivity.Trimming:
+                            VoucherLaborCost.TrimmingCost(costEstimation, item);
+                            break;
+                        case LabourActivity.CheckingAndPacking:
+                            VoucherLaborCost.CheckingPackingCost(costEstimation, item);
+                            break;
+                        case LabourActivity.LoadingAndUnloading:
+                            VoucherLaborCost.LoadingUnloadingCost(costEstimation, item);
+                            break;
+                        case LabourActivity.DispatchingAndTransport:
+                            VoucherLaborCost.DispatchingTransportingCost(costEstimation, item);
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
             return Json(msg.success, JsonRequestBehavior.AllowGet);
         }

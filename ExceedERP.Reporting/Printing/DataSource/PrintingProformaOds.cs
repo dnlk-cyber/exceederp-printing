@@ -30,7 +30,9 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     ApprovedBy = proformaHead.OnlineApprovedBy,
                     ApprovedDate = proformaHead.OnlineApprovedTime,
                     CheckedBy = proformaHead.SendForApprovalBy,
-                    CheckedDate = proformaHead.SendForApprovalTime 
+                    CheckedDate = proformaHead.SendForApprovalTime,
+                    CreatedBy = proformaHead.CreatedBy,
+                    DateCreated = proformaHead.DateCreated
                 };
 
             }

@@ -76,6 +76,7 @@
                                   columns.Bound(c => c.Width);
                                   columns.Bound(c => c.Length);
                                   columns.Bound(c => c.Weight).Title("Weight(g)");
+                                  columns.Bound(c => c.ConsumptionRate).Title("Consumption Rate");
                                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
                               })
                               .ToolBar(toolbar =>

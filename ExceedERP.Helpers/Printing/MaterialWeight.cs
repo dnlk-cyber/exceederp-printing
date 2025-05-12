@@ -33,11 +33,15 @@ namespace ExceedERP.Helpers.Printing
             var materialCost = db.PrintingEstimationMaterialCosts
                 .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId
                 && x.EstimationMaterialType == EstimationMaterialType.TextPaper); // text paper
+            if (materialCost == null)
+                return 0;
 
             var paper = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.TextPaperSizeId); // text paper
-
+            if (paper == null)
+                return 0;
             var categoryItem = db.PrintingMaterialCategoryItems.FirstOrDefault(x => x.PrintingMaterialCategoryItemId == materialCost.PrintingMaterialCategoryItemId);
-
+            if (categoryItem == null)
+                return 0;
             return ((paper.Length * paper.Width * categoryItem.Weight) / 10000000)
                 * estimation.ProductQuantity * estimation.Pages / estimation.TextPrintSide;
 
@@ -48,13 +52,16 @@ namespace ExceedERP.Helpers.Printing
             var materialCost = db.PrintingEstimationMaterialCosts
                 .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId
                 && x.EstimationMaterialType == EstimationMaterialType.CoverPaper); // cover paper
-
+            if (materialCost == null)
+                return 0;
             var paper = db.PrintingPaperSizes
                 .FirstOrDefault(x => x.PrintingPaperSizeId == estimation.CoverPaperSizeId); // cover paper
-
+            if (paper == null)
+                return 0;
             var categoryItem = db.PrintingMaterialCategoryItems
                 .FirstOrDefault(x => x.PrintingMaterialCategoryItemId == materialCost.PrintingMaterialCategoryItemId);
-
+            if (categoryItem == null)
+                return 0;
             return ((paper.Length * paper.Width * categoryItem.Weight) / 10000000) * estimation.ProductQuantity;
 
         }
@@ -65,10 +72,13 @@ namespace ExceedERP.Helpers.Printing
                 .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId
                 && x.EstimationMaterialType == EstimationMaterialType.WrappingPaper); // packing paper
 
+            if (materialCost == null)
+                return 0;
 
             var categoryItem = db.PrintingMaterialCategoryItems
                 .FirstOrDefault(x => x.PrintingMaterialCategoryItemId == materialCost.PrintingMaterialCategoryItemId);
-
+            if (categoryItem == null)
+                return 0;
             return ((categoryItem.Length * categoryItem.Width * categoryItem.Weight) / 10000000) * (double)materialCost.Quantity;
 
         }
@@ -77,10 +87,10 @@ namespace ExceedERP.Helpers.Printing
         {
             var inkText = db.PrintingEstimationMaterialCosts
                 .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId
-                && x.EstimationMaterialType == EstimationMaterialType.InkText).Quantity; // ink text
+                && x.EstimationMaterialType == EstimationMaterialType.InkText)?.Quantity ?? 0; // ink text
             var inkCover = db.PrintingEstimationMaterialCosts
                 .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId
-                && x.EstimationMaterialType == EstimationMaterialType.InkCover).Quantity; // ink cover
+                && x.EstimationMaterialType == EstimationMaterialType.InkCover)?.Quantity ?? 0; // ink cover
             return (double)(inkText + inkCover) * 0.6;
 
         }
@@ -89,7 +99,7 @@ namespace ExceedERP.Helpers.Printing
         {
             var glueQuantity = db.PrintingEstimationMaterialCosts
                 .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId
-                && x.EstimationMaterialType == EstimationMaterialType.Glue).Quantity; // ink text
+                && x.EstimationMaterialType == EstimationMaterialType.Glue)?.Quantity ?? 0; // ink text
 
             return (double)(glueQuantity) * 0.6;
 

@@ -304,7 +304,7 @@ namespace ExceedERP.Helpers.Printing
         {
             if (estimation.BindingStyle == BindingStyle.SaddleStitch || estimation.BindingStyle == BindingStyle.SideStitch)
             {
-                var coverSheets = PrintSignitureAndSheet.PrintSheet(estimation);
+                var coverSheets = PrintSignitureAndSheet.PrintSheetCover(estimation);
                 var signiture = PrintSignitureAndSheet.PrintSigniture(estimation);
                 var machineType = db.PrintingMachineTypes
                     .FirstOrDefault(x => x.PrintingMachineTypeId == estimation.CoverMachineTypeId);
@@ -375,7 +375,7 @@ namespace ExceedERP.Helpers.Printing
                     LaborRate = printingProcess.LaborRate,
                     UOM = printingProcess.UOM,
                     PrintingProcessId = printingProcess.PrintingProcessId,
-                    Quantity = PrintSignitureAndSheet.PrintSigniture(estimation)
+                    Quantity = PrintSignitureAndSheet.PrintSigniture(estimation) + PrintSignitureAndSheet.PrintSheetCover(estimation)
 
                 };
                 entity.TotalCost = entity.Quantity * entity.LaborRate;

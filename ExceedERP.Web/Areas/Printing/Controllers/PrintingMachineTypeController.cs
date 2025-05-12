@@ -10,6 +10,7 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Printing;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Printing;
 
 namespace ExceedERP.Web.Areas.Printing.Controllers
 {
@@ -62,6 +63,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
                 db.PrintingMachineTypes.Add(entity);
                 db.SaveChanges();
+                GenerateSectionUp(entity);
                 model.PrintingMachineTypeId = entity.PrintingMachineTypeId;
             }
 
@@ -96,6 +98,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 db.PrintingMachineTypes.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
+                DeleteDetailRecords(entity.PrintingMachineTypeId);
+                GenerateSectionUp(entity);
             }
 
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
@@ -119,15 +123,39 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     PaperSizeId = printingMachineList.PaperSizeId,
                     PrintSide = printingMachineList.PrintSide
                 };
-
+                DeleteDetailRecords(entity.PrintingMachineTypeId);
                 db.PrintingMachineTypes.Attach(entity);
                 db.PrintingMachineTypes.Remove(entity);
                 db.SaveChanges();
+                
             }
 
             return Json(new[] { printingMachineList }.ToDataSourceResult(request, ModelState));
         }
-
+        
+        private void GenerateSectionUp(PrintingMachineType machineType) 
+        {
+            var fromPaper = db.PrintingPaperSizes.Find(machineType.PaperSizeId);
+            foreach (var toPaper in db.PrintingPaperSizes.ToList())
+            {
+                var upRatio = PaperSizeHelper.GetPaperUpRatio(fromPaper.PrintPaperSize, toPaper.PrintPaperSize);
+                if (upRatio == null) continue; // Skip cross-series comparisons
+                var entity = new PrintingMachineDetail
+                {
+                    PaperSizeId = toPaper.PrintingPaperSizeId,
+                    PrintingMachineTypeId = machineType.PrintingMachineTypeId,
+                    SectionUp = (int)upRatio 
+                };
+                db.PrintingMachineDetails.Add(entity);
+                db.SaveChanges();
+            }
+        }
+        private void DeleteDetailRecords(int machineTypeId)
+        {
+            var entity = db.PrintingMachineDetails.Where(x => x.PrintingMachineTypeId == machineTypeId);
+            db.PrintingMachineDetails.RemoveRange(entity);
+            db.SaveChanges();
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

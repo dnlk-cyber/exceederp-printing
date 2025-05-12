@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Reporting.Printing.ViewModel
 {
-    public class PrintingProformaViewModel
+    public class PrintingProformaViewModel : PrintingCommonViewModel
     {
         public int ProformaNumber { get; set; }
         public string CustomerName { get; set; }
-        public int DeliveryPeriod { get; set; }
+        public string DeliveryPeriod { get; set; }
+        public string PriceValidityPeriod { get; set; }
+        public string PaymentType { get; set; }
+        public int ModeOfPayment { get; set; }
         public string Remark { get; set; }
-        public string CheckedBy { get; set; }
-        public string ApprovedBy { get; set; }
-        public DateTime? CheckedDate { get; set; }
-        public DateTime? ApprovedDate { get; set; }
+       
     }
     public class PrintingProformaItemsViewModel
     {

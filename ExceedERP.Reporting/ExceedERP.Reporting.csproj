@@ -4060,6 +4060,7 @@
     <Compile Include="Printing\Design\PrintSummaryDesign.Designer.cs">
       <DependentUpon>PrintSummaryDesign.cs</DependentUpon>
     </Compile>
+    <Compile Include="Printing\ViewModel\PrintingCommonViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingEstimationViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingProformaViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintSummaryHeadVM.cs" />

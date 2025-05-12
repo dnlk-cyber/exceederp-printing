@@ -200,8 +200,14 @@
     <Compile Include="Planning\PlanningIsoDocumentHelper.cs" />
     <Compile Include="Printing\BookMagazineLaborCostEstimation.cs" />
     <Compile Include="Printing\BookMagazineMaterialCostEstimation.cs" />
+    <Compile Include="Printing\CardFlyerLaborCost.cs" />
+    <Compile Include="Printing\CardFlyerMaterialCost.cs" />
     <Compile Include="Printing\MaterialWeight.cs" />
+    <Compile Include="Printing\PaperSizeHelper.cs" />
     <Compile Include="Printing\PrintSignitureAndSheet.cs" />
+    <Compile Include="Printing\SectionUp.cs" />
+    <Compile Include="Printing\VoucherLaborCost.cs" />
+    <Compile Include="Printing\VoucherMaterialCost.cs" />
     <Compile Include="Procurement\GuaranteeHelper.cs" />
     <Compile Include="Procurement\ItemHelper.cs" />
     <Compile Include="Procurement\PaymentHelper.cs" />

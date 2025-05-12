@@ -60,11 +60,14 @@ namespace ExceedERP.Core.Domain.Printing
         MakeReadyText = 201,
         [Display(Name = "Make Ready Cover")]
         MakeReadyCover,
+        [Display(Name ="Make Ready Numbering")]
+        MakeReadyNumbering,
         [Display(Name = "Text Print")]
         TextPrint,
         [Display(Name = "Cover Print")]
         CoverPrint,
-
+        [Display(Name ="Letter Press Print")]
+        LetterPressPrint,
         // Post Press
         [Display(Name = "Cutting For Text")]
         CuttingForText = 301,
@@ -125,7 +128,8 @@ namespace ExceedERP.Core.Domain.Printing
         [Display(Name ="Dispatching/Transporting")]
         DispatchingAndTransport,
         [Display(Name = "Manual Folding Cover")]
-        ManualFoldingCover
+        ManualFoldingCover,
+        CuttingForNumbering,
     }
 
 }

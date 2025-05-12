@@ -142,6 +142,7 @@
                               {
                                   columns.Bound(c => c.PressCategory)/*.EditorTemplateName("PrintingCategoryDropDownTemplate")*/;
                                   columns.Bound(c => c.LabourActivity);
+                                  columns.Bound(c => c.UOM);
                                   columns.Bound(c => c.Quantity);
                                   columns.Bound(c => c.LaborRate);
                                   columns.Bound(c => c.TotalCost).Format("{0:n2}").Width(130).ClientFooterTemplate("Total Cost: \\#=sum\\# "); ;

@@ -16,24 +16,44 @@ namespace ExceedERP.Helpers.Printing
         {            
             var machineType = db.PrintingMachineTypes
                 .FirstOrDefault(x => x.PrintingMachineTypeId == estimation.TextMachineTypeId); // text machine
+            if (machineType == null)
+                return 0;
             var machineDetail = db.PrintingMachineDetails
                 .FirstOrDefault(x => x.PrintingMachineTypeId == machineType.PrintingMachineTypeId &&
                 x.PaperSizeId == estimation.TextPaperSizeId); // text paper
-           
+            if (machineDetail == null)
+                return 0;
             return (estimation.ProductQuantity * estimation.Pages * estimation.TextNoOfColors) /
                 (machineDetail.SectionUp * machineType.NumberOfColors * estimation.TextPrintSide);            
         }
 
-        public static decimal PrintSheet(PrintingCostEstimation estimation)
+        public static decimal PrintSheetCover(PrintingCostEstimation estimation)
         {
             var machineType = db.PrintingMachineTypes
                 .FirstOrDefault(x => x.PrintingMachineTypeId == estimation.CoverMachineTypeId); // cover machine
+            if (machineType == null)
+                return 0;
             var machineDetail = db.PrintingMachineDetails
                 .FirstOrDefault(x => x.PrintingMachineTypeId == machineType.PrintingMachineTypeId &&
                 x.PaperSizeId == estimation.CoverPaperSizeId); // cover paper
-            
+            if (machineDetail == null)
+                return 0;
             return (estimation.ProductQuantity * estimation.CoverNoOfColor) /
                 (machineDetail.SectionUp * machineType.NumberOfColors);           
+        }
+        public static decimal PrintSheetText(PrintingCostEstimation estimation)
+        {
+            var machineType = db.PrintingMachineTypes
+                .FirstOrDefault(x => x.PrintingMachineTypeId == estimation.TextMachineTypeId); // text machine
+            if (machineType == null)
+                return 0;
+            var machineDetail = db.PrintingMachineDetails
+                .FirstOrDefault(x => x.PrintingMachineTypeId == machineType.PrintingMachineTypeId &&
+                x.PaperSizeId == estimation.TextPaperSizeId); // text paper
+            if (machineDetail == null)
+                return 0;
+            return (estimation.ProductQuantity * estimation.CoverNoOfColor) /
+                (machineDetail.SectionUp * machineType.NumberOfColors);
         }
     }
 }

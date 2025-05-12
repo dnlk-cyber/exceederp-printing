@@ -42,6 +42,8 @@ namespace ExceedERP.Core.Domain.Printing
         WrappingPaper,
         [Display(Name ="Glue")]
         Glue,
+        [Display(Name ="Stitching Wire")]
+        StitchingWire,
         [Display(Name ="Ink Text")]
         InkText,
         [Display(Name = "Ink Cover")]

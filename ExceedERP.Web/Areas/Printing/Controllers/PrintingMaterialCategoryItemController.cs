@@ -49,6 +49,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Width = model.Width,
                     Weight = model.Weight,
                     PaperType = model.PaperType,
+                    ConsumptionRate = model.ConsumptionRate
                 };
 
                 db.PrintingMaterialCategoryItems.Add(entity);
@@ -88,7 +89,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Length = model.Length,
                     Width = model.Width,
                     Weight = model.Weight,
-                    PaperType = model.PaperType
+                    PaperType = model.PaperType,
+                    ConsumptionRate = model.ConsumptionRate
                 };
 
                 db.PrintingMaterialCategoryItems.Attach(entity);
@@ -117,7 +119,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Length = model.Length,
                     Width = model.Width,
                     Weight = model.Weight,
-                    PaperType = model.PaperType
+                    PaperType = model.PaperType,
+                    ConsumptionRate = model.ConsumptionRate
                 };
 
                 db.PrintingMaterialCategoryItems.Attach(entity);

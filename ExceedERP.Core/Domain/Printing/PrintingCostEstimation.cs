@@ -38,7 +38,9 @@ namespace ExceedERP.Core.Domain.Printing
         [Display(Name = "Pack")]
         public decimal Pack { get; set; }
         [Display(Name ="Binding Style")]
-        public BindingStyle BindingStyle { get; set; } 
+        public BindingStyle BindingStyle { get; set; }
+        public int Copy { get; set; }
+        public int Staples { get; set; } 
         //--//
         public double Width { get; set; }
         public double Length { get; set; }          
@@ -66,18 +68,16 @@ namespace ExceedERP.Core.Domain.Printing
         Card,
         Flyer,
         Brochure,
-        Booklet,
-       
-        Calendar,
+        Format,
         Poster,
         Sticker,
-       
+        Voucher,
+        
+        Calendar,
+        
         Newsletter,
-        Manual,
-        Label,
-        Envelope,
-        Folder,
-        Certificate
+        
+        
     }
 
 }

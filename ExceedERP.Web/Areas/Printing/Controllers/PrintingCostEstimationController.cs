@@ -103,7 +103,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     UseLength = model.UseLength,
                     BindingStyle = model.BindingStyle,
                     TextPrintSide = model.TextPrintSide,
-                    CoverPrintSide = model.CoverPrintSide
+                    CoverPrintSide = model.CoverPrintSide,
+                    Copy = model.Copy,
+                    Staples = model.Staples
                 };
 
                 db.PrintingCostEstimations.Add(entity);
@@ -147,7 +149,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     UseLength = model.UseLength,
                     BindingStyle = model.BindingStyle,
                     TextPrintSide = model.TextPrintSide,
-                    CoverPrintSide = model.CoverPrintSide
+                    CoverPrintSide = model.CoverPrintSide,
+                    Copy = model.Copy,
+                    Staples = model.Staples
                 };
 
                 db.PrintingCostEstimations.Attach(entity);
@@ -191,7 +195,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     UseLength = model.UseLength,
                     BindingStyle = model.BindingStyle,
                     TextPrintSide = model.TextPrintSide,
-                    CoverPrintSide = model.CoverPrintSide
+                    CoverPrintSide = model.CoverPrintSide,
+                    Copy = model.Copy,
+                    Staples = model.Staples
                 };
 
                 db.PrintingCostEstimations.Attach(entity);

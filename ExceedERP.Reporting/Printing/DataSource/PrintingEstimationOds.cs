@@ -22,22 +22,31 @@ namespace ExceedERP.Reporting.Printing.DataSource
             if (estimation != null)
             {
                 var customer = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == estimation.CustomerId);
-                var paperSize = db.PrintingPaperSizes.Find(estimation.PrintingCostEstimationId);
+                var textPaperSize = db.PrintingPaperSizes.Find(estimation.TextPaperSizeId);
+                var coverPaperSize = db.PrintingPaperSizes.Find(estimation.CoverPaperSizeId);
+                var textMachine = db.PrintingMachineTypes.Find(estimation.TextMachineTypeId);
+                var coverMachine = db.PrintingMachineTypes.Find(estimation.CoverMachineTypeId);
                 return new PrintingEstimationViewModel
                 {
+                    EstimationNo = estimation.PrintingCostEstimationId,
+                    TextPaperSize = textPaperSize?.PrintPaperSize.ToString() ?? "",
+                    CoverPaperSize = coverPaperSize?.PrintPaperSize.ToString() ?? "",
+                    MachineForText = textMachine?.MachineTypeName ?? "",
+                    MachineForCover = coverMachine?.MachineTypeName ?? "",
                     BindingStyle = estimation.BindingStyle.ToString(),
-                    CoverNoOfColors = estimation.PrintingCostEstimationId,
+                    CoverNoOfColors = estimation.CoverNoOfColor,
                     CustomerName = customer?.TradeName ?? "",
                     JobDescription = estimation.JobDescription,
                     JobType = estimation.PrintJobType,
                     NoOfPages = estimation.Pages,
-                    PaperSize = paperSize?.PaperSizeName ?? "",
                     Quantity = estimation.ProductQuantity,
                     TextNoOfColors = estimation.TextNoOfColors,
                     ApprovedBy = estimation.OnlineApprovedBy,
                     ApprovedDate = estimation.OnlineApprovedTime,
-                    CheckedBy = estimation.SendForApprovalBy,
-                    CheckedDate = estimation.SendForApprovalTime
+                    CheckedBy = estimation.IsOnlineTransferredBy,
+                    CheckedDate = estimation.OnlineTransferredTime,
+                    DateCreated = estimation.DateCreated,
+                    CreatedBy = estimation.CreatedBy
                 };
             }
             return new PrintingEstimationViewModel();
@@ -71,18 +80,18 @@ namespace ExceedERP.Reporting.Printing.DataSource
         public List<PrintingLaborViewModel> GetLabor(int id)
         {
             List<PrintingLaborViewModel> list = new List<PrintingLaborViewModel>();
-            var estimationLaborCosts = db.PrintingEstimationLaborCosts.Where(x => x.PrintingEstimationLaborCostId == id).ToList();
+            var estimationLaborCosts = db.PrintingEstimationLaborCosts.Where(x => x.PrintingCostEstimationId == id).ToList();
             foreach (var item in estimationLaborCosts)
             {
-                var printingProcess = db.PrintingProcesses.Find(item.PrintingProcessId);
-                //var printingMachine = db.PrintingMachineTypes.Find(item.PrintingMachineTypeId);
-
+                
                 list.Add(new PrintingLaborViewModel
                 {
+                    Quantity = item.Quantity,
+                    UoM = item.UOM,
                     LaborRate = item.LaborRate,
                     TotalCost = item.TotalCost,
-                    PrintingProcess = printingProcess.LabourActivity,
-                    ProcessCategory = printingProcess.PressCategory
+                    LaborActivity = item.LabourActivity,
+                    PressCategory = item.PressCategory
                 });
 
             }

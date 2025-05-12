@@ -43,7 +43,8 @@ namespace ExceedERP.Core.Domain.Printing
         public double Length { get; set; }
         public double Weight { get; set; }
 
-        public PaperType? PaperType { get; set; } 
+        public PaperType? PaperType { get; set; }
+        public int ConsumptionRate { get; set; } = 1;
         //Fk
         public int PrintingMaterialCategoryId { get; set; }
 

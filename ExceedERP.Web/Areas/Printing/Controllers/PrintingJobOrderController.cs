@@ -100,7 +100,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
                         CustomerId = proformaInvoice.CustomerId,
                         JobStartDate = model.JobStartDate,
-                        DeliveryDate = model.JobStartDate.AddDays(proformaInvoice.DeliveryPeriod),
+                        DeliveryDate = model.DeliveryDate,
                         PrintingProformaInvoiceId = proformaInvoice.PrintingProformaInvoiceId,
                         DateCreated = DateTime.Today,
                         CreatedBy = User.Identity.Name,
@@ -109,7 +109,6 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                         AdvancePaymentInPercent = model.AdvancePaymentInPercent,
                         Remark = model.Remark
                     };
-                    jobOrder.DeliveryDate = DateTime.Today.AddDays(proformaInvoice.DeliveryPeriod);
                     db.PrintingJobOrders.Add(jobOrder);
                     db.SaveChanges();
                     foreach (var proformaItem in proformaItems)

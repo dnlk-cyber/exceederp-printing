@@ -18,11 +18,11 @@ namespace ExceedERP.Core.Domain.Printing
         [Display(Name = "Customer")]
         public int CustomerId { get; set; }
         [Display(Name = "Delivery Period(Days)")]
-        public int DeliveryPeriod { get; set; }
+        public string DeliveryPeriod { get; set; }
         [Display(Name = "Delivery Date"), DataType(DataType.Date)]
         public DateTime DeliveryDate { get; set; }
         [Display(Name = "Price Validity Period(Days)")]
-        public int PriceValidityPeriod { get; set; }
+        public string PriceValidityPeriod { get; set; }
         [Display(Name = "Mode of payment")]
         public string ModeOfPayment { get; set; }
         [Display(Name = "Advance Payment(%)")]

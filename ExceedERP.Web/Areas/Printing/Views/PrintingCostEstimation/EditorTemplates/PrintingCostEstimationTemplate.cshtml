@@ -121,7 +121,7 @@
             <div class="form-group">
                 <label>Text No Of Colors</label>
                 <div>
-                    @(Html.Kendo().NumericTextBoxFor(model => model.TextNoOfColors).HtmlAttributes(new { style = "width:100%" }).Min(1).Max(4).Placeholder("Text Color"))
+                    @(Html.Kendo().NumericTextBoxFor(model => model.TextNoOfColors).HtmlAttributes(new { style = "width:100%" }).Min(1).Max(6).Placeholder("Text Color"))
                 </div>
             </div>
         </div>
@@ -131,7 +131,7 @@
             <div class="form-group">
                 <label>Cover No Of Color</label>
                 <div>
-                    @(Html.Kendo().NumericTextBoxFor(model => model.CoverNoOfColor).HtmlAttributes(new { style = "width:100%" }).Min(1).Max(4).Placeholder("Cover Color"))
+                    @(Html.Kendo().NumericTextBoxFor(model => model.CoverNoOfColor).HtmlAttributes(new { style = "width:100%" }).Min(1).Max(6).Placeholder("Cover Color"))
                 </div>
             </div>
         </div>
@@ -142,11 +142,11 @@
                 <label>Binding Type</label>
                 <div>
                     @(Html.Kendo().DropDownListFor(m => m.BindingStyle)
-                                .OptionLabel("Binding Type")
-                                .DataTextField("Text")
-                                .DataValueField("Value")
-                                .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.BindingStyle)))
-                                .HtmlAttributes(new { style = "width:100%" }))
+                                                .OptionLabel("Binding Type")
+                                                .DataTextField("Text")
+                                                .DataValueField("Value")
+                                                .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.BindingStyle)))
+                                                .HtmlAttributes(new { style = "width:100%" }))
                 </div>
             </div>
         </div>
@@ -177,6 +177,26 @@
                 <label>Cover Print Side</label>
                 <div>
                     @(Html.Kendo().NumericTextBoxFor(c => c.CoverPrintSide).HtmlAttributes(new { style = "width:100%" }).Min(1).Max(2).RestrictDecimals(true).Placeholder("print side Cover").Decimals(0))
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Copies</label>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(c => c.Copy).HtmlAttributes(new { style = "width:100%" }).Min(1).RestrictDecimals(true).Decimals(0))
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>No. of Staples</label>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(c => c.Staples).HtmlAttributes(new { style = "width:100%" }).Min(1).RestrictDecimals(true).Decimals(0))
                 </div>
             </div>
         </div>
