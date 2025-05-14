@@ -103,6 +103,7 @@
                                                   columns.ForeignKey(c => c.PrintingMaterialCategoryItemId, (IEnumerable)ViewData["Item"], "Value", "Text");
                                                   columns.Bound(c => c.UnitOfMeasurment);
                                                   columns.Bound(c => c.Quantity);
+                                                  columns.Bound(c => c.WastageInPercentage).Title("Wastage(%)").Format("{0:P1}");
                                                   columns.Bound(c => c.UnitCost);
                                                   columns.Bound(c => c.TotalCost).Format("{0:n2}").Width(130).ClientFooterTemplate("Material Cost: \\#=sum\\# "); ;
                                                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);

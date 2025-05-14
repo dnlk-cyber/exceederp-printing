@@ -33,6 +33,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PrintingEstimationMaterialCosts_Create([DataSourceRequest]DataSourceRequest request, PrintingEstimationMaterialCost model, int estId)
         {
+            model.WastageInPercentage = model.WastageInPercentage / 100;
             var existingMaterialCost = db.PrintingEstimationMaterialCosts.SingleOrDefault(x => x.PrintingCostEstimationId == estId && x.EstimationMaterialType == model.EstimationMaterialType);
             if (existingMaterialCost != null)
                 ModelState.AddModelError("", $"{existingMaterialCost.EstimationMaterialType.ToString()} Exists!");
@@ -169,10 +170,11 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PrintingEstimationMaterialCosts_Update([DataSourceRequest]DataSourceRequest request, PrintingEstimationMaterialCost model)
         {
+            model.WastageInPercentage = model.WastageInPercentage / 100;
             var existingMaterialCost = db.PrintingEstimationMaterialCosts
                 .SingleOrDefault(x => x.PrintingCostEstimationId == model.PrintingCostEstimationId
                 && x.EstimationMaterialType == model.EstimationMaterialType
-                && x.PrintingEstimationMaterialCostId == model.PrintingEstimationMaterialCostId);
+                && x.PrintingEstimationMaterialCostId != model.PrintingEstimationMaterialCostId);
             if (existingMaterialCost != null)
                 ModelState.AddModelError("", $"{existingMaterialCost.EstimationMaterialType.ToString()} Exists!");
             if (ModelState.IsValid)

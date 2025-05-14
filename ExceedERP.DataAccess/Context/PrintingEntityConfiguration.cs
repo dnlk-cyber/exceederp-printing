@@ -1,11 +1,52 @@
 using ExceedERP.Core.Domain.printing.PrintingEstimation;
 using ExceedERP.Core.Domain.Printing;
 using ExceedERP.Core.Domain.Printing.PrintingEstimation;
+using ExceedERP.Core.Domain.Printing.PrintingProduction;
 using ExceedERP.Core.Domain.Printing.ProductionFollowUp;
 using System.Data.Entity.ModelConfiguration;
 
 namespace ExceedERP.DataAccess.Context
 {
+    public class PrintingProductionFollowUpEntityTypeConfiguration : EntityTypeConfiguration<PrintingProductionFollowUp>
+    {
+        public PrintingProductionFollowUpEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingProductionFollowUp", "Printing");
+            this.HasKey<int>(p => p.PrintingProductionFollowUpId);
+        }
+    }
+    public class PrintingProductionFollowUpTaskEntityTypeConfiguration : EntityTypeConfiguration<PrintingProductionFollowUpTask>
+    {
+        public PrintingProductionFollowUpTaskEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingProductionFollowUpTask", "Printing");
+            this.HasKey<int>(p => p.PrintingProductionFollowUpTaskId);
+        }
+    }
+    public class PrintingProductionDailyFollowUpDetailEntityTypeConfiguration : EntityTypeConfiguration<PrintingProductionDailyFollowUpDetail>
+    {
+        public PrintingProductionDailyFollowUpDetailEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingProductionDailyFollowUpDetail", "Printing");
+            this.HasKey<int>(p => p.PrintingProductionDailyFollowUpDetailId);
+        }
+    }
+    public class PrintingDailyFollowUpDelayReasonEntityTypeConfiguration : EntityTypeConfiguration<PrintingDailyFollowUpDelayReason>
+    {
+        public PrintingDailyFollowUpDelayReasonEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingDailyFollowUpDelayReason", "Printing");
+            this.HasKey<int>(p => p.PrintingDailyFollowUpDelayReasonId);
+        }
+    }
+    public class PrintingProductionAllottedRawMaterialEntityTypeConfiguration : EntityTypeConfiguration<PrintingProductionAllottedRawMaterial>
+    { 
+        public PrintingProductionAllottedRawMaterialEntityTypeConfiguration()
+        {
+            this.ToTable("PrintingProductionAllottedRawMaterial", "Printing");
+            this.HasKey<int>(p => p.PrintingProductionAllottedRawMaterialId);
+        }
+    }
     public class PrintingMachineDetailEntityTypeConfiguration : EntityTypeConfiguration<PrintingMachineDetail>
     {
         public PrintingMachineDetailEntityTypeConfiguration()

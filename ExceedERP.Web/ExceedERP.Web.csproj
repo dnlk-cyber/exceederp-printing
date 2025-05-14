@@ -2026,6 +2026,10 @@
     <Compile Include="Areas\Printing\Controllers\PrintingOverAllCostController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingPaperSizeController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProcessController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingProductionAllottedRawMaterialController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingProductionDailyFollowUpDetailController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingProductionFollowUpController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingProductionFollowUpTaskController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProductProcessController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProformaInvoiceController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProformaItemController.cs" />
@@ -7130,6 +7134,7 @@
     <Content Include="Areas\Printing\Views\PrintingMachineType\EditorTemplates\MachineTemplateName.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingMaterialCategory\EditorTemplates\CategoryItemTemplate.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingPaperSize\EditorTemplates\PaperSizeTemplate.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

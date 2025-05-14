@@ -65,7 +65,7 @@
         <div class="form-group">
             <label>Wastage(%)</label>
             <div>
-                @(Html.Kendo().NumericTextBoxFor(model => model.WastageInPercentage).HtmlAttributes(new { style = "width:100%" }).Max(1).Min(0))
+                @(Html.Kendo().NumericTextBoxFor(model => model.WastageInPercentage).HtmlAttributes(new { style = "width:100%" }).Min(0).Max(100))
 
             </div>
         </div>

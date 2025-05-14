@@ -70,7 +70,8 @@ namespace ExceedERP.Core.Domain.Printing
     {
         public int PrintingProductionLaborCostId { get; set; }
         [Display(Name = "Process Category")]
-        public PressCategory PressCategory { get; set; } 
+        public PressCategory PressCategory { get; set; }
+        public LabourActivity LabourActivity { get; set; } 
         [Display(Name = "Process Name")]
         public int? PrintingProcessId { get; set; }
         [Display(Name = "Machine Type")]

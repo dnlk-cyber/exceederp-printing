@@ -128,6 +128,7 @@ using ExceedERP.Core.Domain.JobCosting.Setting;
 using static ExceedERP.DataAccess.Context.JobCostingEntityConfiguration;
 using ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting;
 using ExceedERP.Core.Domain.Manufacturing.JobCosting;
+using ExceedERP.Core.Domain.Printing.PrintingProduction;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -1602,10 +1603,15 @@ namespace ExceedERP.DataAccess.Context
 
 
             #region printing 
+            modelBuilder.Configurations.Add(new PrintingProductionAllottedRawMaterialEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingDailyFollowUpDelayReasonEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingProductionDailyFollowUpDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingProductionFollowUpTaskEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingProductionFollowUpEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingMachineDetailEntityTypeConfiguration());       
         // modelBuilder.Configurations.Add(new PrintingJobOrderProductionJobDesignEntityTypeConfiguration());
         //modelBuilder.Configurations.Add(new PrintingJobOrderJobDesignEntityTypeConfiguration());
-        modelBuilder.Configurations.Add(new PrintingProductionLaborCostEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingProductionLaborCostEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionMaterialCostEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingJobOrderProductionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingEstimationMarginEntityTypeConfiguration());
@@ -2511,6 +2517,13 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<DirectLaborCost> DirectLaborCosts { get; set; }
 
         #endregion
+        #endregion
+        #region Print Followup
+        public DbSet<PrintingProductionFollowUp> PrintingProductionFollowUps { get; set; }
+        public DbSet<PrintingProductionFollowUpTask> PrintingProductionFollowUpTasks { get; set; }
+        public DbSet<PrintingProductionDailyFollowUpDetail> PrintingProductionDailyFollowUpDetails { get; set; }
+        public DbSet<PrintingDailyFollowUpDelayReason> PrintingDailyFollowUpDelayReasons { get; set; }
+        public DbSet<PrintingProductionAllottedRawMaterial> PrintingProductionAllottedRawMaterials { get; set; }
         #endregion
         #region Production Follow UP
         public DbSet<FurniturStandardJobDesign> FurniturStandardJobDesigns { get; set; }

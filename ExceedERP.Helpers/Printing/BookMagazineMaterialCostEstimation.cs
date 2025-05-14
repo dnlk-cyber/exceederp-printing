@@ -19,13 +19,14 @@ namespace ExceedERP.Helpers.Printing
             {
                 var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.TextPaperSizeId);
                 var categoryItem = db.PrintingMaterialCategoryItems.FirstOrDefault(x => x.PrintingMaterialCategoryItemId == model.PrintingMaterialCategoryItemId);
-                var paperQty = (estimation.ProductQuantity * estimation.Pages) / (paperSize.NoOfPagesToA1Ratio * 2);
+                var paperQty = Math.Ceiling((double)estimation.ProductQuantity * estimation.Pages / (paperSize.NoOfPagesToA1Ratio * 2));
                 if (categoryItem.PaperType == PaperType.SheetFed)
                 {
-                    return Math.Ceiling((double)paperQty);
+                    return Math.Ceiling(paperQty * (1 + model.WastageInPercentage));
                 }
                
-                return Math.Ceiling((paperQty * categoryItem.Length * categoryItem.Width * categoryItem.Weight) / 10000000 * (1 + model.WastageInPercentage));
+                var result = (paperQty * categoryItem.Length * categoryItem.Width * categoryItem.Weight) / 10000000;
+                return Math.Ceiling(result * (1 + model.WastageInPercentage));
             }
             return -1;
         }
@@ -38,7 +39,7 @@ namespace ExceedERP.Helpers.Printing
             }
             var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.CoverPaperSizeId);
 
-            var paperQty = (estimation.ProductQuantity) / paperSize.NoOfPagesToA1Ratio;
+            var paperQty = Math.Ceiling((double)estimation.ProductQuantity / paperSize.NoOfPagesToA1Ratio);
             
             return Math.Ceiling(paperQty * (1 + model.WastageInPercentage));
         }
@@ -60,7 +61,7 @@ namespace ExceedERP.Helpers.Printing
             {
                 return -1;
             }            
-            var plateQuantity = ((estimation.Pages * estimation.TextNoOfColors)/machineDetail.SectionUp) * Math.Ceiling(estimation.ProductQuantity / machine.OutputRate); // Rounds to the next whole number
+            var plateQuantity = Math.Ceiling(((estimation.Pages * estimation.TextNoOfColors)/machineDetail.SectionUp) * Math.Ceiling(estimation.ProductQuantity / machine.OutputRate)); // Rounds to the next whole number
             return Math.Ceiling(plateQuantity * (1 + model.WastageInPercentage));
         }
         public static double CalculateCoverPlate(PrintingEstimationMaterialCost model, int printingCostEstimationId)
@@ -81,7 +82,7 @@ namespace ExceedERP.Helpers.Printing
             {
                 return -1;
             }            
-            var plateQuantity = (estimation.CoverNoOfColor) * Math.Ceiling(estimation.ProductQuantity / machine.OutputRate * machineDetail.SectionUp); // Rounds to the next whole number
+            var plateQuantity = (estimation.CoverNoOfColor) * Math.Ceiling(estimation.ProductQuantity / (machine.OutputRate * machineDetail.SectionUp)); // Rounds to the next whole number
             return Math.Ceiling(plateQuantity * (1 + model.WastageInPercentage));
         }
 
@@ -94,7 +95,7 @@ namespace ExceedERP.Helpers.Printing
             }
             //PackagingPaper = (Quantity/Input)/2
             var packs = estimation.ProductQuantity / estimation.Pack;
-            return (double)packs / 2;
+            return ((double)packs / 2) * (1 + model.WastageInPercentage);
         }
         public static double CalculateGlue(PrintingEstimationMaterialCost model, int printingCostEstimationId)
         {
@@ -113,7 +114,7 @@ namespace ExceedERP.Helpers.Printing
                 return glueQuantity * (1 + model.WastageInPercentage);
             }
             glueQuantity = estimation.ProductQuantity / (1 / (paperSize.Width / 100 * 0.015));
-            return glueQuantity * (1 + model.WastageInPercentage);
+            return Math.Ceiling(glueQuantity * (1 + model.WastageInPercentage));
         }
         public static double CalculateStitchWire(PrintingEstimationMaterialCost model, int printingCostEstimationId)
         {
@@ -128,7 +129,7 @@ namespace ExceedERP.Helpers.Printing
             if (item == null)
                 return -1;
             var stitchWire = estimation.ProductQuantity * estimation.Staples / item.ConsumptionRate;
-            return stitchWire * (1 + model.WastageInPercentage);
+            return Math.Ceiling(stitchWire * (1 + model.WastageInPercentage));
         }
         public static double CalculateInkText(PrintingEstimationMaterialCost model, int printingCostEstimationId)
         {

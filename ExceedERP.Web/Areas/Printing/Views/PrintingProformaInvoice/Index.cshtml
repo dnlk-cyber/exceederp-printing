@@ -86,8 +86,8 @@
                       .Editable(editable => editable.Mode(GridEditMode.PopUp)
                       .TemplateName("PrintingProformaItemEditorTemplate"))
                       .Filterable()
-.Pageable()
-.Scrollable()
+                      .Pageable()
+                      .Scrollable()
                       .Events(ev => ev.DataBound("onChildDataBound"))
                       .DataSource(dataSource => dataSource
                           .Ajax()

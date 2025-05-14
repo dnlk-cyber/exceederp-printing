@@ -46,29 +46,29 @@
 )
 
 
-<script id="tabstrip" type="text/x-kendo-template">
-    @(Html.Kendo().TabStrip()
-                                                .Name("tab_#=PrintingJobOrderProductionId#")
-                                                .Items(item1 =>
-                                                {
-                                                    item1.Add().Text("Material").Content(
+    <script id="tabstrip" type="text/x-kendo-template">
+        @(Html.Kendo().TabStrip()
+                                                    .Name("tab_#=PrintingJobOrderProductionId#")
+                                                    .Items(item1 =>
+                                                    {
+                                                        item1.Add().Text("Material").Content(
+                                                        @<text>
+                                                            @material()
+                                                        </text>);
+                                                                @*item1.Add().Text("Labor Cost").Content(
                                                     @<text>
-                                                        @material()
-                                                    </text>);
-                                                            @*item1.Add().Text("Labor Cost").Content(
-                                                @<text>
-                                                    @labor()
-                                                </text>);*@
-                                                item1.Add().Text("Store Requisition").Content(
-                                    @<text>
-                                        @StoreRequisition()
-                                    </text>);
-                                                item1.Add().Text("Documents").Content(
-                                    @<text>
-                                        @BoqDocs()
-                                    </text>);
-                        }).ToClientTemplate())
-</script>
+                                                        @labor()
+                                                    </text>);*@
+                                                    item1.Add().Text("Store Requisition").Content(
+                                        @<text>
+                                            @StoreRequisition()
+                                        </text>);
+                                                    item1.Add().Text("Documents").Content(
+                                        @<text>
+                                            @BoqDocs()
+                                        </text>);
+                            }).ToClientTemplate())
+    </script>
 
 
 @helper material()

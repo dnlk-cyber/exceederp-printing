@@ -19,13 +19,14 @@ namespace ExceedERP.Helpers.Printing
             {
                 var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.TextPaperSizeId);
                 var categoryItem = db.PrintingMaterialCategoryItems.FirstOrDefault(x => x.PrintingMaterialCategoryItemId == model.PrintingMaterialCategoryItemId);
-                var paperQty = (estimation.ProductQuantity * estimation.Pages * estimation.Copy) / (paperSize.NoOfPagesToA1Ratio * 2);
+                var paperQty = Math.Ceiling((double)(estimation.ProductQuantity * estimation.Pages * estimation.Copy) / (paperSize.NoOfPagesToA1Ratio * 2));
                 if (categoryItem.PaperType == PaperType.SheetFed)
                 {
-                    return Math.Ceiling((double)paperQty);
+                    return Math.Ceiling(paperQty * (1 + model.WastageInPercentage));
                 }
 
-                return Math.Ceiling((paperQty * categoryItem.Length * categoryItem.Width * categoryItem.Weight) / 10000000 * (1 + model.WastageInPercentage));
+                var result = Math.Ceiling((paperQty * categoryItem.Length * categoryItem.Width * categoryItem.Weight) / 10000000);
+                return Math.Ceiling(result * (1 + model.WastageInPercentage));
             }
             return -1;
         }
@@ -39,7 +40,7 @@ namespace ExceedERP.Helpers.Printing
             }
             var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.CoverPaperSizeId);
 
-            var paperQty = (estimation.ProductQuantity) / paperSize.NoOfPagesToA1Ratio;
+            var paperQty = Math.Ceiling((double)(estimation.ProductQuantity) / paperSize.NoOfPagesToA1Ratio);
 
             return Math.Ceiling(paperQty * (1 + model.WastageInPercentage));
         }
@@ -62,7 +63,7 @@ namespace ExceedERP.Helpers.Printing
             {
                 return -1;
             }
-            var plateQuantity = ((estimation.Pages * estimation.TextNoOfColors) / machineDetail.SectionUp) * Math.Ceiling(estimation.ProductQuantity / machine.OutputRate); // Rounds to the next whole number
+            var plateQuantity = Math.Ceiling((double)((estimation.Pages * estimation.TextNoOfColors) / machineDetail.SectionUp)) * Math.Ceiling(estimation.ProductQuantity / machine.OutputRate); // Rounds to the next whole number
             return Math.Ceiling(plateQuantity * (1 + model.WastageInPercentage));
         }
         public static double CalculateCoverPlate(PrintingEstimationMaterialCost model, int printingCostEstimationId)

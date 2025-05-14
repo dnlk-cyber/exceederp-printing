@@ -1,0 +1,317 @@
+﻿@using ExceedERP.Core.Domain.Printing.PrintingProduction
+
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<label>Production Follow-Up</label>
+
+@(Html.Kendo().Grid<PrintingProductionFollowUp>()
+                    .Name("grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.JobOrderId);
+                        columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Title("Customer");
+                        columns.Bound(c => c.PrintJobType);
+                        columns.Bound(c => c.JobDescription);
+                        columns.ForeignKey(c => c.TextPaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text");
+            //columns.Bound(c => c.TextNoOfColors);
+            //columns.Bound(c => c.CoverNoOfColor);
+            //columns.Bound(c => c.TotalTextNoPages).Title("Number Of Pages");
+            columns.Bound(c => c.Quantity);
+                        columns.Bound(c => c.JobDescription);
+
+                        columns.Command(command =>
+                        {
+                            command.Edit().Text(" ");
+                            command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+                            command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                            command.Destroy().Text(" ");
+                        }).Width(220);
+                    })
+
+                    .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                    .TemplateName("PrintingJoborderProductionEditorTemplate"))
+                    .Filterable()
+                    .Pageable()
+                    .Scrollable(s => s.Height(400))
+                    //.Events(ev => ev.DetailExpand("MasterOnExpand")
+                    //.DataBound("dataBound"))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Sort(sort => sort.Add(e => e.PrintingProductionFollowUpId).Descending())
+                        .Events(ev => ev.Error("error_handler(\"grid\")")
+                                .RequestStart("onRequestStart(\"grid\")")
+                                .RequestEnd("onRequestEnd(\"grid\")"))
+                        .Model(model => model.Id(p => p.PrintingProductionFollowUpId))
+                        .Read(read => read.Action("PrintingJobOrderProduction_Read", "PrintingProductionFollowUp"))
+                        .Update(update => update.Action("PrintingOrderProduction_Update", "PrintingProductionFollowUp"))
+                    ).ClientDetailTemplateId("tabstrip")
+)
+
+
+<script id="tabstrip" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                        .Name("tab_#=PrintingProductionFollowUpId#")
+                        .Items(item1 =>
+                        {
+                            item1.Add().Text("Alloted Raw Materials").Content(
+                            @<text>
+                                @AllottedRawMaterial()
+                            </text>);
+                                    item1.Add().Text("Daily Follow-Up").Content(
+                        @<text>
+                            @DailyFollowUp()
+                        </text>);
+                        item1.Add().Text("Machine Maintenance").Content(
+            @<text>
+
+            </text>);
+    item1.Add().Text("").Content(
+@<text>
+
+</text>);
+}).ToClientTemplate())
+</script>
+
+
+@helper AllottedRawMaterial()
+{
+    @(Html.Kendo().Grid<PrintingProductionAllottedRawMaterial>()
+                                .Name("material_#=PrintingProductionFollowUpId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.PrintingMaterialCategoryId, (IEnumerable)ViewData["PrintingMaterialCategory"], "Value", "Text");
+                                    columns.ForeignKey(c => c.PrintingMaterialCategoryItemId, (IEnumerable)ViewData["PItem"], "Value", "Text");
+                                    columns.Bound(c => c.Quantity);
+
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Filterable()
+                                .Scrollable()
+                                .Pageable()
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(ev => ev.Error("error_handler(\"material_#=PrintingProductionFollowUpId#\")")
+                                            .RequestStart("onRequestStart(\"material_#=PrintingProductionFollowUpId#\")")
+                                            .RequestEnd("onRequestEnd(\"material_#=PrintingProductionFollowUpId#\")"))
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.PrintingProductionAllottedRawMaterialId);
+
+                                    })
+                                    .Read(read => read.Action("Read", "PrintingProductionAllottedRawMaterial", new { id = "#=PrintingProductionFollowUpId#" }))
+                                    .Update(update => update.Action("Update", "PrintingProductionAllottedRawMaterial"))
+
+                                ).ToClientTemplate()
+    )
+}
+@helper FollowUpTask()
+{
+    @(Html.Kendo().Grid<PrintingProductionFollowUpTask>()
+                                .Name("followup#=PrintingProductionFollowUpId#")
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(c => c.PressCategory);
+                                    columns.Bound(c => c.LabourActivity);
+                                    columns.ForeignKey(c => c.PrintingmachineTypeId, (IEnumerable)ViewData["machine"], "Value", "Text");
+
+                                    columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text");
+
+                                    columns.Bound(c => c.UoM);
+
+                                    columns.Bound(c => c.PlannedOutput);
+                                    columns.Bound(c => c.EstimatedHours);
+
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Filterable()
+                                .Scrollable()
+                                .Pageable()
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(ev => ev.Error("error_handler(\"followup#=PrintingProductionFollowUpId#\")")
+                                            .RequestStart("onRequestStart(\"followup#=PrintingProductionFollowUpId#\")")
+                                            .RequestEnd("onRequestEnd(\"followup#=PrintingProductionFollowUpId#\")"))
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.PrintingProductionFollowUpTaskId);
+
+                                    })
+                                    .Read(read => read.Action("Read", "PrintingProductionFollowUpTask", new { id = "#=PrintingProductionFollowUpId#" }))
+                                    .Create(create => create.Action("Create", "PrintingProductionFollowUpTask", new { id = "#=PrintingProductionFollowUpId#" }))
+                                    .Update(update => update.Action("Update", "PrintingProductionFollowUpTask"))
+                                    .Destroy(delete => delete.Action("Delete", "PrintingProductionFollowUpTask"))
+
+                                ).ToClientTemplate()
+    )
+}
+
+@helper DailyFollowUp()
+{
+    @(Html.Kendo().Grid<PrintingProductionDailyFollowUpDetail>()
+                                .Name("followup#=PrintingProductionFollowUpTaskId#")
+                                .Columns(columns =>
+                                {
+
+                                    columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text");
+                                    columns.Bound(c => c.ProductionStartTime);
+                                    columns.Bound(c => c.ProductionEndTime);
+                                    columns.Bound(c => c.UoM);
+
+                                    columns.Bound(c => c.ActualOutput);
+                                    columns.Bound(c => c.TimeSpentHours);
+
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Filterable()
+                                .Scrollable()
+                                .Pageable()
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(ev => ev.Error("error_handler(\"followup#=PrintingProductionFollowUpTaskId#\")")
+                                            .RequestStart("onRequestStart(\"followup#=PrintingProductionFollowUpTaskId#\")")
+                                            .RequestEnd("onRequestEnd(\"followup#=PrintingProductionFollowUpTaskId#\")"))
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.PrintingProductionDailyFollowUpDetailId);
+
+                                    })
+                                    .Read(read => read.Action("Read", "PrintingProductionDailyFollowUpDetail", new { id = "#=PrintingProductionFollowUpTaskId#" }))
+                                    .Create(create => create.Action("Create", "PrintingProductionDailyFollowUpDetail", new { id = "#=PrintingProductionFollowUpTaskId#" }))
+                                    .Update(update => update.Action("Update", "PrintingProductionDailyFollowUpDetail"))
+                                    .Destroy(delete => delete.Action("Delete", "PrintingProductionDailyFollowUpDetail"))
+
+                                ).ToClientTemplate()
+    )
+}
+
+
+<script type="text/javascript">
+
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            $(this).find(".k-grid-reject").hide();
+            if (dataItem.IsOnlineApproved) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+            else if (dataItem.IsSendForApproval) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-reject").show();
+
+                $(this).find(".k-grid-approve").show();
+            }
+            else {
+                $(this).find(".k-grid-approve").hide();
+            }
+
+        });
+    }
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var codeid;
+    var isApproved;
+    var isChecked;
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.PrintingProductionFollowUpId;
+        isApproved = masterDataItem.IsPrePressApproved;
+        isChecked = masterDataItem.IsPrePressChecked;
+        if (isChecked || isApproved) {
+            $(".k-grid-add", "#grid_" + codeid).hide();
+        }
+
+
+    }
+    function onChildDataBound(e) {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (isChecked == true || isApproved) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+        });
+
+    }
+    function handleChecked(e) {
+
+        if (confirm("Are you sure you this form is checked?")) {
+            var grid = this;
+            var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            var id = dataItem.PrintingProductionFollowUpId;
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CheckProforma", "PrintingProductionFollowUp", new { Area = "Printing" })',
+                data: { id: id},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message);
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+
+      function handleApprove(e) {
+        if (confirm("Are you sure you want to approve?")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("ApproveProforma", "PrintingProductionFollowUp", new { Area = "Printing" })',
+                data: { id: dataItem.PrintingProductionFollowUpId},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+
+</script>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>
