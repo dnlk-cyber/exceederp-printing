@@ -6,7 +6,7 @@
                         .Name("grid")
                         .Columns(columns =>
                         {
-                            columns.Bound(c => c.JobOrderNo);
+                            columns.Bound(c => c.PrintingJobOrderItemId);
                             columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Title("Customer");
                             columns.Bound(c => c.PrintJobType);
                             columns.Bound(c => c.JobDescription);
@@ -20,14 +20,12 @@
                             columns.Bound(c => c.DeliveryDate);
                             columns.Command(command =>
                             {
-                                command.Edit().Text(" ");
+                                
                                 command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
                                 command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
                             }).Width(220);
                         })
-
-                        .Editable(editable => editable.Mode(GridEditMode.PopUp)
-                        .TemplateName("PrintingJoborderProductionEditorTemplate"))
+                        
                         .Filterable()
                         .Pageable()
                         .Scrollable(s => s.Height(400))
@@ -41,7 +39,7 @@
                                     .RequestEnd("onRequestEnd(\"grid\")"))
                             .Model(model => model.Id(p => p.PrintingJobOrderProductionId))
                             .Read(read => read.Action("PrintingJobOrderProduction_Read", "PrintingJobOrderProduction"))
-                            .Update(update => update.Action("PrintingOrderProduction_Update", "PrintingJobOrderProduction"))
+                            //.Update(update => update.Action("PrintingOrderProduction_Update", "PrintingJobOrderProduction"))
                         ).ClientDetailTemplateId("tabstrip")
 )
 
@@ -77,8 +75,10 @@
                                                         .Name("material_#=PrintingJobOrderProductionId#")
                                                         .Columns(columns =>
                                                         {
+                                                            columns.Bound(c => c.EstimationMaterialType);
                                                             columns.ForeignKey(c => c.PrintingMaterialCategoryId, (IEnumerable)ViewData["PrintingMaterialCategory"], "Value", "Text");
                                                             columns.ForeignKey(c => c.PrintingMaterialCategoryItemId, (IEnumerable)ViewData["PItem"], "Value", "Text");
+                                                            columns.Bound(c => c.UnitOfMeasurment);
                                                             columns.Bound(c => c.Quantity);
 
                                                         })
@@ -142,13 +142,13 @@
 
 @helper BoqDocs()
 {
-    @(Html.Kendo().Grid<PrintingJobOrderJobDesign>()
+    @(Html.Kendo().Grid<PrintingJobOrderProductionJobDesign>()
                                 .Name("CompanyDocument#=PrintingJobOrderProductionId#")
                                 .Columns(columns =>
                                 {
-                                    columns.Bound(c => c.FileName).ClientTemplate("<a href='/Printing/PrintingProductionDesgin/DownloadCompanyDocument?CompanyDocumentId=\\#=PrintingJobOrderJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>");
+                                    columns.Bound(c => c.FileName).ClientTemplate("<a href='/Printing/PrintingProductionDesgin/DownloadCompanyDocument?CompanyDocumentId=\\#=PrintingJobOrderProductionJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>");
                                     columns.Bound(c => c.Description);
-                                    columns.Template(e => { }).ClientTemplate("<a href='/Printing/PrintingProductionDesgin/DownloadCompanyDocument?CompanyDocumentId=\\#=PrintingJobOrderJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>");
+                                    columns.Template(e => { }).ClientTemplate("<a href='/Printing/PrintingProductionDesgin/DownloadCompanyDocument?CompanyDocumentId=\\#=PrintingJobOrderProductionJobDesignId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>");
                     
                                 })
                                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Answer").Window(window => { window.Title(""); window.Scrollable(false); }))
@@ -156,15 +156,16 @@
                                 .Scrollable(h => h.Height("auto"))
                                 .DataSource(dataSource => dataSource
                                 .Ajax()
-                                .Sort(sort => sort.Add(c => c.PrintingJobOrderJobDesignId).Descending())
+                                .Sort(sort => sort.Add(c => c.PrintingJobOrderProductionJobDesignId).Descending())
                                 .Events(events =>
                                 {
                                     events.Error("error_handler(\"CompanyDocument#=PrintingJobOrderProductionId#\")");
                                     events.RequestStart("onRequestStart(\"CompanyDocument#=PrintingJobOrderProductionId#\")");
                                     events.RequestEnd("onRequestEnd(\"CompanyDocument#=PrintingJobOrderProductionId#\")");
                                 })
-                                .Model(model => model.Id(p => p.PrintingJobOrderJobDesignId))
-                                .Read(read => read.Action("ReadProduction", "PrintingProductionDesgin", new { id = "#=PrintingJobOrderId#" }))
+                                .Model(model => model.Id(p => p.PrintingJobOrderProductionJobDesignId))
+                                .Read(read => read.Action("ReadProduction", "PrintingProductionDesgin", new { id = "#=PrintingJobOrderProductionId#" }))
+                                .Destroy(destroy => destroy.Action("Delete", "PrintingProductionDesgin", new { area = "Printing" }))
                                 ).ToClientTemplate())
 
 }
@@ -569,7 +570,7 @@
             var id = dataItem.PrintingJobOrderProductionId;
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("CheckJob", "PrintingJobOrder", new { Area = "Printing" })',
+                url: '@Url.Action("CheckProduction", "PrintingJobOrderProduction", new { Area = "Printing" })',
                 data: { id: id},
                 success: function (result) {
                     if (result.Success) {
@@ -593,7 +594,7 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("ApproveJobOrder", "PrintingJobOrder", new { Area = "Printing" })',
+                url: '@Url.Action("ApproveProduction", "PrintingJobOrderProduction", new { Area = "Printing" })',
                 data: { id: dataItem.PrintingJobOrderProductionId},
                 success: function (result) {
                     if (result.Success) {
@@ -883,59 +884,7 @@
         }
     }
 
-
-
-    /*------------------------------------------Approval for production job order---------------------------------------------*/
-
-    function handleChecked(e) {
-
-        if (confirm("Are you sure you this form is checked?")) {
-            var grid = this;
-            var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
-            var id = dataItem.PrintingJobOrderProductionId;
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("CheckProduction", "FurnitureJobOrderProduction", new { Area = "Manufacturing" })',
-                data: { id: id},
-                success: function (result) {
-                    if (result.Success) {
-                        toastr.success(result.Message);
-                        $("#grid").data("kendoGrid").dataSource.read();
-                    }
-                    else {
-                        toastr.error(result.Message);
-                    }
-                },
-                error: function (result) {
-                    alert(result)
-                }
-            });
-        }
-    }
-
-    function handleApprove(e) {
-        if (confirm("Are you sure you want to approve?")) {
-            var grid = this;
-            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("ApproveProduction", "FurnitureJobOrderProduction", new { Area = "Manufacturing" })',
-                data: { id: dataItem.PrintingJobOrderProductionId},
-                success: function (result) {
-                    if (result.Success) {
-                        toastr.success(result.Message)
-                        $("#grid").data("kendoGrid").dataSource.read();
-                    }
-                    else {
-                        toastr.error(result.Message)
-                    }
-                },
-                error: function (result) {
-                    alert(result)
-                }
-            });
-        }
-    }
+    
 </script>
 
 
@@ -968,7 +917,7 @@
     function UploadCompanyFile() {
 
             $.ajax({
-                url: '@Url.Action("UploadCompanyFile", "PrintingJobOrderDesgin")',
+                url: '@Url.Action("UploadCompanyFile", "PrintingProductionDesgin")',
                 //contentType: "application/json; charset=utf-8",
                 data: function () {
                     var data = new FormData();
@@ -981,7 +930,7 @@
                     });
 
                    // data.append("CompanyFile", $("#CompanyFile").get(0).files[0]);
-                    data.append("furnitureBoqRequestId", $("#PrintingJobOrderProductionId").val());
+                    data.append("id", $("#PrintingJobOrderProductionId").val());
                     data.append("Description", $("#Description").val());
                     return data;
                 }(),

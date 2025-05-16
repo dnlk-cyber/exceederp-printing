@@ -1,0 +1,100 @@
+﻿
+@model ExceedERP.Core.Domain.Printing.PrintingProduction.PrintingProductionDailyFollowUpDetail
+
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Operator</label>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.OperatorId)
+                                               .ValuePrimitive(true)
+                                               .OptionLabel("Select Operator...")
+                                               .DataTextField("Text")
+                                               .DataValueField("Value")
+                                               .Filter("contains")
+                                               .DataSource(dataSource =>
+                                               {
+                                                   dataSource.Read(read => read.Action("GetEmployees", "PrintDataProvider", new { Area = "Printing" }).Data("filterOperator")
+                                                   )
+                                                   .ServerFiltering(true);
+                                               }).HtmlAttributes(new { style = "width:100%" })
+
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>From</label>
+                <div>
+                    @(Html.Kendo().DateTimePickerFor(model => model.ProductionStartTime).HtmlAttributes(new { style = "width:100%" }))
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>To</label>
+                <div>
+                    @(Html.Kendo().DateTimePickerFor(model => model.ProductionEndTime).HtmlAttributes(new { style = "width:100%" }))
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Actual Output</label>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.ActualOutput).HtmlAttributes(new { style = "width:100%" }).Min(0))
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Unit Of Measurement</label>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.UoM)
+                                            .ValuePrimitive(true)
+                                            .OptionLabel("Select unit...")
+                                            .DataTextField("Text")
+                                            .DataValueField("Value")
+                                            .Filter("contains")
+
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetUoM", "PrintDataProvider", new { area = "Printing" }).Data("filterUoM"))
+                                                    .ServerFiltering(true);
+                                            }).HtmlAttributes(new { style = "width:100%" }))
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Time Spent(Minutes)</label>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.TimeSpentHours).HtmlAttributes(new { style = "width:100%" }).Min(0))
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>Remark</label>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Remark).HtmlAttributes(new { style = "width:100%" }))
+                </div>
+            </div>
+        </div>
+    </div>

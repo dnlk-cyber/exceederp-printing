@@ -14,14 +14,17 @@ namespace ExceedERP.Core.Domain.Printing.PrintingProduction
         [Key]
         public int PrintingProductionFollowUpId { get; set; }
         [Display(Name ="Job No.")]
-        public int JobOrderId { get; set; } // Eg. 102
+        public int PrintingJobOrderItemId { get; set; } // Eg. 102
         [Display(Name = "Customer")]
         public int CustomerId { get; set; } // Eg. Education Minster
         public PrintJobType PrintJobType { get; set; } // Eg. Book
         public BindingStyle BindingStyle { get; set; } // Eg. Perfect
         [Display(Name = "Paper for text")]
         public int TextPaperSizeId { get; set; } // Eg. A4
-        public int Quantity { get; set; } // Eg. 10000
+        public int CoverPaperSizeId { get; set; } // Eg. A3
+        public int TextNoOfColor { get; set; }
+        public int CoverNoOfColor { get; set; }
+        public decimal Quantity { get; set; } // Eg. 10000
         public int Pages { get; set; } // Eg. 200
         public string JobDescription { get; set; } // Eg. Grade 12 Physics Text Book
         
@@ -35,7 +38,7 @@ namespace ExceedERP.Core.Domain.Printing.PrintingProduction
         [Display(Name = "Activity Type")]
         public LabourActivity LabourActivity { get; set; } // Eg. Plate Making
         [Display(Name = "Machine Type")]
-        public int? PrintingmachineTypeId { get; set; }
+        public int? MachineTypeId { get; set; }
         [Display(Name ="Assigned To")]
         public int OperatorId { get; set; } // Eg. Abebe
         public string UoM { get; set; } // Eg. Plate
@@ -55,8 +58,10 @@ namespace ExceedERP.Core.Domain.Printing.PrintingProduction
         [Display(Name ="Operated By")]  
         public int OperatorId { get; set; } // Eg. Abebe
         [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yy HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime ProductionStartTime { get; set; } // Eg. 5/13/2025 7:10 PM
         [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yy HH:mm}", ApplyFormatInEditMode = true)]  
         public DateTime ProductionEndTime { get; set; }  // Eg. 5/13/2025 10:00 PM
         public string UoM { get; set; } // Eg. Plate
       
@@ -82,6 +87,8 @@ namespace ExceedERP.Core.Domain.Printing.PrintingProduction
     {
         [Key]
         public int PrintingProductionAllottedRawMaterialId { get; set; }
+        [Display(Name = "Material Type")]
+        public EstimationMaterialType EstimationMaterialType { get; set; }
         [Display(Name = "Item Category")]
         public int PrintingMaterialCategoryId { get; set; }
         [Display(Name = "Item Name")]

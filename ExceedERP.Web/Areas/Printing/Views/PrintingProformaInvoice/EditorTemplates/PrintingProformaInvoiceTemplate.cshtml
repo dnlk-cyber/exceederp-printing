@@ -2,8 +2,7 @@
 @model ExceedERP.Core.Domain.Printing.PrintingProformaInvoice
 
 <div class="row">
-
-    <div class="col-sm-2">
+    <div class="col-sm-12">
         <div class="form-group">
             <label>Customer</label>
             <div>
@@ -21,7 +20,9 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
+</div>
+<div class="row">
+    <div class="col-sm-12">
         <div class="form-group">
             <label>Delivery Period/Day</label>
             <div>
@@ -29,7 +30,9 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
+</div>
+<div class="row">
+    <div class="col-sm-12">
         <div class="form-group">
             <label>Price Validity Period</label>
             <div>
@@ -37,17 +40,19 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
+</div>
+<div class="row">
+    <div class="col-sm-12">
         <div class="form-group">
             <label>Payment Type</label>
             <div>
                 @(Html.Kendo().DropDownListFor(m => m.PaymentType)
-                            .OptionLabel("Task Type...")
-                            .DataTextField("Text")
-                            .DataValueField("Value")
+                                                    .OptionLabel("Task Type...")
+                                                    .DataTextField("Text")
+                                                    .DataValueField("Value")
 
-                            .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.TypeOfPayment))
-                            )
+                                                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.TypeOfPayment))
+                                                    ).HtmlAttributes(new { style = "width:100%" })
                 )
             </div>
         </div>
@@ -55,7 +60,7 @@
 </div>
 
 <div class="row">
-    <div class="col-sm-2">
+    <div class="col-sm-12">
         <div class="form-group">
             <label>Mode of Payment</label>
             <div>
@@ -63,12 +68,5 @@
             </div>
         </div>
     </div>
-    @*<div class="col-sm-2">
-            <div class="form-group">
-                <label>Advance Payment(%)</label>
-                <div>
-                    @(Html.Kendo().TextBoxFor(model => model.AdvancePaymentInPercent).HtmlAttributes(new { style = "width:100%" }))
-                </div>
-            </div>
-        </div>*@
+    
 </div>

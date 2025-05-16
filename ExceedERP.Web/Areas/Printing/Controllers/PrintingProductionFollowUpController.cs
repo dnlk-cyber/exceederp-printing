@@ -18,6 +18,12 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public ActionResult Index()
         {
+            ViewData["Machine"] = db.PrintingMachineTypes.Select(s => new
+            {
+                Text = s.MachineTypeName,
+                Value = s.PrintingMachineTypeId
+            });
+
             ViewData["Customer"] = db.OrganizationCustomers.Select(s => new
             {
                 Value = s.OrganizationCustomerID,

@@ -7135,6 +7135,8 @@
     <Content Include="Areas\Printing\Views\PrintingMaterialCategory\EditorTemplates\CategoryItemTemplate.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingPaperSize\EditorTemplates\PaperSizeTemplate.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\Index.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\EditorTemplates\FollowUpDetailTemplate.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\EditorTemplates\FollowUpTaskTemplate.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

@@ -22,7 +22,7 @@
     })
     .ToolBar(toolbar =>
     {
-    toolbar.Create();
+        toolbar.Create();
     })
     .Editable(editable => editable.Mode(GridEditMode.PopUp)
     .TemplateName("PrintingJoborderEditorTemplate"))
@@ -146,7 +146,7 @@
                 })
                 .Model(model => model.Id(p => p.PrintingJobOrderJobDesignId))
                 .Read(read => read.Action("Read", "PrintingJobOrderDesgin", new { id = "#=PrintingJobOrderId#" }))
-                .Destroy(destroy => destroy.Action("Delete", "PrintingJobOrderDesgin", new { area = "Manufacturing" }))
+                .Destroy(destroy => destroy.Action("Delete", "PrintingJobOrderDesgin", new { area = "Printing" }))
                 ).ToClientTemplate())
 
 }
@@ -295,8 +295,8 @@
         height: auto;
     }
 
-    .row .col-sm-2 {
-        width: 150px;
+    .row .col-sm-12 {
+        width: 300px;
     }
 
     .row {

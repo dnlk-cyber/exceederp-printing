@@ -12,23 +12,25 @@
                     .Name("grid")
                     .Columns(columns =>
                     {
-                        columns.Bound(c => c.JobOrderId);
+                        columns.Bound(c => c.PrintingJobOrderItemId).Title("Job No.");
                         columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Title("Customer");
                         columns.Bound(c => c.PrintJobType);
                         columns.Bound(c => c.JobDescription);
                         columns.ForeignKey(c => c.TextPaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text");
-            //columns.Bound(c => c.TextNoOfColors);
-            //columns.Bound(c => c.CoverNoOfColor);
-            //columns.Bound(c => c.TotalTextNoPages).Title("Number Of Pages");
-            columns.Bound(c => c.Quantity);
+                        columns.ForeignKey(c => c.CoverPaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text");
+                        columns.Bound(c => c.BindingStyle);
+                        columns.Bound(c => c.Pages);
+                        columns.Bound(c => c.TextNoOfColor);
+                        columns.Bound(c => c.CoverNoOfColor);
+                        columns.Bound(c => c.Quantity);
                         columns.Bound(c => c.JobDescription);
 
                         columns.Command(command =>
                         {
-                            command.Edit().Text(" ");
+                            //command.Edit().Text(" ");
                             command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
                             command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
-                            command.Destroy().Text(" ");
+
                         }).Width(220);
                     })
 
@@ -61,19 +63,19 @@
                             @<text>
                                 @AllottedRawMaterial()
                             </text>);
-                                    item1.Add().Text("Daily Follow-Up").Content(
-                        @<text>
-                            @DailyFollowUp()
-                        </text>);
-                        item1.Add().Text("Machine Maintenance").Content(
-            @<text>
+                            item1.Add().Text("Daily Follow-Up").Content(
+                            @<text>
+                                @FollowUpTask()
+                            </text>);
+                            item1.Add().Text("Machine Maintenance").Content(
+                            @<text>
 
-            </text>);
-    item1.Add().Text("").Content(
-@<text>
+                            </text>);
+                            item1.Add().Text("").Content(
+                            @<text>
 
-</text>);
-}).ToClientTemplate())
+                            </text>);
+                            }).ToClientTemplate())
 </script>
 
 
@@ -83,8 +85,10 @@
                                 .Name("material_#=PrintingProductionFollowUpId#")
                                 .Columns(columns =>
                                 {
+                                    columns.Bound(c => c.EstimationMaterialType);
                                     columns.ForeignKey(c => c.PrintingMaterialCategoryId, (IEnumerable)ViewData["PrintingMaterialCategory"], "Value", "Text");
                                     columns.ForeignKey(c => c.PrintingMaterialCategoryItemId, (IEnumerable)ViewData["PItem"], "Value", "Text");
+                                    columns.Bound(c => c.UnitOfMeasurment);
                                     columns.Bound(c => c.Quantity);
 
                                 })
@@ -92,6 +96,7 @@
                                 .Filterable()
                                 .Scrollable()
                                 .Pageable()
+                                
                                 .DataSource(dataSource => dataSource
                                     .Ajax()
                                     .Events(ev => ev.Error("error_handler(\"material_#=PrintingProductionFollowUpId#\")")
@@ -108,6 +113,8 @@
                                 ).ToClientTemplate()
     )
 }
+
+
 @helper FollowUpTask()
 {
     @(Html.Kendo().Grid<PrintingProductionFollowUpTask>()
@@ -116,7 +123,7 @@
                                 {
                                     columns.Bound(c => c.PressCategory);
                                     columns.Bound(c => c.LabourActivity);
-                                    columns.ForeignKey(c => c.PrintingmachineTypeId, (IEnumerable)ViewData["machine"], "Value", "Text");
+                                    columns.ForeignKey(c => c.MachineTypeId, (IEnumerable)ViewData["Machine"], "Value", "Text");
 
                                     columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text");
 
@@ -124,12 +131,24 @@
 
                                     columns.Bound(c => c.PlannedOutput);
                                     columns.Bound(c => c.EstimatedHours);
-
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { @class = "edit", title = "edit" });
+                                        //command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+                                        //command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                                        command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { @class = "delete", title = "delete" });
+                                    }).Width(180);
                                 })
-                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create();
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                .TemplateName("FollowUpTaskTemplate"))
                                 .Filterable()
-                                .Scrollable()
                                 .Pageable()
+                                .Scrollable(s => s.Height(400))
+                                .ClientDetailTemplateId("tabstrip2")
                                 .DataSource(dataSource => dataSource
                                     .Ajax()
                                     .Events(ev => ev.Error("error_handler(\"followup#=PrintingProductionFollowUpId#\")")
@@ -148,11 +167,26 @@
                                 ).ToClientTemplate()
     )
 }
+<script id="tabstrip2" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                .Name("tab_#=PrintingProductionFollowUpTaskId#")
+                .Items(item1 =>
+                {
+                    item1.Add().Text("Daily Follow-Up").Content(
+                    @<text>
+                        @DailyFollowUp()
+                    </text>);
+                            item1.Add().Text("").Content(
+                            @<text>
 
+                            </text>);
+
+                                }).ToClientTemplate())
+</script>
 @helper DailyFollowUp()
 {
     @(Html.Kendo().Grid<PrintingProductionDailyFollowUpDetail>()
-                                .Name("followup#=PrintingProductionFollowUpTaskId#")
+                                .Name("dailyfollowup#=PrintingProductionFollowUpTaskId#")
                                 .Columns(columns =>
                                 {
 
@@ -165,15 +199,20 @@
                                     columns.Bound(c => c.TimeSpentHours);
 
                                 })
-                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                 .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create();
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                .TemplateName("FollowUpDetailTemplate"))
                                 .Filterable()
                                 .Scrollable()
                                 .Pageable()
                                 .DataSource(dataSource => dataSource
                                     .Ajax()
-                                    .Events(ev => ev.Error("error_handler(\"followup#=PrintingProductionFollowUpTaskId#\")")
-                                            .RequestStart("onRequestStart(\"followup#=PrintingProductionFollowUpTaskId#\")")
-                                            .RequestEnd("onRequestEnd(\"followup#=PrintingProductionFollowUpTaskId#\")"))
+                                    .Events(ev => ev.Error("error_handler(\"dailyfollowup#=PrintingProductionFollowUpTaskId#\")")
+                                            .RequestStart("onRequestStart(\"dailyfollowup#=PrintingProductionFollowUpTaskId#\")")
+                                            .RequestEnd("onRequestEnd(\"dailyfollowup#=PrintingProductionFollowUpTaskId#\")"))
                                     .Model(model =>
                                     {
                                         model.Id(p => p.PrintingProductionDailyFollowUpDetailId);
@@ -188,7 +227,48 @@
     )
 }
 
+<script type="text/javascript">
+    function filterTextMachine() {
+        return {
+            text: $("#MachineTypeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterUoM() {
+        return {
+            text: $("#UoM").data("kendoDropDownList").filterInput.val()
+        }
+    }
+    function filterOperator() {
+        return {
+            text: $("#OperatorId").data("kendoDropDownList").filterInput.val()
+        }
+    }
+    function onPressCategoryChange(e) {
+        var pressCategoryValue = this.value(); // Get selected value (1, 2, or 3)
+        var labourDropdown = $("#LabourActivity").data("kendoDropDownList");
 
+        // Map PressCategory to LabourActivity ranges
+        var ranges = {
+            1: [101, 199], // PrePress
+            2: [201, 299], // Press
+            3: [301, 399]  // PostPress
+        };
+
+        var selectedRange = ranges[pressCategoryValue];
+        var allOptions = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(
+            ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.LabourActivity))
+        ));
+
+        // Filter options
+        var filteredOptions = allOptions.filter(function (item) {
+            var val = parseInt(item.Value);
+            return val >= selectedRange[0] && val <= selectedRange[1];
+        });
+
+        labourDropdown.setDataSource(new kendo.data.DataSource({ data: filteredOptions }));
+        labourDropdown.select(0); // Optionally select the first item
+    }
+</script>
 <script type="text/javascript">
 
     function dataBound() {
@@ -299,6 +379,8 @@
         }
     }
 
+    
+
 </script>
 
 <style>
@@ -307,8 +389,8 @@
         height: auto;
     }
 
-    .row .col-sm-2 {
-        width: 150px;
+    .row .col-sm-12 {
+        width: 300px;
     }
 
     .row {

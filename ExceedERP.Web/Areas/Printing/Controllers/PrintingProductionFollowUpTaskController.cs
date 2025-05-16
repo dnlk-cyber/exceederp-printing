@@ -33,7 +33,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     LabourActivity = model.LabourActivity,
                     PlannedOutput = model.PlannedOutput,
                     PressCategory = model.PressCategory,
-                    PrintingmachineTypeId = model.PrintingmachineTypeId,
+                    MachineTypeId = model.MachineTypeId,
                     
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Today,
@@ -59,7 +59,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     LabourActivity = model.LabourActivity,
                     PlannedOutput = model.PlannedOutput,
                     PressCategory = model.PressCategory,
-                    PrintingmachineTypeId = model.PrintingmachineTypeId,
+                    MachineTypeId = model.MachineTypeId,
                     PrintingProductionFollowUpId = model.PrintingProductionFollowUpId,
                     CreatedBy = model.CreatedBy,
                     DateCreated = model.DateCreated,

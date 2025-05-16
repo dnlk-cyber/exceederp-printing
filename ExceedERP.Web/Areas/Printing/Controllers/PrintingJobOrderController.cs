@@ -264,7 +264,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                                 CustomerId = jobOrder.CustomerId,
                                 DeliveryDate = jobOrder.DeliveryDate,
                                 DateOrdered = jobOrder.JobStartDate,
-                                JobOrderNo = "",
+                              
                                 PrintJobType = item.PrintJobType,
                                 Quantity = item.Quantity,
                                 CreatedBy = User.Identity.Name,
@@ -277,7 +277,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                                 CoverPaperSizeId = estimation.CoverPaperSizeId,
                                 TextNoOfColors = estimation.TextNoOfColors,
                                 TotalTextNoPages = estimation.Pages,                                
-                                PrintingJobOrderId = jobOrder.PrintingJobOrderId
+                                PrintingJobOrderItemId = item.PrintingJobOrderItemId
                             };
                             db.PrintingJobOrderProductions.Add(jobOrderProduction);
                             db.SaveChanges();
@@ -291,6 +291,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                                     DateCreated = DateTime.Today,
                                     CreatedBy = User.Identity.Name,
                                     PrintingJobOrderProductionId = jobOrderProduction.PrintingJobOrderProductionId,
+                                    EstimationMaterialType = materialCost.EstimationMaterialType,
                                     PrintingMaterialCategoryId = materialCost.PrintingMaterialCategoryId,
                                     PrintingMaterialCategoryItemId = materialCost.PrintingMaterialCategoryItemId,
                                     TotalCost = materialCost.TotalCost,

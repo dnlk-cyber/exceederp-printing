@@ -2,7 +2,7 @@
 @model ExceedERP.Core.Domain.Printing.PrintingJobOrder
 
 <div class="row">
-    <div class="col-sm-2">
+    <div class="col-sm-12">
         <div class="form-group">
             <label>Proforma No</label>
             <div>
@@ -20,25 +20,27 @@
             </div>
         </div>
     </div>
+    </div>
+<div class="row">
 
-    <div class="col-sm-2">
+    <div class="col-sm-12">
         <div class="form-group">
             <label>Payment Type</label>
             <div>
                 @(Html.Kendo().DropDownListFor(m => m.PaymentType)
-                                                            .OptionLabel("Task Type...")
-                                                            .DataTextField("Text")
-                                                            .DataValueField("Value")
+                                                                    .OptionLabel("Task Type...")
+                                                                    .DataTextField("Text")
+                                                                    .DataValueField("Value")
 
-                                                            .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.TypeOfPayment))
-                                                            )
+                                                                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation.TypeOfPayment))
+                                                                    ).HtmlAttributes(new { style = "width:100%" })
                 )
             </div>
         </div>
     </div>
-
-
-    <div class="col-sm-2">
+    </div>
+<div class="row">
+    <div class="col-sm-12">
         <div class="form-group">
             <label>CRV No</label>
             <div>
@@ -46,7 +48,9 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
+    </div>
+<div class="row">
+    <div class="col-sm-12">
         <div class="form-group">
             <label>Advance pay(%)</label>
             <div>
@@ -58,7 +62,7 @@
 
 
 <div class="row">
-    <div class="col-sm-2">
+    <div class="col-sm-12">
         <div class="form-group">
             <label>Start Date</label>
             <div>
@@ -66,8 +70,9 @@
             </div>
         </div>
     </div>
-
-    <div class="col-sm-2">
+</div>
+<div class="row">
+    <div class="col-sm-12">
         <div class="form-group">
             <label>Remark</label>
             <div>

@@ -1,0 +1,137 @@
+﻿
+@model ExceedERP.Core.Domain.Printing.PrintingProduction.PrintingProductionFollowUpTask
+
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Press Category</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.PressCategory)
+                                         .Name("PressCategory") // explicitly set the name for JavaScript access
+                                         .DataTextField("Text")
+                                         .DataValueField("Value")
+                                         .OptionLabel("Select Press Category")
+                                         .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.PressCategory)))
+                                         .HtmlAttributes(new { style = "width:100%" })
+                                         .Events(e => e.Change("onPressCategoryChange")) // attach change event
+                )
+            </div>
+        </div>
+    </div>
+    </div>
+<div class="row">
+
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Activity</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.LabourActivity)
+                                       .Name("LabourActivity")
+                                       .DataTextField("Text")
+                                       .DataValueField("Value")
+                                       .AutoBind(true)
+                                       .OptionLabel("Select Labour Activity")
+                                       .HtmlAttributes(new { style = "width:100%" })
+                )
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Machine</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.MachineTypeId)
+                                        .ValuePrimitive(true)
+                                        .OptionLabel("Machine")
+                                        .DataTextField("Text")
+                                        .DataValueField("Value")
+                                        .Filter("contains")
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("PrintMachineType", "PrintDataProvider", new { area = "Printing" }).Data("filterTextMachine")).ServerFiltering(true);
+                                        }).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Operator</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.OperatorId)
+                                   .ValuePrimitive(true)
+                                   .OptionLabel("Select Operator...")
+                                   .DataTextField("Text")
+                                   .DataValueField("Value")
+                                   .Filter("contains")
+                                   .DataSource(dataSource =>
+                                   {
+                                       dataSource.Read(read => read.Action("GetEmployees", "PrintDataProvider", new { Area = "Printing" }).Data("filterOperator")
+                                       )
+                                       .ServerFiltering(true);
+                                   }).HtmlAttributes(new { style = "width:100%" })
+
+                )
+            </div>
+        </div>
+    </div>
+    </div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Planned Output</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.PlannedOutput).HtmlAttributes(new { style = "width:100%" }).Min(0))
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Unit Of Measurement</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.UoM)
+                                .ValuePrimitive(true)
+                                .OptionLabel("Select unit...")
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .Filter("contains")
+
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetUoM", "PrintDataProvider", new { area = "Printing" }).Data("filterUoM"))
+                                        .ServerFiltering(true);
+                                }).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Estimated Minutes</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.EstimatedHours).HtmlAttributes(new { style = "width:100%" }).Min(0))
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Remark</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.Remark).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>

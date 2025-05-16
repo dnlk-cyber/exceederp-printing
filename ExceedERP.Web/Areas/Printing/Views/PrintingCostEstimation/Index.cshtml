@@ -113,6 +113,7 @@
                                                   toolbar.Create();
                                               })
                                               .Events(ev => ev.DataBound("onChildDataBound"))
+                                              .Events(ev => ev.Edit("onEdit"))
                                               .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PrintMaterialEstimationTemplate"))
                                               .Filterable()
                                               .Scrollable()
@@ -228,11 +229,21 @@
     $(function () {
         $('[data-bs-toggle="tooltip"]').tooltip();
     });
+
+    
 </script>
 
 
 <script type="text/javascript">
-
+    function onEdit(e) {
+        var input = e.container.find("input[name='WastageInPercentage']");
+        if (input.length) {
+            var value = parseFloat(input.val());
+            if (!isNaN(value)) {
+                input.val(value * 100); // Convert 0.10 → 10 for display
+            }
+        }
+    }
     function dataBound() {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
         var grid = this;

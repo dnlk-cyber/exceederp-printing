@@ -28,8 +28,7 @@ namespace ExceedERP.Core.Domain.Printing
         public int CoverNoOfColor { get; set; }
         public int TotalTextNoPages { get; set; }
 
-        [Display(Name = "Job.No")]
-        public string JobOrderNo { get; set; }
+        
         public string Unit { get; set; }
         public decimal Quantity { get; set; }
         public string JobDescription { get; set; }
@@ -37,19 +36,23 @@ namespace ExceedERP.Core.Domain.Printing
         public DateTime DateOrdered { get; set; }
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true), Display(Name = "Delivery Date"), DataType(DataType.Date)]
         public DateTime DeliveryDate { get; set; }
-        public int PrintingJobOrderId { get; set; }
+       
         public bool IsSendForFinishing { get; set; }
         public string SendForFinishingBy { get; set; }
         public DateTime? SendForFinishingDate { get; set; }
         public bool IsClosed { get; set; }
         public string ClosedBy { get; set; }
         public DateTime? DateClosed { get; set; }
+
+        public int PrintingJobOrderItemId { get; set; }
     }
 
     public class PrintingProductionMaterialCost : TrackUserSettingOperation
     {
         [Key]
         public int PrintingProductionMaterialCostId { get; set; }
+        [Display(Name = "Material Type")]
+        public EstimationMaterialType EstimationMaterialType { get; set; }
         [Display(Name = "Item Category")]
         public int PrintingMaterialCategoryId { get; set; }
         [Display(Name = "Item Name")]

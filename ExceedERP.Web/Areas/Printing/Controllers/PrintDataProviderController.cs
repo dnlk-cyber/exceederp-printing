@@ -1,12 +1,7 @@
 ﻿using ExceedERP.Core.Domain.Printing;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.Common;
 using Kendo.Mvc.Extensions;
-using Kendo.Mvc.UI;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.Printing.Controllers
@@ -14,7 +9,50 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
     public class PrintDataProviderController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
-        
+
+        public JsonResult GetEmployees(string text)
+        {
+            var employees = db.Person_Employee.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                employees = employees.Where(x => x.FirstName.Contains(text) || x.MiddleName.Contains(text) || x.LastName.Contains(text)).AsQueryable();
+            }
+            var result = employees.Select(s => new
+            {
+                Value = s.EmployeeId,
+                Text = s.FirstName + "-" + s.MiddleName + "-" + s.LastName
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetTaxRate()
+        {
+            var tax = db.GLTaxRates;
+            var result = tax.Select(s => new
+            {
+                Text = s.TaxName,
+                Value = s.GLTaxRateID
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetPrintingEstimation(string text)
+        {
+            var estimation = db.PrintingCostEstimations.Where(x => x.IsOnlineApproved)
+                .OrderByDescending(x => x.PrintingCostEstimationId)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                estimation = estimation.Where(x => x.PrintingCostEstimationId == int.Parse(text) || text.Contains(x.PrintJobType.ToString()))
+                    .OrderByDescending(x => x.PrintingCostEstimationId)
+                    .AsQueryable();
+            }
+            var result = estimation.Select(s => new
+            {
+                Value = s.PrintingCostEstimationId,
+                Text = s.PrintingCostEstimationId + "-" + s.PrintJobType.ToString()
+            }).ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
         public JsonResult InventoryItems(string text, string itemCode)
         {
             var inventoryItems = db.InventoryItems.Where(x => x.ItemCategoryCode == itemCode);

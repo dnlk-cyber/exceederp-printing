@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Printing;
+using ExceedERP.Core.Domain.Printing.PrintingProduction;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -22,8 +23,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 Value = s.OrganizationCustomerID,
                 Text = s.TradeName
             }).ToList();
-          
-           
+
+
             ViewData["PaperSize"] = db.PrintingPaperSizes.Select(s => new
             {
                 Value = s.PrintingPaperSizeId,
@@ -152,5 +153,113 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
+
+        #region Check&Approve
+        public JsonResult CheckProduction(int id)
+        {
+            object response = null;
+            var production = db.PrintingJobOrderProductions.FirstOrDefault(x => x.PrintingJobOrderProductionId == id);
+            if (production != null)
+            {
+                var validity = CheckValidity(production.PrintingJobOrderProductionId);
+                if (validity)
+                {
+                    production.IsSendForApproval = true;
+                    production.SendForApprovalBy = User.Identity.Name;
+                    production.SendForApprovalTime = DateTime.Today;
+
+                    db.PrintingJobOrderProductions.Attach(production);
+                    db.Entry(production).State = EntityState.Modified;
+                    db.SaveChanges();
+                    response = new { Success = true, Message = "Checked Successfully!" };
+                }
+                else
+                {
+                    response = new { Success = false, Message = "Something is wrong! Not Valid" };
+                }
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something is wrong!" };
+            }
+            return Json(response);
+        }
+        //If Validity needs to be checked before approval eg. proper store requisition etc
+        private bool CheckValidity(int id)
+        {
+           // To-Do
+            return true;
+        }
+        public JsonResult ApproveProduction(int id)
+        {
+            object response = null;
+            var production = db.PrintingJobOrderProductions.Find(id);
+            if (production != null)
+            {
+
+                production.IsOnlineApproved = true;
+                production.OnlineApprovedBy = User.Identity.Name;
+                production.OnlineApprovedTime = DateTime.Today;
+
+
+                db.PrintingJobOrderProductions.Attach(production);
+                db.Entry(production).State = EntityState.Modified;
+                db.SaveChanges();
+                //--Generate Productions--//
+                GenerateProductionFollowUp(production);
+
+                response = new { Success = true, Message = "Successfully Approved and Created Production!" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something is wrong!" };
+            }
+            return Json(response);
+        }
+
+        private void GenerateProductionFollowUp(PrintingJobOrderProduction production)
+        {
+            if (production != null)
+            {
+                var jobFollowUp = new PrintingProductionFollowUp
+                {
+                    BindingStyle = production.BindingStyle,
+                    CustomerId = production.CustomerId,
+                    JobDescription = production.JobDescription,
+                    PrintJobType = PrintJobType.Book,
+                    PrintingJobOrderItemId = production.PrintingJobOrderItemId,
+                    Pages = production.TotalTextNoPages,
+                    TextPaperSizeId = production.TextPaperSizeId,
+                    Quantity = production.Quantity,
+                    OperationStatus = OperationStatus.NotStarted,
+                    CoverNoOfColor = production.CoverNoOfColor,
+                    CoverPaperSizeId = production.CoverPaperSizeId,
+                    TextNoOfColor = production.TextNoOfColors,
+                    
+                };
+                db.PrintingProductionFollowUps.Add(jobFollowUp);
+                db.SaveChanges();
+
+                var materials = db.PrintingProductionMaterialCosts
+                    .Where(x => x.PrintingJobOrderProductionId == production.PrintingJobOrderProductionId).ToList();
+                foreach (var item in materials)
+                {
+                    var entity = new PrintingProductionAllottedRawMaterial
+                    {
+                        EstimationMaterialType = item.EstimationMaterialType,
+                        PrintingMaterialCategoryId = item.PrintingMaterialCategoryId,
+                        PrintingMaterialCategoryItemId = item.PrintingMaterialCategoryItemId,
+                        UnitOfMeasurment = item.UnitOfMeasurment,
+                        Quantity = item.Quantity,
+                        CreatedBy = User.Identity.Name,
+                        DateCreated = DateTime.Today,
+                        PrintingProductionFollowUpId = jobFollowUp.PrintingProductionFollowUpId
+                    };
+                    db.PrintingProductionAllottedRawMaterials.Add(entity);
+                }
+                db.SaveChanges();
+            }
+        }
+        #endregion
     }
 }
