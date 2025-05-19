@@ -60,10 +60,16 @@ namespace ExceedERP.Helpers.Printing
             if(machineDetail == null)
             {
                 return -1;
-            }            
+            }
+            if (estimation.UseAdvancedCalculations)
+            {
+                EstimationHelper.TextPlate(estimation.Pages, estimation.ProductQuantity, estimation.TextNoOfColors, machineDetail.SectionUp, (decimal)machine.OutputRate, (decimal)model.WastageInPercentage, out decimal result);
+                return (double)result;
+            }
             var plateQuantity = Math.Ceiling(((estimation.Pages * estimation.TextNoOfColors)/machineDetail.SectionUp) * Math.Ceiling(estimation.ProductQuantity / machine.OutputRate)); // Rounds to the next whole number
             return Math.Ceiling(plateQuantity * (1 + model.WastageInPercentage));
         }
+        
         public static double CalculateCoverPlate(PrintingEstimationMaterialCost model, int printingCostEstimationId)
         {
             var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == printingCostEstimationId);
@@ -95,7 +101,10 @@ namespace ExceedERP.Helpers.Printing
             }
             //PackagingPaper = (Quantity/Input)/2
             var packs = estimation.ProductQuantity / estimation.Pack;
-            return ((double)packs / 2) * (1 + model.WastageInPercentage);
+            if (estimation.UseAdvancedCalculations)
+                return Math.Round((double)packs * (1 + model.WastageInPercentage));           
+            else
+                return ((double)packs / 2) * (1 + model.WastageInPercentage);
         }
         public static double CalculateGlue(PrintingEstimationMaterialCost model, int printingCostEstimationId)
         {
@@ -107,6 +116,18 @@ namespace ExceedERP.Helpers.Printing
             }
             var paperSize = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == estimation.TextPaperSizeId);
             //Glue = Quantity/(1/paperlength/100*1.5/100)
+            if (estimation.UseAdvancedCalculations)
+            {
+                if(db.PrintingPaperSizes.Find(estimation.TextPaperSizeId).PrintPaperSize == PrintPaperSize.A4)
+                {
+                    return estimation.Pages * 3.42 / 130 * estimation.ProductQuantity / 1000;
+                }
+                else
+                {
+                    return estimation.Pages * 2.39 / 130 * estimation.ProductQuantity / 1000;
+                }
+                
+            }
             if (estimation.UseLength)
             {
                 glueQuantity = estimation.ProductQuantity / (1 / (paperSize.Length / 100 * 0.015));

@@ -33,8 +33,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         {
             if (ModelState.IsValid)
             {
-                
-                model.TotalPrice = (model.TotalCost * (model.ProfitMargin/100)) + model.TotalCost;
+                model.ProfitMargin = model.ProfitMargin / 100;
+                model.TotalPrice = (model.TotalCost * model.ProfitMargin) + model.TotalCost;
                 db.PrintingEstimationMargins.Attach(model);
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();

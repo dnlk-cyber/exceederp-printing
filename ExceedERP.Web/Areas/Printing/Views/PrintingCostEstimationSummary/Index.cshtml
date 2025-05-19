@@ -68,7 +68,7 @@
                                     columns.Bound(c => c.AdministrativeCost);
                                     columns.Bound(c => c.UnitCost);
                                     columns.Bound(c => c.TotalCost);
-                                    columns.Bound(c => c.ProfitMargin);
+                                    columns.Bound(c => c.ProfitMargin).Format("{0:P1}");
                                     columns.Bound(c => c.UnitPrice);
                                     columns.Bound(c => c.TotalPrice);
 
@@ -110,7 +110,7 @@
                                       .Columns(columns =>
                                       {
                                           columns.Bound(c => c.TotalCost).Width(120);
-                                          columns.Bound(c => c.ProfitMargin).Width(120).Title("Margin(%)");
+                                          columns.Bound(c => c.ProfitMargin).Width(120).Title("Margin(%)").Format("{0:P1}");
                                           columns.Bound(c => c.TotalPrice).Width(120);
                                           columns.Command(command =>
                                           {
@@ -123,6 +123,7 @@
                                       .Filterable()
                                       .Scrollable(s => s.Height(400))
                                       .Pageable()
+                                      .Events(ev => ev.Edit("onEditPM"))
                                       .DataSource(dataSource => dataSource
                                           .Ajax()
                                           .Model(model =>
@@ -173,6 +174,15 @@
 
 
 <script type="text/javascript">
+    function onEditPM(e) {
+        var input = e.container.find("input[name='ProfitMargin']");
+        if (input.length) {
+            var value = parseFloat(input.val());
+            if (!isNaN(value)) {
+                input.val(value * 100); // Convert 0.10 → 10 for display
+            }
+        }
+    }
     function dataBound() {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
         var grid = this;
@@ -353,7 +363,7 @@
             success: function (result) {
                 if (result.Success) {
                     toastr.success(result.Message);
-                    $("#grid").data("kendoGrid").dataSource.read();
+                    //$("#grid").data("kendoGrid").dataSource.read();
                 }
                 else {
                     toastr.error(result.Message);

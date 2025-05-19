@@ -22,6 +22,8 @@ namespace ExceedERP.Core.Domain.Printing
         [Display(Name = "Admin Cost")]
         public decimal AdminstrativeCost { get; set; }
         public decimal OverHeadCost { get; set; }
+        public decimal AdminRate { get; set; }
+        public decimal OverHeadRate { get; set; }
         public decimal IndirectMaterialCost { get; set; } // 3% Variable Cost
         public decimal MaterialHandlingStorageWaste { get; set; } // 2.5% TotalProductionCost
         [Display(Name = "Profit Margin")]

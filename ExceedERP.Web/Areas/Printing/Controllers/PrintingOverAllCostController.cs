@@ -64,17 +64,23 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }
             if (ModelState.IsValid)
             {
-                
+                model.AdminRate = model.AdminRate / 100;
+                model.OverHeadRate = model.OverHeadRate / 100;
                 var entity = new PrintingOverAllCost
                 {
                     PrintingOverAllCostId = model.PrintingOverAllCostId,
                     MaterialCost = model.MaterialCost,
-                    LaborCost = model.LaborCost,                   
-                    OverHeadCost = model.LaborCost * model.OverHeadCost,
-                    AdminstrativeCost = (model.MaterialCost + model.LaborCost + model.OverHeadCost) * model.AdminstrativeCost,
-                    GraphicsCost = model.GraphicsCost,                  
-                    PrintingCostEstimationId = model.PrintingCostEstimationId
+                    LaborCost = model.LaborCost,
+                    OverHeadCost = model.LaborCost * model.OverHeadRate,
+                    //AdminstrativeCost = (model.MaterialCost + model.LaborCost + model.OverHeadCost) * model.AdminstrativeCost,
+                    GraphicsCost = model.GraphicsCost,
+                    PrintingCostEstimationId = model.PrintingCostEstimationId,
+                    GraphicsRate = model.GraphicsRate,
+                    AdminRate = model.AdminRate,
+                    OverHeadRate = model.OverHeadRate
+                    
                 };
+                entity.AdminstrativeCost = (model.MaterialCost + model.LaborCost + entity.OverHeadCost) * model.AdminRate;
                 entity.GraphicsCost = (entity.GraphicsRate * (decimal)textPaperSize.Length * (decimal)textPaperSize.Width * estimation.Pages);
                 entity.TotalProductionCost = entity.MaterialCost + entity.LaborCost + entity.OverHeadCost;
                 entity.MaterialHandlingStorageWaste = entity.TotalProductionCost * 0.025m;
@@ -84,6 +90,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 model.AdminstrativeCost = entity.AdminstrativeCost;
                 model.OverHeadCost = entity.OverHeadCost;
                 model.TotalProductionCost = entity.TotalProductionCost;
+                model.GraphicsCost = entity.GraphicsCost;
                 db.PrintingOverAllCosts.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
@@ -93,22 +100,28 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult PrintingOverAllCosts_Destroy([DataSourceRequest]DataSourceRequest request, PrintingOverAllCost printingOverAllCost)
+        public ActionResult PrintingOverAllCosts_Destroy([DataSourceRequest]DataSourceRequest request, PrintingOverAllCost model)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PrintingOverAllCost
                 {
-                    PrintingOverAllCostId = printingOverAllCost.PrintingOverAllCostId,
-                    MaterialCost = printingOverAllCost.MaterialCost,
-                    LaborCost = printingOverAllCost.LaborCost,
-                    TotalProductionCost = printingOverAllCost.TotalProductionCost,
-                    AdminstrativeCost = printingOverAllCost.AdminstrativeCost,
-                    ProfitMargin = printingOverAllCost.ProfitMargin,
-                    GraphicsCost = printingOverAllCost.GraphicsCost,
-                   
-                    GrandTotal = printingOverAllCost.GrandTotal,
-                    PrintingCostEstimationId = printingOverAllCost.PrintingCostEstimationId
+                    PrintingOverAllCostId = model.PrintingOverAllCostId,
+                    MaterialCost = model.MaterialCost,
+                    LaborCost = model.LaborCost,
+                    TotalProductionCost = model.TotalProductionCost,
+                    AdminstrativeCost = model.AdminstrativeCost,
+                    ProfitMargin = model.ProfitMargin,
+                    GraphicsCost = model.GraphicsCost,
+                    OverHeadRate = model.OverHeadRate,
+                    AdminRate = model.AdminRate,
+                    OverHeadCost = model.OverHeadCost,
+                    GraphicsRate = model.GraphicsRate,
+                    IndirectMaterialCost = model.IndirectMaterialCost,
+                    MaterialHandlingStorageWaste = model.MaterialHandlingStorageWaste,
+                    SellingPrice = model.SellingPrice,
+                    GrandTotal = model.GrandTotal,
+                    PrintingCostEstimationId = model.PrintingCostEstimationId
                 };
 
                 db.PrintingOverAllCosts.Attach(entity);
@@ -116,7 +129,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 db.SaveChanges();
             }
 
-            return Json(new[] { printingOverAllCost }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         protected override void Dispose(bool disposing)

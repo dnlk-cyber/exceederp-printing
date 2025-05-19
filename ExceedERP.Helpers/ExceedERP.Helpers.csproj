@@ -202,6 +202,7 @@
     <Compile Include="Printing\BookMagazineMaterialCostEstimation.cs" />
     <Compile Include="Printing\CardFlyerLaborCost.cs" />
     <Compile Include="Printing\CardFlyerMaterialCost.cs" />
+    <Compile Include="Printing\EstimationHelper.cs" />
     <Compile Include="Printing\MaterialWeight.cs" />
     <Compile Include="Printing\PaperSizeHelper.cs" />
     <Compile Include="Printing\PrintSignitureAndSheet.cs" />
