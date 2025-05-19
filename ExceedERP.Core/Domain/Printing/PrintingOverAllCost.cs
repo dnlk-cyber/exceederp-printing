@@ -29,7 +29,7 @@ namespace ExceedERP.Core.Domain.Printing
         [Display(Name = "Graphics Cost")]
         public decimal GraphicsCost { get; set; }
         public decimal GraphicsRate { get; set; }
-        public int GLTaxRateID { get; set; }
+       
         [Display(Name = "Grand Total")]
         public decimal GrandTotal { get; set; } // TotalProductionCost + Material Handling and storage waste
         public decimal SellingPrice { get; set; }

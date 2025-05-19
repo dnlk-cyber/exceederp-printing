@@ -55,7 +55,11 @@
             <div class="form-group">
                 <label>No of pages</label>
                 <div>
-                    @(Html.Kendo().NumericTextBoxFor(model => model.Pages).HtmlAttributes(new { style = "width:100%" }).Min(0).Placeholder("Pages"))
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Pages)
+                        .Events(e => e.Change("onPageCountChange"))
+                        .HtmlAttributes(new { style = "width:100%" })
+                        .Min(0)
+                        .Placeholder("Pages"))
                 </div>
             </div>
         </div>
@@ -245,7 +249,7 @@
             </div>
         </div>);
 
-        panelbar.Add().Text("Packing Setup").Content(@<div>
+        panelbar.Add().Text("Packing Setup & Plate Optimization").Content(@<div>
 
     <div class="row">
         <div class="col-sm-12">
@@ -257,7 +261,18 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                @*<label>Optimize Plate Count</label>*@
+                <div>
+                    @(Html.Kendo().CheckBoxFor(model => model.UseAdvancedCalculations).HtmlAttributes(new { style = "width:100%" }).Label("Use Imposition"))
 
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>);
     })
 )

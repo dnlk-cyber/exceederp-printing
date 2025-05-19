@@ -48,20 +48,21 @@
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                                        .Name("tab_#=PrintingJobOrderId#")
-                                                        .Items(item1 =>
-                                                        {
-                                                            item1.Add().Text("job Item").Content(
-                                                            @<text>
-                                                                @JobOrderItem()
-                                                            </text>);
-                                                                    item1.Add().Text("Job Desgin").Content(
-                                                        @<text>
-                                                            <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=PrintingJobOrderId#)" />
+                                                                .Name("tab_#=PrintingJobOrderId#")
+                                                                .Items(item1 =>
+                                                                {
+                                                                    item1.Add().Text("job Item").Content(
+                                                                    @<text>
+                                                                        <a href='@Url.Action("PrintJobOrder", "PrintingReport")/?id=#=PrintingJobOrderId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                                                                        @JobOrderItem()
+                                                                    </text>);
+                                                                            item1.Add().Text("Job Desgin").Content(
+                                                    @<text>
+                                                        <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=PrintingJobOrderId#)" />
 
-                                                            @BoqDocs()
-                                                        </text>);
-                                                    }).ToClientTemplate())
+                                                        @BoqDocs()
+                                                    </text>);
+                                                            }).ToClientTemplate())
 </script>
 
 

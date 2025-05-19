@@ -25,8 +25,8 @@ namespace ExceedERP.Core.Domain.Printing
 
         [Display(Name ="Material Type")]
         public EstimationMaterialType EstimationMaterialType { get; set; }
-        public double WastageInPercentage { get; set; }
-        
+        public double WastageInPercentage { get; set; }       
+
     }
     public enum EstimationMaterialType
     {

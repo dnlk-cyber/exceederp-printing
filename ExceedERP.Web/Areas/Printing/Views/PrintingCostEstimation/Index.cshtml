@@ -235,6 +235,26 @@
 
 
 <script type="text/javascript">
+    function roundUpToNextMultipleOf4(value) {
+        return Math.ceil(value / 4) * 4;
+    }
+
+    function onPageCountChange() {
+        var textbox = $("#Pages").data("kendoNumericTextBox");
+        var value = textbox.value();
+
+        if (value == null) return;
+
+        var rounded = roundUpToNextMultipleOf4(value);
+
+        // Only update if needed to avoid loops or flickers
+        if (rounded !== value) {
+            textbox.value(rounded);
+            textbox.trigger("change"); // Re-trigger change if needed elsewhere
+        }
+    }
+
+
     function onEdit(e) {
         var input = e.container.find("input[name='WastageInPercentage']");
         if (input.length) {

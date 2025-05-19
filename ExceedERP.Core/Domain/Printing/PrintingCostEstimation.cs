@@ -50,6 +50,8 @@ namespace ExceedERP.Core.Domain.Printing
         public bool UseLength { get; set; } = true;// use the Longer side of the paper for glue binding
         public int TextPrintSide { get; set; } // 1 or 2
         public int CoverPrintSide { get; set; }
+        public bool UseAdvancedCalculations { get; set; } // enables advanced calculations
+
     }
 
     public enum BindingStyle

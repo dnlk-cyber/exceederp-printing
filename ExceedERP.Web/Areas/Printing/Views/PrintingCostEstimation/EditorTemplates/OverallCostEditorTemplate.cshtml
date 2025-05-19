@@ -34,29 +34,7 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-sm-12">
-        <div class="form-group">
-            <label>Graphics VAT</label>
-            <div>
-                @(Html.Kendo().DropDownListFor(m => m.GLTaxRateID)
-                                                                                    .ValuePrimitive(true)
-                                                                                    .AutoBind(true)
-                                                                                    .Enable(true)
-                                                                                    .OptionLabel("Select Tax rate...")
-                                                                                    .DataTextField("Text")
-                                                                                    .DataValueField("Value")
-                                                                                    .Filter("contains")
-                                                                                    .DataSource(dataSource =>
-                                                                                    {
-                                                                                        dataSource.Read(read => read.Action("GetTaxRate", "ManufacturingDataProvider", new { area = "Manufacturing" }))
-                                                                                            .ServerFiltering(true);
-                                                                                    }).HtmlAttributes(new { style = "width:100%" }))
-            </div>
-        </div>
-    </div>
 
-</div>
 <style>
     div.k-edit-form-container {
         width: auto;
