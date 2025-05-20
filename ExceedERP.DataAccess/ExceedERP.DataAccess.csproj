@@ -632,6 +632,10 @@
     <Compile Include="Migrations\202505190650386_printoverallcost.Designer.cs">
       <DependentUpon>202505190650386_printoverallcost.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202505200444395_printing-cost-estim.cs" />
+    <Compile Include="Migrations\202505200444395_printing-cost-estim.Designer.cs">
+      <DependentUpon>202505200444395_printing-cost-estim.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1058,6 +1062,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202505190650386_printoverallcost.resx">
       <DependentUpon>202505190650386_printoverallcost.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202505200444395_printing-cost-estim.resx">
+      <DependentUpon>202505200444395_printing-cost-estim.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

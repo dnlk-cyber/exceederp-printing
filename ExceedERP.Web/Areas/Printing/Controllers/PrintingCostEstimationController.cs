@@ -106,7 +106,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     CoverPrintSide = model.CoverPrintSide,
                     Copy = model.Copy,
                     Staples = model.Staples,
-                    UseAdvancedCalculations = model.UseAdvancedCalculations
+                    UseAdvancedCalculations = model.UseAdvancedCalculations,
+                    NumberOfPagesForDesign = model.NumberOfPagesForDesign
                 };
 
                 db.PrintingCostEstimations.Add(entity);
@@ -154,7 +155,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Copy = model.Copy,
                     Staples = model.Staples,
                     UseAdvancedCalculations = model.UseAdvancedCalculations,
-                    
+                    NumberOfPagesForDesign = model.NumberOfPagesForDesign
                 };
 
                 db.PrintingCostEstimations.Attach(entity);
@@ -200,7 +201,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     TextPrintSide = model.TextPrintSide,
                     CoverPrintSide = model.CoverPrintSide,
                     Copy = model.Copy,
-                    Staples = model.Staples
+                    Staples = model.Staples,
+                    NumberOfPagesForDesign = model.NumberOfPagesForDesign
                 };
 
                 db.PrintingCostEstimations.Attach(entity);

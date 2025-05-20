@@ -9,7 +9,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="form-group">
-                <label>Customer Name</label>
+                <label>Customer Name*</label>
                 <div>
                     @(Html.Kendo().DropDownListFor(m => m.CustomerId)
                                                         .ValuePrimitive(true)
@@ -28,7 +28,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="form-group">
-                <label>Job Type</label>
+                <label>Job Type*</label>
                 <div>
                     @(Html.Kendo().DropDownListFor(m => m.PrintJobType)
                                                         .OptionLabel("Job Type")
@@ -43,7 +43,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="form-group">
-                <label>Quantity</label>
+                <label>Quantity*</label>
                 <div>
                     @(Html.Kendo().NumericTextBoxFor(model => model.ProductQuantity).HtmlAttributes(new { style = "width:100%" }).Min(1).Placeholder("Quantity"))
                 </div>
@@ -53,7 +53,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="form-group">
-                <label>No of pages</label>
+                <label>No of pages*</label>
                 <div>
                     @(Html.Kendo().NumericTextBoxFor(model => model.Pages)
                         .Events(e => e.Change("onPageCountChange"))
@@ -81,7 +81,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <label>Text Paper</label>
+                        <label>Text Paper*</label>
                         <div>
                             @(Html.Kendo().DropDownListFor(m => m.TextPaperSizeId)
                                 .ValuePrimitive(true)
@@ -100,7 +100,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <label>Cover Paper</label>
+                        <label>Cover Paper*</label>
                         <div>
                             @(Html.Kendo().DropDownListFor(m => m.CoverPaperSizeId)
                                 .ValuePrimitive(true)
@@ -123,7 +123,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="form-group">
-                <label>Text No Of Colors</label>
+                <label>Text No Of Colors*</label>
                 <div>
                     @(Html.Kendo().NumericTextBoxFor(model => model.TextNoOfColors).HtmlAttributes(new { style = "width:100%" }).Min(1).Max(6).Placeholder("Text Color"))
                 </div>
@@ -133,7 +133,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="form-group">
-                <label>Cover No Of Color</label>
+                <label>Cover No Of Color*</label>
                 <div>
                     @(Html.Kendo().NumericTextBoxFor(model => model.CoverNoOfColor).HtmlAttributes(new { style = "width:100%" }).Min(1).Max(6).Placeholder("Cover Color"))
                 </div>
@@ -143,7 +143,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="form-group">
-                <label>Binding Type</label>
+                <label>Binding Type*</label>
                 <div>
                     @(Html.Kendo().DropDownListFor(m => m.BindingStyle)
                                                 .OptionLabel("Binding Type")
@@ -168,7 +168,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="form-group">
-                <label>Text Print Side</label>
+                <label>Text Print Side*</label>
                 <div>
                     @(Html.Kendo().NumericTextBoxFor(c => c.TextPrintSide).HtmlAttributes(new { style = "width:100%" }).Min(1).Max(2).RestrictDecimals(true).Placeholder("print side text").Decimals(0))
                 </div>
@@ -178,7 +178,7 @@
     <div class="row">
         <div class="col-sm-12">
             <div class="form-group">
-                <label>Cover Print Side</label>
+                <label>Cover Print Side*</label>
                 <div>
                     @(Html.Kendo().NumericTextBoxFor(c => c.CoverPrintSide).HtmlAttributes(new { style = "width:100%" }).Min(1).Max(2).RestrictDecimals(true).Placeholder("print side Cover").Decimals(0))
                 </div>
@@ -212,7 +212,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <label>Machine for Text</label>
+                        <label>Machine for Text*</label>
                         <div>
                             @(Html.Kendo().DropDownListFor(m => m.TextMachineTypeId)
                                 .ValuePrimitive(true)
@@ -231,7 +231,7 @@
             <div class="row">
                 <div class="col-sm-12">
                     <div class="form-group">
-                        <label>Machine for Cover</label>
+                        <label>Machine for Cover*</label>
                         <div>
                             @(Html.Kendo().DropDownListFor(m => m.CoverMachineTypeId)
                                 .ValuePrimitive(true)
@@ -249,24 +249,37 @@
             </div>
         </div>);
 
-        panelbar.Add().Text("Packing Setup & Plate Optimization").Content(@<div>
+        panelbar.Add().Text("Packing Setup, Plate Optimization & Design").Content(@<div>
 
     <div class="row">
         <div class="col-sm-12">
             <div class="form-group">
-                <label>Pack</label>
+                <label>Pack*</label>
                 <div>
                     @(Html.Kendo().NumericTextBoxFor(model => model.Pack).HtmlAttributes(new { style = "width:100%" }).Min(0).Placeholder("Pack"))
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label>No of pages to design</label>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.NumberOfPagesForDesign).HtmlAttributes(new { style = "width:100%" }).Min(0))
+
+                </div>
+            </div>
+        </div>
+
+    </div>
     <div class="row">
         <div class="col-sm-12">
             <div class="form-group">
                 @*<label>Optimize Plate Count</label>*@
                 <div>
-                    @(Html.Kendo().CheckBoxFor(model => model.UseAdvancedCalculations).HtmlAttributes(new { style = "width:100%" }).Label("Use Imposition"))
+                    @(Html.Kendo().CheckBoxFor(model => model.UseAdvancedCalculations).HtmlAttributes(new { style = "width:100%" }).Label("Apply Imposition"))
 
                 </div>
             </div>

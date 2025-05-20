@@ -51,7 +51,7 @@ namespace ExceedERP.Core.Domain.Printing
         public int TextPrintSide { get; set; } // 1 or 2
         public int CoverPrintSide { get; set; }
         public bool UseAdvancedCalculations { get; set; } // enables advanced calculations
-
+        public int NumberOfPagesForDesign { get; set; } // Number of pages to be designed
     }
 
     public enum BindingStyle

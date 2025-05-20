@@ -77,11 +77,11 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     PrintingCostEstimationId = model.PrintingCostEstimationId,
                     GraphicsRate = model.GraphicsRate,
                     AdminRate = model.AdminRate,
-                    OverHeadRate = model.OverHeadRate
-                    
+                    OverHeadRate = model.OverHeadRate                    
                 };
                 entity.AdminstrativeCost = (model.MaterialCost + model.LaborCost + entity.OverHeadCost) * model.AdminRate;
-                entity.GraphicsCost = (entity.GraphicsRate * (decimal)textPaperSize.Length * (decimal)textPaperSize.Width * estimation.Pages);
+                decimal textArea = (decimal)textPaperSize.Length * (decimal)textPaperSize.Width;
+                entity.GraphicsCost = (entity.GraphicsRate * textArea * estimation.NumberOfPagesForDesign);
                 entity.TotalProductionCost = entity.MaterialCost + entity.LaborCost + entity.OverHeadCost;
                 entity.MaterialHandlingStorageWaste = entity.TotalProductionCost * 0.025m;
                 entity.GrandTotal = entity.TotalProductionCost + entity.AdminstrativeCost + entity.GraphicsCost + entity.MaterialHandlingStorageWaste;
