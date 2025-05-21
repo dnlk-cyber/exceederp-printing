@@ -31,6 +31,9 @@ namespace ExceedERP.Core.Domain.Printing
         public TypeOfPayment PaymentType { get; set; }
         public bool HaveEstimation { get; set; }
         public bool IsExistingCustomer { get; set; }
+        public decimal TransporCost { get; set; } // with out VAT
+        public int GLTaxRateID { get; set; } // VAT
+        public decimal TransportCostTotal { get; set; } // with VAT
     }
     public class PrintingProformaInvoiceItem : TrackUserSettingOperation
     {
@@ -54,11 +57,11 @@ namespace ExceedERP.Core.Domain.Printing
         public int CoverPaperSizeId { get; set; }
         public decimal UnitPrice { get; set; } //totalprice/quantity
         public decimal TotalPrice { get; set; }
-        public decimal TransportCost { get; set; }        
+        //public decimal TransportCost { get; set; }        
         public int? GLTaxRateID { get; set; }
-        public int? GLTaxRateTransportId { get; set; }
+        //public int? GLTaxRateTransportId { get; set; }
         public decimal GrandTotalIncludingVAT { get; set; }
-        public decimal GrandTotalIncludingTransport { get; set; }
+        //public decimal GrandTotalIncludingTransport { get; set; }
         public string Remark { get; set; }
         public bool IsActive { get; set; }
 

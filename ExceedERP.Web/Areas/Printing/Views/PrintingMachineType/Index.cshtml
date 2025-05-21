@@ -58,9 +58,12 @@
                   columns.ForeignKey(c => c.PaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text").Title("Paper Size");
                   columns.Bound(c => c.SectionUp);
 
-                  //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
               })
-              
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
               .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("MachineDetailTemplateName"))
               .Filterable()
               .Pageable()

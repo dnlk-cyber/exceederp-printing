@@ -14,9 +14,12 @@ namespace ExceedERP.Reporting.Printing.ViewModel
         public string DeliveryPeriod { get; set; }
         public string PriceValidityPeriod { get; set; }
         public string PaymentType { get; set; }
-        public int ModeOfPayment { get; set; }
+        public string ModeOfPayment { get; set; }
         public string Remark { get; set; }
-       
+        public decimal TransportCost { get; set; }
+        public decimal TotalTransportCost { get; set; }
+        public string VAT { get; set; }
+
     }
     public class PrintingProformaItemsViewModel
     {
@@ -32,6 +35,13 @@ namespace ExceedERP.Reporting.Printing.ViewModel
         public decimal TransportCost { get; set; }
         public decimal SellingPrice { get; set; }
         public decimal SellingPriceIncludingTransCost { get; set; }
-        public string Remark { get; set; } 
+        public string Remark { get; set; }
+        public string PaperSize { get; set; }
+        public string BindingType { get; set; }
+        public string TextPaperType { get; set; }
+        public string CoverPaperType { get; set; }
+        public int ColorText { get; set; }
+        public int ColorCover { get; set; }
     }
+    
 }

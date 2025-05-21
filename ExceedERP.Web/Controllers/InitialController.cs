@@ -506,13 +506,13 @@ new ApplicationRole("HelpDesk_Setting", "Add Help desk settings", "HelpDesk"),
 				#region Printing
 				#region Printing Estimation
                 ,
-                new ApplicationRole("Printing_Admin", "", "Printing"),
-                new ApplicationRole("PrintingEstimation_Officer", "", "Printing"),
+               new ApplicationRole("PrintingEstimation_Officer", "", "Printing"),
                 new ApplicationRole("PrintingEstimation_TeamLead", "", "Printing"),
                 new ApplicationRole("PrintingEstimation_DepartmentHead", "", "Printing"),
                 new ApplicationRole("PrintingProduction_Head", "", "Printing"),
                 new ApplicationRole("PrintingProduction_TeamLead", "", "Printing"),
                 new ApplicationRole("PrintingProduction_Officer", "", "Printing"),
+                new ApplicationRole("Printing_Admin", "", "Printing"),
 					#endregion
 				#region Production FollowUp
 					 new ApplicationRole(ProductionFollowUpRoles.PrintingProductionAdmin, "Production FollowUp Administrator", "Printing"),

@@ -70,3 +70,37 @@
     </div>
     
 </div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Transport Cost</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.TransporCost).HtmlAttributes(new { style = "width:100%" }).Min(0))
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Tax Rate</label>
+            <div>
+
+                @(Html.Kendo().DropDownListFor(m => m.GLTaxRateID)
+                    .ValuePrimitive(true)
+                    .AutoBind(true)
+                    .Enable(true)
+                    .OptionLabel("Select Tax rate...")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Filter("contains")
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetTaxRate", "PrintDataProvider", new { area = "Printing" }))
+                            .ServerFiltering(true);
+                    }).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>

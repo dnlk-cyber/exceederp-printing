@@ -47,7 +47,7 @@ namespace ExceedERP.Reporting.Printing.DataSource
             foreach (var item in details)
             {
                 var paperSize = db.PrintingPaperSizes.Find(item.TextPaperSizeId);
-                
+                var costEstimation = db.PrintingCostEstimations.Find(item.PrintingCostEstimationId);
                 list.Add(new JobOrderDetail
                 {
                     BindingStyle = item.BindingStyle.ToString(),
@@ -59,7 +59,9 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     Quantity = item.Quantity,
                     Remark = item.Remark,
                     TotalPrice = item.TotalPrice,
-                    UnitPrice = item.UnitPrice
+                    UnitPrice = item.UnitPrice,
+                    CoverColor = costEstimation?.CoverNoOfColor ?? 0,
+                    TextColor = costEstimation?.TextNoOfColors ?? 0
                 });
             }
             return list;

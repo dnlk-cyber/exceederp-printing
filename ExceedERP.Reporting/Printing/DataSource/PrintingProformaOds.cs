@@ -1,4 +1,5 @@
 ﻿
+using ExceedERP.Core.Domain.Printing;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Printing.ViewModel;
 using System;
@@ -20,6 +21,7 @@ namespace ExceedERP.Reporting.Printing.DataSource
             var proformaHead = db.PrintingProformaInvoices.Find(id);
             if(proformaHead != null)
             {
+                var glTax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == proformaHead.GLTaxRateID);
                 var customer = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == proformaHead.CustomerId);
                 return new PrintingProformaViewModel
                 {
@@ -34,6 +36,11 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     CreatedBy = proformaHead.CreatedBy,
                     DateCreated = proformaHead.DateCreated,
                     PriceValidityPeriod = proformaHead.PriceValidityPeriod,
+                    ModeOfPayment = proformaHead.ModeOfPayment,
+                    PaymentType = proformaHead.PaymentType.ToString(),
+                    TransportCost = proformaHead.TransporCost,
+                    VAT = glTax.TaxName,
+                    TotalTransportCost = proformaHead.TransportCostTotal
                     
                 };
 
@@ -53,8 +60,14 @@ namespace ExceedERP.Reporting.Printing.DataSource
             var proformaItems = db.PrintingProformaInvoiceItems.Where(x => x.PrintingProformaInvoiceId == proformaHead.PrintingProformaInvoiceId).ToList();
             foreach (var item in proformaItems)
             {
+                var estimation = db.PrintingCostEstimations.Find(item.PrintingCostEstimationId);
+                var text = db.PrintingEstimationMaterialCosts.FirstOrDefault(x => x.PrintingCostEstimationId == item.PrintingCostEstimationId && x.EstimationMaterialType == EstimationMaterialType.TextPaper);
+                var cover = db.PrintingEstimationMaterialCosts.FirstOrDefault(x => x.PrintingCostEstimationId == item.PrintingCostEstimationId && x.EstimationMaterialType == EstimationMaterialType.CoverPaper);
+                var materialItemText = db.PrintingMaterialCategoryItems.FirstOrDefault(x => x.PrintingMaterialCategoryItemId == text.PrintingMaterialCategoryItemId);
+                var materialItemCover = db.PrintingMaterialCategoryItems.FirstOrDefault(x => x.PrintingMaterialCategoryItemId == cover.PrintingMaterialCategoryItemId);
+                var paperSize = db.PrintingPaperSizes.Find(item.TextPaperSizeId);
                 var glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == item.GLTaxRateID);
-                var glTaxRateTransport = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == item.GLTaxRateTransportId);
+
                 list.Add(new PrintingProformaItemsViewModel
                 {
                     JobType = item.PrintJobType,
@@ -64,14 +77,19 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     Remark = item.Remark,
                     SellingPrice = item.GrandTotalIncludingVAT,
                     TotalPrice = item.TotalPrice,
-                    TransportCost = item.TransportCost,
                     UnitPrice = item.UnitPrice,
                     VAT = glTaxRate?.TaxName ?? "",
-                    TransportVAT = glTaxRateTransport?.TaxName ?? "",
-                    SellingPriceIncludingTransCost = item.GrandTotalIncludingTransport
+                    BindingType = item.BindingStyle.ToString(),
+                    PaperSize = paperSize?.PrintPaperSize.ToString() ?? "",
+                    CoverPaperType = materialItemCover?.ItemName ?? "",
+                    TextPaperType = materialItemText?.ItemName ?? "",
+                    ColorText = estimation?.TextNoOfColors ?? 0,
+                    ColorCover = estimation?.CoverNoOfColor ?? 0
                 });
             }
             return list;
         }
+
+
     }
 }

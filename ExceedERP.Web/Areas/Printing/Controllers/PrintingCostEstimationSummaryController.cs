@@ -23,7 +23,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 Value = s.OrganizationCustomerID,
                 Text = s.TradeName
             }).ToList();
-           
+
             ViewData["Category"] = db.PrintingMaterialCategories.Select(s => new
             {
                 Value = s.PrintingMaterialCategoryId,
@@ -39,7 +39,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public ActionResult PrintingEstimationSummaries_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<PrintingEstimationSummary> estimationsummaries = db.PrintingEstimationSummaries;            
+            IQueryable<PrintingEstimationSummary> estimationsummaries = db.PrintingEstimationSummaries;
             return Json(estimationsummaries.ToDataSourceResult(request));
         }
         public ActionResult PrintingEstimationDetail_Read([DataSourceRequest]DataSourceRequest request, int id)
@@ -48,6 +48,39 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             return Json(detail.ToDataSourceResult(request));
         }
 
+        public JsonResult CheckEstSummary(int id)
+        {
+            Object response = null;
+            var estSummary = db.PrintingEstimationSummaries.Find(id);
+            if (estSummary != null)
+            {
+
+                var details = db.PrintingEstimationDetails.Where(x => x.PrintingEstimationSummaryId == estSummary.PrintingEstimationSummaryId);
+                foreach (var item in details)
+                {
+
+                    if (item.ProfitMargin == 0)
+                    {
+                        response = new { Success = true, Message = "Profit Margin Missing!" };
+                        return Json(response);
+                    }
+                }
+
+                estSummary.IsSendForApproval = true;
+                estSummary.SendForApprovalBy = User.Identity.Name;
+                estSummary.SendForApprovalTime = DateTime.Today;
+                estSummary.Status = "Checked";
+                db.Entry(estSummary).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Successfully Checked" };
+
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something's Wrong!" };
+            }
+            return Json(response);
+        }
         public JsonResult ApproveEstimationSummary(int id)
         {
             Object response = null;
@@ -69,7 +102,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 db.SaveChanges();
                 AssignMarginToEstimation(estimationDetails);
                 response = new { Success = true, Message = "Successfully Approved!" };
-            }            
+            }
             else
             {
                 response = new { Success = false, Message = "Margin not set" };
@@ -82,7 +115,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             foreach (var item in models)
             {
                 var estimation = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == item.PrintingCostEstimationId);
-                if(estimation != null)
+                if (estimation != null)
                 {
                     var OverAllCost = db.PrintingOverAllCosts.FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId);
                     estimation.IsMarginAssigned = true;
@@ -120,22 +153,17 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         {
             Object response = null;
             var summary = db.PrintingEstimationSummaries.Find(id);
-            var overAllCost = db.PrintingEstimationCostSummaries.Where(x => x.PrintingEstimationSummaryId == summary.PrintingEstimationSummaryId).ToList();
-            if (overAllCost.Any())
-            {
-                summary.IsOnlineApproved = false;
-                summary.OnlineApprovedBy = User.Identity.Name;
-                summary.OnlineApprovedTime = DateTime.Today;
-                summary.Status = "Rejected";
-                db.Entry(summary).State = EntityState.Modified;
-                db.SaveChanges();
-                response = new { Success = true, Message = "Successfully Approved!" };
-            }
-            else
-            {
-                response = new { Success = false, Message = "Margin not set" };
 
-            }
+            summary.IsOnlineApproved = false;
+            summary.IsSendForApproval = false;
+
+            //summary.OnlineApprovedBy = User.Identity.Name;
+            //summary.OnlineApprovedTime = DateTime.Today;
+            summary.Status = "Rejected";
+            db.Entry(summary).State = EntityState.Modified;
+            db.SaveChanges();
+            response = new { Success = true, Message = "Successfully Rejected!" };
+
             return Json(response);
 
         }

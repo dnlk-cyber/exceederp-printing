@@ -24,6 +24,8 @@ namespace ExceedERP.Reporting.Printing.ViewModel
         public int Pages { get; set; }
         public string BindingStyle { get; set; }
         public string PaperSize { get; set; }
+        public int TextColor { get; set; }
+        public int CoverColor { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal TotalPrice { get; set; }
         public string Remark { get; set; } 

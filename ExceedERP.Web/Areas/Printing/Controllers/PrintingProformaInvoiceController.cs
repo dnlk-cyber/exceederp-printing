@@ -44,6 +44,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         {
             if (ModelState.IsValid)
             {
+                var glTax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GLTaxRateID);
                 var entity = new PrintingProformaInvoice
                 {
                     AdvancePaymentInPercent = model.AdvancePaymentInPercent,
@@ -59,8 +60,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Remark = model.Remark,
                     PriceValidityPeriod = model.PriceValidityPeriod,
                     Status = model.Status,
-                    
+                    GLTaxRateID = model.GLTaxRateID,
+                    TransporCost = model.TransporCost,
                 };
+                entity.TransportCostTotal = model.TransporCost * (1 + glTax?.CalculatedRate ?? 0);
                 db.PrintingProformaInvoices.Add(entity);
                 db.SaveChanges();
                 model.PrintingProformaInvoiceId = entity.PrintingProformaInvoiceId;
@@ -72,6 +75,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         {
             if (ModelState.IsValid)
             {
+                var glTax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GLTaxRateID);
                 var entity = new PrintingProformaInvoice
                 {
                     AdvancePaymentInPercent = model.AdvancePaymentInPercent,
@@ -87,9 +91,12 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Remark = model.Remark,
                     PriceValidityPeriod = model.PriceValidityPeriod,
                     Status = model.Status,
-                    PrintingProformaInvoiceId = model.PrintingProformaInvoiceId
-
+                    PrintingProformaInvoiceId = model.PrintingProformaInvoiceId,
+                    GLTaxRateID = model.GLTaxRateID,
+                    TransporCost = model.TransporCost
                 };
+                entity.TransportCostTotal = model.TransporCost * (1 + glTax?.CalculatedRate ?? 0);
+
                 db.PrintingProformaInvoices.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();

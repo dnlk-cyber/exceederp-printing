@@ -8,6 +8,7 @@
                                           columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(110).Title("Customer");
                                           columns.Command(command =>
                                           {
+                                              command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
                                               command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
                                               columns.Bound(c => c.Status).Width(120);
                                               command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
@@ -40,12 +41,12 @@
 
                         @Detail()
                     </text>);
-                                                                                                itemn.Add().Text("Cost Summary")
+                                                                                                @*itemn.Add().Text("Cost Summary")
             .Content(
                 @<text>
-                    <span class="sum"><a onclick='return calculateOverallCost("#=PrintingEstimationSummaryId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a></span>
+                    <span class="sum"><a onclick='return calculateProfitMargin("#=PrintingEstimationSummaryId#")' href=' \#' title="Add Profit Margine"><i class="fa fa-plus-square fa-2x"></i></a></span>
                     @CostSummary()
-                </text>);
+                </text>);*@
                                                                                 }).ToClientTemplate()
     )
 </script>
@@ -174,6 +175,31 @@
 
 
 <script type="text/javascript">
+    function handleChecked(e) {
+      
+        if (confirm("Are you sure you this form is checked?")) {
+            var grid = this;
+            var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            var id = dataItem.PrintingEstimationSummaryId;
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("CheckEstSummary", "PrintingCostEstimationSummary", new { Area = "Printing" })',
+                data: { id: id},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message);
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
     function onEditPM(e) {
         var input = e.container.find("input[name='ProfitMargin']");
         if (input.length) {
@@ -189,13 +215,23 @@
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
             if (dataItem.IsOnlineApproved) {
+                $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-approve").hide();
                 $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-delete").hide();
             }
-            else if (dataItem.IsOnlineTransferred) {
+            else if (dataItem.IsSendForApproval) {
+                $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-check").hide();
-
+                $(this).find(".k-grid-delete").hide();
+                
+                $(this).find(".k-grid-reject").show();
+                $(this).find(".k-grid-approve").show();
+            }
+            else {
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
             }
 
         });
@@ -241,7 +277,7 @@
             $(".sum").hide();
         }
     }
-    function calculateOverallCost(id) {
+    function calculateProfitMargin(id) {
         var recordStatus = "";
 
         $.ajax({
@@ -308,7 +344,7 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("RejectEstimation", "PrintingCostEstimationSummary", new { Area = "Printing" })',
+            url: '@Url.Action("RejectEstimationSummary", "PrintingCostEstimationSummary", new { Area = "Printing" })',
             data: { id: dataItem.PrintingEstimationSummaryId },
             success: function (result) {
                 if (result.Success) {

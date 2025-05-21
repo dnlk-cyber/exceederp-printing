@@ -10,6 +10,9 @@
                     columns.Bound(c => c.DeliveryPeriod).Width(120);
                     columns.Bound(c => c.PriceValidityPeriod).Width(120);
                     columns.Bound(c => c.ModeOfPayment).Width(100);
+                    columns.Bound(c => c.TransporCost).Width(100).Title("Transport");
+                    columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Value", "Text").Width(100).Title("VAT");
+                    columns.Bound(c => c.TransportCostTotal).Width(100).Title("Transport With VAT");
                     columns.Bound(c => c.Remark).Width(90);
                     columns.Command(command =>
                     {
@@ -73,9 +76,7 @@
                           columns.Bound(c => c.UnitPrice).Width(100);
                           columns.Bound(c => c.TotalPrice).Width(100);
                           columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Value", "Text").Title("Tax Type").Width(120);
-                          columns.Bound(c => c.TransportCost).Width(100);
                           columns.Bound(c => c.GrandTotalIncludingVAT).Title("Grand Total Including VAT").Width(100);
-                          columns.Bound(c => c.GrandTotalIncludingTransport).Title("Grand Total Including Transport").Width(100);
                           columns.Bound(c => c.Remark).Width(100);
                           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
                       })
