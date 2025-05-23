@@ -1,18 +1,19 @@
 ﻿using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.Finance;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
-using Kendo.Mvc.UI;
-using System;
-using System.Linq;
-using System.Web.Mvc;
-using Kendo.Mvc.Extensions;
-using System.Data.Entity;
 using ExceedERP.Helpers.CRM;
 using ExceedERP.Web.Helpers;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+using System;
+using System.Data.Entity;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.CRM.Controllers
 {
-    [AuthorizeRoles(CRMRoles.AdvancePaymentUser, CRMRoles.AdvancePaymentApprover)]
+    [AuthorizeRoles(CRMRoles.AdvancePaymentUser, CRMRoles.AdvancePaymentApprover, FinanceConstants.GeneralSubLedgerTransfer)]
     public class AdvancePaymentLineController : Controller
     {
 
@@ -49,7 +50,6 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
             {
                 var entity = new AdvancePaymentLine
                 {
-
                     RecieveMethod = AdvancePaymentLine.RecieveMethod,
                     Value = AdvancePaymentLine.Value,
                     CreatedBy = User.Identity.Name,
@@ -57,24 +57,13 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                     DateCreated = DateTime.Now
                 };
 
-
-
                 db.AdvancePaymentLines.Add(entity);
                 db.SaveChanges();
 
-                //var  PaymentLine = db.AdvancePayments.Where(x => x.AdvancePaymentId == entity.AdvancePaymentId).FirstOrDefault();
-
-                //var AccountMap = db.AccountMaps.ToList();
-                //var SalesInvoicePaymentDistibutions = CRMPaymentDistibutionHelper.DistributeAdvancePayment(entity, PaymentLine.OrganizationCustomer, AccountMap);
-
-                //if (SalesInvoicePaymentDistibutions.Any())
-                //{
-                //    db.AdvancePaymentDistibutions.AddRange(SalesInvoicePaymentDistibutions);
-                //    db.SaveChanges();
-                //}
                 var header = this.GetAdvancePaymentHeader(entity.AdvancePaymentId);
                 if (header != null)
                 {
+                    UpdateHeaderOnLineChange(header);
                     new CRMPaymentDistibutionHelper().UpdateAdvancePaymentDistribution(header);
                 }
 
@@ -85,8 +74,6 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AdvancePaymentLines_Update([DataSourceRequest]DataSourceRequest request, AdvancePaymentLine AdvancePaymentLine)
         {
-
-
             if (ModelState.IsValid)
             {
                 var entity = new AdvancePaymentLine
@@ -106,6 +93,8 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 var header = this.GetAdvancePaymentHeader(entity.AdvancePaymentId);
                 if (header != null)
                 {
+                    UpdateHeaderOnLineChange(header);
+
                     new CRMPaymentDistibutionHelper().UpdateAdvancePaymentDistribution(header);
                 }
             }
@@ -124,7 +113,6 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                     AdvancePaymentLineId = AdvancePaymentLine.AdvancePaymentLineId,
                     Value = AdvancePaymentLine.Value
                 };
-
                 db.AdvancePaymentLines.Attach(entity);
                 db.AdvancePaymentLines.Remove(entity);
                 db.SaveChanges();
@@ -132,6 +120,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 var header = this.GetAdvancePaymentHeader(entity.AdvancePaymentId);
                 if (header != null)
                 {
+                    UpdateHeaderOnLineChange(header);
                     new CRMPaymentDistibutionHelper().UpdateAdvancePaymentDistribution(header);
                 }
 
@@ -145,9 +134,23 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
         private AdvancePayment GetAdvancePaymentHeader(int id)
         {
             return db.AdvancePayments.Find(id);
-
         }
+        private void UpdateHeaderOnLineChange(AdvancePayment header)
+        {
+            if(header != null)
+            {
+                var lines = db.AdvancePaymentLines
+                    .AsNoTracking()
+                    .Where(l => l.AdvancePaymentId == header.AdvancePaymentId)
+                    .ToList();
+                header.GrandTotal = lines.Sum(l => l.Value);
+                header.Outstanding = header.GrandTotal - header.UsedAmount;
 
+                db.AdvancePayments.Attach(header);
+                db.Entry(header).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();
