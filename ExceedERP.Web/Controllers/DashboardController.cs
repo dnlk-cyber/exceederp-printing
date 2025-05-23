@@ -10,7 +10,6 @@ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.Construction;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using ExceedERP.Core.Domain.Maintenance;

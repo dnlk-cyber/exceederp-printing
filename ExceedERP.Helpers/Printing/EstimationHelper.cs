@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,6 +21,10 @@ namespace ExceedERP.Helpers.Printing
 
 
             result = wholePlates + no;
+            if(result % 2 != 0)
+            {
+                result++;
+            }
             result = result * x;
             result = Math.Ceiling(result * (1 + (wastage / 100)));
             return result;
@@ -31,13 +35,13 @@ namespace ExceedERP.Helpers.Printing
             Array.Sort(allowedSizes);
             Array.Reverse(allowedSizes); // Descending order
 
-            while (remainingPages > 0)
+            while (remainingPages > 0)//12
             {
-                foreach (var size in allowedSizes)
+                foreach (var size in allowedSizes)//[2,4,8]
                 {
                     if (remainingPages >= size)
                     {
-                        breakdown.Add(size);
+                        breakdown.Add(size);//[2,4]
                         remainingPages -= size;
                         break;
                     }

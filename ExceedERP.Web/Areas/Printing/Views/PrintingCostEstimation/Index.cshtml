@@ -7,8 +7,8 @@
                       {
                           columns.Bound(c => c.PrintingCostEstimationId).Title("Est. No");
                           columns.Bound(c => c.PrintJobType).Title("Job Type");
-                          columns.ForeignKey(c => c.TextPaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text").Title("Paper Size");
-                          columns.ForeignKey(c => c.CoverPaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text").Title("Paper Size");
+                          columns.ForeignKey(c => c.TextPaperSizeId, (IEnumerable)ViewData["PaperSizeText"], "Value", "Text").Title("Paper Size");
+                          columns.ForeignKey(c => c.CoverPaperSizeId, (IEnumerable)ViewData["PaperSizeCover"], "Value", "Text").Title("Paper Size");
                           columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text");
                           columns.ForeignKey(c => c.TextMachineTypeId, (IEnumerable)ViewData["PrintingMachineType"], "Value", "Text");
                           columns.ForeignKey(c => c.CoverMachineTypeId, (IEnumerable)ViewData["PrintingMachineType"], "Value", "Text");

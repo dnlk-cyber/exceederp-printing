@@ -1,5 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.Construction;
+
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.DataAccess.Context;
 using System;
