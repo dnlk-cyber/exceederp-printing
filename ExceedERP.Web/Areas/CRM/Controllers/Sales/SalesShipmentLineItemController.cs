@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
@@ -15,7 +16,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.CRM.Controllers
 {
-    [AuthorizeRoles(CRMRoles.ShipmentUser, CRMRoles.ShipmentApprover)]
+    [AuthorizeRoles(CRMRoles.ShipmentUser, CRMRoles.ShipmentApprover, FinanceConstants.GeneralSubLedgerTransfer)]
     public class SalesShipmentLineItemController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

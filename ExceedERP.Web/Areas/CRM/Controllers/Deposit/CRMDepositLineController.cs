@@ -8,10 +8,11 @@ using ExceedERP.Core.Domain.CRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.CRM;
+using ExceedERP.Core.Domain.Finance;
 
 namespace ExceedERP.Web.Areas.CRM.Controllers
 {
-    [AuthorizeRoles(CRMRoles.CashSalesUser, CRMRoles.CashSalesApprover)]
+    [AuthorizeRoles(CRMRoles.CashSalesUser, CRMRoles.CashSalesApprover, FinanceConstants.GeneralSubLedgerTransfer)]
     public class CRMDepositLineController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -40,6 +41,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
 
             return Json(result);
         }
+
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult CRMDepositLine_Create([DataSourceRequest]DataSourceRequest request, CRMDepositLine cRMDepositLine, int id)
