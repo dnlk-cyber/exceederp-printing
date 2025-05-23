@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using static ExceedERP.Core.Domain.CRM.CRMEnums;
 
 namespace ExceedERP.Web.Areas.CRM.Controllers
 {
@@ -33,8 +34,8 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 WithholdingType = lineItem.WithholdingType,
                 WithholdingAmount = lineItem.WithholdingAmount,
                 NetBalance = lineItem.NetBalance,
-                Source = lineItem.Source,
-                AdvancePaymentReference = lineItem.AdvancePaymentReference,
+                //Source = lineItem.Source,
+                //AdvancePaymentReference = lineItem.AdvancePaymentReference,
 
                 CreatedBy = lineItem.CreatedBy,
                 DateCreated = lineItem.DateCreated,
@@ -49,10 +50,10 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
         public ActionResult LineItems_Create([DataSourceRequest]DataSourceRequest request, LineCreditSettlement lineItem, int voucherID)
         {
             CRMPaymentDistibutionHelper CRMPaymentDistibutionHelper = new CRMPaymentDistibutionHelper();
-            if(lineItem.Source == SettlementAmountSource.AdvancePayment && lineItem.AdvancePaymentReference == null)
-            {
-                ModelState.AddModelError("AdvancePaymentReference", "Please provide advance payment reference.");
-            }
+            //if(lineItem.Source == SettlementAmountSource.AdvancePayment && lineItem.AdvancePaymentReference == null)
+            //{
+            //    ModelState.AddModelError("AdvancePaymentReference", "Please provide advance payment reference.");
+            //}
             decimal CurrentAmount = decimal.Zero;
             decimal lineAmount = 0;
             decimal settlementAmount = 0;
@@ -82,14 +83,14 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 {
                     CreditSettlementId = voucherID,
                     InvoiceId = lineItem.InvoiceId,
-                    CurrentAmmount = CurrentAmount,
+                    //CurrentAmmount = CurrentAmount,
                     RemainingAmount = CurrentAmount - lineItem.SettelmentAmount,
                     SettelmentAmount = lineItem.SettelmentAmount,
                     WithholdingType = lineItem.WithholdingType,
                     WithholdingAmount = lineItem.WithholdingAmount,
                     NetBalance = lineItem.NetBalance,
-                    Source = lineItem.Source,
-                    AdvancePaymentReference = lineItem.AdvancePaymentReference,
+                   // Source = lineItem.Source,
+                   // AdvancePaymentReference = lineItem.AdvancePaymentReference,
 
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Now,
@@ -102,7 +103,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 int save = db.SaveChanges();
 
                 UpdateCreditSalesInvoiceOnCreditSettlementLineChange(entity.InvoiceId);
-                CRMSalesHelper.UpdateAdvancePaymentOnInvoiceChange(entity.AdvancePaymentReference?.ToString());
+               // CRMSalesHelper.UpdateAdvancePaymentOnInvoiceChange(entity.AdvancePaymentReference?.ToString());
 
                 var creditSettlement = GetSettlementHeader(entity.CreditSettlementId);
                 if (creditSettlement != null)
@@ -117,10 +118,10 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LineItems_Update([DataSourceRequest]DataSourceRequest request, LineCreditSettlement lineItem, int voucherID)
         {
-            if (lineItem.SettelmentAmount > lineItem.CurrentAmmount)
-            {
-                ModelState.AddModelError("AmountExceed", " Total settlement amount exceeds total credit amount");
-            }
+        //    if (lineItem.SettelmentAmount > lineItem.CurrentAmmount)
+        //    {
+        //        ModelState.AddModelError("AmountExceed", " Total settlement amount exceeds total credit amount");
+        //    }
             if (ModelState.IsValid)
             {
                 var entity = new LineCreditSettlement
@@ -129,13 +130,13 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                     CreditSettlementId = voucherID,
                     InvoiceId = lineItem.InvoiceId,
                     CurrentAmmount = lineItem.CurrentAmmount,
-                    RemainingAmount = lineItem.CurrentAmmount - lineItem.SettelmentAmount,
+                   // RemainingAmount = lineItem.CurrentAmmount - lineItem.SettelmentAmount,
                     SettelmentAmount = lineItem.SettelmentAmount,
                     WithholdingType = lineItem.WithholdingType,
                     WithholdingAmount = lineItem.WithholdingAmount,
                     NetBalance = lineItem.NetBalance,
-                    Source = lineItem.Source,
-                    AdvancePaymentReference = lineItem.AdvancePaymentReference,
+                   // Source = lineItem.Source,
+                   // AdvancePaymentReference = lineItem.AdvancePaymentReference,
 
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Now,
@@ -148,7 +149,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 db.SaveChanges();
 
                 UpdateCreditSalesInvoiceOnCreditSettlementLineChange(entity.InvoiceId);
-                CRMSalesHelper.UpdateAdvancePaymentOnInvoiceChange(entity.AdvancePaymentReference?.ToString());
+               // CRMSalesHelper.UpdateAdvancePaymentOnInvoiceChange(entity.AdvancePaymentReference?.ToString());
 
                 var creditSettlement = GetSettlementHeader(entity.CreditSettlementId);
                 if (creditSettlement != null)
@@ -207,6 +208,30 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                     db.Entry(referedInvoice).State = EntityState.Modified;
                     db.SaveChanges();
                 }
+            }
+        }
+
+        public static void UpdateAdvancePaymentOnInvoiceChange(string advancePaymentReference)
+        {
+            var db = new ExceedDbContext();
+            int.TryParse(advancePaymentReference, out int adId);
+            var advancePayment = db.AdvancePayments.Find(adId);
+            if (advancePayment != null)
+            {
+                //decimal totalUsedInCashInvoice = db.CashSalesInvoices
+                //    .AsNoTracking()
+                //    .Where(i => i.AdvancePaymentReference == advancePaymentReference)
+                //    .Sum(i => (decimal?)i.AdvancePayment) ?? 0;
+                //decimal totalUsedInCreditSettlement = db.LineCreditSettlements
+                //    .AsNoTracking()
+                //    .Where(i => i.AdvancePaymentReference == adId)
+                //    .Sum(i => (decimal?)i.SettelmentAmount) ?? 0;
+
+                //advancePayment.UsedAmount = totalUsedInCashInvoice + totalUsedInCreditSettlement;
+                //advancePayment.Outstanding = advancePayment.GrandTotal - advancePayment.UsedAmount;
+
+                db.Entry(advancePayment).State = EntityState.Modified;
+                db.SaveChanges();
             }
         }
         private CreditSettlement GetSettlementHeader(int id)

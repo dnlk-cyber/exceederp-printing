@@ -1,9 +1,17 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.CRM
 {
     public class CRMEnums
     {
+        public enum SettlementAmountSource
+        {
+            Cash = 0,
+            [Display(Name = "Advance Payment")]
+            [Description("Advance Payment")]
+            AdvancePayment = 1
+        }
         public enum AdditionalCostType
         {
             Insurance,

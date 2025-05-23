@@ -144,7 +144,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                     .Where(l => l.AdvancePaymentId == header.AdvancePaymentId)
                     .ToList();
                 header.GrandTotal = lines.Sum(l => l.Value);
-                header.Outstanding = header.GrandTotal - header.UsedAmount;
+                //header.Outstanding = header.GrandTotal - header.UsedAmount;
 
                 db.AdvancePayments.Attach(header);
                 db.Entry(header).State = EntityState.Modified;

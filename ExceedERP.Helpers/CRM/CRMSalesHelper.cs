@@ -891,7 +891,29 @@ namespace ExceedERP.Helpers.CRM
             }
             return id;
         }
+        public static void UpdateAdvancePaymentOnInvoiceChange(string advancePaymentReference)
+        {
+            var db = new ExceedDbContext();
+            int.TryParse(advancePaymentReference, out int adId);
+            var advancePayment = db.AdvancePayments.Find(adId);
+            if (advancePayment != null)
+            {
+                //decimal totalUsedInCashInvoice = db.CashSalesInvoices
+                //    .AsNoTracking()
+                //    .Where(i => i.AdvancePaymentReference == advancePaymentReference)
+                //    .Sum(i => (decimal?)i.AdvancePayment) ?? 0;
+                //decimal totalUsedInCreditSettlement = db.LineCreditSettlements
+                //    .AsNoTracking()
+                //    .Where(i => i.AdvancePaymentReference == adId)
+                //    .Sum(i => (decimal?)i.SettelmentAmount) ?? 0;
 
+                //advancePayment.UsedAmount = totalUsedInCashInvoice + totalUsedInCreditSettlement;
+                //advancePayment.Outstanding = advancePayment.GrandTotal - advancePayment.UsedAmount;
+
+                db.Entry(advancePayment).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+        }
         public static decimal GetProductSalesPrice(string itemCode)
         {
             var db = new ExceedDbContext();
