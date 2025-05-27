@@ -358,6 +358,7 @@ namespace ExceedERP.Core.Domain.HRM.Payroll
 
         [Display(Name = "HR_Payroll_EmployeePayroll_Association_IsMemeber", ResourceType = typeof(Localization.Resources))]
         public bool IsMemeber { get; set; }
+        public bool ApplyPension { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
 
