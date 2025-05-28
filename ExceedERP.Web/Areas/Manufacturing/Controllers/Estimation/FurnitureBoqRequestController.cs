@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
+using ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -58,7 +58,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         }
         public ActionResult FurnitureBoqRequest_ReadEst([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<FurnitureBoqRequest> furnitureBoqRequest = db.FurnitureBoqRequests.Where(x => x.IsApproved || x.IsRejected);
+            IQueryable<FurnitureBoqRequest> furnitureBoqRequest = db.FurnitureBoqRequests.Where(x => x.IsApproved || x.IsRejected || !x.IsEstSent);
             return Json(furnitureBoqRequest.ToDataSourceResult(request));
         }
         [AcceptVerbs(HttpVerbs.Post)]
