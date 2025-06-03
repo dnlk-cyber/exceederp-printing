@@ -25,7 +25,7 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
         {
             var record = _db.PurchaseRequisitions.Find(id);
 
-            
+
             var organization = _db.Companies.FirstOrDefault(x => x.Category == "0");
 
             PurchaseRequistionHeader headerDs = new PurchaseRequistionHeader
@@ -33,14 +33,14 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                 PurchaseRequistionNo = InventoryPrintHelper.GetId(record.PurchaseRequisitionID),
                 RequestingDate = record.RequestDate.ToShortDateString(),
                 Requestor = EmployeeHelper.GetEmployeeEnglishName(record.EmployeeId),
-                ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.DepartmentOnlineApprovedBy)),               
+                ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(record.DepartmentOnlineApprovedBy)),
                 RequestingDepartment = InventoryPrintHelper.WorkUnitName(record.OrgStructureId)
             };
 
             if (record.DateCreated != null)
                 headerDs.CreatedDate = (DateTime)record.DateCreated;
 
-           
+
             if (record.DepartmentOnlineApprovedTime != null)
                 headerDs.ApprovalDate = (DateTime)record.DepartmentOnlineApprovedTime;
 
@@ -94,14 +94,37 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                     headerDs.LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
                 }
             }
-            return headerDs;
+
+            var prDepartmentValidations = _db.PurchaseRequisitionPurchaseDepartmentValidations
+                                   .Where(x => x.Status == ApprovalStatuses.Approve)
+                                   .Where(x => x.PurchaseRequisitionID == record.PurchaseRequisitionID).ToList();
+
+            if (prDepartmentValidations.Any())
+            {
+                int maxid = prDepartmentValidations.Max(x => x.PurchaseRequisitionPurchaseDepartmentValidationID);
+
+                var prevApprovers = prDepartmentValidations.Where(x => x.PurchaseRequisitionPurchaseDepartmentValidationID < maxid);
+                if (prevApprovers.Any())
+                {
+                    int secondMaxid = prevApprovers.Max(x => x.PurchaseRequisitionPurchaseDepartmentValidationID);
+                    var approver =prDepartmentValidations.FirstOrDefault(x => x.PurchaseRequisitionPurchaseDepartmentValidationID == secondMaxid);
+                    if(approver!=null)
+                    {
+                        headerDs.FirstApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(approver.CreatedBy));
+                        if (approver.DateCreated != null)
+                            headerDs.FirstApprovalDate = (DateTime)approver.DateCreated;
+                    }
+
+                }
+            }
+                return headerDs;
         }
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<PurchaseRequisitionItem> RequisitionItems(int id)
         {
             var record = _db.PurchaseRequisitions.Find(id);
 
-            
+
             List<PurchaseRequisitionItem> requisitionItems = _db.PurchaseRequisitionItems.Where(x => x.PurchaseRequisitionID == id).ToList();
             return requisitionItems;
         }

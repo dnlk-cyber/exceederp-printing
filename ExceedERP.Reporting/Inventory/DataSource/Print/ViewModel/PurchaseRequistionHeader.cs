@@ -39,5 +39,9 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print.ViewModel
         public string BudgetAuthorizerName { get; set; }
         public DateTime BudgetAuthorizationDate { get; set; }
         public Image BudgetAuthorizationSignature { get; set; }
+        //for service req
+        public string FirstApproverName { get; set; }
+        public Image FirstApprovedBySignature { get; set; }
+        public DateTime FirstApprovalDate { get; set; }
     }
 }
