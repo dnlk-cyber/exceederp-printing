@@ -95,19 +95,19 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                 }
             }
 
-            var prDepartmentValidations = _db.PurchaseRequisitionPurchaseDepartmentValidations
+            var prDepartmentValidations = _db.PurchaseRequisitionUserDepartmentValidations
                                    .Where(x => x.Status == ApprovalStatuses.Approve)
                                    .Where(x => x.PurchaseRequisitionID == record.PurchaseRequisitionID).ToList();
 
             if (prDepartmentValidations.Any())
             {
-                int maxid = prDepartmentValidations.Max(x => x.PurchaseRequisitionPurchaseDepartmentValidationID);
+                int maxid = prDepartmentValidations.Max(x => x.PurchaseRequisitionUserDepartmentValidationID);
 
-                var prevApprovers = prDepartmentValidations.Where(x => x.PurchaseRequisitionPurchaseDepartmentValidationID < maxid);
+                var prevApprovers = prDepartmentValidations.Where(x => x.PurchaseRequisitionUserDepartmentValidationID < maxid);
                 if (prevApprovers.Any())
                 {
-                    int secondMaxid = prevApprovers.Max(x => x.PurchaseRequisitionPurchaseDepartmentValidationID);
-                    var approver =prDepartmentValidations.FirstOrDefault(x => x.PurchaseRequisitionPurchaseDepartmentValidationID == secondMaxid);
+                    int secondMaxid = prevApprovers.Max(x => x.PurchaseRequisitionUserDepartmentValidationID);
+                    var approver =prDepartmentValidations.FirstOrDefault(x => x.PurchaseRequisitionUserDepartmentValidationID == secondMaxid);
                     if(approver!=null)
                     {
                         headerDs.FirstApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(approver.CreatedBy));
@@ -117,7 +117,7 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
 
                 }
             }
-                return headerDs;
+            return headerDs;
         }
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<PurchaseRequisitionItem> RequisitionItems(int id)
