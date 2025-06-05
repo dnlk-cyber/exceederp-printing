@@ -24,7 +24,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
     {
         private readonly ExceedDbContext db = new ExceedDbContext();
 
-        
+
         public ActionResult Index()
         {
             PopulateViewData();
@@ -82,15 +82,15 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
 
         }
 
-        
+
         public ActionResult PurchaseRequisitions_Read([DataSourceRequest] DataSourceRequest request)
         {
             int userEmpId = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
             List<int> userworkunit = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
 
             IQueryable<PurchaseRequisition> purchaserequisitions = db.PurchaseRequisitions.Where(x => x.ItemType == PurchaseItemType.Service);//.Where(x => mybraches.Contains(x.OrgStructureId));
-                    
-           
+
+
 
             if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService)
                    && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
@@ -112,30 +112,30 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             }
 
             var result = purchaserequisitions.ToDataSourceResult(request, purchaseRequisition => new
-                {
-                    PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
-                    StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
-                    BranchId = purchaseRequisition.BranchId,
-                    BusinessUnitId = purchaseRequisition.BusinessUnitId,
-                    OrgStructureId = purchaseRequisition.OrgStructureId,
-                    EmployeeId = purchaseRequisition.EmployeeId,
-                    ReferenceNo = purchaseRequisition.ReferenceNo,
-                    ProcurementOfficer = purchaseRequisition.ProcurementOfficer,
-                    RequestDate = purchaseRequisition.RequestDate,
-                    ProcurementMethod = purchaseRequisition.ProcurementMethod,
-                    PurchaseCategory = purchaseRequisition.PurchaseCategory,
-                    ItemType = purchaseRequisition.ItemType,
-                    GLPeriodId = purchaseRequisition.GLPeriodId,
-                    NextApprover = purchaseRequisition.NextApprover,
-                    Status = purchaseRequisition.Status,
-                    ForBranchId = purchaseRequisition.ForBranchId,
-                    PreviousProcurementMethod = purchaseRequisition.PreviousProcurementMethod,
-                    TenderType = purchaseRequisition.TenderType,
+            {
+                PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
+                StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
+                BranchId = purchaseRequisition.BranchId,
+                BusinessUnitId = purchaseRequisition.BusinessUnitId,
+                OrgStructureId = purchaseRequisition.OrgStructureId,
+                EmployeeId = purchaseRequisition.EmployeeId,
+                ReferenceNo = purchaseRequisition.ReferenceNo,
+                ProcurementOfficer = purchaseRequisition.ProcurementOfficer,
+                RequestDate = purchaseRequisition.RequestDate,
+                ProcurementMethod = purchaseRequisition.ProcurementMethod,
+                PurchaseCategory = purchaseRequisition.PurchaseCategory,
+                ItemType = purchaseRequisition.ItemType,
+                GLPeriodId = purchaseRequisition.GLPeriodId,
+                NextApprover = purchaseRequisition.NextApprover,
+                Status = purchaseRequisition.Status,
+                ForBranchId = purchaseRequisition.ForBranchId,
+                PreviousProcurementMethod = purchaseRequisition.PreviousProcurementMethod,
+                TenderType = purchaseRequisition.TenderType,
 
-                    DateCreated = purchaseRequisition.DateCreated,
-                    CreatedBy = purchaseRequisition.CreatedBy,
-                    LastModified = purchaseRequisition.LastModified,
-                    ModifiedBy = purchaseRequisition.ModifiedBy,
+                DateCreated = purchaseRequisition.DateCreated,
+                CreatedBy = purchaseRequisition.CreatedBy,
+                LastModified = purchaseRequisition.LastModified,
+                ModifiedBy = purchaseRequisition.ModifiedBy,
 
                 IsDepartmentOnlineApproved = purchaseRequisition.IsDepartmentOnlineApproved,
                 DepartmentOnlineApprovedBy = purchaseRequisition.DepartmentOnlineApprovedBy,
@@ -151,38 +151,38 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
 
 
                 Remark = purchaseRequisition.Remark,
-                    IsVoid = purchaseRequisition.IsVoid,
-                    VoidBy = purchaseRequisition.VoidBy,
-                    VoidTime = purchaseRequisition.VoidTime,
-                    IsOnlineApproved = purchaseRequisition.IsOnlineApproved,
-                    OnlineApprovedBy = purchaseRequisition.OnlineApprovedBy,
-                    OnlineApprovedTime = purchaseRequisition.OnlineApprovedTime,
+                IsVoid = purchaseRequisition.IsVoid,
+                VoidBy = purchaseRequisition.VoidBy,
+                VoidTime = purchaseRequisition.VoidTime,
+                IsOnlineApproved = purchaseRequisition.IsOnlineApproved,
+                OnlineApprovedBy = purchaseRequisition.OnlineApprovedBy,
+                OnlineApprovedTime = purchaseRequisition.OnlineApprovedTime,
 
-                    IsMiddleOnlineApproved = purchaseRequisition.IsMiddleOnlineApproved,
-                    MiddleOnlineApprovedBy = purchaseRequisition.MiddleOnlineApprovedBy,
-                    MiddleOnlineApprovedTime = purchaseRequisition.MiddleOnlineApprovedTime,
+                IsMiddleOnlineApproved = purchaseRequisition.IsMiddleOnlineApproved,
+                MiddleOnlineApprovedBy = purchaseRequisition.MiddleOnlineApprovedBy,
+                MiddleOnlineApprovedTime = purchaseRequisition.MiddleOnlineApprovedTime,
 
-                    IsSecondOnlineApproved = purchaseRequisition.IsSecondOnlineApproved,
-                    SecondOnlineApprovedBy = purchaseRequisition.SecondOnlineApprovedBy,
-                    SecondOnlineApprovedTime = purchaseRequisition.SecondOnlineApprovedTime,
+                IsSecondOnlineApproved = purchaseRequisition.IsSecondOnlineApproved,
+                SecondOnlineApprovedBy = purchaseRequisition.SecondOnlineApprovedBy,
+                SecondOnlineApprovedTime = purchaseRequisition.SecondOnlineApprovedTime,
 
-                    IsSendForApproval = purchaseRequisition.IsSendForApproval,
-                    SendForApprovalBy = purchaseRequisition.SendForApprovalBy,
-                    SendForApprovalTime = purchaseRequisition.SendForApprovalTime,
+                IsSendForApproval = purchaseRequisition.IsSendForApproval,
+                SendForApprovalBy = purchaseRequisition.SendForApprovalBy,
+                SendForApprovalTime = purchaseRequisition.SendForApprovalTime,
 
-                    IsMiddleSendForApproval = purchaseRequisition.IsMiddleSendForApproval,
-                    MiddleSendForApprovalBy = purchaseRequisition.MiddleSendForApprovalBy,
-                    MiddleSendForApprovalTime = purchaseRequisition.MiddleSendForApprovalTime,
+                IsMiddleSendForApproval = purchaseRequisition.IsMiddleSendForApproval,
+                MiddleSendForApprovalBy = purchaseRequisition.MiddleSendForApprovalBy,
+                MiddleSendForApprovalTime = purchaseRequisition.MiddleSendForApprovalTime,
 
-                    IsSecondSendForApproval = purchaseRequisition.IsSecondSendForApproval,
-                    SecondSendForApprovalBy = purchaseRequisition.SecondSendForApprovalBy,
-                    SecondSendForApprovalTime = purchaseRequisition.SecondSendForApprovalTime,
+                IsSecondSendForApproval = purchaseRequisition.IsSecondSendForApproval,
+                SecondSendForApprovalBy = purchaseRequisition.SecondSendForApprovalBy,
+                SecondSendForApprovalTime = purchaseRequisition.SecondSendForApprovalTime,
 
-                    IsOnlineTransferred = purchaseRequisition.IsOnlineTransferred,
-                    IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
-                    OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime,
+                IsOnlineTransferred = purchaseRequisition.IsOnlineTransferred,
+                IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
+                OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime,
 
-                    OrgBranchName = purchaseRequisition.OrgBranchName
+                OrgBranchName = purchaseRequisition.OrgBranchName
             });
 
             return Json(result);
@@ -314,7 +314,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-        
+
         public ActionResult PurchaseRequisitions_Update([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
             #region validation 
@@ -376,7 +376,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                     StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                     BranchId = purchaseRequisition.BranchId,
                     BusinessUnitId = purchaseRequisition.BusinessUnitId,
-                    OrgStructureId =purchaseRequisition.OrgStructureId,
+                    OrgStructureId = purchaseRequisition.OrgStructureId,
                     EmployeeId = purchaseRequisition.EmployeeId,
                     PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
                     ReferenceNo = purchaseRequisition.ReferenceNo,
@@ -433,35 +433,35 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
             return Json(new[] { purchaseRequisition }.ToDataSourceResult(request, ModelState));
         }
 
-       
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult PurchaseRequisitions_Destroy([DataSourceRequest] DataSourceRequest request, PurchaseRequisition purchaseRequisition)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PurchaseRequisition
-                    {
-                        PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
-                        StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
+                {
+                    PurchaseRequisitionID = purchaseRequisition.PurchaseRequisitionID,
+                    StoreRequisitionID = purchaseRequisition.StoreRequisitionID,
                     BranchId = purchaseRequisition.BranchId,
                     BusinessUnitId = purchaseRequisition.BusinessUnitId,
                     OrgStructureId = purchaseRequisition.OrgStructureId,
                     EmployeeId = purchaseRequisition.EmployeeId,
-                        ReferenceNo = purchaseRequisition.ReferenceNo,
-                        ProcurementOfficer = purchaseRequisition.ProcurementOfficer,
-                        RequestDate = purchaseRequisition.RequestDate,
-                        ProcurementMethod = purchaseRequisition.ProcurementMethod,
-                        PurchaseCategory = purchaseRequisition.PurchaseCategory,
-                        ItemType = purchaseRequisition.ItemType,
-                        NextApprover = purchaseRequisition.NextApprover,
-                        ForBranchId = purchaseRequisition.ForBranchId,
-                        PreviousProcurementMethod = purchaseRequisition.PreviousProcurementMethod,
+                    ReferenceNo = purchaseRequisition.ReferenceNo,
+                    ProcurementOfficer = purchaseRequisition.ProcurementOfficer,
+                    RequestDate = purchaseRequisition.RequestDate,
+                    ProcurementMethod = purchaseRequisition.ProcurementMethod,
+                    PurchaseCategory = purchaseRequisition.PurchaseCategory,
+                    ItemType = purchaseRequisition.ItemType,
+                    NextApprover = purchaseRequisition.NextApprover,
+                    ForBranchId = purchaseRequisition.ForBranchId,
+                    PreviousProcurementMethod = purchaseRequisition.PreviousProcurementMethod,
 
-                        Status = purchaseRequisition.Status,
-                        Remark = purchaseRequisition.Remark,
-                        IsVoid = purchaseRequisition.IsVoid,
-                        VoidBy = purchaseRequisition.VoidBy,
-                        VoidTime = purchaseRequisition.VoidTime,
+                    Status = purchaseRequisition.Status,
+                    Remark = purchaseRequisition.Remark,
+                    IsVoid = purchaseRequisition.IsVoid,
+                    VoidBy = purchaseRequisition.VoidBy,
+                    VoidTime = purchaseRequisition.VoidTime,
 
                     IsDepartmentOnlineApproved = purchaseRequisition.IsDepartmentOnlineApproved,
                     DepartmentOnlineApprovedBy = purchaseRequisition.DepartmentOnlineApprovedBy,
@@ -475,12 +475,12 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.SelfCare
                     IsFinalApproval = purchaseRequisition.IsFinalApproval,
                     CurrentApprovalStep = purchaseRequisition.CurrentApprovalStep,
                     IsOnlineApproved = purchaseRequisition.IsOnlineApproved,
-                        OnlineApprovedBy = purchaseRequisition.OnlineApprovedBy,
-                        OnlineApprovedTime = purchaseRequisition.OnlineApprovedTime,
-                        IsOnlineTransferred = purchaseRequisition.IsOnlineTransferred,
-                        IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
-                        OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime
-                    };
+                    OnlineApprovedBy = purchaseRequisition.OnlineApprovedBy,
+                    OnlineApprovedTime = purchaseRequisition.OnlineApprovedTime,
+                    IsOnlineTransferred = purchaseRequisition.IsOnlineTransferred,
+                    IsOnlineTransferredBy = purchaseRequisition.IsOnlineTransferredBy,
+                    OnlineTransferredTime = purchaseRequisition.OnlineTransferredTime
+                };
 
                 db.PurchaseRequisitions.Attach(entity);
                 db.PurchaseRequisitions.Remove(entity);

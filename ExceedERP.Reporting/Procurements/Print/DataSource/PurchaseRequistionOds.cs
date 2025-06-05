@@ -101,26 +101,15 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                         headerDs.RequestDate = record.RequestDate;
 
 
-                    if (record.ItemType == PurchaseItemType.Service)
-                    {
-                        headerDs.ApproverName =
-                                                  EmployeeHelper.GetEmployeeEnglishName(
-                                                      UserHelper.GetUserEmployeeId(record.DepartmentOnlineApprovedBy));
-                        headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(record.DepartmentOnlineApprovedBy);
-
-                        if (record.DepartmentOnlineApprovedTime != null)
-                            headerDs.ApprovalDate = (DateTime)record.DepartmentOnlineApprovedTime;
-                    }
-                    else
-                    {
-                        headerDs.ApproverName =
+                   
+                     headerDs.ApproverName =
                             EmployeeHelper.GetEmployeeEnglishName(
                                 UserHelper.GetUserEmployeeId(record.OnlineApprovedBy));
                         headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(record.OnlineApprovedBy);
 
                         if (record.OnlineApprovedTime != null)
                             headerDs.ApprovalDate = (DateTime)record.OnlineApprovedTime;
-                    }
+                    
 
                     headerDs.AuthorizerName =
                         EmployeeHelper.GetEmployeeEnglishName(
@@ -139,7 +128,44 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                     if (record.MiddleOnlineApprovedTime != null)
                         headerDs.PrApprovalDate = (DateTime)record.MiddleOnlineApprovedTime;
 
-                    
+
+                    if (record.ItemType == PurchaseItemType.Service)
+                    {
+
+                        var prDepartmentValidations = db.PurchaseRequisitionUserDepartmentValidations
+                                   .Where(x => x.Status == ApprovalStatuses.Approve)
+                                   .Where(x => x.PurchaseRequisitionID == record.PurchaseRequisitionID).ToList();
+
+                        if (prDepartmentValidations.Any())
+                        {
+                            int maxid = prDepartmentValidations.Max(x => x.PurchaseRequisitionUserDepartmentValidationID);
+
+                            var prevApprovers = prDepartmentValidations.Where(x => x.PurchaseRequisitionUserDepartmentValidationID < maxid);
+                            if (prevApprovers.Any())
+                            {
+                                int secondMaxid = prevApprovers.Max(x => x.PurchaseRequisitionUserDepartmentValidationID);
+                                var approver = prDepartmentValidations.FirstOrDefault(x => x.PurchaseRequisitionUserDepartmentValidationID == secondMaxid);
+                                if (approver != null)
+                                {
+                                    headerDs.ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(approver.CreatedBy));
+                                    headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(approver.CreatedBy);
+                                    if (approver.DateCreated != null)
+                                        headerDs.ApprovalDate = (DateTime)approver.DateCreated;
+                                }
+
+                            }
+                        }
+                       
+
+                        headerDs.PrApproverName =
+                                                 EmployeeHelper.GetEmployeeEnglishName(
+                                                     UserHelper.GetUserEmployeeId(record.DepartmentOnlineApprovedBy));
+                        headerDs.PrApprovedBySignature = SignatureHelper.GetUserSignature(record.DepartmentOnlineApprovedBy);
+
+                        if (record.DepartmentOnlineApprovedTime != null)
+                            headerDs.PrApprovalDate = (DateTime)record.DepartmentOnlineApprovedTime;
+                    }
+
                     #endregion
                 }
                 else
@@ -277,23 +303,9 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                           EmployeeHelper.GetEmployeeEnglishName(record.EmployeeId);
                         headerDs.RequestedBySignature = SignatureHelper.GetUserSignature(UserHelper.GetEmployeeUserName(record.EmployeeId));
                         if (record.RequestDate != null)
-                            headerDs.RequestDate = record.RequestDate;
+                            headerDs.RequestDate = record.RequestDate;                   
 
-                        headerDs.ApproverName =
-                                                   EmployeeHelper.GetEmployeeEnglishName(
-                                                       UserHelper.GetUserEmployeeId(record.DepartmentOnlineApprovedBy));
-                        headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(record.DepartmentOnlineApprovedBy);
-
-                        if (record.DepartmentOnlineApprovedTime != null)
-                            headerDs.ApprovalDate = (DateTime)record.DepartmentOnlineApprovedTime;
-
-                        headerDs.PrApproverName =
-                            EmployeeHelper.GetEmployeeEnglishName(
-                                UserHelper.GetUserEmployeeId(record.MiddleOnlineApprovedBy));
-                        headerDs.PrApprovedBySignature = SignatureHelper.GetUserSignature(record.MiddleOnlineApprovedBy);
-
-                        if (record.MiddleOnlineApprovedTime != null)
-                            headerDs.PrApprovalDate = (DateTime)record.MiddleOnlineApprovedTime;
+                        
 
                         headerDs.AuthorizerName =
                             EmployeeHelper.GetEmployeeEnglishName(
@@ -303,6 +315,38 @@ namespace ExceedERP.Reporting.Procurements.Print.Print
                         if (record.SecondOnlineApprovedTime != null)
                             headerDs.AuthorizationDate = (DateTime)record.SecondOnlineApprovedTime;
 
+                        var prDepartmentValidations = db.PurchaseRequisitionUserDepartmentValidations
+                                   .Where(x => x.Status == ApprovalStatuses.Approve)
+                                   .Where(x => x.PurchaseRequisitionID == record.PurchaseRequisitionID).ToList();
+
+                        if (prDepartmentValidations.Any())
+                        {
+                            int maxid = prDepartmentValidations.Max(x => x.PurchaseRequisitionUserDepartmentValidationID);
+
+                            var prevApprovers = prDepartmentValidations.Where(x => x.PurchaseRequisitionUserDepartmentValidationID < maxid);
+                            if (prevApprovers.Any())
+                            {
+                                int secondMaxid = prevApprovers.Max(x => x.PurchaseRequisitionUserDepartmentValidationID);
+                                var approver = prDepartmentValidations.FirstOrDefault(x => x.PurchaseRequisitionUserDepartmentValidationID == secondMaxid);
+                                if (approver != null)
+                                {
+                                    headerDs.ApproverName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(approver.CreatedBy));
+                                    headerDs.ApprovedBySignature = SignatureHelper.GetUserSignature(approver.CreatedBy);
+                                    if (approver.DateCreated != null)
+                                        headerDs.ApprovalDate = (DateTime)approver.DateCreated;
+                                }
+
+                            }
+                        }
+
+
+                        headerDs.PrApproverName =
+                                                 EmployeeHelper.GetEmployeeEnglishName(
+                                                     UserHelper.GetUserEmployeeId(record.DepartmentOnlineApprovedBy));
+                        headerDs.PrApprovedBySignature = SignatureHelper.GetUserSignature(record.DepartmentOnlineApprovedBy);
+
+                        if (record.DepartmentOnlineApprovedTime != null)
+                            headerDs.PrApprovalDate = (DateTime)record.DepartmentOnlineApprovedTime;
                     }
                    
                     
