@@ -15,7 +15,11 @@
 
 
 
-          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
       })
       .ToolBar(toolbar =>
       {
@@ -50,17 +54,17 @@
               .RequestStart("onRequestStart(\"OrganizationCustomerGrid\")")
               .RequestEnd("onRequestEnd(\"OrganizationCustomerGrid\")"))
 
-          .Read(read => read.Action("OrganizationCustomers_Read", "OrganizationCustomer"))
-          .Create(create => create.Action("OrganizationCustomers_Create", "OrganizationCustomer"))
-          .Update(update => update.Action("OrganizationCustomers_Update", "OrganizationCustomer"))
-          .Destroy(destroy => destroy.Action("OrganizationCustomers_Destroy", "OrganizationCustomer"))
+          .Read(read => read.Action("OrganizationCustomers_Read", "OrganizationCustomer").Data("sendForgery"))
+          .Create(create => create.Action("OrganizationCustomers_Create", "OrganizationCustomer").Data("sendForgery"))
+          .Update(update => update.Action("OrganizationCustomers_Update", "OrganizationCustomer").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("OrganizationCustomers_Destroy", "OrganizationCustomer").Data("sendForgery"))
           ).ClientDetailTemplateId("template")
 )
 
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                    .Name("tabstrip_#=OrganizationCustomerID#")
+    .Name("tabstrip_#=OrganizationCustomerID#")
     .SelectedIndex(0)
     .Items(items =>
     {
@@ -124,15 +128,15 @@
                                         .Error("error_handler(\"equipments_grid_#=OrganizationCustomerID#\")")
                                         .RequestStart("onRequestStart(\"equipments_grid_#=OrganizationCustomerID#\")")
                                         .RequestEnd("onRequestEnd(\"equipments_grid_#=OrganizationCustomerID#\")"))
-                            .Create(c => c.Action("Equipment_Create", "EquipmentInformation", new { cstId = "#=OrganizationCustomerID#" }))
-                            .Read(r => r.Action("Equipments_Read", "EquipmentInformation", new { customerId = "#=OrganizationCustomerID#" }))
-                            .Update(update => update.Action("Equipment_Update", "EquipmentInformation"))
-                            .Destroy(update => update.Action("Equipment_Destroy", "EquipmentInformation"))
+                            .Create(c => c.Action("Equipment_Create", "EquipmentInformation", new { cstId = "#=OrganizationCustomerID#" }).Data("sendForgery"))
+                            .Read(r => r.Action("Equipments_Read", "EquipmentInformation", new { customerId = "#=OrganizationCustomerID#" }).Data("sendForgery"))
+                            .Update(update => update.Action("Equipment_Update", "EquipmentInformation").Data("sendForgery"))
+                            .Destroy(update => update.Action("Equipment_Destroy", "EquipmentInformation").Data("sendForgery"))
                 ).ToClientTemplate()
             )
         </text>);
 
-        items.Add().Text("Beginning").Content(
+        @*items.Add().Text("Beginning").Content(
             @<text>
                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Beginning>()
                       .Name("BeginningGrid_#=OrganizationCustomerID#")
@@ -156,14 +160,14 @@
                                                                                                     .Error("error_handler(\"BeginningGrid_#=OrganizationCustomerID#\")")
                                                                                                     .RequestStart("onRequestStart(\"BeginningGrid_#=OrganizationCustomerID#\")")
                                                                                                     .RequestEnd("onRequestEnd(\"BeginningGrid_#=OrganizationCustomerID#\")"))
-                                                  .Read(read => read.Action("Beginnings_Read", "Beginning", new { id = "#=OrganizationCustomerID#", beginningReferenceType = "Organization_Customer" }))
-                                          .Create(create => create.Action("Beginnings_Create", "Beginning", new { id = "#=OrganizationCustomerID#", beginningReferenceType = "Organization_Customer" }))
-          .Update(update => update.Action("Beginnings_Update", "Beginning"))
-          .Destroy(destroy => destroy.Action("Beginnings_Destroy", "Beginning"))
+                                                  .Read(read => read.Action("Beginnings_Read", "Beginning", new { id = "#=OrganizationCustomerID#", beginningReferenceType = "Organization_Customer" }).Data("sendForgery"))
+                                          .Create(create => create.Action("Beginnings_Create", "Beginning", new { id = "#=OrganizationCustomerID#", beginningReferenceType = "Organization_Customer" }).Data("sendForgery"))
+          .Update(update => update.Action("Beginnings_Update", "Beginning").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("Beginnings_Destroy", "Beginning").Data("sendForgery"))
      ).ToClientTemplate()
                 )
             </text>
-    );
+    );*@
          
          items.Add().Text("Account Map").Content(
             @<text>
@@ -195,10 +199,10 @@
                                         .RequestStart("onRequestStart(\"AccountMapGrid_#=OrganizationCustomerID#\")")
                                         .RequestEnd("onRequestEnd(\"AccountMapGrid_#=OrganizationCustomerID#\")"))
                                                                                           
-                          .Read(read => read.Action("AccountMaps_Read", "AccountMap", new { accountMapReferenceType = "Organization_Customer", id = "#=OrganizationCustomerID#" }))
-                          .Create(create => create.Action("AccountMaps_Create", "AccountMap", new { accountMapReferenceType = "Organization_Customer", id = "#=OrganizationCustomerID#" }))
-                          .Update(update => update.Action("AccountMaps_Update", "AccountMap"))
-                          .Destroy(destroy => destroy.Action("AccountMaps_Destroy", "AccountMap"))
+                          .Read(read => read.Action("AccountMaps_Read", "AccountMap", new { accountMapReferenceType = "Organization_Customer", id = "#=OrganizationCustomerID#" }).Data("sendForgery"))
+                          .Create(create => create.Action("AccountMaps_Create", "AccountMap", new { accountMapReferenceType = "Organization_Customer", id = "#=OrganizationCustomerID#" }).Data("sendForgery"))
+                          .Update(update => update.Action("AccountMaps_Update", "AccountMap").Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("AccountMaps_Destroy", "AccountMap").Data("sendForgery"))
                       ).ToClientTemplate()
                 )
             </text>
@@ -230,10 +234,10 @@
             .RequestStart("onRequestStart(\"AddresseGrid_#=OrganizationCustomerID#\")")
             .RequestEnd("onRequestEnd(\"AddresseGrid_#=OrganizationCustomerID#\")"))
             
-            .Read(read => read.Action("Addresses_Read", "Addresse", new { referenceID = "#=OrganizationCustomerID#", addressReferenceType = "Organization_Customer" }))
-            .Create(create => create.Action("Addresses_Create", "Addresse", new { referenceID = "#=OrganizationCustomerID#", addressReferenceType = "Organization_Customer" }))
-          .Update(update => update.Action("Addresses_Update", "Addresse"))
-          .Destroy(destroy => destroy.Action("Addresses_Destroy", "Addresse"))
+            .Read(read => read.Action("Addresses_Read", "Addresse", new { referenceID = "#=OrganizationCustomerID#", addressReferenceType = "Organization_Customer" }).Data("sendForgery"))
+            .Create(create => create.Action("Addresses_Create", "Addresse", new { referenceID = "#=OrganizationCustomerID#", addressReferenceType = "Organization_Customer" }).Data("sendForgery"))
+          .Update(update => update.Action("Addresses_Update", "Addresse").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("Addresses_Destroy", "Addresse").Data("sendForgery"))
        ).ToClientTemplate()
                 )
             </text>
@@ -261,21 +265,18 @@
              .DataSource(dataSource => dataSource
                  .Ajax()
                  .Model(model => model.Id(p => p.BankReferenceID))
-                                         .Read(read => read.Action("BankReferences_Read", "BankReference", new { id = "#=OrganizationCustomerID#", bankReferenceType = "Organization_Customer" }))
-                                                 .Create(create => create.Action("BankReferences_Create", "BankReference", new { id = "#=OrganizationCustomerID#", bankReferenceType = "Organization_Customer" }))
-                                 .Update(update => update.Action("BankReferences_Update", "BankReference"))
-                                 .Destroy(destroy => destroy.Action("BankReferences_Destroy", "BankReference"))
+                                         .Read(read => read.Action("BankReferences_Read", "BankReference", new { id = "#=OrganizationCustomerID#", bankReferenceType = "Organization_Customer" }).Data("sendForgery"))
+                                                 .Create(create => create.Action("BankReferences_Create", "BankReference", new { id = "#=OrganizationCustomerID#", bankReferenceType = "Organization_Customer" }).Data("sendForgery"))
+                                 .Update(update => update.Action("BankReferences_Update", "BankReference").Data("sendForgery"))
+                                 .Destroy(destroy => destroy.Action("BankReferences_Destroy", "BankReference").Data("sendForgery"))
              ).ToClientTemplate()
                 )
 
             </text>
             );*@
-         //****************************************************************************************************//
-
-         //*********************************Industry Involvement*************************************************//
-         items.Add().Text("Industry Involvement").Content(
+        
+         @*items.Add().Text("Industry Involvement").Content(
             @<text>
-                @*<legend>Industry Involvement</legend>*@
                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.IndustryInvolved>()
                       .Name("IndustryInvolvementGrid_#=OrganizationCustomerID#")
       .Columns(columns =>
@@ -298,95 +299,83 @@
                                                                                                                                     .RequestStart("onRequestStart(\"IndustryInvolvementGrid_#=OrganizationCustomerID#\")")
                                                                                                                                     .RequestEnd("onRequestEnd(\"IndustryInvolvementGrid_#=OrganizationCustomerID#\")"))
                                                                        
-                                                                                  .Read(read => read.Action("IndustryInvolveds_Read", "IndustryInvolved", new { referenceIndustryInvolvment = "#=OrganizationCustomerID#", industryInvolvedReferenceType = "Organization_Customer" }))
-                                                                                  .Create(create => create.Action("IndustryInvolveds_Create", "IndustryInvolved", new { referenceIndustryInvolvment = "#=OrganizationCustomerID#", industryInvolvedReferenceType = "Organization_Customer" }))
-                  .Update(update => update.Action("IndustryInvolveds_Update", "IndustryInvolved"))
-          .Destroy(destroy => destroy.Action("IndustryInvolveds_Destroy", "IndustryInvolved"))
+                                                                                  .Read(read => read.Action("IndustryInvolveds_Read", "IndustryInvolved", new { referenceIndustryInvolvment = "#=OrganizationCustomerID#", industryInvolvedReferenceType = "Organization_Customer" }).Data("sendForgery"))
+                                                                                  .Create(create => create.Action("IndustryInvolveds_Create", "IndustryInvolved", new { referenceIndustryInvolvment = "#=OrganizationCustomerID#", industryInvolvedReferenceType = "Organization_Customer" }).Data("sendForgery"))
+                  .Update(update => update.Action("IndustryInvolveds_Update", "IndustryInvolved").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("IndustryInvolveds_Destroy", "IndustryInvolved").Data("sendForgery"))
      ).ToClientTemplate()
                 )
 
             </text>
-    );
+    );*@
     
        items.Add().Text("Credit Setting").Content(
             @<text>
-                @*<legend>Credit Setting</legend>*@
                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CreditSetting>()
-                                                             .Name("CreditSetting_#=OrganizationCustomerID#")
-             .Columns(columns =>
-             {
-                 columns.Bound(c => c.Quantity).Title("Amount").EditorTemplateName("NumEditor").Width(100);
-                 columns.Bound(c => c.Date).Width(100);
-                 
-                 columns.Command(command => { command.Edit();  }).Width(100);
-             })
-             .ToolBar(toolbar =>
-             {
-                 toolbar.Create();
-             })
-             .Editable(editable => editable.Mode(GridEditMode.InLine))
-             .Scrollable()
-             .DataSource(dataSource => dataSource
-                 .Ajax()
-                                  .Sort(x => x.Add(s => s.Date).Descending())
-                          .Model(model =>
-              {
-              model.Id(p => p.CreditSettingID);
-              model.Field(p => p.Date).Editable(false);
-          
-              }).Events(ev => ev
-                                                                                                                                                    .Error("error_handler(\"CreditSetting_#=OrganizationCustomerID#\")")
-                                                                                                                                                    .RequestStart("onRequestStart(\"CreditSetting_#=OrganizationCustomerID#\")")
-                                                                                                                                                    .RequestEnd("onRequestEnd(\"CreditSetting_#=OrganizationCustomerID#\")"))
-                                                                       
-                                                                              
-                                                                                                 .Read(read => read.Action("CreditSettings_Read", "CreditSetting", new { OrgID = "#=OrganizationCustomerID#" }))
-                                                                                                                 .Create(create => create.Action("CreditSettings_Create", "CreditSetting", new { CustomerID = "#=OrganizationCustomerID#" }))
-                                                                            .Update(update => update.Action("CreditSettings_Update", "CreditSetting"))
-
-                                                                         ).ToClientTemplate()
-                )
-
+                .Name("CreditSetting_#=OrganizationCustomerID#")
+                 .Columns(columns =>
+                 {
+                     columns.Bound(c => c.Quantity).Title("Amount").EditorTemplateName("NumEditor").Format("{0:N2}").Width(100);
+                     columns.Bound(c => c.Date).Width(100);
+                     columns.Command(command => { command.Edit();  }).Width(100);
+                 })
+                 .ToolBar(toolbar =>
+                 {
+                     toolbar.Create();
+                 })
+                 .Editable(editable => editable.Mode(GridEditMode.InLine))
+                 .Scrollable()
+                 .DataSource(dataSource => dataSource
+                     .Ajax()
+                     .Sort(x => x.Add(s => s.Date).Descending())
+                     .Model(model =>
+                      {
+                          model.Id(p => p.CreditSettingID);
+                          model.Field(p => p.Date).Editable(false);
+                      })
+                  .Events(ev => ev
+                    .Error("error_handler(\"CreditSetting_#=OrganizationCustomerID#\")")
+                    .RequestStart("onRequestStart(\"CreditSetting_#=OrganizationCustomerID#\")")
+                    .RequestEnd("onRequestEnd(\"CreditSetting_#=OrganizationCustomerID#\")"))
+                                                                      
+                .Read(read => read.Action("CreditSettings_Read", "CreditSetting", new { OrgID = "#=OrganizationCustomerID#" }).Data("sendForgery"))
+                .Create(create => create.Action("CreditSettings_Create", "CreditSetting", new { CustomerID = "#=OrganizationCustomerID#" }).Data("sendForgery"))
+                .Update(update => update.Action("CreditSettings_Update", "CreditSetting").Data("sendForgery"))
+                ).ToClientTemplate()
+            )
             </text>
             );
-
        items.Add().Text("Tin Number").Content(
         @<text>
-            @*<legend>Tin Number</legend>*@
             @(Html.Kendo().Grid<ExceedERP.Web.Areas.CRM.Models.BindingModel>()
-                                                                     .Name("TinNo_#=OrganizationCustomerID#")
-             .Columns(columns =>
-             {
-                 columns.Bound(c => c.Name).Title("Number");
-                 
-                 columns.Command(command => { command.Edit(); }).Width(100);
-             })
+                .Name("TinNo_#=OrganizationCustomerID#")
+                 .Columns(columns =>
+                 {
+                     columns.Bound(c => c.Name).Title("Number");
+                     columns.Command(command => { command.Edit(); }).Width(100);
+                 })
            
-             .Editable(editable => editable.Mode(GridEditMode.InLine))
-             .Scrollable()
-             .DataSource(dataSource => dataSource
-                 .Ajax()
-                               
-                          .Model(model =>
-              {
-                  model.Id(p => p.Id);
-                
-              }).Events(ev => ev
-                                                                                                                                                            .Error("error_handler(\"TinNo_#=OrganizationCustomerID#\")")
-                                                                                                                                                            .RequestStart("onRequestStart(\"TinNo_#=OrganizationCustomerID#\")")
-                                                                                                                                                            .RequestEnd("onRequestEnd(\"TinNo_#=OrganizationCustomerID#\")"))
+                 .Editable(editable => editable.Mode(GridEditMode.InLine))
+                 .Scrollable()
+                 .DataSource(dataSource => dataSource
+                     .Ajax()
+                     .Model(model =>
+                      {
+                          model.Id(p => p.Id);
+                      })
+                      .Events(ev => ev
+                        .Error("error_handler(\"TinNo_#=OrganizationCustomerID#\")")
+                        .RequestStart("onRequestStart(\"TinNo_#=OrganizationCustomerID#\")")
+                        .RequestEnd("onRequestEnd(\"TinNo_#=OrganizationCustomerID#\")"))
+                    .Read(read => read.Action("OrganizationTinNo_Read", "OrganizationCustomer", new { Id = "#=OrganizationCustomerID#" }).Data("sendForgery"))
+                    .Create(create => create.Action("OrganizationTinNo_Create", "OrganizationCustomer", new { Id = "#=OrganizationCustomerID#" }).Data("sendForgery"))
+                    .Update(update => update.Action("OrganizationTinNo_Create", "OrganizationCustomer").Data("sendForgery"))
 
-
-                                                                                                                 .Read(read => read.Action("OrganizationTinNo_Read", "OrganizationCustomer", new { Id = "#=OrganizationCustomerID#" }))
-                                                                                                                                 .Create(create => create.Action("OrganizationTinNo_Create", "OrganizationCustomer", new { Id = "#=OrganizationCustomerID#" }))
-                                                                                            .Update(update => update.Action("OrganizationTinNo_Create", "OrganizationCustomer"))
-
-                                                                         ).ToClientTemplate()
+                ).ToClientTemplate()
             )
 
         </text>
             );
-         //*****************************************************************************************************//
      }).ToClientTemplate())
 </script>
 
