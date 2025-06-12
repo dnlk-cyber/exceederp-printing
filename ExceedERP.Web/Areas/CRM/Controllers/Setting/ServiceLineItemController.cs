@@ -128,7 +128,18 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 db.ServiceLineItems.Add(entity);
                 db.SaveChanges();
                 ServiceLineItem.ServiceLineItemId = entity.ServiceLineItemId;
-                //}
+
+                if (entity.VoucherType == CRMVoucherType.SalesInvoice)
+                {
+                    var invoiceHeader = db.CashSalesInvoices
+                        .AsNoTracking()
+                        .FirstOrDefault(inv => inv.CashSalesInvoiceID == entity.VoucherId);
+                    if (invoiceHeader != null)
+                    {
+                        new CRMSalesHelper().UpdateSalesInvoiceRecordOnLineEdit(invoiceHeader);
+                        new CRMPaymentDistibutionHelper().UpdateCashSalesInvoiceDistribution(invoiceHeader);
+                    }
+                }
             }
 
 
@@ -191,7 +202,17 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
             db.Entry(entity).State = EntityState.Modified;
             db.SaveChanges();
 
-            //}
+            if (entity.VoucherType == CRMVoucherType.SalesInvoice)
+            {
+                var invoiceHeader = db.CashSalesInvoices
+                    .AsNoTracking()
+                    .FirstOrDefault(inv => inv.CashSalesInvoiceID == entity.VoucherId);
+                if (invoiceHeader != null)
+                {
+                    new CRMSalesHelper().UpdateSalesInvoiceRecordOnLineEdit(invoiceHeader);
+                    new CRMPaymentDistibutionHelper().UpdateCashSalesInvoiceDistribution(invoiceHeader);
+                }
+            }
 
             return Json(new[] { ServiceLineItem }.ToDataSourceResult(request));
         }
@@ -231,6 +252,17 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 db.SaveChanges();
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted  Service LineItem number " + ServiceLineItem.ServiceLineItemId);
 
+                if (entity.VoucherType == CRMVoucherType.SalesInvoice)
+                {
+                    var invoiceHeader = db.CashSalesInvoices
+                        .AsNoTracking()
+                        .FirstOrDefault(inv => inv.CashSalesInvoiceID == entity.VoucherId);
+                    if (invoiceHeader != null)
+                    {
+                        new CRMSalesHelper().UpdateSalesInvoiceRecordOnLineEdit(invoiceHeader);
+                        new CRMPaymentDistibutionHelper().UpdateCashSalesInvoiceDistribution(invoiceHeader);
+                    }
+                }
             }
 
             return Json(new[] { ServiceLineItem }.ToDataSourceResult(request, ModelState));

@@ -2,6 +2,7 @@
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.CRM;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -72,6 +73,17 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 additionalCostLog.AdditionalCostLogId = entity.AdditionalCostLogId;
                 UserHelper.OperationLog(Request.UserHostAddress, "Create", "Success", User.Identity.Name, "Create "+ type.ToString() +" Additional Cost Line Item with id " + additionalCostLog.AdditionalCostLogId, Modules.CRM);
 
+                if (type == VoucherType.SalesInvoice)
+                {
+                    var invoiceHeader = db.CashSalesInvoices
+                        .AsNoTracking()
+                        .FirstOrDefault(inv => inv.CashSalesInvoiceID == entity.VoucherId);
+                    if (invoiceHeader != null)
+                    {
+                        new CRMSalesHelper().UpdateSalesInvoiceRecordOnLineEdit(invoiceHeader);
+                        new CRMPaymentDistibutionHelper().UpdateCashSalesInvoiceDistribution(invoiceHeader);
+                    }
+                }
             }
 
             return Json(new[] { additionalCostLog }.ToDataSourceResult(request, ModelState));
@@ -106,6 +118,17 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 db.SaveChanges();
                 UserHelper.OperationLog(Request.UserHostAddress, "Update", "Success", User.Identity.Name, "Updated Addtional Cost Line Item with id " + additionalCostLog.AdditionalCostLogId, Modules.CRM);
 
+                if (entity.VoucherType == VoucherType.SalesInvoice)
+                {
+                    var invoiceHeader = db.CashSalesInvoices
+                        .AsNoTracking()
+                        .FirstOrDefault(inv => inv.CashSalesInvoiceID == entity.VoucherId);
+                    if (invoiceHeader != null)
+                    {
+                        new CRMSalesHelper().UpdateSalesInvoiceRecordOnLineEdit(invoiceHeader);
+                        new CRMPaymentDistibutionHelper().UpdateCashSalesInvoiceDistribution(invoiceHeader);
+                    }
+                }
             }
 
             return Json(new[] { additionalCostLog }.ToDataSourceResult(request, ModelState));
@@ -140,6 +163,17 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
                 db.SaveChanges();
                 UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Addtional Cost Line Item with id " + additionalCostLog.AdditionalCostLogId, Modules.CRM);
 
+                if (entity.VoucherType == VoucherType.SalesInvoice)
+                {
+                    var invoiceHeader = db.CashSalesInvoices
+                        .AsNoTracking()
+                        .FirstOrDefault(inv => inv.CashSalesInvoiceID == entity.VoucherId);
+                    if (invoiceHeader != null)
+                    {
+                        new CRMSalesHelper().UpdateSalesInvoiceRecordOnLineEdit(invoiceHeader);
+                        new CRMPaymentDistibutionHelper().UpdateCashSalesInvoiceDistribution(invoiceHeader);
+                    }
+                }
             }
 
             return Json(new[] { additionalCostLog }.ToDataSourceResult(request, ModelState));

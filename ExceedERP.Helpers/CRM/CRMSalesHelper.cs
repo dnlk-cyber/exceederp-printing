@@ -11,17 +11,12 @@ using System.Web;
 
 namespace ExceedERP.Helpers.CRM
 {
-
     public class CRMSalesHelper
     {
-
-
         public decimal GetPartialLineAmount(LineItem LineItem, List<CashSalesPartialLineItem> CashSalesPartialLineItems)
         {
-
             var PartialSalesQuantity = CashSalesPartialLineItems.Where(x => x.LineItemID == LineItem.LineItemID).Sum(x => x.PartialPayedAmount);
             return PartialSalesQuantity;
-
         }
 
         public decimal GetPartialLinesAmount(List<LineItem> LineItems, List<CashSalesPartialLineItem> CashSalesPartialLineItems)
@@ -44,7 +39,6 @@ namespace ExceedERP.Helpers.CRM
                 PartialSalesQuantity = PartialSalesQuantity + CashSalesPartialLineItems.Where(x => x.CashSalesPartialItemId == CashSalesPartialItem.CashSalesPartialItemId && x.LineItemID == LineItem.LineItemID).Sum(x => x.PartialPayedAmount);
             }
             return PartialSalesQuantity;
-
         }
 
         public decimal GetPartialLineAmountByPartialItem(LineItem LineItem, List<CashSalesPartialLineItem> CashSalesPartialLineItems, CashSalesPartialItem CashSalesPartialItem)
@@ -57,15 +51,11 @@ namespace ExceedERP.Helpers.CRM
 
         }
 
-
         public decimal GetPartialLineQuantityByPartialItem(LineItem LineItem, List<CashSalesPartialLineItem> CashSalesPartialLineItems, CashSalesPartialItem CashSalesPartialItem)
         {
-
-
             var PartialSalesQuantity = CashSalesPartialLineItems.Where(x => x.CashSalesPartialItemId == CashSalesPartialItem.CashSalesPartialItemId && x.LineItemID == LineItem.LineItemID).Sum(x => x.PartialPayedAmount);
 
             return PartialSalesQuantity;
-
         }
 
         public bool ValidatePartialLineAmount(LineItem LineItem, List<CashSalesPartialLineItem> CashSalesPartialLineItems, decimal Value)
@@ -78,7 +68,6 @@ namespace ExceedERP.Helpers.CRM
             { return true; }
 
             return false;
-
         }
 
         public bool ValidatePartialLineAmount(LineItem LineItem, List<CashSalesPartialLineItem> CashSalesPartialLineItems, int PartialLineId, decimal Value)
@@ -92,7 +81,6 @@ namespace ExceedERP.Helpers.CRM
             { return true; }
 
             return false;
-
         }
         public Tuple<List<AdvancePaymentLog>, decimal> ProcessAdvancePayment(CashSalesInvoice Invoice, List<LineItem> LineItems, List<AdvancePaymentLine> AdvancePaymentLine, List<AdvancePayment> AdvancePayments)
         {
@@ -110,10 +98,6 @@ namespace ExceedERP.Helpers.CRM
 
                 var AdvancePaymentLines = AdvancePaymentLine.Where(x => x.AdvancePaymentId == AdvancePayment.AdvancePaymentId).ToList();
 
-
-
-
-
                 foreach (var Line in AdvancePaymentLines)
                 {
                     if (TotalAmount > Line.Value)
@@ -121,8 +105,6 @@ namespace ExceedERP.Helpers.CRM
                         PayedAmount += Line.Value;
 
                         var Amount = decimal.Zero;
-
-
 
                         if (TotalAmount > 0)
                         {
@@ -137,7 +119,6 @@ namespace ExceedERP.Helpers.CRM
 
                             };
                             Logs.Add(Log);
-
 
                         }
                     }
@@ -164,25 +145,17 @@ namespace ExceedERP.Helpers.CRM
 
                         }
                         return Tuple.Create(Logs, PayedAmount);
-
-
                     }
-
-
                 }
-
-
             }
             return Tuple.Create(Logs, PayedAmount);
-
-
         }
         public void ConfigureWitholding(bool WithholdTax, string WithholdingType, List<GLTaxRate> Rate, out decimal WithHoldingAmount, out decimal WithHoldingTaxAmount, decimal TaxAmount, decimal subTotal)
         {
             var db = new ExceedDbContext();
-            var GLWithholdingTaxRate = Rate.Where(t => t.GLTaxRateID.ToString() == WithholdingType).FirstOrDefault();
+            var GLWithholdingTaxRate = Rate.FirstOrDefault(t => t.GLTaxRateID.ToString() == WithholdingType);
             //WithHoldingAmount = (TotalAmount - (TotalAmount * (GLWithholdingTaxRate.Rate / 100)));
-            if(GLWithholdingTaxRate != null)
+            if (GLWithholdingTaxRate != null)
             {
                 WithHoldingAmount = subTotal * GLWithholdingTaxRate.CalculatedRate;
             }
@@ -194,10 +167,10 @@ namespace ExceedERP.Helpers.CRM
             if (WithholdTax)
             {
                 var vatWithholdingSetting = db.GLVatWithholdings.FirstOrDefault();
-                if(vatWithholdingSetting != null)
+                if (vatWithholdingSetting != null)
                 {
                     // VAT withholding could be partial instead of full 15% withholding
-                    WithHoldingTaxAmount = subTotal * (vatWithholdingSetting.WithholdPercent / 100);
+                    WithHoldingTaxAmount = TaxAmount * (vatWithholdingSetting.WithholdPercent / 100);
                 }
 
                 //WithHoldingTaxAmount = TaxAmount;
@@ -208,7 +181,7 @@ namespace ExceedERP.Helpers.CRM
             var db = new ExceedDbContext();
             decimal amnt = 0;
             var taxType = db.GLTaxRates.Find(taxTypeId);
-            if(taxType != null)
+            if (taxType != null)
             {
                 amnt = taxType.CalculatedRate * subTotal;
             }
@@ -291,17 +264,42 @@ namespace ExceedERP.Helpers.CRM
         {
             var db = new ExceedDbContext();
             var currentInvoice = db.CashSalesInvoices.Find(invoice.CashSalesInvoiceID);
-            var lineItems = db.LineItems.Where(l => l.VoucherDefinitionID == "2" && l.Voucher == invoice.CashSalesInvoiceID.ToString()).ToList();
-            if (lineItems.Any())
-            {
-                var total = lineItems.Sum(l => l.TotalAmount);
+            var lineItems = db.LineItems
+                .AsNoTracking()
+                .Where(l => l.VoucherDefinitionID == "2"
+                    && l.Voucher == invoice.CashSalesInvoiceID.ToString())
+                .ToList();
+            var services = db.ServiceLineItems
+                .AsNoTracking()
+                .Where(l => l.VoucherType == CRMVoucherType.SalesInvoice
+                    && l.VoucherId == invoice.CashSalesInvoiceID)
+                .ToList();
+            var additionalCosts = db.AdditionalCostLogs
+                .AsNoTracking()
+                .Where(l => l.VoucherType == VoucherType.SalesInvoice
+                    && l.VoucherId == invoice.CashSalesInvoiceID)
+                .ToList();
 
-                currentInvoice.GrandTotal = total;
+            var total = lineItems.Sum(l => l.TotalAmount)
+                + services.Sum(s => s.TotalAmount)
+                + additionalCosts.Sum(a => a.TotalAmount);
 
-                db.CashSalesInvoices.Attach(currentInvoice);
-                db.Entry(currentInvoice).State = EntityState.Modified;
-                db.SaveChanges();
-            }
+            decimal settledAmount =
+                       db.LineCreditSettlements
+                       .Where(l => l.InvoiceId == invoice.CashSalesInvoiceID)
+                       .Sum(l => (decimal?)l.SettelmentAmount) ?? 0;
+            decimal settledAmountInCons =
+                   db.SubContractorCreditSettlementItems
+                   .Where(l => l.InvoiceId == invoice.CashSalesInvoiceID)
+                   .Sum(l => (decimal?)l.SettledAmount) ?? 0;
+            decimal totalSettledAmount = settledAmount + settledAmountInCons;
+
+            currentInvoice.GrandTotal = total;
+            currentInvoice.AmountDue = total - totalSettledAmount;
+
+            db.CashSalesInvoices.Attach(currentInvoice);
+            db.Entry(currentInvoice).State = EntityState.Modified;
+            db.SaveChanges();
         }
 
         public static OrganizationCustomer CreateTempCustomer(string Name, string customerTin = "")
@@ -523,12 +521,19 @@ namespace ExceedERP.Helpers.CRM
                 if (res > 0)
                 {
                     #region create line
-                    var invoiceLines = db.LineItems.Where(l => l.Voucher == invoice.CashSalesInvoiceID.ToString() && l.VoucherDefinitionID == "2").ToList();
+                    var invoiceLines = db.LineItems
+                        .AsNoTracking()
+                        .Where(l => l.Voucher == invoice.CashSalesInvoiceID.ToString()
+                            && l.VoucherDefinitionID == "2")
+                        .ToList();
                     foreach (LineItem invoiceLineItem in invoiceLines)
                     {
                         decimal remainingQty = invoiceLineItem.Quantity;
                         decimal shippedBefore = 0;
-                        var existingShipmentLineItem = db.SalesShipmentLineItem.Where(li => li.LineItemId == invoiceLineItem.LineItemID).ToList();
+                        var existingShipmentLineItem = db.SalesShipmentLineItem
+                            .AsNoTracking()
+                            .Where(li => li.LineItemId == invoiceLineItem.LineItemID)
+                        .ToList();
                         if (existingShipmentLineItem.Any())
                         {
                             shippedBefore = existingShipmentLineItem.Sum(i => i.ShipedQuantity);
@@ -891,6 +896,44 @@ namespace ExceedERP.Helpers.CRM
             }
             return id;
         }
+
+        public static decimal GetProductSalesPrice(string itemCode)
+        {
+            var db = new ExceedDbContext();
+            decimal price = 0;
+            var product = db.Products.FirstOrDefault(p => p.ItemCode == itemCode);
+            if (product != null)
+            {
+                var priceSetting = db.Prices.FirstOrDefault(p => p.Thing == product.ProductID.ToString());
+                if (priceSetting != null)
+                {
+                    price = priceSetting.Value;
+                }
+            }
+            return price;
+        }
+
+        public static void UpdatePriceEstimationQuoteGrandTotal(int id)
+        {
+            var db = new ExceedDbContext();
+            var record = db.PriceEstimationQuoteVouchers.Find(id);
+            if (record != null)
+            {
+                var linesTotal = db.PriceEstimationQuoteVoucherLines
+                    .Where(t => t.PriceEstimationQuoteVoucherId == record.PriceEstimationQuoteVoucherId)
+                    .Sum(l => (decimal?)l.TotalAmount);
+                var servicesTotal = db.PriceEstimationQuoteVoucherServices
+                    .Where(t => t.PriceEstimationQuoteVoucherId == record.PriceEstimationQuoteVoucherId)
+                    .Sum(l => (decimal?)l.TotalAmount);
+                var grandTotal = linesTotal.GetValueOrDefault() + servicesTotal.GetValueOrDefault();
+
+                record.GrandTotal = grandTotal;
+
+                db.Entry(record).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+        }
+
         public static void UpdateAdvancePaymentOnInvoiceChange(string advancePaymentReference)
         {
             var db = new ExceedDbContext();
@@ -898,36 +941,21 @@ namespace ExceedERP.Helpers.CRM
             var advancePayment = db.AdvancePayments.Find(adId);
             if (advancePayment != null)
             {
-                //decimal totalUsedInCashInvoice = db.CashSalesInvoices
-                //    .AsNoTracking()
-                //    .Where(i => i.AdvancePaymentReference == advancePaymentReference)
-                //    .Sum(i => (decimal?)i.AdvancePayment) ?? 0;
-                //decimal totalUsedInCreditSettlement = db.LineCreditSettlements
-                //    .AsNoTracking()
-                //    .Where(i => i.AdvancePaymentReference == adId)
-                //    .Sum(i => (decimal?)i.SettelmentAmount) ?? 0;
+                decimal totalUsedInCashInvoice = db.CashSalesInvoices
+                    .AsNoTracking()
+                    .Where(i => i.AdvancePaymentReference == advancePaymentReference)
+                    .Sum(i => (decimal?)i.AdvancePayment) ?? 0;
+                decimal totalUsedInCreditSettlement = db.LineCreditSettlements
+                    .AsNoTracking()
+                    .Where(i => i.AdvancePaymentReference == adId)
+                    .Sum(i => (decimal?)i.SettelmentAmount) ?? 0;
 
-                //advancePayment.UsedAmount = totalUsedInCashInvoice + totalUsedInCreditSettlement;
-                //advancePayment.Outstanding = advancePayment.GrandTotal - advancePayment.UsedAmount;
+                advancePayment.UsedAmount = totalUsedInCashInvoice + totalUsedInCreditSettlement;
+                advancePayment.Outstanding = advancePayment.GrandTotal - advancePayment.UsedAmount;
 
                 db.Entry(advancePayment).State = EntityState.Modified;
                 db.SaveChanges();
             }
-        }
-        public static decimal GetProductSalesPrice(string itemCode)
-        {
-            var db = new ExceedDbContext();
-            decimal price = 0;
-            var product = db.Products.FirstOrDefault(p => p.ItemCode == itemCode);
-            if(product != null)
-            {
-                var priceSetting = db.Prices.FirstOrDefault(p => p.Thing == product.ProductID.ToString());
-                if(priceSetting != null)
-                {
-                    price = priceSetting.Value;
-                }
-            }
-            return price;
         }
     }
 

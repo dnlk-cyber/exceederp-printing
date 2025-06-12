@@ -19,9 +19,21 @@ namespace ExceedERP.Helpers.CRM
             bool isReplacingBranchDisabled = CRMConfigurationHelper.IsReplacingBranchSegmentInDistributionDisabled();
 
             DynamicAccountHelper _dynamicAccount = new DynamicAccountHelper();
-            var SalesInvoicePaymentDistibutions = new List<SalesInvoicePaymentDistibution>();
-            var invoiceLineItems = db.LineItems.Where(l => l.Voucher == invoice.CashSalesInvoiceID.ToString() && l.VoucherDefinitionID == "2").ToList();
-            var invoiceServiceLines = db.ServiceLineItems.Where(l => l.VoucherId == invoice.CashSalesInvoiceID && l.VoucherType == CRMVoucherType.SalesInvoice).ToList();
+            var invoiceLineItems = db.LineItems
+                .AsNoTracking()
+                .Where(l => l.Voucher == invoice.CashSalesInvoiceID.ToString() 
+                    && l.VoucherDefinitionID == "2")
+                .ToList();
+            var invoiceServiceLines = db.ServiceLineItems
+                .AsNoTracking()
+                .Where(l => l.VoucherId == invoice.CashSalesInvoiceID
+                    && l.VoucherType == CRMVoucherType.SalesInvoice)
+                .ToList();
+            var additionalCosts = db.AdditionalCostLogs
+                .AsNoTracking()
+                .Where(l => l.VoucherId == invoice.CashSalesInvoiceID
+                    && l.VoucherType == VoucherType.SalesInvoice)
+                .ToList();
             //var customerAccount = db.AccountMaps.Where(m => m.ReferenceType == "Organization_Customer" && m.Reference == invoice.OrganizationCustomerId.ToString()).FirstOrDefault();
 
             #region Remove Existing data
@@ -32,93 +44,113 @@ namespace ExceedERP.Helpers.CRM
                 db.SaveChanges();
             }
             #endregion
+            var salesStore = db.SalesStores.Find(invoice.StoreID);
+            string businessUnitCode = db.BusinessUnits.Find(salesStore?.InventoryStore.BusinessUnitId)?.Accountcode;
+
             #region debit net receivable amount
+            decimal withholdingSum = invoiceLineItems.Sum(l => l.WithholdingAmount + l.WithholdTaxAmount)
+                                         + invoiceServiceLines.Sum(s => s.WithholdingAmount + s.WithholdTaxAmount);
+
+            decimal netOfPaidWithCash = invoice.GrandTotal - invoice.AdvancePayment;
+            decimal netOfPaidWithAdvance = invoice.AdvancePayment;
+            if (invoice.AdvancePayment > netOfPaidWithCash)
+            {
+                netOfPaidWithAdvance = netOfPaidWithAdvance - withholdingSum;
+            }
+            else
+            {
+                netOfPaidWithCash = netOfPaidWithCash - withholdingSum;
+            }
+            if (netOfPaidWithAdvance > 0)
+            {
+                var customerAccount = db.AccountMaps.FirstOrDefault(m => m.ReferenceType == "Organization_Customer"
+                    && m.Reference == invoice.OrganizationCustomerId.ToString()
+                    && m.ControlAccountID == AccountRequirementDefinition.SALES_ACCOUNT.ToString());
+                if (customerAccount != null && !string.IsNullOrEmpty(customerAccount.AccountID))
+                {
+                    string acc = customerAccount.AccountID;
+
+                    int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                    int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                    if (!string.IsNullOrEmpty(businessUnitCode))
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                    }
+                    if (!isReplacingBranchDisabled)
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                    }
+                    if (checkAccount.ContainsKey(acc))
+                    {
+                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
+                        if (existingDstn != null)
+                        {
+                            existingDstn.AccountCode = acc;
+                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
+                            existingDstn.Debit += netOfPaidWithAdvance;
+                            existingDstn.Credit = 0;
+                            existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
+                        }
+                    }
+                    else if (!checkAccount.ContainsKey(acc))
+                    {
+                        SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
+                        {
+                            AccountCode = acc,
+                            AccountDesc = _dynamicAccount.GetAccountDesc(acc),
+                            Debit = netOfPaidWithAdvance,
+                            Credit = 0,
+                            CashSalesInvoiceId = invoice.CashSalesInvoiceID,
+                        };
+                        distributions.Add(distribution);
+                        checkAccount.Add(acc, invoice.CashSalesInvoiceID.ToString());
+                    }
+                }
+            }
             var payMetMethod = db.PaymentMethods.Where(x => x.PaymentMethodID.ToString() == invoice.RecieveMethod).FirstOrDefault();
             if (payMetMethod != null && !string.IsNullOrEmpty(payMetMethod.ArAccountCode))
             {
-                #region product line items
-                foreach (var invoiceItem in invoiceLineItems)
+                string acc = payMetMethod.ArAccountCode;
+
+                int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                if (!string.IsNullOrEmpty(businessUnitCode))
                 {
-
-                    //AccountHelper accountHelper = new AccountHelper();
-                    string acc = payMetMethod.ArAccountCode;
-
-                    int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                    //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
-                    //string branchSeg = HrHelper.GetBranchSubAccount(invoiceItem.SalesStore.InventoryStore.BranchId);
-                    //string branchSeg = HrHelper.GetBranchSubAccount(invoice.BranchId);
-                    string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
-                    string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
-
-
-                    if (invoiceItem.TotalAmount != 0 && checkAccount.ContainsKey(newacc))
+                    acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                }
+                if (!isReplacingBranchDisabled)
+                {
+                    acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                }
+                if (netOfPaidWithCash != 0 && checkAccount.ContainsKey(acc))
+                {
+                    var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
+                    if (existingDstn != null)
                     {
-                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
-                        if (existingDstn != null)
-                        {
-                            decimal netAmount = invoiceItem.WithholdTax ? invoiceItem.TotalAmount - invoiceItem.WithholdingAmount - invoiceItem.WithholdTaxAmount : invoiceItem.TotalAmount - invoiceItem.WithholdingAmount;
-
-                            existingDstn.AccountCode = newacc;
-                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
-                            existingDstn.Debit += netAmount;
-                            existingDstn.Credit = 0;
-                            existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
-                        }
-                    }
-                    else if (invoiceItem.TotalAmount != 0 && !checkAccount.ContainsKey(newacc))
-                    {
-                        decimal netAmount = invoiceItem.WithholdTax ? invoiceItem.TotalAmount - invoiceItem.WithholdingAmount - invoiceItem.WithholdTaxAmount : invoiceItem.TotalAmount - invoiceItem.WithholdingAmount;
-
-                        SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
-                        {
-                            AccountCode = newacc,
-                            AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
-                            Debit = netAmount,
-                            Credit = 0,
-                            CashSalesInvoiceId = invoice.CashSalesInvoiceID,
-                        };
-                        distributions.Add(distribution);
-                        checkAccount.Add(newacc, invoiceItem.Voucher);
+                        existingDstn.AccountCode = acc;
+                        existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
+                        existingDstn.Debit += netOfPaidWithCash;
+                        existingDstn.Credit = 0;
+                        existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
                     }
                 }
-                #endregion
-                #region services
-                foreach (var service in invoiceServiceLines)
+                else if (netOfPaidWithCash != 0 && !checkAccount.ContainsKey(acc))
                 {
-                    string acc = payMetMethod.ArAccountCode;
-                    int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                    string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
-                    string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
-
-                    if (service.TotalAmount != 0 && checkAccount.ContainsKey(newacc))
+                    SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
                     {
-                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
-                        if (existingDstn != null)
-                        {
-                            decimal netAmount = service.WithholdTax ? service.TotalAmount - service.WithholdingAmount - service.WithholdTaxAmount : service.TotalAmount - service.WithholdingAmount;
-                            existingDstn.AccountCode = newacc;
-                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
-                            existingDstn.Debit += netAmount;
-                            existingDstn.Credit = 0;
-                            existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
-                        }
-                    }
-                    else if (service.TotalAmount != 0 && !checkAccount.ContainsKey(newacc))
-                    {
-                        decimal netAmount = service.WithholdTax ? service.TotalAmount - service.WithholdingAmount - service.WithholdTaxAmount : service.TotalAmount - service.WithholdingAmount;
-                        SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
-                        {
-                            AccountCode = newacc,
-                            AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
-                            Debit = netAmount,
-                            Credit = 0,
-                            CashSalesInvoiceId = invoice.CashSalesInvoiceID,
-                        };
-                        distributions.Add(distribution);
-                        checkAccount.Add(newacc, service.VoucherId.ToString());
-                    }
+                        AccountCode = acc,
+                        AccountDesc = _dynamicAccount.GetAccountDesc(acc),
+                        Debit = netOfPaidWithCash,
+                        Credit = 0,
+                        CashSalesInvoiceId = invoice.CashSalesInvoiceID,
+                    };
+                    distributions.Add(distribution);
+                    checkAccount.Add(acc, invoice.CashSalesInvoiceID.ToString());
                 }
-                #endregion
+
                 foreach (SalesInvoicePaymentDistibution invoiceDistribution in distributions)
                 {
                     db.SalesInvoicePaymentDistibutions.Add(invoiceDistribution);
@@ -134,35 +166,43 @@ namespace ExceedERP.Helpers.CRM
                 foreach (var invoiceItem in invoiceLineItems)
                 {
                     string acc = payMetMethod.ArAccountCode;
-                    int subaccountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                    string subAccountSeG = HrHelper.GetBranchLocationAccount(invoice.BranchId);
-                    string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
-
-
-                    if (invoiceItem.Discount != 0 && checkAccount.ContainsKey(newacc))
+                    int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                    //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                    int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                    if (!string.IsNullOrEmpty(businessUnitCode))
                     {
-                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
+                        acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                    }
+                    if (!isReplacingBranchDisabled)
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                    }
+
+                    if (invoiceItem.Discount != 0 && checkAccount.ContainsKey(acc))
+                    {
+                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
                         if (existingDstn != null)
                         {
-                            existingDstn.AccountCode = newacc;
-                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                            existingDstn.AccountCode = acc;
+                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
                             existingDstn.Debit += invoiceItem.Discount;
                             existingDstn.Credit = 0;
                             existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
                         }
                     }
-                    else if (invoiceItem.Discount != 0 && !checkAccount.ContainsKey(newacc))
+                    else if (invoiceItem.Discount != 0 && !checkAccount.ContainsKey(acc))
                     {
                         SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
                         {
-                            AccountCode = newacc,
-                            AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                            AccountCode = acc,
+                            AccountDesc = _dynamicAccount.GetAccountDesc(acc),
                             Debit = invoiceItem.Discount,
                             Credit = 0,
                             CashSalesInvoiceId = invoice.CashSalesInvoiceID,
                         };
                         distributions.Add(distribution);
-                        checkAccount.Add(newacc, invoiceItem.Voucher);
+                        checkAccount.Add(acc, invoiceItem.Voucher);
                     }
                 }
                 foreach (SalesInvoicePaymentDistibution invoiceDistribution in distributions)
@@ -180,45 +220,51 @@ namespace ExceedERP.Helpers.CRM
             {
                 if (invoiceItem.WithholdTax)
                 {
-                    var tax = db.GLTaxRates.Where(x => x.GLTaxRateID.ToString() == invoiceItem.Tax).FirstOrDefault();
+                    var vatWithholdingSetting = db.GLVatWithholdings.FirstOrDefault();
 
-                    if (tax != null && !string.IsNullOrEmpty(tax.WithholdingAccountCode))
+                    if (vatWithholdingSetting != null && !string.IsNullOrEmpty(vatWithholdingSetting.WithholdingAccountCode))
                     {
-                        string acc = tax.WithholdingAccountCode;
+                        string acc = vatWithholdingSetting.WithholdingAccountCode;
 
-                        int subaccountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                        string subAccountSeG = HrHelper.GetBranchLocationAccount(invoice.BranchId);
-                        string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
-
-                        if (invoiceItem.WithholdTaxAmount != 0 && checkAccount.ContainsKey(newacc))
+                        int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                        string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                        //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                        int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                        if (!string.IsNullOrEmpty(businessUnitCode))
                         {
-                            var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
+                            acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                        }
+                        if (!isReplacingBranchDisabled)
+                        {
+                            acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                        }
+                        if (invoiceItem.WithholdTaxAmount != 0 && checkAccount.ContainsKey(acc))
+                        {
+                            var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
                             if (existingDstn != null)
                             {
-                                existingDstn.AccountCode = newacc;
-                                existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                                existingDstn.AccountCode = acc;
+                                existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
                                 existingDstn.Debit += invoiceItem.WithholdTaxAmount;
                                 existingDstn.Credit = 0;
                                 existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
                             }
                         }
-                        else if (invoiceItem.WithholdTaxAmount != 0 && !checkAccount.ContainsKey(newacc))
+                        else if (invoiceItem.WithholdTaxAmount != 0 && !checkAccount.ContainsKey(acc))
                         {
                             SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
                             {
-                                AccountCode = newacc,
-                                AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                AccountCode = acc,
+                                AccountDesc = _dynamicAccount.GetAccountDesc(acc),
                                 Debit = invoiceItem.WithholdTaxAmount,
                                 Credit = 0,
                                 CashSalesInvoiceId = invoice.CashSalesInvoiceID,
                             };
                             distributions.Add(distribution);
-                            checkAccount.Add(newacc, invoiceItem.Voucher);
+                            checkAccount.Add(acc, invoiceItem.Voucher);
                         }
                     }
                 }
-
-
             }
             #endregion
             #region services
@@ -232,34 +278,42 @@ namespace ExceedERP.Helpers.CRM
                     {
                         string acc = tax.WithholdingAccountCode;
 
-                        int subaccountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                        string subAccountSeG = HrHelper.GetBranchLocationAccount(invoice.BranchId);
-                        string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
-
-                        if (service.WithholdTaxAmount != 0 && checkAccount.ContainsKey(newacc))
+                        int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                        string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                        //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                        int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                        if (!string.IsNullOrEmpty(businessUnitCode))
                         {
-                            var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
+                            acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                        }
+                        if (!isReplacingBranchDisabled)
+                        {
+                            acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                        }
+                        if (service.WithholdTaxAmount != 0 && checkAccount.ContainsKey(acc))
+                        {
+                            var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
                             if (existingDstn != null)
                             {
-                                existingDstn.AccountCode = newacc;
-                                existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                                existingDstn.AccountCode = acc;
+                                existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
                                 existingDstn.Debit += service.WithholdTaxAmount;
                                 existingDstn.Credit = 0;
                                 existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
                             }
                         }
-                        else if (service.WithholdTaxAmount != 0 && !checkAccount.ContainsKey(newacc))
+                        else if (service.WithholdTaxAmount != 0 && !checkAccount.ContainsKey(acc))
                         {
                             SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
                             {
-                                AccountCode = newacc,
-                                AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                AccountCode = acc,
+                                AccountDesc = _dynamicAccount.GetAccountDesc(acc),
                                 Debit = service.WithholdTaxAmount,
                                 Credit = 0,
                                 CashSalesInvoiceId = invoice.CashSalesInvoiceID,
                             };
                             distributions.Add(distribution);
-                            checkAccount.Add(newacc, service.VoucherId.ToString());
+                            checkAccount.Add(acc, service.VoucherId.ToString());
                         }
                     }
                 }
@@ -285,40 +339,46 @@ namespace ExceedERP.Helpers.CRM
                     {
                         string acc = WithHolding.WithholdingAccountCode;
 
-                        int subaccountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                        string subAccountSeG = HrHelper.GetBranchLocationAccount(invoice.BranchId);
-                        string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
-
-
-                        if (invoiceItem.WithholdingAmount != 0 && checkAccount.ContainsKey(newacc))
+                        int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                        string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                        //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                        int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                        if (!string.IsNullOrEmpty(businessUnitCode))
                         {
-                            var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
+                            acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                        }
+                        if (!isReplacingBranchDisabled)
+                        {
+                            acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                        }
+
+                        if (invoiceItem.WithholdingAmount != 0 && checkAccount.ContainsKey(acc))
+                        {
+                            var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
                             if (existingDstn != null)
                             {
-                                existingDstn.AccountCode = newacc;
-                                existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                                existingDstn.AccountCode = acc;
+                                existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
                                 existingDstn.Debit += invoiceItem.WithholdingAmount;
                                 existingDstn.Credit = 0;
                                 existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
                             }
                         }
-                        else if (invoiceItem.WithholdingAmount != 0 && !checkAccount.ContainsKey(newacc))
+                        else if (invoiceItem.WithholdingAmount != 0 && !checkAccount.ContainsKey(acc))
                         {
                             SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
                             {
-                                AccountCode = newacc,
-                                AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                AccountCode = acc,
+                                AccountDesc = _dynamicAccount.GetAccountDesc(acc),
                                 Debit = invoiceItem.WithholdingAmount,
                                 Credit = 0,
                                 CashSalesInvoiceId = invoice.CashSalesInvoiceID,
                             };
                             distributions.Add(distribution);
-                            checkAccount.Add(newacc, invoiceItem.Voucher);
+                            checkAccount.Add(acc, invoiceItem.Voucher);
                         }
                     }
                 }
-
-
             }
             #endregion
             #region srvices
@@ -332,35 +392,43 @@ namespace ExceedERP.Helpers.CRM
                     {
                         string acc = WithHolding.WithholdingAccountCode;
 
-                        int subaccountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                        string subAccountSeG = HrHelper.GetBranchLocationAccount(invoice.BranchId);
-                        string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
-
-
-                        if (service.WithholdingAmount != 0 && checkAccount.ContainsKey(newacc))
+                        int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                        string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                        //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                        int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                        if (!string.IsNullOrEmpty(businessUnitCode))
                         {
-                            var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
+                            acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                        }
+                        if (!isReplacingBranchDisabled)
+                        {
+                            acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                        }
+
+                        if (service.WithholdingAmount != 0 && checkAccount.ContainsKey(acc))
+                        {
+                            var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
                             if (existingDstn != null)
                             {
-                                existingDstn.AccountCode = newacc;
-                                existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                                existingDstn.AccountCode = acc;
+                                existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
                                 existingDstn.Debit += service.WithholdingAmount;
                                 existingDstn.Credit = 0;
                                 existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
                             }
                         }
-                        else if (service.WithholdingAmount != 0 && !checkAccount.ContainsKey(newacc))
+                        else if (service.WithholdingAmount != 0 && !checkAccount.ContainsKey(acc))
                         {
                             SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
                             {
-                                AccountCode = newacc,
-                                AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                                AccountCode = acc,
+                                AccountDesc = _dynamicAccount.GetAccountDesc(acc),
                                 Debit = service.WithholdingAmount,
                                 Credit = 0,
                                 CashSalesInvoiceId = invoice.CashSalesInvoiceID,
                             };
                             distributions.Add(distribution);
-                            checkAccount.Add(newacc, service.VoucherId.ToString());
+                            checkAccount.Add(acc, service.VoucherId.ToString());
                         }
                     }
                 }
@@ -388,35 +456,43 @@ namespace ExceedERP.Helpers.CRM
                 if (category != null && !string.IsNullOrEmpty(category.SalesAccountCode))
                 {
                     string acc = category.SalesAccountCode;
-                    int subaccountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                    string subAccountSeG = HrHelper.GetBranchLocationAccount(invoice.BranchId);
-                    string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
-
-
-                    if (invoiceItem.CalculatedCost != 0 && checkAccount.ContainsKey(newacc))
+                    int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                    //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                    int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                    if (!string.IsNullOrEmpty(businessUnitCode))
                     {
-                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
+                        acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                    }
+                    if (!isReplacingBranchDisabled)
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                    }
+
+                    if (invoiceItem.CalculatedCost != 0 && checkAccount.ContainsKey(acc))
+                    {
+                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
                         if (existingDstn != null)
                         {
-                            existingDstn.AccountCode = newacc;
-                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                            existingDstn.AccountCode = acc;
+                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
                             existingDstn.Credit += invoiceItem.CalculatedCost;
                             existingDstn.Debit = 0;
                             existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
                         }
                     }
-                    else if (invoiceItem.CalculatedCost != 0 && !checkAccount.ContainsKey(newacc))
+                    else if (invoiceItem.CalculatedCost != 0 && !checkAccount.ContainsKey(acc))
                     {
                         SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
                         {
-                            AccountCode = newacc,
-                            AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                            AccountCode = acc,
+                            AccountDesc = _dynamicAccount.GetAccountDesc(acc),
                             Credit = invoiceItem.CalculatedCost,
                             Debit = 0,
                             CashSalesInvoiceId = invoice.CashSalesInvoiceID,
                         };
                         distributions.Add(distribution);
-                        checkAccount.Add(newacc, invoiceItem.Voucher);
+                        checkAccount.Add(acc, invoiceItem.Voucher);
                     }
                 }
             }
@@ -425,42 +501,99 @@ namespace ExceedERP.Helpers.CRM
             foreach (var service in invoiceServiceLines)
             {
                 // crm category, not inventory
-                //var category = GetProductCategoryForServicice(service);
+                var category = GetProductCategoryForServicice(service);
 
-                //if (category != null && !string.IsNullOrEmpty(category.UnEarnedAccountCode))
-                //{
-                //    string acc = category.UnEarnedAccountCode;
-                //    int subaccountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                //    string subAccountSeG = HrHelper.GetBranchLocationAccount(invoice.BranchId);
-                //    string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
+                if (category != null && !string.IsNullOrEmpty(category.UnEarnedAccountCode))
+                {
+                    string acc = category.UnEarnedAccountCode;
+                    int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                    //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                    int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                    if (!string.IsNullOrEmpty(businessUnitCode))
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                    }
+                    if (!isReplacingBranchDisabled)
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                    }
 
+                    if (service.SubTotal != 0 && checkAccount.ContainsKey(acc))
+                    {
+                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
+                        if (existingDstn != null)
+                        {
+                            existingDstn.AccountCode = acc;
+                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
+                            existingDstn.Credit += service.SubTotal;
+                            existingDstn.Debit = 0;
+                            existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
+                        }
+                    }
+                    else if (service.SubTotal != 0 && !checkAccount.ContainsKey(acc))
+                    {
+                        SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
+                        {
+                            AccountCode = acc,
+                            AccountDesc = _dynamicAccount.GetAccountDesc(acc),
+                            Credit = service.SubTotal,
+                            Debit = 0,
+                            CashSalesInvoiceId = invoice.CashSalesInvoiceID,
+                        };
+                        distributions.Add(distribution);
+                        checkAccount.Add(acc, service.VoucherId.ToString());
+                    }
+                }
+            }
+            #endregion
+            #region additional costs
+            foreach (var additionalCost in additionalCosts)
+            {
+                var costType = additionalCost.AdditionalCost;
 
-                //    if (service.SubTotal != 0 && checkAccount.ContainsKey(newacc))
-                //    {
-                //        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
-                //        if (existingDstn != null)
-                //        {
-                //            existingDstn.AccountCode = newacc;
-                //            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
-                //            existingDstn.Credit += service.SubTotal;
-                //            existingDstn.Debit = 0;
-                //            existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
-                //        }
-                //    }
-                //    else if (service.SubTotal != 0 && !checkAccount.ContainsKey(newacc))
-                //    {
-                //        SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
-                //        {
-                //            AccountCode = newacc,
-                //            AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
-                //            Credit = service.SubTotal,
-                //            Debit = 0,
-                //            CashSalesInvoiceId = invoice.CashSalesInvoiceID,
-                //        };
-                //        distributions.Add(distribution);
-                //        checkAccount.Add(newacc, service.VoucherId.ToString());
-                //    }
-                //}
+                if (costType != null && !string.IsNullOrEmpty(costType.SalesAccountCode))
+                {
+                    string acc = costType.SalesAccountCode;
+                    int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                    //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                    int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                    if (!string.IsNullOrEmpty(businessUnitCode))
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                    }
+                    if (!isReplacingBranchDisabled)
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                    }
+
+                    if (additionalCost.CostAmount != 0 && checkAccount.ContainsKey(acc))
+                    {
+                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
+                        if (existingDstn != null)
+                        {
+                            existingDstn.AccountCode = acc;
+                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
+                            existingDstn.Credit += additionalCost.CostAmount;
+                            existingDstn.Debit = 0;
+                            existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
+                        }
+                    }
+                    else if (additionalCost.CostAmount != 0 && !checkAccount.ContainsKey(acc))
+                    {
+                        SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
+                        {
+                            AccountCode = acc,
+                            AccountDesc = _dynamicAccount.GetAccountDesc(acc),
+                            Credit = additionalCost.CostAmount,
+                            Debit = 0,
+                            CashSalesInvoiceId = invoice.CashSalesInvoiceID,
+                        };
+                        distributions.Add(distribution);
+                        checkAccount.Add(acc, additionalCost.VoucherId.ToString());
+                    }
+                }
             }
             #endregion
             foreach (SalesInvoicePaymentDistibution invoiceDistribution in distributions)
@@ -477,38 +610,46 @@ namespace ExceedERP.Helpers.CRM
             foreach (var invoiceItem in invoiceLineItems)
             {
                 var taxRate = db.GLTaxRates.Where(x => x.GLTaxRateID.ToString() == invoiceItem.Tax).FirstOrDefault();
-                if (taxRate != null && !string.IsNullOrEmpty(taxRate.ApAccountCode) && invoiceItem.TaxAmount != 0)
+                if (taxRate != null && !string.IsNullOrEmpty(taxRate.ArAccountCode) && invoiceItem.TaxAmount != 0)
                 {
-                    string acc = taxRate.ApAccountCode;
-                    int subaccountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                    string subAccountSeG = HrHelper.GetBranchLocationAccount(invoiceItem.SalesStore.InventoryStore.BranchId);
-                    string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
-
-
-                    if (invoiceItem.TaxAmount != 0 && checkAccount.ContainsKey(newacc))
+                    string acc = taxRate.ArAccountCode;
+                    int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    string branchSeg = HrHelper.GetBranchLocationAccount(salesStore?.InventoryStore?.BranchId ?? -1);
+                    //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                    int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                    if (!string.IsNullOrEmpty(businessUnitCode))
                     {
-                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
+                        acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                    }
+                    if (!isReplacingBranchDisabled)
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                    }
+
+                    if (invoiceItem.TaxAmount != 0 && checkAccount.ContainsKey(acc))
+                    {
+                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
                         if (existingDstn != null)
                         {
-                            existingDstn.AccountCode = newacc;
-                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                            existingDstn.AccountCode = acc;
+                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
                             existingDstn.Credit += invoiceItem.TaxAmount;
                             existingDstn.Debit = 0;
                             existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
                         }
                     }
-                    else if (invoiceItem.TaxAmount != 0 && !checkAccount.ContainsKey(newacc))
+                    else if (invoiceItem.TaxAmount != 0 && !checkAccount.ContainsKey(acc))
                     {
                         SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
                         {
-                            AccountCode = newacc,
-                            AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                            AccountCode = acc,
+                            AccountDesc = _dynamicAccount.GetAccountDesc(acc),
                             Credit = invoiceItem.TaxAmount,
                             Debit = 0,
                             CashSalesInvoiceId = invoice.CashSalesInvoiceID,
                         };
                         distributions.Add(distribution);
-                        checkAccount.Add(newacc, invoiceItem.Voucher);
+                        checkAccount.Add(acc, invoiceItem.Voucher);
                     }
                 }
             }
@@ -517,37 +658,92 @@ namespace ExceedERP.Helpers.CRM
             foreach (var service in invoiceServiceLines)
             {
                 var taxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == service.TaxTypeId);
-                if (taxRate != null && !string.IsNullOrEmpty(taxRate.ApAccountCode) && service.TaxAmount != 0)
+                if (taxRate != null && !string.IsNullOrEmpty(taxRate.ArAccountCode) && service.TaxAmount != 0)
                 {
-                    string acc = taxRate.ApAccountCode;
-                    int subaccountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                    string subAccountSeG = HrHelper.GetBranchLocationAccount(invoice.BranchId);
-                    string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
-
-                    if (service.TaxAmount != 0 && checkAccount.ContainsKey(newacc))
+                    string acc = taxRate.ArAccountCode;
+                    int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                    //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                    int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                    if (!string.IsNullOrEmpty(businessUnitCode))
                     {
-                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
+                        acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                    }
+                    if (!isReplacingBranchDisabled)
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                    }
+                    if (service.TaxAmount != 0 && checkAccount.ContainsKey(acc))
+                    {
+                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
                         if (existingDstn != null)
                         {
-                            existingDstn.AccountCode = newacc;
-                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                            existingDstn.AccountCode = acc;
+                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
                             existingDstn.Credit += service.TaxAmount;
                             existingDstn.Debit = 0;
                             existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
                         }
                     }
-                    else if (service.TaxAmount != 0 && !checkAccount.ContainsKey(newacc))
+                    else if (service.TaxAmount != 0 && !checkAccount.ContainsKey(acc))
                     {
                         SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
                         {
-                            AccountCode = newacc,
-                            AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                            AccountCode = acc,
+                            AccountDesc = _dynamicAccount.GetAccountDesc(acc),
                             Credit = service.TaxAmount,
                             Debit = 0,
                             CashSalesInvoiceId = invoice.CashSalesInvoiceID,
                         };
                         distributions.Add(distribution);
-                        checkAccount.Add(newacc, service.VoucherId.ToString());
+                        checkAccount.Add(acc, service.VoucherId.ToString());
+                    }
+                }
+            }
+            #endregion
+            #region additional costs
+            foreach (var additionalCost in additionalCosts)
+            {
+                var taxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == additionalCost.GLTaxRateID);
+                if (taxRate != null && !string.IsNullOrEmpty(taxRate.ArAccountCode) && additionalCost.TaxAmount != 0)
+                {
+                    string acc = taxRate.ArAccountCode;
+                    int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                    //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                    int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                    if (!string.IsNullOrEmpty(businessUnitCode))
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                    }
+                    if (!isReplacingBranchDisabled)
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                    }
+                    if (additionalCost.TaxAmount != 0 && checkAccount.ContainsKey(acc))
+                    {
+                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
+                        if (existingDstn != null)
+                        {
+                            existingDstn.AccountCode = acc;
+                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
+                            existingDstn.Credit += additionalCost.TaxAmount;
+                            existingDstn.Debit = 0;
+                            existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
+                        }
+                    }
+                    else if (additionalCost.TaxAmount != 0 && !checkAccount.ContainsKey(acc))
+                    {
+                        SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
+                        {
+                            AccountCode = acc,
+                            AccountDesc = _dynamicAccount.GetAccountDesc(acc),
+                            Credit = additionalCost.TaxAmount,
+                            Debit = 0,
+                            CashSalesInvoiceId = invoice.CashSalesInvoiceID,
+                        };
+                        distributions.Add(distribution);
+                        checkAccount.Add(acc, additionalCost.VoucherId.ToString());
                     }
                 }
             }
@@ -571,14 +767,19 @@ namespace ExceedERP.Helpers.CRM
 
             bool isReplacingBranchDisabled = CRMConfigurationHelper.IsReplacingBranchSegmentInDistributionDisabled();
 
+            var salesStore = db.SalesStores.Find(invoice.StoreID);
+            string businessUnitCode = db.BusinessUnits.Find(salesStore?.InventoryStore.BusinessUnitId)?.Accountcode;
 
             DynamicAccountHelper _dynamicAccount = new DynamicAccountHelper();
-            var SalesInvoicePaymentDistibutions = new List<SalesInvoicePaymentDistibution>();
-            var invoiceLineItems = db.LineItems.Where(l => l.Voucher == invoice.CashSalesInvoiceID.ToString() && l.VoucherDefinitionID == "2").ToList();
+            var invoiceLineItems = db.LineItems
+                .AsNoTracking()
+                .Where(l => l.Voucher == invoice.CashSalesInvoiceID.ToString()
+                    && l.VoucherDefinitionID == "2")
+                .ToList();
             var customerAccount =
-                db.AccountMaps.Where(m => m.ReferenceType == "Organization_Customer" &&
+                db.AccountMaps.FirstOrDefault(m => m.ReferenceType == "Organization_Customer" &&
                                             m.Reference == invoice.OrganizationCustomerId.ToString() &&
-                                            m.ControlAccountID == AccountRequirementDefinition.SALES_ACCOUNT.ToString()).FirstOrDefault();
+                                            m.ControlAccountID == AccountRequirementDefinition.SALES_ACCOUNT.ToString());
 
             #region Remove Existing data
             var existingDistributions = db.SalesInvoicePaymentDistibutions.Where(d => d.CashSalesInvoiceId == invoice.CashSalesInvoiceID).ToList();
@@ -596,35 +797,43 @@ namespace ExceedERP.Helpers.CRM
                 {
                     //AccountHelper accountHelper = new AccountHelper();
                     string acc = customerAccount.AccountID;
-                    int subaccountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                    string subAccountSeG = HrHelper.GetBranchLocationAccount(invoice.BranchId);
-                    string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
-
-
-                    if (invoiceItem.TotalAmount != 0 && checkAccount.ContainsKey(newacc))
+                    int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                    //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                    int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                    if (!string.IsNullOrEmpty(businessUnitCode))
                     {
-                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
+                        acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                    }
+                    if (!isReplacingBranchDisabled)
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                    }
+
+                    if (invoiceItem.TotalAmount != 0 && checkAccount.ContainsKey(acc))
+                    {
+                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
                         if (existingDstn != null)
                         {
-                            existingDstn.AccountCode = newacc;
-                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                            existingDstn.AccountCode = acc;
+                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
                             existingDstn.Debit += invoiceItem.TotalAmount;
                             existingDstn.Credit = 0;
                             existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
                         }
                     }
-                    else if (invoiceItem.TotalAmount != 0 && !checkAccount.ContainsKey(newacc))
+                    else if (invoiceItem.TotalAmount != 0 && !checkAccount.ContainsKey(acc))
                     {
                         SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
                         {
-                            AccountCode = newacc,
-                            AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                            AccountCode = acc,
+                            AccountDesc = _dynamicAccount.GetAccountDesc(acc),
                             Debit = invoiceItem.TotalAmount,
                             Credit = 0,
                             CashSalesInvoiceId = invoice.CashSalesInvoiceID,
                         };
                         distributions.Add(distribution);
-                        checkAccount.Add(newacc, invoiceItem.LineItemID);
+                        checkAccount.Add(acc, invoiceItem.LineItemID);
                     }
                 }
                 foreach (SalesInvoicePaymentDistibution invoiceDistribution in distributions)
@@ -641,35 +850,43 @@ namespace ExceedERP.Helpers.CRM
                 {
                     //AccountHelper accountHelper = new AccountHelper();
                     string acc = customerAccount.AccountID;
-                    int subaccountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                    string subAccountSeG = HrHelper.GetBranchLocationAccount(invoice.BranchId);
-                    string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
-
-
-                    if (invoiceItem.Discount != 0 && checkAccount.ContainsKey(newacc))
+                    int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                    //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                    int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                    if (!string.IsNullOrEmpty(businessUnitCode))
                     {
-                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
+                        acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                    }
+                    if (!isReplacingBranchDisabled)
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                    }
+
+                    if (invoiceItem.Discount != 0 && checkAccount.ContainsKey(acc))
+                    {
+                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
                         if (existingDstn != null)
                         {
-                            existingDstn.AccountCode = newacc;
-                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                            existingDstn.AccountCode = acc;
+                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
                             existingDstn.Debit += invoiceItem.Discount;
                             existingDstn.Credit = 0;
                             existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
                         }
                     }
-                    else if (invoiceItem.Discount != 0 && !checkAccount.ContainsKey(newacc))
+                    else if (invoiceItem.Discount != 0 && !checkAccount.ContainsKey(acc))
                     {
                         SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
                         {
-                            AccountCode = newacc,
-                            AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                            AccountCode = acc,
+                            AccountDesc = _dynamicAccount.GetAccountDesc(acc),
                             Debit = invoiceItem.Discount,
                             Credit = 0,
                             CashSalesInvoiceId = invoice.CashSalesInvoiceID,
                         };
                         distributions.Add(distribution);
-                        checkAccount.Add(newacc, invoiceItem.LineItemID);
+                        checkAccount.Add(acc, invoiceItem.LineItemID);
                     }
                 }
                 foreach (SalesInvoicePaymentDistibution invoiceDistribution in distributions)
@@ -690,35 +907,43 @@ namespace ExceedERP.Helpers.CRM
                 if (category != null && !string.IsNullOrEmpty(category.UnEarnedAccountCode))
                 {
                     string acc = category.UnEarnedAccountCode;
-                    int subaccountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                    string subAccountSeG = HrHelper.GetBranchLocationAccount(invoice.BranchId);
-                    string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
-
-
-                    if (invoiceItem.CalculatedCost != 0 && checkAccount.ContainsKey(newacc))
+                    int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                    //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                    int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                    if (!string.IsNullOrEmpty(businessUnitCode))
                     {
-                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
+                        acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                    }
+                    if (!isReplacingBranchDisabled)
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                    }
+
+                    if (invoiceItem.CalculatedCost != 0 && checkAccount.ContainsKey(acc))
+                    {
+                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
                         if (existingDstn != null)
                         {
-                            existingDstn.AccountCode = newacc;
-                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                            existingDstn.AccountCode = acc;
+                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
                             existingDstn.Credit += invoiceItem.CalculatedCost;
                             existingDstn.Debit = 0;
                             existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
                         }
                     }
-                    else if (invoiceItem.CalculatedCost != 0 && !checkAccount.ContainsKey(newacc))
+                    else if (invoiceItem.CalculatedCost != 0 && !checkAccount.ContainsKey(acc))
                     {
                         SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
                         {
-                            AccountCode = newacc,
-                            AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                            AccountCode = acc,
+                            AccountDesc = _dynamicAccount.GetAccountDesc(acc),
                             Credit = invoiceItem.CalculatedCost,
                             Debit = 0,
                             CashSalesInvoiceId = invoice.CashSalesInvoiceID,
                         };
                         distributions.Add(distribution);
-                        checkAccount.Add(newacc, invoiceItem.LineItemID);
+                        checkAccount.Add(acc, invoiceItem.LineItemID);
                     }
                 }
             }
@@ -738,35 +963,43 @@ namespace ExceedERP.Helpers.CRM
                 if (taxRate != null && !string.IsNullOrEmpty(taxRate.ApAccountCode))
                 {
                     string acc = taxRate.ApAccountCode;
-                    int subaccountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                    string subAccountSeG = HrHelper.GetBranchLocationAccount(invoice.BranchId);
-                    string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
-
-
-                    if (invoiceItem.TaxAmount != 0 && checkAccount.ContainsKey(newacc))
+                    int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+                    string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+                    //int subaccountindex = _dynamicAccount.GetSubAccountSequenceIndex();
+                    int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+                    if (!string.IsNullOrEmpty(businessUnitCode))
                     {
-                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
+                        acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+                    }
+                    if (!isReplacingBranchDisabled)
+                    {
+                        acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+                    }
+
+                    if (invoiceItem.TaxAmount != 0 && checkAccount.ContainsKey(acc))
+                    {
+                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
                         if (existingDstn != null)
                         {
-                            existingDstn.AccountCode = newacc;
-                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(newacc);
+                            existingDstn.AccountCode = acc;
+                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
                             existingDstn.Credit += invoiceItem.TaxAmount;
                             existingDstn.Debit = 0;
                             existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
                         }
                     }
-                    else if (invoiceItem.TaxAmount != 0 && !checkAccount.ContainsKey(newacc))
+                    else if (invoiceItem.TaxAmount != 0 && !checkAccount.ContainsKey(acc))
                     {
                         SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
                         {
-                            AccountCode = newacc,
-                            AccountDesc = _dynamicAccount.GetAccountDesc(newacc),
+                            AccountCode = acc,
+                            AccountDesc = _dynamicAccount.GetAccountDesc(acc),
                             Credit = invoiceItem.TaxAmount,
                             Debit = 0,
                             CashSalesInvoiceId = invoice.CashSalesInvoiceID,
                         };
                         distributions.Add(distribution);
-                        checkAccount.Add(newacc, invoiceItem.LineItemID);
+                        checkAccount.Add(acc, invoiceItem.LineItemID);
                     }
                 }
             }
@@ -872,7 +1105,6 @@ namespace ExceedERP.Helpers.CRM
 
             foreach (var lineItem in lineItems)
             {
-
                 var payMethod = db.PaymentMethods.Where(x => x.PaymentMethodID == lineItem.RecieveMethod).FirstOrDefault();
                 if (payMethod != null)
                 {
@@ -927,7 +1159,6 @@ namespace ExceedERP.Helpers.CRM
                     string subAccountSeG = HrHelper.GetBranchLocationAccount(advancePayment.BranchId);
                     string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
 
-
                     if (lineItem.Value != 0 && checkAccount.ContainsKey(newacc))
                     {
                         var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == newacc);
@@ -964,7 +1195,6 @@ namespace ExceedERP.Helpers.CRM
 
                 #endregion
             }
-
         }
         public void UpdateCreditSettlementDistribution(CreditSettlement creditSettlement)
         {
@@ -977,7 +1207,10 @@ namespace ExceedERP.Helpers.CRM
             DynamicAccountHelper _dynamicAccount = new DynamicAccountHelper();
             //var SalesInvoicePaymentDistibutions = new List<SalesInvoicePaymentDistibution>();
             var creditLineItems = db.LineCreditSettlements.Where(l => l.CreditSettlementId == creditSettlement.CreditSettlementId).ToList();
-            var customerAccount = db.AccountMaps.Where(m => m.ReferenceType == "Organization_Customer" && m.Reference == creditSettlement.Customer.ToString()).FirstOrDefault();
+            var customerAccount = db.AccountMaps
+                .FirstOrDefault(m => m.ReferenceType == "Organization_Customer" 
+                    && m.Reference == creditSettlement.Customer.ToString()
+                    && m.ControlAccountID == AccountRequirementDefinition.SALES_ACCOUNT.ToString());
 
             #region Remove Existing data
             var existingDistributions = db.CreditSettlementDistribution.Where(d => d.CreditSettlementId == creditSettlement.CreditSettlementId).ToList();
@@ -989,11 +1222,14 @@ namespace ExceedERP.Helpers.CRM
             #endregion
             #region debit net  amount
             var payMentMethod = db.PaymentMethods.Where(x => x.PaymentMethodID == creditSettlement.RecieveMethod).FirstOrDefault();
-            if (payMentMethod != null)
+
+            foreach (var lineItem in creditLineItems)
             {
-                foreach (var lineItem in creditLineItems)
+                string acc = lineItem.Source == SettlementAmountSource.Cash 
+                    ? payMentMethod?.ArAccountCode
+                    : customerAccount?.AccountID;
+                if (!string.IsNullOrEmpty(acc))
                 {
-                    string acc = payMentMethod.ArAccountCode;
                     int subaccountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
                     string subAccountSeG = HrHelper.GetBranchLocationAccount(creditSettlement.BranchId);
                     string newacc = isReplacingBranchDisabled ? acc : _dynamicAccount.ReplaceSegment(acc, subaccountindex, subAccountSeG);
@@ -1515,21 +1751,20 @@ namespace ExceedERP.Helpers.CRM
 
         }
 
-
         private ProductCategory GetProductCategory(string categoryId)
         {
             var _db = new ExceedDbContext();
             return _db.ProductCategories.FirstOrDefault(c => c.ProductCategoryId.ToString() == categoryId);
         }
-        //private ProductCategory GetProductCategoryForServicice(ServiceLineItem service)
-        //{
-        //    var _db = new ExceedDbContext();
-        //    var repairType = _db.RepairType.FirstOrDefault(r => r.RepairTypeID.ToString() == service.ServiceTypeId);
-        //    if (repairType != null)
-        //    {
-        //        return _db.ProductCategories.FirstOrDefault(c => c.InventoryCategoryCode == repairType.CategoryCode);
-        //    }
-        //    return null;
-        //}
+        private ProductCategory GetProductCategoryForServicice(ServiceLineItem service)
+        {
+            var _db = new ExceedDbContext();
+            var repairType = _db.RepairType.FirstOrDefault(r => r.RepairTypeID.ToString() == service.ServiceTypeId);
+            if (repairType != null)
+            {
+                return _db.ProductCategories.FirstOrDefault(c => c.InventoryCategoryCode == repairType.CategoryCode);
+            }
+            return null;
+        }
     }
 }
