@@ -288,11 +288,11 @@ namespace ExceedERP.Helpers.CRM
                        db.LineCreditSettlements
                        .Where(l => l.InvoiceId == invoice.CashSalesInvoiceID)
                        .Sum(l => (decimal?)l.SettelmentAmount) ?? 0;
-            decimal settledAmountInCons =
-                   db.SubContractorCreditSettlementItems
-                   .Where(l => l.InvoiceId == invoice.CashSalesInvoiceID)
-                   .Sum(l => (decimal?)l.SettledAmount) ?? 0;
-            decimal totalSettledAmount = settledAmount + settledAmountInCons;
+            //decimal settledAmountInCons =
+            //       db.SubContractorCreditSettlementItems
+            //       .Where(l => l.InvoiceId == invoice.CashSalesInvoiceID)
+            //       .Sum(l => (decimal?)l.SettledAmount) ?? 0;
+            decimal totalSettledAmount = settledAmount /*+ settledAmountInCons*/;
 
             currentInvoice.GrandTotal = total;
             currentInvoice.AmountDue = total - totalSettledAmount;
@@ -934,29 +934,29 @@ namespace ExceedERP.Helpers.CRM
             }
         }
 
-        public static void UpdateAdvancePaymentOnInvoiceChange(string advancePaymentReference)
-        {
-            var db = new ExceedDbContext();
-            int.TryParse(advancePaymentReference, out int adId);
-            var advancePayment = db.AdvancePayments.Find(adId);
-            if (advancePayment != null)
-            {
-                decimal totalUsedInCashInvoice = db.CashSalesInvoices
-                    .AsNoTracking()
-                    .Where(i => i.AdvancePaymentReference == advancePaymentReference)
-                    .Sum(i => (decimal?)i.AdvancePayment) ?? 0;
-                decimal totalUsedInCreditSettlement = db.LineCreditSettlements
-                    .AsNoTracking()
-                    .Where(i => i.AdvancePaymentReference == adId)
-                    .Sum(i => (decimal?)i.SettelmentAmount) ?? 0;
+        //public static void UpdateAdvancePaymentOnInvoiceChange(string advancePaymentReference)
+        //{
+        //    var db = new ExceedDbContext();
+        //    int.TryParse(advancePaymentReference, out int adId);
+        //    var advancePayment = db.AdvancePayments.Find(adId);
+        //    if (advancePayment != null)
+        //    {
+        //        decimal totalUsedInCashInvoice = db.CashSalesInvoices
+        //            .AsNoTracking()
+        //            .Where(i => i.AdvancePaymentReference == advancePaymentReference)
+        //            .Sum(i => (decimal?)i.AdvancePayment) ?? 0;
+        //        decimal totalUsedInCreditSettlement = db.LineCreditSettlements
+        //            .AsNoTracking()
+        //            .Where(i => i.AdvancePaymentReference == adId)
+        //            .Sum(i => (decimal?)i.SettelmentAmount) ?? 0;
 
-                advancePayment.UsedAmount = totalUsedInCashInvoice + totalUsedInCreditSettlement;
-                advancePayment.Outstanding = advancePayment.GrandTotal - advancePayment.UsedAmount;
+        //        advancePayment.UsedAmount = totalUsedInCashInvoice + totalUsedInCreditSettlement;
+        //        advancePayment.Outstanding = advancePayment.GrandTotal - advancePayment.UsedAmount;
 
-                db.Entry(advancePayment).State = EntityState.Modified;
-                db.SaveChanges();
-            }
-        }
+        //        db.Entry(advancePayment).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //    }
+        //}
     }
 
 }

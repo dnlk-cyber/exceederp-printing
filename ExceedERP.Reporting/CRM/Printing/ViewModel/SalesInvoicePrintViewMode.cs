@@ -69,6 +69,7 @@ namespace ExceedERP.Reporting.CRM.Printing.ViewModel
         public decimal TaxAmount { get; set; }
         public decimal WithholdingAmount { get; set; }
         public decimal TotalAmount { get; set; }
+        public decimal VatWithholdingAmount { get; internal set; }
     }
 
     public class SalesInvoicePrintServiceLineItemViewModel

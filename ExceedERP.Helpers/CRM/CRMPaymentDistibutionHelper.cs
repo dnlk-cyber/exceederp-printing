@@ -51,63 +51,63 @@ namespace ExceedERP.Helpers.CRM
             decimal withholdingSum = invoiceLineItems.Sum(l => l.WithholdingAmount + l.WithholdTaxAmount)
                                          + invoiceServiceLines.Sum(s => s.WithholdingAmount + s.WithholdTaxAmount);
 
-            decimal netOfPaidWithCash = invoice.GrandTotal - invoice.AdvancePayment;
-            decimal netOfPaidWithAdvance = invoice.AdvancePayment;
-            if (invoice.AdvancePayment > netOfPaidWithCash)
-            {
-                netOfPaidWithAdvance = netOfPaidWithAdvance - withholdingSum;
-            }
-            else
-            {
+            decimal netOfPaidWithCash = invoice.GrandTotal /*- invoice.AdvancePayment*/;
+            //decimal netOfPaidWithAdvance = invoice.AdvancePayment;
+            //if (invoice.AdvancePayment > netOfPaidWithCash)
+            //{
+            //    netOfPaidWithAdvance = netOfPaidWithAdvance - withholdingSum;
+            //}
+            //else
+            //{
                 netOfPaidWithCash = netOfPaidWithCash - withholdingSum;
-            }
-            if (netOfPaidWithAdvance > 0)
-            {
-                var customerAccount = db.AccountMaps.FirstOrDefault(m => m.ReferenceType == "Organization_Customer"
-                    && m.Reference == invoice.OrganizationCustomerId.ToString()
-                    && m.ControlAccountID == AccountRequirementDefinition.SALES_ACCOUNT.ToString());
-                if (customerAccount != null && !string.IsNullOrEmpty(customerAccount.AccountID))
-                {
-                    string acc = customerAccount.AccountID;
+            //}
+            //if (netOfPaidWithAdvance > 0)
+            //{
+            //    var customerAccount = db.AccountMaps.FirstOrDefault(m => m.ReferenceType == "Organization_Customer"
+            //        && m.Reference == invoice.OrganizationCustomerId.ToString()
+            //        && m.ControlAccountID == AccountRequirementDefinition.SALES_ACCOUNT.ToString());
+            //    if (customerAccount != null && !string.IsNullOrEmpty(customerAccount.AccountID))
+            //    {
+            //        string acc = customerAccount.AccountID;
 
-                    int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
-                    string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
-                    int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
-                    if (!string.IsNullOrEmpty(businessUnitCode))
-                    {
-                        acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
-                    }
-                    if (!isReplacingBranchDisabled)
-                    {
-                        acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
-                    }
-                    if (checkAccount.ContainsKey(acc))
-                    {
-                        var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
-                        if (existingDstn != null)
-                        {
-                            existingDstn.AccountCode = acc;
-                            existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
-                            existingDstn.Debit += netOfPaidWithAdvance;
-                            existingDstn.Credit = 0;
-                            existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
-                        }
-                    }
-                    else if (!checkAccount.ContainsKey(acc))
-                    {
-                        SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
-                        {
-                            AccountCode = acc,
-                            AccountDesc = _dynamicAccount.GetAccountDesc(acc),
-                            Debit = netOfPaidWithAdvance,
-                            Credit = 0,
-                            CashSalesInvoiceId = invoice.CashSalesInvoiceID,
-                        };
-                        distributions.Add(distribution);
-                        checkAccount.Add(acc, invoice.CashSalesInvoiceID.ToString());
-                    }
-                }
-            }
+            //        int branchAccountIndex = _dynamicAccount.GetBranchAccountSequenceIndex();
+            //        string branchSeg = HrHelper.GetBranchLocationAccount(invoice.BranchId);
+            //        int bUtIndex = _dynamicAccount.GetBizUnitAccountSequenceIndex();
+            //        if (!string.IsNullOrEmpty(businessUnitCode))
+            //        {
+            //            acc = _dynamicAccount.ReplaceSegment(acc, bUtIndex, businessUnitCode);
+            //        }
+            //        if (!isReplacingBranchDisabled)
+            //        {
+            //            acc = _dynamicAccount.ReplaceSegment(acc, branchAccountIndex, branchSeg);
+            //        }
+            //        if (checkAccount.ContainsKey(acc))
+            //        {
+            //            var existingDstn = distributions.FirstOrDefault(d => d.AccountCode == acc);
+            //            if (existingDstn != null)
+            //            {
+            //                existingDstn.AccountCode = acc;
+            //                existingDstn.AccountDesc = _dynamicAccount.GetAccountDesc(acc);
+            //                existingDstn.Debit += netOfPaidWithAdvance;
+            //                existingDstn.Credit = 0;
+            //                existingDstn.CashSalesInvoiceId = invoice.CashSalesInvoiceID;
+            //            }
+            //        }
+            //        else if (!checkAccount.ContainsKey(acc))
+            //        {
+            //            SalesInvoicePaymentDistibution distribution = new SalesInvoicePaymentDistibution
+            //            {
+            //                AccountCode = acc,
+            //                AccountDesc = _dynamicAccount.GetAccountDesc(acc),
+            //                Debit = netOfPaidWithAdvance,
+            //                Credit = 0,
+            //                CashSalesInvoiceId = invoice.CashSalesInvoiceID,
+            //            };
+            //            distributions.Add(distribution);
+            //            checkAccount.Add(acc, invoice.CashSalesInvoiceID.ToString());
+            //        }
+            //    }
+            //}
             var payMetMethod = db.PaymentMethods.Where(x => x.PaymentMethodID.ToString() == invoice.RecieveMethod).FirstOrDefault();
             if (payMetMethod != null && !string.IsNullOrEmpty(payMetMethod.ArAccountCode))
             {
@@ -1225,9 +1225,9 @@ namespace ExceedERP.Helpers.CRM
 
             foreach (var lineItem in creditLineItems)
             {
-                string acc = lineItem.Source == SettlementAmountSource.Cash 
-                    ? payMentMethod?.ArAccountCode
-                    : customerAccount?.AccountID;
+                string acc = /*lineItem.Source == SettlementAmountSource.Cash*/
+                    payMentMethod?.ArAccountCode;
+                    //: customerAccount?.AccountID;
                 if (!string.IsNullOrEmpty(acc))
                 {
                     int subaccountindex = _dynamicAccount.GetBranchAccountSequenceIndex();
