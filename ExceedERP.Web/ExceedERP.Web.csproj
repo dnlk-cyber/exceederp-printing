@@ -1353,9 +1353,6 @@
     <Compile Include="Areas\HRM\Controllers\Payroll\EmployeeAccountController.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Areas\HRM\Controllers\Payroll\EmpPayrollNoDaysWorkedController.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Areas\HRM\Controllers\Payroll\FixedContributionController.cs">
       <SubType>Code</SubType>
     </Compile>
