@@ -311,6 +311,12 @@
     <Reference Include="Microsoft.Owin.Security.MicrosoftAccount">
       <HintPath>..\packages\Microsoft.Owin.Security.MicrosoftAccount.3.0.1\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
     </Reference>
+    <Reference Include="zxing, Version=0.16.10.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.10\lib\net45\zxing.dll</HintPath>
+    </Reference>
+    <Reference Include="zxing.presentation, Version=0.16.10.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.10\lib\net45\zxing.presentation.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <!--<Reference Include="Newtonsoft.Json">
@@ -2252,6 +2258,7 @@
     <Compile Include="Areas\Procurement\Models\ReceiveServiceItemVm.cs" />
     <Compile Include="Areas\Procurement\Models\ResultViewMode.cs" />
     <Compile Include="Areas\Procurement\ProcurementAreaRegistration.cs" />
+    <Compile Include="Controllers\BarcodeController.cs" />
     <Compile Include="Controllers\BranchUserController.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -8990,6 +8997,7 @@
     <Content Include="Views\Dashboard\ProjectManagementDashboard.cshtml" />
     <Content Include="Views\Dashboard\RealEstate.cshtml" />
     <Content Include="Views\Dashboard\ScoreCardDashboard.cshtml" />
+    <Content Include="Views\Barcode\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Bid Cancellation\" />

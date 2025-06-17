@@ -94,6 +94,12 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
+    <Reference Include="zxing, Version=0.16.10.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.10\lib\net45\zxing.dll</HintPath>
+    </Reference>
+    <Reference Include="zxing.presentation, Version=0.16.10.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.10\lib\net45\zxing.presentation.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Archive\ArchiveIsoDocumentHelper.cs" />
@@ -106,6 +112,7 @@
     <Compile Include="BugetGAAP\BudgetPlanHelper.cs" />
     <Compile Include="BugetGAAP\BugetGAAPGenericHelper.cs" />
     <Compile Include="CMS\CMSGenericHelper.cs" />
+    <Compile Include="Common\BarcodeGenerator.cs" />
     <Compile Include="Common\CacheData.cs" />
     <Compile Include="Common\DocApprovalHelper.cs" />
     <Compile Include="Common\EmployeeHelper.cs" />

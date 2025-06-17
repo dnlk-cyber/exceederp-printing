@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "ISBN Barcode Generator";
+    var isbn = ViewBag.ISBN as string;
+}
+
+<h2>ISBN Barcode Generator</h2>
+
+<form method="post">
+    <label>Enter ISBN-13:</label><br />
+    <input type="text" name="isbn" value="@isbn" required minlength="13" maxlength="13" pattern="\d{13}" />
+    <button type="submit">Generate Barcode</button>
+</form>
+
+@if (!string.IsNullOrEmpty(ViewBag.Error as string))
+{
+    <p style="color:red;">@ViewBag.Error</p>
+}
+
+@if (!string.IsNullOrEmpty(ViewBag.BarcodeImage as string))
+{
+    <h3>Generated Barcode</h3>
+    <img src="@ViewBag.BarcodeImage" alt="ISBN Barcode" /><br /><br />
+    <a class="btn btn-primary" href="@Url.Action("Download", "Barcode", new { isbn = isbn })">Download as PNG</a>
+}
