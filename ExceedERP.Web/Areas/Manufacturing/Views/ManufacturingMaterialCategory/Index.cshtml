@@ -5,21 +5,21 @@
           .Name("grid")
           .Columns(columns =>
           {
-              columns.ForeignKey(c => c.InventoryCategoryCode, (IEnumerable)ViewData["ItemCategory"], "Value", "Text");/*.EditorTemplateName("InventoryCategoryTemplate");*/
+              columns.ForeignKey(c => c.InventoryCategoryCode, (IEnumerable)ViewData["ItemCategory"], "Value", "Text");
               columns.Bound(c => c.ManufacturingCategory);
               columns.Bound(c => c.CostAccountCode);
               columns.Bound(c => c.InventoryAccountCode);
-              columns.Bound(c => c.ProductionAccountCode);
-              //columns.Bound(c => c.IsActive);
+             
               columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
           })
           .ToolBar(toolbar =>
           {
               toolbar.Create();
           })
-          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("InventoryCategoryTemplate"))
           .Pageable()
           .Navigatable()
+          .Events(e => e.DetailExpand("detailExpand"))
           .Sortable(sortable =>
           {
               sortable.SortMode(GridSortMode.SingleColumn);
@@ -28,6 +28,10 @@
           .Scrollable()
           .DataSource(dataSource => dataSource
               .Ajax()
+              .Sort(sort => sort.Add(e => e.ManufacturingMaterialCategoryId).Descending())
+              .Events(ev => ev.Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
               .Model(model => model.Id(p => p.ManufacturingMaterialCategoryId))
               .Read(read => read.Action("ManufacturingMaterialCategories_Read", "ManufacturingMaterialCategory"))
               .Create(create => create.Action("ManufacturingMaterialCategories_Create", "ManufacturingMaterialCategory"))
@@ -55,7 +59,7 @@
               .Name("grid_#=ManufacturingMaterialCategoryId#")
               .Columns(columns =>
               {
-                  columns.ForeignKey(c => c.InventorySubCategoryCode, (IEnumerable)ViewData["ItemCategory"], "Value", "Text").EditorTemplateName("SubCategoryTemplate");
+                  //columns.ForeignKey(c => c.InventorySubCategoryCode, (IEnumerable)ViewData["ItemCategory"], "Value", "Text").EditorTemplateName("SubCategoryTemplate");
                   columns.Bound(c => c.ItemName);
                   columns.Bound(c => c.ItemCode);
                   columns.Bound(c => c.UnitOfMeasurement);
@@ -65,9 +69,9 @@
               })
               .ToolBar(toolbar =>
               {
-                  //toolbar.Create();
+                  toolbar.Create();
               })
-              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CategoryItemTemplate"))
               .Filterable()
               .Scrollable()
               .DataSource(dataSource => dataSource
@@ -75,11 +79,7 @@
                   .Model(model =>
                   {
                       model.Id(p => p.ManufacturingMaterialCategoryItemId);
-                      model.Field(p => p.InventorySubCategoryCode).Editable(false);
-                      model.Field(p => p.ItemName).Editable(false);
-                      model.Field(p => p.ItemCode).Editable(false);
-                      model.Field(p => p.UnitOfMeasurement).Editable(false);
-
+                     
                   })
                   .Read(read => read.Action("ManufacturingMaterialCategoryDetails_Read", "ManufacturingMaterialCategoryDetail", new { id = "#=ManufacturingMaterialCategoryId#" }))
                   .Create(create => create.Action("ManufacturingMaterialCategoryDetails_Create", "ManufacturingMaterialCategoryDetail", new { id = "#=ManufacturingMaterialCategoryId#" }))
@@ -90,7 +90,17 @@
 }
 
 <script type="text/javascript">
+    var inventoryCategoryCode;
+    var materialCatId;
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
 
+        materialCatId = masterDataItem.ManufacturingMaterialCategoryId;
+        inventoryCategoryCode = masterDataItem.InventoryCategoryCode;
+
+    }
     function filterCategory() {
         return {
             text: $("#InventoryCategoryCode").data("kendoDropDownList").filterInput.val(),
@@ -104,5 +114,29 @@
         }
     }
 
-    
+    function filterUoM() {
+        return {
+            text: $("#UnitOfMeasurement").data("kendoDropDownList").filterInput.val()
+        }
+    }
+    function filterItemCode() {
+        return {
+            text: $("#ItemCode").data("kendoDropDownList").filterInput.val(),
+            itemCode: inventoryCategoryCode
+        }
+    }
 </script>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-12 {
+        width: 300px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

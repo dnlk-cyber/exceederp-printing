@@ -69,8 +69,8 @@
                                                       .Columns(columns =>
                                                       {
                                                           columns.Bound(c => c.WorkshopType);
-                                                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text");
-                                                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryItemId, (IEnumerable)ViewData["MaterialCategoryItem"], "Value", "Text");
+                                                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryId, (IEnumerable)ViewData["MaterialCategory"], "Value", "Text").Title("Category");
+                                                          columns.ForeignKey(c => c.ManufacturingMaterialCategoryItemId, (IEnumerable)ViewData["MaterialCategoryItem"], "Value", "Text").Title("Item");
                                                           columns.Bound(c => c.UnitOfMeasurement);
                                                           columns.Bound(c => c.Quantity).Format("{0:n2}");
                                                           columns.Bound(c => c.Remark);

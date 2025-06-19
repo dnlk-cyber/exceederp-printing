@@ -1,12 +1,28 @@
-﻿@(Html.Kendo().DropDownListFor(m => m)                    
-    .DataTextField("Text")
-    .DataValueField("Value")                   
-    .DataSource(dataSource =>
-    {
-        dataSource.Read(read => read.Action("GetInventoryItemCategory", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterCategory"))
-        .ServerFiltering(true);
-    })
-    .Filter("contains")
-    .MinLength(2)
-    .ValuePrimitive(true)
-)
+﻿@model ExceedERP.Core.Domain.Manufacturing.Setting.ManufacturingMaterialCategory
+
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Item Code</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.InventoryCategoryCode)
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .AutoBind(true)
+                    .ValuePrimitive(true)
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetInventoryItemCategory", "PrintDataProvider", new { Area = "Printing" }).Data("filterCategory"))
+                        .ServerFiltering(true);
+                    })
+                    .Filter("contains")
+                    
+                    .ValuePrimitive(true)
+                    .HtmlAttributes(new { style = "width:100%"})
+                )
+            </div>
+        </div>
+    </div>
+</div>

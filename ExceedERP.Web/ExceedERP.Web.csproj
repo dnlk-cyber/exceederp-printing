@@ -1353,6 +1353,7 @@
     <Compile Include="Areas\HRM\Controllers\Payroll\EmployeeAccountController.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Areas\HRM\Controllers\Payroll\EmpPayrollNoDaysWorkedController.cs" />
     <Compile Include="Areas\HRM\Controllers\Payroll\FixedContributionController.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -7142,6 +7143,7 @@
     <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\EditorTemplates\FollowUpDetailTemplate.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\EditorTemplates\FollowUpTaskTemplate.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingReport\PrintJobOrder.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\ManufacturingMaterialCategory\EditorTemplates\CategoryItemTemplate.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

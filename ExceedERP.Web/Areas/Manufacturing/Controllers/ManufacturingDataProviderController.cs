@@ -199,20 +199,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetPrintingEstimation(string text)
-        {
-            var estimation = db.PrintingCostEstimations.Where(x => x.IsOnlineApproved).AsQueryable();
-            if (!string.IsNullOrEmpty(text))
-            {
-                estimation = estimation.Where(x => x.PrintingCostEstimationId == int.Parse(text)).AsQueryable();
-            }
-            var result = estimation.Select(s => new
-            {
-                Value = s.PrintingCostEstimationId,
-                Text = s.PrintJobType
-            }).ToList();
-            return Json(result, JsonRequestBehavior.AllowGet);
-        }
+       
 
         public JsonResult GetEmployees(string text)
         {

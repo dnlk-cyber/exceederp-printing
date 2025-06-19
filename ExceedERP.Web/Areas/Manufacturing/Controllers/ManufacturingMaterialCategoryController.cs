@@ -43,43 +43,60 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ManufacturingMaterialCategories_Create([DataSourceRequest]DataSourceRequest request, ManufacturingMaterialCategory manufacturingMaterialCategory)
+        public ActionResult ManufacturingMaterialCategories_Create([DataSourceRequest]DataSourceRequest request, ManufacturingMaterialCategory model)
         {
+            var exsistingCategoryCode = db.ManufacturingMaterialCategories
+                .Where(x => x.InventoryCategoryCode == model.InventoryCategoryCode);
+            if (exsistingCategoryCode.Any())
+                ModelState.AddModelError("", "Exsisting Category Code");
             if (ModelState.IsValid)
             {
+                var itemCategory = db.ItemCategorys.FirstOrDefault(x => x.ItemCategoryCode == model.InventoryCategoryCode);
+
                 var entity = new ManufacturingMaterialCategory
                 {
-                    InventoryCategoryCode = manufacturingMaterialCategory.InventoryCategoryCode,
-                    ManufacturingCategory = manufacturingMaterialCategory.ManufacturingCategory,
-                    CostAccountCode = manufacturingMaterialCategory.CostAccountCode,
-                    InventoryAccountCode = manufacturingMaterialCategory.InventoryAccountCode,
-                    ProductionAccountCode = manufacturingMaterialCategory.ProductionAccountCode,
-                    IsActive = manufacturingMaterialCategory.IsActive
+                    InventoryCategoryCode = model.InventoryCategoryCode,
+                    ManufacturingCategory = itemCategory.Name,
+                    CostAccountCode = itemCategory.AccountCode,
+                    InventoryAccountCode = itemCategory.IssueAccountCode,
+                    ProductionAccountCode = model.ProductionAccountCode,
+                    IsActive = model.IsActive
                 };
 
                 db.ManufacturingMaterialCategories.Add(entity);
                 db.SaveChanges();
-                GenerateManufactureCategoryDetail(entity);
-                manufacturingMaterialCategory.ManufacturingMaterialCategoryId = entity.ManufacturingMaterialCategoryId;
+                //GenerateManufactureCategoryDetail(entity);
+                model.ManufacturingMaterialCategoryId = entity.ManufacturingMaterialCategoryId;
+                model.ManufacturingCategory = entity.ManufacturingCategory;
+                model.CostAccountCode = entity.CostAccountCode;
+                model.InventoryAccountCode = entity.InventoryAccountCode;
+                model.ManufacturingMaterialCategoryId = entity.ManufacturingMaterialCategoryId;
             }
 
-            return Json(new[] { manufacturingMaterialCategory }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ManufacturingMaterialCategories_Update([DataSourceRequest]DataSourceRequest request, ManufacturingMaterialCategory manufacturingMaterialCategory)
+        public ActionResult ManufacturingMaterialCategories_Update([DataSourceRequest]DataSourceRequest request, ManufacturingMaterialCategory model)
         {
+            var exsistingCategoryCode = db.ManufacturingMaterialCategories
+                .Where(x => x.InventoryCategoryCode == model.InventoryCategoryCode 
+                && x.ManufacturingMaterialCategoryId != model.ManufacturingMaterialCategoryId);
+            if (exsistingCategoryCode.Any())
+                ModelState.AddModelError("", "Exsisting Category Code");
             if (ModelState.IsValid)
             {
+                var itemCategory = db.ItemCategorys.FirstOrDefault(x => x.ItemCategoryCode == model.InventoryCategoryCode);
+
                 var entity = new ManufacturingMaterialCategory
                 {
-                    ManufacturingMaterialCategoryId = manufacturingMaterialCategory.ManufacturingMaterialCategoryId,
-                    InventoryCategoryCode = manufacturingMaterialCategory.InventoryCategoryCode,
-                    ManufacturingCategory = manufacturingMaterialCategory.ManufacturingCategory,
-                    CostAccountCode = manufacturingMaterialCategory.CostAccountCode,
-                    InventoryAccountCode = manufacturingMaterialCategory.InventoryAccountCode,
-                    ProductionAccountCode = manufacturingMaterialCategory.ProductionAccountCode,
-                    IsActive = manufacturingMaterialCategory.IsActive
+                    InventoryCategoryCode = model.InventoryCategoryCode,
+                    ManufacturingCategory = itemCategory.Name,
+                    CostAccountCode = itemCategory.AccountCode,
+                    InventoryAccountCode = itemCategory.IssueAccountCode,
+                    ProductionAccountCode = model.ProductionAccountCode,
+                    IsActive = model.IsActive,
+                    ManufacturingMaterialCategoryId = model.ManufacturingMaterialCategoryId
                 };
 
                 db.ManufacturingMaterialCategories.Attach(entity);
@@ -87,7 +104,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 db.SaveChanges();
             }
 
-            return Json(new[] { manufacturingMaterialCategory }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
