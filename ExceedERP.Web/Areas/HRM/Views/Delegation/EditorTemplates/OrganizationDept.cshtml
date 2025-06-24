@@ -9,7 +9,7 @@
       
       .DataSource(dataSource =>
       {
-          dataSource.Read(read => read.Action("GetAllDepartments", "HRMDataProvider", new { area = "HRM" }))
+          dataSource.Read(read => read.Action("GetAllDepartments", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
           .ServerFiltering(true);
       })
       .ValuePrimitive( true)

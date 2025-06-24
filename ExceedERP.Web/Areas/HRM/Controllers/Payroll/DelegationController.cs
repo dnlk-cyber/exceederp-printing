@@ -18,6 +18,7 @@ using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Web.Models;
 using Microsoft.AspNet.Identity.Owin;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 {
@@ -44,16 +45,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         {
             ViewData["CC"] = db.MainCompanyStructures.ToList();
 
-            //var periodList = db.PayrollPeriods.Where(x => x.Status == FiscalYearStatus.Open);
-            //var list = from p in periodList
-            //           join g in db.GLPeriods
-            //               on p.Name equals g.Name
-            //           select (new
-            //           {
-            //               g
-            //           });
-            //ViewData["PeriodList"] = db.GLPeriods.ToList();// list.Select(x => x.g).ToList(); ;
-                                                           // var listt = inputs.GetEmployees(User.Identity.Name);
+            ViewData["isEthiopicDate"] = true;
+
             ViewData["EmployeeList"] = db.Person_Employee.ToList();
             return View();
         }
@@ -101,7 +94,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 LastModified = delegation.LastModified,
                 CreatedBy = delegation.CreatedBy,
                 ModifiedBy = delegation.ModifiedBy,
-                //Reason = delegation.Reason,
+                IsWithBenefit = delegation.IsWithBenefit,
               //  GLPeriodId = delegation.GLPeriodId,
                 IsOpen = delegation.IsOpen,
                 HideButtons = CheckDate(delegation.DelegationId)
@@ -111,7 +104,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         }
         public ActionResult Delegations_Hr_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<Delegation> delegations = db.Delegations;//.Where(x => employees.Contains(x.EmployeeId));
+            IQueryable<Delegation> delegations = db.Delegations/*.AsNoTracking().Where(x=>x.ToDateTime.Value >=DateTime.Now.Date)*/;//.Where(x => employees.Contains(x.EmployeeId));
 
             DataSourceResult result = delegations.ToDataSourceResult(request, delegation => new
             {
@@ -122,6 +115,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 ToDateTimeAm = delegation.ToDateTimeAm,
                 EmployeeId = delegation.EmployeeId,
                 FromEmployeeId = delegation.FromEmployeeId,
+                IsWithBenefit = delegation.IsWithBenefit,
                 Remark = delegation.Remark,
                 OrgBranchName = delegation.OrgBranchName,
                 DateCreated = delegation.DateCreated,
@@ -150,6 +144,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 ToDateTimeAm = delegation.ToDateTimeAm,
                 EmployeeId = delegation.EmployeeId,
                 FromEmployeeId = delegation.FromEmployeeId,
+                IsWithBenefit = delegation.IsWithBenefit,
                 Remark = delegation.Remark,
                 OrgBranchName = delegation.OrgBranchName,
                 DateCreated = delegation.DateCreated,
@@ -196,6 +191,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 ToDateTimeAm = delegation.ToDateTimeAm,
                 EmployeeId = delegation.EmployeeId,
                 FromEmployeeId = delegation.FromEmployeeId,
+                IsWithBenefit = delegation.IsWithBenefit,
                 Remark = delegation.Remark,
                 OrgBranchName = delegation.OrgBranchName,
                 DateCreated = delegation.DateCreated,
@@ -212,61 +208,72 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Delegations_Create([DataSourceRequest]DataSourceRequest request, Delegation delegation)
         {
-            ModelState.Clear();
-            if (delegation.FromDateTimeAm != null)
+           
+
+          
+            bool datePreference =  true;
+            if (datePreference)
             {
-                var splitDate = delegation.FromDateTimeAm.Split('/');
-                delegation.FromDateTime = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                if (string.IsNullOrEmpty(delegation.FromDateTimeAm)
+                || string.IsNullOrEmpty(delegation.ToDateTimeAm))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory");
+                    return Json(new[] { delegation }.ToDataSourceResult(request, ModelState));
+                }
+                else
+                {
+                    delegation.FromDateTime = HrHelper.ParseEthiopicDate(delegation.FromDateTimeAm);
+                    delegation.ToDateTime = HrHelper.ParseEthiopicDate(delegation.ToDateTimeAm);
+                }
+
             }
-            if (delegation.ToDateTimeAm != null)
+            else
             {
-                var splitDate = delegation.ToDateTimeAm.Split('/');
-                delegation.FromDateTime = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+
+                delegation.FromDateTimeAm = XAPI.EthiopicDateTime.GetEthiopicDate(delegation.FromDateTime.Value.Day, delegation.FromDateTime.Value.Month, delegation.FromDateTime.Value.Year);
+                delegation.ToDateTimeAm = XAPI.EthiopicDateTime.GetEthiopicDate(delegation.ToDateTime.Value.Day, delegation.ToDateTime.Value.Month, delegation.ToDateTime.Value.Year);
+
             }
-            //var checkexistancep = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == delegation.GLPeriodId);
-            //if (checkexistancep != null)
-            //{
-            //    ModelState.AddModelError("", "You cannot add this delegation. This period is already processed!!");
-            //}
+            if (delegation.FromDateTime > delegation.ToDateTime)
+            {
+                ModelState.AddModelError("", "Please check the date range!!");
+                return Json(new[] { delegation }.ToDataSourceResult(request, ModelState));
+
+            }
             if (delegation.FromEmployeeId == delegation.EmployeeId)
             {
                 ModelState.AddModelError("", "The assigned employee should be diffretnt from Delegator!!");
+                return Json(new[] { delegation }.ToDataSourceResult(request, ModelState));
+
             }
-            if (db.Delegations.Any(x => x.FromEmployeeId == delegation.FromEmployeeId ))
+
+            if (db.Delegations.Any(x => x.FromEmployeeId == delegation.FromEmployeeId
+                                        && x.FromDateTime >= delegation.FromDateTime
+                                        && x.ToDateTime <= delegation.ToDateTime))
             {
                 ModelState.AddModelError("", "You  Delegated for another delegate too ! Remove your delegator!!");
-
+                return Json(new[] { delegation }.ToDataSourceResult(request, ModelState));
+                
             }
-            if (db.Delegations.Any(x => x.EmployeeId == delegation.EmployeeId ))
+
+            if (db.Delegations.Any(x => x.EmployeeId == delegation.EmployeeId
+                                        && x.FromDateTime >= delegation.FromDateTime
+                                        && x.ToDateTime <= delegation.ToDateTime))
             {
                 ModelState.AddModelError("", "He/She is  Delegated for another employee!!");
-
+                return Json(new[] { delegation }.ToDataSourceResult(request, ModelState));
             }
+
             if (ModelState.IsValid)
             {
 
-                var entity = new Delegation
-                {
-                    FromDateTime = delegation.FromDateTime,
-                    ToDateTime = delegation.ToDateTime,
-                    FromDateTimeAm = delegation.FromDateTimeAm,
-                    ToDateTimeAm = delegation.ToDateTimeAm,
-                    EmployeeId = delegation.EmployeeId,
-                    Remark = delegation.Remark,
-                    FromEmployeeId = delegation.FromEmployeeId,
-                    OrgBranchName = delegation.OrgBranchName,
-                    DateCreated = DateTime.Now,
-                    LastModified = delegation.LastModified,
-                    CreatedBy = User.Identity.Name,
-                    ModifiedBy = delegation.ModifiedBy,
-                    // Reason = delegation.Reason,
-                    //GLPeriodId = delegation.GLPeriodId
-                };
-
+                delegation.DateCreated = DateTime.Now;
+                delegation.CreatedBy = User.Identity.Name;
+                var entity = GetMappedObject(delegation);
                 db.Delegations.Add(entity);
                 db.SaveChanges();
                 delegation.DelegationId = entity.DelegationId;
-
+                //HandlePlacementToEmployeeCard(delegation, EmployeeCardType.Delegation);
                 #region operation log
 
                 UserHelper.OperationLog(Request.UserHostAddress, "Delegation", "Success", User.Identity.Name, User.Identity.Name + " add new Delegation at date" + DateTime.Today, Modules.HRM);
@@ -281,80 +288,79 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         }
         [Authorize(Roles = HR_Profile_User)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Delegations_Update([DataSourceRequest]DataSourceRequest request, Delegation delegation)
+        public ActionResult Delegations_Update([DataSourceRequest] DataSourceRequest request, Delegation delegation)
         {
-            ModelState.Clear();
+    
 
-            if (delegation.FromDateTimeAm != null)
+            bool datePreference =  true;
+            if (datePreference)
             {
-                var splitDate = delegation.FromDateTimeAm.Split('/');
-                delegation.FromDateTime = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                if (string.IsNullOrEmpty(delegation.FromDateTimeAm)
+                || string.IsNullOrEmpty(delegation.ToDateTimeAm))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory");
+                    return Json(new[] { delegation }.ToDataSourceResult(request, ModelState));
+                }
+                else
+                {
+                    delegation.FromDateTime = HrHelper.ParseEthiopicDate(delegation.FromDateTimeAm);
+                    delegation.ToDateTime = HrHelper.ParseEthiopicDate(delegation.ToDateTimeAm);
+                }
+
             }
-            if (delegation.ToDateTimeAm != null)
+            else
             {
-                var splitDate = delegation.ToDateTimeAm.Split('/');
-                delegation.FromDateTime = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+
+                delegation.FromDateTimeAm = XAPI.EthiopicDateTime.GetEthiopicDate(delegation.FromDateTime.Value.Day, delegation.FromDateTime.Value.Month, delegation.FromDateTime.Value.Year);
+                delegation.ToDateTimeAm = XAPI.EthiopicDateTime.GetEthiopicDate(delegation.ToDateTime.Value.Day, delegation.ToDateTime.Value.Month, delegation.ToDateTime.Value.Year);
+
             }
-            //var checkexistancep = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == delegation.GLPeriodId);
-            //if (checkexistancep != null)
-            //{
-            //    ModelState.AddModelError("", "You cannot add this delegation. This period is already processed!!");
-            //}
-            if (delegation.FromEmployeeId == delegation.EmployeeId)
-            {
-                ModelState.AddModelError("", "The assigned employee should be diffretnt from Delegator!!");
-            }
-            //var checkExit = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == delegation.GLPeriodId);
-            //if (checkExit != null)
-            //{
-            //    ModelState.AddModelError("", "You cannot add this delegation. This period is already processed!!");
-            //}
+
             if (delegation.FromDateTime > delegation.ToDateTime)
             {
-                ModelState.AddModelError("", "Please check the date range!!");
+                ModelState.AddModelError("", "Please check the date range!");
+                return Json(new[] { delegation }.ToDataSourceResult(request, ModelState));
             }
-            if (db.Delegations.Any(x => x.FromEmployeeId == delegation.FromEmployeeId && x.DelegationId != delegation.DelegationId))
-            {
-                ModelState.AddModelError("", "You  Delegated for another delegate too ! Remove your delegator!!");
 
-            }
-            if (db.Delegations.Any(x => x.EmployeeId == delegation.EmployeeId && x.DelegationId != delegation.DelegationId))
+            if (delegation.FromEmployeeId == delegation.EmployeeId)
             {
-                ModelState.AddModelError("", "He/She is  Delegated for another employee!!");
-
+                ModelState.AddModelError("", "The assigned employee should be different from the delegator!");
+                return Json(new[] { delegation }.ToDataSourceResult(request, ModelState));
             }
+
+            if (db.Delegations.Any(x => x.FromEmployeeId == delegation.FromEmployeeId
+                                        && x.FromDateTime >= delegation.FromDateTime
+                                        && x.ToDateTime <= delegation.ToDateTime
+                                        && x.DelegationId != delegation.DelegationId))
+            {
+                ModelState.AddModelError("", "You are already delegated for another delegate! Remove your existing delegator!");
+                return Json(new[] { delegation }.ToDataSourceResult(request, ModelState));
+            }
+
+            if (db.Delegations.Any(x => x.EmployeeId == delegation.EmployeeId
+                                        && x.DelegationId != delegation.DelegationId
+                                        && x.FromDateTime >= delegation.FromDateTime
+                                        && x.ToDateTime <= delegation.ToDateTime))
+            {
+                ModelState.AddModelError("", "This employee is already delegated for another employee!");
+                return Json(new[] { delegation }.ToDataSourceResult(request, ModelState));
+            }
+
             if (ModelState.IsValid)
             {
-
-                var entity = new Delegation
-                {
-                    DelegationId = delegation.DelegationId,
-                    FromDateTime = FromDate,
-                    ToDateTime = ToDate,
-                    FromDateTimeAm = FromDateAm,
-                    ToDateTimeAm = ToDateAm,
-                    EmployeeId = delegation.EmployeeId,
-                    FromEmployeeId = delegation.FromEmployeeId,
-                    Remark = delegation.Remark,
-                    OrgBranchName = delegation.OrgBranchName,
-                    DateCreated = delegation.DateCreated,
-                    LastModified = DateTime.Now,
-                    CreatedBy = delegation.CreatedBy,
-                    ModifiedBy = User.Identity.Name,
-                    //Reason = delegation.Reason,
-                   // GLPeriodId = delegation.GLPeriodId
-                };
-
+                delegation.LastModified = DateTime.Now;
+                delegation.ModifiedBy = User.Identity.Name;
+                var entity = GetMappedObject(delegation);
                 db.Delegations.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
-                #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "delegation", "Success", User.Identity.Name, $"updated delegation from  {entity.FromDateTime} to {entity.ToDateTime} ", Modules.Payroll);
-                #endregion
 
+                UserHelper.OperationLog(Request.UserHostAddress, "delegation", "Success", User.Identity.Name, $"updated delegation from {entity.FromDateTime} to {entity.ToDateTime}", Modules.Payroll);
             }
+
             return Json(new[] { delegation }.ToDataSourceResult(request, ModelState));
         }
+
         [Authorize(Roles = HR_Profile_Admin + "," + HR_Admin)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Delegations_Destroy([DataSourceRequest]DataSourceRequest request, Delegation delegation)
@@ -362,24 +368,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             ModelState.Clear();
             if (ModelState.IsValid)
             {
-                var entity = new Delegation
-                {
-                    DelegationId = delegation.DelegationId,
-                    FromDateTime = delegation.FromDateTime,
-                    ToDateTime = delegation.ToDateTime,
-                    FromDateTimeAm = delegation.FromDateTimeAm,
-                    ToDateTimeAm = delegation.ToDateTimeAm,
-                    EmployeeId = delegation.EmployeeId,
-                    FromEmployeeId = delegation.FromEmployeeId,
-                    Remark = delegation.Remark,
-                    OrgBranchName = delegation.OrgBranchName,
-                    DateCreated = delegation.DateCreated,
-                    LastModified = delegation.LastModified,
-                    CreatedBy = delegation.CreatedBy,
-                    ModifiedBy = delegation.ModifiedBy,
-                    //Reason = delegation.Reason,
-                   // GLPeriodId = delegation.GLPeriodId
-                };
+                delegation.LastModified = DateTime.Now;
+                delegation.ModifiedBy = User.Identity.Name;
+                var entity = GetMappedObject(delegation);
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted delegation information of employee " + delegation.FromEmployeeId);
                 #endregion
@@ -391,7 +382,32 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             return Json(new[] { delegation }.ToDataSourceResult(request, ModelState));
         }
 
-        // ================================== Delegation CC ==============================================
+        private Delegation GetMappedObject(Delegation delegation)
+        {
+            var entity = new Delegation
+            {
+                DelegationId = delegation.DelegationId,
+                FromDateTime = delegation.FromDateTime,
+                ToDateTime = delegation.ToDateTime,
+                FromDateTimeAm = delegation.FromDateTimeAm,
+                ToDateTimeAm = delegation.ToDateTimeAm,
+                EmployeeId = delegation.EmployeeId,
+                FromEmployeeId = delegation.FromEmployeeId,
+                Remark = delegation.Remark,
+                OrgBranchName = delegation.OrgBranchName,
+                DateCreated = delegation.DateCreated,
+                LastModified = delegation.LastModified,
+                CreatedBy = delegation.CreatedBy,
+                ModifiedBy = delegation.ModifiedBy,
+                IsOpen = delegation.IsOpen,
+                IsWithBenefit = delegation.IsWithBenefit,
+               
+            };
+            return entity;
+        }
+
+        // ================================== Add To Employee Card ==============================================
+            // ================================== Delegation CC ==============================================
 
         [Authorize(Roles = HR_Profile_Admin + "," + HR_Profile_User + "," + HR_Admin)]
         public ActionResult DelegationCC_Read([DataSourceRequest]DataSourceRequest request, int id)
@@ -583,71 +599,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
                 db.Entry(delegation).State = EntityState.Modified;
                 db.SaveChanges();
-
-                var placementFrom = db.Placements.FirstOrDefault(x => x.EmployeeId == delegation.FromEmployeeId && x.isCurrent);
-                if (placementFrom != null && placementFrom.IsHead)
-                {
-                    placementFrom.IsHead = false;
-
-                    db.Entry(placementFrom).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    var placementTo = db.Placements.FirstOrDefault(x => x.EmployeeId == delegation.EmployeeId && x.isCurrent);
-                    if (placementTo != null)
-                    {
-                        placementTo.IsHead = true;
-
-                        db.Entry(placementTo).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
-                }
-                var user = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.FromEmployeeId);
-                if (user != null)
-                {
-                    List<string> roleNames = new List<string>();
-                    var toUser = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.EmployeeId);
-                    if (toUser != null)
-                    {
-                        foreach (var rm in user.Roles)
-                        {
-                            var chek = toUser.Roles.FirstOrDefault(x => x.RoleId == rm.RoleId);
-                            if (chek == null)
-                            {
-                                var identityRole = adb.Roles.Find(rm.RoleId);
-
-                                if (identityRole != null)
-                                {
-                                    roleNames.Add(identityRole.Name);
-                                }
-                            }
-                        }
-
-
-                        //  var _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-
-                        ApplicationUserManager _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-
-
-                        _userManager.AddToRolesAsync(toUser.Id, roleNames.ToArray());
-
-                        //  _userManager.AddToRolesAsync(toUser.Id, rolesArray);
-
-                        foreach (var tou in roleNames)
-                        {
-                            _userManager.AddToRoleAsync(toUser.Id, tou);
-
-                            var tempo = new DelegationTempoRole();
-
-                            tempo.FromUserId = user.Id;
-                            tempo.ToUserId = toUser.Id;
-                            tempo.RoleName = tou;
-
-                            db.DelegationTempoRoles.Add(tempo);
-                            db.SaveChanges();
-                        }
-                    }
-                }
-
+                
                 var formattedData = new
                 {
                     Message = "You successfully open this delegation .",
@@ -676,71 +628,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
                 db.Entry(delegation).State = EntityState.Modified;
                 db.SaveChanges();
-
-                var placementTo = db.Placements.FirstOrDefault(x => x.EmployeeId == delegation.EmployeeId && x.isCurrent);
-                if (placementTo != null && placementTo.IsHead)
-                {
-                    placementTo.IsHead = false;
-
-                    db.Entry(placementTo).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    var placementFrom = db.Placements.FirstOrDefault(x => x.EmployeeId == delegation.FromEmployeeId && x.isCurrent);
-                    if (placementFrom != null)
-                    {
-                        placementFrom.IsHead = true;
-
-                        db.Entry(placementFrom).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
-                }
-
-
-                var user = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.FromEmployeeId);
-                if (user != null)
-                {
-                    //List<string> roleNames = new List<string>();
-
-                    //foreach (var rm in user.Roles)
-                    //{
-                    //    var identityRole = adb.Roles.Find(rm.RoleId);
-                    //    if (identityRole != null)
-                    //    {
-                    //        roleNames.Add(identityRole.Name);
-                    //    }
-                    //}
-
-                    //var rolesArray = roleNames.ToArray();
-
-                    var toUser = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.EmployeeId);
-                    if (toUser != null)
-                    {
-                        var tempoRoles = db.DelegationTempoRoles.Where(x => x.FromUserId == user.Id && x.ToUserId == toUser.Id).ToList();
-
-                        List<string> roleNames = new List<string>();
-
-                        foreach (var temp in tempoRoles)
-                        {
-                            roleNames.Add(temp.RoleName);
-                        }
-
-                        var rolesArray = roleNames.ToArray();
-
-                        var _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-
-                        _userManager.RemoveFromRolesAsync(toUser.Id, rolesArray);
-
-                        foreach (var tm in tempoRoles)
-                        {
-                            db.Entry(tm).State = EntityState.Deleted;
-                            db.SaveChanges();
-                        }
-
-                        //db.Entry(tempoRoles).State = EntityState.Deleted;
-                        //db.SaveChanges();
-                    }
-                }
-
                 var formattedData = new
                 {
                     Message = "You successfully close this delegation .",

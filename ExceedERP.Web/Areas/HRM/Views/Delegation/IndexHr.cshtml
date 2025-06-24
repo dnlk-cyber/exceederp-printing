@@ -78,10 +78,10 @@
                 //model.Field(p => p.FromDateTimeAm).Editable(false);
                 model.Field(p => p.ToDateTime).Editable(false);
             })
-                .Read(read => read.Action("Delegations_Hr_Read", "Delegation"))
-                .Create(create => create.Action("Delegations_Create", "Delegation"))
-                .Update(update => update.Action("Delegations_Update", "Delegation"))
-                .Destroy(destroy => destroy.Action("Delegations_Destroy", "Delegation"))
+                .Read(read => read.Action("Delegations_Hr_Read", "Delegation").Data("sendForgery"))
+                .Create(create => create.Action("Delegations_Create", "Delegation").Data("sendForgery"))
+                .Update(update => update.Action("Delegations_Update", "Delegation").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("Delegations_Destroy", "Delegation").Data("sendForgery"))
 
         ).ClientDetailTemplateId("template")
 )
@@ -138,10 +138,10 @@
 
 
                                    .Model(model => model.Id(p => p.DeligationCCId))
-                                .Read(read => read.Action("DelegationCC_Read", "Delegation", new { id = "#=DelegationId#" }))
-                                .Create(create => create.Action("DelegationCC_Create", "Delegation", new { id = "#=DelegationId#" }))
-                               .Update(update => update.Action("DelegationCC_Update", "Delegation"))
-                               .Destroy(destroy => destroy.Action("DelegationCC_Destroy", "Delegation"))
+                                .Read(read => read.Action("DelegationCC_Read", "Delegation", new { id = "#=DelegationId#" }).Data("sendForgery"))
+                                .Create(create => create.Action("DelegationCC_Create", "Delegation", new { id = "#=DelegationId#" }).Data("sendForgery"))
+                               .Update(update => update.Action("DelegationCC_Update", "Delegation").Data("sendForgery"))
+                               .Destroy(destroy => destroy.Action("DelegationCC_Destroy", "Delegation").Data("sendForgery"))
 
                                                                                                          ).ToClientTemplate()
                              )
@@ -195,10 +195,10 @@
 
 
                             .Model(model => model.Id(p => p.DelegationReasonId))
-                             .Read(read => read.Action("DelegationReason_Read", "Delegation", new { id = "#=DelegationId#" }))
-                             .Create(create => create.Action("DelegationReason_Create", "Delegation", new { id = "#=DelegationId#" }))
-                             .Update(update => update.Action("DelegationReason_Update", "Delegation"))
-                             .Destroy(destroy => destroy.Action("DelegationReason_Destroy", "Delegation"))
+                             .Read(read => read.Action("DelegationReason_Read", "Delegation", new { id = "#=DelegationId#" }).Data("sendForgery"))
+                             .Create(create => create.Action("DelegationReason_Create", "Delegation", new { id = "#=DelegationId#" }).Data("sendForgery"))
+                             .Update(update => update.Action("DelegationReason_Update", "Delegation").Data("sendForgery"))
+                             .Destroy(destroy => destroy.Action("DelegationReason_Destroy", "Delegation").Data("sendForgery"))
 
                                     ).ToClientTemplate()
                                   )

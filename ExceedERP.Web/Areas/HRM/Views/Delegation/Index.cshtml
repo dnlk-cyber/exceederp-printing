@@ -5,6 +5,7 @@
 @using ExceedERP.Core.Domain.HRM.EmployeeDetail
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
 <legend>@Resources.NavigatorBenefit_Delegation</legend>
 @(Html.Kendo().Grid<Delegation>()
@@ -21,8 +22,18 @@
           //columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(120);
           columns.ForeignKey(c => c.FromEmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("Employees").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("Employees").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
-          columns.Bound(c => c.FromDateTimeAm).EditorTemplateName("Calander").Width(200);
-          columns.Bound(c => c.ToDateTimeAm).EditorTemplateName("Calander").Width(200);
+          if (useEthiopian)
+          {
+              columns.Bound(c => c.FromDateTimeAm).EditorTemplateName("Calander").Width(200);
+              columns.Bound(c => c.ToDateTimeAm).EditorTemplateName("Calander").Width(200);
+          }
+          else
+          {
+              columns.Bound(c => c.FromDateTime).Width(80);
+              columns.Bound(c => c.ToDateTime).Width(80);
+          }
+
+
           columns.Bound(c => c.IsOpen).ClientTemplate(
           "<input type='checkbox' disabled = 'true' value='#= IsOpen#' " +
           "# if (IsOpen) { #" +
@@ -92,10 +103,10 @@
                 //model.Field(p => p.FromDateTimeAm).Editable(false);
                 model.Field(p => p.ToDateTime).Editable(false);
             })
-                .Read(read => read.Action("Delegations_Hr_Read", "Delegation"))
-                .Create(create => create.Action("Delegations_Create", "Delegation"))
-                .Update(update => update.Action("Delegations_Update", "Delegation"))
-                .Destroy(destroy => destroy.Action("Delegations_Destroy", "Delegation"))
+                .Read(read => read.Action("Delegations_Hr_Read", "Delegation").Data("sendForgery"))
+                .Create(create => create.Action("Delegations_Create", "Delegation").Data("sendForgery"))
+                .Update(update => update.Action("Delegations_Update", "Delegation").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("Delegations_Destroy", "Delegation").Data("sendForgery"))
 
         ).ClientDetailTemplateId("template")
 )
@@ -153,10 +164,10 @@
 
 
                              .Model(model => model.Id(p => p.DeligationCCId))
-                             .Read(read => read.Action("DelegationCC_Read", "Delegation", new { id = "#=DelegationId#" }))
-                             .Create(create => create.Action("DelegationCC_Create", "Delegation", new { id = "#=DelegationId#" }))
-                             .Update(update => update.Action("DelegationCC_Update", "Delegation"))
-                             .Destroy(destroy => destroy.Action("DelegationCC_Destroy", "Delegation"))
+                             .Read(read => read.Action("DelegationCC_Read", "Delegation", new { id = "#=DelegationId#" }).Data("sendForgery"))
+                             .Create(create => create.Action("DelegationCC_Create", "Delegation", new { id = "#=DelegationId#" }).Data("sendForgery"))
+                             .Update(update => update.Action("DelegationCC_Update", "Delegation").Data("sendForgery"))
+                             .Destroy(destroy => destroy.Action("DelegationCC_Destroy", "Delegation").Data("sendForgery"))
 
                                                                                                          ).ToClientTemplate()
                              )
@@ -210,10 +221,10 @@
 
 
                             .Model(model => model.Id(p => p.DelegationReasonId))
-                             .Read(read => read.Action("DelegationReason_Read", "Delegation", new { id = "#=DelegationId#" }))
-                             .Create(create => create.Action("DelegationReason_Create", "Delegation", new { id = "#=DelegationId#" }))
-                             .Update(update => update.Action("DelegationReason_Update", "Delegation"))
-                             .Destroy(destroy => destroy.Action("DelegationReason_Destroy", "Delegation"))
+                             .Read(read => read.Action("DelegationReason_Read", "Delegation", new { id = "#=DelegationId#" }).Data("sendForgery"))
+                             .Create(create => create.Action("DelegationReason_Create", "Delegation", new { id = "#=DelegationId#" }).Data("sendForgery"))
+                             .Update(update => update.Action("DelegationReason_Update", "Delegation").Data("sendForgery"))
+                             .Destroy(destroy => destroy.Action("DelegationReason_Destroy", "Delegation").Data("sendForgery"))
 
                                     ).ToClientTemplate()
                                   )
