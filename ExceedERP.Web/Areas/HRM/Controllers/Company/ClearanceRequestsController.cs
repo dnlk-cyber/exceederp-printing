@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
  using ExceedERP.Core.Domain;
  using ExceedERP.Core.Domain.Common;
@@ -19,7 +17,11 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
-    [AuthorizeRoles(HrmConstants.HREmployeeSelfService,HrmConstants.HRDepartmentHead)] 
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService
+        ,HrmConstants.HRDepartmentHead, 
+        HrmConstants.HRCompanyAdmin,
+        HrmConstants.HRCompanyUser,
+        HrmConstants.HRAdmin)] 
     public class ClearanceRequestsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -51,7 +53,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             }), JsonRequestBehavior.AllowGet);
         }
 
-        [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
         public ActionResult ClearanceRequests_Read([DataSourceRequest]DataSourceRequest request)
         {
 
@@ -94,7 +95,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
             return Json(result);
         }
-        [AuthorizeRoles(HrmConstants.HRCompanyUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ClearanceRequests_Create([DataSourceRequest]DataSourceRequest request, ClearanceRequest clearance)
         {
@@ -130,7 +130,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             return Json(new[] { clearance }.ToDataSourceResult(request, ModelState));
         }
       
-         [AuthorizeRoles(HrmConstants.HRCompanyUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ClearanceRequests_Update([DataSourceRequest]DataSourceRequest request, ClearanceRequest clearanceProvider)
         {
@@ -164,7 +163,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             return Json(new[] { clearanceProvider }.ToDataSourceResult(request, ModelState));
         }
      
-        [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRAdmin)]
+        
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ClearanceRequests_Destroy([DataSourceRequest]DataSourceRequest request, ClearanceRequest clearanceProvider)
         {
@@ -223,57 +222,173 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             };
             return entity;
         }
-
-        public ActionResult ClearanceRequestApproval(int id)
+        public JsonResult ClearanceRequestApproval(int id)
         {
+            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var orgId = UserInformationHelper.GetEmployeeDepartmentIdByEmpId(empId);
             var clearance = db.ClearanceRequests.Find(id);
-            if (clearance != null)
+            if (clearance == null)
             {
-                if(clearance.IsSendForApproval 
-                    && clearance.IsDepartmentOnlineApproved
-                    && !clearance.IsOnlineApproved)
-                {
-                    clearance.IsOnlineApproved = true;
-                    clearance.OnlineApprovedTime = DateTime.Now;
-                    clearance.OnlineApprovedBy = User.Identity.Name;
-                    db.Entry(clearance).State = EntityState.Modified;
-                    db.SaveChanges();
-                    var formattedData = new
-                    {
-                        Message = "You successfully approved this Clearance.",
-                        Status = "OK"
-                    };
-                    return Json(formattedData, JsonRequestBehavior.AllowGet);
-                }
-                else if (clearance.IsDepartmentOnlineApproved)
-                {
-                    var formattedData12 = new
-                    {
-                        Message = "This Clearance must be approved department First approver.",
-                        Status = "OK"
-                    };
-                    return Json(formattedData12, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    var formattedData1 = new
-                    {
-                        Message = "This Clearance is already approved Once. you can't approve again.",
-                        Status = "OK"
-                    };
-                    return Json(formattedData1, JsonRequestBehavior.AllowGet);
-
-                }
-
+                return Json(new { Message = "Record not found.", Status = "not-OK" }, JsonRequestBehavior.AllowGet);
             }
 
-            var formattedData2 = new
+            if (!clearance.IsSendForApproval)
             {
-                Message = "Record is not found.",
-                Status = "FAIL"
-            };
-            return Json(formattedData2, JsonRequestBehavior.AllowGet);
+                return Json(new { Message = "This clearance request has not been sent for approval yet.", Status = "not-OK" }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (clearance.IsOnlineApproved)
+            {
+                return Json(new { Message = "This clearance has already been approved. You cannot approve it again.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+            }
+            var clearanceApprover = db.ClearanceRequestApprovers
+                                        .FirstOrDefault(x => x.ClearanceRequestId == clearance.ClearanceRequestId
+                                                            &&x.OrgStructureId==orgId);
+            if (clearanceApprover != null)
+            {
+                clearanceApprover.IsOnlineApproved = true;
+                clearanceApprover.OnlineApprovedTime = DateTime.Now;
+                clearanceApprover.OnlineApprovedBy = User.Identity.Name;
+                db.Entry(clearanceApprover).State = EntityState.Modified;
+
+            }
+            var clearanceStatus = db.ClearanceRequestStatus.FirstOrDefault(x =>
+              x.ClearanceRequestId == clearance.ClearanceRequestId &&
+              x.OrgStructureId == orgId);
+            if (clearanceStatus != null)
+            {
+                clearanceStatus.IsOnlineApproved = true;
+                //clearanceStatus.IsOnlineApproved = true;
+                clearanceStatus.OnlineApprovedTime = DateTime.Now;
+                clearanceStatus.OnlineApprovedBy = User.Identity.Name;
+                db.Entry(clearanceStatus).State = EntityState.Modified;
+
+            }
+            clearance.IsOnlineApproved = true;
+            clearance.OnlineApprovedTime = DateTime.Now;
+            clearance.OnlineApprovedBy = User.Identity.Name;
+            db.Entry(clearance).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return Json(new { Message = "Clearance approved successfully.", Status = "OK" }, JsonRequestBehavior.AllowGet);
         }
+
+        public JsonResult FinalApproval(int id)
+        {
+            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var orgId = UserInformationHelper.GetEmployeeDepartmentIdByEmpId(empId);
+            var clearance = db.ClearanceRequests.Find(id);
+            if (clearance == null)
+            {
+                return Json(new { Message = "Record not found.", Status = "not-OK" }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (!clearance.IsSendForApproval)
+            {
+                return Json(new { Message = "This clearance request has not been sent for approval yet.", Status = "not-OK" }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (!clearance.IsOnlineApproved)
+            {
+                return Json(new { Message = "This clearance must first be approved by HR.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (!clearance.IsDepartmentOnlineApproved)
+            {
+                return Json(new { Message = "This clearance must first be approved by both the department and HR before final approval.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (clearance.IsFinalApproval)
+            {
+                return Json(new { Message = "This clearance has already been approved. You cannot approve it again.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+            }
+            var clearanceApprover = db.ClearanceRequestApprovers
+                               .FirstOrDefault(x => x.ClearanceRequestId == clearance.ClearanceRequestId);
+            if (clearanceApprover != null)
+            {
+                clearanceApprover.IsFinalApproval = true;
+                clearanceApprover.IsOnlineApproved = true;
+                clearanceApprover.OnlineApprovedTime = DateTime.Now;
+                clearanceApprover.OnlineApprovedBy = User.Identity.Name;
+                db.Entry(clearanceApprover).State = EntityState.Modified;
+
+            }
+            var clearanceStatus = db.ClearanceRequestStatus.FirstOrDefault(x =>
+              x.ClearanceRequestId == clearance.ClearanceRequestId &&
+              x.OrgStructureId == orgId);
+            if (clearanceStatus != null)
+            {
+                clearanceStatus.IsOnlineApproved = true;
+                clearanceStatus.IsFinalApproval =true;
+                clearanceStatus.OnlineApprovedBy = User.Identity.Name;
+                db.Entry(clearanceStatus).State = EntityState.Modified;
+
+            }
+            // Final Approval
+            clearance.IsFinalApproval = true;
+            db.Entry(clearance).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return Json(new { Message = "Clearance has been successfully given final approval.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+        }
+
+        //public ActionResult FinalApproval(int id)
+        //{
+        //    var clearance = db.ClearanceRequests.Find(id);
+        //    if (clearance != null)
+        //    {
+        //        if(clearance.IsSendForApproval 
+        //            && clearance.IsDepartmentOnlineApproved
+        //            && !clearance.IsFinalApproval)
+        //        {
+        //            clearance.IsFinalApproval = true;
+        //            db.Entry(clearance).State = EntityState.Modified;
+        //            db.SaveChanges();
+        //            var formattedData = new
+        //            {
+        //                Message = "You successfully approved this Clearance final Approval.",
+        //                Status = "OK"
+        //            };
+        //            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        //        }
+        //        else if (!clearance.IsOnlineApproved)
+        //        {
+        //            var formattedData12 = new
+        //            {
+        //                Message = "This Clearance must be approved by HR  first .",
+        //                Status = "OK"
+        //            };
+        //            return Json(formattedData12, JsonRequestBehavior.AllowGet);
+        //        }
+        //        else if (!clearance.IsDepartmentOnlineApproved)
+        //        {
+        //            var formattedData12 = new
+        //            {
+        //                Message = "This Clearance must be approved by both Department and HR  first approver for final approval.",
+        //                Status = "OK"
+        //            };
+        //            return Json(formattedData12, JsonRequestBehavior.AllowGet);
+        //        }
+        //        else
+        //        {
+        //            var formattedData1 = new
+        //            {
+        //                Message = "This Clearance is already approved Once. you can't approve again.",
+        //                Status = "OK"
+        //            };
+        //            return Json(formattedData1, JsonRequestBehavior.AllowGet);
+
+        //        }
+
+        //    }
+
+        //    var formattedData2 = new
+        //    {
+        //        Message = "Record is not found.",
+        //        Status = "Not-Ok"
+        //    };
+        //    return Json(formattedData2, JsonRequestBehavior.AllowGet);
+        //}
         public JsonResult SendForApprovalRequest(int id)
         {
             var clearance = db.ClearanceRequests.Find(id);
@@ -299,7 +414,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     var formattedData2 = new
                     {
                         Message = "it is sent Once you can't do again.",
-                        Status = "OK"
+                        Status = "Not-Ok"
                     };
                     return Json(formattedData2, JsonRequestBehavior.AllowGet);
                 }
@@ -308,7 +423,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             var formattedData3 = new
             {
                 Message = "Record not found.",
-                Status = "not-OKe"
+                Status = "Not-Ok"
             };
             return Json(formattedData3, JsonRequestBehavior.AllowGet);
 

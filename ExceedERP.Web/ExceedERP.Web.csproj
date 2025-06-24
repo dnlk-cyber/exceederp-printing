@@ -1264,6 +1264,9 @@
     <Compile Include="Areas\HRM\Controllers\Company\BranchAdminController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\BusinessUnitController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\BranchLocationController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Company\ClearanceProviderController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Company\ClearanceProviderDetailsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Company\ClearanceRequestsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\CommitteeMemberController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\CompanyEmailController.cs" />
     <Compile Include="Areas\HRM\Controllers\Company\ComplainResponseController.cs" />
@@ -1527,6 +1530,12 @@
     <Compile Include="Areas\HRM\Controllers\Recruitment\VacancyTrackingController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\AllInternalApplicantsController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\ApplicationFormHRController.cs" />
+    <Compile Include="Areas\HRM\Controllers\SelfCare\ClearanceProviderDepartmentController.cs" />
+    <Compile Include="Areas\HRM\Controllers\SelfCare\ClearanceRequestApproversController.cs" />
+    <Compile Include="Areas\HRM\Controllers\SelfCare\ClearanceRequestDepartmentController.cs" />
+    <Compile Include="Areas\HRM\Controllers\SelfCare\ClearanceRequestDepartmentsController.cs" />
+    <Compile Include="Areas\HRM\Controllers\SelfCare\ClearanceRequestPersonalController.cs" />
+    <Compile Include="Areas\HRM\Controllers\SelfCare\ClearanceRequestStatusController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\CommitmentDepartmentController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\ComplainCCController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\ComplainDescriptionController.cs" />

@@ -74,10 +74,10 @@
               model.Field(p => p.EmployeeId).Editable(false);
               model.Field(p => p.OrgStructureId).Editable(false);
           })
-          .Read(read => read.Action("ClearanceRequestApprovers_Read", "ClearanceRequestApprovers"))
-          .Create(create => create.Action("ClearanceRequestApprovers_Create", "ClearanceRequestApprovers"))
-          .Update(update => update.Action("ClearanceRequestApprovers_Update", "ClearanceRequestApprovers"))
-          .Destroy(destroy => destroy.Action("ClearanceRequestApprovers_Destroy", "ClearanceRequestApprovers"))
+          .Read(read => read.Action("ClearanceRequestApprovers_Read", "ClearanceRequestApprovers").Data("sendForgery"))
+          .Create(create => create.Action("ClearanceRequestApprovers_Create", "ClearanceRequestApprovers").Data("sendForgery"))
+          .Update(update => update.Action("ClearanceRequestApprovers_Update", "ClearanceRequestApprovers").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("ClearanceRequestApprovers_Destroy", "ClearanceRequestApprovers").Data("sendForgery"))
       )/*.ClientDetailTemplateId("template")*/
 )
 
@@ -137,10 +137,10 @@
                             })
 
                             .Model(model => model.Id(p => p.ClearanceRequestStatusId))
-                            .Read(read => read.Action("ClearanceRequestStatus_Read", "ClearanceRequestStatus", new { id = "#=ClearanceRequestId#" }))
-                        //.Create(create => create.Action("ClearanceProviderDetails_Create", "ClearanceProviderDetails", new { cRId = "#=ClearanceRequestId#" }))
-                        //.Update(update => update.Action("ClearanceProviderDetails_Update", "ClearanceProviderDetails"))
-                        //.Destroy(destroy => destroy.Action("ClearanceProviderDetails_Destroy", "ClearanceProviderDetails"))
+                            .Read(read => read.Action("ClearanceRequestStatus_Read", "ClearanceRequestStatus", new { id = "#=ClearanceRequestId#" }).Data("sendForgery"))
+                        //.Create(create => create.Action("ClearanceProviderDetails_Create", "ClearanceProviderDetails", new { cRId = "#=ClearanceRequestId#" }).Data("sendForgery"))
+                        //.Update(update => update.Action("ClearanceProviderDetails_Update", "ClearanceProviderDetails").Data("sendForgery"))
+                        //.Destroy(destroy => destroy.Action("ClearanceProviderDetails_Destroy", "ClearanceProviderDetails").Data("sendForgery"))
                         ).ToClientTemplate())
 
                 </text>);
@@ -218,35 +218,37 @@
         });
     }
 
-        function onDataBound(e) {
-            var rows = e.sender.tbody.children();
-
-            for (var j = 0; j < rows.length; j++) {
-                var row = $(rows[j]);
-                var dataItem = e.sender.dataItem(row);
-                if (dataItem.IsDepartmentOnlineApproved || dataItem.IsOnlineApproved) {
-
-                    row.find(".k-grid-edit").remove();
-                    row.find(".k-grid-delete").remove();
-                    $(".k-grid-top").show();
-
-                }
-                if (dataItem.IsSendForApproval && (!dataItem.IsOnlineApproved || !dataItem.IsOnlineApproved)) {
-
-                    row.find(".k-grid-edit").show();
-                    row.find(".k-grid-delete").remove();
-                    $(".k-grid-top").show();
-
-                }
-                else {
-
-                    row.find(".k-grid-delete").show();
-
-                }
-
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsSendForApproval)
+            {
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
 
             }
+            if (dataItem.IsOnlineApproved)
+            {
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+                row.find(".k-grid-cmd-approve").show();
+                row.find("#approve").show();
+                row.find(".k-grid-top").show();
+
+            }
+            if (dataItem.IsDepartmentOnlineApproved) {
+
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+                row.find(".k-grid-cmd-approve").hide();
+                row.find("#approve").hide();
+                row.find(".k-grid-top").show();
+            }
+            
         }
+    }
 </script>
     
 <style type="text/css">

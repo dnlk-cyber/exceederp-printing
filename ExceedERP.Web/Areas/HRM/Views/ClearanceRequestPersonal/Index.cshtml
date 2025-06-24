@@ -73,10 +73,10 @@
               model.Field(p => p.EmployeeId).Editable(false);
               model.Field(p => p.OrgStructureId).Editable(false);
           })
-          .Read(read => read.Action("ClearanceRequestPersonal_Read", "ClearanceRequestPersonal"))
-          .Create(create => create.Action("ClearanceRequestPersonal_Create", "ClearanceRequestPersonal"))
-          .Update(update => update.Action("ClearanceRequestPersonal_Update", "ClearanceRequestPersonal"))
-          .Destroy(destroy => destroy.Action("ClearanceRequestPersonal_Destroy", "ClearanceRequestPersonal"))
+          .Read(read => read.Action("ClearanceRequestPersonal_Read", "ClearanceRequestPersonal").Data("sendForgery"))
+          .Create(create => create.Action("ClearanceRequestPersonal_Create", "ClearanceRequestPersonal").Data("sendForgery"))
+          .Update(update => update.Action("ClearanceRequestPersonal_Update", "ClearanceRequestPersonal").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("ClearanceRequestPersonal_Destroy", "ClearanceRequestPersonal").Data("sendForgery"))
       ).ClientDetailTemplateId("template")
 )
 
@@ -86,37 +86,38 @@
         .SelectedIndex(0)
         .Items(items =>
         {
-                items.Add().Text("Detail").Content(
-                @<text>
-                     # if (!IsSendForApproval){#
-                          <a onclick='return sendForApproval("#=ClearanceRequestId#")' href=' \#' title="@Resources.HR_Send_For_Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                       
-                        #}#
+              items.Add().Text("Detail").Content(
+              @<text>
+                    # if (!IsSendForApproval){#
+                        <a onclick='return sendForApproval("#=ClearanceRequestId#")' href=' \#' title="@Resources.HR_Send_For_Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                            
+                #}#
                     
               </text>);
               items.Add().Text("Clearance status").Content(
                 @<text>
                 @(Html.Kendo().Grid<ClearanceRequestStatus>()
-                        .Name("Clearancerequestgrid_#=ClearanceRequestId#")
-                        .Columns(columns =>
-                        {
-                            columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").EditorTemplateName("Organization").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-                            columns.Bound(c => c.IsAproved).ClientTemplate(
-                                       "<input type='checkbox' disabled = 'true' value='\\#= IsAproved\\#' " +
-                                       "\\# if (IsAproved) { \\#" +
-                                       "checked='checked'" +
-                                       "\\# } \\#" +
-                                       "/>"
-                                       ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(75);
+                      .Name("Clearancerequestgrid_#=ClearanceRequestId#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").EditorTemplateName("Organization").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                          columns.Bound(c => c.IsDepartmentOnlineApproved).ClientTemplate(
+                                      "<input type='checkbox' disabled = 'true' value='\\#=IsDepartmentOnlineApproved\\#' " +
+                                      "\\# if (IsDepartmentOnlineApproved) { \\#" +
+                                      "checked='checked'" +
+                                      "\\# } \\#" +
+                                      "/>"
+                                      ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(150);
 
-                        })
-                        .ToolBar(toolbar =>
-                        {
-                            if (HttpContext.Current.User.IsInRole("HR_Discipline_User"))
-                            {
-                                // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                            }
-                        })
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          if (HttpContext.Current.User.IsInRole("HR_Discipline_User"))
+                          {
+                              // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          }
+
+                      })
                         .Editable(editable => editable.Mode(GridEditMode.InLine))
                         .Selectable(selectable =>
                         {
@@ -125,7 +126,8 @@
                         })
 
 
-                            .Scrollable(h => h.Height(350))
+
+                        .Scrollable(h => h.Height(350))
                         .DataSource(dataSource => dataSource
                             .Ajax()
                             .Events(events =>
@@ -136,10 +138,10 @@
                             })
 
                             .Model(model => model.Id(p => p.ClearanceRequestStatusId))
-                            .Read(read => read.Action("ClearanceRequestStatus_Read", "ClearanceRequestStatus", new { id = "#=ClearanceRequestId#" }))
-                        //.Create(create => create.Action("ClearanceProviderDetails_Create", "ClearanceProviderDetails", new { cRId = "#=ClearanceRequestId#" }))
-                        //.Update(update => update.Action("ClearanceProviderDetails_Update", "ClearanceProviderDetails"))
-                        //.Destroy(destroy => destroy.Action("ClearanceProviderDetails_Destroy", "ClearanceProviderDetails"))
+                            .Read(read => read.Action("ClearanceRequestStatus_Read", "ClearanceRequestStatus", new { id = "#=ClearanceRequestId#" }).Data("sendForgery"))
+                        //.Create(create => create.Action("ClearanceProviderDetails_Create", "ClearanceProviderDetails", new { cRId = "#=ClearanceRequestId#" }).Data("sendForgery"))
+                        //.Update(update => update.Action("ClearanceProviderDetails_Update", "ClearanceProviderDetails").Data("sendForgery"))
+                        //.Destroy(destroy => destroy.Action("ClearanceProviderDetails_Destroy", "ClearanceProviderDetails").Data("sendForgery"))
                         ).ToClientTemplate())
 
                 </text>);

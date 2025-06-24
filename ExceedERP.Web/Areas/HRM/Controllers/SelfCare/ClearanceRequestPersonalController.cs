@@ -1,10 +1,7 @@
 ﻿﻿using System;
 using System.Collections.Generic;
-
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
  using ExceedERP.Core.Domain;
  using ExceedERP.Core.Domain.Common;
@@ -104,23 +101,42 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             clearanceRequest.EmployeeId = empId;
             clearanceRequest.OrgStructureId = EmployeeHelper.GetEmployeeDepartmentIdByEmpId(empId);
-            var exists = db.ClearanceRequests.Where(x =>x.OrgStructureId == clearanceRequest.OrgStructureId
-                                                        &&x.EmployeeId == clearanceRequest.EmployeeId
-                                                        &&x.LookupId== clearanceRequest.LookupId).Any();
+            var exists = db.ClearanceRequests.Where(x => x.OrgStructureId == clearanceRequest.OrgStructureId
+                                                        && x.EmployeeId == clearanceRequest.EmployeeId
+                                                        && x.LookupId == clearanceRequest.LookupId).Any();
             if (exists)
             {
                 ModelState.AddModelError("exists", "Duplication Request is not allowed!!");
             }
-            var provider = db.ClearanceProvideres.FirstOrDefault(x => x.OrgStructureId == clearanceRequest.OrgStructureId);
-            if(provider !=null)
-            {
-                if (!db.ClearanceProvideres.Any(x => x.ClearanceProviderId == provider.ClearanceProviderId))
-                {
-                    ModelState.AddModelError("exists", "there is no Cleerance Approvers For this work unit Set Clearance providers !!");
 
-                }
+            var exist = db.ClearanceRequests
+                                .Where(x => x.OrgStructureId == clearanceRequest.OrgStructureId
+                                        && x.LookupId == clearanceRequest.LookupId
+                                        && x.EmployeeId == clearanceRequest.EmployeeId).Any();
+            if (exist)
+            {
+                ModelState.AddModelError("exists", "Duplication is not allowed!!");
+                return Json(new[] { clearanceRequest }.ToDataSourceResult(request, ModelState));
 
             }
+            var clearanceProvider = db.ClearanceProviderDetails.FirstOrDefault(x => x.Clearance.OrgStructureId == clearanceRequest.OrgStructureId);
+            if (clearanceProvider == null)
+            {
+                ModelState.AddModelError("exists", "there is no Cleerance Approvers For this work unit Set Clearance providers !!");
+                return Json(new[] { clearanceRequest }.ToDataSourceResult(request, ModelState));
+
+            }
+            
+            if (!db.ClearanceProviderDetails.Any(x => x.Clearance.ClearanceProviderId == clearanceProvider.ClearanceProviderId))
+            {
+                    ModelState.AddModelError("exists", "there is no Cleerance Approvers For this work unit Set Clearance providers !!");
+                    return Json(new[] { clearanceRequest }.ToDataSourceResult(request, ModelState));
+
+
+            }
+            
+           
+         
 
             if (ModelState.IsValid)
             {
@@ -131,8 +147,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 db.ClearanceRequests.Add(entity);
                 db.SaveChanges();
                 clearanceRequest.ClearanceRequestId = entity.ClearanceRequestId;
-
-                var approvers = db.ClearanceProviderDetails.Where(x => x.ClearanceProviderId == provider.ClearanceProviderId).ToList();
+                var approvers = db.ClearanceProviderDetails
+                    .Where(x => x.ClearanceProviderId == clearanceProvider.ClearanceProviderId).ToList();
                 foreach (var approver in approvers)
                 {
                     var entity1 = new ClearanceRequestApprover
@@ -140,6 +156,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                         ClearanceRequestId = clearanceRequest.ClearanceRequestId,
                         ApproverOrgStructureId = approver.OrgStructureId,
                         OrgStructureId = clearanceRequest.OrgStructureId,
+                        EmployeeId = clearanceRequest.EmployeeId,
                         LookupId = clearanceRequest.LookupId,
                         Remark = clearanceRequest.Remark,
                         Status = clearanceRequest.Status,
@@ -158,11 +175,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 }
                 db.SaveChanges();
                 #region operation log
-               
-                   
-                        UserHelper.OperationLog(Request.UserHostAddress, "Clearance Request ", "Success", User.Identity.Name, User.Identity.Name + " Create Clearance Request Named " + entity.ClearanceRequestId,Modules.HRM);
-                
-                
+                UserHelper.OperationLog(Request.UserHostAddress, "Clearance Request ", "Success", User.Identity.Name, User.Identity.Name + " Create Clearance Request Named " + entity.ClearanceRequestId,Modules.HRM);
                 #endregion
             }
 
@@ -171,26 +184,98 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
       
          [AuthorizeRoles(HrmConstants.HRCompanyUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ClearanceRequestPersonal_Update([DataSourceRequest]DataSourceRequest request, ClearanceRequest clearanceProvider)
+        public ActionResult ClearanceRequestPersonal_Update([DataSourceRequest]DataSourceRequest request, ClearanceRequest clearanceRequest)
         {
             ModelState.Clear();
-            var exists = db.ClearanceRequests.Where(x => x.OrgStructureId == clearanceProvider.OrgStructureId 
-                                                        && x.EmployeeId ==clearanceProvider.EmployeeId 
-                                                        && x.LookupId ==clearanceProvider.LookupId 
-                                                        && x.ClearanceRequestId != clearanceProvider.ClearanceRequestId).Any();
+            var exists = db.ClearanceRequests.Where(x => x.OrgStructureId == clearanceRequest.OrgStructureId 
+                                                        && x.EmployeeId == clearanceRequest.EmployeeId 
+                                                        && x.LookupId == clearanceRequest.LookupId 
+                                                        && x.ClearanceRequestId != clearanceRequest.ClearanceRequestId).Any();
             if (exists)
             {
                 ModelState.AddModelError("exists", "The same Record exists!!");
             }
+            var employee = db.Placements.FirstOrDefault(x => x.EmployeeId == clearanceRequest.EmployeeId && x.isCurrent);
+            if (employee != null)
+            {
+                clearanceRequest.OrgStructureId = employee.OrgStructureId;
+            }
+            var exist = db.ClearanceRequests.Where(x => x.OrgStructureId == clearanceRequest.OrgStructureId
+            && x.LookupId == clearanceRequest.LookupId
+            && x.ClearanceRequestId != clearanceRequest.ClearanceRequestId
+            && x.EmployeeId == clearanceRequest.EmployeeId).Any();
+            if (exist)
+            {
+                ModelState.AddModelError("exists", "Duplication is not allowed!!");
+                return Json(new[] { clearanceRequest }.ToDataSourceResult(request, ModelState));
+
+            }
+            if (!db.ClearanceProvideres.Any(x => x.OrgStructureId == clearanceRequest.OrgStructureId))
+            {
+                ModelState.AddModelError("exists", "there is no Cleerance Approvers For this work unit Set Clearance providers !!");
+                return Json(new[] { clearanceRequest }.ToDataSourceResult(request, ModelState));
+
+            }
+            var provider = db.ClearanceProvideres.FirstOrDefault(x => x.OrgStructureId == clearanceRequest.OrgStructureId);
+            if (provider == null)
+            {
+                ModelState.AddModelError("exists", "there is no Cleerance Approvers For this work unit Set Clearance providers !!");
+                return Json(new[] { clearanceRequest }.ToDataSourceResult(request, ModelState));
+
+            }
+            if (!db.ClearanceProvideres.Any(x => x.ClearanceProviderId == provider.ClearanceProviderId))
+            {
+                ModelState.AddModelError("exists", "there is no Cleerance Approvers For this work unit Set Clearance providers !!");
+                return Json(new[] { clearanceRequest }.ToDataSourceResult(request, ModelState));
+
+            }
+            
             if (ModelState.IsValid)
             {
-                clearanceProvider.LastModified = DateTime.Now;
-                clearanceProvider.ModifiedBy = User.Identity.Name;
-                var entity = GetMappedObject(clearanceProvider);
+                clearanceRequest.LastModified = DateTime.Now;
+                clearanceRequest.ModifiedBy = User.Identity.Name;
+                var entity = GetMappedObject(clearanceRequest);
                 db.ClearanceRequests.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
+                var approvers = db.ClearanceProviderDetails.Where(x => x.ClearanceProviderId == provider.ClearanceProviderId).ToList();
+                foreach (var approver in approvers)
+                {
+                    var approverRecord = db.ClearanceRequestApprovers
+                        .Where(x => x.ClearanceRequestId == clearanceRequest.ClearanceRequestId
+                        && x.OrgStructureId == approver.OrgStructureId
+                        && x.ApproverOrgStructureId == clearanceRequest.OrgStructureId).FirstOrDefault();
+                    if (approverRecord == null)
+                    {
+                        var entity1 = new ClearanceRequestApprover
+                        {
+                            ClearanceRequestId = clearanceRequest.ClearanceRequestId,
+                            ApproverOrgStructureId = approver.OrgStructureId,
+                            OrgStructureId = clearanceRequest.OrgStructureId,
+                            LookupId = clearanceRequest.LookupId,
+                            Remark = clearanceRequest.Remark,
+                            Status = clearanceRequest.Status,
 
+                        };
+                        db.ClearanceRequestApprovers.Add(entity1);
+                    }
+                    var statusrRecord = db.ClearanceRequestStatus
+                          .Where(x => x.ClearanceRequestId == clearanceRequest.ClearanceRequestId
+                          && x.OrgStructureId == approver.OrgStructureId).FirstOrDefault();
+                    if (statusrRecord == null)
+                    {
+                        var requestStatus = new ClearanceRequestStatus
+                        {
+                            ClearanceRequestId = clearanceRequest.ClearanceRequestId,
+                            OrgStructureId = approver.OrgStructureId,
+                            IsAproved = false,
+                            IsOnlineApproved = false,
+
+                        };
+                        db.ClearanceRequestStatus.Add(requestStatus);
+                    }
+
+                }
+                db.SaveChanges();
                 #region operation log
 
                 var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -201,7 +286,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 #endregion
             }
 
-            return Json(new[] { clearanceProvider }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { clearanceRequest }.ToDataSourceResult(request, ModelState));
         }
      
         [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRAdmin)]
@@ -267,42 +352,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         public JsonResult SendForApprovalRequest(int id)
         {
             var clearance = db.ClearanceRequests.Find(id);
-            if (clearance != null )
+            if (clearance == null)
             {
-                if (!clearance.IsSendForApproval)
-                {
-
-                
-                    clearance.IsSendForApproval = true;
-                    clearance.SendForApprovalTime = DateTime.Now;
-                    clearance.SendForApprovalBy = User.Identity.Name;
-                    db.Entry(clearance).State = EntityState.Modified;
-                    db.SaveChanges();
-                    var formattedData1 = new
-                    {
-                        Message = "You have Sent successfully for  approval.",
-                        Status = "OK"
-                    };
-                    return Json(formattedData1, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    var formattedData2 = new
-                    {
-                        Message = "it is sent Once you can't do again.",
-                        Status = "OK"
-                    };
-                    return Json(formattedData2, JsonRequestBehavior.AllowGet);
-                }
-
+                return Json(new { Message = "Record not found.", Status = "not-OK" }, JsonRequestBehavior.AllowGet);
             }
-            var formattedData3 = new
-            {
-                Message = "Record not found.",
-                Status = "not-OKe"
-            };
-            return Json(formattedData3, JsonRequestBehavior.AllowGet);
 
+            if (clearance.IsSendForApproval)
+            {
+                return Json(new { Message = "Already sent for approval. You cannot send it again.", Status = "OK" }, JsonRequestBehavior.AllowGet);
+            }
+
+            clearance.IsSendForApproval = true;
+            clearance.SendForApprovalTime = DateTime.Now;
+            clearance.SendForApprovalBy = User.Identity.Name;
+            db.Entry(clearance).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return Json(new { Message = "Request sent successfully for approval.", Status = "OK" }, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)

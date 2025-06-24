@@ -9,30 +9,25 @@
       .Name("grid")
       .Columns(columns =>
       {
+          columns.Bound(c => c.ClearanceProviderId).Title("#").Width(100);
           columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").EditorTemplateName("Organization").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
           columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["clearanceType"], "LookupId", "Description").EditorTemplateName("ClearanceType").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
           columns.Bound(c => c.Name).EditorTemplateName("DepartmentAutoComplate").Width(170);
           columns.Bound(c => c.Remark).Width(100);
           columns.Command(command =>
           {
-              if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-              {
-                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-              }
-              if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-              {
-                  command.Custom("cmd-approve").Click("hrApproval").Text("Approve").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-success", @title = "Approve  ", @id = "approve" });
 
-                  command.Destroy().Text(Resources.ActionButton_Cancel);
-              }
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Custom("cmd-approve").Click("hrApproval").Text("Approve").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-success", @title = "Approve  ", @id = "approve" });
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+
           }).Width(250);
       })
       .ToolBar(toolbar =>
       {
-          if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-          {
-               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-          }
+
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .Selectable(selectable =>
@@ -67,11 +62,15 @@
               events.RequestStart("onRequestStart(\"grid\")");
               events.RequestEnd("onRequestEnd(\"grid\")");
           })
-          .Model(model => model.Id(p => p.ClearanceProviderId))
-          .Read(read => read.Action("ClearanceProvideres_Read", "ClearanceProvider"))
-          .Create(create => create.Action("ClearanceProvideres_Create", "ClearanceProvider"))
-          .Update(update => update.Action("ClearanceProvideres_Update", "ClearanceProvider"))
-          .Destroy(destroy => destroy.Action("ClearanceProvideres_Destroy", "ClearanceProvider"))
+        .Model(model =>
+        {
+            model.Id(p => p.ClearanceProviderId);
+            model.Field(p => p.ClearanceProviderId).Editable(false);
+        })
+        .Read(read => read.Action("ClearanceProvideres_Read", "ClearanceProvider").Data("sendForgery"))
+          .Create(create => create.Action("ClearanceProvideres_Create", "ClearanceProvider").Data("sendForgery"))
+          .Update(update => update.Action("ClearanceProvideres_Update", "ClearanceProvider").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("ClearanceProvideres_Destroy", "ClearanceProvider").Data("sendForgery"))
       ).ClientDetailTemplateId("detailtemplate")
 
 )
@@ -104,10 +103,10 @@
                         })
                         .ToolBar(toolbar =>
                         {
-                            if (HttpContext.Current.User.IsInRole("HR_Discipline_User"))
-                            {
-                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                            }
+
+
+                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
                         })
                         .Editable(editable => editable.Mode(GridEditMode.InLine))
                         .Selectable(selectable =>
@@ -128,10 +127,10 @@
                             //})
 
                             .Model(model => model.Id(p => p.ClearanceProviderId))
-                            .Read(read => read.Action("ClearanceProviderDetails_Read", "ClearanceProviderDetails", new { cPId = "#=ClearanceProviderId#" }))
-                            .Create(create => create.Action("ClearanceProviderDetails_Create", "ClearanceProviderDetails", new { cPId = "#=ClearanceProviderId#" }))
-                            .Update(update => update.Action("ClearanceProviderDetails_Update", "ClearanceProviderDetails"))
-                            .Destroy(destroy => destroy.Action("ClearanceProviderDetails_Destroy", "ClearanceProviderDetails"))
+                            .Read(read => read.Action("ClearanceProviderDetails_Read", "ClearanceProviderDetails", new { cPId = "#=ClearanceProviderId#" }).Data("sendForgery"))
+                            .Create(create => create.Action("ClearanceProviderDetails_Create", "ClearanceProviderDetails", new { cPId = "#=ClearanceProviderId#" }).Data("sendForgery"))
+                            .Update(update => update.Action("ClearanceProviderDetails_Update", "ClearanceProviderDetails").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("ClearanceProviderDetails_Destroy", "ClearanceProviderDetails").Data("sendForgery"))
                         ).ToClientTemplate()
                         )
 
@@ -186,10 +185,10 @@
 
                     })
                     .Model(model => model.Id(p => p.ClearanceProviderDetailId))
-                    .Read(read => read.Action("ClearanceProviderDetails_Read", "ClearanceProviderDetails", new { cPId = "#=ClearanceProviderId#" }))
-                    .Create(create => create.Action("ClearanceProviderDetails_Create", "ClearanceProviderDetails", new { cPId = "#=ClearanceProviderId#" }))
-                    .Update(update => update.Action("ClearanceProviderDetails_Update", "ClearanceProviderDetails"))
-                    .Destroy(destroy => destroy.Action("ClearanceProviderDetails_Destroy", "ClearanceProviderDetails"))
+                    .Read(read => read.Action("ClearanceProviderDetails_Read", "ClearanceProviderDetails", new { cPId = "#=ClearanceProviderId#" }).Data("sendForgery"))
+                    .Create(create => create.Action("ClearanceProviderDetails_Create", "ClearanceProviderDetails", new { cPId = "#=ClearanceProviderId#" }).Data("sendForgery"))
+                    .Update(update => update.Action("ClearanceProviderDetails_Update", "ClearanceProviderDetails").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("ClearanceProviderDetails_Destroy", "ClearanceProviderDetails").Data("sendForgery"))
                     ).ToClientTemplate()
                     )
             </text>);

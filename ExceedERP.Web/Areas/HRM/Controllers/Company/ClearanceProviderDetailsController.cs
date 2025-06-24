@@ -1,17 +1,12 @@
 ﻿﻿using System;
 using System.Collections.Generic;
-
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
- using ExceedERP.Core.Domain;
  using ExceedERP.Core.Domain.Common;
 ﻿using ExceedERP.Core.Domain.Common.HRM;
 ﻿using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.Company;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
@@ -21,7 +16,7 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
-    [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
+    [Authorize]
     public class ClearanceProviderDetailsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -52,8 +47,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
             }), JsonRequestBehavior.AllowGet);
         }
-
-        [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
         public ActionResult ClearanceProviderDetails_Read([DataSourceRequest]DataSourceRequest request, int cPId)
         {
             IQueryable<ClearanceProviderDetail> clearanceprovideres = db.ClearanceProviderDetails.Where(x=>x.ClearanceProviderId==cPId);
@@ -71,7 +64,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
             return Json(result);
         }
-        [AuthorizeRoles(HrmConstants.HRCompanyUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ClearanceProviderDetails_Create([DataSourceRequest]DataSourceRequest request, ClearanceProviderDetail clearanceProvider,int cPId)
         {
@@ -104,7 +96,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             return Json(new[] { clearanceProvider }.ToDataSourceResult(request, ModelState));
         }
       
-         [AuthorizeRoles(HrmConstants.HRCompanyUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ClearanceProviderDetails_Update([DataSourceRequest]DataSourceRequest request, ClearanceProviderDetail clearanceProvider)
         {
@@ -131,7 +122,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             return Json(new[] { clearanceProvider }.ToDataSourceResult(request, ModelState));
         }
      
-        [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ClearanceProviderDetails_Destroy([DataSourceRequest]DataSourceRequest request, ClearanceProviderDetail clearanceProvider)
         {

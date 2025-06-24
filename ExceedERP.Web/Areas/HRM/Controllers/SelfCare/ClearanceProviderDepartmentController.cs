@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
  using ExceedERP.Core.Domain;
  using ExceedERP.Core.Domain.Common;
@@ -59,7 +57,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }), JsonRequestBehavior.AllowGet);
         }
 
-        [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
         public ActionResult ClearanceProvideres_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<int> userworkunitIds = UserInformationHelper.GetUserHeadWorkUnitAndChildWorkUnits(User.Identity.Name);
@@ -103,7 +100,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             return Json(result);
         }
-        [AuthorizeRoles(HrmConstants.HRCompanyUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ClearanceProvideres_Create([DataSourceRequest]DataSourceRequest request, ClearanceProvider clearanceProvider)
         {
@@ -139,7 +135,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             return Json(new[] { clearanceProvider }.ToDataSourceResult(request, ModelState));
         }
       
-         [AuthorizeRoles(HrmConstants.HRCompanyUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ClearanceProvideres_Update([DataSourceRequest]DataSourceRequest request, ClearanceProvider clearanceProvider)
         {
@@ -168,7 +163,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             return Json(new[] { clearanceProvider }.ToDataSourceResult(request, ModelState));
         }
      
-        [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ClearanceProvideres_Destroy([DataSourceRequest]DataSourceRequest request, ClearanceProvider clearanceProvider)
         {

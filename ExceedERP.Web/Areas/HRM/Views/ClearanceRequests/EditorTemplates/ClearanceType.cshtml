@@ -8,7 +8,7 @@
       .Filter("Contains")
       .DataSource(dataSource =>
       {//GetJobTitleSelected
-          dataSource.Read(read => read.Action("GetClearanceType", "HRMDataProvider", new { area = "HRM" }))
+          dataSource.Read(read => read.Action("GetClearanceType", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
               .ServerFiltering(false);
       })
                     .ValuePrimitive( true)

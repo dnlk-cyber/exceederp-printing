@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
  using ExceedERP.Core.Domain;
  using ExceedERP.Core.Domain.Common;
@@ -59,10 +57,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             }), JsonRequestBehavior.AllowGet);
         }
 
-        [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
         public ActionResult ClearanceProvideres_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<ClearanceProvider> clearanceprovideres = db.ClearanceProvideres.Where(x=>x.IsDepartmentOnlineApproved);
+            IQueryable<ClearanceProvider> clearanceprovideres = db.ClearanceProvideres.Where(x=>x.IsDepartmentOnlineApproved||!x.IsDepartmentOnlineApproved);
             DataSourceResult result = clearanceprovideres.ToDataSourceResult(request, clearanceProvider => new {
                 ClearanceProviderId = clearanceProvider.ClearanceProviderId,
                 OrgStructureId = clearanceProvider.OrgStructureId,
@@ -101,7 +98,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
             return Json(result);
         }
-        [AuthorizeRoles(HrmConstants.HRCompanyUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ClearanceProvideres_Create([DataSourceRequest]DataSourceRequest request, ClearanceProvider clearanceProvider)
         {
@@ -141,7 +137,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             return Json(new[] { clearanceProvider }.ToDataSourceResult(request, ModelState));
         }
       
-         [AuthorizeRoles(HrmConstants.HRCompanyUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ClearanceProvideres_Update([DataSourceRequest]DataSourceRequest request, ClearanceProvider clearanceProvider)
         {
@@ -176,7 +171,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             return Json(new[] { clearanceProvider }.ToDataSourceResult(request, ModelState));
         }
      
-        [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ClearanceProvideres_Destroy([DataSourceRequest]DataSourceRequest request, ClearanceProvider clearanceProvider)
         {
@@ -237,50 +231,58 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         }
         public ActionResult ClearanceApproval(int id)
         {
-            var clearanceproviderDetails = db.ClearanceProviderDetails.Where(x => x.ClearanceProviderId == id);
             var clearance = db.ClearanceProvideres.Find(id);
-            if (clearance != null&& clearanceproviderDetails.Any())
-            {
-                if (clearance.IsSendForApproval 
-                    && clearance.IsDepartmentOnlineApproved 
-                    && !clearance.IsOnlineApproved)
-                {
-                    clearance.IsOnlineApproved = true;
-                    clearance.OnlineApprovedTime = DateTime.Now;
-                    clearance.OnlineApprovedBy = User.Identity.Name;
-                    db.Entry(clearance).State = EntityState.Modified;
-                    db.SaveChanges();
-                    var formattedData = new
-                    {
-                        Message = "You successfully approved this Clearance.",
-                        Status = "OK"
-                    };
-                    return Json(formattedData, JsonRequestBehavior.AllowGet);
-                }
 
-                var formattedData1 = new
+            if (clearance == null)
+            {
+                return Json(new
                 {
-                    Message = "This Clearance is already approved Once. you can't approve again.",
-                    Status = "OK"
-                };
-                return Json(formattedData1, JsonRequestBehavior.AllowGet);
+                    Message = "Record is not found.",
+                    Status = "FAIL"
+                }, JsonRequestBehavior.AllowGet);
+            }
 
-            }
-            else if(clearance != null && !clearanceproviderDetails.Any())
+            var clearanceDetailsExist = db.ClearanceProviderDetails.Any(x => x.ClearanceProviderId == id);
+
+            if (!clearanceDetailsExist)
             {
-                var formattedData13 = new
+                return Json(new
                 {
-                    Message = "you can't approve add Clearance Approver in detail First.",
+                    Message = "You can't approve. Please add clearance approver details first.",
                     Status = "OK"
-                };
-                return Json(formattedData13, JsonRequestBehavior.AllowGet);
+                }, JsonRequestBehavior.AllowGet);
             }
-            var formattedData2 = new
+
+            if (!clearance.IsSendForApproval || !clearance.IsDepartmentOnlineApproved)
             {
-                Message = "Record is not Found.",
-                Status = "FAIL"
-            };
-            return Json(formattedData2, JsonRequestBehavior.AllowGet);
+                return Json(new
+                {
+                    Message = "Clearance is not ready for final approval.",
+                    Status = "Not-Ok"
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (clearance.IsOnlineApproved)
+            {
+                return Json(new
+                {
+                    Message = "This clearance is already approved. You can't approve again.",
+                    Status = "OK"
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            // Proceed with approval
+            clearance.IsOnlineApproved = true;
+            clearance.OnlineApprovedTime = DateTime.Now;
+            clearance.OnlineApprovedBy = User.Identity.Name;
+            db.Entry(clearance).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return Json(new
+            {
+                Message = "You successfully approved this clearance.",
+                Status = "OK"
+            }, JsonRequestBehavior.AllowGet);
         }
 
         protected override void Dispose(bool disposing)

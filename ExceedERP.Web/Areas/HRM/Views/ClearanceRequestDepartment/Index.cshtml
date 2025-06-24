@@ -68,10 +68,10 @@
                 })
 
           .Model(model => model.Id(p => p.ClearanceRequestId))
-          .Read(read => read.Action("ClearanceRequestDepartment_Read", "ClearanceRequestDepartment"))
-          .Create(create => create.Action("ClearanceRequestDepartment_Create", "ClearanceRequestDepartment"))
-          .Update(update => update.Action("ClearanceRequestDepartment_Update", "ClearanceRequestDepartment"))
-          .Destroy(destroy => destroy.Action("ClearanceRequestDepartment_Destroy", "ClearanceRequestDepartment"))
+          .Read(read => read.Action("ClearanceRequestDepartment_Read", "ClearanceRequestDepartment").Data("sendForgery"))
+          .Create(create => create.Action("ClearanceRequestDepartment_Create", "ClearanceRequestDepartment").Data("sendForgery"))
+          .Update(update => update.Action("ClearanceRequestDepartment_Update", "ClearanceRequestDepartment").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("ClearanceRequestDepartment_Destroy", "ClearanceRequestDepartment").Data("sendForgery"))
       ).ClientDetailTemplateId("template")
 )
 

@@ -4,7 +4,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>Clearance Request</legend>
+<legend>Clearance Request </legend>
 @(Html.Kendo().Grid<ClearanceRequest>()
       .Name("grid")
       .Columns(columns =>
@@ -12,6 +12,18 @@
           columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").EditorTemplateName("Organization").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
           columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["clearanceType"], "LookupId", "Description").EditorTemplateName("ClearanceType").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ActiveEmployeeDepart").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.Bound(c => c.IsDepartmentOnlineApproved).ClientTemplate(
+                "<input type='checkbox' disabled = 'true' value='#= IsDepartmentOnlineApproved#' " +
+                "# if (IsDepartmentOnlineApproved) { #" +
+                "checked='checked'" +
+                "# } #" +
+                "/>").Title("Department Online Approved").Width(150);
+          columns.Bound(c => c.IsOnlineApproved).ClientTemplate(
+                "<input type='checkbox' disabled = 'true' value='#= IsOnlineApproved#' " +
+                "# if (IsOnlineApproved) { #" +
+                "checked='checked'" +
+                "# } #" +
+                "/>").Title("Online Approved").Width(150);
           columns.Bound(c => c.Remark).Width(120);
           columns.Command(command =>
           {
@@ -27,7 +39,8 @@
               }
           }).Width(300);
       })
-      .ToolBar(toolbar => {
+      .ToolBar(toolbar =>
+      {
           if (HttpContext.Current.User.IsInRole("HR_Company_User"))
           {
               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
@@ -42,9 +55,10 @@
 
       })
       .Events(ev =>
-          {
-              ev.DataBound("onDataBound");
-          })
+      {
+          ev.DataBound("onDataBound");
+          ev.DetailExpand("onDetailExpand");
+      })
       .Scrollable(h => h.Height(500))
       .Sortable(sortable =>
       {
@@ -67,11 +81,14 @@
                     events.RequestEnd("onRequestEnd(\"grid\")");
                 })
 
-          .Model(model => model.Id(p => p.ClearanceRequestId))
-          .Read(read => read.Action("ClearanceRequestDepartments_Read", "ClearanceRequestDepartments"))
-          .Create(create => create.Action("ClearanceRequestDepartments_Create", "ClearanceRequestDepartments"))
-          .Update(update => update.Action("ClearanceRequestDepartments_Update", "ClearanceRequestDepartments"))
-          .Destroy(destroy => destroy.Action("ClearanceRequestDepartments_Destroy", "ClearanceRequestDepartments"))
+          .Model(model => {
+              model.Id(p => p.ClearanceRequestId);
+              model.Field(p => p.OrgStructureId).Editable(false);
+          })
+          .Read(read => read.Action("ClearanceRequestDepartments_Read", "ClearanceRequestDepartments").Data("sendForgery"))
+          .Create(create => create.Action("ClearanceRequestDepartments_Create", "ClearanceRequestDepartments").Data("sendForgery"))
+          .Update(update => update.Action("ClearanceRequestDepartments_Update", "ClearanceRequestDepartments").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("ClearanceRequestDepartments_Destroy", "ClearanceRequestDepartments").Data("sendForgery"))
       ).ClientDetailTemplateId("template")
 )
 
@@ -83,7 +100,7 @@
                 {
                     items.Add().Text("Detail").Content(
                     @<text>
-                        # if (!IsDepartmentSendForApproval){#
+                        # if (!IsSendForApproval){#
                         <a onclick='return sendForApproval("#=ClearanceRequestId#")' href=' \#' title="@Resources.HR_Send_For_Approval"><i class="fa fa-share-square fa-2x"></i></a>
 
                         #}#
@@ -96,13 +113,22 @@
                         .Columns(columns =>
                         {
                             columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").EditorTemplateName("Organization").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-                            columns.Bound(c => c.IsAproved).ClientTemplate(
-                                       "<input type='checkbox' disabled = 'true' value='\\#= IsAproved\\#' " +
-                                       "\\# if (IsAproved) { \\#" +
+                            columns.Bound(c => c.IsDepartmentOnlineApproved).ClientTemplate(
+                                       "<input type='checkbox' disabled = 'true' value='\\#=IsDepartmentOnlineApproved\\#' " +
+                                       "\\# if (IsDepartmentOnlineApproved) { \\#" +
                                        "checked='checked'" +
                                        "\\# } \\#" +
                                        "/>"
-                                       ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(75);
+                                       ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(150);
+                            columns.Command(command =>
+                            {
+
+
+
+                                command.Custom("cmd-approve").Click("departmentDetailApproval").Text("Approve").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-success", @title = "Approve  ", @id = "dapprove" });
+
+
+                            }).Width(300);
 
                         })
                         .ToolBar(toolbar =>
@@ -118,6 +144,11 @@
                             selectable.Mode(GridSelectionMode.Single);
                             selectable.Type(GridSelectionType.Row);
                         })
+                         .Events(ev =>
+                         {
+                             ev.DataBound("onDataDtailBound");
+
+                         })
                         .Scrollable(h => h.Height(350))
                         .DataSource(dataSource => dataSource
                             .Ajax()
@@ -128,10 +159,10 @@
                                 events.RequestEnd("onRequestEnd(\"Clearancerequestgrid_#=ClearanceRequestId#\")");
                             })
                             .Model(model => model.Id(p => p.ClearanceRequestStatusId))
-                            .Read(read => read.Action("ClearanceRequestStatus_Read", "ClearanceRequestStatus", new { id = "#=ClearanceRequestId#" }))
-                            //.Create(create => create.Action("ClearanceProviderDetails_Create", "ClearanceProviderDetails", new { cRId = "#=ClearanceRequestId#" }))
-                            //.Update(update => update.Action("ClearanceProviderDetails_Update", "ClearanceProviderDetails"))
-                            //.Destroy(destroy => destroy.Action("ClearanceProviderDetails_Destroy", "ClearanceProviderDetails"))
+                            .Read(read => read.Action("ClearanceRequestStatus_Read", "ClearanceRequestStatus", new { id = "#=ClearanceRequestId#" }).Data("sendForgery"))
+                            //.Create(create => create.Action("ClearanceProviderDetails_Create", "ClearanceProviderDetails", new { cRId = "#=ClearanceRequestId#" }).Data("sendForgery"))
+                            //.Update(update => update.Action("ClearanceProviderDetails_Update", "ClearanceProviderDetails").Data("sendForgery"))
+                            //.Destroy(destroy => destroy.Action("ClearanceProviderDetails_Destroy", "ClearanceProviderDetails").Data("sendForgery"))
                             ).ToClientTemplate())
                 </text>);
 
@@ -193,50 +224,108 @@
         }
 
     }*@
-    function departmentApproval(e) {
-    // Get the closest row to the event target
-    var row = $(e.target).closest("tr");
+    var masterId = 0;
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.ClearanceRequestId;
+    }
+
+    function departmentApproval(e)
+    {
+        // Get the closest row to the event target
+        var row = $(e.target).closest("tr");
     
-    // Get the Kendo Grid instance
-        var grid = $("#grid").data("kendoGrid");
+        // Get the Kendo Grid instance
+            var grid = $("#grid").data("kendoGrid");
     
-    // Get the data item for the selected row
-    var dataItem = grid.dataItem(row);
+        // Get the data item for the selected row
+        var dataItem = grid.dataItem(row);
     
-    // Extract the ClearanceRequestId from the data item
-    var id = dataItem.ClearanceRequestId;
+        // Extract the ClearanceRequestId from the data item
+        var id = dataItem.ClearanceRequestId;
     
-    // Check if the id is valid (non-empty and defined)
-    if (id) {
-        // Show loading image during the request
-        $('#loading-image').show();
+        // Check if the id is valid (non-empty and defined)
+        if (id) {
+            // Show loading image during the request
+            $('#loading-image').show();
         
-        // Make an AJAX POST request to the server for approval
-        $.ajax({
-            url: '@Url.Action("DepartmentApproval", "ClearanceRequestDepartments")', // Server-side action
-            data: { id: id }, // Pass the id to the server
-            type: 'POST',
-            cache: false,
+            // Make an AJAX POST request to the server for approval
+            $.ajax({
+                url: '@Url.Action("DepartmentApproval", "ClearanceRequestDepartments")', // Server-side action
+                data: { id: id }, // Pass the id to the server
+                type: 'POST',
+                cache: false,
             
-            // On success, show the result message, hide loading, and refresh the grid
-            success: function (result) {
-                alert(result.Message); // Show the success message from the server
-                $('#loading-image').hide(); // Hide the loading image
-                grid.dataSource.read(); // Refresh the grid data to reflect changes
-            },
+                // On success, show the result message, hide loading, and refresh the grid
+                success: function (result) {
+                    alert(result.Message); // Show the success message from the server
+                    $('#loading-image').hide(); // Hide the loading image
+                    grid.dataSource.read(); // Refresh the grid data to reflect changes
+                },
             
-            // Handle any errors during the AJAX request
-            error: function (xhr, status, error) {
-                console.log("Error: " + error); // Log the error for debugging
-                alert("An error occurred while processing the request. Please try again.");
-                $('#loading-image').hide(); // Ensure the loading image is hidden on error
-            }
-        });
+                // Handle any errors during the AJAX request
+                error: function (xhr, status, error) {
+                    console.log("Error: " + error); // Log the error for debugging
+                    alert("An error occurred while processing the request. Please try again.");
+                    $('#loading-image').hide(); // Ensure the loading image is hidden on error
+                }
+            });
+
+        }
+        else {
+            // If the id is invalid, show an alert
+            alert("Clearance Request ID is missing.");
+        }
+
     }
-    else {
-        // If the id is invalid, show an alert
-        alert("Clearance Request ID is missing.");
-    }
+    function departmentDetailApproval(e)
+    {
+        // Get the closest row to the event target
+        var row = $(e.target).closest("tr");
+    
+        // Get the Kendo Grid instance
+        var grid = $("#grid" + masterId).data("kendoGrid");
+    
+        // Get the data item for the selected row
+        var dataItem = grid.dataItem(row);
+    
+        // Extract the ClearanceRequestId from the data item
+        var id = dataItem.ClearanceRequestStatusId;
+    
+        // Check if the id is valid (non-empty and defined)
+        if (id) {
+            // Show loading image during the request
+            $('#loading-image').show();
+        
+            // Make an AJAX POST request to the server for approval
+            $.ajax({
+                url: '@Url.Action("DepartmentDetilApproval", "ClearanceRequestStatus")', // Server-side action
+                data: { id: id }, // Pass the id to the server
+                type: 'POST',
+                cache: false,
+            
+                // On success, show the result message, hide loading, and refresh the grid
+                success: function (result) {
+                    alert(result.Message); // Show the success message from the server
+                    $('#loading-image').hide(); // Hide the loading image
+                    grid.dataSource.read(); // Refresh the grid data to reflect changes
+                },
+            
+                // Handle any errors during the AJAX request
+                error: function (xhr, status, error) {
+                    console.log("Error: " + error); // Log the error for debugging
+                    alert("An error occurred while processing the request. Please try again.");
+                    $('#loading-image').hide(); // Ensure the loading image is hidden on error
+                }
+            });
+
+        }
+        else {
+            // If the id is invalid, show an alert
+            alert("Clearance Request ID is missing.");
+        }
 
     }
     @*function departmentApproval(e)
@@ -272,40 +361,103 @@
         }
 
     }*@
+    function onDetailExpand(e)
+    {
+        var masterRow = e.masterRow;
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.EmployeeAccidentCreditServiceId;
+    }
 
-    function onDataBound(e) {
+    function onDataBound(e)
+    {
         var rows = e.sender.tbody.children();
-
         for (var j = 0; j < rows.length; j++) {
             var row = $(rows[j]);
             var dataItem = e.sender.dataItem(row);
-            if (dataItem.IsDepartmentOnlineApproved || dataItem.IsOnlineApproved) {
+           
+            if (!dataItem.IsSendForApproval) {
+
+                row.find(".k-grid-cmd-approve").remove();
+                row.find("#approve").remove();
+
+            }
+            if (dataItem.IsSendForApproval) {
 
                 row.find(".k-grid-edit").remove();
                 row.find(".k-grid-delete").remove();
-                row.find(".k-grid-cmd-approve").remove();
-                row.find("#approve").hide();
+                //row.find(".k-grid-cmd-approve").remove();
+                //row.find("#approve").remove();
                 row.find(".k-grid-top").show();
 
             }
-            if (dataItem.IsSendForApproval && (!dataItem.IsDepartmentOnlineApproved || !dataItem.IsOnlineApproved)) {
+            if (dataItem.IsOnlineApproved) {
 
-                row.find(".k-grid-edit").show();
+                row.find(".k-grid-edit").remove();
                 row.find(".k-grid-delete").remove();
                 row.find(".k-grid-cmd-approve").show();
                 row.find("#approve").show();
                 row.find(".k-grid-top").show();
 
             }
-            else {
+            if (dataItem.IsDepartmentOnlineApproved)
+            {
 
-                row.find(".k-grid-delete").show();
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+                row.find(".k-grid-cmd-approve").hide();
+                row.find("#approve").hide();
+                row.find(".k-grid-top").hide();
+            }
+            if (!dataItem.IsDepartmentOnlineApproved)
+            {
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+                row.find(".k-grid-cmd-approve").show();
+                row.find("#approve").show();
+                row.find(".k-grid-top").show();
 
             }
-
-
+           
         }
     }
+    function onDataDtailBound(e)
+    {
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsFinalApproval) {
+
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+                row.find(".k-grid-cmd-approve").show();
+                row.find("#dapprove").show();
+                row.find(".k-grid-top").show();
+
+            }
+            if (dataItem.IsDepartmentOnlineApproved)
+            {
+
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+                row.find(".k-grid-cmd-approve").hide();
+                row.find("#approve").hide();
+                row.find(".k-grid-top").hide();
+            }
+            if (!dataItem.IsFinalApproval)
+            {
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+                row.find(".k-grid-cmd-approve").hide();
+                row.find("#approve").hide();
+                row.find(".k-grid-top").show();
+
+            }
+           
+        }
+    }
+
     function filterEmployee() {
         return {
             text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),

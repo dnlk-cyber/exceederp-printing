@@ -2648,6 +2648,10 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<SeverancePayableDetail> SeverancePayableDetails { get; set; }
         public System.Data.Entity.DbSet<SeverancePayable> SeverancePayables { get; set; }
         #region Company
+        public System.Data.Entity.DbSet<ClearanceProviderDetail> ClearanceProviderDetails { get; set; }
+        public System.Data.Entity.DbSet<ClearanceRequest> ClearanceRequests { get; set; }
+        public System.Data.Entity.DbSet<ClearanceRequestApprover> ClearanceRequestApprovers { get; set; }
+        public System.Data.Entity.DbSet<ClearanceRequestStatus> ClearanceRequestStatus { get; set; }
         public System.Data.Entity.DbSet<SalarySetting> SalarySettings { get; set; }
         public System.Data.Entity.DbSet<WaterMark> WaterMarks { get; set; }
         public System.Data.Entity.DbSet<ManPowerPlanningRequest> ManPowerPlanningRequests { get; set; }
