@@ -16,7 +16,7 @@
                           columns.ForeignKey(c => c.SupportGroupId, (System.Collections.IEnumerable)ViewData["Group"], "SupportGroup_HelpDeskId", "Name").Title("Group").Width(180);
 
                           columns.Bound(c => c.Status)/*.HtmlAttributes(new { style = "background-color:#:StatusColor#;" })*/.Width(100);
-                          columns.Bound(c => c.Rate).Width(120);
+                          columns.Bound(c => c.RequesterIPAddress).Width(120);
 
                           //  columns.Bound(c => c.AgeOfTicket).Width(150);
                           columns.Command(command =>

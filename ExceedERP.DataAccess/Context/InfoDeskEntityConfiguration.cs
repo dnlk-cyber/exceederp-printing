@@ -1,4 +1,5 @@
 using ExceedERP.Core.Domain.InfoDesk;
+using ExceedERP.Core.Domain.InfoDesk.ChangeManagement;
 using ExceedERP.Core.Domain.InfoDesk.License;
 using ExceedERP.Core.Domain.InfoDesk.Support;
 using System;
@@ -157,7 +158,78 @@ namespace ExceedERP.DataAccess.Context
 
             }
         }    
+        public class MaterialItemsEntityTypeConfiguration : EntityTypeConfiguration<MaterialItems>
+        {
 
+            public MaterialItemsEntityTypeConfiguration()
+            {
+                this.ToTable("MaterialItems", "InfoDesk");
+                this.HasKey<int>(t => t.MaterialItemsId);
+
+            }
+        }    
+        public class MaterialsUsedEntityTypeConfiguration : EntityTypeConfiguration<MaterialsUsed>
+        {
+
+            public MaterialsUsedEntityTypeConfiguration()
+            {
+                this.ToTable("MaterialsUseds", "InfoDesk");
+                this.HasKey<int>(t => t.MaterialsUsedId);
+
+            }
+        }    
+        public class ChatSessionEntityTypeConfiguration : EntityTypeConfiguration<ChatSession>
+        {
+
+            public ChatSessionEntityTypeConfiguration()
+            {
+                this.ToTable("ChatSessions", "InfoDesk");
+                this.HasKey<int>(t => t.ChatSessionId);
+
+            }
+        }
+        public class MessageEntityTypeConfiguration : EntityTypeConfiguration<Message>
+        {
+
+            public MessageEntityTypeConfiguration()
+            {
+                this.ToTable("Messages", "InfoDesk");
+                this.HasKey<int>(t => t.MessageId);
+
+            }
+        }
+        #region change mgt
+        public class ChangeRequestEntityTypeConfiguration : EntityTypeConfiguration<ChangeRequest>
+        {
+
+            public ChangeRequestEntityTypeConfiguration()
+            {
+                this.ToTable("ChangeRequests", "InfoDesk");
+                this.HasKey<int>(t => t.ChangeRequestId);
+
+            }
+        }
+        public class ChangeApprovalEntityTypeConfiguration : EntityTypeConfiguration<ChangeApproval>
+        {
+
+            public ChangeApprovalEntityTypeConfiguration()
+            {
+                this.ToTable("ChangeApprovals", "InfoDesk");
+                this.HasKey<int>(t => t.ChangeApprovalId);
+
+            }
+        }
+        public class ChangeTaskEntityTypeConfiguration : EntityTypeConfiguration<ChangeTask>
+        {
+
+            public ChangeTaskEntityTypeConfiguration()
+            {
+                this.ToTable("ChangeTasks", "InfoDesk");
+                this.HasKey<int>(t => t.ChangeTaskId);
+
+            }
+        }
+        #endregion
 
     }
 }

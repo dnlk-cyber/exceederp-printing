@@ -19,9 +19,9 @@
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.LogisticPlanDetailId))
-          .Read(read => read.Action("LogisticPlanDetails_Read", "LogisticPlanDetail"))
-          .Create(create => create.Action("LogisticPlanDetails_Create", "LogisticPlanDetail"))
-          .Update(update => update.Action("LogisticPlanDetails_Update", "LogisticPlanDetail"))
-          .Destroy(destroy => destroy.Action("LogisticPlanDetails_Destroy", "LogisticPlanDetail"))
+          .Read(read => read.Action("LogisticPlanDetails_Read", "LogisticPlanDetail").Data("sendForgery"))
+          .Create(create => create.Action("LogisticPlanDetails_Create", "LogisticPlanDetail").Data("sendForgery"))
+          .Update(update => update.Action("LogisticPlanDetails_Update", "LogisticPlanDetail").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("LogisticPlanDetails_Destroy", "LogisticPlanDetail").Data("sendForgery"))
       )
 )

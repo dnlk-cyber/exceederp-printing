@@ -1,15 +1,18 @@
-﻿<legend>Ticket Types</legend>
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.InfoDesk.TicketType_HelpDesk>()
+﻿@using ExceedERP.Core.Domain.InfoDesk
+<legend>Ticket Types</legend>
+@(Html.Kendo().Grid<TicketType_HelpDesk>()
       .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.Type);
-          columns.Bound(c => c.TicketCode);
-          columns.Bound(c => c.TicketCategory);
-          columns.Bound(c => c.TicketPriority);
-          columns.Bound(c => c.DueDays);
-          columns.Bound(c => c.Description);
-          columns.Command(command => {
+          columns.Bound(c => c.Type).Width(150);
+          columns.Bound(c => c.TicketCode).Width(150);
+          columns.Bound(c => c.TicketCategory).Width(150);
+          columns.Bound(c => c.TicketPriority).Width(150);
+          columns.Bound(c => c.EstimatedCost).Width(160);
+          columns.Bound(c => c.DueDays).Width(150);
+          columns.Bound(c => c.Description).Width(150);
+          columns.Command(command =>
+          {
               command.Edit();
               command.Destroy();
           }).Width(200);

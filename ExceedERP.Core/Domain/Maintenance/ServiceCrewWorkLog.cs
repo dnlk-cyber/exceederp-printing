@@ -52,11 +52,20 @@ namespace ExceedERP.Core.Domain.Maintenance
         [DisplayName("Standared Hour")]
         public decimal StandaredHours { get; set; }
         //[NotMapped]
+        public string AdditionalWork { get; set; }
         [DisplayName("TotalLabour Cost")]
         public decimal TotalLabourCost { get; set; }
 
         [ForeignKey("MecanicId")]
         public virtual MechanicCrew MechanicCrew { get; set; }
+    }
+    public class CloseWorkShopWithRemark
+    {
+        public int CloseWorkShopWithRemarkId { get; set; }
+       public string JobId { get; set; }
+       public string JobOrderId { get; set; }
+        public string ServiceName { get; set; }
+        public string Remark { get; set; }
     }
     public enum WorkShopType
     {

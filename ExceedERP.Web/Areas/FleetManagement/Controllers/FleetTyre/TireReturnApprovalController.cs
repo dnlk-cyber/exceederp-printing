@@ -1,7 +1,7 @@
 ﻿using ExceedERP.ApplicationServices.FleetManagement.FleetTireManagement;
 
 
-
+using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetTireManagement;
 using Kendo.Mvc.UI;
 using System;
@@ -101,7 +101,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                   if (TireReturnApproval.Status == MaintenanceConst.Approved)
                   {
                       var entity = db.TireReturn.Where(x => x.TireReturnID == Id).FirstOrDefault();
-
                       entity.IsOnlineApproved = true;
                       entity.OnlineApprovedBy = User.Identity.Name;
                       entity.OnlineApprovedTime = DateTime.Now;

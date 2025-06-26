@@ -35,10 +35,10 @@
                                                     .RequestStart("onRequestStart(\"grid\")")
                                                     .RequestEnd("onRequestEnd(\"grid\")"))
                                         .Model(model => model.Id(p => p.FleetAnnualPlanId))
-                                        .Read(read => read.Action("FleetAnnualPlan_Read", "FleetAnnualPlan"))
-                                        .Create(create => create.Action("FleetAnnualPlan_Create", "FleetAnnualPlan"))
-                                        .Update(update => update.Action("FleetAnnualPlan_Update", "FleetAnnualPlan"))
-                                        .Destroy(delete => delete.Action("FleetAnnualPlan_Delete", "FleetAnnualPlan"))
+                                        .Read(read => read.Action("FleetAnnualPlan_Read", "FleetAnnualPlan").Data("sendForgery"))
+                                        .Create(create => create.Action("FleetAnnualPlan_Create", "FleetAnnualPlan").Data("sendForgery"))
+                                        .Update(update => update.Action("FleetAnnualPlan_Update", "FleetAnnualPlan").Data("sendForgery"))
+                                        .Destroy(delete => delete.Action("FleetAnnualPlan_Delete", "FleetAnnualPlan").Data("sendForgery"))
 
                                     ).ClientDetailTemplateId("tabs")
 )
@@ -108,10 +108,10 @@
                                                     model.Field(p => p.DateFrom).Editable(false);
                                                     model.Field(p => p.DateTo).Editable(false);
                                                     })
-                                                .Read(read => read.Action("FleetAnnualPlanDetail_Read", "FleetAnnualPlanDetail", new { id = "#=FleetAnnualPlanId#" }))
-                                                .Create(create => create.Action("FleetAnnualPlanDetail_Create", "FleetAnnualPlanDetail", new { id = "#=FleetAnnualPlanId#" }))
-                                                .Update(update => update.Action("FleetAnnualPlanDetail_Update", "FleetAnnualPlanDetail"))
-                                                .Destroy(delete => delete.Action("FleetAnnualPlanDetail_Delete", "FleetAnnualPlanDetail"))
+                                                .Read(read => read.Action("FleetAnnualPlanDetail_Read", "FleetAnnualPlanDetail", new { id = "#=FleetAnnualPlanId#" }).Data("sendForgery"))
+                                                .Create(create => create.Action("FleetAnnualPlanDetail_Create", "FleetAnnualPlanDetail", new { id = "#=FleetAnnualPlanId#" }).Data("sendForgery"))
+                                                .Update(update => update.Action("FleetAnnualPlanDetail_Update", "FleetAnnualPlanDetail").Data("sendForgery"))
+                                                .Destroy(delete => delete.Action("FleetAnnualPlanDetail_Delete", "FleetAnnualPlanDetail").Data("sendForgery"))
 
                                             ).ToClientTemplate()
     )

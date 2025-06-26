@@ -90,6 +90,6 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         [Display(Name = "External Operator")]
         public string ExternalOperator { get; set; }
         [Display(Name ="Rate(M)")]
-        public decimal RateInMeter { get; set; }
+        public decimal RateInMeter { get; set; } 
     }
 }

@@ -27,6 +27,7 @@
         columns.Bound(c => c.TicketStatus)/*.HtmlAttributes(new { style = "background-color:#:StatusColor#;" })*/.Width(160);
         columns.Bound(c => c.Rate).Width(120);
         columns.Bound(c => c.ClosedDate).Width(100).Title("Closed Date");
+        columns.Bound(c => c.RequesterIPAddress).Width(150);
         columns.Command(
             command =>
             {
@@ -92,6 +93,9 @@
             {
               items.Add().Text(" Assign Ticket  ").Content(
                 @<text>
+                       
+                <a href='@Url.Action("ITSupportReport", "HelpDeskReport")/?id=#=CustomerTicket_HelpDeskId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
                 @(Html.Kendo().Grid<AssignTicket_HelpDesk>()
                    .Name("Assigngrid_#=CustomerTicket_HelpDeskId#")
                    .Columns(columns =>
@@ -99,6 +103,7 @@
                        // columns.Bound(c => c.AssignTicket_HelpDeskId).Width(100);
                        columns.ForeignKey(c => c.AssinedTo, (System.Collections.IEnumerable)ViewData["AssignTo"], "AssinedTo", "FullNameaEnglish").EditorTemplateName("EmployeesList").Width(160);
                       // columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList").Width(160);
+                       columns.Bound(c => c.Handler).Width(140);
                        columns.Bound(c => c.Role).Width(140);
                        columns.Bound(c => c.AssignedDate).Width(150);
                        columns.Bound(c => c.RootCause).Width(160);
@@ -117,7 +122,6 @@
                    })
                .Editable(editable => editable.Mode(GridEditMode.InLine))
                 .ClientDetailTemplateId("MaterialsUsed___template")
-                  //    }))               
                   .Scrollable(h => h.Height(500))
                   .DataSource(dataSource => dataSource
                       .Ajax()
@@ -136,7 +140,7 @@
                                  .RequestEnd("onRequestEnd(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")"))
                            .Read(read => read.Action("AssignTickets_Read", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }).Data("sendForgery"))
                            .Create(create => create.Action("AssignTickets_Create", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }).Data("sendForgery"))
-                           .Update(update => update.Action("Handler_Update", "Handler").Data("sendForgery"))
+                           .Update(update => update.Action("AssignTickets_Update", "AssignTicket").Data("sendForgery"))
                            .Destroy(destroy => destroy.Action("AssignTickets_Destroy", "AssignTicket").Data("sendForgery"))
                              ).ToClientTemplate())
                         </text>);
@@ -321,7 +325,9 @@
         CurtomerTicketId_Global = masterDataItem.CustomerTicket_HelpDeskId;
         masterId = masterDataItem.CustomerTicket_HelpDeskId;
          var gridName = "#Assigngrid_" + masterId;
-         if (masterDataItem.TicketStatus == 3 || masterDataItem.IsClosed) {
+         if (masterDataItem.TicketStatus == 3
+             || masterDataItem.IsClosed
+             || masterDataItem.IsAssigned == true) {
              $(gridName).find(".k-toolbar").hide(); //hide toolbar
              $(".k-grid-top", gridName).hide();
              $(".k-grid-edit", gridName).hide();
@@ -341,10 +347,10 @@
                     $(".k-grid-edit", gridName).hide();
                     $(".k-grid-delete", gridName).hide();
                 }
-                else {
-                    $(gridName).find(".k-toolbar").show(); //hide toolbar
-                    $(".k-grid-top", gridName).show();
-                }
+                //else {
+                //    $(gridName).find(".k-toolbar").show(); //hide toolbar
+                //    $(".k-grid-top", gridName).show();
+                //}
 
             }
 
@@ -465,12 +471,13 @@
                      type: 'POST',
                      cache: false,
                      success: function (result) {
-                         alert(result);
+                         alert(result.Message);
                          $("#grid").data("kendoGrid").dataSource.read();
                      }
 
                  });
-             } catch (ee) {
+             }
+             catch (ee) {
                  alert("Please select the row first!!");
              }
          }
@@ -493,7 +500,7 @@
                      type: 'POST',
                      cache: false,
                      success: function (result) {
-                         r = result;
+                         alert(result.Message);
                          $("#grid").data("kendoGrid").dataSource.read();
                      }
 

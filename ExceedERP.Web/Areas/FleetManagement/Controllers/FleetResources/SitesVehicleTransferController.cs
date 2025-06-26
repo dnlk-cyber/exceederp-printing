@@ -33,6 +33,19 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         // GET: /FleetManagement/SitesVehicleTransfer/
         public ActionResult Index()
         {
+            ViewData["Customer"] = db.OrganizationCustomers.ToList();
+            ViewData["Employee"] = db.Person_Employee.Select(
+                i => new
+                {
+                    Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+                    Code = i.EmployeeId
+                }).ToList();
+            ViewData["VehiclePartDamageType"] = db.VehiclePartDamageType.ToList();
+            ViewData["VehicleParts"] = db.VehiclePart.ToList();
+            ViewData["category"] = db.EquipmentIdentity.Select(s => new {
+                Id = s.EquipmentIdentityID,
+                Name = s.EquipmentCategoryName
+            }).ToList();
             ViewData["Fleets"] = db.Fleets.Select(s => new
             {
                 Value = s.FleetsID,
@@ -48,6 +61,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 Value = s.OperatorID,
                 Text = s.FullName
             }).ToList();
+            ViewData["OperatorTwo"] = db.Operator.Select(s => new
+            {
+                Value = s.OperatorID,
+                Text = s.FullName
+            }).ToList();
+
 
             ViewData["EquipmentCategory"] = db.EquipmentIdentity.Select(s => new
             {
@@ -80,6 +99,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 StartingDate = s.StartingDate,
                 DestinationSite = s.DestinationSite,
                 InitialSite = s.InitialSite,
+                OperatorId = s.OperatorId,
+                SecondOperatorId = s.SecondOperatorId,
                 //EquipmentTypeId = s.Fleet.EquipmentIdentityID.ToString(),
                 Remark = s.Fleet.PlateNumber + " -- " + s.Fleet.EquipmentName,
                 SitesVehicleTransferID = s.SitesVehicleTransferID  ,
@@ -108,7 +129,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
             ModelState.Remove("SitesVehicleTransferID");
             ModelState.Remove("InitialSite");
-
+            ModelState.Remove("EquipmentIdentityID");
+            ModelState.Remove("EquipmentTypeID");
+            ModelState.Remove("EquipmentNameID");
+           
             Fleets fleet = db.Fleets.Where(x => x.FleetsID == sitesVehicleTransfer.FleetsID).FirstOrDefault();
                   
             if (sitesVehicleTransfer.StartingDate > sitesVehicleTransfer.ToDate)
@@ -116,7 +140,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     ModelState.Clear();
                     ModelState.AddModelError("", "Start Date is Above End Date");
                 }
-            else if (sitesVehicleTransfer.DestinationSite == fleet.Location)
+            else if (sitesVehicleTransfer.BranchId == fleet.BranchId)
             {
                 ModelState.Clear();
                 ModelState.AddModelError("SameSite", "Intial and Destination Site Must be Different");
@@ -127,7 +151,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 {
                    
                     sitesVehicleTransfer.SitesVehicleTransferID = Guid.NewGuid();
-                    //SitesVehicleTransfer.InitialSite = fleet.Location;
+                    sitesVehicleTransfer.EquipmentIdentityID = fleet.EquipmentIdentityID;
+                    sitesVehicleTransfer.EquipmentTypeID = fleet.EquipmentTypeID;
+                    sitesVehicleTransfer.EquipmentNameID = fleet.EquipmentNameID;
+                    sitesVehicleTransfer.OperatorId = sitesVehicleTransfer.OperatorId;
+                    sitesVehicleTransfer.SecondOperatorId = sitesVehicleTransfer.SecondOperatorId;
                     sitesVehicleTransfer.InitialSite = fleet.Location;
                     sitesVehicleTransfer.DestinationSite = sitesVehicleTransfer.DestinationSite;
                     sitesVehicleTransfer.CreatedBy = User.Identity.Name;

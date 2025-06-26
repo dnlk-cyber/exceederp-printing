@@ -16,10 +16,12 @@
                       columns.Bound(e => e.PlateNumber).Width(100);
                       columns.Bound(e => e.Model).Width(100);
                       columns.Bound(e => e.SerialNo).Title("Serial/Chasis No.").Width(100);
+                     // columns.Bound(e => e.Location).Title("Location").Width(100);
                       columns.ForeignKey(e => e.BranchId, (System.Collections.IEnumerable)ViewData["Branch"], "Id", "Name").Width(100).Title("Branch");
                       columns.Bound(e => e.ApprovalStatus).Hidden();
                       columns.Bound(e => e.LastModified).Hidden();
                       columns.Bound(e => e.EngineNumber).Width(80);
+                      columns.ForeignKey(e => e.OperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text").Width(120);
                       columns.Command(command =>
                       {
                           command.Edit(); command.Destroy();
@@ -78,10 +80,10 @@
                                   .Error("error_handler(\"grid\")")
                                   .RequestStart("onRequestStart(\"grid\")")
                                   .RequestEnd("onRequestEnd(\"grid\")"))
-                                  .Create(update => update.Action("Fleets_Create", "EquipmentRegistration"))
-                                  .Read(read => read.Action("Fleets_Read", "EquipmentRegistration")/*.Data("FilterFleets")*/)
-                                  .Update(update => update.Action("Fleets_Update", "EquipmentRegistration"))
-                                  .Destroy(update => update.Action("Fleets_Destroy", "EquipmentRegistration"))
+                                  .Create(update => update.Action("Fleets_Create", "EquipmentRegistration").Data("sendForgery"))
+                                  .Read(read => read.Action("Fleets_Read", "EquipmentRegistration").Data("sendForgery")/*.Data("FilterFleets")*/)
+                                  .Update(update => update.Action("Fleets_Update", "EquipmentRegistration").Data("sendForgery"))
+                                  .Destroy(update => update.Action("Fleets_Destroy", "EquipmentRegistration").Data("sendForgery"))
                     )
                     .Events(events => events.DataBound("dataBound"))
                     )
@@ -152,7 +154,7 @@
                                                                         <ul style="margin-top:10px;">
                                                                             <li> <label> @Html.LabelFor(model => model.ManufacturerYear):</label><span>#=ManufacturerYear#</span></li>
                                                                             <li><label>@Html.LabelFor(model => model.WayOfSupply)</label>:<span>#=WayOfSupply#</span></li>
-                                                                            <li> <label>@Html.LabelFor(model => model.OperatorName)</label>:<span>#=OperatorName#</span></li>
+                                                                            @*<li> <label>@Html.LabelFor(model => model.OperatorName)</label>:<span>#=OperatorName#</span></li>*@
                                                                             <li> <label>@Html.LabelFor(model => model.Location)</label>:<span>#=Location#</span></li>
                                                                             <li> <label>@Html.LabelFor(model => model.Status)</label>:<span>#=Status#</span></li>
                                                                         </ul>
@@ -234,9 +236,9 @@
                     .Error("error_handler(\"linechecklistgrid_#=FleetsID#\")")
                     .RequestStart("onRequestStart(\"linechecklistgrid_#=FleetsID#\")")
                     .RequestEnd("onRequestEnd(\"linechecklistgrid_#=FleetsID#\")"))
-                    .Read(read => read.Action("EquipmentCheckList_Read", "EquipmentRegistration", new { id = "#=FleetsID#" }))
-                    .Update(update => update.Action("EquipmentCheckList_Update", "EquipmentRegistration"))
-                    .Destroy(destroy => destroy.Action("EquipmentCheckList_Destroy", "EquipmentRegistration"))
+                    .Read(read => read.Action("EquipmentCheckList_Read", "EquipmentRegistration", new { id = "#=FleetsID#" }).Data("sendForgery"))
+                    .Update(update => update.Action("EquipmentCheckList_Update", "EquipmentRegistration").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("EquipmentCheckList_Destroy", "EquipmentRegistration").Data("sendForgery"))
                     )
                     .ToClientTemplate())
                             </text>

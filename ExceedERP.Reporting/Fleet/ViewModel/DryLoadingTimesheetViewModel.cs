@@ -21,11 +21,29 @@ namespace ExceedERP.Reporting.Fleet.ViewModel
         public string PlateNumber { get; set; }
         public string Project { get; set; }
         public string EqipmentName { get; set; }
+        public string PreparedBy { get; set; }
+        public string PreparedDate { get; set; }
+        public string ApprovedBy { get; set; }
+        public string ApprovedDate { get; set; }
+        public string AuthorizedBy { get; set; }
+        public string AuthorizedDate { get; set; }
+        public string CheckedBY { get; set; }
+        public string CheckedDate { get; set; }
+        public string LastModifiedBy { get; set; }
+        public string ModifiedDate { get; set; }
+        public string TimesheetSendForApprovalBY { get; set; }
+        public string TimesheetSendForApprovalDate { get; set; }
+        public string TimesheetApporvedBy { get; set; }
+        public string TimesheetApporvedDate { get; set; }
+
     }
     public class DryLoadingTimesheetViewModel
     {
         public int  Sn { get; set; }
         public string WorkType { get; set; }
+        public string PlateNumber { get; set; }
+        public string EquipmentCategory { get; set; }
+        public string EquipmentName { get; set; }
         public string DeparturePlace { get; set; }
         public string ArrivalPlace { get; set; }
         public DateTime StartingDate { get; set; }
@@ -49,6 +67,12 @@ namespace ExceedERP.Reporting.Fleet.ViewModel
         public decimal Salary { get; set; }
         public decimal TotalCost { get; set; }
         public decimal NetIncome { get; set; }
+        public string PreparedBy { get; set; }
+        public DateTime? PreparedDate { get; set; }
+        public string Name { get; set; }
+        public string ApprovedBy { get; set; }
+        public DateTime? ApprovedDate { get; set; }
+        public string ApproverName { get; set; }
 
     }
 }

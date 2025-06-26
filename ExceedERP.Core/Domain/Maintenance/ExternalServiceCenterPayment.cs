@@ -24,6 +24,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         [Required]
         public int GlTaxRateId { get; set; }
         public decimal Total { get; set; }
+        public string Invoice { get; set; }
         public Guid ServiceCenterJobId { get; set; }
     }
 }

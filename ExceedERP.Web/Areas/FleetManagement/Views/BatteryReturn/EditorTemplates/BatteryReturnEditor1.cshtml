@@ -25,7 +25,7 @@
                         @(Html.Kendo().DropDownListFor(model => model.PlateNumber).Name("PlateNumber")
                               .DataTextField("EquipmentName")
                               .DataValueField("PlateNumber").OptionLabel(" Select ").Filter(FilterType.Contains)
-                              .DataSource(d => d.Read(r => r.Action("FleetsTyreReadingDDBind", "EquipmentRegistration")).ServerFiltering(false)))
+                              .DataSource(d => d.Read(r => r.Action("FleetsTyreReadingDDBind", "EquipmentRegistration").Data("sendForgery")).ServerFiltering(false)))
                     </div>
                 </div>
             </div>

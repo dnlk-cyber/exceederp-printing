@@ -12,24 +12,62 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Reporting.Fleet.ViewModel;
+using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using ExceedERP.Reporting.Fleet.ViewModel;
+//using ExceedERP.Reporting.Fleet.ViewModel;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 {
-    [AuthorizeRoles(FleetManagementRoles.FleetTimeSheet)]
+    [AuthorizeRoles(FleetManagementRoles.FleetCostSheetUser, FleetManagementRoles.FleetCostSheetApprover)]
     public class DryLoadingCostSheetController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();       
         public ActionResult Index()
         {
+            ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            {
+                Text = s.EquipmentCategoryName,
+                Value = s.EquipmentIdentityID
+            }).ToList();
+            ViewData["type"] = db.EquipmentType.Select(s => new
+            {
+                Text = s.EquipmentTypeName,
+                Value = s.EquipmentTypeID
+            }).ToList();
+            ViewData["name"] = db.EquipmentName.Select(s => new
+            {
+                Text = s.Name,
+                Value = s.EquipmentNameID
+            }).ToList();
             ViewData["fleet"] = db.Fleets.Select(x => new { x.FleetsID, x.PlateNumber }).ToList();
             ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
+
+          
+            ViewData["branch"] = db.Branch.Select(s => new
+            {
+                Value = s.BranchId,
+                Text = s.Name
+            }).ToList();
+            ViewData["operator"] = db.Operator.Select(s => new
+            {
+                Value = s.OperatorID,
+                Text = s.FullName
+            }).ToList();
+            ViewData["businessunit"] = db.BusinessUnits.Select(s => new
+            {
+                Value = s.BusinessUnitId,
+                Text = s.Name
+            }).ToList();
+
+         
             return View();
         }
         public ActionResult DryLoadingCostSheet_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var dryLoadingTimeSheets = db.DryLoadingTimeSheets.Where(x => x.TimeSheetApproved);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var dryLoadingTimeSheets = db.DryLoadingTimeSheets.Where(x => x.TimeSheetApproved)
+                .Where(x => mybraches.Contains(x.BranchId));
             DataSourceResult result = dryLoadingTimeSheets.ToDataSourceResult(request, dryLoadingTimeSheet => new DryLoadingTimeSheet
             {
                 DryLoadingTimeSheetId = dryLoadingTimeSheet.DryLoadingTimeSheetId,
@@ -52,7 +90,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 CreatedBy = dryLoadingTimeSheet.CreatedBy,
                 ModifiedBy = dryLoadingTimeSheet.ModifiedBy,
                 LastModified = dryLoadingTimeSheet.LastModified,
-
+                OilConsumption = dryLoadingTimeSheet.OilConsumption,
                 AsphaltRate = dryLoadingTimeSheet.AsphaltRate,
                 FuelRate = dryLoadingTimeSheet.FuelRate,
                 GravelRate = dryLoadingTimeSheet.GravelRate,
@@ -87,7 +125,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 TimeSheetStatus = dryLoadingTimeSheet.TimeSheetStatus,
                 RentalRate = dryLoadingTimeSheet.RentalRate,
                 OperatorId = dryLoadingTimeSheet.OperatorId,
-                ExternalOperator = dryLoadingTimeSheet.ExternalOperator
+                ExternalOperator = dryLoadingTimeSheet.ExternalOperator,
+                EquipmentCategoryId = dryLoadingTimeSheet.EquipmentCategoryId,
+                EquipmentNameId = dryLoadingTimeSheet.EquipmentNameId,
+                EquipmentTypeId = dryLoadingTimeSheet.EquipmentTypeId
                 
                 
                 
@@ -150,6 +191,39 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
 
         }
+        public JsonResult VoidCostSheet(int id)
+        {
+
+            var dryLoadingCostSheet = db.DryLoadingTimeSheets.Find(id);
+
+            if (dryLoadingCostSheet != null)
+            {
+                dryLoadingCostSheet.CostSheetSendForAproval = false;
+                dryLoadingCostSheet.CostSheetApproved = false;
+                dryLoadingCostSheet.CostSheetApprovedDate = DateTime.Now;
+                dryLoadingCostSheet.CostSheetApprovedBy = User.Identity.Name;
+                dryLoadingCostSheet.CostSheetStatus = MaintenanceConst.Rejected;
+
+                db.DryLoadingTimeSheets.Attach(dryLoadingCostSheet);
+                db.Entry(dryLoadingCostSheet).State = EntityState.Modified;
+                db.SaveChanges();
+                var returnMessage = new
+                {
+                    Message = "Successfully Sent!",
+
+                };
+                return Json(returnMessage.Message, JsonRequestBehavior.AllowGet);
+
+            }
+
+            var jsonData = new
+            {
+                Message = "Error Sending!",
+
+            };
+            return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
+
+        }
 
 
         public ActionResult DryLoadingCostSheetApproval_Read([DataSourceRequest] DataSourceRequest request, int id)
@@ -172,7 +246,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             return Json(result);
         }
 
-
+        [AuthorizeRoles(FleetManagementRoles.FleetCostSheetApprover)]
         public ActionResult DryLoadingCostSheetApproval_Create([DataSourceRequest] DataSourceRequest request, CostSheetApproval model, int id)
         {
             if (ModelState.IsValid)

@@ -108,7 +108,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         [Display(Name = "Business Unit")]
         public int? BusinessUnitId { get; set; }
         [Display(Name = "Operator")]
-        public Guid OperatorId { get; set; }
+        public Guid? OperatorId { get; set; }
         [Display(Name ="Grease Rate")]
         public decimal GreaseRate { get; set; }
     }

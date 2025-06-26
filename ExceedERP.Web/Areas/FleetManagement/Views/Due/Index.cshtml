@@ -34,7 +34,7 @@
     .Events(ev => ev.DetailExpand("onDetailExpand"))
     .DataSource(dataSource => dataSource
         .Ajax()
-               .ServerOperation(false)
+             
 
         .Model(model =>
               {
@@ -45,9 +45,9 @@
                                     .Error("error_handler(\"grid\")")
                                     .RequestStart("onRequestStart(\"grid\")")
                                     .RequestEnd("onRequestEnd(\"grid\")"))
-                    .Read(read => read.Action("Due_Read", "Due"))
-                                    .Update(update => update.Action("Due_Destroy", "Due", new { fleetID = "#=AssetId#" }))
-                                                .Destroy(delete => delete.Action("Due_Destroy", "Due"))
+                    .Read(read => read.Action("Due_Read", "Due").Data("sendForgery"))
+                                    .Update(update => update.Action("Due_Destroy", "Due", new { fleetID = "#=AssetId#" }).Data("sendForgery"))
+                                                .Destroy(delete => delete.Action("Due_Destroy", "Due").Data("sendForgery"))
 
       ).ClientDetailTemplateId("template")
 )
@@ -79,7 +79,7 @@
                                          .HtmlAttributes(new { style = "height:350px;" })
           .DataSource(dataSource => dataSource
               .Ajax()
-              .ServerOperation(false)
+            
               .Model(model =>
                   {
                       model.Id(p => p.ServiceID);
@@ -89,7 +89,7 @@
                                                 .Error("error_handler(\"Service_#=AssetId#\")")
                                                 .RequestStart("onRequestStart(\"Service_#=AssetId#\")")
                                                 .RequestEnd("onRequestEnd(\"Service_#=AssetId#\")"))
-                                     .Read(read => read.Action("DueService_Read", "Due", new { fleetID = "#=AssetId#" }))
+                                     .Read(read => read.Action("DueService_Read", "Due", new { fleetID = "#=AssetId#" }).Data("sendForgery"))
 
 
       ).ToClientTemplate()
@@ -131,10 +131,10 @@
                                                     .Error("error_handler(\"ServiceToolgrid_#=ServiceID#\")")
                                                     .RequestStart("onRequestStart(\"ServiceToolgrid_#=ServiceID#\")")
                                                     .RequestEnd("onRequestEnd(\"ServiceToolgrid_#=ServiceID#\")"))
-                                         .Read(read => read.Action("ServiceToolByService", "ServiceTool", new { tserviceID = "#=ServiceID#" }))
-                                                                  .Create(update => update.Action("ServiceTool_Create", "ServiceTool", new { tserviceID = "#=ServiceID#" }))
-                                                                          .Update(destroy => destroy.Action("ServiceTool_Update", "ServiceTool", new { tserviceID = "#=ServiceID#" }))
-                                                          .Destroy(destroy => destroy.Action("ServiceTool_Destroy", "ServiceTool"))
+                                         .Read(read => read.Action("ServiceToolByService", "ServiceTool", new { tserviceID = "#=ServiceID#" }).Data("sendForgery"))
+                                                                  .Create(update => update.Action("ServiceTool_Create", "ServiceTool", new { tserviceID = "#=ServiceID#" }).Data("sendForgery"))
+                                                                          .Update(destroy => destroy.Action("ServiceTool_Update", "ServiceTool", new { tserviceID = "#=ServiceID#" }).Data("sendForgery"))
+                                                          .Destroy(destroy => destroy.Action("ServiceTool_Destroy", "ServiceTool").Data("sendForgery"))
                                  )
                             .Pageable()
                            .ToClientTemplate())
@@ -159,7 +159,7 @@
                                                                                     .Error("error_handler(\"ServiceCrewgrid_#=ServiceID#\")")
                                                                                     .RequestStart("onRequestStart(\"ServiceCrewgrid_#=ServiceID#\")")
                                                                                     .RequestEnd("onRequestEnd(\"ServiceCrewgrid_#=ServiceID#\")"))
-                                                                                     .Read(read => read.Action("ServiceCrewByService", "ServiceCrew", new { cserviceID = "#=ServiceID#" }))
+                                                                                     .Read(read => read.Action("ServiceCrewByService", "ServiceCrew", new { cserviceID = "#=ServiceID#" }).Data("sendForgery"))
                                                                                     )
                                   .Pageable()
                             .ToClientTemplate())
@@ -185,7 +185,7 @@
                                                                     .Error("error_handler(\"ServiceSparegrid_#=ServiceID#\")")
                                                                     .RequestStart("onRequestStart(\"ServiceSparegrid_#=ServiceID#\")")
                                                                     .RequestEnd("onRequestEnd(\"ServiceSparegrid_#=ServiceID#\")"))
-                                                                                                        .Read(read => read.Action("ServiceSpareByService", "ServiceSpare", new { sserviceID = "#=ServiceID#" }))
+                                                                                                        .Read(read => read.Action("ServiceSpareByService", "ServiceSpare", new { sserviceID = "#=ServiceID#" }).Data("sendForgery"))
                                                                                                       )
                             .Pageable()
                             .ToClientTemplate())

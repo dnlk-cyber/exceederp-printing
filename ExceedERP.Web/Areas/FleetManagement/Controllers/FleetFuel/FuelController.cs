@@ -156,56 +156,57 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 LastModified = o.LastModified,
                 CreatedBy = o.Issue.IssueDate,
                 ModifiedBy = o.ModifiedBy,
-                
+                RequestedQty = GetReqQty(o.Issue.PlateNo)
 
             }).ToDataSourceResult(request));
         }
 
-        //private decimal GetFuelSum(string plateNo)
-        //{
-        //    decimal fuelSum = 0;
-        //    List<Fleets> fleets = new List<Fleets>();
+        private decimal GetReqQty(string plateNo)
+        {
+            decimal requestedQty = 0;
 
-        //    if (!string.IsNullOrWhiteSpace(plateNo))
-        //    {
+            if (!string.IsNullOrWhiteSpace(plateNo))
+            {
 
 
-        //        var fleet = db.Fleets.FirstOrDefault(x => x.PlateNumber == plateNo);
+                var fleet = db.Fleets.FirstOrDefault(x => x.PlateNumber == plateNo);
+                if(fleet != null)
+                {
+                    var vehicleDemandIds = db.AssignedEquipment
+                        .Where(x => x.FleetId == fleet.FleetsID)
+                        .Select(s => s.VehicleDemandId)
+                        .ToList();
 
-        //        var assignedEquipments = db.AssignedEquipment.Where(x => x.FleetId == fleet.FleetsID);
-        //        foreach (var assignedEquipment in assignedEquipments)
-        //        {
-        //            var requestEquipment = db.RequestedEquipments.FirstOrDefault(x => x.VehicleDemandId == assignedEquipment.VehicleDemandId);
+                    var requestedEquipments = db.RequestedEquipments
+                        .Where(re => vehicleDemandIds.Contains(re.VehicleDemandId))
+                        .ToList();
 
-        //            var distibution = db.VehicleDistribution.FirstOrDefault(x => x.RequestID == requestEquipment.RequestNumber);
+                    var requestNumbers = requestedEquipments
+                        .Select(re => re.RequestNumber)
+                        .ToList();
 
-                    
+                    var vehicleDistributions = db.VehicleDistribution
+                        .Where(vd => requestNumbers.Contains(vd.RequestID))
+                        .ToList();
+                    foreach (var vd in vehicleDistributions)
+                    {
+                        var storeRequisitionIds = db.StoreRequisitions
+                            .Where(x => x.IsFuel == true && x.VehicleDistributionID == vd.VehicleDistributionID)
+                            .Where(x => x.IsForMaintenance == false)
+                            .Select(s => s.StoreRequisitionID)
+                            .ToList();
+                        var qty = db.StoreRequisitionItems
+                            .Where(p => storeRequisitionIds.Contains(p.StoreRequisitionID))
+                            .Sum(x => (decimal?)x.RequestedQuantity) ?? 0;
 
-        //            var apTravelOrder = db.ApTravelOrders.Where(x => x.VehicleDistributionID == distibution.VehicleDistributionID).ToList();
-        //            foreach (var travelOrder in apTravelOrder)
-        //            {
-
-        //                var advancePayments = db.ApTravelOrderAdvancePayments.Where(x => x.ApTravelOrderId == travelOrder.ApTravelOrderId && x.Type == TravelPaymentType.Fuel).ToList();
-        //                foreach (var advancePayment in advancePayments)
-        //                {
-        //                    fuelSum += advancePayment.Total;
-        //                }
-        //                var claims = db.ApTravelExpenseClaims.Where(x => x.ApTravelOrderId == travelOrder.ApTravelOrderId).ToList();
-        //                foreach (var claim in claims)
-        //                {
-        //                    var claimExpenses = db.ApTravelExpenseExpenses.Where(x => x.ApTravelExpenseClaimId == claim.ApTravelExpenseClaimId && x.Type == TravelPaymentType.Fuel).ToList();
-        //                    foreach (var claimExpese in claimExpenses)
-        //                    {
-        //                        fuelSum += claimExpese.Total;
-        //                    }
-        //                }
-        //            }
-        //        }
-                
-        //        return fuelSum;
-        //    }
-        //    return 0;
-        //}
+                        requestedQty += qty;
+                    }
+                    return requestedQty;
+                }
+               
+            }
+            return requestedQty;
+        }
 
         public string GetAssetNo(string p, List<Fleets> fleets)
         {

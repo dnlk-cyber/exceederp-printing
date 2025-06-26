@@ -19,7 +19,13 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
 
         }
         public Guid DriverVehicleTransferID { get; set; }
-        [Display(Name ="Equipment")]
+        [Display(Name = "Equipment Category")]
+        public Guid EquipmentCategoryId { get; set; }
+        [Display(Name = "Equipment Type")]
+        public Guid EquipmentTypeId { get; set; }
+        [Display(Name = "Equipment Name")]
+        public Guid EquipmentNameId { get; set; }
+        [Display(Name ="Plate No")]
         public Guid FleetId { get; set; }
         [DisplayName("From Equipment ")]
         public Guid FromEquipment { get; set; }
@@ -43,8 +49,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         [DataType(DataType.MultilineText)]
         public string Description { get; set; }
 
-        [NotMapped]
-        public string EquipmentTypeId { get; set; }
+        
        
     }
 }

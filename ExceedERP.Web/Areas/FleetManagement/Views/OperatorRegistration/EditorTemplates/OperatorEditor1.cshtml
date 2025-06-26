@@ -57,7 +57,7 @@
                   .DataValueField("Value")
                   .OptionLabel("Select ")
                   .Events(x => x.Change("GetJobTitle")).Filter(FilterType.Contains)//.HtmlAttributes(new { style = "width:100%" })
-                  .DataSource(d => d.Read(r => r.Action("OperatorDDBind", "FleetDataProvider")).ServerFiltering(false)))
+                  .DataSource(d => d.Read(r => r.Action("OperatorDDBind", "FleetDataProvider").Data("sendForgery")).ServerFiltering(false)))
                </div>
             </div>
          </div>
@@ -147,7 +147,7 @@
                   @(Html.Kendo().DropDownListFor(model => model.Postion).Name("Postion")
                   .DataTextField("Name")
                   .DataValueField("Name").OptionLabel("Select Postion")//.HtmlAttributes(new { style = "width:100%" })
-                  .DataSource(d => d.Read(r => r.Action("OperatorPositionDDBind", "OperatorPosition"))))
+                  .DataSource(d => d.Read(r => r.Action("OperatorPositionDDBind", "OperatorPosition").Data("sendForgery"))))
                </div>
             </div>
          </div>
@@ -247,7 +247,7 @@
                   @(Html.Kendo().DropDownListFor(m => m.LicenseType).Name("LicenseType")
                   .DataTextField("Name")
                   .DataValueField("Name").OptionLabel("Select ").Filter(FilterType.Contains)//.HtmlAttributes(new { style = "width:100%" })
-                  .DataSource(d => d.Read(r => r.Action("LicenseTypeDDBind", "FleetManagementDataProvider")).ServerFiltering(false)))
+                  .DataSource(d => d.Read(r => r.Action("LicenseTypeDDBind", "FleetManagementDataProvider").Data("sendForgery")).ServerFiltering(false)))
                </div>
             </div>
          </div>
@@ -259,7 +259,7 @@
                   @(Html.Kendo().DropDownListFor(model => model.LicenseLevel)
                   .DataTextField("Name").Filter(FilterType.Contains)
                   .DataValueField("Name").OptionLabel("Select ").HtmlAttributes(new { style = "width:100%" })
-                  .DataSource(d => d.Read(r => r.Action("LicenseLevelDDBind", "LicenseLevel")).ServerFiltering(true)))
+                  .DataSource(d => d.Read(r => r.Action("LicenseLevelDDBind", "LicenseLevel").Data("sendForgery")).ServerFiltering(true)))
                </div>
             </div>
          </div>
@@ -271,7 +271,7 @@
                   @(Html.Kendo().DropDownListFor(model => model.EducationLevel).Name("EducationLevel")
                   .DataTextField("Name")
                   .DataValueField("Name").OptionLabel("Select Education Level").Filter(FilterType.Contains)//.HtmlAttributes(new { style = "width:100%" })
-                  .DataSource(d => d.Read(r => r.Action("EducationallevelDDBind", "Educationallevel")).ServerFiltering(false)))
+                  .DataSource(d => d.Read(r => r.Action("EducationallevelDDBind", "Educationallevel").Data("sendForgery")).ServerFiltering(false)))
                </div>
             </div>
          </div>

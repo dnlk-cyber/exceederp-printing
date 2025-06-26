@@ -104,7 +104,8 @@ namespace ExceedERP.Reporting.HelpDesk.DataSource
                 maintenance.Handler = handler;
                 maintenance.Solution = solution;
                 maintenance.MaterialUsed = materialUsed;
-
+                maintenance.CreatedDate = maint.DateCreated;
+                maintenance.ClosedDate = maint.ClosedDate;
                 maintenanceList.Add(maintenance);
             }
 

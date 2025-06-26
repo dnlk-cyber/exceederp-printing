@@ -1,0 +1,8 @@
+﻿ @(Html.Kendo().DropDownListFor(model => model)
+                          .DataValueField("Value")
+                            .DataTextField("Name")
+                                  .OptionLabel(" Select Status Key ")
+                                  .Filter(FilterType.Contains)
+                          .DataSource(d => d.Read(r => r.Action("StatusKeyDS", "FleetManagementDataProvider").Data("sendForgery"))
+                          .ServerFiltering(false)))
+             

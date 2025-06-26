@@ -4,6 +4,7 @@ using Kendo.Mvc.UI;
 using Kendo.Mvc.Extensions;
 using System; using ExceedERP.Web.Helpers;
 using System.Collections.Generic;
+using ExceedERP.Core.Domain.Maintenance;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;     
@@ -79,7 +80,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             if (System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HREmployeeSelfService)
                  && System.Web.HttpContext.Current.User.IsInRole(HrmConstants.HRDepartmentHead))
             {
-                
+
                 VehicleDemand = VehicleDemand.Where(x => userworkunit.Contains(x.OrgStructureId)
                 || x.ForwardedTo == User.Identity.Name
                 || x.OrgStructureId == 0
@@ -92,6 +93,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 VehicleDemand = VehicleDemand.Where(x => x.CreatedBy == User.Identity.Name);
             }
             return Json(VehicleDemand.ToDataSourceResult(request));
+
+
         }
 
 
@@ -140,6 +143,22 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 VehicleDemand.VehicleDemandId = Guid.NewGuid();
                 VehicleDemand.RequestNumber = RequestNumber;
                 VehicleDemand.DateCreated = DateTime.Now;
+                VehicleDemand.ForwardedFrom = User.Identity.Name;
+                VehicleDemand.ForwardedTo = User.Identity.Name;
+                VehicleDemand.IsFinalApproval = VehicleDemand.IsFinalApproval;
+                VehicleDemand.CurrentApprovalStep = VehicleDemand.CurrentApprovalStep;
+                VehicleDemand.IsDepartmentOnlineApproved = VehicleDemand.IsDepartmentOnlineApproved;
+                VehicleDemand.DepartmentOnlineApprovedBy = VehicleDemand.DepartmentOnlineApprovedBy;
+                VehicleDemand.DepartmentOnlineApprovedTime = VehicleDemand.DepartmentOnlineApprovedTime;
+                VehicleDemand.IsDepartmentSendForApproval = VehicleDemand.IsDepartmentSendForApproval;
+                VehicleDemand.DepartmentSendForApprovalBy = VehicleDemand.DepartmentSendForApprovalBy;
+                VehicleDemand.DepartmentSendForApprovalTime = VehicleDemand.DepartmentSendForApprovalTime;
+                VehicleDemand.IsOnlineApproved = VehicleDemand.IsOnlineApproved;
+                VehicleDemand.OnlineApprovedBy = VehicleDemand.OnlineApprovedBy;
+                VehicleDemand.OnlineApprovedTime = VehicleDemand.OnlineApprovedTime;
+                VehicleDemand.IsVoid = VehicleDemand.IsVoid;
+                VehicleDemand.VoidBy = VehicleDemand.VoidBy;
+                VehicleDemand.VoidTime = VehicleDemand.VoidTime;
                 VehicleDemand.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
                 
                 VehicleDemand.CreatedBy = User.Identity.Name;
@@ -190,6 +209,21 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             {
                 if (VehicleDemand != null)
                 {
+                    VehicleDemand.ForwardedFrom = User.Identity.Name;
+                    VehicleDemand.ForwardedTo = User.Identity.Name;
+                    VehicleDemand.IsFinalApproval = VehicleDemand.IsFinalApproval;
+                    VehicleDemand.CurrentApprovalStep = VehicleDemand.CurrentApprovalStep;
+                    VehicleDemand.IsDepartmentOnlineApproved = VehicleDemand.IsDepartmentOnlineApproved;
+                    VehicleDemand.DepartmentOnlineApprovedBy = VehicleDemand.DepartmentOnlineApprovedBy;
+                    VehicleDemand.DepartmentOnlineApprovedTime = VehicleDemand.DepartmentOnlineApprovedTime;
+                    VehicleDemand.IsDepartmentSendForApproval = VehicleDemand.IsDepartmentSendForApproval;
+                    VehicleDemand.DepartmentSendForApprovalBy = VehicleDemand.DepartmentSendForApprovalBy;
+                    VehicleDemand.DepartmentSendForApprovalTime = VehicleDemand.DepartmentSendForApprovalTime;
+                    VehicleDemand.IsOnlineApproved = VehicleDemand.IsOnlineApproved;
+                    VehicleDemand.OnlineApprovedBy = VehicleDemand.OnlineApprovedBy;
+                    VehicleDemand.OnlineApprovedTime = VehicleDemand.OnlineApprovedTime;
+                    VehicleDemand.IsVoid = VehicleDemand.IsVoid;
+                    VehicleDemand.VoidBy = VehicleDemand.VoidBy;
                     VehicleDemand.ModifiedBy = User.Identity.Name;
                     VehicleDemand.LastModified = DateTime.Now;
                     VehicleDemand.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
@@ -233,7 +267,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
             if (vehicleDemand != null)
             {
-                vehicleDemand.IsSendForApproval = true;
+                vehicleDemand.IsDepartmentSendForApproval = true;
                 vehicleDemand.Status = MaintenanceConst.WaitingApproval;
                 db.VehicleDemand.Attach(vehicleDemand);
                 db.Entry(vehicleDemand).State = EntityState.Modified;
@@ -279,35 +313,48 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 
         }
 
-        
+
         [AuthorizeRoles(HrmConstants.HRDepartmentHead)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult VehicleDemandSelfCareApproval([DataSourceRequest]DataSourceRequest request, VehicleDemandApproval VehicleDemandApproval, string EId)
         {
-            try
+
+            ModelState.Remove("VehicleDemandId");
+            Guid Id = Guid.Parse(EId);
+
+            var record = db.VehicleDemand.Find(Id);
+            if (record == null)
+                ModelState.AddModelError("No record", "No Record Found");
+
+            if (record != null && record.ForwardedTo != User.Identity.Name)
+                ModelState.AddModelError("notcorrectuser", "You can't approve this record,it is forwarded to another user.");
+
+            if (record.IsDepartmentOnlineApproved)
+                ModelState.AddModelError("already Approved", "record already Approved");
+
+            if (ModelState.IsValid)
             {
-                Guid Id = Guid.Parse(EId);
                 if (VehicleDemandApproval.Status == MaintenanceConst.Approved)
                 {
-                    var entity = db.VehicleDemand.Where(x => x.VehicleDemandId == Id).FirstOrDefault();
+                   // var entity = db.VehicleDemand.Where(x => x.VehicleDemandId == Id).FirstOrDefault();
+                     
+                    record.IsDepartmentOnlineApproved = true;
+                    record.DepartmentOnlineApprovedBy = User.Identity.Name;
+                    record.Status = MaintenanceConst.Approved;
+                    record.DepartmentOnlineApprovedTime = DateTime.Now;
+                    record.Status = MaintenanceConst.Approved;
 
-                    entity.IsOnlineApproved = true;
-                    entity.OnlineApprovedBy = User.Identity.Name;
-                    entity.Status = MaintenanceConst.Approved;
-                    entity.OnlineApprovedTime = DateTime.Now;
-                    entity.Status = MaintenanceConst.Approved;
-
-                    db.VehicleDemand.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
+                    db.VehicleDemand.Attach(record);
+                    db.Entry(record).State = EntityState.Modified;
                     db.SaveChanges();
                 }
                 if (VehicleDemandApproval.Status == MaintenanceConst.Rejected)
                 {
-                    var entity = db.VehicleDemand.Where(x => x.VehicleDemandId == Id).FirstOrDefault();
-                    entity.IsSendForApproval = false;
-
-                    db.VehicleDemand.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
+                    //var entity = db.VehicleDemand.Where(x => x.VehicleDemandId == Id).FirstOrDefault();
+                    record.IsDepartmentSendForApproval = false;
+                    record.Status = MaintenanceConst.Rejected;
+                    db.VehicleDemand.Attach(record);
+                    db.Entry(record).State = EntityState.Modified;
                     db.SaveChanges();
 
                 }
@@ -325,14 +372,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 db.VehicleDemandApproval.Add(approval);
                 db.SaveChanges();
                 VehicleDemandApproval.VehicleDemandApprovalID = approval.VehicleDemandApprovalID;
-
             }
-            catch (Exception e)
-            {
 
-                string ee = e.Message;
-            }
+
             return Json(new[] { VehicleDemandApproval }.ToDataSourceResult(request));
         }
-    }
 }
+        }
+    

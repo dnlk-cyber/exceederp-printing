@@ -1,11 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.CRM;
-using ExceedERP.Core.Domain.InfoDesk;
 namespace ExceedERP.Core.Domain.InfoDesk.Support
 {
     public class CustomerTicket_HelpDesk : TrackUserOperation
@@ -38,6 +35,16 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
         public DateTime? AssignedDate { get; set; }
         [DisplayName("Material Used")]
         public int? MaterialItemsId { get; set; }
+        [DisplayName("Item/device Category")]
+        public int? FixedAssetCategoryId { get; set; }
+        [DisplayName("Sub Category")]
+        public int? FixedAssetSubCategoryId { get; set; }
+        [DisplayName("Asset")]
+        public int? AssetRegistrationId { get; set; }
+        [Display(Name = "Item Name")]
+        public string ItemName { get; set; }
+        [Display(Name = "Tag No.")]
+        public string TagNo { get; set; }
         public int? Quantity { get; set; }
         [DisplayName("Priority Color")]
         public string PriorityColor { get; set; }
@@ -61,6 +68,8 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
         public int? EmployeeId { get; set; }
         [DisplayName("Age In Days")]
         public string AgeOfTicket { get; set; }
+        [DisplayName("Pending Reason")]
+        public string PendingReason { get; set; }
         public bool IsAssigned { get; set; }
         public bool IsSendForApproval { get; set; }
         public DateTime? SendApprovalTime { get; set; }
@@ -70,6 +79,9 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
         //public int Rate { get; set; }
         public bool IsClosed { get; set; }
         public bool IsMultipleAssign { get; set; }
+        public TicketHandledBy Handler { get; set; }
+        [DisplayName("IP Address")]
+        public string RequesterIPAddress { get; set; }
         public virtual TicketType_HelpDesk TicketType_HelpDesk { get; set; }
         public virtual SupportGroup_HelpDesk SupportGroup_HelpDesk { get; set; }
         public virtual MaterialItems MaterialItems { get; set; }
@@ -169,7 +181,8 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
     public enum CustomerTicketSourceType
     {
    
-        Customer, Employee,
+        Customer,
+        Employee,
         Unknown
     }
 
@@ -177,29 +190,38 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
     {
         On_Time ,Late
     }
-    public enum SourceTicket {
+    public enum SourceTicket
+    {
 
-    Direct,In_Direct}
+
+        Direct,
+        In_Direct
+    }
+    public enum TicketHandledBy
+    {
+
+        N_A,
+        Internal,
+        External
+    }
 }
 public enum TicketStatus
 {
     [Display(Name = "Waiting for Response")]
     Waiting,
-    
     [Display(Name = "Ticket Assigned")]
     Assigned,
-    
     [Display(Name = "Issue Resolved")]
     Resolved,
-    
     [Display(Name = "Ticket Closed")]
     Closed,
-    
     [Display(Name = "Not Solved")]
     NOT_SOLVED,
-    
     [Display(Name = "Waiting for Confirmation")]
-    WAITING_FOR_CONFIRMATION
+    WAITING_FOR_CONFIRMATION,
+    Pending
+
+
 }
 //public enum TicketStatus
 //{
@@ -215,5 +237,6 @@ public enum TicketPriority
 {
     Low,
     Medium,
-    High
+    High,
+    Critical
 }

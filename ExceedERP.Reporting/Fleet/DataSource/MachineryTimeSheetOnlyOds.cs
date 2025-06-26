@@ -13,7 +13,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
     [DataObject]
     public class MachineryTimeSheetOnlyOds
     {
-        ExceedDbContext db = new ExceedDbContext();
+        ExceedDbContext db = new ExceedDbContext(); 
 
 
 
@@ -24,8 +24,6 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             List<MachineryTimeSheetDTO> list = new List<MachineryTimeSheetDTO>();
             if (fleetId != null)
             {
-
-
                 var machineryTimeSheetOnly = db.MachineryWorkingTimeSheets.OrderByDescending(x => x.Date).Where(x => x.TimeSheetApproved).ToList();
                 Guid.TryParse(fleetId, out Guid FId);
                 machineryTimeSheetOnly = machineryTimeSheetOnly.Where(x => x.FleetsID == FId && x.Date.Date >= from.Date && x.Date.Date <= to.Date).ToList();
@@ -87,8 +85,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         DownHours = item.DownHours,
                         DownReason = item.DownReason,
                         FuelConsumption = item.FuelConsumption,
-                        GreaseConsumption = item.GreaseConsumption,
-
+                        GreaseConsumption = item.GreaseConsumption,//////
                         IdleHours = item.IdleHours,
                         IdleReason = item.IdleReason,
                         MorningTimeEnd = item.MorningTimeEnd,

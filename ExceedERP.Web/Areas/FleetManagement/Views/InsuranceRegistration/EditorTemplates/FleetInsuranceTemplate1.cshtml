@@ -14,7 +14,7 @@
                           .DataValueField("FleetsID")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetFleet", "FleetManagementDataProvider", new { Area = "FleetManagement" }))
+                              dataSource.Read(read => read.Action("GetFleet", "FleetManagementDataProvider", new { Area = "FleetManagement" }).Data("sendForgery"))
                                   .ServerFiltering(false);
                           })
                           .Filter("contains")
@@ -36,7 +36,7 @@
                           .DataValueField("InsuranceCompanyId")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetInsuranceCompany", "FleetManagementDataProvider", new { Area = "FleetManagement" }))
+                              dataSource.Read(read => read.Action("GetInsuranceCompany", "FleetManagementDataProvider", new { Area = "FleetManagement" }).Data("sendForgery"))
                                   .ServerFiltering(false);
                           })
                           .Filter("contains")

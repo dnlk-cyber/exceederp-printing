@@ -46,7 +46,7 @@
                                 .Scrollable(h => h.Height(500))
       .DataSource(dataSource => dataSource
           .Ajax()
-          .ServerOperation(false)
+         
               .Model(model =>
               {
               model.Id(p => p.ServiceID);
@@ -55,10 +55,10 @@
                                     .Error("error_handler(\"grid\")")
                                     .RequestStart("onRequestStart(\"grid\")")
                                     .RequestEnd("onRequestEnd(\"grid\")"))
-          .Create(update => update.Action("Service_Create", "InspectionRegistration"))
-          .Read(read => read.Action("Service_Read", "InspectionRegistration"))
-          .Update(update => update.Action("Service_Update", "InspectionRegistration"))
-          .Destroy(update => update.Action("Service_Destroy", "InspectionRegistration"))
+          .Create(update => update.Action("Service_Create", "InspectionRegistration").Data("sendForgery"))
+          .Read(read => read.Action("Service_Read", "InspectionRegistration").Data("sendForgery"))
+          .Update(update => update.Action("Service_Update", "InspectionRegistration").Data("sendForgery"))
+          .Destroy(update => update.Action("Service_Destroy", "InspectionRegistration").Data("sendForgery"))
       )
       .Events(events => events.DataBound("dataBound")))
 <script id="template" type="text/kendo-tmpl">
@@ -95,10 +95,10 @@
                                                                     .Error("error_handler(\"ServiceCrewgrid_#=ServiceID#\")")
                                                                     .RequestStart("onRequestStart(\"ServiceCrewgrid_#=ServiceID#\")")
                                                                     .RequestEnd("onRequestEnd(\"ServiceCrewgrid_#=ServiceID#\")"))
-                                                                            .Create(update => update.Action("ServiceCrew_Create", "ServiceCrew", new { cserviceID = "#=ServiceID#" }))
-                                                                                            .Read(read => read.Action("ServiceCrewByService_Read", "ServiceCrew", new { Id = "#=ServiceID#" }))
-                                                                                                                       .Update(destroy => destroy.Action("ServiceCrew_Update", "ServiceCrew", new { cserviceID = "#=ServiceID#" }))
-                                                                            .Destroy(destroy => destroy.Action("ServiceCrew_Destroy", "ServiceCrew"))
+                                                                            .Create(update => update.Action("ServiceCrew_Create", "ServiceCrew", new { cserviceID = "#=ServiceID#" }).Data("sendForgery"))
+                                                                                            .Read(read => read.Action("ServiceCrewByService_Read", "ServiceCrew", new { Id = "#=ServiceID#" }).Data("sendForgery"))
+                                                                                                                       .Update(destroy => destroy.Action("ServiceCrew_Update", "ServiceCrew", new { cserviceID = "#=ServiceID#" }).Data("sendForgery"))
+                                                                            .Destroy(destroy => destroy.Action("ServiceCrew_Destroy", "ServiceCrew").Data("sendForgery"))
                         )
                            .Sortable()
                         .ToClientTemplate())

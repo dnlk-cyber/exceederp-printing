@@ -21,7 +21,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public string Type { get; set; }
         public string Tube { get; set; }
         public string Size { get; set; }
-        public decimal UnitPrice { get; set; }
+        public decimal UnitPrice { get; set; }        
         public decimal OdoMeter { get; set; }
         public Guid fleetId { get; set; }
         public bool Isattached { get; set; }

@@ -1,0 +1,140 @@
+﻿@model  ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternalEquipment
+
+
+
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Category</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentIdentityID)
+                    .AutoBind(true)
+                                .DataTextField("Name")
+                                .DataValueField("Id").Filter(FilterType.Contains)
+                                .OptionLabel("Select Category")
+                                .HtmlAttributes(new { style = "width:100%" })
+                                .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery"))
+                                .ServerFiltering(false)))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentTypeID)
+                    .AutoBind(true)
+                                     .DataTextField("Name")
+                                     .DataValueField("Id")
+                                     .OptionLabel("Select Equipment Type")
+                                     .Filter(FilterType.Contains)
+                                     .DataSource(d =>
+                                     {
+                                         d.Read(r =>
+                                          {
+                                              r.Action("GetEquipmentTypes", "FleetManagementDataProvider")
+                                                .Data("filterCategory");
+                                          })
+                                           .ServerFiltering(true);
+                                     })
+                                           .Enable(false)
+                                           .AutoBind(false)
+                                           .CascadeFrom("EquipmentIdentityID")
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Name</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentNameID)
+                                                       .AutoBind(true)
+                                                       .Enable(false)
+                                                       .DataTextField("Name")
+                                                         .DataValueField("Id")
+                                                         .Filter(FilterType.Contains)
+                                                         .OptionLabel("Select")
+                                                       .DataSource(d => d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider").Data("sendForgery")
+                                                       .Data("filterEquipmentNames"))
+                                                       .ServerFiltering(true))
+                                                       .CascadeFrom("EquipmentTypeID"))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Plate/Serial</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.FleetId)
+                                                              .AutoBind(true)
+                                                              .Enable(false)
+                                                              .DataTextField("Text")
+                                                                .DataValueField("Value")
+                                                                .Filter(FilterType.Contains)
+                                                                .OptionLabel("Select")
+                                                              .DataSource(d => d.Read(r => r.Action("GetExternalFleetForRentFromExternalEquipment", "FleetManagementDataProvider").Data("sendForgery")
+                                                              .Data("filterPlateNumber"))
+                                                              .ServerFiltering(true))
+                                                              .CascadeFrom("EquipmentNameID"))
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Rent Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.RentType).Enable(true)
+
+                                                         .OptionLabel(" Select ")
+                                                         .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.RentType))))
+                @Html.ValidationMessageFor(model => model.RentType, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Rental Rate</label>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.RentalRate).HtmlAttributes(new { @class = "form-control", required = "required" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Idle Rate</label>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.IdleRentalRate).HtmlAttributes(new { @class = "form-control", required = "required" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label></label>
+            <div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

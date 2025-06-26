@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,6 +33,12 @@ namespace ExceedERP.Reporting.Fleet.ViewModel
         public string CreatedBy { get; set; }
         public string SendForApprovalBy { get; set; }
         public string ApprovedBy { get; set; }
+        public string CreatedDate { get; set; }
+        public string ApprovedDate { get; set; }
+        public string CheckedDate { get; set; }
+        public Image ApprovedBySignature { get; set; }
+        public Image CreatedBySignature { get; set; }
+        public Image CheckedBySignature { get; set; }
         public string Location { get; set; }
          public string UnitNum { get; set; }
         public string Manufacturer { get; set; }

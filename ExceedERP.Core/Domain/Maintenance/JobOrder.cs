@@ -25,12 +25,15 @@ namespace ExceedERP.Core.Domain.Maintenance
         public int? CustomerId;
 
         public Guid JobOrderID { get; set; }
+        public string ToExternalJobOrderId { get; set; }
+        public string ServiceCenterJobId { get; set; }
 
         [DisplayName(" Is Rework?")]
         public bool IsRework { get; set; }
         [DisplayName(" Equipment")]
         public Guid FleetsID { get; set; }
-
+        public string KMReading { get; set; }
+        public string GPSInfo { get; set; }
         [DisplayName(" Equipment (License Plate)")]
         public Guid EquipmentInformationId { get; set; }
 
@@ -109,7 +112,9 @@ namespace ExceedERP.Core.Domain.Maintenance
         public string LicensePlate { get; set; }
         public string RejectionReason { get; set; }
         public bool IsSentToWorkShop { get; set; }
+        public DateTime? IsSentToWorkShopTime { get; set; }
         public bool IsSubmittedToServiceCenter { get; set; }
+        //public DateTime? IsSubmittedToServiceCenterTime { get; set; }
         public DateTime? OnlineAssignedTime { get; set; }
         public DateTime? OnlineSubmittedTime { get; set; }
         public string WorkShopRejectedReason { get; set; }
@@ -136,5 +141,56 @@ namespace ExceedERP.Core.Domain.Maintenance
         SubmittedToServiceCenter,
         Rejected,
         Approved
+    }
+    public class JobOrderVM 
+    {
+       
+
+        public string JobOrderId { get; set; }
+
+        [DisplayName(" Is Rework?")]
+        public bool IsRework { get; set; }
+        
+        public bool IsExternal { get; set; }
+        [DisplayName("Maintenance Center")]
+        public string MaintenanceCenter { get; set; }
+        public string Status { get; set; }
+      
+        [DisplayName(" Project ")]
+        public string ProjectName { get; set; }
+        public string PercentCompleted { get; set; }
+        public decimal Odometer { get; set; }
+        public string Site { get; set; }
+        public string FailureReason { get; set; }
+        public string AdvanceMeasure { get; set; }
+        public string EquipmentNo { get; set; }
+        public string EquipmentType { get; set; }
+       
+        [DisplayName("Date Issued  ")]
+        public DateTime? DateCreated { get; set; }
+        public DateTime? DateClosed { get; set; }
+        [DisplayName("Date Completed   ")]
+        public DateTime? DateCompleted { get; set; }
+        [DisplayName("Requested By")]
+        public string InspectedBy { get; set; }
+       
+        public string InspectorComments { get; set; }
+        public string LicensePlate { get; set; }
+        public string RejectionReason { get; set; }
+        public bool IsSentToWorkShop { get; set; } 
+        public DateTime? IsSentToWorkShopTime { get; set; }
+        public bool IsSubmittedToServiceCenter { get; set; }
+        //public DateTime? IsSubmittedToServiceCenterTime { get; set; }
+        public DateTime? OnlineAssignedTime { get; set; }
+        public DateTime? OnlineSubmittedTime { get; set; }
+        public string WorkShopRejectedReason { get; set; }
+        //public virtual Fleets Fleets { get; set; }
+        [Display(Name ="Branch")]
+        public string BranchName { get; set; }
+        [Display(Name ="Business Unit")]
+        public string BusinessUnit { get; set; }
+        [Display(Name ="Org Structure")]
+        public string OrgStructure { get; set; }
+        public string Description { get; set; } 
     }
 }

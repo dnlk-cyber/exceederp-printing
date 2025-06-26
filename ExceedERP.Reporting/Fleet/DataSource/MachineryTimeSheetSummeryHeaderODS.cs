@@ -2,6 +2,7 @@
 using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.Procurement.Supplier;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Fleet.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -24,9 +25,9 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             if (fleetId != null)
             {
                 Guid FId = Guid.Parse(fleetId);
-
+                List<MachineryWorkingTimeSheet> PreparedBy = db.MachineryWorkingTimeSheets.Where(x => x.FleetsID == FId && DbFunctions.TruncateTime(x.Date) >= from.Date && DbFunctions.TruncateTime(x.Date) <= to.Date).ToList();
+                MachineryWorkingTimeSheet LastMachineryTimeSheet = PreparedBy.LastOrDefault();
                 MachineryWorkingTimeSheet machineryTimeSheet = db.MachineryWorkingTimeSheets.FirstOrDefault(x => x.FleetsID == FId && DbFunctions.TruncateTime(x.Date) >= from.Date && DbFunctions.TruncateTime(x.Date) <= to.Date);
-                
                 if (machineryTimeSheet != null)
                 {
                     var branch = db.Branch.FirstOrDefault(x => x.BranchId == machineryTimeSheet.BranchId);
@@ -47,7 +48,21 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         if (equipmentName != null)
                             header.EquipmentName = equipmentName.Name;
                         header.PlateNumber = fleet.SerialNo;
-                        header.OwnerName = procurementSupplier?.Name == null ? db.Companies.FirstOrDefault()?.TradeName : "";
+                        if (fleet.IsExternal)
+                        {
+                            if (procurementSupplier != null)
+                            {
+                                header.OwnerName = procurementSupplier?.Name;
+                            }
+                            else
+                            {
+                                header.OwnerName = "";
+                            }
+                        }
+                        else
+                        {
+                            header.OwnerName = db.Companies.FirstOrDefault()?.TradeName;
+                        }
                         if (operatorName != null)
                             header.OperatorName = operatorName.FullName;
                         if (branch != null)
@@ -60,114 +75,116 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     header.Duration = from.ToString("MM/dd/yyyy") + "-" + to.ToString("MM/dd/yyyy");
 
                     header.Period = DateTime.Now.Month.ToString() + "," + DateTime.Now.Year.ToString();
+                    if (LastMachineryTimeSheet.CreatedBy != null)
+                    {
+                        header.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastMachineryTimeSheet.CreatedBy));
+                    }
+                    if (LastMachineryTimeSheet.CostSheetSendForApprovalBy != null)
+                    {
+                        header.CheckedBY = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastMachineryTimeSheet.CostSheetSendForApprovalBy));
+                    }
+                    if (LastMachineryTimeSheet.CostSheetApprovedBy != null)
+                    {
+                        header.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastMachineryTimeSheet.CostSheetApprovedBy));
+                    }
+                    header.PreparedDate = LastMachineryTimeSheet.DateCreated?.ToString("yyyy-MM-dd")??"";
+                    header.CheckedDate = LastMachineryTimeSheet.CostSheetSendForApprovalTime?.ToString("yyyy-MM-dd")??"";
+                    header.ApprovedDate = LastMachineryTimeSheet.CostSheetApprovedDate?.ToString("yyyy-MM-dd")??"";
+                    if (LastMachineryTimeSheet.TimeSheetApprovedBy != null)
+                    {
+                        header.TimesheetApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastMachineryTimeSheet.TimeSheetApprovedBy));
+                    }
+                    header.TimesheetApprovedDate = LastMachineryTimeSheet.TimeSheetApprovedDate?.ToString("yyyy-MM-dd")??"";
+                    header.TimesheetSendForApprovalBy = LastMachineryTimeSheet.TimeSheetSendForApprovalTime?.ToString("yyyy-MM-dd")??"";
+                    if (LastMachineryTimeSheet.TimeSheetSendForApprovalBy != null)
+                    {
+                        header.TimesheetSendForApprovalBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastMachineryTimeSheet.TimeSheetSendForApprovalBy));
+                    }
                 }
             }
-            
+
             return header;
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<MachineryTimeSheetSummeryVM> MachineryTimeSheetSummery(string fleetId, DateTime from, DateTime to, string project, string businessUnitId, string categoryId, string subCategoryId)
+        public List<MachineryTimeSheetSummeryVM> MachineryTimeSheetSummery(string fleetId, DateTime from, DateTime to, string IntExt, string project, string businessUnitId, string categoryId, string subCategoryId)
         {
-
             var list = new List<MachineryTimeSheetSummeryVM>();
-            if (fleetId != null)
+
+            if (!Guid.TryParse(fleetId, out Guid FId)) return list;
+
+            var query = db.MachineryWorkingTimeSheets
+                .Where(x => x.CostSheetApproved &&
+                            x.FleetsID == FId &&
+                            x.Date >= from.Date &&
+                            x.Date <= to.Date);
+
+            if (int.TryParse(project, out int branchId))
+                query = query.Where(x => x.BranchId == branchId);
+
+            if (int.TryParse(businessUnitId, out int buId))
+                query = query.Where(x => x.BusinessUnitId == buId);
+
+            // External/Internal filtering
+            if (!string.IsNullOrWhiteSpace(IntExt))
             {
-
-                
-                var machineryTimeSheets = db.MachineryWorkingTimeSheets.OrderByDescending(x => x.Date).Where(x => x.CostSheetApproved).ToList();
-                var categories = db.EquipmentIdentity.ToList();
-                var equipmentTypes = db.EquipmentType.ToList();
-
-                Guid.TryParse(fleetId, out Guid FId);
-                machineryTimeSheets = machineryTimeSheets.Where(x => x.FleetsID == FId && x.Date.Date >= from.Date && x.Date.Date <= to.Date).ToList();
-                #region Rental Rate
-                //var fleet = db.Fleets.FirstOrDefault(x => x.FleetsID == FId);
-                var fleetList = db.Fleets.ToList();
-                var fleetRentalRates = db.FleetRentalRates.ToList();
-                var timeSheetBranchIds = new HashSet<int>(machineryTimeSheets.Select(s => s.BranchId));
-                var timeSheetDates = new HashSet<int>(machineryTimeSheets.Select(s => s.Date.Year));
-                fleetRentalRates = fleetRentalRates.Where(x => timeSheetBranchIds.Contains(x.BranchId)).ToList();
-                fleetRentalRates = fleetRentalRates.Where(x => timeSheetDates.Contains(x.Year.Year)).ToList();
-
-                foreach (var item in fleetRentalRates)
-                {
-                    var equipmentRates = db.EquipmentRates.Where(x => x.FleetRentalRateId == item.FleetRentalRateId).ToList();
-                  
-                }
-                #endregion
-
-
-                if (project != null)
-                {
-                    int.TryParse(project, out int branchId);
-                    machineryTimeSheets = machineryTimeSheets.Where(x => x.BranchId == branchId).ToList();
-
-                }
-                if (!string.IsNullOrWhiteSpace(businessUnitId))
-                {
-                    machineryTimeSheets = machineryTimeSheets.Where(x => x.BusinessUnitId == int.Parse(businessUnitId)).ToList();
-                }
-                if (!string.IsNullOrWhiteSpace(categoryId))
-                {
-                    Guid.TryParse(categoryId, out Guid id);
-                    List<MachineryWorkingTimeSheet> machineryList = new List<MachineryWorkingTimeSheet>();
-                    var fleetFiltered = db.Fleets.Where(x => x.EquipmentIdentityID == id).ToList();
-                    foreach (var item in fleetFiltered)
-                    {
-                        var machineryTimesheetList = machineryTimeSheets.Where(x => x.FleetsID == item.FleetsID).ToList();
-                        machineryList.AddRange(machineryTimesheetList);
-                    }
-                    machineryTimeSheets = machineryList;
-
-                }
-                if (!string.IsNullOrWhiteSpace(subCategoryId))
-                {
-                    Guid.TryParse(subCategoryId, out Guid id);
-                    List<MachineryWorkingTimeSheet> machineryList = new List<MachineryWorkingTimeSheet>();
-                    var fleets = db.Fleets.Where(x => x.EquipmentTypeID == id).ToList();
-                    foreach (var item in fleets)
-                    {
-                        var machineryTimesheetList = machineryTimeSheets.Where(x => x.FleetsID == item.FleetsID).ToList();
-                        machineryList.AddRange(machineryTimesheetList);
-                    }
-                    machineryTimeSheets = machineryList;
-                }
-                foreach (var machineryTimeSheet in machineryTimeSheets)
-                {
-                    var timeSheet = new MachineryTimeSheetSummeryVM();
-                    timeSheet.Date = machineryTimeSheet.Date.Date;
-                    timeSheet.WorkItem = machineryTimeSheet.WorkType;
-                    timeSheet.OperationNetworkinHour = Math.Round((decimal)((machineryTimeSheet.MorningTimeEnd - machineryTimeSheet.MorningTimeStart).TotalHours + (machineryTimeSheet.AfternoonTimeEnd - machineryTimeSheet.AfternoonTimeStart).TotalHours + (machineryTimeSheet.NightTimeEnd - machineryTimeSheet.NightTimeStart).TotalHours), 2);
-                    timeSheet.OperationRatePerHour = machineryTimeSheet.RentalRate;
-                    // Calculated
-                    timeSheet.OpertionRevenue = timeSheet.OperationNetworkinHour * timeSheet.OperationRatePerHour;
-                    timeSheet.IdleHour = machineryTimeSheet.IdleHours;
-                    timeSheet.IdleRatePerHour = machineryTimeSheet.IdealRentalRate;
-                    // Calculated
-                    timeSheet.IdleRevenue = timeSheet.IdleHour * timeSheet.IdleRatePerHour * timeSheet.OperationRatePerHour;
-                    timeSheet.DownHour = machineryTimeSheet.DownHours;
-                    // Calculated
-                    timeSheet.TotalRevenue = timeSheet.IdleRevenue + timeSheet.OpertionRevenue;
-                    timeSheet.FuelInLiter = machineryTimeSheet.FuelConsumption;
-                    timeSheet.FuelRate = machineryTimeSheet.FuelRate;
-                    // Calculated
-                    timeSheet.FuelCost = timeSheet.FuelInLiter * timeSheet.FuelRate;
-                    timeSheet.LubricantCost = machineryTimeSheet.LubricantCost;
-                    timeSheet.MaintenanceCost = machineryTimeSheet.MaintenanceCost;
-                    timeSheet.TireCost = machineryTimeSheet.TireCost;
-                    timeSheet.Perdium = machineryTimeSheet.Perdium;
-                    timeSheet.Salary = machineryTimeSheet.Salary;
-                    // Calculated
-                    timeSheet.TotalCost = timeSheet.FuelCost + timeSheet.LubricantCost + timeSheet.MaintenanceCost + timeSheet.TireCost + timeSheet.Perdium + timeSheet.Salary;
-                    timeSheet.NetIncome = timeSheet.TotalRevenue - timeSheet.TotalCost;
-                    list.Add(timeSheet);
-                }
-                return list.OrderBy(x => x.Date.Date).ToList();
+                bool isExternal = IntExt == "Rent";
+                var fleetIds = db.Fleets.Where(f => f.IsExternal == isExternal).Select(f => f.FleetsID).ToList();
+                query = query.Where(x => fleetIds.Contains(x.FleetsID));
             }
-            return list;
-        }
 
+            // Category filter
+            if (Guid.TryParse(categoryId, out Guid catId))
+            {
+                var fleetIds = db.Fleets.Where(f => f.EquipmentIdentityID == catId).Select(f => f.FleetsID).ToList();
+                query = query.Where(x => fleetIds.Contains(x.FleetsID));
+            }
+
+            // Subcategory filter
+            if (Guid.TryParse(subCategoryId, out Guid subCatId))
+            {
+                var fleetIds = db.Fleets.Where(f => f.EquipmentTypeID == subCatId).Select(f => f.FleetsID).ToList();
+                query = query.Where(x => fleetIds.Contains(x.FleetsID));
+            }
+
+            var filteredSheets = query.ToList();
+
+            foreach (var sheet in filteredSheets)
+            {
+                var opHours = (sheet.MorningTimeEnd - sheet.MorningTimeStart).TotalHours +
+                              (sheet.AfternoonTimeEnd - sheet.AfternoonTimeStart).TotalHours +
+                              (sheet.NightTimeEnd - sheet.NightTimeStart).TotalHours;
+
+                var vm = new MachineryTimeSheetSummeryVM
+                {
+                    Date = sheet.Date.Date,
+                    WorkItem = sheet.WorkType,
+                    OperationNetworkinHour = Math.Round((decimal)opHours, 2),
+                    OperationRatePerHour = sheet.RentalRate,
+                    OpertionRevenue = Math.Round((decimal)opHours, 2) * sheet.RentalRate,
+                    IdleHour = sheet.IdleHours,
+                    IdleRatePerHour = sheet.IdealRentalRate,
+                    IdleRevenue = sheet.IdleHours * sheet.IdealRentalRate,
+                    DownHour = sheet.DownHours,
+                    FuelInLiter = sheet.FuelConsumption,
+                    FuelRate = sheet.FuelRate,
+                    FuelCost = sheet.FuelConsumption * sheet.FuelRate,
+                    LubricantCost = sheet.LubricantCost,
+                    MaintenanceCost = sheet.MaintenanceCost,
+                    TireCost = sheet.TireCost,
+                    Perdium = sheet.Perdium,
+                    Salary = sheet.Salary,
+                };
+
+                vm.TotalRevenue = vm.OpertionRevenue + vm.IdleRevenue;
+                vm.TotalCost = vm.FuelCost + vm.LubricantCost + vm.MaintenanceCost + vm.TireCost + vm.Perdium + vm.Salary;
+                vm.NetIncome = vm.TotalRevenue - vm.TotalCost;
+
+                list.Add(vm);
+            }
+
+            return list.OrderBy(x => x.Date).ToList();
+        }
     }
 
     [DataObject]

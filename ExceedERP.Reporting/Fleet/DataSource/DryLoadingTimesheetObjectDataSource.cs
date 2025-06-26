@@ -1,8 +1,9 @@
-﻿using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.Procurement.Supplier;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Fleet.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,8 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             if (fleetId != null)
             {
                 Guid FId = Guid.Parse(fleetId);
-
+                List<DryLoadingTimeSheet> PreparedBy = db.DryLoadingTimeSheets.Where(x => x.FleetsID == FId && DbFunctions.TruncateTime(x.TripStartDate) >= from.Date && DbFunctions.TruncateTime(x.TripStartDate) <= to.Date).ToList();
+                DryLoadingTimeSheet LastDryLoadingtimeSheet = PreparedBy.LastOrDefault();
                 var dryLoadingTimesheet = db.DryLoadingTimeSheets.FirstOrDefault(x => x.FleetsID == FId && DbFunctions.TruncateTime(x.TripStartDate) >= from.Date && DbFunctions.TruncateTime(x.TripStartDate) <= to.Date);
                 if (dryLoadingTimesheet != null)
                 {
@@ -49,7 +51,22 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         if (equipmentName != null)
                             header.EquipmentName = equipmentName.Name;
                         header.PlateNumber = fleet.PlateNumber;
-                        header.OwnerName = procurementSupplier?.Name == null ? db.Companies.FirstOrDefault()?.TradeName : "";
+
+                        if (fleet.IsExternal)
+                        {
+                            if (procurementSupplier != null)
+                            {
+                                header.OwnerName = procurementSupplier?.Name;
+                            }
+                            else
+                            {
+                                header.OwnerName = "";
+                            }
+                        }
+                        else
+                        {
+                            header.OwnerName = db.Companies.FirstOrDefault()?.TradeName;
+                        }
                         if (operatorName != null)
                             header.OperatorName = operatorName.FullName;
                         if (branch != null)
@@ -59,66 +76,105 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     header.DurationTo = to.Date;
                     header.Duration = from.ToString("MM/dd/yyyy") + "-" + to.ToString("MM/dd/yyyy");
                     header.Period = DateTime.Now.Month.ToString() + "," + DateTime.Now.Year.ToString();
-                }
+                    header.PreparedBy = LastDryLoadingtimeSheet.CreatedBy;
+                    if (LastDryLoadingtimeSheet.CreatedBy != null)
+                    {
+                        header.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastDryLoadingtimeSheet.CreatedBy));
+                    }
+                    if (LastDryLoadingtimeSheet.CostSheetSendForApprovalBy != null)
+                    {
+                        header.CheckedBY = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastDryLoadingtimeSheet.CostSheetSendForApprovalBy));
+                    }
+                    header.CheckedDate = LastDryLoadingtimeSheet.CostSheetSendForApprovalTime?.ToString("yyyy-MM-dd")??"";
+                    if (LastDryLoadingtimeSheet.CostSheetApprovedBy != null)
+                    {
+                        header.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastDryLoadingtimeSheet.CostSheetApprovedBy));
+                    }
+                    header.PreparedDate = LastDryLoadingtimeSheet.DateCreated?.ToString("yyyy-MM-dd")??"";
+                    header.ApprovedDate = LastDryLoadingtimeSheet.CostSheetApprovedDate?.ToString("yyyy-MM-dd")??"";
+                    if (LastDryLoadingtimeSheet.ModifiedBy != null)
+                    {
+                        header.LastModifiedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastDryLoadingtimeSheet.ModifiedBy));
+                    }
+                    header.ModifiedDate = LastDryLoadingtimeSheet.LastModified?.ToString("yyyy-MM-dd")??"";
+                    if (LastDryLoadingtimeSheet.TimeSheetApprovedBy != null)
+                    {
+                        header.TimesheetApporvedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastDryLoadingtimeSheet.TimeSheetApprovedBy));
+                    }
+                    header.TimesheetApporvedDate = LastDryLoadingtimeSheet.TimeSheetApprovedDate?.ToString("yyyy-MM-dd")??"";
+                    if (LastDryLoadingtimeSheet.TimeSheetSendForApprovalBy != null)
+                    {
+                        header.TimesheetSendForApprovalBY = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastDryLoadingtimeSheet.TimeSheetSendForApprovalBy));
+                    }
+                    header.TimesheetSendForApprovalDate = LastDryLoadingtimeSheet.CostSheetSendForApprovalTime?.ToString("yyyy-MM-dd")??"";
+
+    }
             }
 
             return header;
         }
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<DryLoadingTimesheetViewModel> DryLoadingTimesheet(string fleetId, string startPlace, string ArrivalPlace, DateTime from, DateTime to, string businessUnitId, string categoryId, string subCategoryId, string projectId)
-        {
-
+        public List<DryLoadingTimesheetViewModel> DryLoadingTimesheet(
+    string fleetId, string startPlace, string IntExt, string ArrivalPlace,
+    DateTime from, DateTime to, string businessUnitId,
+    string categoryId, string subCategoryId, string projectId)
+{
+            var fromDate = from.Date;
+            var toDate = to.Date.AddDays(1); // Make upper bound exclusive
             var list = new List<DryLoadingTimesheetViewModel>();
-            if (fleetId != null)
-            {
-                Guid FId = Guid.Parse(fleetId);
 
-                var dryLoadingTimesheets = db.DryLoadingTimeSheets.Where(x => x.FleetsID == FId && x.CostSheetApproved).ToList();
+    if (string.IsNullOrWhiteSpace(fleetId) || !Guid.TryParse(fleetId, out Guid FId))
+        return list;
 
-                dryLoadingTimesheets = dryLoadingTimesheets.Where(x => x.TripStartDate.Date >= from.Date && x.TripStartDate <= to.Date).ToList();
+    var query = db.DryLoadingTimeSheets
+                  .AsNoTracking()
+                  .Where(x => x.FleetsID == FId && x.CostSheetApproved);
 
-                if (startPlace != null)
-                {
-                    dryLoadingTimesheets = dryLoadingTimesheets.Where(x => x.TripStartPlace == startPlace).ToList();
-                }
-                if (ArrivalPlace != null)
-                {
-                    int.TryParse(ArrivalPlace, out int aId);
-                    dryLoadingTimesheets = dryLoadingTimesheets.Where(x => x.DryLoadingTimeSheetId == aId).ToList();
-                }
-                if (!string.IsNullOrWhiteSpace(businessUnitId))
-                {
-                    dryLoadingTimesheets = dryLoadingTimesheets.Where(x => x.BusinessUnitId == int.Parse(businessUnitId)).ToList();
-                }
-                if (!string.IsNullOrWhiteSpace(categoryId))
-                {
-                    Guid.TryParse(categoryId, out Guid id);
-                    List<DryLoadingTimeSheet> dryLoadingList = new List<DryLoadingTimeSheet>();
-                    var fleetFiltered = db.Fleets.Where(x => x.EquipmentIdentityID == id).ToList();
-                    foreach (var item in fleetFiltered)
-                    {
-                        var dryLoadingFiltered = dryLoadingTimesheets.Where(x => x.FleetsID == item.FleetsID).ToList();
-                        dryLoadingList.AddRange(dryLoadingFiltered);
-                    }
-                    dryLoadingTimesheets = dryLoadingList;
-                }
-                if (!string.IsNullOrWhiteSpace(subCategoryId))
-                {
-                    Guid.TryParse(subCategoryId, out Guid id);
-                    List<DryLoadingTimeSheet> dryLoadingList = new List<DryLoadingTimeSheet>();
-                    var fleetFiltered = db.Fleets.Where(x => x.EquipmentIdentityID == id).ToList();
-                    foreach (var item in fleetFiltered)
-                    {
-                        var dryLoadingFiltered = dryLoadingTimesheets.Where(x => x.FleetsID == item.FleetsID).ToList();
-                        dryLoadingList.AddRange(dryLoadingFiltered);
-                    }
-                    dryLoadingTimesheets = dryLoadingList;
-                }
-                if (!string.IsNullOrWhiteSpace(projectId))
-                {
-                    int.TryParse(projectId, out int branchId);
-                    dryLoadingTimesheets = dryLoadingTimesheets.Where(x => x.BranchId == branchId).ToList();
-                }
+   // query = query.Where(x => x.TripStartDate.Date >= from.Date && x.TripStartDate.Date <= to.Date);
+    query = query.Where(x => x.TripStartDate >= fromDate && x.TripStartDate < toDate);
+            if (!string.IsNullOrWhiteSpace(startPlace))
+        query = query.Where(x => x.TripStartPlace == startPlace);
+
+    if (int.TryParse(ArrivalPlace, out int arrivalId))
+        query = query.Where(x => x.DryLoadingTimeSheetId == arrivalId);
+
+    if (!string.IsNullOrWhiteSpace(businessUnitId) && int.TryParse(businessUnitId, out int buId))
+        query = query.Where(x => x.BusinessUnitId == buId);
+
+    if (!string.IsNullOrWhiteSpace(IntExt))
+    {
+        var external = IntExt == "Rent";
+        var externalFleetIds = db.Fleets
+                                 .AsNoTracking()
+                                 .Where(f => f.IsExternal == external)
+                                 .Select(f => f.FleetsID);
+        query = query.Where(x => externalFleetIds.Contains(x.FleetsID));
+    }
+
+    if (!string.IsNullOrWhiteSpace(categoryId) && Guid.TryParse(categoryId, out Guid catId))
+    {
+        var catFleetIds = db.Fleets
+                            .AsNoTracking()
+                            .Where(f => f.EquipmentIdentityID == catId)
+                            .Select(f => f.FleetsID);
+        query = query.Where(x => catFleetIds.Contains(x.FleetsID));
+    }
+
+    if (!string.IsNullOrWhiteSpace(subCategoryId) && Guid.TryParse(subCategoryId, out Guid subCatId))
+    {
+        var subCatFleetIds = db.Fleets
+                               .AsNoTracking()
+                               .Where(f => f.EquipmentIdentityID == subCatId)
+                               .Select(f => f.FleetsID);
+        query = query.Where(x => subCatFleetIds.Contains(x.FleetsID));
+    }
+
+    // Project / Branch Filter
+    if (!string.IsNullOrWhiteSpace(projectId) && int.TryParse(projectId, out int projectBranchId))
+        query = query.Where(x => x.BranchId == projectBranchId);
+
+    // Execute query
+    var dryLoadingTimesheets = query.ToList();
                 foreach (var dryLoadingTimesheet in dryLoadingTimesheets)
                 {
                     var item = new DryLoadingTimesheetViewModel();
@@ -142,6 +198,12 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     item.AsphaltRate = dryLoadingTimesheet.AsphaltRate;
                     item.GravelRate = dryLoadingTimesheet.GravelRate;
                     item.LoadedType = dryLoadingTimesheet.LoadedType;
+                    item.PreparedBy = dryLoadingTimesheet.CreatedBy;
+                    item.Name = dryLoadingTimesheet.CreatedBy;
+                    item.PreparedDate = dryLoadingTimesheet.DateCreated;
+                    item.ApprovedBy = dryLoadingTimesheet.ModifiedBy;
+                    item.ApprovedDate = dryLoadingTimesheet.LastModified;
+                    item.ApproverName = dryLoadingTimesheet.ModifiedBy;
                     //Calculated
                     item.TotalRevenue = item.NoOfTripe * (item.AsphaltTraveled * item.AsphaltRate + item.GravelRate * item.GravelTraveled);
                     item.FuelInLiter = dryLoadingTimesheet.FuelInLiter;
@@ -152,7 +214,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     item.MaintenaceCost = dryLoadingTimesheet.MaintenanceCost;
                     item.TireCost = dryLoadingTimesheet.TireCost;
                     item.LoadingUnloadingCost = dryLoadingTimesheet.LoadingUnloadingCost;
-                    item.Perdium = dryLoadingTimesheet.PerDiem;
+                    item.Perdium = dryLoadingTimesheet.Perdium;
                     item.Salary = dryLoadingTimesheet.Salary;
                     //Calculated
                     item.TotalCost = item.Salary + item.Perdium + item.LoadingUnloadingCost + item.TireCost + item.MaintenaceCost + item.LubricantCost + item.FuelCost;
@@ -160,8 +222,8 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     list.Add(item);
                 }
                 return list;
-            }
-            return list;
+            
+            
         }
     }
     [DataObject]

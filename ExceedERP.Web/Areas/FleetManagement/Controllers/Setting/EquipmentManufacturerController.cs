@@ -100,7 +100,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 
 			return this.Json(new[] { Manufacturer }.ToDataSourceResult(request));
 		}
-            [AllowAnonymous]
+            
 		public ActionResult ManufacturerDDBind()
 		{
 

@@ -1,0 +1,6 @@
+﻿@using ExceedERP.Core.Domain.FleetManagement.FleetTireManagement
+@(Html.Kendo().DropDownListFor(m=>m)
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .BindTo(EnumExtension.EnumToSelectList(typeof(FleetBatteryOrTyreType))
+                            ))

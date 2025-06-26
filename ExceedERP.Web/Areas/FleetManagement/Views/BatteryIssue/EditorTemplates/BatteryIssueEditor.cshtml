@@ -19,7 +19,7 @@
                         @(Html.Kendo().DropDownListFor(model => model.SerialNo).Name("SerialNo")
                                                                  .DataTextField("Text")
                                                                  .DataValueField("Value").OptionLabel(" Select ").Filter(FilterType.Contains)
-                                                                                                 .DataSource(d => d.Read(r => r.Action("BatteryForIssue", "BatteryIssue")).ServerFiltering(false)).Events(e => e.Change("BindDetail")))
+                                                                                                 .DataSource(d => d.Read(r => r.Action("BatteryForIssue", "BatteryIssue").Data("sendForgery")).ServerFiltering(false)).Events(e => e.Change("BindDetail")))
 
 
 
@@ -36,7 +36,7 @@
                         @(Html.Kendo().DropDownListFor(model => model.PlateNumber).Name("PlateNumber")
                                                          .DataTextField("EquipmentName")
                                                  .DataValueField("PlateNumber").OptionLabel(" Select ")
-                                                                         .DataSource(d => d.Read(r => r.Action("FleetsTyreReadingDDBind", "EquipmentRegistration"))))
+                                                                         .DataSource(d => d.Read(r => r.Action("FleetsTyreReadingDDBind", "EquipmentRegistration").Data("sendForgery"))))
                     </div>
                 </div>
             </div>

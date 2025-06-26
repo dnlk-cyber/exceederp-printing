@@ -9,7 +9,7 @@
     .MinLength(2)
     .DataSource(dataSource =>
     {
-        dataSource.Read(read => read.Action("GetTax", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+        dataSource.Read(read => read.Action("GetTax", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
             .ServerFiltering(false);
     })
 )

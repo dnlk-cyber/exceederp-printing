@@ -19,11 +19,29 @@ namespace ExceedERP.Reporting.Fleet.ViewModel
         public string PlateNumber { get; set; }
         public string OperatorName { get; set; }
         public string Project { get; set; }
+        public string PreparedBy { get; set; }
+        public string PreparedDate { get; set; }
+        public string CheckedBY { get; set; }
+        public string CheckedDate { get; set; }
+        public string ApprovedBy { get; set; }
+        public string ApprovedDate { get; set; }
+        public string AuthorizedBy { get; set; }
+        public string AuthorizedDate { get; set; }
+        public string ModifiedBy { get; set; }
+        public string ModifiedDate { get; set; }
+        public string TimesheetSendForApprovalBy { get; set; }
+        public string TimesheetSendForApprovalDate { get; set; }
+        public string TimesheetApprovedBy { get; set; }
+        public string TimesheetApprovedDate { get; set; }
+
     }
     public class MachineryTimeSheetSummeryVM
     {
         public DateTime Date { get; set; }
         public string WorkItem { get; set; }
+        public string Category { get; set; }
+        public string EquipmentName { get; set; }
+        public string PlateNumber { get; set; }
         public decimal OperationNetworkinHour { get; set; }
         public decimal OperationRatePerHour { get; set; }
         public decimal OpertionRevenue { get; set; }

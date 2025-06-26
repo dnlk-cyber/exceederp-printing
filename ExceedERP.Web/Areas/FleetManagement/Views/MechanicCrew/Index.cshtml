@@ -43,7 +43,6 @@
                                 .Scrollable(h => h.Height(500))
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
                .Model(model =>
               {
                   model.Id(p => p.MechanicCrewID);
@@ -52,10 +51,10 @@
                                             .Error("error_handler(\"grid\")")
                                             .RequestStart("onRequestStart(\"grid\")")
                                             .RequestEnd("onRequestEnd(\"grid\")"))
-                .Create(update => update.Action("MechanicCrew_Create", "MechanicCrew"))
-                .Read(read => read.Action("MechanicCrew_Read", "MechanicCrew"))
-                .Update(update => update.Action("MechanicCrew_Update", "MechanicCrew"))
-                .Destroy(update => update.Action("MechanicCrew_Destroy", "MechanicCrew"))
+                .Create(update => update.Action("MechanicCrew_Create", "MechanicCrew").Data("sendForgery"))
+                .Read(read => read.Action("MechanicCrew_Read", "MechanicCrew").Data("sendForgery"))
+                .Update(update => update.Action("MechanicCrew_Update", "MechanicCrew").Data("sendForgery"))
+                .Destroy(update => update.Action("MechanicCrew_Destroy", "MechanicCrew").Data("sendForgery"))
   )
 )
 

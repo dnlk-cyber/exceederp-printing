@@ -45,7 +45,6 @@
                                             .Events(ev => ev.DetailExpand("onDetailExpand"))
       .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
                      .Model(model =>
               {
                   model.Id(p => p.RentInternalProjectID);
@@ -55,10 +54,10 @@
                                                     .Error("error_handler(\"grid\")")
                                                     .RequestStart("onRequestStart(\"grid\")")
                                                     .RequestEnd("onRequestEnd(\"grid\")")) 
-                    .Create(create => create.Action("RentInternalProject_Create", "RentInternalProject"))
-                    .Read(read => read.Action("RentInternalProject_Read", "RentInternalProject"))
-                    .Update(read => read.Action("RentInternalProject_Update", "RentInternalProject"))
-                    .Destroy(read => read.Action("RentInternalProject_Destroy", "RentInternalProject"))
+                    .Create(create => create.Action("RentInternalProject_Create", "RentInternalProject").Data("sendForgery"))
+                    .Read(read => read.Action("RentInternalProject_Read", "RentInternalProject").Data("sendForgery"))
+                    .Update(read => read.Action("RentInternalProject_Update", "RentInternalProject").Data("sendForgery"))
+                    .Destroy(read => read.Action("RentInternalProject_Destroy", "RentInternalProject").Data("sendForgery"))
   )
 )
 
@@ -186,9 +185,9 @@
                                                     .Error("error_handler(\"RentForInternalApproval#=RentInternalProjectID#\")")
                                                     .RequestStart("onRequestStart(\"RentForInternalApproval#=RentInternalProjectID#\")")
                                                     .RequestEnd("onRequestEnd(\"RentForInternalApproval#=RentInternalProjectID#\")"))
-                                                                                                           .Create(update => update.Action("Rent_Approve", "RentForInternalApproval", new { EId = "#=RentInternalProjectID#" }))
-                                                                                     .Read(read => read.Action("RentForInternalApproval_Read", "RentForInternalApproval", new { EId = "#=RentInternalProjectID#" }))
-                                                                           .Update(update => update.Action("Rent_Approve", "RentForInternalApproval", new { EId = "#=RentInternalProjectID#" }))
+                                                                                                           .Create(update => update.Action("Rent_Approve", "RentForInternalApproval", new { EId = "#=RentInternalProjectID#" }).Data("sendForgery"))
+                                                                                     .Read(read => read.Action("RentForInternalApproval_Read", "RentForInternalApproval", new { EId = "#=RentInternalProjectID#" }).Data("sendForgery"))
+                                                                           .Update(update => update.Action("Rent_Approve", "RentForInternalApproval", new { EId = "#=RentInternalProjectID#" }).Data("sendForgery"))
 
 
                                                       )

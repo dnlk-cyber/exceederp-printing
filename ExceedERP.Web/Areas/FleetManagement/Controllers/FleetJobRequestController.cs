@@ -43,6 +43,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public ActionResult Index()
         {
             ViewData["Customer"] = db.OrganizationCustomers.ToList();
+            ViewData["equipmentInfo"] = db.EquipmentInformation.Select(s => new
+            {
+                PlateNumber = s.LicensePlate,
+                Name = s.LicensePlate
+            }).ToList();
             ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Select(s => new
             {
                 Id = s.MaintenanceCenterID,
@@ -83,11 +88,60 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
 
             var JobRequest = db.JobRequest.Where(x => x.JobOrderStatus != JobOrderStatus.Delivered).ToList();
+           // var printJobRequest = db.JobRequest.Where(jid => jid.JobRequestId.ToString() == JobID).ToList();
+            var Result = JobRequest.ToDataSourceResult(request, jobRequest => new
+            {
+                BranchId = jobRequest.BranchId,
+                BusinessUnitId = jobRequest.BusinessUnitId,
+                CreatedAtBranchId = jobRequest.CreatedAtBranchId,
+                CreatedAtBusinessUnitId = jobRequest.CreatedAtBusinessUnitId,
+                CustomerId = jobRequest.CustomerId,
+                EquipmentInformationId = jobRequest.EquipmentInformationId,
+                EquipmentName = jobRequest.EquipmentName,
+                EquipmentType = jobRequest.EquipmentType,
+                EstmatedCostAmount = jobRequest.EstmatedCostAmount,
+                FuelAmount = jobRequest.FuelAmount,
+                HasInsurance = jobRequest.HasInsurance,
+                IsHighPriority = jobRequest.IsHighPriority,
+                IsOnlineApproved = jobRequest.IsOnlineApproved,
+                IsOnlineTransferred = jobRequest.IsOnlineTransferred,
+                IsOnlineTransferredBy = jobRequest.IsOnlineTransferredBy,
+                IsPM = jobRequest.IsPM,
+                IsSendForApproval = jobRequest.IsSendForApproval,
+                IsVoid = jobRequest.IsVoid,
+                JobOrderStatus = jobRequest.JobOrderStatus,
+                JobRequestId = jobRequest.JobRequestId,
+                LastKmHr = jobRequest.LastKmHr,
+                LastModified = jobRequest.LastModified,
+                LicensePlate = jobRequest.LicensePlate,
+                MaintenanceCenter = jobRequest.MaintenanceCenter,
+                MaintenanceCenterId = jobRequest.MaintenanceCenterId,
+                Model = jobRequest.Model,
+                ModifiedBy = jobRequest.ModifiedBy,
+                Num = jobRequest.Num,
+                DateCreated = jobRequest.DateCreated,
+                Odometer = jobRequest.Odometer,
+                OnlineApprovedBy = jobRequest.OnlineApprovedBy,
+                OnlineApprovedTime = jobRequest.OnlineApprovedTime,
+                OnlineTransferredTime = jobRequest.OnlineTransferredTime,
+                OperatorName = jobRequest.OperatorName,
+                OrgBranchName = jobRequest.OrgBranchName,
+                OrgStructureId = jobRequest.OrgStructureId,
+                Remark = jobRequest.Remark,
+                Requester = jobRequest.Requester,
+                RequesterId = jobRequest.RequesterId,
+                RequestNumber = jobRequest.RequestNumber,
+                SendForApprovalBy = jobRequest.SendForApprovalBy,
+                SendForApprovalTime = jobRequest.SendForApprovalTime,
+                Source = jobRequest.Source,
+                Status = jobRequest.Status,
+                VeheicleReceptionFormId = jobRequest.VeheicleReceptionFormId,
+                VoidBy = jobRequest.VoidBy,
+                VoidTime = jobRequest.VoidTime
+                
+            });
 
-
-            //   System.Runtime.Caching.MemoryCache.Default["AssetList"] = db.AssetRegistrations.ToList();
-
-            return Json(JobRequest.ToDataSourceResult(request));
+            return Json(Result);
         }
         
         public ActionResult Admin_Approve([DataSourceRequest] DataSourceRequest request, AdministrativeJobApproval model, string Id)
@@ -250,6 +304,16 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
             ModelState.Remove("JobRequestID");
             ModelState.Remove("EquipmentInformationId");
+            ModelState.Remove("Num");
+            ModelState.Remove("DateCreated");
+            ModelState.Remove("OnlineApprovedTime");
+            ModelState.Remove("DeliveredDate");
+            ModelState.Remove("EstimatedCostAmount");
+            ModelState.Remove("Status");
+            ModelState.Remove("JobOrderStatus");
+           // ModelState.Remove("RequestId");
+          
+
             IFleetService _FleetService = new FleetService();
             IEquipmentIdentityService _EquipmentIdentityService = new EquipmentIdentityService();
             string EquipmentType = string.Empty;
@@ -298,6 +362,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             JobRequest.Status = MaintenanceConst.Pending;
             //JobRequest.ProjectName = fleet.Location;
             JobRequest.Odometer = JobRequest.Odometer;
+            JobRequest.LicensePlate = JobRequest.LicensePlate;
+            
+            JobRequest.CustomerId = JobRequest.CustomerId;
             JobRequest.RequestNumber = JobRequest.RequestNumber;
             //JobRequest.OperatorName = fleet.OperatorName;
             //JobRequest.AssetNum = fleet.UnitNum;

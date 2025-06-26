@@ -20,7 +20,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         public string EquipmentName { get; set; }
         [DisplayName(" From Operator")]
         public string FromOperatorName { get; set; }
-        [Required]
+        
         [DisplayName("To Operator")]
         public string ToOperatorName { get; set; }
         [DisplayName("Starting Date")]
@@ -37,5 +37,16 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         public decimal Odometer { get; set; }
         [Display(Name ="Branch")]
         public int BranchId { get; set; }
+        [Display(Name ="Operator One")]
+        public Guid OperatorId { get; set; }
+        [Display(Name = "Operator Two")]
+        public Guid SecondOperatorId { get; set; }
+        [Display(Name ="Equipment Category")]
+        public Guid EquipmentCategoryId { get; set; }
+        [Display(Name = "Equipment Type")]
+        public Guid EquipmentTypeId { get; set; }
+        [Display(Name = "Equipment Name")]
+        public Guid EquipmentNameId { get; set; }
+
     }
 }

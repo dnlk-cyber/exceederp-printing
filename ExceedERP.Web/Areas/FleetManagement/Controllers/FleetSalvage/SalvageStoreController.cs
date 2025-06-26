@@ -15,7 +15,7 @@ using ExceedERP.Web.Areas.FleetManagement.Models;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.ApplicationServices.FleetManagement.FleetMaintenance;
 //using ExceedERP.ApplicationServices.FleetManagement.FleetMaintenance;
-
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     [AuthorizeRoles(FleetManagementRoles.SalvageStoreIssueApprover, FleetManagementRoles.SalvageStoreIssueApprover)]

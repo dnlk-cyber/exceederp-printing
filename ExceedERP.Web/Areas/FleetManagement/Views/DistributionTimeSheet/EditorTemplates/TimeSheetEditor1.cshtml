@@ -15,7 +15,7 @@
                                       .DataTextField("PlateNumber")
                                       .DataValueField("FleetsID")
                                       .OptionLabel("Select ").Filter(FilterType.Contains)
-                                      .DataSource(d => d.Read(r => r.Action("OnDistributionTimeSheetDDBind", "FleetManagementDataProvider"))
+                                      .DataSource(d => d.Read(r => r.Action("OnDistributionTimeSheetDDBind", "FleetManagementDataProvider").Data("sendForgery"))
                                       .ServerFiltering(false))
                                       .Events(e => e.Change("BindFleetDetail")))
 
@@ -212,7 +212,7 @@
                                       .DataTextField("Name")
                                       .DataValueField("Name")
                                       .OptionLabel("Select ")
-                                      .DataSource(d => d.Read(r => r.Action("IdealTypeDDBind", "FleetDataProvider"))).Events(e => e.Change("BindFleetDetail")))
+                                      .DataSource(d => d.Read(r => r.Action("IdealTypeDDBind", "FleetDataProvider").Data("sendForgery"))).Events(e => e.Change("BindFleetDetail")))
                     </div>
 
                 </div>

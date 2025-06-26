@@ -181,7 +181,8 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                             ProjectName = FuelConsumption.CreatedBy,
                             FuelType = FuelConsumption.FuelType,
                             FuelItem = FuelConsumption.Description,
-                            Amount = FuelConsupmtions.Where(x => x.FuelSourceDetail == OWNED ).Sum(x => x.FuelFilledAmount),
+                            Amount = FuelConsupmtions.Where(x => x.FuelSourceDetail == OWNED ).Sum(x => x.FuelFilledAmount),                            
+                            //TotalKm = FuelConsupmtions.Where(x => x.FuelSourceDetail == OWNED ).Sum(x => x.),                            
                             TotalCost = FuelConsupmtions.Where(x => x.FuelSourceDetail == OWNED ).Sum(x => x.TotalFuelcost),
 
                             RentalAmount = FuelConsupmtions.Where(x => x.FuelSourceDetail == RENTAL ).Sum(x => x.FuelFilledAmount),

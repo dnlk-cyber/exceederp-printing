@@ -39,7 +39,6 @@
                                 .Scrollable(h => h.Height(500))
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
                    .Model(model =>
               {
                   model.Id(p => p.PlannerID);
@@ -48,10 +47,10 @@
                                                     .Error("error_handler(\"grid\")")
                                                     .RequestStart("onRequestStart(\"grid\")")
                                                     .RequestEnd("onRequestEnd(\"grid\")"))   
-                .Create(update => update.Action("Planner_Create", "Planner"))
-                .Read(read => read.Action("Planner_Read", "Planner"))
-                .Update(update => update.Action("Planner_Update", "Planner"))
-                .Destroy(update => update.Action("Planner_Destroy", "Planner"))
+                .Create(update => update.Action("Planner_Create", "Planner").Data("sendForgery"))
+                .Read(read => read.Action("Planner_Read", "Planner").Data("sendForgery"))
+                .Update(update => update.Action("Planner_Update", "Planner").Data("sendForgery"))
+                .Destroy(update => update.Action("Planner_Destroy", "Planner").Data("sendForgery"))
   )
 )
 

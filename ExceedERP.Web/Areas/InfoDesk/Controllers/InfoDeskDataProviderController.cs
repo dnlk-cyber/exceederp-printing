@@ -81,28 +81,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             return Json(tickets, JsonRequestBehavior.AllowGet);
 
         }
-        public JsonResult GetAllEmployees()
-        {
-            var employee1 = new
-            {
-                EmployeeId = 1,
-                FullNameaenglish = "beki"
-            };
-            var employee2 = new
-            {
-                EmployeeId = 2,
-                FullNameaenglish = "beki2"
-            };
-            var list = new { employee1, employee2 };
-            return Json(null, JsonRequestBehavior.AllowGet);
-
-            //var employees = db.Person_Employee.Where(x => x.IsActive).ToList();
-            //return Json(employees.Select(p => new
-            //{
-            //    EmployeeId = p.EmployeeId,
-            //    FullNameaEnglish = p.EmployeeCode + "-" + p.FullNameaEnglish,
-            //}), JsonRequestBehavior.AllowGet);
-        }
+       
         public JsonResult getBranches()
         {
             var customers = db.Branch.AsQueryable();
@@ -173,7 +152,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         public JsonResult StatusAwaitingDDBind()
         {
 
-            var StatusAwaiting = db.StatusType_HelpDesks.Where(x => x.Status == InfoDeskFinalizeType.WAITING).ToList();
+            var StatusAwaiting = db.StatusType_HelpDesks.Where(x => x.Status == InfoDeskFinalizeType.Waiting).ToList();
             return Json(StatusAwaiting, JsonRequestBehavior.AllowGet);
 
         }     
@@ -313,7 +292,64 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             }), JsonRequestBehavior.AllowGet);
 
         }
+        public JsonResult GetInventoryItemCategorys()
+        {
+            var itemCategories = db.ItemCategorys.ToList();
 
+            return Json(itemCategories.Select(p => new
+            {
+                Code = p.ItemCategoryCode,
+                Name = $"{p.ItemCategoryCode}-{p.Name}"
+            }), JsonRequestBehavior.AllowGet);
+
+        }
+        public JsonResult GetInventoryItems(string code)
+        {
+            var inventoryItems = db.InventoryItems.ToList();
+            if (!string.IsNullOrEmpty(code))
+            {
+                inventoryItems = inventoryItems.Where(x => x.ItemCategoryCode == code).ToList();
+            }
+            return Json(inventoryItems.Select(p => new
+            {
+                Code = p.ItemCode,
+                Name = $"{p.ItemCode}-{p.Name}"
+            }), JsonRequestBehavior.AllowGet);
+
+        }
+        public JsonResult GetAllDepartments()
+        {
+            var departments = db.MainCompanyStructures.Where(x => x.IsActive).ToList();
+
+            return Json(departments.Select(p => new
+            {
+                OrgStructureId = p.OrgStructureId,
+                Name = p.Name
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetAllEmployees()
+        {
+            var employees = db.Person_Employee
+                                .Select(x => new
+                                {
+                                    x.EmployeeId,
+                                    RequestorId = x.EmployeeId,
+                                    ApproverId = x.EmployeeId,
+                                    FullNameaEnglish = x.EmployeeCode + "-" + x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish,
+                                    FullNameAmharic = x.FirstName + " " + x.MiddleName + " " + x.LastName
+                                }).ToList();
+            return Json(employees, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetAllActiveEmployees()
+        {
+
+            var employees = db.Person_Employee.Where(x => x.IsActive).ToList();
+            return Json(employees.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameaEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish,
+            }), JsonRequestBehavior.AllowGet);
+        }
 
     }
 

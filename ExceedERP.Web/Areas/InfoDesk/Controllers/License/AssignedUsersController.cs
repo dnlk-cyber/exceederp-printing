@@ -8,6 +8,8 @@ using System;
 using ExceedERP.Core.Domain.InfoDesk.License;
 using ExceedERP.Web.Models;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Web.Hubs;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers.License
 {
@@ -16,6 +18,38 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers.License
     {
         private ExceedDbContext db = new ExceedDbContext();
         private ApplicationDbContext _user = new ApplicationDbContext();
+
+        private bool GetNotificationStatus(string userName, int softwareLicenseId, int? employeeId)
+        {
+            var licence = db.SoftwareLicenses.Find(softwareLicenseId);
+            if (licence == null)
+            {
+                return false;
+            }
+            if(employeeId ==null || employeeId == 0)
+            {
+                employeeId = UserInformationHelper.GetEmployeeId(userName);
+            }
+            if(licence.RenewalNotificationDate.HasValue && licence.RenewalNotificationDate.Value.Date <= DateTime.Now)
+            {
+                NotifModels notif = new NotifModels
+                {
+                    UserId = UserInformationHelper.GetEmployeeUserId((int)employeeId),
+                    Title = $"Software Licenses Expire for Name: {licence.SoftwareName} ",
+                    Message = $" Software Licenses Expire for Name: {licence.SoftwareName} Id:{licence.LicenseId}",
+                    URL = "/InfoDesk/SoftwareLicenses"
+                };
+
+                Notify.NotifyUser(notif);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+          
+        }
+       
         public ActionResult AssignedUsers_Read([DataSourceRequest]DataSourceRequest request,int id)
         {
             IQueryable<AssignedUser> assignedUsers = db.AssignedUsers.Where(x=>x.SoftwareLicenseId==id);
@@ -29,6 +63,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers.License
                 DateCreated = assignedUser.DateCreated,
                 LastModified = assignedUser.LastModified,
                 CreatedBy = assignedUser.CreatedBy,
+                IsNotified = GetNotificationStatus(assignedUser.UserName,assignedUser.SoftwareLicenseId,assignedUser.EmployeeId),
                 ModifiedBy = assignedUser.ModifiedBy
 
             });
@@ -38,7 +73,11 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers.License
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AssignedUsers_Create([DataSourceRequest]DataSourceRequest request, AssignedUser assignedUser, int id)
         {
-
+            var licence = db.SoftwareLicenses.Find(id);
+            if (licence == null)
+            {
+                ModelState.AddModelError("exist", "No licence Found");
+            }
             assignedUser.SoftwareLicenseId = id;
             assignedUser.UserName = UserInformationHelper.GetEmployeeUserId((int)assignedUser.EmployeeId)?.Trim();
             //var userId = UserInformationHelper.GetUserId(assignedUser.UserName)?.Trim();
@@ -51,6 +90,20 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers.License
                 db.AssignedUsers.Add(entity);
                 db.SaveChanges();
                 assignedUser.AssignedUserId = entity.AssignedUserId;
+                if (licence.RenewalNotificationDate.HasValue && licence.RenewalNotificationDate.Value.Date <= DateTime.Now)
+                {
+                    NotifModels notif = new NotifModels
+                    {
+                        UserId = UserInformationHelper.GetEmployeeUserId((int)assignedUser.EmployeeId),
+                        Title = $"Software Licenses Expire for Name: {licence.SoftwareName} ",
+                        Message = $" Software Licenses Expire for Name: {licence.SoftwareName} Id:{licence.LicenseId}",
+                        URL = "/InfoDesk/SoftwareLicenses"
+                    };
+
+                    Notify.NotifyUser(notif);
+                  
+                }
+
             }
             return Json(new[] { assignedUser }.ToDataSourceResult(request, ModelState));
         }

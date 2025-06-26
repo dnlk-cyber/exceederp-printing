@@ -4,13 +4,13 @@
     .Name("grid")
     .Columns(columns =>
     {
-        columns.Bound(c => c.SupportGroup_HelpDeskId).Title("#").Width(80);
+        columns.Bound(c => c.SupportGroup_HelpDeskId).Title("#").Width(90);
         columns.ForeignKey(c => c.BranchId, (IEnumerable<BranchVM>)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
         columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable<BussinesUnitVM>)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
         columns.Bound(c => c.Name);
         columns.Bound(c => c.Description);
         columns.Bound(c => c.Remark);
-        columns.Command(command => 
+        columns.Command(command =>
         {
             command.Edit();
             command.Destroy();
@@ -35,14 +35,16 @@
     .Scrollable()
     .Sortable()
     .Filterable()
-    .Groupable()
+    //.Groupable()
     .Scrollable(h => h.Height(500))
     .DataSource(dataSource => dataSource
-        .Ajax().Model(model =>
+        .Ajax()
+        .Sort(x=>x.Add(srt=>srt.SupportGroup_HelpDeskId).Descending())
+        .Model(model =>
         {
             model.Id(p => p.SupportGroup_HelpDeskId);
             model.Field(p => p.SupportGroup_HelpDeskId).Editable(false);
-            
+
         })
         .Events(ev => ev
                     .Error("error_handler(\"grid\")")

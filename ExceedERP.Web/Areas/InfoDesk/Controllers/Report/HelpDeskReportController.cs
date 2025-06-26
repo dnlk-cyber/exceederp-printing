@@ -24,6 +24,14 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers.Report
             ViewBag.FormNumber = number;
             return View();
         }
+        public ActionResult ITSupportReport(int id)
+        {
+            InfoDeskIsoDocumentHelper.GetIsoDocumentInfo(Modules.InfoDesk, InfoDeskModuleReportType.IT_Support_Report, out string title, out string number);
+            ViewBag.id = id;
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
         public ActionResult SoftwareLicense()
         {
             InfoDeskIsoDocumentHelper.GetIsoDocumentInfo(Modules.InfoDesk, InfoDeskModuleReportType.Software_License, out string title, out string number);

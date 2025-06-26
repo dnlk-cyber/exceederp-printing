@@ -32,7 +32,7 @@
                              .Scrollable(h => h.Height(500))
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
+     
         .Model(model =>
               {
                   model.Id(p => p.HRFleetMappingId);
@@ -43,10 +43,10 @@
                                     .Error("error_handler(\"grid\")")
                                     .RequestStart("onRequestStart(\"grid\")")
                                     .RequestEnd("onRequestEnd(\"grid\")"))
-                            .Create(update => update.Action("EmployeeFleetMap_Create", "EmployeeFleetMap"))
-                            .Read(read => read.Action("EmployeeFleetMap_Read", "EmployeeFleetMap"))
-                            .Update(update => update.Action("EmployeeFleetMap_Update", "EmployeeFleetMap"))
-                            .Destroy(update => update.Action("EmployeeFleetMap_Destroy", "EmployeeFleetMap"))
+                            .Create(update => update.Action("EmployeeFleetMap_Create", "EmployeeFleetMap").Data("sendForgery"))
+                            .Read(read => read.Action("EmployeeFleetMap_Read", "EmployeeFleetMap").Data("sendForgery"))
+                            .Update(update => update.Action("EmployeeFleetMap_Update", "EmployeeFleetMap").Data("sendForgery"))
+                            .Destroy(update => update.Action("EmployeeFleetMap_Destroy", "EmployeeFleetMap").Data("sendForgery"))
   )
 )
 

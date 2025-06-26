@@ -14,6 +14,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.RentalPayment
     {
         public int RentalPaymentRequestLineId { get; set; }
         public int RentalPaymentRequestId { get; set; }
+        [Display(Name ="Equipment Category")]
+        public Guid EquipmentCategoryId { get; set; }
         [DisplayName("Equipment Type")]
         public Guid EquipmnetTypeId { get; set; }
         [DisplayName("Equipment Name")]
@@ -23,7 +25,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.RentalPayment
         [DisplayName("Total Amount before Tax")]
         public decimal Amount { get; set; }
         [DisplayName("Tax")]
-        public int GLTaxRateID { get; set; }
+        public int? GLTaxRateID { get; set; }
         [DisplayName("Tax Amount")]
         public decimal TaxAmount { get; set; }
         [DisplayName("Sub Total Amount")]
@@ -43,3 +45,4 @@ namespace ExceedERP.Core.Domain.FleetManagement.RentalPayment
 
     }
 }
+// PerformanceAuditWeeklyWorkTimeDetail PerformanceWeeklyWorkTimeControlReportActual

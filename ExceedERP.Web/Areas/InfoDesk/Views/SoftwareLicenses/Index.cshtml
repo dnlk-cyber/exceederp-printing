@@ -33,6 +33,7 @@
           columns.Bound(c => c.UsageLimitations).Width(140);
           columns.Bound(c => c.SupportContact).Width(150);
           columns.Bound(c => c.CommentsOrNotes).Width(130);
+          columns.Bound(c => c.RenewalNotificationDate).Width(130);
           columns.Command(command => 
           {
               command.Edit();
@@ -155,6 +156,14 @@
                     columns.ForeignKey(c => c.EmployeeId, (System.Collections.IEnumerable)ViewData["employees"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeesList").Filterable(ft => ft.Multi(true).Search(true)).Width(200);
                     //columns.ForeignKey(c => c.UserId, (System.Collections.IEnumerable)ViewData["users"], "UserId", "Name").EditorTemplateName("AssignedUser").Filterable(ft => ft.Multi(true).Search(true)).Width(150);
                     columns.Bound(c => c.UserName).Width(120);
+                    columns.Bound(c => c.IsNotified).ClientTemplate(
+                                           "<input type='checkbox' disabled = 'true' value='\\#= IsNotified\\#' " +
+                                           "\\# if (IsNotified) { \\#" +
+                                           "checked='checked'" +
+                                           "\\# } \\#" +
+                                           "/>"
+                                           ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(75);
+
                     columns.Bound(c => c.Remark).Width(150);
                     columns.Command(command =>
                     {
@@ -176,10 +185,11 @@
                     events.RequestStart("onRequestStart(\"childGrid#=SoftwareLicenseId#\")");
                     events.RequestEnd("onRequestEnd(\"childGrid#=SoftwareLicenseId#\")");
                 })
-                .Model(model => 
+                .Model(model =>
                 {
                     model.Id(p => p.AssignedUserId);
                     model.Field(p => p.UserName).Editable(false);
+                    model.Field(p => p.IsNotified).Editable(false);
                 })
                 .Read(read => read.Action("AssignedUsers_Read", "AssignedUsers", new { id = "#=SoftwareLicenseId#", area = "InfoDesk" }).Data("sendForgery"))
                 .Create(create => create.Action("AssignedUsers_Create", "AssignedUsers", new { id = "#=SoftwareLicenseId#", area = "InfoDesk" }).Data("sendForgery"))

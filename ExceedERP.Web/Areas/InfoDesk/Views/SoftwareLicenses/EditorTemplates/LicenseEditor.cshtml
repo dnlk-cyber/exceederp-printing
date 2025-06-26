@@ -258,4 +258,18 @@
             </div>
         </div>
     </div>
+    @*<div class="col-sm-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.RenewalNotificationDate, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @(Html.Kendo().DatePickerFor(m => m.RenewalNotificationDate))
+                               
+                   
+                @Html.ValidationMessageFor(model => model.RenewalNotificationDate, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+    </div>*@
 </div>

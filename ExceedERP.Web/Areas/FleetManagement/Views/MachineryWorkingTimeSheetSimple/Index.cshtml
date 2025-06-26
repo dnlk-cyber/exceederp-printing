@@ -14,6 +14,8 @@
                             columns.Bound(c => c.NightTimeStart).Title("Night Time Start").Width(100);
                             columns.Bound(c => c.NightTimeEnd).Title("Night Time End").Width(100);
                             columns.Bound(c => c.NumberOfHoles).Title("Number of Holes").Width(100);
+                            columns.Bound(c => c.LubricantCost).Title("Lubricant Cost").Width(100);
+                            columns.Bound(c => c.OilConsumption).Title("Oil Consumtion").Width(100);
                             columns.Bound(c => c.TimeSheetStatus).Width(100);
 
                             columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(160);
@@ -38,10 +40,10 @@
                             .Error("error_handler(\"grid\")")
                             .RequestStart("onRequestStart(\"grid\")")
                             .RequestEnd("onRequestEnd(\"grid\")"))
-                            .Read(read => read.Action("MachineryWorkingTimeSheets_Read", "MachineryWorkingTimeSheetSimple"))
-                            .Create(create => create.Action("MachineryWorkingTimeSheets_Create", "MachineryWorkingTimeSheetSimple"))
-                            .Update(update => update.Action("MachineryWorkingTimeSheets_Update", "MachineryWorkingTimeSheetSimple"))
-                            .Destroy(destroy => destroy.Action("InsuranceCompanies_Destroy", "MachineryWorkingTimeSheetSimple"))
+                            .Read(read => read.Action("MachineryWorkingTimeSheets_Read", "MachineryWorkingTimeSheetSimple").Data("sendForgery"))
+                            .Create(create => create.Action("MachineryWorkingTimeSheets_Create", "MachineryWorkingTimeSheetSimple").Data("sendForgery"))
+                            .Update(update => update.Action("MachineryWorkingTimeSheets_Update", "MachineryWorkingTimeSheetSimple").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("InsuranceCompanies_Destroy", "MachineryWorkingTimeSheetSimple").Data("sendForgery"))
                             .Sort(e => e.Add(a => a.MachineryWorkingTimeSheetId).Descending())
                         ).ClientDetailTemplateId("template")
 )
@@ -126,9 +128,9 @@
                                                                                     .RequestStart("onRequestStart(\"TimeSheetApproval#=MachineryWorkingTimeSheetId#\")")
                                                                                     .RequestEnd("onRequestEnd(\"TimeSheetApproval#=MachineryWorkingTimeSheetId#\")"))
 
-                                                                                    .Create(update => update.Action("MachineryTimeSheetApproval_Create", "MachineryWorkingTimeSheetSimple", new { Id = "#=MachineryWorkingTimeSheetId#" }))
-                                                                                    .Read(read => read.Action("MachineryTimeSheetApproval_Read", "MachineryWorkingTimeSheetSimple", new { Id = "#=MachineryWorkingTimeSheetId#" }))
-                                                                                    .Update(update => update.Action("MachineryTimeSheetApproval_Create", "MachineryWorkingTimeSheetSimple"))
+                                                                                    .Create(update => update.Action("MachineryTimeSheetApproval_Create", "MachineryWorkingTimeSheetSimple", new { Id = "#=MachineryWorkingTimeSheetId#" }).Data("sendForgery"))
+                                                                                    .Read(read => read.Action("MachineryTimeSheetApproval_Read", "MachineryWorkingTimeSheetSimple", new { Id = "#=MachineryWorkingTimeSheetId#" }).Data("sendForgery"))
+                                                                                    .Update(update => update.Action("MachineryTimeSheetApproval_Create", "MachineryWorkingTimeSheetSimple").Data("sendForgery"))
 
 
                                                                                 )

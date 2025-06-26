@@ -1,0 +1,113 @@
+﻿
+@using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
+<legend>TimeSheet Setting</legend>
+@(Html.Kendo().Grid<TimeSheetSetting>()
+                        .Name("grid")
+                       .Columns(
+                        columns =>
+                        {
+                // columns.Bound(c => c.IsSet);
+                columns.Bound(c => c.IsSet).Width(100).Title("Is Set").ClientTemplate(
+                      "<input type='checkbox' disabled = 'true' value='#= IsSet #' " +
+                      "# if (IsSet) { #" +
+                      "checked='checked'" +
+                      "# } #" +
+                      "/>"
+                      );
+                            columns.Bound(c => c.SettedHours);
+                            columns.Command(command =>
+                            {
+                                command.Edit();
+                                command.Destroy();
+
+                            });
+                        }
+                        )
+                        .Editable(editable =>
+                        {
+                            editable.Mode(GridEditMode.InLine);
+                        })
+                        .Sortable()
+                        .ToolBar(toolbar => toolbar.Create())
+                        .DataSource(datasource => datasource
+                        .Ajax()
+                        .Model(model =>
+                        {
+                            model.Id(m => m.TimeSheetSettingId);
+                //model.Field(f => f.IsSet).Editable(false);
+            })
+                         .Events(ev => ev
+                                    .Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+                        .Read(read => read.Action("TimeSheetSetting_Read", "TimeSheetSetting", new { area = "FleetManagement" }).Data("sendForgery"))
+                        .Create(create => create.Action("TimeSheetSetting_Create", "TimeSheetSetting", new { area = "FleetManagement" }).Data("sendForgery"))
+                        .Update(update => update.Action("TimeSheetSetting_Update", "TimeSheetSetting", new { area = "FleetManagement" }).Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("TimeSheetSetting_Destroy", "TimeSheetSetting", new { area = "FleetManagement" }).Data("sendForgery"))
+                        ).ClientDetailTemplateId("ExceptionSetting")
+
+     //.ToClientTemplate()
+)
+
+
+<script id="ExceptionSetting" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                      .Name("ExceptionSetting_grid#=TimeSheetSettingId#")
+                        .SelectedIndex(0)
+                            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                        .Items(items =>
+                        {
+                    items.Add().Text("Exception")
+                    .Content(@<text>
+                        @TimeSheetExceptionSetting()
+                    </text>);
+                        }).ToClientTemplate()
+                         )
+ </script>
+
+    @helper TimeSheetExceptionSetting()
+        {
+                            /**/
+            @(Html.Kendo().Grid<TimeSheetException>()
+                        .Name("TimeSheetException_grid#=TimeSheetSettingId#")
+                        .Columns(columns =>
+                        {
+                            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Value", "Text")
+                                   .EditorTemplateName("ExceptionBranchSelector")
+                                   .Title("Branch Name")
+                                   .Width(100); columns.Bound(c => c.Reason);
+                            columns.Command(command =>
+            {
+                            command.Edit();
+                            command.Destroy();
+                        }).Title("Action");
+
+                        })
+                        .Editable(editable =>
+                        {
+                            editable.Mode(GridEditMode.InLine);
+                        })
+                        .Sortable()
+                        .ToolBar(toolbar => toolbar.Create())
+                        .DataSource(datasource => datasource
+                        .Ajax()
+                        .Model(model =>
+                        {
+                            model.Id(m => m.TimeSheetExceptionId);
+            //model.Field(f => f.IsSet).Editable(false);
+        })
+                        .Events(ev => ev
+                        .Error("error_handler(\"TimeSheetException_grid#=TimeSheetSettingId#\")")
+                        .RequestStart("onRequestStart(\"TimeSheetException_grid#=TimeSheetSettingId#\")")
+                        .RequestEnd("onRequestEnd(\"TimeSheetException_grid#=TimeSheetSettingId#\")"))
+                        .Read(read => read.Action("TimeSheetException_Read", "TimeSheetException", new { id = "#=TimeSheetSettingId#", area = "FleetManagement" }).Data("sendForgery"))
+                        .Create(create => create.Action("TimeSheetException_Create", "TimeSheetException", new { id = "#=TimeSheetSettingId#", area = "FleetManagement" }).Data("sendForgery"))
+                        .Update(update => update.Action("TimeSheetException_Update", "TimeSheetException", new { area = "FleetManagement" }).Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("TimeSheetException_Destroy", "TimeSheetException", new { area = "FleetManagement" }).Data("sendForgery"))
+                        ).ToClientTemplate()
+            )
+
+
+
+        }
+    

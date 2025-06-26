@@ -1,0 +1,16 @@
+@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)                 
+                 .ValuePrimitive(true)
+                  .AutoBind(false)
+                  .OptionLabel("Select Branch...")
+                      .DataTextField("Text")
+                              .DataValueField("Value")
+                          .Filter("contains")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetBranchForRentFromExternal", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                                            .ServerFiltering(false);
+                  })
+)
+@Html.ValidationMessageFor(m => m)

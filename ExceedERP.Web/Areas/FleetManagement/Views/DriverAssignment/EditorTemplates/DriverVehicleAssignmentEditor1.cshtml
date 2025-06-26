@@ -50,7 +50,7 @@
                                 .DataTextField("Name")
                                 .DataValueField("Id").Filter(FilterType.Contains)
                                 .OptionLabel("Select Equipment Category")
-                                .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider"))
+                                .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery"))
                                 .ServerFiltering(false)))
                 </div>
             </div>
@@ -65,7 +65,7 @@
                                 .DataValueField("FleetsID")
                                 .OptionLabel(" Select ")
                                 .Filter(FilterType.Contains)
-                                .DataSource(d => d.Read(r => r.Action("UnAssignedEquipmentDDBind", "FleetManagementDataProvider")
+                                .DataSource(d => d.Read(r => r.Action("UnAssignedEquipmentDDBind", "FleetManagementDataProvider").Data("sendForgery")
                                 .Data("filterEquipment"))
                                 .ServerFiltering(true))
                                 .CascadeFrom("EquipmentNameID"))
@@ -116,7 +116,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.ToOperatorName).Name("ToOperatorName")
                                       .DataTextField("FullName")
                                       .DataValueField("FullName").OptionLabel(" Select Operator").Filter(FilterType.Contains)
-                                      .DataSource(d => d.Read(r => r.Action("OperatorUnAssignedDDBind", "OperatorRegistration").Data("filterEquipmentType")).ServerFiltering(false)))
+                                      .DataSource(d => d.Read(r => r.Action("OperatorUnAssignedDDBind", "OperatorRegistration").Data("sendForgery").Data("filterEquipmentType")).ServerFiltering(false)))
 
                 </div>
             </div>
@@ -148,7 +148,7 @@
                           .Filter(FilterType.Contains)
                           .OptionLabel("Select")
                           .DataSource(d =>
-                          d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider")
+                          d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider").Data("sendForgery")
                           .Data("filterByType")).ServerFiltering(true))
                           .CascadeFrom("EquipmentTypeID"))
                 </div>

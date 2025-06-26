@@ -13,6 +13,8 @@
      //   columns.Bound(e => e.Quantity).Width(200);
         columns.Bound(e => e.UnitPrice).Width(140);
         columns.Bound(e => e.InstalledDate).Width(200);
+        columns.Bound(e => e.DateCreated).Title("Returned Date").Width(200);
+
         
        
    
@@ -33,17 +35,16 @@
    // .Groupable()
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
                  .Events(events => events.Error("error_handler").Sync("sync_handler"))
         .Model(model =>
               {
                   model.Id(p => p.TireReturnID);
                
               })
-                .Create(update => update.Action("TireReturn_Create", "TireReturn"))
-                .Read(read => read.Action("TireReturn_Read", "TireReturn"))
-                .Update(update => update.Action("TireReturn_Update", "TireReturn"))
-                .Destroy(update => update.Action("TireReturn_Destroy", "TireReturn"))
+                .Create(update => update.Action("TireReturn_Create", "TireReturn").Data("sendForgery"))
+                .Read(read => read.Action("TireReturn_Read", "TireReturn").Data("sendForgery"))
+                .Update(update => update.Action("TireReturn_Update", "TireReturn").Data("sendForgery"))
+                .Destroy(update => update.Action("TireReturn_Destroy", "TireReturn").Data("sendForgery"))
   )
 )
 

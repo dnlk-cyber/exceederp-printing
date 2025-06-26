@@ -34,10 +34,10 @@
                           .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.OwningandOperatingCostId))
-          .Read(read => read.Action("OwningandOperatingCosts_Read", "OwningOperatingCost"))
-          .Create(create => create.Action("OwningandOperatingCosts_Create", "OwningOperatingCost"))
-          .Update(update => update.Action("OwningandOperatingCosts_Update", "OwningOperatingCost"))
-          .Destroy(destroy => destroy.Action("OwningandOperatingCosts_Destroy", "OwningOperatingCost"))
+          .Read(read => read.Action("OwningandOperatingCosts_Read", "OwningOperatingCost").Data("sendForgery"))
+          .Create(create => create.Action("OwningandOperatingCosts_Create", "OwningOperatingCost").Data("sendForgery"))
+          .Update(update => update.Action("OwningandOperatingCosts_Update", "OwningOperatingCost").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("OwningandOperatingCosts_Destroy", "OwningOperatingCost").Data("sendForgery"))
       )
 )
 

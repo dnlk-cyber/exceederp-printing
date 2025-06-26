@@ -1,0 +1,43 @@
+﻿<legend>Fleet Insurance History</legend>
+
+@using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+@(Html.Kendo().Grid<FleetInsuranceHistory>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            //columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120).Title("Category");
+            //columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120).Title("Type");
+            //columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["Name"], "Value", "Text").Width(120).Title("Name");
+            columns.Bound(c => c.FleetInsuranceId).Width(100);
+            columns.Bound(c => c.FleetInsuranceId).Title("S.No").Width(50);
+            columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text").EditorTemplateName("EquipmentIdentity").Width(120).Title("Category");
+            columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").EditorTemplateName("EquipmentType").Width(120).Title("Type");
+            columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["Name"], "Value", "Text").EditorTemplateName("EquipmentName").Width(120).Title("Name");
+            columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["Fleet"], "Value", "Text").EditorTemplateName("FleetTemplate").Filterable(ftb => ftb.Multi(true).Search(true)).Title("Plate No").Width(100);
+            columns.ForeignKey(c => c.InsuranceCompanyId, (IEnumerable)ViewData["InsuranceCompany"], "InsuranceCompanyId", "InsuranceCompanyName").EditorTemplateName("InsuranceDoc").Title("Company").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+            columns.Bound(c => c.InsuranceType).Width(80);
+            columns.Bound(c => c.PremiumCost).Width(80);
+            columns.Bound(c => c.DueDate).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+            columns.Bound(c => c.ThirdPartyInsurance).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+            columns.Bound(c => c.ExpireDate).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+            columns.Bound(c => c.ComprehensiveInsurance).Width(80);
+            columns.Bound(c => c.PolicyNo).Width(80);
+            columns.Bound(c => c.Attachment).Width(80);
+            columns.Bound(c => c.Description).Title("Descrption").Width(140);
+            columns.Bound(c => c.HasExpired).Visible(false);
+
+        })
+        //.Events(e => e.DataBound("onDataBoundMaster"))
+        //.Events(ev => ev.DetailExpand("detailExpand"))
+        // .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("boloregTemp"))
+        .Pageable()
+        .Filterable()
+        .Scrollable(s => s.Height(550))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .Model(model => model.Id(p => p.FleetInsuranceHistoryId))
+        .Read(read => read.Action("Read", "FleetInsuranceHistory").Data("sendForgery"))
+
+        )
+)
+

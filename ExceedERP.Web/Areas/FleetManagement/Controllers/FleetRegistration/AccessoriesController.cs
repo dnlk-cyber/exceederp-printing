@@ -1,4 +1,5 @@
-﻿using System; using ExceedERP.Web.Helpers;
+﻿using System; 
+using ExceedERP.Web.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -14,11 +15,12 @@ using ExceedERP.Helpers;
 using ExceedERP.Web.Areas.FleetManagement.Models;
 using ExceedERP.Helpers.Fleet;
 using ExceedERP.Core.Domain.Global;
-
+using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
-	[DevLogHelper("Henok Solomon", "5-28-18")] 
-	[AuthorizeRoles(FleetManagementRoles.RegistrationUser ,FleetManagementRoles.RegistrationApprover)] 
+	
+	//[AuthorizeRoles(FleetManagementRoles.RegistrationUser ,FleetManagementRoles.RegistrationApprover,HrmConstants.HRDepartmentHead,HrmConstants.HREmployeeSelfService)] 
 	public class AccessoriesController : Controller
 	{
 	   IAccessoriesService _AccessoriesService;
@@ -122,7 +124,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 		}
 
 
-		[AllowAnonymous]
+		
 		public ActionResult ApprovalDDBind()
 		{
 			var approvals = new List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject>();

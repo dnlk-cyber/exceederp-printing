@@ -134,11 +134,12 @@
                 @Html.LabelFor(model => model.UnitPrice)
             </div>
             <div>
-                @Html.Kendo().NumericTextBoxFor(model => model.UnitPrice)
+                @Html.Kendo().NumericTextBoxFor(model => model.UnitPrice)                
                 @Html.ValidationMessageFor(model => model.UnitPrice)
             </div>
         </div>
     </div>
+  
     <div class="col-md-3">
         <div class="form-group">
             <div class="k-label">
@@ -159,7 +160,7 @@
                 @(Html.Kendo().DropDownListFor(model => model.PlateNumber).Name("PlateNumber")
                               .DataTextField("PlateNumber")
                               .DataValueField("PlateNumber").OptionLabel(" Select Equipment")
-                              .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration"))))
+                              .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration").Data("sendForgery"))))
             </div>
         </div>
     </div>

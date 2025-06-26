@@ -157,7 +157,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-        [AllowAnonymous]
+        
         public ActionResult BatteryByFleet(string Id)
         {
 
@@ -176,7 +176,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
 
 
-        [AllowAnonymous]
+        
         public ActionResult BatteryByFleetByPlate(string Id)
         {
             var Equipment = db.Fleets.Where(x => x.PlateNumber == Id).FirstOrDefault();
@@ -195,7 +195,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(string.Empty, JsonRequestBehavior.AllowGet);
 
         }
-        [AllowAnonymous]
+        
         public ActionResult GetBatteryInfo(Guid Id)
         {
             string Response = string.Empty;

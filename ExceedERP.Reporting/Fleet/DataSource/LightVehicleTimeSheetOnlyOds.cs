@@ -67,6 +67,12 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 foreach (var item in lightVehicleTimeSheets)
                 {
                     var fleet = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID);
+                    var morningTime = (item.MorningTimeEnd - item.MorningTimeStart).TotalMinutes;
+                    var afternoonTime = (item.AfternoonTimeEnd - item.AfternoonTimeStart).TotalMinutes;
+                    var nightTime = (item.NightTimeEnd - item.NightTimeStart).TotalMinutes;
+                    var totalMinutes = morningTime + afternoonTime + nightTime;
+                    double totalHour = totalMinutes / 60;
+                    totalHour = Math.Round(totalHour, 2);
                     LightVehicleTimeSheetDTO lightVehicleTimeSheetDTO = new LightVehicleTimeSheetDTO
                     {
                         PlateNumber = fleet?.PlateNumber,
@@ -84,8 +90,8 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         MorningTimeStart = item.MorningTimeStart,
                         NightTimeEnd = item.NightTimeEnd,
                         NightTimeStart = item.NightTimeStart,
-
-                        Remark = item.Remark,
+                       TotalWorkingHour=totalHour,
+                       Remark = item.Remark,
                         WorkType = item.WorkType
                     };
 
@@ -130,6 +136,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         public decimal IdleHours { get; set; }
         public string DownReason { get; set; }
         public string Remark { get; set; }
+        public double TotalWorkingHour { get; set; }
 
     }
 }

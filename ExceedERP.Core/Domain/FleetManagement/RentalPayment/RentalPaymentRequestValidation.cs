@@ -22,4 +22,5 @@ namespace ExceedERP.Core.Domain.FleetManagement.RentalPayment
         public int RentalPaymentRequestId { get; set; }
         public virtual RentalPaymentRequest RentalPaymentRequest { get; set; }
     }
+   
 }

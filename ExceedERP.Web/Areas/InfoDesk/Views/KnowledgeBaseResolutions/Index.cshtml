@@ -4,13 +4,16 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.Problem);
-          columns.Bound(c => c.Solution);
-          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.InfoDeskKnowledgeBaseId).Title("#").Width(90);
+          columns.Bound(c => c.Problem).Width(300);
+          columns.Bound(c => c.Solution).Width(300);
+          columns.Bound(c => c.DocumentType).Width(150);
+          columns.Bound(c => c.Remark).Width(150);
           columns.Command(command => {
               command.Edit();
+              command.Custom("approve").Text("Approve").Click("approveKnowlegeBase").HtmlAttributes(new { @class = "btn btn-primary", @title = "approve " });
               command.Destroy();
-          }).Width(200);
+          }).Width(300);
       })
       .ToolBar(toolbar => {
           toolbar.Create();
@@ -28,8 +31,16 @@
                         })
       .Filterable()
       .Scrollable()
+      .Events(ev=> {
+          ev.DataBound("onDataBound");
+      })
       .DataSource(dataSource => dataSource
           .Ajax()
+          .Events(ev => ev
+                   .Error("error_handler(\"grid\")")
+                   .RequestStart("onRequestStart(\"grid\")")
+                   .RequestEnd("onRequestEnd(\"grid\")"))
+          .Sort(sort => sort.Add(x => x.InfoDeskKnowledgeBaseId).Descending())
           .Model(model => { model.Id(p => p.InfoDeskKnowledgeBaseId);
               model.Field(p => p.CreatedBy).Editable(false);
               model.Field(p => p.ModifiedBy).Editable(false);
@@ -185,5 +196,55 @@
         $("#masterId").val(id);
         var wnd = $("#UploadDoc").data("kendoWindow");
         wnd.center().open();
+    }
+</script>
+<script>
+    function onDataBound(e) {
+        var grid = this;
+        var Checkgrid = $("#grid").data("kendoGrid");
+        var gridData = Checkgrid.dataSource.view();
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsOnlineApproved) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-update").remove();
+                $(this).find(".k-grid-approve").remove();
+                $(this).css("background-color", "yellow");
+
+            }
+
+
+
+
+        });
+    }
+      function approveKnowlegeBase(e) {
+
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.InfoDeskKnowledgeBaseId;
+
+        if (confirm('Are you sure you want to Approve  this ')) {
+        var AcceptedReason = prompt("Please provide a  solution you want to add:");
+        try {
+
+                $.ajax({
+
+                    url: '@Url.Action("ApproveKnowledgeBases", "KnowledgeBaseResolutions")',
+                    data: { id: id, reason: AcceptedReason },
+                    type: 'POST',
+                    cache: false,
+                    success: function (result) {
+                        alert(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+
+                });
+            }
+            catch (ee) {
+                alert("Please select the row first!!");
+            }
+
+        }
     }
 </script>

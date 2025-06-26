@@ -51,7 +51,6 @@
                                               .Events(ev => ev.DetailExpand("onDetailExpand")) 
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
                    .Model(model =>
               {
                   model.Id(p => p.OtherCompanyMaintenanceID);
@@ -61,10 +60,10 @@
                                                     .Error("error_handler(\"grid\")")
                                                     .RequestStart("onRequestStart(\"grid\")")
                                                     .RequestEnd("onRequestEnd(\"grid\")"))                             
-                .Create(update => update.Action("OtherCompanyMaintenance_Create", "OtherCompanyMaintenance"))
-                .Read(read => read.Action("OtherCompanyMaintenance_Read", "OtherCompanyMaintenance"))
-                .Update(update => update.Action("OtherCompanyMaintenance_Update", "OtherCompanyMaintenance"))
-                .Destroy(update => update.Action("OtherCompanyMaintenance_Destroy", "OtherCompanyMaintenance"))
+                .Create(update => update.Action("OtherCompanyMaintenance_Create", "OtherCompanyMaintenance").Data("sendForgery"))
+                .Read(read => read.Action("OtherCompanyMaintenance_Read", "OtherCompanyMaintenance").Data("sendForgery"))
+                .Update(update => update.Action("OtherCompanyMaintenance_Update", "OtherCompanyMaintenance").Data("sendForgery"))
+                .Destroy(update => update.Action("OtherCompanyMaintenance_Destroy", "OtherCompanyMaintenance").Data("sendForgery"))
   )
 )
 
@@ -192,9 +191,9 @@
                                                     .Error("error_handler(\"OtherCompanyMaintenance#=OtherCompanyMaintenanceID#\")")
                                                     .RequestStart("onRequestStart(\"OtherCompanyMaintenance#=OtherCompanyMaintenanceID#\")")
                                                     .RequestEnd("onRequestEnd(\"OtherCompanyMaintenance#=OtherCompanyMaintenanceID#\")"))
-                                                                                                           .Create(update => update.Action("OtherCompanyMaintenance_Approve", "OtherCompanyMaintenaceApproval", new { EId = "#=OtherCompanyMaintenanceID#" }))
-                                                                                             .Read(read => read.Action("OtherCompanyMaintenaceApproval_Read", "OtherCompanyMaintenaceApproval", new { EId = "#=OtherCompanyMaintenanceID#" }))
-                                                                                   .Update(update => update.Action("OtherCompanyMaintenance_Approve", "OtherCompanyMaintenaceApproval"))
+                                                                                                           .Create(update => update.Action("OtherCompanyMaintenance_Approve", "OtherCompanyMaintenaceApproval", new { EId = "#=OtherCompanyMaintenanceID#" }).Data("sendForgery"))
+                                                                                             .Read(read => read.Action("OtherCompanyMaintenaceApproval_Read", "OtherCompanyMaintenaceApproval", new { EId = "#=OtherCompanyMaintenanceID#" }).Data("sendForgery"))
+                                                                                   .Update(update => update.Action("OtherCompanyMaintenance_Approve", "OtherCompanyMaintenaceApproval").Data("sendForgery"))
 
 
                                                       )

@@ -18,9 +18,9 @@
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.FailureReasonId))
-          .Read(read => read.Action("FailureReasons_Read", ""))
-          .Create(create => create.Action("FailureReasons_Create", ""))
-          .Update(update => update.Action("FailureReasons_Update", ""))
-          .Destroy(destroy => destroy.Action("FailureReasons_Destroy", ""))
+          .Read(read => read.Action("FailureReasons_Read", "").Data("sendForgery"))
+          .Create(create => create.Action("FailureReasons_Create", "").Data("sendForgery"))
+          .Update(update => update.Action("FailureReasons_Update", "").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("FailureReasons_Destroy", "").Data("sendForgery"))
       )
 )

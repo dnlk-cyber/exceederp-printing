@@ -741,6 +741,8 @@
     <Compile Include="Domain\FleetManagement\FleetTimeSheet\LightVehicleTimeSheet.cs" />
     <Compile Include="Domain\FleetManagement\FleetTimeSheet\MachineryWorkingTimeSheet.cs" />
     <Compile Include="Domain\FleetManagement\FleetTimeSheet\OperationsCostTimeSheet.cs" />
+    <Compile Include="Domain\FleetManagement\FleetTimeSheet\TimeSheetException.cs" />
+    <Compile Include="Domain\FleetManagement\FleetTimeSheet\TimeSheetSetting.cs" />
     <Compile Include="Domain\FleetManagement\FleetTimeSheet\WagonDrillTimesheet.cs" />
     <Compile Include="Domain\FleetManagement\FleetTireManagement\TireIssue.cs" />
     <Compile Include="Domain\FleetManagement\FleetTireManagement\TireIssueApproval.cs" />
@@ -758,6 +760,7 @@
     <Compile Include="Domain\FleetManagement\RentalPayment\RentalPaymentRequest.cs" />
     <Compile Include="Domain\FleetManagement\RentalPayment\RentalPaymentRequestLine.cs" />
     <Compile Include="Domain\FleetManagement\RentalPayment\RentalPaymentRequestValidation.cs" />
+    <Compile Include="Domain\FleetManagement\RequestToInspection.cs" />
     <Compile Include="Domain\Global\UserBusinessUnitMap.cs" />
     <Compile Include="Domain\Global\GlobalOperationLog.cs" />
     <Compile Include="Domain\Global\GlobalStatus.cs" />
@@ -1018,6 +1021,8 @@
     <Compile Include="Domain\HRM\TrainingEducation\TrainingFeedback.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\TrainingNeedRequest.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\TrainingStatus.cs" />
+    <Compile Include="Domain\InfoDesk\ChangeManagement\ChangeRequest.cs" />
+    <Compile Include="Domain\InfoDesk\ChatSession.cs" />
     <Compile Include="Domain\InfoDesk\Enum.cs" />
     <Compile Include="Domain\InfoDesk\HelpDeskRoles.cs" />
     <Compile Include="Domain\InfoDesk\InfoDeskConstants.cs" />
@@ -1106,6 +1111,7 @@
     <Compile Include="Domain\JobCosting\Tax.cs" />
     <Compile Include="Domain\Maintenance\AdministrativeJobApproval.cs" />
     <Compile Include="Domain\Maintenance\AdvanceMeasure.cs" />
+    <Compile Include="Domain\Maintenance\Canibalization.cs" />
     <Compile Include="Domain\Maintenance\DailyCare.cs" />
     <Compile Include="Domain\Maintenance\DailyCareCategory.cs" />
     <Compile Include="Domain\Maintenance\DailyCareDetailItem.cs" />
@@ -1116,9 +1122,11 @@
     <Compile Include="Domain\Maintenance\ExternalCrew.cs" />
     <Compile Include="Domain\Maintenance\ExternalMaintenancePaymentRequest.cs" />
     <Compile Include="Domain\Maintenance\ExternalMaterial.cs" />
+    <Compile Include="Domain\Maintenance\ExternalPaymentRequestJob.cs" />
     <Compile Include="Domain\Maintenance\ExternalServiceCenterPayment.cs" />
     <Compile Include="Domain\Maintenance\FailureReason.cs" />
     <Compile Include="Domain\Maintenance\FollowUp.cs" />
+    <Compile Include="Domain\Maintenance\InternalJobToExternal.cs" />
     <Compile Include="Domain\Maintenance\InventorySparePartMapping.cs" />
     <Compile Include="Domain\Maintenance\JobCauses.cs" />
     <Compile Include="Domain\Maintenance\JobOrder.cs" />
@@ -1131,6 +1139,7 @@
     <Compile Include="Domain\Maintenance\MaintenaceInspectionLog.cs" />
     <Compile Include="Domain\Maintenance\MaintenanceCenter.cs" />
     <Compile Include="Domain\Maintenance\MaintenanceCompanyDocumentType.cs" />
+    <Compile Include="Domain\Maintenance\MaintenanceConst.cs" />
     <Compile Include="Domain\Maintenance\MaintenanceInterval.cs" />
     <Compile Include="Domain\Maintenance\MaintenanceIsoConst.cs" />
     <Compile Include="Domain\Maintenance\MaintenancePlan.cs" />
@@ -1148,11 +1157,13 @@
     <Compile Include="Domain\Maintenance\Planner.cs" />
     <Compile Include="Domain\Maintenance\PMSchedule.cs" />
     <Compile Include="Domain\Maintenance\PMScheduleDetail.cs" />
+    <Compile Include="Domain\Maintenance\PmSetting.cs" />
     <Compile Include="Domain\Maintenance\RepairType.cs" />
     <Compile Include="Domain\Maintenance\Service.cs" />
     <Compile Include="Domain\Maintenance\ServiceCenterJob.cs" />
     <Compile Include="Domain\Maintenance\ServiceCrew.cs" />
     <Compile Include="Domain\Maintenance\ServiceCrewWorkLog.cs" />
+    <Compile Include="Domain\Maintenance\ServiceGroupSetting.cs" />
     <Compile Include="Domain\Maintenance\ServiceLubricant.cs" />
     <Compile Include="Domain\Maintenance\ServiceMaterial.cs" />
     <Compile Include="Domain\Maintenance\ServiceSpare.cs" />

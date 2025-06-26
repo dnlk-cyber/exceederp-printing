@@ -8,15 +8,19 @@
       .Name("grid")
       .Columns(columns =>
       {
-          //columns.Bound(e => e.EquipmentName).Width(120);
-          columns.ForeignKey(e => e.FleetId, (System.Collections.IEnumerable)ViewData["equipmentName"], "Id", "Name").Width(120);
-          columns.ForeignKey(e => e.ToOperatorName, (System.Collections.IEnumerable)ViewData["Operators"], "Id", "Name").Width(120);
-          //columns.Bound(e => e.ToOperatorName).Width(120);
-          columns.Bound(e => e.StartingDate).Title("Starting Date").Format("{0:d}").Width(100);
+          
+          columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
+          columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
+          columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
+          columns.ForeignKey(e => e.FleetId, (System.Collections.IEnumerable)ViewData["equipmentName"], "Id", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+          columns.ForeignKey(e => e.BranchId, (System.Collections.IEnumerable)ViewData["Branch"], "Value", "Text").Width(120);
+          columns.ForeignKey(e => e.OperatorId, (System.Collections.IEnumerable)ViewData["Operators"], "Id", "Name").Width(120);
+          columns.ForeignKey(e => e.SecondOperatorId, (System.Collections.IEnumerable)ViewData["OperatorTwo"], "Id", "Name").Width(120);
+                   columns.Bound(e => e.StartingDate).Title("Starting Date").Format("{0:d}").Width(100);
           columns.Bound(e => e.Status).Width(100);
           columns.Command(command =>
           {
-           command.Edit(); command.Destroy();
+              command.Edit(); command.Destroy();
           }).Width(250);
 
 
@@ -53,7 +57,7 @@
                .DataSource(dataSource => dataSource
           .Ajax()
           .Sort(sort => sort.Add(e => e.DateCreated).Descending())
-          .ServerOperation(false)
+      
                    .Model(model =>
                    {
                        model.Id(p => p.DriverAssignmentId);
@@ -63,10 +67,10 @@
                                 .Error("error_handler(\"grid\")")
                                 .RequestStart("onRequestStart(\"grid\")")
                                 .RequestEnd("onRequestEnd(\"grid\")"))
-                  .Create(update => update.Action("DriverAssignment_Create", "DriverAssignment"))
-                  .Read(read => read.Action("DriverAssignment_Read", "DriverAssignment"))
-                  .Update(update => update.Action("DriverAssignment_Update", "DriverAssignment"))
-                  .Destroy(update => update.Action("DriverAssignment_Destroy", "DriverAssignment"))
+                  .Create(update => update.Action("DriverAssignment_Create", "DriverAssignment").Data("sendForgery"))
+                  .Read(read => read.Action("DriverAssignment_Read", "DriverAssignment").Data("sendForgery"))
+                  .Update(update => update.Action("DriverAssignment_Update", "DriverAssignment").Data("sendForgery"))
+                  .Destroy(update => update.Action("DriverAssignment_Destroy", "DriverAssignment").Data("sendForgery"))
       ))
 
 
@@ -124,13 +128,13 @@
 
 
             );
-                items.Add().Text(" Approval").Content(@<text>
+                items.Add().Text("Approval").Content(@<text>
      
                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.DriverTransferApproval>()
                         .Name("DriverTransferApproval#=DriverAssignmentId#")
                         .Columns(columns =>
                         {
-                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126); 
 
                             columns.Bound(o => o.Remark).Width(200);
                             columns.Bound(c => c.CreatedBy).Width(150);
@@ -156,9 +160,9 @@
                         .Error("error_handler(\"DriverTransferApproval#=DriverAssignmentId#\")")
                         .RequestStart("onRequestStart(\"DriverTransferApproval#=DriverAssignmentId#\")")
                         .RequestEnd("onRequestEnd(\"DriverTransferApproval#=DriverAssignmentId#\")"))
-                        .Create(update => update.Action("DriverVehicleTransfer_Approve", "DriverAssignmentApproval", new { EId = "#=DriverAssignmentId#" }))
-                        .Read(read => read.Action("DriverVehicleTransferApproval_Read", "DriverAssignmentApproval", new { EId = "#=DriverAssignmentId#" }))
-                        .Update(update => update.Action("DriverVehicleTransfer_Approve", "DriverAssignmentApproval", new { EId = "#=DriverAssignmentId#" }))
+                        .Create(update => update.Action("DriverVehicleTransfer_Approve", "DriverAssignmentApproval", new { EId = "#=DriverAssignmentId#" }).Data("sendForgery"))
+                        .Read(read => read.Action("DriverVehicleTransferApproval_Read", "DriverAssignmentApproval", new { EId = "#=DriverAssignmentId#" }).Data("sendForgery"))
+                        .Update(update => update.Action("DriverVehicleTransfer_Approve", "DriverAssignmentApproval", new { EId = "#=DriverAssignmentId#" }).Data("sendForgery"))
                         )
                         .ToClientTemplate())
                 </text>
@@ -228,5 +232,63 @@
             }
         });
     }
+    function filterOperator() {
+        return {
+            text: $("#OperatorId").data("kendoDropDownList").filterInput.val()
+        }
+    }
+    function filterOperatorTwo() {
+        return {
+            text: $("#SecondOperatorId").data("kendoDropDownList").filterInput.val()
+        }
+    }
+    function filterEquipmentNames() {
+        var dropdownlist = $("#EquipmentNameId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentTypeId: $("#EquipmentTypeId").val(),
+            search: filterInput.val()
+        };
+    }
+    function filterPlateNumber() {
+        var dropdownlist = $("#EquipmentName").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentNameID: $("#EquipmentNameID").val(),
+            search: filterInput.val()
+        };
+    }
+    function filterCategory() {
+        var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentIdentityId: $("#EquipmentCategoryId").val(),
+            search: filterInput.val()
+        };
+
+    }
+    function filterFleet() {
+        return {
+            text: $("#FleetId").data("kendoDropDownList").filterInput.val(),
+            equipmentNameId: $("#EquipmentNameId").val()
+        };
+    }
 
 </script>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-2 {
+        width: 150px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>

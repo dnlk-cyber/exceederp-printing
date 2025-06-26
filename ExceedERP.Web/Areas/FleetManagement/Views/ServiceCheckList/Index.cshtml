@@ -45,7 +45,6 @@
                                              .ClientDetailTemplateId("template")  
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
         .Model(model =>
               {
                   model.Id(p => p.CheckListId);
@@ -56,10 +55,10 @@
                                     .Error("error_handler(\"grid\")")
                                     .RequestStart("onRequestStart(\"grid\")")
                                     .RequestEnd("onRequestEnd(\"grid\")"))
-                            .Create(update => update.Action("CheckList_Create", "ServiceCheckList"))
-                            .Read(read => read.Action("CheckList_Read", "ServiceCheckList"))
-                            .Update(update => update.Action("CheckList_Update", "ServiceCheckList"))
-                            .Destroy(update => update.Action("CheckList_Destroy", "ServiceCheckList"))
+                            .Create(update => update.Action("CheckList_Create", "ServiceCheckList").Data("sendForgery"))
+                            .Read(read => read.Action("CheckList_Read", "ServiceCheckList").Data("sendForgery"))
+                            .Update(update => update.Action("CheckList_Update", "ServiceCheckList").Data("sendForgery"))
+                            .Destroy(update => update.Action("CheckList_Destroy", "ServiceCheckList").Data("sendForgery"))
   )
 )
 
@@ -98,9 +97,9 @@
                                                                                 .Error("error_handler(\"linechecklistgrid_#=CheckListId#\")")
                                                                                 .RequestStart("onRequestStart(\"linechecklistgrid_#=CheckListId#\")")
                                                                                 .RequestEnd("onRequestEnd(\"linechecklistgrid_#=CheckListId#\")"))
-                                                                                                   .Create(update => update.Action("LineCheckList_Create", "LineLineCheckList", new { CId = "#=CheckListId#" }))
-                                                                                     .Read(read => read.Action("LineCheckList_Read", "LineLineCheckList", new { Id = "#=CheckListId#" }))
-                                                                   .Update(update => update.Action("LineCheckList_Update", "LineLineCheckList"))
+                                                                                                   .Create(update => update.Action("LineCheckList_Create", "LineLineCheckList", new { CId = "#=CheckListId#" }).Data("sendForgery"))
+                                                                                     .Read(read => read.Action("LineCheckList_Read", "LineLineCheckList", new { Id = "#=CheckListId#" }).Data("sendForgery"))
+                                                                   .Update(update => update.Action("LineCheckList_Update", "LineLineCheckList").Data("sendForgery"))
 
 
                                                       )

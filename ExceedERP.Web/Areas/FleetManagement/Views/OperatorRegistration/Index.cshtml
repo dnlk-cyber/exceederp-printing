@@ -59,15 +59,14 @@
                         .DataSource(dataSource => dataSource
                             .Ajax()
                             .Sort(sort => sort.Add(e => e.DateCreated).Descending())
-                            .ServerOperation(false)
                             .Model(model => model.Id(p => p.OperatorID)).Events(ev => ev
                             .Error("error_handler(\"grid\")")
                             .RequestStart("onRequestStart(\"grid\")")
                             .RequestEnd("onRequestEnd(\"grid\")"))
-                            .Create(update => update.Action("Operator_Create", "OperatorRegistration"))
-                            .Read(read => read.Action("Operator_Read", "OperatorRegistration"))
-                            .Update(update => update.Action("Operator_Update", "OperatorRegistration"))
-                            .Destroy(update => update.Action("Operator_Destroy", "OperatorRegistration"))
+                            .Create(update => update.Action("Operator_Create", "OperatorRegistration").Data("sendForgery"))
+                            .Read(read => read.Action("Operator_Read", "OperatorRegistration").Data("sendForgery"))
+                            .Update(update => update.Action("Operator_Update", "OperatorRegistration").Data("sendForgery"))
+                            .Destroy(update => update.Action("Operator_Destroy", "OperatorRegistration").Data("sendForgery"))
                         ).Events(events => events.DataBound("dataBound")))
 <div id="customToolbar"></div>
 <script>
@@ -161,10 +160,10 @@
                                                           .Error("error_handler(\"licenseLevelId_#=OperatorID#\")")
                                                           .RequestStart("onRequestStart(\"licenseLevelId_#=OperatorID#\")")
                                                           .RequestEnd("onRequestEnd(\"licenseLevelId_#=OperatorID#\")"))
-                                                          .Create(update => update.Action("LicenseLevel_Create", "OperatorRegistration", new { Id = "#=OperatorID#" }))
-                                                          .Read(read => read.Action("LicenseLevel__Read", "OperatorRegistration", new { Id = "#=OperatorID#" }))
-                                                  .Update(update => update.Action("LicenseLevel_Update", "OperatorRegistration", new { Id = "#=OperatorID#" }))
-                                                                  .Destroy(destroy => destroy.Action("LicenseLevel_Destroy", "OperatorRegistration"))
+                                                          .Create(update => update.Action("LicenseLevel_Create", "OperatorRegistration", new { Id = "#=OperatorID#" }).Data("sendForgery"))
+                                                          .Read(read => read.Action("LicenseLevel__Read", "OperatorRegistration", new { Id = "#=OperatorID#" }).Data("sendForgery"))
+                                                  .Update(update => update.Action("LicenseLevel_Update", "OperatorRegistration", new { Id = "#=OperatorID#" }).Data("sendForgery"))
+                                                                  .Destroy(destroy => destroy.Action("LicenseLevel_Destroy", "OperatorRegistration").Data("sendForgery"))
                                                   )
                                                   .ToClientTemplate())
                       </text>

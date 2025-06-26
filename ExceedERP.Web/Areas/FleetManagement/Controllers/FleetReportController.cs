@@ -24,6 +24,13 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             ViewBag.FormNumber = number;
             return View();
         }
+        public ActionResult WagonDrillTimesheetReportSummary()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.WagondrillCostsheetSummary, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
         public ActionResult WagoneDrillTimeSheetOnly()
         {
             IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.WagondrillTimesheet, out string title, out string number);
@@ -35,6 +42,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public ActionResult MachineTimeSheetReport()
         {
             IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.MachineryCostsheet, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+
+        }
+        public ActionResult MachineTimeSheetReportSummary()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.MachineryCostsheetSummary, out string title, out string number);
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
@@ -55,6 +70,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return View();
 
         }
+        public ActionResult LightVehicleTimeSheetReportSummary()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.LightVehicleCostsheetSummary, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+
+        }
         public ActionResult LightVehicleTimeSheetOnlyReport()
         {
             IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.LightVehicleTimesheet, out string title, out string number);
@@ -69,6 +92,13 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             ViewBag.FormNumber = number;
             return View();
         }
+        public ActionResult DryLoadingTimeSheetReportSummary()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.DryLoadingCostsheetSummary, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
         public ActionResult DryLoadingTimeSheetOnly()
         {
             IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.DryLoadingTimesheet, out string title, out string number);
@@ -79,6 +109,13 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public ActionResult DumpTruckTimesheetReport()
         {
             IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.DumpTruckCostsheet, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+        public ActionResult DumpTruckTimesheetReportSummary()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.DumpTruckCostsheetSummary, out string title, out string number);
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();
@@ -99,6 +136,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             ViewBag.FormNumber = number;
             return View();
         }
+        
         public ActionResult ExternalMachineTimeSheetReport()
         {
             IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.ExternalMachineryTimesheet, out string title, out string number);
@@ -400,6 +438,13 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             ViewBag.FormNumber = number;
             return View();
         }
+        public ActionResult BatteryConsumption()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.BatteryConsumption, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
         [AuthorizeRoles(FleetManagementRoles.FleetReport)]
         public ActionResult EquipmentInspectionReport()
         {
@@ -546,6 +591,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public ActionResult UtilizationSummaryToDate()
         {
             IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.UtilizationSummaryToDate, out string title, out string number);
+            ViewBag.FormTitle = title;
+            ViewBag.FormNumber = number;
+            return View();
+        }
+
+        public ActionResult EquipmentDistribution()
+        {
+            IsoDocumentHelper.GetIsoDocumentInfo(Modules.FleetManagement, FleetConst.EquipmentDistrubtionReport, out string title, out string number);
             ViewBag.FormTitle = title;
             ViewBag.FormNumber = number;
             return View();

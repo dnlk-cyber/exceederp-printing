@@ -14,7 +14,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.FleetsID)
                           .DataTextField("PlateNumber")
                           .DataValueField("FleetsID").OptionLabel(" Select ").Filter(FilterType.Contains)
-                          .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "FleetManagementDataProvider")).ServerFiltering(false)))
+                          .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "FleetManagementDataProvider").Data("sendForgery")).ServerFiltering(false)))
                     @Html.ValidationMessageFor(model => model.FleetsID, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -41,7 +41,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.Remark)
                           .DataTextField("Name")
                           .DataValueField("Name").OptionLabel("Select").Filter(FilterType.Contains)
-                          .DataSource(d => d.Read(r => r.Action("FleetConditionDDBind", "FleetManagementDataProvider")).ServerFiltering(false)))
+                          .DataSource(d => d.Read(r => r.Action("FleetConditionDDBind", "FleetManagementDataProvider").Data("sendForgery")).ServerFiltering(false)))
                     @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
                 </div>
             </div>

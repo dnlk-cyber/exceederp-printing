@@ -46,7 +46,6 @@
                                              .Events(ev => ev.DetailExpand("onDetailExpand"))     
                  .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
         .Model(model =>
               {
                   model.Id(p => p.SalvageStoreGoodReceivingID);
@@ -56,10 +55,10 @@
                                                         .Error("error_handler(\"grid\")")
                                                         .RequestStart("onRequestStart(\"grid\")")
                                                         .RequestEnd("onRequestEnd(\"grid\")")) 
-                            .Create(update => update.Action("SalvageStoreGoodReceiving_Create", "SalvageStoreGoodReceiving"))
-                    .Read(read => read.Action("SalvageStoreGoodReceiving_Read", "SalvageStoreGoodReceiving"))
-                            .Update(update => update.Action("SalvageStoreGoodReceiving_Update", "SalvageStoreGoodReceiving"))
-                            .Destroy(update => update.Action("SalvageStoreGoodReceiving_Destroy", "SalvageStoreGoodReceiving"))
+                            .Create(update => update.Action("SalvageStoreGoodReceiving_Create", "SalvageStoreGoodReceiving").Data("sendForgery"))
+                    .Read(read => read.Action("SalvageStoreGoodReceiving_Read", "SalvageStoreGoodReceiving").Data("sendForgery"))
+                            .Update(update => update.Action("SalvageStoreGoodReceiving_Update", "SalvageStoreGoodReceiving").Data("sendForgery"))
+                            .Destroy(update => update.Action("SalvageStoreGoodReceiving_Destroy", "SalvageStoreGoodReceiving").Data("sendForgery"))
   )
 )
 
@@ -194,9 +193,9 @@
                                                             .Error("error_handler(\"SalvageStoreGoodReceiving#=SalvageStoreGoodReceivingID#\")")
                                                             .RequestStart("onRequestStart(\"SalvageStoreGoodReceiving#=SalvageStoreGoodReceivingID#\")")
                                                             .RequestEnd("onRequestEnd(\"SalvageStoreGoodReceiving#=SalvageStoreGoodReceivingID#\")"))
-                                                                                                                   .Create(update => update.Action("GoodRecivingNote_Approve", "GoodRecivingNoteApproval", new { EId = "#=SalvageStoreGoodReceivingID#" }))
-                                                                                                             .Read(read => read.Action("GoodRecivingNoteApproval_Read", "GoodRecivingNoteApproval", new { EId = "#=SalvageStoreGoodReceivingID#" }))
-                                                                                                   .Update(update => update.Action("GoodRecivingNote_Approve", "GoodRecivingNoteApproval"))
+                                                                                                                   .Create(update => update.Action("GoodRecivingNote_Approve", "GoodRecivingNoteApproval", new { EId = "#=SalvageStoreGoodReceivingID#" }).Data("sendForgery"))
+                                                                                                             .Read(read => read.Action("GoodRecivingNoteApproval_Read", "GoodRecivingNoteApproval", new { EId = "#=SalvageStoreGoodReceivingID#" }).Data("sendForgery"))
+                                                                                                   .Update(update => update.Action("GoodRecivingNote_Approve", "GoodRecivingNoteApproval").Data("sendForgery"))
 
 
                                                       )

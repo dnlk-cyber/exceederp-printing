@@ -16,7 +16,7 @@ using ExceedERP.DataAccess.Context;
 using System.Data.Entity.Validation;
 using ExceedERP.Core.Domain.Global;
 using System.Data.Entity;
-
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     [AuthorizeRoles(FleetManagementRoles.RegistrationUser)]
@@ -104,6 +104,20 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
             return "";            
         }
+        public JsonResult Seed()
+        {
+            var operators = db.Operator.ToList();
+            foreach (var item in operators)
+            {
+                var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == item.EmployeeId);
+                if(employee != null)
+                {
+                    item.EmployeeCode = employee?.EmployeeCode ?? "";
+                }
+            }
+            db.SaveChanges();
+            return Json("Success", JsonRequestBehavior.AllowGet);
+        }
         [AcceptVerbs(HttpVerbs.Post)]
         public JsonResult Operator_Create([DataSourceRequest] DataSourceRequest request, Operator Operator)
         {
@@ -123,6 +137,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 {
                     try
                     {
+                        Operator.EmployeeCode = Employee.EmployeeCode;
                         Operator.OperatorID = Guid.NewGuid();
                         Operator.EmployeeId = Employee.EmployeeId;
                         Operator.FullName = Employee.FirstName + " " + Employee.MiddleName+" "+Employee.LastName;
@@ -195,18 +210,18 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
             return this.Json(new[] { Operator }.ToDataSourceResult(request));
         }
-        [AllowAnonymous]
+        
         public ActionResult OperatorUnAssignedDDBind()
         {
-            var fleets = _OperatorService.GetAll()/*.Where(x => x.IsActive == false)*/.Select(s => new Operator
+            var entity = _OperatorService.GetAll()/*.Where(x => x.IsActive == false)*/.Select(s => new Operator
             {
                 FullName = s.FullName,
                 OperatorID = s.OperatorID
             });
 
-            return Json(fleets, JsonRequestBehavior.AllowGet);
+            return Json(entity, JsonRequestBehavior.AllowGet);
         }
-        [AllowAnonymous]
+        
         public ActionResult OperatorDDBind()
         {
             var fleets = _OperatorService.GetAll().Select(s => new Operator
@@ -216,7 +231,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             });
             return Json(fleets, JsonRequestBehavior.AllowGet);
         }
-        [AllowAnonymous]
+        
         public ActionResult OperatorEquipmentDDBind()
         {
             IFleetService _FleetService = new FleetService();
@@ -307,7 +322,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             // return Json(mapping, JsonRequestBehavior.AllowGet);
             return Json(count + " items added");
         }
-        [AllowAnonymous]
+        
         public ActionResult OperatorTODDBind(string FromOperatorId)
         {
             var fleets = _OperatorService.GetAll().Where(x => x.FullName != FromOperatorId).Select(s => new Operator
@@ -317,7 +332,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             });
             return Json(fleets, JsonRequestBehavior.AllowGet);
         }
-        [AllowAnonymous]
+        
         public ActionResult OperatorFleetTODDBind(string fleetId)
         {
             var fleets = _OperatorService.GetAll().Where(x => x.FleetsID != Guid.Parse(fleetId)).Select(s => new Operator

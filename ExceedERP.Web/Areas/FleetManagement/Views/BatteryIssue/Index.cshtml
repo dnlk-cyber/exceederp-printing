@@ -46,7 +46,7 @@
 
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
+       
         .Model(model =>
         {
             model.Id(p => p.BatteryIssueId);
@@ -55,10 +55,10 @@
                                                       .Error("error_handler(\"grid\")")
                                                       .RequestStart("onRequestStart(\"grid\")")
                                                       .RequestEnd("onRequestEnd(\"grid\")"))
-                    .Create(update => update.Action("BatteryIssue_Create", "BatteryIssue"))
-                    .Read(read => read.Action("BatteryIssue_Read", "BatteryIssue"))
-                    .Update(update => update.Action("BatteryIssue_Update", "BatteryIssue"))
-                    .Destroy(update => update.Action("BatteryIssue_Destroy", "BatteryIssue"))
+                    .Create(update => update.Action("BatteryIssue_Create", "BatteryIssue").Data("sendForgery"))
+                    .Read(read => read.Action("BatteryIssue_Read", "BatteryIssue").Data("sendForgery"))
+                    .Update(update => update.Action("BatteryIssue_Update", "BatteryIssue").Data("sendForgery"))
+                    .Destroy(update => update.Action("BatteryIssue_Destroy", "BatteryIssue").Data("sendForgery"))
   )
 )
 
@@ -187,9 +187,9 @@
                                             .Error("error_handler(\"BatteryIssueApproval#=BatteryIssueId#\")")
                                             .RequestStart("onRequestStart(\"BatteryIssueApproval#=BatteryIssueId#\")")
                                             .RequestEnd("onRequestEnd(\"BatteryIssueApproval#=BatteryIssueId#\")"))
-                                                                                                                   .Create(update => update.Action("BatteryIssue_Approve", "BatteryIssueApproval", new { EId = "#=BatteryIssueId#" }))
-                                                                                                     .Read(read => read.Action("BatteryIssueApproval_Read", "BatteryIssueApproval", new { EId = "#=BatteryIssueId#" }))
-                                                                                                   .Update(update => update.Action("BatteryIssue_Approve", "BatteryIssueApproval", new { EId = "#=BatteryIssueId#" }))
+                                                                                                                   .Create(update => update.Action("BatteryIssue_Approve", "BatteryIssueApproval", new { EId = "#=BatteryIssueId#" }).Data("sendForgery"))
+                                                                                                     .Read(read => read.Action("BatteryIssueApproval_Read", "BatteryIssueApproval", new { EId = "#=BatteryIssueId#" }).Data("sendForgery"))
+                                                                                                   .Update(update => update.Action("BatteryIssue_Approve", "BatteryIssueApproval", new { EId = "#=BatteryIssueId#" }).Data("sendForgery"))
 
 
                                               )

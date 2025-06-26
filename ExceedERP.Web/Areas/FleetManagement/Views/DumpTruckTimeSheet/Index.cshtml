@@ -15,21 +15,26 @@
         .Columns(columns =>
         {
             columns.Bound(c => c.DumpTruckTimeSheetId).Title("#").Filterable(false).Width(30);
-           // columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
-           // columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
-           // columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
+            columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
+            columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
+            columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
 
-            columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["Fleets"], "Value", "Text").Title("Equipment Name").Width(110).Filterable(ftb => ftb.Multi(true).Search(true));
+            columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["Fleets"], "Value", "Text").Title("Plate No").Width(110).Filterable(ftb => ftb.Multi(true).Search(true));
             columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(110);
             columns.Bound(c => c.Date).Width(70);
             columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Value", "Text").Title("Branch Name").Width(100);
-
-            //columns.Bound(c => c.TypeOfWorkExcuted).Title("Work Excuted").Width(100);
-
+            columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessunit"], "Value", "Text").Title("Business unit").Width(100);
             columns.Bound(c => c.NetworkingHour).Width(100);
             columns.Bound(c => c.DownHour).Width(100);
+            columns.Bound(c => c.ReasonForDown).Width(100);
             columns.Bound(c => c.IdleHour).Width(100);
             columns.Bound(c => c.TimeSheetStatus).Width(100);
+            columns.Bound(c => c.OilConsumption).Width(100);
+            columns.Bound(c => c.LubricantCost).Title("Lubricant Cost").Width(100);
+            columns.Bound(c => c.FuelConsumption).Width(100);
+            columns.Bound(c => c.GreaseConsumption).Width(120);
+            columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["operator"], "Value", "Text").Width(120).Title("Operator Name");
+
 
             columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
         })
@@ -54,10 +59,10 @@
                          .Error("error_handler(\"grid\")")
                          .RequestStart("onRequestStart(\"grid\")")
                          .RequestEnd("onRequestEnd(\"grid\")"))
-            .Read(read => read.Action("DumpTruckTimeSheets_Read", "DumpTruckTimeSheet"))
-            .Create(create => create.Action("DumpTruckTimeSheets_Create", "DumpTruckTimeSheet"))
-            .Update(update => update.Action("DumpTruckTimeSheets_Update", "DumpTruckTimeSheet"))
-            .Destroy(destroy => destroy.Action("DumpTruckTimeSheets_Destroy", "DumpTruckTimeSheet"))
+            .Read(read => read.Action("DumpTruckTimeSheets_Read", "DumpTruckTimeSheet").Data("sendForgery"))
+            .Create(create => create.Action("DumpTruckTimeSheets_Create", "DumpTruckTimeSheet").Data("sendForgery"))
+            .Update(update => update.Action("DumpTruckTimeSheets_Update", "DumpTruckTimeSheet").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("DumpTruckTimeSheets_Destroy", "DumpTruckTimeSheet").Data("sendForgery"))
         ).ClientDetailTemplateId("template")
 )
 
@@ -80,6 +85,13 @@
                                                                                         {#
 
                                                                                         <a onclick='return sendForApproval("#=DumpTruckTimeSheetId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                                                        # }
+                                                                                        #
+
+                                                                                        # if (TimeSheetSendForAproval == true&&TimeSheetApproved==true)
+                                                                                        {#
+
+                                                                                        <a onclick='return voidTimeSheet("#=DumpTruckTimeSheetId#")' href=' \#' title="Void Time Sheet"><i class="fa fa-bolt fa-2x" style="color:red"></i></a>
                                                                                         # }#
                                                                                     </div>
                                                                                 </div>
@@ -148,10 +160,10 @@
                                                  .Error("error_handler(\"grid_Detail\")")
                                                  .RequestStart("onRequestStart(\"grid_Detail\")")
                                                  .RequestEnd("onRequestEnd(\"grid_Detail\")"))
-                                    .Read(read => read.Action("DumpTruckTimeSheetsDetail_Read", "DumpTruckTimeSheetDetail", new { dumpTruckTimesheetId = "#=DumpTruckTimeSheetId#" }))
-                                    .Create(create => create.Action("DumpTruckTimeSheetsDetail_Create", "DumpTruckTimeSheetDetail", new { dtId = "#=DumpTruckTimeSheetId#" }))
-                                    .Update(update => update.Action("DumpTruckTimeSheetsDetail_Update", "DumpTruckTimeSheetDetail"))
-                                    .Destroy(destroy => destroy.Action("DumpTruckTimeSheetsDetail_Destroy", "DumpTruckTimeSheetDetail"))
+                                    .Read(read => read.Action("DumpTruckTimeSheetsDetail_Read", "DumpTruckTimeSheetDetail", new { dumpTruckTimesheetId = "#=DumpTruckTimeSheetId#" }).Data("sendForgery"))
+                                    .Create(create => create.Action("DumpTruckTimeSheetsDetail_Create", "DumpTruckTimeSheetDetail", new { dtId = "#=DumpTruckTimeSheetId#" }).Data("sendForgery"))
+                                    .Update(update => update.Action("DumpTruckTimeSheetsDetail_Update", "DumpTruckTimeSheetDetail").Data("sendForgery"))
+                                    .Destroy(destroy => destroy.Action("DumpTruckTimeSheetsDetail_Destroy", "DumpTruckTimeSheetDetail").Data("sendForgery"))
                                 ).ToClientTemplate()
                 )
 
@@ -191,9 +203,9 @@
                                                                                                                                 .RequestStart("onRequestStart(\"TimeSheetApproval#=DumpTruckTimeSheetId#\")")
                                                                                                                                 .RequestEnd("onRequestEnd(\"TimeSheetApproval#=DumpTruckTimeSheetId#\")"))
 
-                                                                                                                                .Create(update => update.Action("DumpTruckTimeSheetApproval_Create", "DumpTruckTimeSheet", new { Id = "#=DumpTruckTimeSheetId#" }))
-                                                                                                                                .Read(read => read.Action("DumpTruckTimeSheetApproval_Read", "DumpTruckTimeSheet", new { Id = "#=DumpTruckTimeSheetId#" }))
-                                                                                                                                .Update(update => update.Action("DumpTruckTimeSheetApproval_Create", "DumpTruckTimeSheet"))
+                                                                                                                                .Create(update => update.Action("DumpTruckTimeSheetApproval_Create", "DumpTruckTimeSheet", new { Id = "#=DumpTruckTimeSheetId#" }).Data("sendForgery"))
+                                                                                                                                .Read(read => read.Action("DumpTruckTimeSheetApproval_Read", "DumpTruckTimeSheet", new { Id = "#=DumpTruckTimeSheetId#" }).Data("sendForgery"))
+                                                                                                                                .Update(update => update.Action("DumpTruckTimeSheetApproval_Create", "DumpTruckTimeSheet").Data("sendForgery"))
 
 
                                                                                                                             )
@@ -211,7 +223,8 @@
         var filterInput = dropdownlist.filterInput;
 
         return {
-            timeSheetEquipmentType: "@ViewBag.dumpTruck",
+            //timeSheetEquipmentType: "@ViewBag.dumpTruck",
+            timeSheetEquipmentType: "",
             equipmentIdentityId: $("#EquipmentCategoryId").val(),
             search: filterInput.val()
         };
@@ -303,6 +316,23 @@ function filterPlateNumber() {
             }
         });
     }
+    function voidTimeSheet(id) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("VoidTimeSheet", "DumpTruckTimeSheet", new { area = "FleetManagement" })',
+            data: { id: id },
+            success: function (result) {
+
+                alert(result);
+
+                location.reload(true);
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
 
     function approvalDataBound(e) {
         var grid = this;
@@ -324,7 +354,13 @@ function filterPlateNumber() {
             text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
         }
     }
-
+    function handleFleetId() {
+        return {
+            equipmentNameId: $("#EquipmentNameId").val(),
+            @* timeSheetEquipmentType: "@ViewBag.machineryType",*@
+        text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
+        }
+    }
     function filterOperator() {
         return {
             text: $("#OperatorId").data("kendoDropDownList").filterInput.val()

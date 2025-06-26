@@ -34,7 +34,7 @@
                                  .Scrollable(h => h.Height(500))
                .DataSource(dataSource => dataSource
             .Ajax()
-            .ServerOperation(false)
+           
             .PageSize(6)
             .Model(model =>
                 {
@@ -45,10 +45,10 @@
                                                             .Error("error_handler(\"grid\")")
                                                             .RequestStart("onRequestStart(\"grid\")")
                                                             .RequestEnd("onRequestEnd(\"grid\")"))
-                    .Create(update => update.Action("WorkUnitSection_Create", "WorkUnitSection"))
-                                        .Read(read => read.Action("WorkUnitSection_Read", "WorkUnitSection"))
-                    .Update(update => update.Action("WorkUnitSection_Update", "WorkUnitSection"))
-                    .Destroy(update => update.Action("WorkUnitSection_Destroy", "WorkUnitSection"))
+                    .Create(update => update.Action("WorkUnitSection_Create", "WorkUnitSection").Data("sendForgery"))
+                                        .Read(read => read.Action("WorkUnitSection_Read", "WorkUnitSection").Data("sendForgery"))
+                    .Update(update => update.Action("WorkUnitSection_Update", "WorkUnitSection").Data("sendForgery"))
+                    .Destroy(update => update.Action("WorkUnitSection_Destroy", "WorkUnitSection").Data("sendForgery"))
 
         )
 

@@ -1,6 +1,10 @@
-﻿using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+﻿using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.Finance.AP.Travel;
+using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 using ExceedERP.Core.Domain.FleetManagement.FleetViewModel;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -17,22 +21,159 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         // GET: FleetManagement/FleetEquipmentHistoryJacket
         public ActionResult Index()
         {
+            ViewData["Category"] = db.EquipmentIdentity.Select(s => new
+            {
+                
+                Value = s.EquipmentIdentityID,
+                Text = s.EquipmentCategoryName
+            }).ToList();
+            ViewData["Type"] = db.EquipmentType.Select(s => new
+            {
+                Value = s.EquipmentTypeID,
+                Text = s.EquipmentTypeName
+            }).ToList();
+
+            ViewData["Name"] = db.EquipmentName.Select(s => new
+            {
+                Value = s.EquipmentNameID,
+                Text = s.Name
+            }).ToList();
+            ViewData["Fleet"] = db.Fleets.Select(s => new
+            {
+                Text = s.PlateNumber,
+                Value = s.FleetsID
+            }).ToList();
             return View();
         }
 
         public ActionResult Equipment_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var equip = db.Fleets.ToList();
+            var equip = db.Fleets.AsQueryable();
             var equipmentHistoryJacket = equip.Select(s => new FleetEquipmentHistoryJacketViewModel
             {
-                FleetId = db.Fleets.FirstOrDefault(x => x.FleetsID == s.FleetsID).FleetsID,
+                FleetId =s.FleetsID,
                 EquipmentCategoryName = db.EquipmentIdentity.FirstOrDefault(x => x.EquipmentIdentityID == s.EquipmentIdentityID).EquipmentCategoryName,
                 EquipmentTypeName = db.EquipmentType.FirstOrDefault(x => x.EquipmentTypeID == s.EquipmentTypeID).EquipmentTypeName,
                 EquipmentName = db.EquipmentName.FirstOrDefault(x => x.EquipmentNameID == s.EquipmentNameID).Name,
                 PlateNo = db.Fleets.FirstOrDefault(x => x.FleetsID == s.FleetsID).PlateNumber,
+                PurchasingCost = db.Fleets.FirstOrDefault(x => x.FleetsID == s.FleetsID).PurchasingCost.ToString(),
                 SerialNo = db.Fleets.FirstOrDefault(x => x.FleetsID == s.FleetsID).SerialNo
             });
             return Json(equipmentHistoryJacket.ToDataSourceResult(request, ModelState));
+        }
+        public ActionResult Read_BoloRegistrationHistory([DataSourceRequest] DataSourceRequest request, Guid id)
+        {
+            var boloreg = db.FleetBoloRegistrations.Where(x => x.FleetId == id).ToList();
+
+            var fleetBoloJacket = boloreg.Select(s => new BoloRegistrationHistoryVM
+            {
+                FleetBoloRegistrationId = s.FleetBoloRegistrationId,
+                BoloExpireDate = s.BoloExpireDate,
+                BoloRegistrationDate = s.BoloRegistrationDate,
+                EquipmentCategoryId = db.EquipmentIdentity.FirstOrDefault(x => x.EquipmentIdentityID == s.EquipmentCategoryId).EquipmentCategoryName,
+                EquipmentTypeId = db.EquipmentType.FirstOrDefault(x => x.EquipmentTypeID == s.EquipmentTypeId).EquipmentTypeName,
+                EquipmentNameId = db.EquipmentName.FirstOrDefault(x => x.EquipmentNameID == s.EquipmentNameId).Name,
+                FleetId = db.Fleets.FirstOrDefault(x => x.FleetsID == s.FleetId).PlateNumber,
+                SerialNo = db.Fleets.FirstOrDefault(x => x.FleetsID == s.FleetId).SerialNo,
+                Remark = s.Remark
+            });
+            return Json(fleetBoloJacket.ToDataSourceResult(request, ModelState));
+        }
+        public ActionResult Read_DryLoadingTimeSheetHistory([DataSourceRequest] DataSourceRequest request, Guid id)
+        {
+
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var dryloadingHistory = db.DryLoadingTimeSheets.Where(x=>mybraches.Contains(x.BranchId)&&x.FleetsID==id).ToList();
+
+            var dryLoadingJacket = dryloadingHistory.Select(dryLoadingTimeSheet => new DryLoadingTimesheetHistoryVM
+            {
+                DryLoadingTimeSheetId = dryLoadingTimeSheet.DryLoadingTimeSheetId,
+                TripStartDate = dryLoadingTimeSheet.TripStartDate,
+                TripArrivalDate = dryLoadingTimeSheet.TripArrivalDate,
+                EquipmentCategoryId = db.EquipmentIdentity.FirstOrDefault(x => x.EquipmentIdentityID == dryLoadingTimeSheet.EquipmentCategoryId).EquipmentCategoryName,
+                EquipmentTypeId = db.EquipmentType.FirstOrDefault(x => x.EquipmentTypeID == dryLoadingTimeSheet.EquipmentTypeId).EquipmentTypeName,
+                EquipmentNameId = db.EquipmentName.FirstOrDefault(x => x.EquipmentNameID == dryLoadingTimeSheet.EquipmentNameId).Name,
+                FleetsID = db.Fleets.FirstOrDefault(x => x.FleetsID == dryLoadingTimeSheet.FleetsID).PlateNumber,
+                WorkItem = dryLoadingTimeSheet.WorkItem,
+                WorkingHour = dryLoadingTimeSheet.WorkingHour,
+                TripStartPlace = dryLoadingTimeSheet.TripStartPlace,
+                TriplArrivalPlace = dryLoadingTimeSheet.TriplArrivalPlace,               
+                Asphalt = dryLoadingTimeSheet.Asphalt,
+                Gravel = dryLoadingTimeSheet.Gravel,
+                TotalKmTravelled = dryLoadingTimeSheet.TotalKmTravelled,
+                FuelInLiter = dryLoadingTimeSheet.FuelInLiter,
+                PerDiem = dryLoadingTimeSheet.PerDiem,
+                IdleHour = dryLoadingTimeSheet.IdleHour,
+                ReasonForIdle = dryLoadingTimeSheet.ReasonForIdle,              
+                DownReason = dryLoadingTimeSheet.DownReason,
+                OilConsumption = dryLoadingTimeSheet.OilConsumption,
+                AsphaltRate = dryLoadingTimeSheet.AsphaltRate,
+                FuelRate = dryLoadingTimeSheet.FuelRate,
+                GravelRate = dryLoadingTimeSheet.GravelRate,
+                LoadedType = dryLoadingTimeSheet.LoadedType,
+                LoadingUnloadingCost = dryLoadingTimeSheet.LoadingUnloadingCost,
+                LubricantCost = dryLoadingTimeSheet.LubricantCost,
+                MaintenanceCost = dryLoadingTimeSheet.MaintenanceCost,
+                NetworkingHour = dryLoadingTimeSheet.NetworkingHour,
+                NoOfTripe = dryLoadingTimeSheet.NoOfTripe,
+                Perdium = dryLoadingTimeSheet.Perdium,
+               // ProcurementSupplier = dryLoadingTimeSheet.ProcurementSupplier,
+                Salary = dryLoadingTimeSheet.Salary,
+                TireCost = dryLoadingTimeSheet.TireCost,
+                BranchId = db.Branch.FirstOrDefault(x => x.BranchId == dryLoadingTimeSheet.BranchId).Name,
+                BusinessUnitId = db.BusinessUnits.FirstOrDefault(x => x.BusinessUnitId == dryLoadingTimeSheet.BusinessUnitId).Name,
+                OperatorId = db.Operator.FirstOrDefault(x => x.OperatorID == dryLoadingTimeSheet.OperatorId).FullName,
+               // TimeSheetStatus = dryLoadingTimeSheet.TimeSheetStatus,
+                Downhour = dryLoadingTimeSheet.Downhour,
+                
+
+            });
+            return Json(dryLoadingJacket.ToDataSourceResult(request, ModelState));
+        }
+        public ActionResult Read_DumpTruckTimeSheetHistory([DataSourceRequest] DataSourceRequest request, Guid id)
+        {
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var dumpTruckTimeSheets = db.DumpTruckTimeSheets.Where(x => mybraches.Contains(x.BranchId)&&x.FleetsID==id);
+
+            var dumptruckJacket = dumpTruckTimeSheets.Select(dumpTruckTimeSheet => new DumpTruckTimeSheetViewModel
+            {
+                DumpTruckTimeSheetId = dumpTruckTimeSheet.DumpTruckTimeSheetId,
+                FleetsID = db.Fleets.FirstOrDefault(x => x.FleetsID == dumpTruckTimeSheet.FleetsID).PlateNumber,
+                ProcurementSupplierID = dumpTruckTimeSheet.ProcurementSupplierID,
+                Date = dumpTruckTimeSheet.Date,
+                TypeOfWorkExcuted = dumpTruckTimeSheet.TypeOfWorkExcuted,
+                LoadingLocationFrom = dumpTruckTimeSheet.LoadingLocationFrom,
+                LoadingLOactionTo = dumpTruckTimeSheet.LoadingLOactionTo,
+                Capacity = dumpTruckTimeSheet.Capacity,
+                ActualDistance = dumpTruckTimeSheet.ActualDistance,
+                NumberOfTrip = dumpTruckTimeSheet.NumberOfTrip,
+                TotalHaulage = dumpTruckTimeSheet.TotalHaulage,
+                FuelConsumption = dumpTruckTimeSheet.FuelConsumption,
+                OilConsumption = dumpTruckTimeSheet.OilConsumption,
+                GreaseConsumption = dumpTruckTimeSheet.GreaseConsumption,
+                IdleHour = dumpTruckTimeSheet.IdleHour,
+                ReasonForIdle = dumpTruckTimeSheet.ReasonForIdle,
+                DownHour = dumpTruckTimeSheet.DownHour,
+                ReasonForDown = dumpTruckTimeSheet.ReasonForDown,                
+                RentalRate = dumpTruckTimeSheet.RentalRate,
+                IdealRentalRate = dumpTruckTimeSheet.IdealRentalRate,
+                LubricantCost = dumpTruckTimeSheet.LubricantCost,
+                FuelRate = dumpTruckTimeSheet.FuelRate,
+                MaintenanceCost = dumpTruckTimeSheet.MaintenanceCost,
+                NetworkingHour = dumpTruckTimeSheet.NetworkingHour,
+                Perdium = dumpTruckTimeSheet.Perdium,
+                Salary = dumpTruckTimeSheet.Salary,
+                TireCost = dumpTruckTimeSheet.TireCost,
+                BranchId = db.Branch.FirstOrDefault(x => x.BranchId == dumpTruckTimeSheet.BranchId).Name,
+                BusinessUnitId = db.BusinessUnits.FirstOrDefault(x => x.BusinessUnitId == dumpTruckTimeSheet.BusinessUnitId).Name,
+                OperatorId = db.Operator.FirstOrDefault(x => x.OperatorID == dumpTruckTimeSheet.OperatorId).FullName,               
+                EquipmentCategoryId = db.EquipmentIdentity.FirstOrDefault(x => x.EquipmentIdentityID == dumpTruckTimeSheet.EquipmentCategoryId).EquipmentCategoryName,
+                EquipmentTypeId = db.EquipmentType.FirstOrDefault(x => x.EquipmentTypeID == dumpTruckTimeSheet.EquipmentTypeId).EquipmentTypeName,
+                EquipmentNameId = db.EquipmentName.FirstOrDefault(x => x.EquipmentNameID == dumpTruckTimeSheet.EquipmentNameId).Name,
+
+            });
+
+            return Json(dumptruckJacket.ToDataSourceResult(request, ModelState));
         }
         public ActionResult Insurance_Read([DataSourceRequest] DataSourceRequest request, Guid id)
         {
@@ -350,6 +491,203 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                UnitPrice = s.UnitPrice
             });
             return Json(insuranceVm.ToDataSourceResult(request, ModelState));
+        }
+
+        public ActionResult Distribution_Read([DataSourceRequest] DataSourceRequest request, Guid id)
+        {
+            List<EquipmentDistributionViewModel> list = new List<EquipmentDistributionViewModel>();
+            var assignedEquip = db.AssignedEquipment.Where(x => x.FleetId == id).ToList();
+            foreach (var item in assignedEquip)
+            {
+                var reqEquipment = db.RequestedEquipments.FirstOrDefault(x => x.VehicleDemandId == item.VehicleDemandId);
+                var additionalInfo = db.AssignedEquipmentAdditionalInfos.FirstOrDefault(x => x.AssignedEquipmentId == item.AssignedEquipmentID);
+                if(reqEquipment != null)
+                {
+
+                    list.Add(new EquipmentDistributionViewModel
+                    {
+                        AssignedEqiupmentId = item.AssignedEquipmentID,
+                        Destination = reqEquipment?.Destination,
+                        StartDate = reqEquipment?.StartDate,
+                        EndDate = reqEquipment?.EndDate,
+                        Quantity = reqEquipment?.Quantity ?? 0,
+                        OperatorName = db.Operator.FirstOrDefault(x => x.OperatorID == item.OperatorId)?.FullName,
+                        StartOdometer = item.StartOdometr,
+                        EndOdometer = item.EndOdometer,
+                        NetOdometer = item.NetOdometer,
+                        TotalCost = additionalInfo?.TotalBirr ?? 0
+                    });
+                }
+
+            }
+            return Json(list.ToDataSourceResult(request, ModelState));
+        }
+        public ActionResult Fuel_Read([DataSourceRequest] DataSourceRequest request, Guid id)
+        {
+            List<FuelConsumptionViewModel> list = new List<FuelConsumptionViewModel>();
+            var assignedEquipments = db.AssignedEquipment.AsNoTracking().Where(x => x.FleetId == id).ToList();
+            var groupedAssignedEquipments = assignedEquipments.GroupBy(x => x.FleetId).ToList();
+            var fleetIds = groupedAssignedEquipments.Select(g => g.Key).ToList();
+            var fleets = db.Fleets.Where(f => fleetIds.Contains(f.FleetsID)).ToList();
+            var equipmentTypeIds = fleets.Select(f => f.EquipmentTypeID).Distinct().ToList();
+            var equipmentTypes = db.EquipmentType.Where(et => equipmentTypeIds.Contains(et.EquipmentTypeID)).ToList();
+            var equipmentNameIds = fleets.Select(f => f.EquipmentNameID).Distinct().ToList();
+            var equipmentNames = db.EquipmentName.Where(en => equipmentNameIds.Contains(en.EquipmentNameID)).ToList();
+            
+            foreach (var group in groupedAssignedEquipments)
+            {
+                var fleet = fleets.FirstOrDefault(f => f.FleetsID == group.Key);
+                if (fleet != null)
+                {
+                   
+                    var totalFuelFromStore = GetFuelFromIssueItem(fleet.PlateNumber);
+                    var totalFuelFromTravelOrder = GetTotalFuelFromTravelOrder(group);
+
+                    list.Add(new FuelConsumptionViewModel
+                    {
+                        FleetId = fleet.FleetsID,
+                        TotalFuelFromStore = totalFuelFromStore,
+                        TotalFuelFromTravelOrder = totalFuelFromTravelOrder,
+                        TotalFuelConsumption = totalFuelFromStore + totalFuelFromTravelOrder
+                    });
+                    
+                }
+            }
+            return Json(list.ToDataSourceResult(request, ModelState));
+        }
+        public ActionResult Maintenace_Read([DataSourceRequest] DataSourceRequest request, Guid id)
+        {
+            List<MaintenanceViewModel> list = new List<MaintenanceViewModel>();
+            var jobOrder = db.JobOrder.Where(x => x.FleetsID == id).ToList();
+            var jobNums = jobOrder.Select(s => s.Num);
+            foreach (var item in jobNums)
+            {
+                list.Add(new MaintenanceViewModel
+                {
+                    MaitenanceServiceCost = CalculateServiceCost(item),
+                    AdditionalCost = CalculateAdditionalCost(item),
+                    SparePartsCost = CalculateSparePartCost(item),
+                    TotalCost = CalculateTotalCost(item),
+                    JobNumber = GetJobNum(item),
+                    MaintenanceCenter = GetServiceCenter(item),
+                    ServiceType = GetServiceType(item)
+                });
+            }
+            return Json(list.ToDataSourceResult(request, ModelState));
+        }
+
+
+        private string GetJobNum(int jobNum)
+        {
+            return db.JobOrder.FirstOrDefault(x => x.Num == jobNum)?.Num.ToString() ?? "";
+        }
+        private string GetServiceCenter(int jobNum)
+        {
+            return db.JobOrder.FirstOrDefault(x => x.Num == jobNum)?.MaintenanceCenter ?? "";
+        }
+        private string GetServiceType(int jobNum)
+        {
+            return db.JobOrder.FirstOrDefault(x => x.Num == jobNum)?.Type ?? "";
+        }
+        private decimal CalculateServiceCost(int jobNum)
+        {
+
+            var salesQuote = db.SalesQuoteVouchers
+              .Where(x => x.Source == SalesQuoteSource.Maintenance)
+              .AsEnumerable() // Switch to in-memory filtering to use TryParse
+              .FirstOrDefault(x => int.TryParse(x.JobOrderNumber, out var jobOrderNumber) && jobOrderNumber == jobNum);
+            if (salesQuote == null)
+                return 0;
+            var serviceLineItems = db.ServiceLineItems.Where(t => t.VoucherId == salesQuote.SalesQuoteVoucherID && t.VoucherType == CRMVoucherType.SalesQuote).ToList();
+
+            return serviceLineItems.Sum(x => (decimal?)x.UnitAmount) ?? 0;
+
+        }
+
+        private decimal CalculateSparePartCost(int jobNum)
+        {
+            var salesQuote = db.SalesQuoteVouchers
+              .Where(x => x.Source == SalesQuoteSource.Maintenance)
+              .AsEnumerable() // Switch to in-memory filtering to use TryParse
+              .FirstOrDefault(x => int.TryParse(x.JobOrderNumber, out var jobOrderNumber) && jobOrderNumber == jobNum);
+            if (salesQuote == null)
+                return 0;
+            var lineItems = db.LineItems.Where(t => t.Voucher == salesQuote.SalesQuoteVoucherID.ToString() && t.VoucherDefinitionID == "0").ToList();
+
+            return lineItems.Sum(x => (decimal?)x.UnitAmount) ?? 0;
+
+        }
+
+        private decimal CalculateAdditionalCost(int jobNum)
+        {
+            var workShop = db.ServiceCenterJob.FirstOrDefault(x => x.Num == jobNum);
+            if (workShop == null)
+                return 0;
+            return db.AdditionalWorkShopDetails.Where(x => x.ServiceCenterJobId == workShop.ServiceCenterJobId).Sum(x => (decimal?)x.OtherCosts) ?? 0;
+        }
+        private decimal CalculateTotalCost(int jobNum)
+        {
+            return CalculateServiceCost(jobNum) + CalculateSparePartCost(jobNum) + CalculateAdditionalCost(jobNum);
+        }
+
+
+        private decimal GetFuelFromIssueItem(string plateNo)
+        {
+            var query = db.IssueItems.AsNoTracking().Where(ii => ii.Issue.IsFuel);
+            if (query == null)
+                return 0;
+            
+            if (!string.IsNullOrWhiteSpace(plateNo))
+            {
+                query = query.Where(ii => ii.Issue.PlateNo == plateNo);
+            }
+
+            return query.Sum(ii => (decimal?)ii.Total) ?? 0;
+        }
+        private decimal GetTotalFuelFromTravelOrder(IEnumerable<AssignedEquipment> assignedEquipments)
+        {
+            var totalFuelFromTravelOrder = 0m;
+            var vehicleDemandIds = assignedEquipments.Select(ae => ae.VehicleDemandId).ToList();
+            var requestedEquipments = db.RequestedEquipments.Where(re => vehicleDemandIds.Contains(re.VehicleDemandId)).ToList();
+
+            var requestNumbers = requestedEquipments.Select(re => re.RequestNumber).ToList();
+            var vehicleDistributions = db.VehicleDistribution.Where(vd => requestNumbers.Contains(vd.RequestID)).ToList();
+
+            foreach (var vd in vehicleDistributions)
+            {
+                totalFuelFromTravelOrder += GetFuelSumFromTravelOrder(vd.VehicleDistributionID);
+            }
+
+            return totalFuelFromTravelOrder;
+        }
+        private decimal GetFuelSumFromTravelOrder(Guid vehicleDistributionId)
+        {
+            var query = db.ApTravelOrders.AsNoTracking().Where(ato => ato.VehicleDistributionID == vehicleDistributionId);
+            if (query == null)
+                return 0;                    
+            var travelOrders = query.ToList();
+            if (!travelOrders.Any())
+            {
+                return 0m;
+            }
+
+            var travelOrderIds = travelOrders.Select(ato => ato.ApTravelOrderId).ToList();
+
+            var advancePayments = db.ApTravelOrderAdvancePayments
+                                   .Where(ap => travelOrderIds.Contains(ap.ApTravelOrderId) && ap.Type == TravelPaymentType.Fuel)
+                                   .Sum(ap => (decimal?)ap.Total) ?? 0;
+
+            var expenseClaims = db.ApTravelExpenseClaims
+                                  .Where(ec => travelOrderIds.Contains((int)ec.ApTravelOrderId))
+                                  .ToList();
+
+            var claimIds = expenseClaims.Select(ec => ec.ApTravelExpenseClaimId).ToList();
+
+            var claimExpenses = db.ApTravelExpenseExpenses
+                                   .Where(ce => claimIds.Contains(ce.ApTravelExpenseClaimId) && ce.Type == TravelPaymentType.Fuel)
+                                   .Sum(ce => (decimal?)ce.Total) ?? 0;
+
+            return advancePayments + Math.Max(0, claimExpenses - advancePayments);
         }
     }
 }

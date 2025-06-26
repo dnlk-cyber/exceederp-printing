@@ -14,7 +14,8 @@ using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.FleetManagement.FleetInsurances;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Reporting.Fleet.ViewModel;
-
+//using ExceedERP.Reporting.Fleet.ViewModel;
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimeSheetSimple
 {
     //[AuthorizeRoles(FleetManagementRoles.FleetTimeSheet)]
@@ -75,7 +76,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimeSheetSimple
                 MaintenanceCost = machineryWorkingTimeSheet.MaintenanceCost,
                 TotalCost = machineryWorkingTimeSheet.TotalCost,
                 NetAmount = machineryWorkingTimeSheet.NetAmount,
-
+                OilConsumption = machineryWorkingTimeSheet.OilConsumption,
                 DownHourRate = machineryWorkingTimeSheet.DownHourRate,
                 OperationRevenue = machineryWorkingTimeSheet.OperationRevenue,
                 Perdium = machineryWorkingTimeSheet.Perdium,

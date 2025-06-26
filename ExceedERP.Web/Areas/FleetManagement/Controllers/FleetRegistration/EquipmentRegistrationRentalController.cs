@@ -976,7 +976,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                             {
                                 FleetsID = fleets.FleetsID,
                                 EquipmentLineCheckListId = fleetLineCheckList.FleetLineCheckListId,
-                                Name = fleetLineCheckList.Name,
+                                Name = fleetLineCheckList.SystemName,
                                 Code = fleetLineCheckList.Code,
                                 Description = fleetLineCheckList.Description,
                                 Quantity = 0
@@ -1450,7 +1450,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
 
 
-        [AllowAnonymous]
+        
         public ActionResult FleetsDDBind()
         {
             var assetRegistrations = db.AssetRegistrations.ToList();
@@ -1479,7 +1479,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(returnBattery, JsonRequestBehavior.AllowGet);
         }
 
-        //[AllowAnonymous]
+        //
         public ActionResult EquipmentNameDDBind(string Search, string EquipmentTypeId)
         {
             var fleets = new List<FleetViewModel>();
@@ -1512,7 +1512,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(fleets, JsonRequestBehavior.AllowGet);
         }
-        //[AllowAnonymous]
+        //
         //public ActionResult EquipmentNameFilterDDBind(string Search, string EquipmentTypeId)
         //{
 
@@ -1528,7 +1528,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //    return Json(fleets, JsonRequestBehavior.AllowGet);
         //}
 
-        //[AllowAnonymous]
+        //
         //public ActionResult EquipmentFilterDDBind(string Search, string EquipmentTypeId)
         //{
 
@@ -1547,7 +1547,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
 
 
-        //[AllowAnonymous]
+        //
         //public ActionResult EquipmentDDBind(string EquipmentTypeId, string Search)
         //{
 
@@ -1564,7 +1564,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //    }
         //    return Json(fleets, JsonRequestBehavior.AllowGet);
         //}
-        //[AllowAnonymous]
+        //
         //public ActionResult AssignedEquipmentDDBind()
         //{
 
@@ -1585,7 +1585,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
 
 
-        //[AllowAnonymous]
+        //
         //public ActionResult FixedAssetPlateDDBind(string Id, string Search)
         //{
 
@@ -1601,7 +1601,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //    return Json(fleets, JsonRequestBehavior.AllowGet);
 
         //}
-        //[AllowAnonymous]
+        //
         //public ActionResult EquipmentByNameDDBind(string Id, string Search)
         //{
 
@@ -1625,7 +1625,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //}
 
 
-        //[AllowAnonymous]
+        //
         //public ActionResult FixedAssetPlateSearchDDBind(string Id, string search)
         //{
 
@@ -1640,7 +1640,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //    return Json(fleets, JsonRequestBehavior.AllowGet);
 
         //}
-        //[AllowAnonymous]
+        //
         //public ActionResult FixedAssetChasisDDBind(string Id, string Search)
         //{
 
@@ -1658,7 +1658,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //}
 
 
-        //[AllowAnonymous]
+        //
         //public ActionResult FixedAssetSerialNoDDBind(string Id, string Search)
         //{
         //    var fleets = db.AssetRegistrations.Where(x => x.IsMachinery == true && x.FixedAssetSubCategoryID.ToString() == Id).Select(s => new FleetViewModel
@@ -1674,7 +1674,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //}
 
 
-        //[AllowAnonymous]
+        //
         //public ActionResult OutOfGarageFleetDDBind()
         //{
 
@@ -1690,7 +1690,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         //    return Json(ActiveFleet, JsonRequestBehavior.AllowGet);
         //}
-        //[AllowAnonymous]
+        //
         //public ActionResult FixedNameBySubType(string Id, string search)
         //{
 
@@ -1715,7 +1715,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //    return Json(string.Empty, JsonRequestBehavior.AllowGet);
         //}
 
-        //[AllowAnonymous]
+        //
         //public ActionResult FixedNameBySubTypeByName(string Id, string Search)
         //{
 
@@ -1741,7 +1741,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //}
 
 
-        //[AllowAnonymous]
+        //
         //public ActionResult UnAssignedFleetsDDBind()
         //{
         //    IOperatorService _operatorService = new OperatorService();
@@ -1769,7 +1769,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //    return Json(UnAssignedFleet, JsonRequestBehavior.AllowGet);
         //}
 
-        //[AllowAnonymous]
+        //
         //public ActionResult YearDDBind()
         //{
         //    List<SelectListItem> Years = new List<SelectListItem>();
@@ -1783,7 +1783,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //    }
         //    return Json(Years, JsonRequestBehavior.AllowGet);
         //}
-        //[AllowAnonymous]
+        //
         //public ActionResult ApprovalDDBind()
         //{
         //    var approvals = new List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject>();
@@ -1854,7 +1854,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //    }
         //    return Json(RequestEquipment, JsonRequestBehavior.AllowGet);
         //}
-        //[AllowAnonymous]
+        //
         //public ActionResult AssignDDBind(string Id, string Search)
         //{
 
@@ -1921,7 +1921,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //    return Json(RequestEquipment, JsonRequestBehavior.AllowGet);
         //}
 
-        //[AllowAnonymous]
+        //
         //public ActionResult FleetsTyreDDBind(string PlateNumber)
         //{
         //    string FleetType = string.Empty;
@@ -1986,7 +1986,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //}
 
 
-        //[AllowAnonymous]
+        //
         //public ActionResult FleetsJobRequestDDBind(string Id)
         //{
         //    string FleetType = string.Empty;
@@ -2010,7 +2010,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //    }
         //    return Json("");
         //}
-        //[AllowAnonymous]
+        //
         //public ActionResult FleetsFuelAndRentDDBind(string FleetsID)
         //{
 
@@ -2029,7 +2029,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //    }
         //    return Json(fleets, JsonRequestBehavior.AllowGet);
         //}
-        //[AllowAnonymous]
+        //
         //public ActionResult FleetsTODDBind(string PartNeededFleetsID)
         //{
 
@@ -2047,7 +2047,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //    return Json(fleets, JsonRequestBehavior.AllowGet);
         //}
 
-        //[AllowAnonymous]
+        //
         //public ActionResult GetEquipmentByRent(Guid RentId)
         //{
 
@@ -2066,7 +2066,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //}
 
 
-        //[AllowAnonymous]
+        //
         //public ActionResult OnDistributionFleetDDBind()
         //{
         //    IVehicleDistributionService _VehicleDistributionService = new VehicleDistributionService();

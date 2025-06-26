@@ -25,7 +25,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EquipmentSummaryViewModel> GetSheetInfo(DateTime StartingDate, DateTime EndingDate, string Project , string status, string PlateNo, string Model, string ChasisNo, string serialNo)
+        public List<EquipmentSummaryViewModel> GetSheetInfo(DateTime StartingDate, DateTime EndingDate, string Project, string status, string PlateNo, string Model, string ChasisNo, string serialNo)
         {
             List<EquipmentSummaryViewModel> EquipmentSummaryList = new List<EquipmentSummaryViewModel>();
             List<Branch> Branchs = db.Branch.ToList();
@@ -81,13 +81,13 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
 
 
-            
-                Periods =
-                    db.GLPeriods.Where(x =>
-                            x.DateFrom >= StartingDate && x.DateTo <= EndingDate
-                            ).FirstOrDefault();
 
-             
+            Periods =
+                db.GLPeriods.Where(x =>
+                        x.DateFrom >= StartingDate && x.DateTo <= EndingDate
+                        ).FirstOrDefault();
+
+
 
             if (Periods != null)
             {
@@ -158,29 +158,29 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
 
 
-                                   List<IssueItem> FuelConsumptions =
-                                  FleetReportHelper.GetInventoryIssueItem( 
-                                            x =>
-                                                x.Issue.IsFuel == true && x.Issue.BranchId == Branch.BranchId &&
-                                                x.Issue.PlateNo == FleetObj.PlateNumber && x.Issue.GLPeriodId == Periods.GLPeriodId  &&
-                                                    x.ItemCategoryCode ==
-                                                    FuelItemSetting.ItemCategoryCode
-                                              );
+                                    List<IssueItem> FuelConsumptions =
+                                   FleetReportHelper.GetInventoryIssueItem(
+                                             x =>
+                                                 x.Issue.IsFuel == true && x.Issue.BranchId == Branch.BranchId &&
+                                                 x.Issue.PlateNo == FleetObj.PlateNumber && x.Issue.GLPeriodId == Periods.GLPeriodId &&
+                                                     x.ItemCategoryCode ==
+                                                     FuelItemSetting.ItemCategoryCode
+                                               );
 
 
-                                   
 
-                                   
-                                        FuelConsumptionTemp.Add(new Fuel
-                                            {
-                                                FuelFilledAmount =
-                                                    FuelConsumptions.Sum(x => x.IssuedQuantity),
-                                                IsVoid = FleetObj.IsExternal,
-                                                FuelType = FuelItemSetting.ItemCategoryCode,
-                                                TotalFuelcost = FuelConsumptions.Sum(x => x.Total)
-                                            });
 
-                                 
+
+                                    FuelConsumptionTemp.Add(new Fuel
+                                    {
+                                        FuelFilledAmount =
+                                                FuelConsumptions.Sum(x => x.IssuedQuantity),
+                                        IsVoid = FleetObj.IsExternal,
+                                        FuelType = FuelItemSetting.ItemCategoryCode,
+                                        TotalFuelcost = FuelConsumptions.Sum(x => x.Total)
+                                    });
+
+
                                 }
                                 SheetsTemp.AddRange(FleetSheet);
                             }
@@ -197,7 +197,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                             DownTime = DownTime + Work.DownTime;
                             Workingtime = Workingtime + (MorningDuration.Hours + AfterNoonDuration.Hours);
                             Workingcost = Workingcost + ((MorningDuration.Hours + AfterNoonDuration.Hours) * decimal.Parse(Work.RentalRate.ToString()));
-                            IdelaCost = IdelaCost + ((Work.IdleTime + Work.BreakDownTime + Work.DownTime )* decimal.Parse(Work.IdealRentalRate.ToString()));
+                            IdelaCost = IdelaCost + ((Work.IdleTime + Work.BreakDownTime + Work.DownTime) * decimal.Parse(Work.IdealRentalRate.ToString()));
 
                         }
 
@@ -249,9 +249,9 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         EquipmentSummaryViewModel.Name = Name;
                         EquipmentSummaryViewModel.LogoFileName = LogoFileName;
                         EquipmentSummaryViewModel.Address = Address;
-                 
 
-                      EquipmentSummaryList.Add(EquipmentSummaryViewModel);
+
+                        EquipmentSummaryList.Add(EquipmentSummaryViewModel);
                     }
                 }
 
@@ -271,8 +271,8 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
             if (!EquipmentSummaryList.Any())
             {
-               var EquipmentSummary  = new EquipmentSummaryViewModel();
-               EquipmentSummary.AmharicName = AmharicName;
+                var EquipmentSummary = new EquipmentSummaryViewModel();
+                EquipmentSummary.AmharicName = AmharicName;
                 EquipmentSummary.Name = Name;
                 EquipmentSummary.LogoFileName = LogoFileName;
                 EquipmentSummary.Address = Address;

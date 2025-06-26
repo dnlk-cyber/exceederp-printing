@@ -34,7 +34,6 @@
                                 .Scrollable(h => h.Height(500))
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
                        .Model(model =>
               {
                   model.Id(p => p.RentCustomerFeedBackID);
@@ -45,10 +44,10 @@
                                                         .Error("error_handler(\"grid\")")
                                                         .RequestStart("onRequestStart(\"grid\")")
                                                         .RequestEnd("onRequestEnd(\"grid\")")) 
-                    .Create(create => create.Action("RentCustomerFeedBack_Create", "RentCustomerFeedBack"))
-                    .Read(read => read.Action("RentCustomerFeedBack_Read", "RentCustomerFeedBack"))
-                    .Update(read => read.Action("RentCustomerFeedBack_Update", "RentCustomerFeedBack"))
-                    .Destroy(read => read.Action("RentCustomerFeedBack_Destroy", "RentCustomerFeedBack"))
+                    .Create(create => create.Action("RentCustomerFeedBack_Create", "RentCustomerFeedBack").Data("sendForgery"))
+                    .Read(read => read.Action("RentCustomerFeedBack_Read", "RentCustomerFeedBack").Data("sendForgery"))
+                    .Update(read => read.Action("RentCustomerFeedBack_Update", "RentCustomerFeedBack").Data("sendForgery"))
+                    .Destroy(read => read.Action("RentCustomerFeedBack_Destroy", "RentCustomerFeedBack").Data("sendForgery"))
   )
 )
 

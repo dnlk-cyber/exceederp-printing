@@ -8,6 +8,9 @@ using ExceedERP.DataAccess.Context;
 using System;
 using ExceedERP.Core.Domain.InfoDesk.License;
 using ExceedERP.Web.Models;
+using ExceedERP.Web.Hubs;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers.License
 {
@@ -73,6 +76,32 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers.License
                 var entity = GetMappedObject(softwareLicense);
                 db.SoftwareLicenses.Add(entity);
                 db.SaveChanges();
+                if (softwareLicense.LicenseStatus == LicenseStatus.Renewal)
+                {
+                    var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                    NotifModels notif = new NotifModels
+                    {
+                        UserId = UserInformationHelper.GetEmployeeUserId(employeeId),
+                        Title = $"Software Licenses Renewal for Name: {softwareLicense.SoftwareName} ",
+                        Message = $" Software Licenses Renewal for Name: {softwareLicense.SoftwareName} Id:{softwareLicense.LicenseId}",
+                        URL = "/InfoDesk/SoftwareLicenses"
+                    };
+                    Notify.NotifyUser(notif);
+                }
+                if (softwareLicense.LicenseStatus == LicenseStatus.Expired)
+                {
+                    var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+                    NotifModels notif = new NotifModels
+                    {
+                        UserId = UserInformationHelper.GetEmployeeUserId(employeeId),
+                        Title = $"Software Licenses Expire for Name: {softwareLicense.SoftwareName} ",
+                        Message = $" Software Licenses Expire for Name: {softwareLicense.SoftwareName} Id:{softwareLicense.LicenseId}",
+                        URL = "/InfoDesk/SoftwareLicenses"
+                    };
+
+                    Notify.NotifyUser(notif);
+                }
                 softwareLicense.SoftwareLicenseId = entity.SoftwareLicenseId;
             }
 

@@ -26,22 +26,23 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             {
                 FleetRentalRateId = s.FleetRentalRateId,
                 CapacityFrom = s.CapacityFrom,
-                CapacityTo = s.CapacityTo,
-                DistanceFrom = s.DistanceFrom,
-                DistanceTo = s.DistanceTo,
+                CapacityTo = s.CapacityTo,              
                 EquipmentCatagoryId = s.EquipmentCatagoryId,
                 EquipmentRateId = s.EquipmentRateId,
                 EquipmentTypeId = s.EquipmentTypeId,
-                
+                DistanceFrom = s.DistanceFrom,
+                DistanceTo = s.DistanceTo,
+                RoadType = s.RoadType,
+                DumpTruckTypeOfWork = s.DumpTruckTypeOfWork,
                 ManufacturingYearFrom = s.ManufacturingYearFrom,
                 ManufacturingYearTo = s.ManufacturingYearTo,
                 NumberOfSeatsFrom = s.NumberOfSeatsFrom,
                 NumberOfSeatsTo = s.NumberOfSeatsTo,
                 Rate = s.Rate,
+                IdleRate = s.IdleRate,
                 Remark = s.Remark,
                 SprayingType = s.SprayingType,
-                RoadType = s.RoadType,
-                DumpTruckTypeOfWork = s.DumpTruckTypeOfWork,
+                
                 UoM = s.UoM,
                 
 
@@ -51,6 +52,15 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 
         public ActionResult EquipmentRate_Create([DataSourceRequest] DataSourceRequest request, EquipmentRate model, int id)
         {
+            if(model.IsDump==true)
+            {
+                model.DumpTruckTypeOfWork =null;
+            }
+            else
+            {
+                model.RoadType = null;
+
+            }
             if (ModelState.IsValid)
             {
                 model.FleetRentalRateId = id;
@@ -61,6 +71,15 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         }
         public ActionResult EquipmentRate_Update([DataSourceRequest] DataSourceRequest request, EquipmentRate model)
         {
+            if (model.IsDump == true)
+            {
+                model.DumpTruckTypeOfWork = null;
+            }
+            else
+            {
+                model.RoadType = null;
+
+            }
             if (ModelState.IsValid)
             {
                 db.Entry(model).State = System.Data.Entity.EntityState.Modified;
@@ -70,9 +89,13 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         }
         public ActionResult EquipmentRate_Delete([DataSourceRequest] DataSourceRequest request, EquipmentRate model)
         {
+            var equipmentRate = db.EquipmentRates.Find(model.EquipmentRateId);
+            if(equipmentRate==null)
+            {
+                ModelState.AddModelError("Error","Empty record");
+            }
             if (ModelState.IsValid)
             {
-                var equipmentRate = db.EquipmentRates.Find(model.FleetRentalRateId);
                 db.EquipmentRates.Remove(equipmentRate);
                 db.SaveChanges();
             }

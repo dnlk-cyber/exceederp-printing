@@ -24,6 +24,70 @@ namespace ExceedERP.DataAccess.Context
     
     public class FleetManagementEntityConfiguration
     {
+        public class TimeSheetExceptionEntityTypeConfiguration : EntityTypeConfiguration<TimeSheetException>
+        {
+            public TimeSheetExceptionEntityTypeConfiguration()
+            {
+                this.ToTable("TimeSheetException", "FleetManagement");
+                this.HasKey<int>(p => p.TimeSheetExceptionId);
+            }
+        }  public class RentalPaymentRequestFinanceValidationEntityTypeConfiguration : EntityTypeConfiguration<RentalPaymentRequestValidation>
+        {
+            public RentalPaymentRequestFinanceValidationEntityTypeConfiguration()
+            {
+                this.ToTable("RentalPaymentRequestFinanceValidation", "FleetManagement");
+                this.HasKey<int>(p => p.RentalPaymentRequestValidationId);
+            }
+        }
+        
+        public class TimeSheetSettingEntityTypeConfiguration : EntityTypeConfiguration<TimeSheetSetting>
+        {
+            public TimeSheetSettingEntityTypeConfiguration()
+            {
+                this.ToTable("TimeSheetSetting", "FleetManagement");
+                this.HasKey<int>(p => p.TimeSheetSettingId);
+            }
+        }
+        public class InspectionStatusKeyEntityTypeConfiguration : EntityTypeConfiguration<InspectionStatusKey>
+        {
+            public InspectionStatusKeyEntityTypeConfiguration()
+            {
+                this.ToTable("InspectionStatusKeys", "FleetManagement");
+                this.HasKey<int>(p => p.InspectionStatusKeyId);
+            }
+        }
+        public class RentFromExternalEquipmentRateEntityTypeConfiguration : EntityTypeConfiguration<RentFromExternalEquipmentRate>
+        {
+            public RentFromExternalEquipmentRateEntityTypeConfiguration()
+            {
+                this.ToTable("RentFromExternalEquipmentRate", "FleetManagement");
+                this.HasKey<int>(p => p.RentFromExternalEquipmentRateId);
+            }
+        }
+        public class RequestToInspectionEntityTypeConfiguration : EntityTypeConfiguration<RequestToInspection>
+        {
+            public RequestToInspectionEntityTypeConfiguration()
+            {
+                this.ToTable("RequestToInspection", "FleetManagement");
+                this.HasKey<int>(p => p.RequestToInspectionId);
+            }
+        }
+        public class FleetInsuranceDocumentEntityTypeConfiguration : EntityTypeConfiguration<FleetInsuranceDocument>
+        {
+            public FleetInsuranceDocumentEntityTypeConfiguration()
+            {
+                this.ToTable("FleetInsuranceDocument", "FleetManagement");
+                this.HasKey<int>(p => p.FleetInsuranceDocumentId);
+            }
+        }
+        public class TireIssueDetailEntityTypeConfiguration : EntityTypeConfiguration<TireIssueDetail>
+        {
+            public TireIssueDetailEntityTypeConfiguration()
+            {
+                this.ToTable("TireIssueDetails", "FleetManagement");
+                this.HasKey<int>(p => p.TireIssueDetailId);
+            }
+        }
         public class FleetRentalRateEntityTypeConfiguration : EntityTypeConfiguration<FleetRentalRate>
         {
             public FleetRentalRateEntityTypeConfiguration()
@@ -46,6 +110,29 @@ namespace ExceedERP.DataAccess.Context
             {
                 this.ToTable("FleetAnnualPlan", "FleetManagement");
                 this.HasKey<int>(p => p.FleetAnnualPlanId);
+            }
+        } public class RoadORLoadEntitytypeConfiguration : EntityTypeConfiguration<RoadORLoad>
+        {
+            public RoadORLoadEntitytypeConfiguration()
+            {
+                this.ToTable("RoadORLoad", "FleetManagement");
+                this.HasKey<int>(p => p.RoadOrLoadId);
+            }
+        }
+        public class HeavyORDumpTruckEntitytypeConfiguration : EntityTypeConfiguration<HeavyORDumpTruck>
+        {
+            public HeavyORDumpTruckEntitytypeConfiguration()
+            {
+                this.ToTable("HeavyORDumpTruck", "FleetManagement");
+                this.HasKey<int>(p => p.HeavyORDumpTruckId);
+            }
+        }
+        public class RateOfRoadORLoadEntitytypeConfiguration : EntityTypeConfiguration<RateOfRoadORLoad>
+        {
+            public RateOfRoadORLoadEntitytypeConfiguration()
+            {
+                this.ToTable("RateOfRoadORLoad", "FleetManagement");
+                this.HasKey<int>(p => p.RateOfRoadORLoadId);
             }
         }
         public class FleetAnnualPlanDetailEntityTypeConfiguration : EntityTypeConfiguration<FleetAnnualPlanDetail>
@@ -1729,7 +1816,7 @@ namespace ExceedERP.DataAccess.Context
             public TireReturnEntityTypeConfiguration()
             {
                 this.ToTable("TireReturn", "FleetManagement");
-                this.HasKey<Guid>(t => t.TireReturnID);
+                this.HasKey<Guid?>(t => t.TireReturnID);
 
             }
         }
@@ -1777,6 +1864,35 @@ namespace ExceedERP.DataAccess.Context
             {
                 this.ToTable("TireIssueApproval", "FleetManagement");
                 this.HasKey<int>(t => t.TireIssueApprovalID);
+
+            }
+        }
+        public class BoloRegistrationDocumentEntityTypeConfiguration : EntityTypeConfiguration<BoloRegistrationDocument>
+        {
+
+            public BoloRegistrationDocumentEntityTypeConfiguration()
+            {
+                this.ToTable("BoloRegistrationDocuments", "FleetManagement");
+                this.HasKey<int>(t => t.BoloRegistrationDocumentId);
+
+            }
+        }
+        public class FleetBoloRegistrationHistoryEntityTypeConfiguration : EntityTypeConfiguration<FleetBoloRegistrationHistory>
+        {
+            
+            public FleetBoloRegistrationHistoryEntityTypeConfiguration()
+            {
+                this.ToTable("FleetBoloRegistrationsHistorys", "FleetManagement");
+                this.HasKey<int>(t => t.FleetBoloRegistrationHistoryId);
+
+            }
+        }     public class FleetInsuranceHistoryEntityTypeConfiguration : EntityTypeConfiguration<FleetInsuranceHistory>
+        {
+            
+            public FleetInsuranceHistoryEntityTypeConfiguration()
+            {
+                this.ToTable("FleetInsuranceHistorys", "FleetManagement");
+                this.HasKey<int>(t => t.FleetInsuranceHistoryId);
 
             }
         }

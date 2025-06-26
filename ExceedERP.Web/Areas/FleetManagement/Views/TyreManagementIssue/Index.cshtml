@@ -1,4 +1,5 @@
 ﻿@model ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssue
+@using ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent;
 @{
   
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -8,24 +9,21 @@
     .Name("grid")
     .Columns(columns =>
     {
-
-
         columns.Bound(e => e.IssueType).Width(140);
         columns.ForeignKey(c => c.EquipmentIdentityID, (IEnumerable)ViewData["category"], "Value", "Text").Width(100);
         columns.ForeignKey(c => c.EquipmentTypeID, (IEnumerable)ViewData["type"], "Value", "Text").Width(100);
         columns.ForeignKey(c => c.EquipmentNameID, (IEnumerable)ViewData["name"], "Value", "Text").Width(100);
         columns.ForeignKey(c => c.FleetId, (IEnumerable)ViewData["fleet"], "Value", "Text").Width(100);
+        columns.Bound(e => e.IssueDate).Width(140);
+        columns.Bound(e => e.StoreCode).Width(140);
+        columns.Bound(e => e.IssueReference).Width(140);
         columns.Bound(e => e.PlateNumber).Width(140);
-        columns.Bound(e => e.Brand).Width(140);
-        columns.Bound(e => e.SerialNo).Width(140);
-        columns.Bound(e => e.TireSize).Width(140);
-        columns.Bound(e => e.UnitPrice).Width(120);
+        //  columns.Bound(e => e.Brand).Width(140);
+        // columns.Bound(e => e.SerialNo).Width(140);
+        //columns.Bound(e => e.TireSize).Width(140);
+        //columns.Bound(e => e.UnitPrice).Width(120);
         columns.Bound(e => e.Status).Width(100);
-
-
         columns.Command(command => { command.Edit();/* command.Destroy(); */}).Width(250);
-
-
     })
       .ToolBar(commands => commands.Create())
       .Editable(editable =>
@@ -54,7 +52,7 @@
 
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
+        //.ServerOperation(false)
         .Model(model =>
         {
             model.Id(p => p.TireIssueID);
@@ -63,10 +61,10 @@
                                                       .Error("error_handler(\"grid\")")
                                                       .RequestStart("onRequestStart(\"grid\")")
                                                       .RequestEnd("onRequestEnd(\"grid\")"))
-                    .Create(update => update.Action("TireIssue_Create", "TyreManagementIssue"))
-                    .Read(read => read.Action("TireIssue_Read", "TyreManagementIssue"))
-                    .Update(update => update.Action("TireIssue_Update", "TyreManagementIssue"))
-                    .Destroy(update => update.Action("TireIssue_Destroy", "TyreManagementIssue"))
+                    .Create(update => update.Action("TireIssue_Create", "TyreManagementIssue",new { area="FleetManagement"}).Data("sendForgery"))
+                    .Read(read => read.Action("TireIssue_Read", "TyreManagementIssue", new { area = "FleetManagement" }).Data("sendForgery"))
+                    .Update(update => update.Action("TireIssue_Update", "TyreManagementIssue", new { area = "FleetManagement" }).Data("sendForgery"))
+                    .Destroy(update => update.Action("TireIssue_Destroy", "TyreManagementIssue", new { area = "FleetManagement" }).Data("sendForgery"))
   )
 )
 
@@ -126,7 +124,45 @@
 
 
             );
-                items.Add().Text(" Approval").Content(@<text>
+            items.Add().Text("Serial")
+            .Content(@<text>
+             @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssueDetail>()
+                    .Name("TireIssueDetail_#=TireIssueID#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.IssueType).EditorTemplateName("IssueTypeSelector");
+                        columns.Bound(c => c.TireType);
+                        columns.Bound(c => c.SerialNo);
+                        columns.Bound(c => c.TireSize);
+                        columns.Bound(c => c.TireTube);
+                        columns.Bound(c => c.Brand);
+                        columns.Bound(c => c.UnitPrice);
+                        columns.Command(command => { command.Edit();
+                            command.Destroy();
+                        });
+                    })
+                    .ToolBar(toolbar => toolbar.Create())
+                     .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Scrollable()
+                    .Pageable()
+                    .DataSource(
+                    datasource=>datasource
+                    .Ajax()
+                    .Model(model =>
+                    {
+                        model.Id(p => p.TireIssueDetailId);
+                    }
+                    )
+                    .Create(create=>create.Action("TireIssueDetail_Create", "TyreIssueDetail", new { id= "#=TireIssueID#" }))
+                    .Read(create=>create.Action("TireIssueDetail_Read", "TyreIssueDetail", new { id= "#=TireIssueID#" }))
+                    .Update(create=>create.Action("TireIssueDetail_Update", "TyreIssueDetail"))
+                    .Destroy(create=>create.Action("TireIssueDetail_Create", "TyreIssueDetail", new { id= "#=TireIssueID#" }))
+
+
+                 ).ToClientTemplate())
+
+            </text>);
+            items.Add().Text(" Approval").Content(@<text>
                 
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssueApproval>()
                                                                                         .Name("TireIssueApproval#=TireIssueID#")
@@ -157,9 +193,9 @@
                                                     .Error("error_handler(\"TireIssueApproval#=TireIssueID#\")")
                                                     .RequestStart("onRequestStart(\"TireIssueApproval#=TireIssueID#\")")
                                                     .RequestEnd("onRequestEnd(\"TireIssueApproval#=TireIssueID#\")"))
-                                                                                                           .Create(update => update.Action("TireIssue_Approve", "TireIssueApproval", new { EId = "#=TireIssueID#" }))
-                                                                                             .Read(read => read.Action("TireIssueApproval_Read", "TireIssueApproval", new { EId = "#=TireIssueID#" }))
-                                                                           .Update(update => update.Action("TireIssue_Approve", "TireIssueApproval", new { EId = "#=TireIssueID#" }))
+                                                                                                           .Create(update => update.Action("TireIssue_Approve", "TireIssueApproval", new { EId = "#=TireIssueID#" }).Data("sendForgery"))
+                                                                                             .Read(read => read.Action("TireIssueApproval_Read", "TireIssueApproval", new { EId = "#=TireIssueID#" }).Data("sendForgery"))
+                                                                           .Update(update => update.Action("TireIssue_Approve", "TireIssueApproval", new { EId = "#=TireIssueID#" }).Data("sendForgery"))
 
 
                                                       )

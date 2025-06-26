@@ -60,7 +60,7 @@
                   .DataValueField("Id").Filter(FilterType.Contains)
                   .OptionLabel("Select Equipment Category")
                   //.HtmlAttributes(new { style = "width:100%" })
-                  .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider"))
+                  .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery"))
                   .ServerFiltering(false)))
 
         </div>
@@ -101,7 +101,7 @@
                       .DataValueField("Id")
                       .Filter(FilterType.Contains)
                       .OptionLabel("Select")
-                      .DataSource(d => d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider")
+                      .DataSource(d => d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider").Data("sendForgery")
                       .Data("filterEquipmentName")).ServerFiltering(true)).CascadeFrom("EquipmentTypeId"))
 
 
@@ -133,7 +133,7 @@
                                        .DataValueField("FleetsID")
                                        .Filter(FilterType.Contains)
                                        .OptionLabel("Select")
-                                       .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "FleetManagementDataProvider")
+                                       .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "FleetManagementDataProvider").Data("sendForgery")
                                        .Data("PopulateFleets")).ServerFiltering(true)).CascadeFrom("EquipmentNameId"))
                             </div>
                         </div>  

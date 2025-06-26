@@ -1,4 +1,4 @@
-﻿
+
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTireManagement
     public partial class TireReturn : Operations
     {
         
-        public Guid TireReturnID { get; set; }
+        public Guid? TireReturnID { get; set; }
         public Guid TireId { get; set; }
         public Guid FleetId { get; set; }
          [DisplayName(" Equipment")]
@@ -33,7 +33,17 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTireManagement
         [Required]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public Nullable<DateTime> InstalledDate { get; set; }
+        public DateTime? InstalledDate { get; set; }  
+        [DisplayName("Issue Date")]
+        [Required]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? IssueDate { get; set; }
+        [DisplayName("Return Date")]
+        [Required]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? ReturnDate { get; set; }
         [Required]
         public string Brand { get; set; }
         [Required]
@@ -55,7 +65,10 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTireManagement
           [Required] 
         public string DescriptionReason { get; set; }
         public int ReturnId { get; set; }
-        public int ReturnItemId { get; set; } 
+        public int ReturnItemId { get; set; }
+
+        public decimal ReturnedKMReading { get; set; }
+      //  public DateTime ReturnDate { get; set; }
 
     }
 }

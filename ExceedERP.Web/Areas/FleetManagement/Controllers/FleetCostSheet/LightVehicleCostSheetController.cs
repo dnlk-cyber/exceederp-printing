@@ -8,11 +8,17 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Reporting.Fleet.ViewModel;
+using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.FleetManagement;
+using System.Collections.Generic;
+using ExceedERP.Reporting.Fleet.ViewModel;
+//using ExceedERP.Reporting.Fleet.ViewModel;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
 {
+    [AuthorizeRoles(FleetManagementRoles.FleetCostSheetUser, FleetManagementRoles.FleetCostSheetApprover)]
     public class LightVehicleCostSheetController : Controller
     {
 
@@ -20,6 +26,36 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
 
         public ActionResult Index()
         {
+            ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            {
+                Text = s.EquipmentCategoryName,
+                Value = s.EquipmentIdentityID
+            }).ToList();
+            ViewData["type"] = db.EquipmentType.Select(s => new
+            {
+                Text = s.EquipmentTypeName,
+                Value = s.EquipmentTypeID
+            }).ToList();
+            ViewData["name"] = db.EquipmentName.Select(s => new
+            {
+                Text = s.Name,
+                Value = s.EquipmentNameID
+            }).ToList();
+            ViewData["branch"] = db.Branch.Select(s => new
+            {
+                Value = s.BranchId,
+                Text = s.Name
+            }).ToList();
+            ViewData["operator"] = db.Operator.Select(s => new
+            {
+                Value = s.OperatorID,
+                Text = s.FullName
+            }).ToList();
+            ViewData["businessunit"] = db.BusinessUnits.Select(s => new
+            {
+                Value = s.BusinessUnitId,
+                Text = s.Name
+            }).ToList();
 
             ViewData["fleet"] = db.Fleets.Select(x => new { x.FleetsID, x.PlateNumber }).ToList();
             ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
@@ -29,8 +65,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
        
         public ActionResult LightVehicleCostSheet_Read([DataSourceRequest] DataSourceRequest request)
         {
-          
-            var lightVehicleCostSheet = db.LightVehicleTimeSheets.Where(x => x.TimeSheetApproved);           
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var lightVehicleCostSheet = db.LightVehicleTimeSheets.Where(x => x.TimeSheetApproved)
+                .Where(x => mybraches.Contains(x.BranchId));
             DataSourceResult result = lightVehicleCostSheet.ToDataSourceResult(request, model => new LightVehicleTimeSheet
             {
                 
@@ -63,10 +100,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                 IdleAmount = model.IdleAmount,
                 TotalAmountBeforeVAT = model.TotalAmountBeforeVAT,
                 VAT = model.VAT,
+                LubricantCost = model.LubricantCost,
                 TotalAmount = model.TotalAmount,
                 FuelCost = model.FuelCost,
                 ServiceRecharge = model.ServiceRecharge,
-                LubricantCost = model.LubricantCost,
                 MaintenanceCost = model.MaintenanceCost,
                 TotalCost = model.TotalCost,
                 NetAmount = model.NetAmount,
@@ -97,7 +134,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                 CostSheetSendForApprovalTime = model.CostSheetSendForApprovalTime,
                 OperatorId = model.OperatorId,
                 TimeSheetSendForApprovalBy = model.TimeSheetSendForApprovalBy,
-                TimeSheetSendForApprovalTime = model.TimeSheetSendForApprovalTime
+                TimeSheetSendForApprovalTime = model.TimeSheetSendForApprovalTime,
+                EquipmentCategoryId = model.EquipmentCategoryId,
+                EquipmentNameId = model.EquipmentNameId,
+                EquipmentTypeId = model.EquipmentTypeId
 
             });
             return Json(result);
@@ -173,7 +213,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                     TimeSheetStatus = model.TimeSheetStatus,
                     CostSheetStatus = model.CostSheetStatus,
                     GreaseRate = model.GreaseRate,
-                    
+                    EquipmentCategoryId = model.EquipmentCategoryId,
+                    EquipmentNameId = model.EquipmentNameId,
+                    EquipmentTypeId = model.EquipmentTypeId,
+                    OperatorId = model.OperatorId,
+                    TimeSheetSendForApprovalBy = model.TimeSheetSendForApprovalBy,
+                    CostSheetSendForApprovalBy = model.CostSheetSendForApprovalBy,
+                    CostSheetSendForApprovalTime = model.CostSheetSendForApprovalTime,
+                    TimeSheetSendForApprovalTime = model.TimeSheetSendForApprovalTime
                     
                 };
 
@@ -307,6 +354,39 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
             return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
 
         }
+        public JsonResult VoidCostSheet(int lightVehicleTimeSheetId)
+        {
+
+            var lightVehicleCostSheet = db.LightVehicleTimeSheets.Find(lightVehicleTimeSheetId);
+
+            if (lightVehicleCostSheet != null)
+            {
+                lightVehicleCostSheet.CostSheetSendForAproval = false;
+                lightVehicleCostSheet.CostSheetApproved = false;
+                lightVehicleCostSheet.CostSheetApprovedDate = DateTime.Now;
+                lightVehicleCostSheet.CostSheetApprovedBy = User.Identity.Name;
+                lightVehicleCostSheet.CostSheetStatus = MaintenanceConst.Rejected;
+
+                db.LightVehicleTimeSheets.Attach(lightVehicleCostSheet);
+                db.Entry(lightVehicleCostSheet).State = EntityState.Modified;
+                db.SaveChanges();
+                var returnMessage = new
+                {
+                    Message = "Successfully Sent!",
+
+                };
+                return Json(returnMessage.Message, JsonRequestBehavior.AllowGet);
+
+            }
+
+            var jsonData = new
+            {
+                Message = "Error Sending!",
+
+            };
+            return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
+
+        }
         public ActionResult LightVehicleCostSheetApproval_Read([DataSourceRequest] DataSourceRequest request, int id)
         {
 
@@ -326,6 +406,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
             });
             return Json(result);
         }
+        [AuthorizeRoles(FleetManagementRoles.FleetCostSheetApprover)]
         public ActionResult LightVehicleCostSheetApproval_Create([DataSourceRequest] DataSourceRequest request, CostSheetApproval model, int id)
         {
             if (ModelState.IsValid)

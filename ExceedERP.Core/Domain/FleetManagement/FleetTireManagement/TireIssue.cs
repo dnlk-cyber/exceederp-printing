@@ -40,13 +40,20 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTireManagement
         [Required]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public Nullable<DateTime> InstalledDate { get; set; }
-  
+        public DateTime? InstalledDate { get; set; } [Required]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? IssueDate { get; set; }
+        public string IssueReference { get; set; }
+
         [Required]
         public string Brand { get; set; }
         [Required]
         [DisplayName("Serial Number ")]
         public string SerialNo { get; set; }
+        public string SerialNoB { get; set; }
+        public string SerialNoC { get; set; }
+        public string SerialNoD { get; set; }
         public enum TireTubeenum { With, WithOut }
         [Required]
         [DisplayName("Tyre Tube  ")]
@@ -64,8 +71,29 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTireManagement
         public string DescriptionReason { get; set; }
         public int IssueId { get; set; } 
         public int IssueItemId { get; set; } 
+
         
 
+    }
+    public class TireIssueDetail
+    {
+        public int TireIssueDetailId { get; set; }
+        public string TireIssueId { get; set; }
+        [DisplayName("Serial Number ")]
+        public string SerialNo { get; set; }
+        public string TireSize { get; set; }
+        public FleetBatteryOrTyreType IssueType { get; set; }
+        [DisplayName("Type")]
+        public string TireType { get; set; }
+        [Required]
+        [DisplayName("Tyre Tube  ")]
+        public string TireTube { get; set; }
+        [Required]
+        [DisplayName("Unit Price ")]
+        public decimal UnitPrice { get; set; }
+
+        [Required]
+        public string Brand { get; set; }
     }
     public enum FleetBatteryOrTyreType
     {

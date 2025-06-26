@@ -2,18 +2,28 @@
 @model ExceedERP.Core.Domain.FleetManagement.EquipmentRate
 
 <div class="row">
+    <div class="col-sm-2" id="HavePrPo">
+        <div class="form-group">
+            <div class="k-label">
+                <label for="Exporter">Is Road Type?</label>
+            </div>
+            <div>
+                @(Html.Kendo().CheckBoxFor(model => model.IsDump).HtmlAttributes(new { onchange = "SelectRateType(this);" }))
+            </div>
+        </div>
+    </div>
     <div class="col-sm-2">
         <div class="form-group">
             <label>Equipment Category</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.EquipmentCatagoryId)
-                                                        .DataTextField("Name")
-                                                        .DataValueField("Id")
-                                                        .Filter(FilterType.Contains)
-                                                        .OptionLabel("Select Category")
-                                                        .HtmlAttributes(new { style = "width:100%" })
-                                                        .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider"))
-                                                        .ServerFiltering(false)))
+                                                                .DataTextField("Name")
+                                                                .DataValueField("Id")
+                                                                .Filter(FilterType.Contains)
+                                                                .OptionLabel("Select Category")
+                                                                .HtmlAttributes(new { style = "width:100%" })
+                                                                .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery"))
+                                                                .ServerFiltering(false)))
             </div>
         </div>
     </div>
@@ -22,22 +32,22 @@
             <label>Equipment Type</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.EquipmentTypeId)
-                                           .DataTextField("Name")
-                                           .DataValueField("Id")
-                                           .OptionLabel("Select Equipment Type")
-                                           .Filter(FilterType.Contains)
-                                           .DataSource(d =>
-                                           {
-                                               d.Read(r =>
-                                               {
-                                                   r.Action("GetEquipmentTypes", "FleetManagementDataProvider")
-                                                   .Data("filterCategory");
-                                               })
-                                               .ServerFiltering(true);
-                                           })
-                                           .Enable(false)
-                                           .AutoBind(false)
-                                           .CascadeFrom("EquipmentCatagoryId"))
+                                                   .DataTextField("Name")
+                                                   .DataValueField("Id")
+                                                   .OptionLabel("Select Equipment Type")
+                                                   .Filter(FilterType.Contains)
+                                                   .DataSource(d =>
+                                                   {
+                                                       d.Read(r =>
+                                                       {
+                                                           r.Action("GetEquipmentTypes", "FleetManagementDataProvider")
+                                                           .Data("filterCategory");
+                                                       })
+                                                       .ServerFiltering(true);
+                                                   })
+                                                   .Enable(false)
+                                                   .AutoBind(false)
+                                                   .CascadeFrom("EquipmentCatagoryId"))
             </div>
         </div>
     </div>
@@ -47,17 +57,17 @@
             <div>
 
                 @(Html.Kendo().DropDownListFor(model => model.UoM)
-                            .ValuePrimitive(true)
-                            .OptionLabel("Select unit...")
-                            .DataTextField("UoMName")
-                            .DataValueField("Value")
-                            .Filter("contains")
+                                    .ValuePrimitive(true)
+                                    .OptionLabel("Select unit...")
+                                    .DataTextField("UoMName")
+                                    .DataValueField("Value")
+                                    .Filter("contains")
 
-                            .DataSource(dataSource =>
-                            {
-                                dataSource.Read(read => read.Action("GetUoM", "FleetManagementDataProvider", new { area = "FleetManagement" }))
-                                    .ServerFiltering(true);
-                            }).HtmlAttributes(new { style = "width:100%" }))
+                                    .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetUoM", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                            .ServerFiltering(true);
+                                    }).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>
@@ -139,7 +149,9 @@
             <label>Type Of Work</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.DumpTruckTypeOfWork)
+                                                        .Name("DumpTruckTypeOfWork")
                                                         .DataTextField("Text")
+                                                        .ValuePrimitive(true)
                                                         .DataValueField("Value")
 
                                                         .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.DumpTruckTypeOfWork))
@@ -151,31 +163,52 @@
 </div>
 
 <div class="row">
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>Road Type</label>
-            <div>
-                @(Html.Kendo().DropDownListFor(model => model.RoadType)
-                                                               .DataTextField("Text")
-                                                               .DataValueField("Value")
-
-                                                               .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRoadType))
-                                                               )
-                                                           .HtmlAttributes(new { style = "width:100%" }))
+    @*<div class="col-sm-2">
+        <div class="form-group" id="tostoreDiv" style="display: none">
+            @Html.LabelFor(model => model.ToStoreCode, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-6">
+                @(Html.Kendo().DropDownListFor(model => model.ToStoreCode)
+                                              .ValuePrimitive(true)
+                                              .OptionLabel("Select Store...")
+                                              .DataTextField("Name")
+                                              .DataValueField("StoreCode")
+                                              .Filter("contains")
+                                              .DataSource(dataSource =>
+                                              {
+                                                  dataSource.Read(read => read.Action("GetAllStores", "DataProvider", new { area = "Inventory" }).Data("sendForgery"))
+                                                      .ServerFiltering(false);
+                                              })
+                )
+                @Html.ValidationMessageFor(model => model.ToStoreCode, "", new { @class = "text-danger" })
             </div>
         </div>
-    </div>
+    </div>*@
+    <div class="col-sm-2">
+            <div class="form-group" style="display: none">
+                <label>Road Type</label>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.RoadType)
+                    .Name("RoadType")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .ValuePrimitive(true)
+                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRoadType))
+                    )
+                .HtmlAttributes(new { style = "width:100%" }))
+                </div>
+            </div>
+        </div>
     <div class="col-sm-2">
         <div class="form-group">
             <label>Spray Type</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.SprayingType)
-                                                               .DataTextField("Text")
-                                                               .DataValueField("Value")
+                                    .DataTextField("Text")
+                                    .DataValueField("Value")
 
-                                                               .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.SprayingType))
-                                                               )
-                                                           .HtmlAttributes(new { style = "width:100%" }))
+                                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.SprayingType))
+                                    )
+                                .HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>
@@ -190,9 +223,18 @@
     </div>
     <div class="col-sm-2">
         <div class="form-group">
+            <label>Idle Rate</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.IdleRate).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
             <label></label>
             <div>
-               
+
             </div>
         </div>
     </div>

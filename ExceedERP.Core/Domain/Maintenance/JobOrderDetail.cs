@@ -16,10 +16,13 @@ namespace ExceedERP.Core.Domain.Maintenance
         public string SubCategoryCode { get; set; }
         [DisplayName("Service Group")]
         public ServiceGroup ServiceGroup { get; set; }
+        public int ServiceGroupSettingId { get; set; }
         public Guid ServiceID { get; set; }
         public string ServiceName { get; set; }
-       
-
+        public bool IsFromWorkShop { get; set; }
+        public string DescriptionOfJobs { get; set; }
+        public bool IsFromWorkShopRejected { get; set; }
+        public bool IsFromWorkShopApproved { get; set; }
         [DisplayName("Cause")]
         public Guid JobCausesId { get; set; }
         [DisplayName("Service Name")]

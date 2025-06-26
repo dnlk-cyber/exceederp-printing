@@ -14,6 +14,7 @@ using ExceedERP.Web.Controllers;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
+    [Authorize]
     public class KnowledgeBaseResolutionsController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -23,12 +24,16 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         }
         public ActionResult Read([DataSourceRequest]DataSourceRequest request)
         {
-            var knowledgeBases = db.InfoDeskKnowledgeBases.ToList();
+            var knowledgeBases = db.InfoDeskKnowledgeBases.Where(x=>x.DocumentType==InfoDocumentType.DocumentResolution).ToList();
             DataSourceResult result = knowledgeBases.ToDataSourceResult(request, knowledgeBase => new
             {
                 InfoDeskKnowledgeBaseId = knowledgeBase.InfoDeskKnowledgeBaseId,
                 Problem = knowledgeBase.Problem,
                 Solution = knowledgeBase.Solution,
+                DocumentType = knowledgeBase.DocumentType,
+                IsOnlineApproved = knowledgeBase.IsOnlineApproved,
+                OnlineApprovedBy = knowledgeBase.OnlineApprovedBy,
+                OnlineApprovedTime = knowledgeBase.OnlineApprovedTime,
                 DateCreated = knowledgeBase.DateCreated,
                 CreatedBy = knowledgeBase.CreatedBy,
                 ModifiedBy = knowledgeBase.ModifiedBy,
@@ -41,6 +46,12 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Create([DataSourceRequest]DataSourceRequest request, InfoDeskKnowledgeBase knowledgeBase)
         {
+            if (knowledgeBase.DocumentType == InfoDocumentType.KnowledgeBase)
+            {
+                ModelState.AddModelError("exist", "you can't add Knowledge base Document type ");
+                return Json(new[] { knowledgeBase }.ToDataSourceResult(request, ModelState));
+
+            }
             if (ModelState.IsValid)
             {
                 knowledgeBase.DateCreated = DateTime.Now;
@@ -57,6 +68,12 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Update([DataSourceRequest]DataSourceRequest request, InfoDeskKnowledgeBase knowledgeBase)
         {
+            if (knowledgeBase.DocumentType == InfoDocumentType.KnowledgeBase)
+            {
+                ModelState.AddModelError("exist", "you can't add Knowledge base Document type ");
+                return Json(new[] { knowledgeBase }.ToDataSourceResult(request, ModelState));
+
+            }
             if (ModelState.IsValid)
             {
                 knowledgeBase.LastModified = DateTime.Now;
@@ -90,6 +107,10 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 InfoDeskKnowledgeBaseId = knowledgeBase.InfoDeskKnowledgeBaseId,
                 Problem = knowledgeBase.Problem,
                 Solution = knowledgeBase.Solution,
+                DocumentType = knowledgeBase.DocumentType,
+                IsOnlineApproved = knowledgeBase.IsOnlineApproved,
+                OnlineApprovedBy = knowledgeBase.OnlineApprovedBy,
+                OnlineApprovedTime = knowledgeBase.OnlineApprovedTime,
                 DateCreated = knowledgeBase.DateCreated,
                 CreatedBy = knowledgeBase.CreatedBy,
                 ModifiedBy = knowledgeBase.ModifiedBy,
@@ -98,8 +119,40 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             };
             return entity;
         }
-       
-        
+        public JsonResult ApproveKnowledgeBases(int id, string reason)
+        {
+            var knowledgeBase = db.InfoDeskKnowledgeBases.Find(id);
+            if (knowledgeBase == null)
+            {
+                return Json(new { Message = "Record not found.", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (knowledgeBase.IsOnlineApproved)
+            {
+                return Json(new { Message = "already aproved.", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
+            }
+
+            // Update ticket 
+            if (!string.IsNullOrWhiteSpace(reason))
+            {
+                if (string.IsNullOrWhiteSpace(knowledgeBase.Solution))
+                    knowledgeBase.Solution = reason;
+                else
+                    knowledgeBase.Solution += ", " + reason;
+            }
+            knowledgeBase.IsOnlineApproved = true;
+            knowledgeBase.OnlineApprovedBy = User.Identity.Name;
+            knowledgeBase.OnlineApprovedTime = DateTime.Now;
+            // Mark entities as modified
+            db.Entry(knowledgeBase).State = EntityState.Modified;
+            db.SaveChanges();
+
+
+            return Json(new { Message = "Successfully Approved ", Status = "Ok" }, JsonRequestBehavior.AllowGet);
+
+        }
+
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

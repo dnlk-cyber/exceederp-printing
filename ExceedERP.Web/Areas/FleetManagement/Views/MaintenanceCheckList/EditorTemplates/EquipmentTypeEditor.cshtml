@@ -7,7 +7,7 @@
           .DataTextField("EquipmentCategoryName")
           .DataValueField("EquipmentCategoryName")
           .OptionLabel("Select Fleet Category")
-          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory"))))
+          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory").Data("sendForgery"))))
 
 
 </div>

@@ -27,10 +27,6 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             List<RentToExternalViewModel> ExternalRentList = new List<RentToExternalViewModel>();
             RentToExternalViewModel RentToExternalViewModel;
             List<RentOtherSuppliers> RentOtherSuppliers = new List<RentOtherSuppliers>();
-
-
-
-
             string AmharicName = "";
             string Name = "";
             string Address = "";

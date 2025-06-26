@@ -10,6 +10,8 @@ using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Fleet.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
+using ExceedERP.Core.Domain.Maintenance;
+
 using ExceedERP.Reporting.Fleet.View;
 using ExceedERP.Core.Domain.Finance.GL;
 using static ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleDistribution;

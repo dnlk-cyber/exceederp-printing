@@ -1,6 +1,5 @@
 ﻿@using System.Collections
 @using ExceedERP.Core.Domain.Finance.AP.Travel
-@using ExceedERP.Core.Domain.HRM.SelfCare
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -78,10 +77,10 @@
               model.Field(p => p.ModifiedBy).Editable(false);
               model.Field(p => p.LastModified).Editable(false);
           })
-                  .Read(read => read.Action("TravelOrderRequest_Read", "TravelOrderRequest"))
-                  .Create(create => create.Action("TravelOrderRequest_Create", "TravelOrderRequest"))
-                  .Update(update => update.Action("TravelOrderRequest_Update", "TravelOrderRequest"))
-                  .Destroy(destroy => destroy.Action("TravelOrderRequest_Destroy", "TravelOrderRequest"))
+                  .Read(read => read.Action("TravelOrderRequest_Read", "TravelOrderRequest").Data("sendForgery"))
+                  .Create(create => create.Action("TravelOrderRequest_Create", "TravelOrderRequest").Data("sendForgery"))
+                  .Update(update => update.Action("TravelOrderRequest_Update", "TravelOrderRequest").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("TravelOrderRequest_Destroy", "TravelOrderRequest").Data("sendForgery"))
 
                   ).ClientDetailTemplateId("template")
 )
@@ -277,10 +276,10 @@
                                         model.Field(p => p.LastModified).Editable(false);
 
                                     })
-                                    .Read(read => read.Action("TravelOrderAdvancePayments_Read", "TravelOrderAdvancePaymentRequest", new { id = "#=ApTravelOrderId#" }))
-                                    .Create(create => create.Action("TravelOrderAdvancePayments_Create", "TravelOrderAdvancePaymentRequest", new { id = "#=ApTravelOrderId#" }))
-                                    .Update(update => update.Action("TravelOrderAdvancePayments_Update", "TravelOrderAdvancePaymentRequest", new { id = "#=ApTravelOrderId#" }))
-                                    .Destroy(destroy => destroy.Action("TravelOrderAdvancePayments_Destroy", "TravelOrderAdvancePaymentRequest"))
+                                    .Read(read => read.Action("TravelOrderAdvancePayments_Read", "TravelOrderAdvancePaymentRequest", new { id = "#=ApTravelOrderId#" }).Data("sendForgery"))
+                                    .Create(create => create.Action("TravelOrderAdvancePayments_Create", "TravelOrderAdvancePaymentRequest", new { id = "#=ApTravelOrderId#" }).Data("sendForgery"))
+                                    .Update(update => update.Action("TravelOrderAdvancePayments_Update", "TravelOrderAdvancePaymentRequest", new { id = "#=ApTravelOrderId#" }).Data("sendForgery"))
+                                    .Destroy(destroy => destroy.Action("TravelOrderAdvancePayments_Destroy", "TravelOrderAdvancePaymentRequest").Data("sendForgery"))
                                     ).ToClientTemplate()
             )
 
@@ -341,10 +340,10 @@
                                             model.Field(p => p.LastModified).Editable(false);
 
                                         })
-                                                        .Read(read => read.Action("TravelOrderDepartures_Read", "TravelOrderDepartureRequest", new { id = "#=ApTravelOrderId#" }))
-                                                        .Create(create => create.Action("TravelOrderDepartures_Create", "TravelOrderDepartureRequest", new { id = "#=ApTravelOrderId#" }))
-                                                        .Update(update => update.Action("TravelOrderDepartures_Update", "TravelOrderDepartureRequest", new { id = "#=ApTravelOrderId#" }))
-                                                        .Destroy(destroy => destroy.Action("TravelOrderDepartures_Destroy", "TravelOrderDepartureRequest"))
+                                                        .Read(read => read.Action("TravelOrderDepartures_Read", "TravelOrderDepartureRequest", new { id = "#=ApTravelOrderId#" }).Data("sendForgery"))
+                                                        .Create(create => create.Action("TravelOrderDepartures_Create", "TravelOrderDepartureRequest", new { id = "#=ApTravelOrderId#" }).Data("sendForgery"))
+                                                        .Update(update => update.Action("TravelOrderDepartures_Update", "TravelOrderDepartureRequest", new { id = "#=ApTravelOrderId#" }).Data("sendForgery"))
+                                                        .Destroy(destroy => destroy.Action("TravelOrderDepartures_Destroy", "TravelOrderDepartureRequest").Data("sendForgery"))
                                                     ).ToClientTemplate()
             )
 
@@ -400,9 +399,9 @@ command.Edit();
                                     model.Field(p => p.DateCreated).Editable(false);
                                 })
 
-                    .Read(read => read.Action("TravelOrderDepartmentValidations_Read", "TravelOrderDepartmentValidation", new { id = "#=ApTravelOrderId#" }))
-                    .Create(create => create.Action("TravelOrderDepartmentValidations_Create", "TravelOrderDepartmentValidation", new { id = "#=ApTravelOrderId#" }))
-                    .Update(update => update.Action("TravelOrderDepartmentValidations_Update", "TravelOrderDepartmentValidation", new { id = "#=ApTravelOrderId#" }))
+                    .Read(read => read.Action("TravelOrderDepartmentValidations_Read", "TravelOrderDepartmentValidation", new { id = "#=ApTravelOrderId#" }).Data("sendForgery"))
+                    .Create(create => create.Action("TravelOrderDepartmentValidations_Create", "TravelOrderDepartmentValidation", new { id = "#=ApTravelOrderId#" }).Data("sendForgery"))
+                    .Update(update => update.Action("TravelOrderDepartmentValidations_Update", "TravelOrderDepartmentValidation", new { id = "#=ApTravelOrderId#" }).Data("sendForgery"))
                 )
                 .ToClientTemplate())
 

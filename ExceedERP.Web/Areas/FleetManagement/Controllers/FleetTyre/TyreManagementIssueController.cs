@@ -20,7 +20,7 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
-    [AuthorizeRoles(FleetManagementRoles.TyreUser, FleetManagementRoles.TyreApprover)]
+   // [AuthorizeRoles(FleetManagementRoles.TyreUser, FleetManagementRoles.TyreApprover)]
     public class TyreManagementIssueController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
@@ -38,29 +38,30 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             {
                 Value = s.EquipmentIdentityID,
                 Text = s.EquipmentCategoryName
-            }).ToList();
+            });
             ViewData["type"] = db.EquipmentType.Select(s => new
             {
                 Value = s.EquipmentTypeID,
                 Text = s.EquipmentTypeName
-            }).ToList();
+            });
             ViewData["name"] = db.EquipmentName.Select(s => new
             {
                 Value = s.EquipmentNameID,
                 Text = s.Name
-            }).ToList();
+            });
             ViewData["fleet"] = db.Fleets.Select(s => new
             {
                 Value = s.FleetsID,
                 Text = s.PlateNumber + "-" + s.SerialNo
-            }).ToList();
+            });
             return View();
         }
 
 
         public ActionResult TireIssue_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var TireIssue = _TireIssueService.GetAll().ToList().Select(t => new TireIssue
+            IQueryable<TireIssue> vehicleDistributions = db.TireIssue;
+            DataSourceResult result = vehicleDistributions.ToDataSourceResult(request, t => new
             {
 
                 UnitPrice = t.UnitPrice,
@@ -72,10 +73,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 InstalledDate = t.InstalledDate,
                 KMReading = t.KMReading,
                 StoreCode = t.StoreCode,
-                SerialNo = t.SerialNo,
+                SerialNo = t.SerialNo,                
                 TireIssueID = t.TireIssueID,
                 TireSize = t.TireSize,
                 TireTube = t.TireTube,
+                IssueReference = t.IssueReference,
+                IssueDate = t.IssueDate,
                 TireType = t.TireType,
                 IsOnlineApproved = t.IsOnlineApproved,
                 IsSendForApproval = t.IsSendForApproval,
@@ -91,12 +94,15 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 EquipmentNameID = t.EquipmentNameID,
                 EquipmentTireId = t.EquipmentTireId,
                 EquipmentTypeID = t.EquipmentTypeID,
-                TireReturnId = t.TireReturnId
+                TireReturnId = t.TireReturnId,
+                SerialNoB = t.SerialNoB,
+                SerialNoC = t.SerialNoC,
+                SerialNoD = t.SerialNoD
 
             }
-                );
+             );
 
-            return Json(TireIssue.ToDataSourceResult(request));
+            return Json(result);
         }
 
 
@@ -113,8 +119,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             TireIssue.TireReturnId = Guid.NewGuid();
             //TireIssue.FleetId = fleet.FleetsID;
             TireIssue.Brand = TireIssue.Brand;
+            TireIssue.IssueReference = TireIssue.IssueReference;
+            TireIssue.IssueDate = TireIssue.IssueDate;
             TireIssue.InstalledDate = DateTime.Now;
             TireIssue.StoreCode = TireIssue.StoreCode;
+            TireIssue.IssueDate = TireIssue.IssueDate;
+           // TireIssue.IssueReference = TireIssue.IssueReference;
             TireIssue.KMReading = TireIssue.KMReading;
             TireIssue.SerialNo = TireIssue.SerialNo;
             TireIssue.IssueType = TireIssue.IssueType;
@@ -172,7 +182,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-        [AllowAnonymous]
+        
         public ActionResult TyreForIssue()
         {
 
@@ -198,7 +208,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(Tyres, JsonRequestBehavior.AllowGet);
         }
 
-        [AllowAnonymous]
+        
         public ActionResult GetTyreInfo(Guid Id)
         {
             string Response = string.Empty;

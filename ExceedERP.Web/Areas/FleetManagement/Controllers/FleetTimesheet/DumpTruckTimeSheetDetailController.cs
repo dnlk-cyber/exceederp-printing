@@ -1,7 +1,9 @@
-﻿using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
+﻿using ExceedERP.Core.Domain.FleetManagement;
+using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -13,6 +15,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
 {
+    [AuthorizeRoles(FleetManagementRoles.FleetTimeSheetUser, FleetManagementRoles.FleetTimeSheetApprover)]
     public class DumpTruckTimeSheetDetailController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();

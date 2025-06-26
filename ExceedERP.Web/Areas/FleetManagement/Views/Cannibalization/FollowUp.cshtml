@@ -47,7 +47,7 @@
                                  .Events(ev => { ev.DetailExpand("onDetailExpandUser"); ev.DataBound("onDataBound"); })
        .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
+     
        
         .Model(model =>
               {
@@ -57,7 +57,7 @@
                                 .Error("error_handler(\"grid\")")
                                 .RequestStart("onRequestStart(\"grid\")")
                                 .RequestEnd("onRequestEnd(\"grid\")"))
-                    .Read(read => read.Action("CannibalizationFollowUp_Read", "Cannibalization"))
+                    .Read(read => read.Action("CannibalizationFollowUp_Read", "Cannibalization").Data("sendForgery"))
                
   )
 )
@@ -188,10 +188,10 @@
                                                             .Error("error_handler(\"CannibalizationDetaill#=CannibalizationID#\")")
                                                             .RequestStart("onRequestStart(\"CannibalizationDetaill#=CannibalizationID#\")")
                                                             .RequestEnd("onRequestEnd(\"CannibalizationDetaill#=CannibalizationID#\")"))
-                                                                                                                           .Create(update => update.Action("CannibalizationDetails_Create", "CannibalizationDetail", new { Id = "#=CannibalizationID#" }))
-                                                                                                             .Read(read => read.Action("CannibalizationDetails_Read", "CannibalizationDetail", new { Id = "#=CannibalizationID#" }))
-                                                                                   .Update(update => update.Action("CannibalizationDetails_Update", "CannibalizationDetail"))
-                                                                                                     .Destroy(update => update.Action("CannibalizationDetails_Destroy", "CannibalizationDetail"))
+                                                                                                                           .Create(update => update.Action("CannibalizationDetails_Create", "CannibalizationDetail", new { Id = "#=CannibalizationID#" }).Data("sendForgery"))
+                                                                                                             .Read(read => read.Action("CannibalizationDetails_Read", "CannibalizationDetail", new { Id = "#=CannibalizationID#" }).Data("sendForgery"))
+                                                                                   .Update(update => update.Action("CannibalizationDetails_Update", "CannibalizationDetail").Data("sendForgery"))
+                                                                                                     .Destroy(update => update.Action("CannibalizationDetails_Destroy", "CannibalizationDetail").Data("sendForgery"))
 
                                                       )
                                                .ToClientTemplate())
@@ -230,9 +230,9 @@
                                                     .Error("error_handler(\"CannibalizationApproval#=CannibalizationID#\")")
                                                     .RequestStart("onRequestStart(\"CannibalizationApproval#=CannibalizationID#\")")
                                                     .RequestEnd("onRequestEnd(\"CannibalizationApproval#=CannibalizationID#\")"))
-                                                                                                   .Create(update => update.Action("Cannibalization_Approve", "CannibalizationApproval", new { EId = "#=CannibalizationID#" }))
-                                                                                     .Read(read => read.Action("CannibalizationApproval_Read", "CannibalizationApproval", new { EId = "#=CannibalizationID#" }))
-                                                                   .Update(update => update.Action("Cannibalization_Approve", "CannibalizationApproval"))
+                                                                                                   .Create(update => update.Action("Cannibalization_Approve", "CannibalizationApproval", new { EId = "#=CannibalizationID#" }).Data("sendForgery"))
+                                                                                     .Read(read => read.Action("CannibalizationApproval_Read", "CannibalizationApproval", new { EId = "#=CannibalizationID#" }).Data("sendForgery"))
+                                                                   .Update(update => update.Action("Cannibalization_Approve", "CannibalizationApproval").Data("sendForgery"))
 
 
                                                       )

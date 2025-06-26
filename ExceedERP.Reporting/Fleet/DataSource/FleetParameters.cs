@@ -112,6 +112,34 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             return list;
 
         }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<GenericVm> GetMaintenanceCenter()
+        {
+            var list = db.MaintenanceCenter.Select(s => new GenericVm
+            {
+                Text = s.Name,
+                Value = s.MaintenanceCenterID.ToString()
+            }).ToList();
+            return list;
+        }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<GenericVm> GetGrade() 
+        {
+            return new List<GenericVm>
+            {
+                new GenericVm {Value = EquipmentGrade.Excellent.ToString(), Text = "Excellent"},
+                new GenericVm {Value = EquipmentGrade.Very_Good.ToString(), Text = "Very Good"},
+                new GenericVm {Value = EquipmentGrade.Good.ToString(), Text = "Good"},
+                new GenericVm {Value = EquipmentGrade.Poor.ToString(), Text = "Poor"},
+            };
+        }
+        public enum EquipmentGrade
+        {
+            Excellent,
+            Very_Good,
+            Good,
+            Poor
+        }
         public class GenericVm
         {
             public string Text { get; set; }

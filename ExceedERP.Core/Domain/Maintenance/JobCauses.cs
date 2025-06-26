@@ -11,5 +11,7 @@ namespace ExceedERP.Core.Domain.Maintenance
                 [Required]
             public string Name { get; set; }
             public string Description  { get; set; }
+           public bool ShowOnReception { get; set; }
+           public int FromReceptionCount { get; set; }
     }
 }

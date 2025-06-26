@@ -36,6 +36,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         // GET: /FleetManagement/TireReturn/
         public ActionResult Index()
         {
+           // ViewData["store"] = db.InventoryStores.ToList();
+            ViewData["store"] = db.InventoryStores.Select(s => new
+            {
+                StoreCode = s.StoreCode,
+                StoreName = s.Name
+            });
             return View();
         }
 
@@ -51,9 +57,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 PlateNumber = t.PlateNumber,
                 DescriptionReason = t.DescriptionReason,
                 InstalledDate = t.InstalledDate,
+                IssueDate=t.IssueDate,
                 KMReading = t.KMReading,
                 StoreCode = t.StoreCode,
                 SerialNo = t.SerialNo,
+                ReturnDate = t.ReturnDate,
+                ReturnedKMReading = t.ReturnedKMReading,
                 TireReturnID = t.TireReturnID,
                 TireSize = t.TireSize,
                 TireTube = t.TireTube,
@@ -74,33 +83,26 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TireReturn_Create([DataSourceRequest] DataSourceRequest request, TireReturn TireReturn)
         {
+            ModelState.Remove("TireReturnID");
             IOperatorService _OperatorService = new OperatorService();
             IFleetService fleetService = new FleetService();
-
-
-            //try 
-            //{ 
-
             Fleets fleet = fleetService.GetAll().Where(x => x.FleetsID == TireReturn.FleetId).FirstOrDefault();
             EquipmentTyre Tyre = db.EquipmentTyres.Where(x => x.SerialNo == TireReturn.SerialNo.ToString()).FirstOrDefault();
-
-
-
-
-
 
             if (TireReturn != null && fleet != null && Tyre != null)
             {
                 TireReturn.TireReturnID = Guid.NewGuid();
                 TireReturn.Brand = Tyre.Make;
                 TireReturn.FleetId = fleet.FleetsID;
-                TireReturn.InstalledDate = Tyre.DateCreated;
+               // TireReturn.IssueDate = Tyre.IssueDate;
                 TireReturn.KMReading = fleet.CurentOdoMeter - Tyre.OdoMeter;
                 TireReturn.SerialNo = Tyre.SerialNo;
-                TireReturn.StoreCode = Tyre.StoreCode;
+                TireReturn.StoreCode = TireReturn.StoreCode;
                 TireReturn.TireSize = Tyre.Size;
                 TireReturn.TireTube = Tyre.Tube;
                 TireReturn.TireType = Tyre.Type;
+                TireReturn.ReturnDate = TireReturn.ReturnDate;
+                TireReturn.ReturnedKMReading = TireReturn.ReturnedKMReading;
                 TireReturn.UnitPrice = Tyre.UnitPrice;
                 TireReturn.PlateNumber = fleet.PlateNumber + " - " + fleet.UnitNum;
                 TireReturn.CreatedBy = User.Identity.Name;
@@ -112,12 +114,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 #endregion
 
             }
-
-            //}
-            //catch (Exception ee)
-            //{
-
-            //}
             return Json(new[] { TireReturn }.ToDataSourceResult(request));
         }
 
@@ -145,7 +141,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TireReturn_Destroy([DataSourceRequest] DataSourceRequest request, TireReturn tireReturn)
         {
-            var TireReturn = _TireReturnService.GetById(tireReturn.TireReturnID);
+            //var TireReturn = _TireReturnService.GetById(tireReturn.TireReturnID);
+            var TireReturn = db.TireReturn.Find(tireReturn.TireReturnID);
             if (TireReturn != null)
             {
                 _TireReturnService.Delete(TireReturn);

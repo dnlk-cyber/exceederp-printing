@@ -17,7 +17,12 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
     {
         [Key]
         public int FleetInsuranceId { get; set; }
-       
+        [Display(Name = "Equipment Category")]
+        public Guid EquipmentCategoryId { get; set; }
+        [Display(Name = "Equipment Type")]
+        public Guid EquipmentTypeId { get; set; }
+        [Display(Name = "Equipment Name")]
+        public Guid EquipmentNameId { get; set; }
         public Guid FleetsID { get; set; }
         public enum InsuranceTypeenum { TypeOne, TypeTwo, TypeThree, Comprehensive }
         [Required]
@@ -52,6 +57,64 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public decimal ThirdPartyInsurance { get; set; }    
         [Display(Name ="Comprehensive")]
         public decimal ComprehensiveInsurance { get; set; }
+
+    }
+    public partial class FleetInsuranceHistory : Operations
+    {
+        [Key]
+        public int FleetInsuranceHistoryId { get; set; }
+        public int FleetInsuranceId { get; set; }
+        [Display(Name = "Equipment Category")]
+        public Guid EquipmentCategoryId { get; set; }
+        [Display(Name = "Equipment Type")]
+        public Guid EquipmentTypeId { get; set; }
+        [Display(Name = "Equipment Name")]
+        public Guid EquipmentNameId { get; set; }
+        public Guid FleetsID { get; set; }
+        public enum InsuranceTypeenum { TypeOne, TypeTwo, TypeThree, Comprehensive }
+        [Required]
+        [DisplayName("Company ")]
+        public int InsuranceCompanyId { get; set; }
+        [DisplayName("Premium Cost")]
+        [Required]
+        public decimal PremiumCost { get; set; }
+        
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DisplayName(" Due Date ")]
+        public DateTime? DueDate { get; set; }
+        [DisplayName("Effective Date")]   
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? ExpireDate { get; set; } 
+        [NotMapped]
+        public bool HasExpired { get; set; }
+        public string Attachment { get; set; }
+        public string Description { get; set; }
+       
+        [Display(Name = "Policy No")]
+        public string PolicyNo { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? HazardOfExpiryDate { get; set; }
+       
+        public string ThirdParty { get; set; }
+        public FleetInsuranceTypeEnum InsuranceType { get; set; }
+        [Display(Name ="Third Party")]
+        public decimal ThirdPartyInsurance { get; set; }    
+        [Display(Name ="Comprehensive")]
+        public decimal ComprehensiveInsurance { get; set; }
+
+    }
+    public class FleetInsuranceDocument
+    {
+        public int FleetInsuranceDocumentId { get; set; }
+        public int FleetInsuranceId { get; set; }
+        public string FilePath { get; set; }
+        public string FileName { get; set; }
+        public string ShortPath { get; set; }
+        public string FileExtension { get; set; }
+        public string Description { get; set; }
 
     }
     public enum FleetInsuranceTypeEnum

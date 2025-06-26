@@ -46,6 +46,7 @@ namespace ExceedERP.Reporting.Fleet.Printing.ViewModel
         public string EquipmentName { get; set; }
         public string PlateNumber { get; set; }
         public string EquipmentType { get; set; }
+        public string AccountNumber { get; set; }
         public string EquipmentCategory{get;set;}
         public string ManufacturingYear { get; set; }
         public string ApprovedBy { get; set; }

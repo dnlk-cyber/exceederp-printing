@@ -1,4 +1,4 @@
-﻿
+
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using System;
 using System.Collections.Generic;
@@ -63,6 +63,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.FuelManagement
         [NotMapped]
         [DisplayName("Asset No")]
         public string AssetNo { get; set; }
+
+        public decimal RequestedQty { get; set; }
         public virtual Fleets Fleet { get; set; }
 
 

@@ -5,7 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;     
+using System.Web.Mvc;    
+
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
 
@@ -41,7 +42,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             var equipmentDemandApprover = db.VehicleDemandApproval.Where(x => x.VehicleDemandId.ToString() == Id).FirstOrDefault();
             var employeeId = UserInformationHelper.GetEmployeeId(equipmentDemandApprover.CreatedBy);
             ViewBag.EmployeeId = employeeId;
+           
             var equipmentDemandChecker = db.VehicleDemand.Where(x => x.VehicleDemandId.ToString() == Id).FirstOrDefault();
+            var userName = UserInformationHelper.GetEmployeeUserId(equipmentDemandChecker.EmployeeId);
+            ViewBag.RUName = userName;
             var demandCheckerEmployeeId = UserInformationHelper.GetEmployeeId(equipmentDemandChecker.CreatedBy);
             ViewBag.CheckerEmployeeId = demandCheckerEmployeeId;
 

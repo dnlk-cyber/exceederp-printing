@@ -7,11 +7,11 @@ using Kendo.Mvc.UI;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.InfoDesk.Support;
-using System.Collections.Generic;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using System.Data.Entity.Infrastructure;
+using ExceedERP.Core.Domain.InfoDesk;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
@@ -40,24 +40,24 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             var customertickets = db.CustomerTicket_HelpDesks.Where(x => assinedToMeTicketIds.Contains(x.CustomerTicket_HelpDeskId) && x.IsSendForApproval).AsQueryable();
             DataSourceResult result = customertickets.ToDataSourceResult(request, customerTicket => new
             {
-
                 CustomerTicket_HelpDeskId = customerTicket.CustomerTicket_HelpDeskId,
                 EmployeeId = customerTicket.EmployeeId,
                 BranchId = customerTicket.BranchId,
                 BusinessUnitId = customerTicket.BusinessUnitId,
                 OrgStructureId = customerTicket.OrgStructureId,
+                RequesterIPAddress = customerTicket.RequesterIPAddress,
                 Description = customerTicket.Description,
                 TicketPriority = customerTicket.TicketPriority,
                 SupportGroup_HelpDeskId = customerTicket.SupportGroup_HelpDeskId,
                 DueDate = customerTicket.DueDate,
                 OverDue = customerTicket.OverDue,
-                AgeOfTicket = customerTicket.AgeOfTicket,
                 ClosedDate = customerTicket.ClosedDate,
                 IsClosed = customerTicket.IsClosed,
                 IsConfirmedByTheRequester = customerTicket.IsConfirmedByTheRequester,
                 AssignedDate = customerTicket.AssignedDate,
                 AssignedTo = customerTicket.AssignedTo,
                 IsAssigned = customerTicket.IsAssigned,
+                IsSendForApproval = customerTicket.IsSendForApproval,
                 IsMultipleAssign = customerTicket.IsMultipleAssign,
                 IsSendForClosing = customerTicket.IsSendForClosing,
                 Quantity = customerTicket.Quantity,
@@ -66,13 +66,22 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 Role = customerTicket.Role,
                 RootCuase = customerTicket.RootCuase,
                 SolutionGiven = customerTicket.SolutionGiven,
+                Handler = customerTicket.Handler,
+                FixedAssetCategoryId = customerTicket.FixedAssetCategoryId,
+                FixedAssetSubCategoryId = customerTicket.FixedAssetSubCategoryId,
+                AssetRegistrationId = customerTicket.AssetRegistrationId,
+                ItemName = customerTicket.ItemName,
+                TagNo = customerTicket.TagNo,
+                SendApprovalBy = customerTicket.SendApprovalBy,
+                SendApprovalTime = customerTicket.SendApprovalTime,
+                PendingReason = customerTicket.PendingReason,
+                OrgBranchName = customerTicket.OrgBranchName,
                 TicketType_HelpDeskId = customerTicket.TicketType_HelpDeskId,
                 TicketStatus = customerTicket.TicketStatus,
                 CreatedBy = customerTicket.CreatedBy,
                 DateCreated = customerTicket.DateCreated,
                 LastModified = customerTicket.LastModified,
                 ModifiedBy = customerTicket.ModifiedBy,
-                OrgBranchName = customerTicket.OrgBranchName,
                 PriorityColor = customerTicket.PriorityColor,
                 Remark = customerTicket.Remark,
 
@@ -94,7 +103,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
            
             return age;
         }
-
         public ActionResult AssignedHandler_Read([DataSourceRequest]DataSourceRequest request, int Id)
         {
             var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -111,6 +119,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 AssinedTo = assignTicket_HelpDesk.AssinedTo,
                 ClosedDate = assignTicket_HelpDesk.ClosedDate,
                 IsAssigned = assignTicket_HelpDesk.IsAssigned,
+                IsSendToKB = assignTicket_HelpDesk.IsSendToKB,
                 Role = assignTicket_HelpDesk.Role,
                 Status = assignTicket_HelpDesk.Status,
                 RootCause = assignTicket_HelpDesk.RootCause,
@@ -147,7 +156,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(result);
         }
-
         public ActionResult AssignTickets_Read([DataSourceRequest]DataSourceRequest request, int Id)
         {
            
@@ -156,12 +164,14 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             {
                 AssignTicket_HelpDeskId = assignTicket_HelpDesk.AssignTicket_HelpDeskId,
                 CustomerTicketId = assignTicket_HelpDesk.CustomerTicketId,
+                Handler = assignTicket_HelpDesk.Handler,
                 Age = GetAge(assignTicket_HelpDesk?.DateCreated, assignTicket_HelpDesk?.ClosedDate, assignTicket_HelpDesk.IsClosed),
-
                 AssignedDate = assignTicket_HelpDesk.AssignedDate,
                 AssinedTo = assignTicket_HelpDesk.AssinedTo,
                 ClosedDate = assignTicket_HelpDesk.ClosedDate,
+                IsSolved = assignTicket_HelpDesk.IsSolved,
                 IsAssigned = assignTicket_HelpDesk.IsAssigned,
+                IsSendToKB = assignTicket_HelpDesk.IsSendToKB,
                 Role = assignTicket_HelpDesk.Role,
                 Status = assignTicket_HelpDesk.Status,
                 RootCause = assignTicket_HelpDesk.RootCause,
@@ -175,7 +185,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 IsOnlineTransferred = assignTicket_HelpDesk.IsOnlineTransferred,
                 IsSendForApproval = assignTicket_HelpDesk.IsSendForApproval,
                 IsSendForClosing = assignTicket_HelpDesk.IsSendForClosing,
-                IsSolved = assignTicket_HelpDesk.IsSolved,
                 IsVoid = assignTicket_HelpDesk.IsVoid,
                 OnlineApprovedBy = assignTicket_HelpDesk.OnlineApprovedBy,
                 OnlineApprovedTime = assignTicket_HelpDesk.OnlineApprovedTime,
@@ -197,7 +206,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             });
             return Json(result);
         }
-
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AssignTickets_Create([DataSourceRequest]DataSourceRequest request, AssignTicket_HelpDesk assignTicket, int Id)
         {
@@ -224,8 +232,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(new[] { assignTicket }.ToDataSourceResult(request));
         }
-
-
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AssignTickets_Update([DataSourceRequest]DataSourceRequest request, AssignTicket_HelpDesk assignTicket)
         {
@@ -238,13 +244,13 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             assignTicket.PhoneNumber = person?.PhoneNo;
             if (ModelState.IsValid)
             {
-                var entity = GetMappedObject(assignTicket); db.AssignTicket_HelpDesks.Attach(entity);
+                var entity = GetMappedObject(assignTicket);
+                db.AssignTicket_HelpDesks.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
             }
             return Json(new[] { assignTicket }.ToDataSourceResult(request));
         }
-
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult CustomerTickets_Update([DataSourceRequest]DataSourceRequest request, CustomerTicket_HelpDesk customerTicket_HelpDesk, int Id)
         {
@@ -287,7 +293,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(new[] { ticket }.ToDataSourceResult(request, ModelState));
         }
-
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Handler_Update([DataSourceRequest] DataSourceRequest request, CustomerTicket_HelpDesk assignTicket_HelpDesk)
         {
@@ -333,8 +338,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(new[] { assignTicket_HelpDesk }.ToDataSourceResult(request));
         }
-
-
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AssignTickets_Destroy([DataSourceRequest]DataSourceRequest request, AssignTicket_HelpDesk AssignTicket)
         {
@@ -348,7 +351,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             }
             return Json(new[] { AssignTicket }.ToDataSourceResult(request, ModelState));
         }
-
         public JsonResult GetMaterials()
         {
             var materials = db.MaterialItems.ToList();
@@ -360,38 +362,91 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             }), JsonRequestBehavior.AllowGet);
 
         }
-        public string SendForClosing(string childId)
+        public JsonResult SendForClosing(int id)
         {
-            int assignId = int.Parse(childId);
-            var ticket = db.AssignTicket_HelpDesks.Find(assignId);
-            if (ticket != null)
+            var ticket = db.AssignTicket_HelpDesks.Find(id);
+            if (ticket == null)
             {
-                if (!ticket.IsSendForClosing)
-                {
-                    var customer = db.CustomerTicket_HelpDesks.FirstOrDefault(x => x.CustomerTicket_HelpDeskId == ticket.CustomerTicketId);
-                    if (customer != null)
-                    {
-                        customer.IsSendForClosing = true;
-                        customer.TicketStatus = TicketStatus.Resolved;
-                        db.Entry(customer).State = EntityState.Modified;
-                        db.SaveChanges();
-
-                    }
-
-                    ticket.IsSendForClosing = true;
-
-                    db.Entry(ticket).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    return "Successfulley sent for closing";
-                }
-                else
-                {
-                    return "false";
-                }
-
+                return Json(new { Message = "Record not found.", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
             }
-            return "faild";
+            if (ticket.IsSendForClosing)
+            {
+                return Json(new { Message = "Already sent for closing.", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
+            }
+            if (string.IsNullOrEmpty(ticket.RootCause)||string.IsNullOrEmpty(ticket.Solution))
+            {
+                return Json(new { Message = "first Put your solutions for  the problems ", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
+            }
+
+            var customer = db.CustomerTicket_HelpDesks.Find(ticket.CustomerTicketId);
+            if (customer == null)
+            {
+                return Json(new { Message = "Record not found.", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
+            }
+
+            //if (!customer.IsAssigned)
+            //{
+            //    return Json(new { Message = "You can't send close the ticket before assigning and resolving the issue.", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
+            //}
+
+            // Update ticket and customer
+            ticket.IsSendForClosing = true;
+            customer.IsAssigned = true;
+            customer.IsSendForClosing = true;
+            customer.TicketStatus = TicketStatus.Resolved;
+            // Add knowledge base entry
+            if (ticket.IsSendToKB)
+            {
+                var entity = new InfoDeskKnowledgeBase
+                {
+                    Problem = ticket.RootCause,
+                    Solution = ticket.Solution,
+                    DocumentType = InfoDocumentType.DocumentResolution,
+                    DateCreated = DateTime.Now,
+                    CreatedBy = User.Identity.Name
+                };
+                db.InfoDeskKnowledgeBases.Add(entity);
+            }
+           
+            // Mark entities as modified
+            db.Entry(ticket).State = EntityState.Modified;
+            db.Entry(customer).State = EntityState.Modified;
+
+            // Save all changes
+            int changes = db.SaveChanges();
+
+            if (changes > 0)
+            {
+                return Json(new { Message = "Successfully sent for closing", Status = "Ok" }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { Message = "Failed to update ticket", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
+            }
+        }
+        public JsonResult PendingTicket(int id,string reason)
+        {
+            var customerTicket = db.CustomerTicket_HelpDesks.Find(id);
+            if (customerTicket == null)
+            {
+                return Json(new { Message = "Record not found.", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
+            }
+
+            if (customerTicket.TicketStatus!=TicketStatus.Assigned)
+            {
+                return Json(new { Message = "You can't pend a ticket before assigning a handler.", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
+            }
+
+            // Update ticket 
+            customerTicket.TicketStatus = TicketStatus.Pending;
+            customerTicket.PendingReason = reason;
+            // Mark entities as modified
+            db.Entry(customerTicket).State = EntityState.Modified;
+            db.SaveChanges();
+
+            
+                return Json(new { Message = "Successfully Pend ", Status = "Ok" }, JsonRequestBehavior.AllowGet);
+           
         }
         public string CheckStatus(int masterId)
         {
@@ -413,9 +468,11 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 CustomerTicketId = assignTicket_HelpDesk.CustomerTicketId,
                 Age = assignTicket_HelpDesk.Age,
                 AssignedDate = assignTicket_HelpDesk.AssignedDate,
+                Handler = assignTicket_HelpDesk.Handler,
                 AssinedTo = assignTicket_HelpDesk.AssinedTo,
                 ClosedDate = assignTicket_HelpDesk.ClosedDate,
                 IsAssigned = assignTicket_HelpDesk.IsAssigned,
+                IsSendToKB = assignTicket_HelpDesk.IsSendToKB,
                 Role = assignTicket_HelpDesk.Role,
                 Status = assignTicket_HelpDesk.Status,
                 RootCause = assignTicket_HelpDesk.RootCause,

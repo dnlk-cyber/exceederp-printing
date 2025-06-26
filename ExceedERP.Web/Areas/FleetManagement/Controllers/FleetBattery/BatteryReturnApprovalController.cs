@@ -12,6 +12,7 @@ using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.FleetManagement.BatteryManagement;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Web.Areas.FleetManagement.Models;
+using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
 

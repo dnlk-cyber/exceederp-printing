@@ -55,6 +55,7 @@
             columns.Bound(e => e.FuelType).Width(120);
             columns.Bound(e => e.FuelFilledAmount).Title("Qty").Width(80).ClientFooterTemplate("Total Qty: #=sum#").ClientGroupHeaderColumnTemplate("Total Qty : #=sum#");
             columns.Bound(e => e.TotalFuelcost).Width(100).ClientFooterTemplate("Total Cost: #=sum#").ClientGroupHeaderColumnTemplate("Total Cost : #=sum#");
+            columns.Bound(e => e.RequestedQty).Width(100).ClientFooterTemplate("Requested Qty: #=sum#").ClientGroupHeaderColumnTemplate("Requested Qty : #=sum#");
            
             columns.Bound(e => e.DateCreated).Title("Issue Date").Format("{0:yyyy-MM-dd}").Width(120);
 
@@ -129,7 +130,7 @@
                                 .RequestStart("onRequestStart(\"grid\")")
                                 .RequestEnd("onRequestEnd(\"grid\")"))
 
-                          .Read(read => read.Action("Fuel_Read", "Fuel"))
+                          .Read(read => read.Action("Fuel_Read", "Fuel").Data("sendForgery"))
 
             )
 )

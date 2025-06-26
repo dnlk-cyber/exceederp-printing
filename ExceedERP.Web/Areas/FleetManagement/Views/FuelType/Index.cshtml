@@ -33,7 +33,7 @@
                              .Scrollable(h => h.Height(500))
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
+       
 
         .Model(model =>
               {
@@ -45,10 +45,10 @@
                                 .Error("error_handler(\"grid\")")
                                 .RequestStart("onRequestStart(\"grid\")")
                                 .RequestEnd("onRequestEnd(\"grid\")"))
-                            .Create(update => update.Action("FuelType_Create", "FuelType"))
-                        .Read(read => read.Action("FuelType_Read", "FuelType"))
-                        .Update(update => update.Action("FuelType_Update", "FuelType"))
-                        .Destroy(update => update.Action("FuelType_Destroy", "FuelType"))
+                            .Create(update => update.Action("FuelType_Create", "FuelType").Data("sendForgery"))
+                        .Read(read => read.Action("FuelType_Read", "FuelType").Data("sendForgery"))
+                        .Update(update => update.Action("FuelType_Update", "FuelType").Data("sendForgery"))
+                        .Destroy(update => update.Action("FuelType_Destroy", "FuelType").Data("sendForgery"))
   )
 )
   

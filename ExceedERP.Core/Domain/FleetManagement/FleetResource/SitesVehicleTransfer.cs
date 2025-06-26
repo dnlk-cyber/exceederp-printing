@@ -73,6 +73,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         [DisplayName("Transfered Operator")]
         public string TransferedOperator { get; set; }
         public Guid OperatorId { get; set; }
+        public Guid SecondOperatorId { get; set; }
         [DisplayName("Loaded Plate No")]
         public string LoadedPlateNo { get; set; }
         [DisplayName("Transfer Reason")]

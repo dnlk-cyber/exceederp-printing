@@ -1,4 +1,4 @@
-﻿
+﻿@using ExceedERP.Core.Domain.FleetManagement.FleetRegistration
 @{
     ViewBag.Title = "InsuranceCompany";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,67 +7,161 @@
 <legend>Fleet Insurance</legend>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsurance>()
-            .Name("grid")
-            .Columns(columns =>
-            {
-                columns.Bound(c => c.FleetInsuranceId).Title("S.No").Width(50);
-                columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "Id", "Name").Title("Fleet Plate No").Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
-                columns.ForeignKey(c => c.InsuranceCompanyId, (IEnumerable)ViewData["InsuranceCompany"], "InsuranceCompanyId", "InsuranceCompanyName").Title("Company").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
-                columns.Bound(c => c.InsuranceType).Width(80);
-                columns.Bound(c => c.PremiumCost).Width(80);
-                columns.Bound(c => c.DueDate).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
-                columns.Bound(c => c.ThirdPartyInsurance).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
-                columns.Bound(c => c.ExpireDate).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
-              
-                columns.Bound(c => c.ComprehensiveInsurance).Width(80);
-                columns.Bound(c => c.PolicyNo).Width(80);
-                columns.Bound(c => c.Attachment).Width(80);
-                columns.Bound(c => c.Description).Title("Descrption").Width(140);
-                columns.Bound(c => c.HasExpired).Visible(false);
-                columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
-            })
-             .ToolBar(toolbar =>
-             {
-                 toolbar.Create();
+                    .Name("grid")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.FleetInsuranceId).Title("S.No").Width(50);
+                        columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120);
+                        columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120);
+                        columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["Name"], "Value", "Text").Width(120);
+                        columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "Id", "Name").Title("Fleet Plate No").Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
+                        columns.ForeignKey(c => c.InsuranceCompanyId, (IEnumerable)ViewData["InsuranceCompany"], "InsuranceCompanyId", "InsuranceCompanyName").Title("Company").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+                        columns.Bound(c => c.InsuranceType).Width(80);
+                        columns.Bound(c => c.PremiumCost).Width(80);
+                        columns.Bound(c => c.DueDate).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+                        columns.Bound(c => c.ThirdPartyInsurance).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+                        columns.Bound(c => c.ExpireDate).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
+                        columns.Bound(c => c.ComprehensiveInsurance).Width(80);
+                        columns.Bound(c => c.PolicyNo).Width(80);
+                        columns.Bound(c => c.Attachment).Width(80);
+                        columns.Bound(c => c.Description).Title("Descrption").Width(140);
+                        columns.Bound(c => c.HasExpired).Visible(false);
+                        columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
+                    })
+                     .ToolBar(toolbar =>
+                     {
+                         toolbar.Create();
 
-             }).Events(e => e.DataBound("onDataBoundMaster"))
-             .Editable(editable => editable.Mode(GridEditMode.PopUp)
-             .TemplateName("FleetInsuranceTemplate")
-             .Window(win => win.Title("Fleet Insurance")))
-             .Pageable()
-             .Filterable()
-             .Scrollable(s => s.Height(550))
-             .DataSource(dataSource => dataSource
-                 .Ajax()
-                 .Sort(sort => sort.Add(e => e.InsuranceCompanyId).Descending())
-                 .Model(model => model.Id(p => p.InsuranceCompanyId))
-                 .Events(ev => ev
-                 .Error("error_handler(\"grid\")")
-                 .RequestStart("onRequestStart(\"grid\")")
-                 .RequestEnd("onRequestEnd(\"grid\")"))
-                 .Read(read => read.Action("FleetInsurances_Read", "InsuranceRegistration"))
-                 .Create(create => create.Action("FleetInsurances_Create", "InsuranceRegistration"))
-                 .Update(update => update.Action("FleetInsurances_Update", "InsuranceRegistration"))
-                 .Destroy(destroy => destroy.Action("FleetInsurances_Destroy", "InsuranceRegistration"))
-                                )
-            )
+                     }).Events(e => e.DataBound("onDataBoundMaster"))
+                      .Events(ev => ev.DetailExpand("detailExpand"))
+                     .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                     .TemplateName("FleetInsuranceTemplate")
+                     .Window(win => win.Title("Fleet Insurance")))
+                     .Pageable()
+                     .Filterable()
+                     .Scrollable(s => s.Height(550))
+                     .DataSource(dataSource => dataSource
+                         .Ajax()
+                         .Sort(sort => sort.Add(e => e.FleetInsuranceId).Descending())
+                         .Model(model => model.Id(p => p.FleetInsuranceId))
+                         .Events(ev => ev
+                         .Error("error_handler(\"grid\")")
+                         .RequestStart("onRequestStart(\"grid\")")
+                         .RequestEnd("onRequestEnd(\"grid\")"))
+                         .Read(read => read.Action("FleetInsurances_Read", "InsuranceRegistration").Data("sendForgery"))
+                         .Create(create => create.Action("FleetInsurances_Create", "InsuranceRegistration").Data("sendForgery"))
+                         .Update(update => update.Action("FleetInsurances_Update", "InsuranceRegistration").Data("sendForgery"))
+                         .Destroy(destroy => destroy.Action("FleetInsurances_Destroy", "InsuranceRegistration").Data("sendForgery"))
+                                        )
+                    .ClientDetailTemplateId("template"))
 
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                .Name("tabstrip_#=FleetInsuranceId#")
+                                .SelectedIndex(0)
+                                .Items(items =>
+                                {
+                                     items.Add().Text("Attachment").Content(@<text>
 
+                    @FileUpload()
+
+                </text>);
+
+                                        }).ToClientTemplate())
+</script>
 
 <script type="text/javascript">
+
+    @helper FileUpload()
+        {
+            <text>
+                @(Html.Kendo().Grid<FleetInsuranceDocument>
+                ()
+                .Name("CompanyDocument#=FleetInsuranceId#")
+
+                .Columns(columns =>
+                {
+                columns.Bound(x => x.FleetInsuranceDocumentId).Hidden(true);
+                columns.Bound(c => c.FileName).ClientTemplate("<a href='/FleetManagement/InsuranceRegistration/DownloadCompanyDocument?CompanyDocumentId=\\#=FleetInsuranceDocumentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(200);
+
+                columns.Command(command =>
+                {
+                //command.Edit();
+                command.Destroy();
+                }).Width(580);
+                })
+              .ToolBar(t => t.Template(
+                        @<text>
+                        @(Html.Kendo().Upload()
+                        .Name("attachments")
+                        .Async(a => a.Save("InsuranceAttachment_Create", "InsuranceRegistration", new { id = "#=FleetInsuranceId #" }))
+                        .Events(e => e.Complete("onUploadSuccess").Select("function(e) { globalOnSelect(e, ['.jpg', '.png', '.pdf'], 2 * 1024 * 1024); }")
+                        .Error("onUploadError"))
+                        .ShowFileList(false)
+                        .ToClientTemplate()
+                        )
+                        </text>
+                        ))
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .HtmlAttributes(new { style = "height: 350px;" })
+                .Sortable(sortable =>
+                {
+                sortable.SortMode(GridSortMode.SingleColumn);
+                })
+                .Scrollable()
+                .Pageable(pageable => pageable
+                .Input(true)
+                .Numeric(false)
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+                .Events(x => x.DataBound("onDataBoundLines"))
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .Events(ev => ev
+                    .Error("error_handler(\"CompanyDocument#=FleetInsuranceId#\")")
+                    .RequestStart("onRequestStart(\"CompanyDocument#=FleetInsuranceId#\")")
+                    .RequestEnd("onRequestEnd(\"CompanyDocument#=FleetInsuranceId#\")"))
+                    .Model(model => model.Id(p => p.FleetInsuranceDocumentId))
+                    .Read(read => read.Action("FleetInsuranceDoc_Read", "InsuranceRegistration", new { id = "#=FleetInsuranceId#", area = "FleetManagement" }).Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("FleetInsuranceDoc_Delete", "InsuranceRegistration", new { area = "FleetManagement" }).Data("sendForgery"))
+                    ).ToClientTemplate())
+        </text>
+    }
+
+
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+
+    var isDeptapproved;
+    var isDeptSendForApproval;
+
+    function detailExpand(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.FleetInsuranceId;
+        //isDeptapproved = masterDataItem.IsDepartmentOnlineApproved;
+        //isDeptSendForApproval = masterDataItem.IsDepartmentSendForApproval;
+    }
     function onDataBoundMaster(e) {
-       
+
         //changing colors
         var rows = e.sender.tbody.children();
         for (var j = 0; j < rows.length; j++) {
             var row = $(rows[j]);
             var dataItem = e.sender.dataItem(row);
-           
+
             if (dataItem.HasExpired) {
                 row.css("background-color", "red");
             }
 
-           
+
 
         }
     }
@@ -83,11 +177,11 @@
         var type = $("#InsuranceType").data("kendoDropDownList");
         if (type) {
             if (type.value() == 0) {
-                
+
                 $("ThirdPartyInsurance").prop('disabled', false);
                 $("ThirdPartyInsurance").prop('disabled', false);
             } else {
-                
+
                 $("ThirdPartyInsurance").prop('disabled', true);
                 $("ThirdPartyInsurance").prop('disabled', true);
             }
@@ -122,6 +216,48 @@
             $('#PremiumCost').data("kendoNumericTextBox").trigger("change");
         }
     }
+
+
+    function filterFleet() {
+        return {
+            text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
+            equipmentNameId: $("#EquipmentNameId").val()
+        };
+    }
+    function filterEquipmentNames() {
+        var dropdownlist = $("#EquipmentNameId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentTypeId: $("#EquipmentTypeId").val(),
+            search: filterInput.val()
+        };
+    }
+    function filterPlateNumber() {
+        var dropdownlist = $("#EquipmentName").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentNameID: $("#EquipmentNameID").val(),
+            search: filterInput.val()
+        };
+    }
+    function filterCategory() {
+        var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentIdentityId: $("#EquipmentCategoryId").val(),
+            search: filterInput.val()
+        };
+
+    }
+
+    function onUploadSuccess(e) {
+        var gridname = "#CompanyDocument" + codeid;
+        $(gridname).data("kendoGrid").dataSource.read();
+    }
+
 </script>
 <style>
     div.k-edit-form-container {

@@ -7,7 +7,7 @@
                               .ValuePrimitive(true)
                               .DataSource(dataSource =>
                               {
-                                  dataSource.Read(read => read.Action("GetAllEmployeesForSelfCare", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
+                                  dataSource.Read(read => read.Action("GetAllEmployeesForSelfCare", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployees"))
                                                 .ServerFiltering(true);
                               })
 
@@ -25,7 +25,7 @@
                               .ValuePrimitive(true)
                               .DataSource(dataSource =>
                               {
-                                  dataSource.Read(read => read.Action("GetEmployeeForTravelOrder", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                                  dataSource.Read(read => read.Action("GetEmployeeForTravelOrder", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
                                                 .ServerFiltering(false);
                               }).Enable(false)
 

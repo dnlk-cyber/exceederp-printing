@@ -48,7 +48,7 @@
                          .DataValueField("Id").Filter(FilterType.Contains)
                          .OptionLabel("Select Equipment Category")
                          .HtmlAttributes(new { style = "width:100%" })
-                         .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider"))
+                         .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery"))
                          .ServerFiltering(false)))
 
             </div>
@@ -90,7 +90,7 @@
                                                           .Filter(FilterType.Contains)
                                                           .OptionLabel("Select")
                                                         .DataSource(d =>
-                                                        d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider")
+                                                        d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider").Data("sendForgery")
                                                         .Data("filterByType")).ServerFiltering(true))
                                                         .CascadeFrom("EquipmentTypeID"))
 
@@ -114,7 +114,7 @@
                                       .DataTextField("PlateNumber")
                                       .DataValueField("FleetsID").OptionLabel(" Select ")
                                       .Filter(FilterType.Contains)
-                                      .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "FleetManagementDataProvider")
+                                      .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "FleetManagementDataProvider").Data("sendForgery")
                                       .Data("filterEquipment"))
                                       .ServerFiltering(true))
                                       .Events(e => e.Change("BindIntialSite"))
@@ -146,7 +146,7 @@
                         @(Html.Kendo().DropDownListFor(model => model.DestinationSite)
                          .DataTextField("Name")
                          .DataValueField("Name").OptionLabel(" Select")
-                         .DataSource(d => d.Read(r => r.Action("BranchDDBind", "Branch"))))
+                         .DataSource(d => d.Read(r => r.Action("BranchDDBind", "Branch").Data("sendForgery"))))
                     </div>
                 </div>
             </div>

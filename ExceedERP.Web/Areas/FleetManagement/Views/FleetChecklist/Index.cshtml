@@ -2,25 +2,15 @@
 
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-@*<script>
-
-        function filterEquipmentIdentity() {
-            return {
-                EquipmentIdentityID: $("#EquipmentIdentityId").val()
-            };
-        }
-
-    </script>*@
-<legend> Check List   </legend>
+<legend>Fleet Inspection Setting</legend>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.FleetCheckList>()
             .Name("grid")
             .Columns(columns =>
             {
-                columns.Bound(e => e.Code).Width(80);
+                columns.Bound(e => e.FleetCheckListId).Width(80);
                 columns.ForeignKey(c => c.EquipmentIdentityID, (System.Collections.IEnumerable)ViewData["EquipmentIdentity"], "EquipmentIdentityID", "EquipmentCategoryName").EditorTemplateName("EquipmentCategoryEditor").Title("Equipment Category").Width(140);
                 columns.ForeignKey(c => c.EquipmentTypeID, (System.Collections.IEnumerable)ViewData["EquipmentType"], "EquipmentTypeId", "EquipmentTypeName").Title("Equipment Type").EditorTemplateName("EquipmentTypeEditor").Title("Equipment Type").Width(120);
-                columns.Bound(e => e.Type).EditorTemplateName("FleetCheckListTypeEditor").Title("Category").Width(120);
                 columns.Bound(e => e.Description).Width(120);
                 columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
             })
@@ -43,7 +33,6 @@
               .ClientDetailTemplateId("template")
             .DataSource(dataSource => dataSource
                 .Ajax()
-                .ServerOperation(false)
                 .Model(model =>
                 {
                     model.Id(p => p.FleetCheckListId);
@@ -53,10 +42,10 @@
     .Error("error_handler(\"grid\")")
     .RequestStart("onRequestStart(\"grid\")")
     .RequestEnd("onRequestEnd(\"grid\")"))
-    .Create(update => update.Action("FleetCheckLists_Create", "FleetChecklist"))
-    .Read(read => read.Action("FleetCheckLists_Read", "FleetChecklist"))
-    .Update(update => update.Action("FleetCheckLists_Update", "FleetChecklist"))
-    .Destroy(update => update.Action("FleetCheckLists_Destroy", "FleetChecklist"))
+    .Create(update => update.Action("FleetCheckLists_Create", "FleetChecklist").Data("sendForgery"))
+    .Read(read => read.Action("FleetCheckLists_Read", "FleetChecklist").Data("sendForgery"))
+    .Update(update => update.Action("FleetCheckLists_Update", "FleetChecklist").Data("sendForgery"))
+    .Destroy(update => update.Action("FleetCheckLists_Destroy", "FleetChecklist").Data("sendForgery"))
           )
 )
 <script id="template" type="text/kendo-tmpl">
@@ -66,14 +55,13 @@
                   .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
                   .Items(items =>
                   {
-                      items.Add().Text(" Line  ").Content(@<text>
+                      items.Add().Text("Check List").Content(@<text>
                         @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.FleetLineCheckList>()
                                 .Name("fleetlinechecklistgrid_#=FleetCheckListId#")
                            .Columns(columns =>
                            {
-                                    columns.Bound(o => o.Code).Width(120);
-                                    columns.Bound(o => o.Name).Width(120);
-                                    columns.Bound(o => o.Description).Width(120);
+                                    columns.Bound(o => o.SystemName).Width(120);
+                                    columns.Bound(o => o.CheckList).Width(120);
 
                                     columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
                                 })
@@ -102,10 +90,10 @@
                                 .Error("error_handler(\"fleetlinechecklistgrid_#=FleetCheckListId#\")")
                                 .RequestStart("onRequestStart(\"fleetlinechecklistgrid_#=FleetCheckListId#\")")
                                 .RequestEnd("onRequestEnd(\"fleetlinechecklistgrid_#=FleetCheckListId#\")"))
-                                .Create(create => create.Action("FleetLineCheckList_Create", "FleetLineCheckList", new { Id = "#=FleetCheckListId#" }))
-                                .Read(read => read.Action("FleetLineCheckList_Read", "FleetLineCheckList", new { Id = "#=FleetCheckListId#" }))
-                                .Update(update => update.Action("FleetLineCheckList_Update", "FleetLineCheckList"))
-                                .Destroy(destroy => destroy.Action("FleetLineCheckList_Destroy", "FleetLineCheckList"))
+                                .Create(create => create.Action("FleetLineCheckList_Create", "FleetLineCheckList", new { Id = "#=FleetCheckListId#" }).Data("sendForgery"))
+                                .Read(read => read.Action("FleetLineCheckList_Read", "FleetLineCheckList", new { Id = "#=FleetCheckListId#" }).Data("sendForgery"))
+                                .Update(update => update.Action("FleetLineCheckList_Update", "FleetLineCheckList").Data("sendForgery"))
+                                .Destroy(destroy => destroy.Action("FleetLineCheckList_Destroy", "FleetLineCheckList").Data("sendForgery"))
                                 )
                                           .ToClientTemplate())
                              </text>

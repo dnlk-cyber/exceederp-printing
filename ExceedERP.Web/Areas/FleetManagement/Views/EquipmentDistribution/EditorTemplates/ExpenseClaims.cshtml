@@ -72,7 +72,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetTravelOrders", "FinanceDataProvider", new { area = "Finance" }))
+                              dataSource.Read(read => read.Action("GetTravelOrders", "FinanceDataProvider", new { area = "Finance" }).Data("sendForgery"))
                                   .ServerFiltering(false);
                           })
                           .Events(e =>

@@ -21,36 +21,69 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<EquipmentPlanEvaluationViewModel> GetPlanEvaluation(DateTime StartingDate, DateTime EndingDate, string Location, string Type, string category, string EquipmentName, string SerialNo, string status, string PlateNo, string Model, string ChasisNo)
         {
-            List<EquipmentPlanEvaluationViewModel> EquipmentPlanEvaluations = new List<EquipmentPlanEvaluationViewModel>();
+            var fleetCostHelper = new Helpers.Fleet.FleetCostHelper();
 
-            FleetCostHelper FleetCostHelper = new Helpers.Fleet.FleetCostHelper();
-            var PlanEvaluations = db.PMSchedules.Where(x=> x.DateCreated >= StartingDate && x.DateCreated <= EndingDate).ToList();
-            var Job = db.JobOrderDetail.Where(x => x.DateCreated > StartingDate && x.DateCreated < EndingDate).ToList();
+            // Filter PM Schedules by date range
+            var planEvaluationsQuery = db.PMSchedules
+                .Where(x => x.DateCreated >= StartingDate && x.DateCreated <= EndingDate);
 
-            foreach (var PlanEvaluation in PlanEvaluations.DistinctByField(x => x.EquipmentTypeId))
+            // Filter JobOrderDetails by date range
+            var jobQuery = db.JobOrderDetail
+                .Where(x => x.DateCreated > StartingDate && x.DateCreated < EndingDate)
+                .Select(x => new { x.ServiceID });
+
+            var jobList = jobQuery.ToList();
+
+            // Get distinct equipment type IDs
+            var distinctEquipmentTypeIds = planEvaluationsQuery
+                .Select(x => x.EquipmentTypeId)
+                .Distinct()
+                .ToList();
+
+            // Preload equipment types
+            var equipmentTypesDict = db.EquipmentType
+                .Where(x => distinctEquipmentTypeIds.Contains(x.EquipmentTypeID))
+                .ToDictionary(x => x.EquipmentTypeID, x => x.EquipmentTypeName);
+
+            // Materialize PlanEvaluations after DB-side filtering
+            var planEvaluations = planEvaluationsQuery.ToList();
+
+            var result = new List<EquipmentPlanEvaluationViewModel>();
+
+            foreach (var planEvaluationGroup in planEvaluations.GroupBy(x => x.EquipmentTypeId))
             {
-                var type = db.EquipmentType.Where(x => x.EquipmentTypeID == PlanEvaluation.EquipmentTypeId).FirstOrDefault();
-                var obj = new EquipmentPlanEvaluationViewModel();
-                obj.EquipmentType = type.EquipmentTypeName;
-                obj.Type = PlanEvaluation.Type;
-                    var PMScheduleDetails = db.PMScheduleDetails.Where(x => x.PMScheduleId == PlanEvaluation.PMScheduleId).ToList();
-                    foreach (var PMScheduleDetail in PMScheduleDetails)
+                var firstPlan = planEvaluationGroup.First(); // representative for the group
+                var obj = new EquipmentPlanEvaluationViewModel
+                {
+                    EquipmentType = equipmentTypesDict.ContainsKey(firstPlan.EquipmentTypeId)
+                                    ? equipmentTypesDict[firstPlan.EquipmentTypeId]
+                                    : string.Empty,
+                    Type = firstPlan.Type
+                };
+
+                // Gather all PMScheduleIds for this type group
+                var pmScheduleIds = planEvaluationGroup.Select(x => x.PMScheduleId).ToList();
+
+                // Get all relevant PMScheduleDetails
+                var pmDetails = db.PMScheduleDetails
+                    .Where(x => pmScheduleIds.Contains(x.PMScheduleId))
+                    .Select(x => new { x.FleetsId, x.ServiceId })
+                    .ToList();
+
+                foreach (var detail in pmDetails)
+                {
+                    if (FleetGenericHelper.FilterSingleFleet(detail.FleetsId, category, Type, PlateNo, ChasisNo, SerialNo, string.Empty, Location, Model))
                     {
-                        if (FleetGenericHelper.FilterSingleFleet(PMScheduleDetail.FleetsId, category, Type, PlateNo, ChasisNo, SerialNo, string.Empty, Location, Model))
-                        {
-                       
-                        obj.Plan++; 
-                        obj.FleetSize++; 
-                           obj.Actual += decimal.Parse((Job.Where(x => x.ServiceID == PMScheduleDetail.ServiceId).Count()).ToString());
-
-                      }
+                        obj.Plan++;
+                        obj.FleetSize++;
+                        obj.Actual += jobList.Count(j => j.ServiceID == detail.ServiceId);
                     }
-
-                    EquipmentPlanEvaluations.Add(obj);
-               
                 }
-            
-            return EquipmentPlanEvaluations;
+
+                result.Add(obj);
+            }
+
+            return result;
         }
     }
 }

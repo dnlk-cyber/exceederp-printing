@@ -37,8 +37,8 @@
                     }
 
                     <li id="InfoDesk02439" class="actionlinlk">@Html.ActionLink("Ticket Status", "TicketStatus", "CustomerTicket", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>
-                    
-                  
+
+
 
                 </ul>
             </li>
@@ -58,20 +58,47 @@
                         <li id="InfoDesk0g10" class="actionlinlk">@Html.ActionLink("Ticket Types", "Index", "TicketType", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>
 
                         <li id="InfoDesk0g11" class="actionlinlk">@Html.ActionLink("Groups", "Index", "SupportGroup", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>
-                         @*<li id="InfoDesk0s11" class="actionlinlk">@Html.ActionLink("Status ", "Index", "StatusType", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>*@
-                        
-                        @*<li id="InfoDesk0p12" class="actionlinlk">@Html.ActionLink("Priority", "Index", "PriorityType", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>*@
-                     
-                        @*<li id="hrdfm02300100" class="actionlinlk">
-                            @Html.ActionLink("Employees", "Index", "EmployeeProfile", new { area = "HRM" }, null)<b class="arrow"></b>
-                        </li>*@
+                        @*<li id="InfoDesk0s11" class="actionlinlk">@Html.ActionLink("Status ", "Index", "StatusType", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>*@
 
+                        @*<li id="InfoDesk0p12" class="actionlinlk">@Html.ActionLink("Priority", "Index", "PriorityType", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>*@
+
+                        @*<li id="hrdfm02300100" class="actionlinlk">
+                        @Html.ActionLink("Employees", "Index", "EmployeeProfile", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>*@
+                        <li id="InfoDesk0p12" class="actionlinlk">@Html.ActionLink("Materials", "Index", "MaterialItems", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>
 
                     </ul>
                 </li>
             }
 
-            
+            @if (HttpContext.Current.User.IsInRole("HelpDesk_Report"))
+            {
+
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Report
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+
+                        <li id="InfoDesk0g10" class="actionlinlk">
+                            @Html.ActionLink("Ict Directorate Maintenance Form", "MaintenanceForm", "HelpDeskReport", new { area = "InfoDesk" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="InfoDeskreport11" class="actionlinlk">
+                            @Html.ActionLink("Software License", "SoftwareLicense", "HelpDeskReport", new { area = "InfoDesk" }, null)<b class="arrow"></b>
+                        </li>
+
+
+                    </ul>
+                </li>
+
+            }
+
+
         </ul>
     }
 </li>

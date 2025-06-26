@@ -14,38 +14,101 @@
 </script>
 
 
-
 <div class="row">
     <div class="col-sm-2">
         <div class="form-group">
-            <label>Equipment</label>
+            <label>Equipment Category</label>
             <div>
-                @(Html.Kendo().DropDownListFor(model => model.FleetId)
-                                        .DataTextField("PlateNumber")
-                                        .DataValueField("FleetsID")
-
-                                        .OptionLabel("Select..")
-                                        .Filter(FilterType.Contains)
-                                        .DataSource(d => d.Read(r => r.Action("GetFleet", "FleetManagementDataProvider", new { area = "FleetManagement" }))
-
-                                        .ServerFiltering(false)).HtmlAttributes(new { style="width:100%"}))
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentCategoryId)
+                                                .DataTextField("Name")
+                                                .DataValueField("Id")
+                                                .Filter(FilterType.Contains)
+                                                .OptionLabel("Select Category")
+                                                .HtmlAttributes(new { style = "width:100%" })
+                                                .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery"))
+                                                .ServerFiltering(false)))
             </div>
         </div>
     </div>
     <div class="col-sm-2">
         <div class="form-group">
+            <label>Equipment Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentTypeId)
+                            .DataTextField("Name")
+                            .DataValueField("Id")
+                            .OptionLabel("Select Equipment Type")
+                            .Filter(FilterType.Contains)
+                            .DataSource(d =>
+                            {
+                                d.Read(r =>
+                                {
+                                    r.Action("GetEquipmentTypes", "FleetManagementDataProvider")
+                                    .Data("filterCategory");
+                                })
+                                .ServerFiltering(true);
+                            })
+                            .Enable(false)
+                            .AutoBind(false)
+                            .CascadeFrom("EquipmentCategoryId")
+                )
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Name</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentNameId)
+                            .AutoBind(false)
+                            .Enable(false)
+                            .DataTextField("Name")
+                            .DataValueField("Id")
+                            .Filter(FilterType.Contains)
+                            .OptionLabel("Select")
+                            .DataSource(d => d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider").Data("sendForgery")
+                            .Data("filterEquipmentNames"))
+                            .ServerFiltering(true))
+                            .CascadeFrom("EquipmentTypeId"))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Plate/Serial</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.FleetId)
+                            .AutoBind(false)
+                            .Enable(false)
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .Filter(FilterType.Contains)
+                            .OptionLabel("Select")
+                            .DataSource(d => d.Read(r => r.Action("GetFleetForPlanAndEvaluation", "FleetManagementDataProvider").Data("sendForgery")
+                            .Data("filterFleet"))
+                            .ServerFiltering(true))
+                            .CascadeFrom("EquipmentNameId"))
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row">
+
+    <div class="col-sm-2">
+        <div class="form-group">
             <label>From</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.FromOperatorId)
-                                 .DataTextField("FullName")
-                                 .DataValueField("OperatorID")
-                                 //.DataTextField("FullName")
-                                 //.DataValueField("Remark")
-                                 .OptionLabel(" Select To")
-                                 .Filter(FilterType.Contains)
-                                 .DataSource(d => d.Read(r => r.Action("OperatorDdBind", "OperatorRegistration", new { area = "FleetManagement" }))
-                                 //.DataSource(d => d.Read(r => r.Action("OperatorTransferDDBind", "OperatorRegistration"))
-                                 .ServerFiltering(false)).HtmlAttributes(new { style = "width:100%" }))
+                                         .DataTextField("FullName")
+                                         .DataValueField("OperatorID")
+                                         //.DataTextField("FullName")
+                                         //.DataValueField("Remark")
+                                         .OptionLabel(" Select To")
+                                         .Filter(FilterType.Contains)
+                                         .DataSource(d => d.Read(r => r.Action("OperatorDdBind", "OperatorRegistration", new { area = "FleetManagement" }).Data("sendForgery"))
+                                         //.DataSource(d => d.Read(r => r.Action("OperatorTransferDDBind", "OperatorRegistration").Data("sendForgery"))
+                                         .ServerFiltering(false)).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>
@@ -54,16 +117,16 @@
             <label>To</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.ToOperatorId)
-                               .Name("ToOperatorId")
-                                 //.DataTextField("FullName")
-                                 //.DataValueField("Remark")
-                                 .DataTextField("FullName")
-                                 .DataValueField("OperatorID")
-                                 .OptionLabel(" Select To")
-                                 .Filter(FilterType.Contains)
-                                 //.DataSource(d => d.Read(r => r.Action("OperatorTransferDDBind", "OperatorRegistration"))
-                                 .DataSource(d => d.Read(r => r.Action("OperatorDdBind", "OperatorRegistration", new { area = "FleetManagement" }))
-                                 .ServerFiltering(false)).HtmlAttributes(new { style = "width:100%" }))
+                                       .Name("ToOperatorId")
+                                         //.DataTextField("FullName")
+                                         //.DataValueField("Remark")
+                                         .DataTextField("FullName")
+                                         .DataValueField("OperatorID")
+                                         .OptionLabel(" Select To")
+                                         .Filter(FilterType.Contains)
+                                         //.DataSource(d => d.Read(r => r.Action("OperatorTransferDDBind", "OperatorRegistration").Data("sendForgery"))
+                                         .DataSource(d => d.Read(r => r.Action("OperatorDdBind", "OperatorRegistration", new { area = "FleetManagement" }).Data("sendForgery"))
+                                         .ServerFiltering(false)).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
     </div>
@@ -75,9 +138,6 @@
             </div>
         </div>
     </div>
-</div>
-
-<div class="row">
     <div class="col-sm-2">
         <div class="form-group">
             <label>End Date</label>
@@ -86,6 +146,10 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="row">
+   
     <div class="col-sm-2">
         <div class="form-group">
             <label>Description</label>

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.Maintenance
 {
-    public class VehicleReceptionForm : TrackUserSettingOperation
+    public class VehicleReceptionForm : Operations
     {
         public int VehicleReceptionFormId { get; set; }
         [Display(Name = "Customer")]
@@ -17,10 +17,11 @@ namespace ExceedERP.Core.Domain.Maintenance
         [Display(Name = "Reception")]
         public int RecipientId { get; set; }
         public Guid? VehicleCategoryId { get; set; }
-        [Display(Name = "Technician Assigned")]
+        [Display(Name = "Inspector Assigned")]
         public int ? TechnicianAssignedId { get; set; }
         [Display(Name = "Plate No")]
         public string PlateNo { get; set; }
+        public string ReferenceNumber { get; set; }
         [Display(Name = "Vehicle Type")]
         public string VehicleType { get; set; }
         [Display(Name = "Vehicle Model")]
@@ -32,6 +33,11 @@ namespace ExceedERP.Core.Domain.Maintenance
         [Display(Name = "Remark")]
         public string Remark { get; set; }
         public Source Source { get; set; }
+        public bool FromRequest { get; set; }
+        public string JobRequestId { get; set; }
+        public string SitesVehicleTransferID { get; set; }
+        public bool IssentToBackToJobRequest { get; set; }
+       
     }
     public enum Source { External,Internal}
     public enum FuelValue
@@ -58,5 +64,12 @@ namespace ExceedERP.Core.Domain.Maintenance
         Full,
 
 
+    }
+    public class VehicleReceptionApproval : TrackUserOperation
+    {
+        public int VehicleReceptionApprovalId { get; set; }
+        public int VehicleReceptionFormId { get; set; }
+        public ApprovalStatuses Status { get; set; }
+        public string Remark { get; set; }
     }
 }

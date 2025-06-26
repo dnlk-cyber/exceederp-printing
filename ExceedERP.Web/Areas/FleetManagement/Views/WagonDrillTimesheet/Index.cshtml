@@ -11,20 +11,26 @@
                     .Columns(columns =>
                     {
                         columns.Bound(c => c.WagonDrillTimesheetId).Title("#").Width(70);
-                       // columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
-                        //columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
-                        //columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
-                        columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "Value", "Text").Title("Equipment Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+                        columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
+                        columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
+                        columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
+                        columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "Value", "Text").Title("Serial No").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
                         columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(100);
                         columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Value", "Text").Title("Branch Name").Width(100);
+                        //columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Value", "Text").Title("Branch Name").Width(100);
+                        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessunit"], "Value", "Text").Title("Business unit").Width(100);
+                        columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["operator"], "Value", "Text").Title("Operator").Width(100);
+                        columns.Bound(c => c.FuelCost).Width(100);
+                        columns.Bound(c => c.LubricantCost).Title("Lubricant Consumption").Width(100);
+                        columns.Bound(c => c.MaintenanceCost).Width(100);
+                        columns.Bound(c => c.TireCost).Width(100);
+                        columns.Bound(c => c.TotalCost).Width(100);
                         columns.Bound(c => c.WorkItem).Width(100);
                         columns.Bound(c => c.OperationNetWorkingHour).Width(120);
                         columns.Bound(c => c.IdleHour).Width(120);
                         columns.Bound(c => c.DownTime).Width(120);
                         columns.Bound(c => c.NumberOfHolesDrilled).Width(120);
                         columns.Bound(c => c.OperationDrilledHoleDepth).Width(120);
-
-
                         columns.Bound(c => c.IdleRateHour).Width(120);
                         columns.Bound(c => c.TimeSheetStatus).Width(120);
 
@@ -52,10 +58,10 @@
                                      .Error("error_handler(\"grid\")")
                                      .RequestStart("onRequestStart(\"grid\")")
                                      .RequestEnd("onRequestEnd(\"grid\")"))
-                        .Read(read => read.Action("WagonDrillTimesheets_Read", "WagonDrillTimesheet"))
-                        .Create(create => create.Action("WagonDrillTimesheets_Create", "WagonDrillTimesheet"))
-                        .Update(update => update.Action("WagonDrillTimesheets_Update", "WagonDrillTimesheet"))
-                        .Destroy(destroy => destroy.Action("WagonDrillTimesheets_Destroy", "WagonDrillTimesheet"))
+                        .Read(read => read.Action("WagonDrillTimesheets_Read", "WagonDrillTimesheet").Data("sendForgery"))
+                        .Create(create => create.Action("WagonDrillTimesheets_Create", "WagonDrillTimesheet").Data("sendForgery"))
+                        .Update(update => update.Action("WagonDrillTimesheets_Update", "WagonDrillTimesheet").Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("WagonDrillTimesheets_Destroy", "WagonDrillTimesheet").Data("sendForgery"))
                     ).ClientDetailTemplateId("template")
 )
 
@@ -81,6 +87,11 @@
                                                                         {#
 
                                                                         <a onclick='return sendForApproval("#=WagonDrillTimesheetId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                                        # }#
+                                                                        # if (TimeSheetSendForAproval == true&&TimeSheetApproved==true)
+                                                                        {#
+
+                                                                        <a onclick='return voidTimeSheet("#=WagonDrillTimesheetId#")' href=' \#' title="Void Record"><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
                                                                         # }#
                                                                     </div>
                                                                 </div>
@@ -140,9 +151,9 @@
                                                                                                                                     .RequestStart("onRequestStart(\"TimeSheetApproval#=WagonDrillTimesheetId#\")")
                                                                                                                                     .RequestEnd("onRequestEnd(\"TimeSheetApproval#=WagonDrillTimesheetId#\")"))
 
-                                                                                                                                    .Create(update => update.Action("WagonDrillTimeSheetApproval_Create", "WagonDrillTimesheet", new { Id = "#=WagonDrillTimesheetId#" }))
-                                                                                                                                    .Read(read => read.Action("DumpTruckTimeSheetApproval_Read", "WagonDrillTimesheet", new { Id = "#=WagonDrillTimesheetId#" }))
-                                                                                                                                    .Update(update => update.Action("WagonDrillTimeSheetApproval_Create", "WagonDrillTimesheet"))
+                                                                                                                                    .Create(update => update.Action("WagonDrillTimeSheetApproval_Create", "WagonDrillTimesheet", new { Id = "#=WagonDrillTimesheetId#" }).Data("sendForgery"))
+                                                                                                                                    .Read(read => read.Action("DumpTruckTimeSheetApproval_Read", "WagonDrillTimesheet", new { Id = "#=WagonDrillTimesheetId#" }).Data("sendForgery"))
+                                                                                                                                    .Update(update => update.Action("WagonDrillTimeSheetApproval_Create", "WagonDrillTimesheet").Data("sendForgery"))
 
 
                                                                                                                                 )
@@ -250,6 +261,23 @@
             }
         });
     }
+    function VoidTimeSheet(id) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("VoidTimeSheet", "WagonDrillTimesheet", new { area = "FleetManagement" })',
+            data: { id: id },
+            success: function (result) {
+
+                alert(result);
+
+                location.reload(true);
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
 
     function approvalDataBound(e) {
         var grid = this;
@@ -271,7 +299,13 @@
             text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
         }
     }
-
+    function handleFleetId() {
+        return {
+            equipmentNameId: $("#EquipmentNameId").val(),
+            
+        text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
+        }
+    }
     function filterOperator() {
         return {
             text: $("#OperatorId").data("kendoDropDownList").filterInput.val()

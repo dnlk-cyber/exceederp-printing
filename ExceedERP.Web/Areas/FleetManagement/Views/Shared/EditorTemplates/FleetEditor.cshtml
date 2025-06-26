@@ -7,5 +7,5 @@
     .Filter(FilterType.Contains)
     //.Events(e => e.Change("handlePlateNoChange"))
     .OptionLabel("Select")
-      .DataSource(d => d.Read(r => r.Action("GetFleetFromEquipmentName", "FleetManagementDataProvider")
+      .DataSource(d => d.Read(r => r.Action("GetFleetFromEquipmentName", "FleetManagementDataProvider").Data("sendForgery")
       .Data("filterFleets")).ServerFiltering(true)).CascadeFrom("EquipmentNameID"))

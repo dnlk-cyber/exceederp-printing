@@ -155,7 +155,7 @@
                             </li>
                         </ul>
                     </li>
-                   
+
                     <li id="selfservice077" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_LeaveRequest, "Index", "LeaveRequestPersonal", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
@@ -176,8 +176,8 @@
                     </li>
 
                     @*<li id="hrm0sdfd79" class="actionlinlk">
-                        @Html.ActionLink("Health Payment Self", "EmployeeHealthPaymentSelfCare", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b>
-                    </li>*@
+            @Html.ActionLink("Health Payment Self", "EmployeeHealthPaymentSelfCare", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b>
+        </li>*@
 
                     <li id="selfservice84" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.Printable_Vacancy_For_Internal, "InternalVacancyForSelfCare", "PrintableLetter", new { area = "HRM" }, null)<b class="arrow"></b>
@@ -204,10 +204,12 @@
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_PaySlip, "PaySlipByEmployee", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
                     @*<li id="selfservice476" class="actionlinlk">
-                        @Html.ActionLink("Open Ticket", "Index", "CustomerTicketSelfCare", new { area = "InfoDesk" }, null)<b class="arrow"></b>
-                    </li>*@
+                    @Html.ActionLink("Open Ticket", "Index", "CustomerTicketSelfCare", new { area = "InfoDesk" }, null)<b class="arrow"></b>
+                </li>*@
 
-                  
+                    <li id="selfservice76fleet1" class="actionlinlk">
+                        @Html.ActionLink("Fleet Requisition", "Index", "EquipmentDemandSelfCare", new { area = "FleetManagement" }, null)<b class="arrow"></b>
+                    </li>
 
                 </ul>
 
@@ -289,8 +291,8 @@
 
                                 <ul class="submenu">
                                     @*<li id="selfservice091" class="actionlinlk">
-                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_RecruitmentRequest + "Updated", "Index", "EmployeeTransferRequests", new { area = "HRM" }, null)<b class="arrow"></b>
-                                    </li>*@
+                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_RecruitmentRequest + "Updated", "Index", "EmployeeTransferRequests", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>*@
                                     <li id="selfservice0911" class="actionlinlk">
                                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_RecruitmentRequest, "Index", "RecruitmentRequest", new { area = "HRM" }, null)<b class="arrow"></b>
                                     </li>
@@ -321,8 +323,8 @@
                                         @Html.ActionLink("Fuel Request", "Index", "FuelRequisitionSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
                                     </li>
                                     @*<li id="selfservice741093str" class="actionlinlk">
-                                        @Html.ActionLink("Stock Store Request for Sub Con", "Index", "StoreRequisitionSubSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
-                                    </li>*@
+                        @Html.ActionLink("Stock Store Request for Sub Con", "Index", "StoreRequisitionSubSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
+                    </li>*@
                                     <li id="selfservice0109fisrd" class="actionlinlk">
                                         @Html.ActionLink("PPE Store Request", "Index", "FixedAssetRequisitionSelfCare", new { area = "FixedAsset" }, null)<b class="arrow"></b>
                                     </li>
@@ -482,11 +484,13 @@
                                 </ul>
                             </li>
 
-
+                            <li id="selfservice76fleet" class="actionlinlk">
+                                @Html.ActionLink("Fleet Requisition", "Index", "EquipmentDemandSelfCare", new { area = "FleetManagement" }, null)<b class="arrow"></b>
+                            </li>
                         }
-                      
 
-                       
+
+
                         @if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
                         {
 

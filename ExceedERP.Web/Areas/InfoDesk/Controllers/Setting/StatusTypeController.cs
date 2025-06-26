@@ -98,7 +98,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers.Settings
                     StatusType_HelpDeskId = StatusType.StatusType_HelpDeskId,
                     Remark = StatusType.Remark
                 };
-
                 db.StatusType_HelpDesks.Attach(entity);
                 db.StatusType_HelpDesks.Remove(entity);
                 db.SaveChanges();

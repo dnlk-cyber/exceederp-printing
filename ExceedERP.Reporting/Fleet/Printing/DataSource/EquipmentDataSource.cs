@@ -3,6 +3,7 @@ using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Fleet.Printing.ViewModel;
 using ExceedERP.Reporting.Fleet.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
@@ -123,15 +124,21 @@ namespace ExceedERP.Reporting.Fleet.Printing.DataSource
                 {
                     FleetViewModel.Category = Fleet.EquipmentIdentity.EquipmentCategoryName;
                 }            
-                FleetViewModel.Location = Fleet.Location;                
+                FleetViewModel.Location = Fleet.Location;         
                 FleetViewModel.Model = Fleet.Model;
                 FleetViewModel.FuelStandard = ((Fleet.MaxFuelStandard + Fleet.MinFuelStandard) / 2).ToString();                    
                 FleetViewModel.PurchasedDate = Fleet.PurchasedDate;
                 FleetViewModel.PurchasingCost = Fleet.PurchasingCost;
                 FleetViewModel.TyreSize = Fleet.TyreSize;
                 FleetViewModel.Status = Fleet.Status;
-                FleetViewModel.CreatedBy = Fleet.OnlineApprovedBy;
-                FleetViewModel.SendForApprovalBy = Fleet.OnlineApprovedBy;
+                FleetViewModel.CreatedBy = Fleet.CreatedBy;
+                FleetViewModel.CreatedDate = Fleet.DateCreated.Value.Date.ToString("yyyy-MM-dd");
+                FleetViewModel.CheckedDate = Fleet.SendForApprovalTime.Value.Date.ToString("yyyy-MM-dd");
+                FleetViewModel.ApprovedDate = Fleet.OnlineApprovedTime.Value.Date.ToString("yyyy-MM-dd");
+                FleetViewModel.ApprovedBySignature = SignatureHelper.GetUserSignature(Fleet.OnlineApprovedBy);
+                FleetViewModel.CreatedBySignature = SignatureHelper.GetUserSignature(Fleet.CreatedBy);
+                FleetViewModel.CheckedBySignature = SignatureHelper.GetUserSignature(Fleet.SendForApprovalBy);
+                FleetViewModel.SendForApprovalBy = Fleet.SendForApprovalBy;
                 FleetViewModel.ApprovedBy = Fleet.OnlineApprovedBy;
                 FleetViewModel.AmharicName = AmharicName;
                 FleetViewModel.Name = Name;

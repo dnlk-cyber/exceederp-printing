@@ -39,7 +39,13 @@ namespace ExceedERP.Core.Domain.FleetManagement
         public const string FleetReport = "Fleet_Report";
         public const string FleetResourceReport = "Fleet_Resource_Report";
         public const string FleetRegistrationReport = "Fleet_Registration_Report";
-        public const string FleetTimeSheet = "Fleet_TimeSheet";
+        //new roles for timesheet
+        public const string FleetTimeSheetUser = "Fleet_TimeSheet_User";
+        public const string FleetTimeSheetApprover = "Fleet_TimeSheet_Approver";
+        //costsheet
+        public const string FleetCostSheetUser = "Fleet_CostSheet_User";
+        public const string FleetCostSheetApprover = "Fleet_CostSheet_Approver";
+
         public const string FleetRequisition = "Fleet_Requisition";
        //Not Added
         public const string Equipment_Plan_User = "Equipment_Plan_User";
@@ -48,5 +54,9 @@ namespace ExceedERP.Core.Domain.FleetManagement
         public const string SalvageStoreIssueApprover = "Salvage_Store_Issue_Approver";
         public const string StoreGoodReceivingUser = "Store_Good_Receiving_User";
         public const string SalvageGoodReceivingApprover = "Store_Good_Receiving_Approver";
+
+        // Plan and Evaluation roles
+        public const string FleetAnnualPlanner = "Fleet_Annual_Planner";
+        public const string FleetAnnualPlanApprover = "Fleet_Annual_Plan_Approver";
     }
 }

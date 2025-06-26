@@ -759,7 +759,7 @@
                             @(Html.Kendo().DropDownList().Name("Category")
                                           .DataTextField("EquipmentCategoryName")
                                                   .DataValueField("EquipmentIdentityID").Filter(FilterType.Contains).OptionLabel("Select Equipment Category").HtmlAttributes(new { style = "width:100%" })
-                                          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory")).ServerFiltering(false)))
+                                          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory").Data("sendForgery")).ServerFiltering(false)))
 
                         </div>
                     </div>
@@ -827,7 +827,7 @@
                               .DataSource(dataSource => dataSource
                                           .Ajax() 
                                               .Sort(x => x.Add(s => s.LastMaintained).Descending())
-                                  .ServerOperation(false)
+                                  //.ServerOperation(false)
                                        .PageSize(6)
                                   .Model(model =>
                                       {
@@ -838,9 +838,9 @@
                                                             .Error("error_handler(\"grid\")")
                                                             .RequestStart("onRequestStart(\"grid\")")
                                                             .RequestEnd("onRequestEnd(\"grid\")"))
-                                  .Create(update => update.Action("Fleets_Create", "EquipmentRegistration"))
-                                                                                  .Read(read => read.Action("SendForApprovalFleets_Read", "EquipmentRegistration").Data("FilterFleets"))
-                                                          .Update(update => update.Action("ApproveBatch", "EquipmentRegistration"))
+                                  .Create(update => update.Action("Fleets_Create", "EquipmentRegistration").Data("sendForgery"))
+                                                                                  .Read(read => read.Action("SendForApprovalFleets_Read", "EquipmentRegistration").Data("sendForgery").Data("FilterFleets"))
+                                                          .Update(update => update.Action("ApproveBatch", "EquipmentRegistration").Data("sendForgery"))
                                 
 
                               )
@@ -1169,7 +1169,7 @@
                                                                                     .Error("error_handler(\"FleetHistorygrid_#=FleetsID#\")")
                                                                                     .RequestStart("onRequestStart(\"FleetHistorygrid_#=FleetsID#\")")
                                                                                     .RequestEnd("onRequestEnd(\"FleetHistorygrid_#=FleetsID#\")"))
-                                                                                     .Read(read => read.Action("FleetHistoryByFleet", "FleetHistory", new { fleetID = "#=FleetsID#" }))
+                                                                                     .Read(read => read.Action("FleetHistoryByFleet", "FleetHistory", new { fleetID = "#=FleetsID#" }).Data("sendForgery"))
                                                                              )
                                                                              .Sortable()
                                             .ToClientTemplate())
@@ -1213,10 +1213,10 @@
                                                                                             .Error("error_handler(\"Accessoriesgrid_#=FleetsID#\")")
                                                                                             .RequestStart("onRequestStart(\"Accessoriesgrid_#=FleetsID#\")")
                                                                                             .RequestEnd("onRequestEnd(\"Accessoriesgrid_#=FleetsID#\")"))
-                                                                                            .Create(update => update.Action("Accessories_Create", "Accessories", new { fleetID = "#=FleetsID#" }))
-                                                                                            .Read(read => read.Action("AccessoriesByFleet", "Accessories", new { fleetID = "#=FleetsID#" }))
-                                                                            .Update(update => update.Action("Accessories_Update", "Accessories"))
-                                                                                                    .Destroy(destroy => destroy.Action("Accessories_Destroy", "Accessories"))
+                                                                                            .Create(update => update.Action("Accessories_Create", "Accessories", new { fleetID = "#=FleetsID#" }).Data("sendForgery"))
+                                                                                            .Read(read => read.Action("AccessoriesByFleet", "Accessories", new { fleetID = "#=FleetsID#" }).Data("sendForgery"))
+                                                                            .Update(update => update.Action("Accessories_Update", "Accessories").Data("sendForgery"))
+                                                                                                    .Destroy(destroy => destroy.Action("Accessories_Destroy", "Accessories").Data("sendForgery"))
                                                 )
                                                 .Sortable()
                                                 .ToClientTemplate())
@@ -1269,10 +1269,10 @@
                                                                                                     .RequestStart("onRequestStart(\"EquipmentBatterygrid_#=FleetsID#\")")
                                                                                                     .RequestEnd("onRequestEnd(\"EquipmentBatterygrid_#=FleetsID#\")"))
 
-                                                                                                                    .Create(update => update.Action("EquipmentBattery_Create", "EquipmentBattery", new { Id = "#=FleetsID#" }))
-                                                                           .Read(read => read.Action("BatteryByFleet_Read", "EquipmentBattery", new { Id = "#=FleetsID#" }))
-                                                                                          .Update(update => update.Action("EquipmentBattery_Update", "EquipmentBattery"))
-                                                                                          .Destroy(update => update.Action("EquipmentBattery_Destroy", "EquipmentBattery"))
+                                                                                                                    .Create(update => update.Action("EquipmentBattery_Create", "EquipmentBattery", new { Id = "#=FleetsID#" }).Data("sendForgery"))
+                                                                           .Read(read => read.Action("BatteryByFleet_Read", "EquipmentBattery", new { Id = "#=FleetsID#" }).Data("sendForgery"))
+                                                                                          .Update(update => update.Action("EquipmentBattery_Update", "EquipmentBattery").Data("sendForgery"))
+                                                                                          .Destroy(update => update.Action("EquipmentBattery_Destroy", "EquipmentBattery").Data("sendForgery"))
 
 
                                                                              )
@@ -1327,10 +1327,10 @@
                                                                                                                     .Error("error_handler(\"EquipmentTyregrid_#=FleetsID#\")")
                                                                                                                     .RequestStart("onRequestStart(\"EquipmentTyregrid_#=FleetsID#\")")
                                                                                                                     .RequestEnd("onRequestEnd(\"EquipmentTyregrid_#=FleetsID#\")"))
-                                                                                                            .Create(update => update.Action("EquipmentTyre_Create", "EquipmentTyre", new { Id = "#=FleetsID#" }))
-                                                   .Read(read => read.Action("TyreByFleet_Read", "EquipmentTyre", new { Id = "#=FleetsID#" }))
-                                                                  .Update(update => update.Action("EquipmentTyre_Update", "EquipmentTyre"))
-                                                                  .Destroy(update => update.Action("EquipmentTyre_Destroy", "EquipmentTyre"))
+                                                                                                            .Create(update => update.Action("EquipmentTyre_Create", "EquipmentTyre", new { Id = "#=FleetsID#" }).Data("sendForgery"))
+                                                   .Read(read => read.Action("TyreByFleet_Read", "EquipmentTyre", new { Id = "#=FleetsID#" }).Data("sendForgery"))
+                                                                  .Update(update => update.Action("EquipmentTyre_Update", "EquipmentTyre").Data("sendForgery"))
+                                                                  .Destroy(update => update.Action("EquipmentTyre_Destroy", "EquipmentTyre").Data("sendForgery"))
 
 
                                                                              )
@@ -1371,10 +1371,10 @@
                                                                                             .Error("error_handler(\"Locationgrid_#=FleetsID#\")")
                                                                                             .RequestStart("onRequestStart(\"Locationgrid_#=FleetsID#\")")
                                                                                             .RequestEnd("onRequestEnd(\"Locationgrid_#=FleetsID#\")"))
-                                                                                         .Create(update => update.Action("Location_Create", "Location", new { Id = "#=FleetsID#" }))
-                                                                                           .Read(read => read.Action("LocationByFleet", "Location", new { Id = "#=FleetsID#" }))
-                                                                                                  .Update(update => update.Action("Location_Update", "Location"))
-                                                                                          .Destroy(update => update.Action("Location_Destroy", "Location"))
+                                                                                         .Create(update => update.Action("Location_Create", "Location", new { Id = "#=FleetsID#" }).Data("sendForgery"))
+                                                                                           .Read(read => read.Action("LocationByFleet", "Location", new { Id = "#=FleetsID#" }).Data("sendForgery"))
+                                                                                                  .Update(update => update.Action("Location_Update", "Location").Data("sendForgery"))
+                                                                                          .Destroy(update => update.Action("Location_Destroy", "Location").Data("sendForgery"))
                         )
                                                                              .Sortable()
                                             .ToClientTemplate())
@@ -1410,7 +1410,7 @@
                                                                                                     .Error("error_handler(\"Operatorsgrid_#=FleetsID#\")")
                                                                                                     .RequestStart("onRequestStart(\"Operatorsgrid_#=FleetsID#\")")
                                                                                                     .RequestEnd("onRequestEnd(\"Operatorsgrid_#=FleetsID#\")"))
-                                                                                                                     .Read(read => read.Action("DriverAssignmentByFleet_Read", "DriverAssignment", new { Id = "#=FleetsID#" }))
+                                                                                                                     .Read(read => read.Action("DriverAssignmentByFleet_Read", "DriverAssignment", new { Id = "#=FleetsID#" }).Data("sendForgery"))
                                                                              )
                                                                              .Sortable()
                                             .ToClientTemplate())
@@ -1487,7 +1487,7 @@
                                                                                                                     .Error("error_handler(\"ServiceHistorygrid_#=FleetsID#\")")
                                                                                                                     .RequestStart("onRequestStart(\"ServiceHistorygrid_#=FleetsID#\")")
                                                                                                                     .RequestEnd("onRequestEnd(\"ServiceHistorygrid_#=FleetsID#\")"))
-                                                                                                                                                     .Read(read => read.Action("EquipmentServiceHistory_Read", "EquipmentRegistration", new { Id = "#=FleetsID#" }))
+                                                                                                                                                     .Read(read => read.Action("EquipmentServiceHistory_Read", "EquipmentRegistration", new { Id = "#=FleetsID#" }).Data("sendForgery"))
 
                                                                                   )
                                                                         .ToClientTemplate())
@@ -1527,7 +1527,7 @@
                                                                                                                     .Error("error_handler(\"ServiceCostgrid_#=FleetsID#\")")
                                                                                                                     .RequestStart("onRequestStart(\"ServiceCostgrid_#=FleetsID#\")")
                                                                                                                     .RequestEnd("onRequestEnd(\"ServiceCostgrid_#=FleetsID#\")"))
-                                                                                                                                                             .Read(read => read.Action("EquipmentServiceCost_Read", "EquipmentRegistration", new { Id = "#=FleetsID#" }))
+                                                                                                                                                             .Read(read => read.Action("EquipmentServiceCost_Read", "EquipmentRegistration", new { Id = "#=FleetsID#" }).Data("sendForgery"))
 
                                                                                   )
                                                                         .ToClientTemplate())
@@ -1564,9 +1564,9 @@
                                                   model.Field(p => p.CreatedBy).Editable(false);
                                                   model.Field(p => p.DateCreated).Editable(false);
                                               })
-                                                                         .Read(read => read.Action("EquipmentApproval_Read", "EquipmentRegistration", new { EId = "#=FleetsID#" }))
-                                                                                                                                                          .Create(create => create.Action("Equipment_Approve", "EquipmentRegistration", new { EId = "#=FleetsID#" }))
-                                                                                  .Update(update => update.Action("Equipment_Approve", "EquipmentRegistration", new { EId = "#=FleetsID#" }))
+                                                                         .Read(read => read.Action("EquipmentApproval_Read", "EquipmentRegistration", new { EId = "#=FleetsID#" }).Data("sendForgery"))
+                                                                                                                                                          .Create(create => create.Action("Equipment_Approve", "EquipmentRegistration", new { EId = "#=FleetsID#" }).Data("sendForgery"))
+                                                                                  .Update(update => update.Action("Equipment_Approve", "EquipmentRegistration", new { EId = "#=FleetsID#" }).Data("sendForgery"))
 
                              ).ToClientTemplate()
 

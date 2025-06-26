@@ -36,49 +36,35 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<DriverTransferViewModel> GetDriverTransfer(string FromDriver, string ToDriver, DateTime startingDate,
-            DateTime endingDate)
-        {
-            List<DriverTransferViewModel> DriverTransferList = new List<DriverTransferViewModel>();
-            DriverTransferViewModel DriverTransferModel;
-            List<DriverVehicleTransfer> DriverTransfers = db.DriverVehicleTransfer.ToList();
+       public List<DriverTransferViewModel> GetDriverTransfer(string FromDriver, string ToDriver, DateTime startingDate, DateTime endingDate)
+{
+    // Start with IQueryable to avoid early materialization
+    IQueryable<DriverVehicleTransfer> query = db.DriverVehicleTransfer;
 
+    // Apply filters before materialization
+    if (!string.IsNullOrEmpty(FromDriver))
+    {
+        query = query.Where(x => x.FromOperatorId == FromDriver);
+    }
 
- 
-            if (!string.IsNullOrEmpty(FromDriver))
-            {
+    if (!string.IsNullOrEmpty(ToDriver))
+    {
+        query = query.Where(x => x.ToOperatorId == ToDriver);
+    }
 
-                DriverTransfers = DriverTransfers.Where(x => x.FromOperatorId == FromDriver).ToList();
-            }
+    query = query.Where(x => x.DateCreated >= startingDate && x.DateCreated <= endingDate);
 
-            if (!string.IsNullOrEmpty(FromDriver) && !string.IsNullOrEmpty(ToDriver))
-            {
+    // Project directly into the ViewModel
+    var result = query.Select(DriverTransfer => new DriverTransferViewModel
+    {
+        Description = DriverTransfer.Description,
+        FromOperator = DriverTransfer.FromOperatorId,
+        ToOperator = DriverTransfer.ToOperatorId,
+        StartingDate = DriverTransfer.StartingDate,
+        ToDate = DriverTransfer.ToDate
+    }).ToList();
 
-                DriverTransfers = DriverTransfers.Where(x => x.FromOperatorId == FromDriver && x.ToOperatorId == ToDriver).ToList();
-            }
-
-            DriverTransfers = DriverTransfers.Where(x => x.DateCreated >= startingDate && x.DateCreated <= endingDate).ToList();
-           
-            foreach (var DriverTransfer in DriverTransfers)
-            {
-
-
-                DriverTransferModel = new DriverTransferViewModel();
-
-
-
-                DriverTransferModel.Description = DriverTransfer.Description;
-                DriverTransferModel.FromOperator = DriverTransfer.FromOperatorId;
-                DriverTransferModel.ToOperator = DriverTransfer.ToOperatorId;
-                DriverTransferModel.StartingDate = DriverTransfer.StartingDate;
-                DriverTransferModel.ToDate = DriverTransfer.ToDate;
-
-
- 
-                DriverTransferList.Add(DriverTransferModel);
-            }
-
-            return DriverTransferList;
-        }
+    return result;
+}
     }
 }

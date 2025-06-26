@@ -9,7 +9,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.FleetManagement;
-
+using ExceedERP.Core.Domain.Maintenance;
 
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Areas.FleetManagement.Models;

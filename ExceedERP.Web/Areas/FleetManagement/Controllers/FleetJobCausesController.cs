@@ -9,17 +9,13 @@ using System.Web;
 using System.Web.Mvc;     
 using System.Data.Entity;
 using ExceedERP.Core.Domain.Maintenance;
+using XAPI;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     public class FleetJobCausesController : Controller
     {
-
-
         ExceedDbContext db = new ExceedDbContext();
- 
-   
-
         public ActionResult FleetJobCauses_Read([DataSourceRequest] DataSourceRequest request , Guid jobRequstId)
         {
             var JobCauses = db.JobCauses.Where(x=>x.OrderId == jobRequstId).ToList();
@@ -27,7 +23,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(JobCauses.ToDataSourceResult(request));
         }
 
-        public ActionResult JobCausesOrder_Read([DataSourceRequest] DataSourceRequest request, int Id)
+        public ActionResult FleetJobCauses_Read([DataSourceRequest] DataSourceRequest request, int Id)
         {
             var Request = db.JobRequest.Where(x => x.Num == Id).FirstOrDefault();
             if (Request != null)
@@ -46,7 +42,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult JobCauses_Create([DataSourceRequest] DataSourceRequest request, JobCauses model , Guid jobRequstId)
+        public ActionResult FleetJobCauses_Create([DataSourceRequest] DataSourceRequest request, JobCauses model , Guid jobRequstId)
         {
             ModelState.Remove("JobCausesId");
             ModelState.Remove("OrderId");
@@ -79,7 +75,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult JobCauses_Update([DataSourceRequest] DataSourceRequest request, JobCauses JobCauses)
+        public ActionResult FleetJobCauses_Update([DataSourceRequest] DataSourceRequest request, JobCauses JobCauses)
         {
             if (JobCauses != null)
             {
@@ -96,7 +92,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult JobCauses_Destroy([DataSourceRequest] DataSourceRequest request, JobCauses JobCauses)
+        public ActionResult FleetJobCauses_Destroy([DataSourceRequest] DataSourceRequest request, JobCauses JobCauses)
         {
             var JobCausess = db.JobCauses.Where(x => x.JobCausesId == JobCauses.JobCausesId).FirstOrDefault();
             if (JobCausess != null)
@@ -112,7 +108,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(new[] { JobCauses }.ToDataSourceResult(request));
         }
 
-        [AllowAnonymous]
+        
         public ActionResult JobCauseDDBind(string Id)
         {
             var Request = db.JobRequest.Where(x => x.Num.ToString() == Id).FirstOrDefault();

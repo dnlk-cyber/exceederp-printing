@@ -13,7 +13,7 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Areas.FleetManagement.Models;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.Global;
-
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 {
     [AuthorizeRoles(FleetManagementRoles.FleetAdmin)]
@@ -165,7 +165,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 
             return Json(new[] { CheckList }.ToDataSourceResult(request));
         }
-        [AllowAnonymous]
+        
         public ActionResult GetCheckList()
         {
             List<CheckListViewModel> list = new List<CheckListViewModel>();

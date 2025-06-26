@@ -38,6 +38,8 @@ namespace ExceedERP.Reporting.Fleet.View
             Telerik.Reporting.ReportParameter reportParameter5 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter6 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter7 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter8 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter9 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.Drawing.StyleRule styleRule1 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule2 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule3 = new Telerik.Reporting.Drawing.StyleRule();
@@ -49,6 +51,8 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox20 = new Telerik.Reporting.TextBox();
             this.textBox2 = new Telerik.Reporting.TextBox();
             this.textBox3 = new Telerik.Reporting.TextBox();
+            this.textBox7 = new Telerik.Reporting.TextBox();
+            this.textBox5 = new Telerik.Reporting.TextBox();
             this.textBox4 = new Telerik.Reporting.TextBox();
             this.textBox6 = new Telerik.Reporting.TextBox();
             this.textBox8 = new Telerik.Reporting.TextBox();
@@ -77,6 +81,8 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox16 = new Telerik.Reporting.TextBox();
             this.textBox19 = new Telerik.Reporting.TextBox();
             this.textBox21 = new Telerik.Reporting.TextBox();
+            this.textBox15 = new Telerik.Reporting.TextBox();
+            this.textBox13 = new Telerik.Reporting.TextBox();
             this.masterOds = new Telerik.Reporting.ObjectDataSource();
             this.textBox36 = new Telerik.Reporting.TextBox();
             this.textBox37 = new Telerik.Reporting.TextBox();
@@ -95,10 +101,6 @@ namespace ExceedERP.Reporting.Fleet.View
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
             this.reportHeaderSection1 = new Telerik.Reporting.ReportHeaderSection();
             this.subReport1 = new Telerik.Reporting.SubReport();
-            this.textBox7 = new Telerik.Reporting.TextBox();
-            this.textBox15 = new Telerik.Reporting.TextBox();
-            this.textBox5 = new Telerik.Reporting.TextBox();
-            this.textBox13 = new Telerik.Reporting.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.headerSubReportLandScape1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -155,6 +157,28 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox3.Style.Font.Name = "Times New Roman";
             this.textBox3.StyleName = "BlueOpal.TableHeader";
             this.textBox3.Value = "Actual Hour";
+            // 
+            // textBox7
+            // 
+            this.textBox7.Format = "{0:N1}";
+            this.textBox7.Name = "textBox7";
+            this.textBox7.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.52000004053115845D), Telerik.Reporting.Drawing.Unit.Inch(0.64999997615814209D));
+            this.textBox7.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox7.Style.Color = System.Drawing.Color.White;
+            this.textBox7.Style.Font.Name = "Times New Roman";
+            this.textBox7.StyleName = "BlueOpal.TableHeader";
+            this.textBox7.Value = "Actual Down Hour";
+            // 
+            // textBox5
+            // 
+            this.textBox5.Format = "{0:N1}";
+            this.textBox5.Name = "textBox5";
+            this.textBox5.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.52000004053115845D), Telerik.Reporting.Drawing.Unit.Inch(0.64999997615814209D));
+            this.textBox5.Style.BackgroundColor = System.Drawing.Color.Gray;
+            this.textBox5.Style.Color = System.Drawing.Color.White;
+            this.textBox5.Style.Font.Name = "Times New Roman";
+            this.textBox5.StyleName = "BlueOpal.TableHeader";
+            this.textBox5.Value = "Actual Idle Hour";
             // 
             // textBox4
             // 
@@ -396,6 +420,8 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox21,
             this.textBox10,
             this.textBox11,
+            this.textBox15,
+            this.textBox13,
             this.textBox12,
             this.textBox14,
             this.textBox16,
@@ -404,13 +430,11 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox20,
             this.textBox2,
             this.textBox3,
+            this.textBox7,
+            this.textBox5,
             this.textBox4,
             this.textBox6,
-            this.textBox8,
-            this.textBox7,
-            this.textBox15,
-            this.textBox5,
-            this.textBox13});
+            this.textBox8});
             this.table1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(0.5D));
             this.table1.Name = "table1";
             tableGroup11.Groupings.Add(new Telerik.Reporting.Grouping(null));
@@ -496,6 +520,24 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox21.StyleName = "BlueOpal.TableBody";
             this.textBox21.Value = "= Fields.PlannedMonthlyHour";
             // 
+            // textBox15
+            // 
+            this.textBox15.Format = "{0:N1}";
+            this.textBox15.Name = "textBox15";
+            this.textBox15.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.52000004053115845D), Telerik.Reporting.Drawing.Unit.Inch(0.65000009536743164D));
+            this.textBox15.Style.Font.Name = "Times New Roman";
+            this.textBox15.StyleName = "BlueOpal.TableBody";
+            this.textBox15.Value = "= Fields.ActualMonthlyDownHour";
+            // 
+            // textBox13
+            // 
+            this.textBox13.Format = "{0:N1}";
+            this.textBox13.Name = "textBox13";
+            this.textBox13.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.52000004053115845D), Telerik.Reporting.Drawing.Unit.Inch(0.65000009536743164D));
+            this.textBox13.Style.Font.Name = "Times New Roman";
+            this.textBox13.StyleName = "BlueOpal.TableBody";
+            this.textBox13.Value = "= Fields.ActualMonthlyIdleHour";
+            // 
             // masterOds
             // 
             this.masterOds.DataMember = "GetUtilization";
@@ -503,8 +545,8 @@ namespace ExceedERP.Reporting.Fleet.View
             this.masterOds.Name = "masterOds";
             this.masterOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("glFiscalYearId", typeof(string), "= Parameters.FiscalYear.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("glPeriodId", typeof(string), "= Parameters.Period.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("week", typeof(string), "= Parameters.Week.Value")});
+            new Telerik.Reporting.ObjectDataSourceParameter("From", typeof(System.DateTime), "= Parameters.From.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("To", typeof(System.DateTime), "= Parameters.To.Value")});
             // 
             // textBox36
             // 
@@ -513,11 +555,11 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox36.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(5.1999998092651367D), Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D));
             this.textBox36.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox36.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
-            this.textBox36.Style.Color = System.Drawing.Color.Black;
+            this.textBox36.Style.Color = System.Drawing.Color.White;
             this.textBox36.Style.Font.Name = "Times New Roman";
             this.textBox36.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox36.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox36.Value = "Week";
+            this.textBox36.Value = "From                                          To:";
             // 
             // textBox37
             // 
@@ -526,7 +568,7 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox37.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.5D), Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D));
             this.textBox37.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox37.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
-            this.textBox37.Style.Color = System.Drawing.Color.Black;
+            this.textBox37.Style.Color = System.Drawing.Color.White;
             this.textBox37.Style.Font.Name = "Times New Roman";
             this.textBox37.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox37.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
@@ -736,46 +778,6 @@ namespace ExceedERP.Reporting.Fleet.View
             this.subReport1.ReportSource = instanceReportSource1;
             this.subReport1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.1999999284744263D), Telerik.Reporting.Drawing.Unit.Inch(0.29999998211860657D));
             // 
-            // textBox7
-            // 
-            this.textBox7.Format = "{0:N1}";
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.52000004053115845D), Telerik.Reporting.Drawing.Unit.Inch(0.64999997615814209D));
-            this.textBox7.Style.BackgroundColor = System.Drawing.Color.Gray;
-            this.textBox7.Style.Color = System.Drawing.Color.White;
-            this.textBox7.Style.Font.Name = "Times New Roman";
-            this.textBox7.StyleName = "BlueOpal.TableHeader";
-            this.textBox7.Value = "Actual Down Hour";
-            // 
-            // textBox15
-            // 
-            this.textBox15.Format = "{0:N1}";
-            this.textBox15.Name = "textBox15";
-            this.textBox15.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.52000004053115845D), Telerik.Reporting.Drawing.Unit.Inch(0.65000009536743164D));
-            this.textBox15.Style.Font.Name = "Times New Roman";
-            this.textBox15.StyleName = "BlueOpal.TableBody";
-            this.textBox15.Value = "= Fields.ActualMonthlyDownHour";
-            // 
-            // textBox5
-            // 
-            this.textBox5.Format = "{0:N1}";
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.52000004053115845D), Telerik.Reporting.Drawing.Unit.Inch(0.64999997615814209D));
-            this.textBox5.Style.BackgroundColor = System.Drawing.Color.Gray;
-            this.textBox5.Style.Color = System.Drawing.Color.White;
-            this.textBox5.Style.Font.Name = "Times New Roman";
-            this.textBox5.StyleName = "BlueOpal.TableHeader";
-            this.textBox5.Value = "Actual Idle Hour";
-            // 
-            // textBox13
-            // 
-            this.textBox13.Format = "{0:N1}";
-            this.textBox13.Name = "textBox13";
-            this.textBox13.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.52000004053115845D), Telerik.Reporting.Drawing.Unit.Inch(0.65000009536743164D));
-            this.textBox13.Style.Font.Name = "Times New Roman";
-            this.textBox13.StyleName = "BlueOpal.TableBody";
-            this.textBox13.Value = "= Fields.ActualMonthlyIdleHour";
-            // 
             // FleetUtilizationSummaryDesign
             // 
             this.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
@@ -800,7 +802,6 @@ namespace ExceedERP.Reporting.Fleet.View
             reportParameter2.AvailableValues.ValueMember = "= Fields.Value";
             reportParameter2.Name = "Period";
             reportParameter2.Text = "Period";
-            reportParameter2.Visible = true;
             reportParameter3.AllowNull = true;
             reportParameter3.AvailableValues.DataSource = this.categoryOds;
             reportParameter3.AvailableValues.DisplayMember = "= Fields.Text";
@@ -820,7 +821,16 @@ namespace ExceedERP.Reporting.Fleet.View
             reportParameter7.AvailableValues.DisplayMember = "= Fields.Text";
             reportParameter7.AvailableValues.ValueMember = "= Fields.Value";
             reportParameter7.Name = "Week";
-            reportParameter7.Visible = true;
+            reportParameter8.Name = "From";
+            reportParameter8.Text = "From";
+            reportParameter8.Type = Telerik.Reporting.ReportParameterType.DateTime;
+            reportParameter8.Value = "= Today()";
+            reportParameter8.Visible = true;
+            reportParameter9.Name = "To";
+            reportParameter9.Text = "To";
+            reportParameter9.Type = Telerik.Reporting.ReportParameterType.DateTime;
+            reportParameter9.Value = "= Today()";
+            reportParameter9.Visible = true;
             this.ReportParameters.Add(reportParameter1);
             this.ReportParameters.Add(reportParameter2);
             this.ReportParameters.Add(reportParameter3);
@@ -828,6 +838,8 @@ namespace ExceedERP.Reporting.Fleet.View
             this.ReportParameters.Add(reportParameter5);
             this.ReportParameters.Add(reportParameter6);
             this.ReportParameters.Add(reportParameter7);
+            this.ReportParameters.Add(reportParameter8);
+            this.ReportParameters.Add(reportParameter9);
             styleRule1.Selectors.AddRange(new Telerik.Reporting.Drawing.ISelector[] {
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.TextItemBase)),
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.HtmlTextBox))});

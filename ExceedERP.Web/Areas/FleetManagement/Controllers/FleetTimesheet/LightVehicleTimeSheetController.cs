@@ -13,12 +13,14 @@ using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.FleetManagement.FleetInsurances;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Reporting.Fleet.ViewModel;
-using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 
+using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using ExceedERP.Reporting.Fleet.ViewModel;
+//using ExceedERP.Reporting.Fleet.ViewModel;
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
 {
-    //[AuthorizeRoles(FleetManagementRoles.FleetTimeSheet)]
+    [AuthorizeRoles(FleetManagementRoles.FleetTimeSheetUser, FleetManagementRoles.FleetTimeSheetApprover)]
     public class LightVehicleTimeSheetController : Controller
     {
 
@@ -49,10 +51,21 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 Value = s.BranchId,
                 Text = s.Name
             }).ToList();
-            RepopulateTimeSheet();
+           
+            ViewData["operator"] = db.Operator.Select(s => new
+            {
+                Value = s.OperatorID,
+                Text = s.FullName
+            }).ToList();
+            ViewData["businessunit"] = db.BusinessUnits.Select(s => new
+            {
+                Value = s.BusinessUnitId,
+                Text = s.Name
+            }).ToList();
+
             return View();
         }
-        public void RepopulateTimeSheet()
+        public JsonResult RepopulateTimeSheet()
         {
             var timesheets = db.LightVehicleTimeSheets.ToList();
             if (timesheets.Any())
@@ -66,12 +79,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 }
                 db.SaveChanges();
             }
-
+            return Json("success", JsonRequestBehavior.AllowGet);
         }
         public ActionResult LightVehicleTimeSheets_Read([DataSourceRequest] DataSourceRequest request)
         {
-          
-            var lightVehicleTimesheet = db.LightVehicleTimeSheets;           
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var lightVehicleTimesheet = db.LightVehicleTimeSheets.Where(x => mybraches.Contains(x.BranchId));           
             DataSourceResult result = lightVehicleTimesheet.ToDataSourceResult(request, model => new LightVehicleTimeSheet
             {
                 
@@ -111,7 +124,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 MaintenanceCost = model.MaintenanceCost,
                 TotalCost = model.TotalCost,
                 NetAmount = model.NetAmount,
-
                 DownHourRate = model.DownHourRate,
                 OperationRevenue = model.OperationRevenue,
                 Perdium = model.Perdium,
@@ -153,6 +165,26 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
             var totalCost = fuelCost + model.MaintenanceCost + model.LubricantCost + model.ServiceRecharge;
 
             #endregion
+           
+            var fetchSettings = db.TimeSheetSetting.ToList();
+
+            if (fetchSettings.Any())
+            {
+                var fetchSetting = fetchSettings.First();
+                var fetchException = db.TimeSheetException.FirstOrDefault(x => x.TimeSheetSettingId == fetchSetting.TimeSheetSettingId && x.BranchId == model.BranchId.ToString());
+                if (fetchException == null)
+                {
+                    if (fetchSetting != null && fetchSetting.IsSet == true)
+                    {
+                        int hoursDifference = (int)(DateTime.Now - model.Date).TotalHours;
+
+                        if (fetchSetting.SettedHours < hoursDifference)
+                        {
+                            ModelState.AddModelError("date expired", "The timesheet recording date is passed");
+                        }
+                    }
+                }
+            }
             if (ModelState.IsValid)
             {
                 var entity = new LightVehicleTimeSheet
@@ -347,6 +379,39 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
 
 
         #region Approval
+        public JsonResult VoidTimeSheet(int lightVehicleTimeSheetId)
+        {
+
+            var lightVehicle = db.LightVehicleTimeSheets.Find(lightVehicleTimeSheetId);
+
+            if (lightVehicle != null)
+            {
+                lightVehicle.TimeSheetSendForAproval = false;
+                lightVehicle.TimeSheetApproved = false;
+                lightVehicle.TimeSheetApprovedDate = DateTime.Now;
+                lightVehicle.TimeSheetApprovedBy = User.Identity.Name;
+                lightVehicle.TimeSheetStatus = MaintenanceConst.Rejected;
+
+                db.LightVehicleTimeSheets.Attach(lightVehicle);
+                db.Entry(lightVehicle).State = EntityState.Modified;
+                db.SaveChanges();
+                var returnMessage = new
+                {
+                    Message = "Successfully Sent!",
+
+                };
+                return Json(returnMessage.Message, JsonRequestBehavior.AllowGet);
+
+            }
+
+            var jsonData = new
+            {
+                Message = "Error Sending!",
+
+            };
+            return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
+
+        }
         public JsonResult TimeSheetSendForApproval(int lightVehicleTimeSheetId)
         {
 
@@ -398,6 +463,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
             });
             return Json(result);
         }
+        [AuthorizeRoles(FleetManagementRoles.FleetTimeSheetApprover)]
         public ActionResult LightVehicleTimeSheetApproval_Create([DataSourceRequest] DataSourceRequest request, TimeSheetApprovalNew model, int id)
         {
             if (ModelState.IsValid)

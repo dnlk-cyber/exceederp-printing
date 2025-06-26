@@ -18,7 +18,7 @@
                     .MinLength(2)
                     .DataSource(dataSource =>
                     {
-                        dataSource.Read(read => read.Action("GetFleet", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                        dataSource.Read(read => read.Action("GetFleet", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
                             .ServerFiltering(false);
                     }).HtmlAttributes(new { style = "width:100%" })
                 )
@@ -39,7 +39,7 @@
                     .Events(e => e.Change("handleSupplierChange"))
                     .DataSource(dataSource =>
                     {
-                        dataSource.Read(read => read.Action("GetSuppliers", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                        dataSource.Read(read => read.Action("GetSuppliers", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
                         .ServerFiltering(false);
                     })
                 )
@@ -60,7 +60,7 @@
 
                     .DataSource(dataSource =>
                     {
-                        dataSource.Read(read => read.Action("GetBranches", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                        dataSource.Read(read => read.Action("GetBranches", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
                         .ServerFiltering(false);
                     })
                 )
@@ -81,7 +81,7 @@
 
                     .DataSource(dataSource =>
                     {
-                        dataSource.Read(read => read.Action("GetBusinessUnits", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                        dataSource.Read(read => read.Action("GetBusinessUnits", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
                         .ServerFiltering(false);
                     })
                 )
@@ -388,7 +388,7 @@
 
                                             .DataSource(dataSource =>
                                             {
-                                                dataSource.Read(read => read.Action("Operators", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("filterOperator"))
+                                                dataSource.Read(read => read.Action("Operators", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery").Data("filterOperator"))
                                                 .ServerFiltering(true);
                                             })
                 )

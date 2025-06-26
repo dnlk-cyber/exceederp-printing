@@ -42,7 +42,7 @@
               aggregates.Add(p => p.Reason).Sum();
             })
                 .Group(x => { x.Add(y => y.SerialNo); x.Add(y => y.Name); })
-        .ServerOperation(false)
+      
        
         .Model(model =>
               {
@@ -52,7 +52,7 @@
                                 .Error("error_handler(\"grid\")")
                                 .RequestStart("onRequestStart(\"grid\")")
                                 .RequestEnd("onRequestEnd(\"grid\")"))
-                        .Read(read => read.Action("BatteryUsageHistory_Read", "BatteryUsageHistory")) 
+                        .Read(read => read.Action("BatteryUsageHistory_Read", "BatteryUsageHistory").Data("sendForgery")) 
   )
 )
 

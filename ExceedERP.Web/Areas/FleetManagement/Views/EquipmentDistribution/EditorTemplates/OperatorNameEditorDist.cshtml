@@ -7,6 +7,6 @@
             .DataValueField("Value")
             .OptionLabel("Select")
             .Filter("contains")
-            .DataSource(d => d.Read(r => r.Action("OperatorForDistributionNew", "FleetManagementDataProvider")
+            .DataSource(d => d.Read(r => r.Action("OperatorForDistributionNew", "FleetManagementDataProvider").Data("sendForgery")
             .Data("filterOperator")).ServerFiltering(true)
             ))

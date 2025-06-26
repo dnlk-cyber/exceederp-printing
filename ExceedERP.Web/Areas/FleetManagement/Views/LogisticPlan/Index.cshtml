@@ -39,10 +39,10 @@
                                                                     .Error("error_handler(\"grid\")")
                                                                     .RequestStart("onRequestStart(\"grid\")")
                                                                     .RequestEnd("onRequestEnd(\"grid\")"))
-          .Read(read => read.Action("LogisticPlans_Read", "LogisticPlan"))
-          .Create(create => create.Action("LogisticPlans_Create", "LogisticPlan"))
-          .Update(update => update.Action("LogisticPlans_Update", "LogisticPlan"))
-          .Destroy(destroy => destroy.Action("LogisticPlans_Destroy", "LogisticPlan"))
+          .Read(read => read.Action("LogisticPlans_Read", "LogisticPlan").Data("sendForgery"))
+          .Create(create => create.Action("LogisticPlans_Create", "LogisticPlan").Data("sendForgery"))
+          .Update(update => update.Action("LogisticPlans_Update", "LogisticPlan").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("LogisticPlans_Destroy", "LogisticPlan").Data("sendForgery"))
       )
 )
 
@@ -86,10 +86,10 @@
                                                                                 .RequestStart("onRequestStart(\"Detail_#=LogisticPlanId#\")")
                                                                                 .RequestEnd("onRequestEnd(\"Detail_#=LogisticPlanId#\")"))
                           
-                          .Read(read => read.Action("LogisticPlanDetails_Read", "LogisticPlanDetail", new { Id = "#=LogisticPlanId#" }))
-                  .Create(create => create.Action("LogisticPlanDetails_Create", "LogisticPlanDetail", new { Id = "#=LogisticPlanId#" }))
-          .Update(update => update.Action("LogisticPlanDetails_Update", "LogisticPlanDetail"))
-          .Destroy(destroy => destroy.Action("LogisticPlanDetails_Destroy", "LogisticPlanDetail"))
+                          .Read(read => read.Action("LogisticPlanDetails_Read", "LogisticPlanDetail", new { Id = "#=LogisticPlanId#" }).Data("sendForgery"))
+                  .Create(create => create.Action("LogisticPlanDetails_Create", "LogisticPlanDetail", new { Id = "#=LogisticPlanId#" }).Data("sendForgery"))
+          .Update(update => update.Action("LogisticPlanDetails_Update", "LogisticPlanDetail").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("LogisticPlanDetails_Destroy", "LogisticPlanDetail").Data("sendForgery"))
       )
 
 
@@ -126,9 +126,9 @@
                                                                                     .Error("error_handler(\"JobOrderAdmingrid_#=LogisticPlanId#\")")
                                                                                     .RequestStart("onRequestStart(\"JobOrderAdmingrid_#=LogisticPlanId#\")")
                                                                                     .RequestEnd("onRequestEnd(\"JobOrderAdmingrid_#=LogisticPlanId#\")"))
-                                                                                                                       .Create(create => create.Action("Admin_Approve", "JobRequest", new { Id = "#=LogisticPlanId#" }))
-                                                                                                   .Read(read => read.Action("Admin_Read", "JobRequest", new { Id = "#=LogisticPlanId#" }))
-                                                                                                 .Update(update => update.Action("Admin_Approve", "JobRequest", new { Id = "#=LogisticPlanId#" }))
+                                                                                                                       .Create(create => create.Action("Admin_Approve", "JobRequest", new { Id = "#=LogisticPlanId#" }).Data("sendForgery"))
+                                                                                                   .Read(read => read.Action("Admin_Read", "JobRequest", new { Id = "#=LogisticPlanId#" }).Data("sendForgery"))
+                                                                                                 .Update(update => update.Action("Admin_Approve", "JobRequest", new { Id = "#=LogisticPlanId#" }).Data("sendForgery"))
 
 
                                                       )

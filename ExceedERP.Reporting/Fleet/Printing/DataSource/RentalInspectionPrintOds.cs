@@ -17,31 +17,68 @@ namespace ExceedERP.Reporting.Fleet.Printing.DataSource
 
         public RentalInspectionViewModel GetRentalInspection(string Id)
         {
-            var rentalInspection = db.RentalInspections.Find(Id);
             RentalInspectionViewModel rentalInspectionViewModel = new RentalInspectionViewModel();
-            rentalInspectionViewModel = new RentalInspectionViewModel
+            if (int.TryParse(Id, out int id))
             {
-                Capacity = rentalInspection.Capacity,
-                //BranchId = rentalInspection.BranchId,
-                ChasisSerialNo = rentalInspection.ChasisSerialNo,
-                EngineModel = rentalInspection.EngineModel,
-                EngineSerialNo = rentalInspection.EngineSerialNo,
-                //EquipmentNameID = rentalInspection.EquipmentNameID,
-                //EquipmentTypeID = rentalInspection.EquipmentTypeID,
-                Hp = rentalInspection.Hp,
-                Lessor = rentalInspection.Lessor,
-                Manufacturer = rentalInspection.Manufacturer,
-                ManufacturingYear = rentalInspection.ManufacturingYear,
-                MeterReading = rentalInspection.MeterReading,
-                Model = rentalInspection.Model,
-                OperatorLicenceNo = rentalInspection.OperatorLicenceNo,
-                PlateNo = rentalInspection.PlateNo,
-                
-            };
+                var rentalInspection = db.RentalInspections.FirstOrDefault(x => x.RentalInspectionId == id);
+
+                rentalInspectionViewModel = new RentalInspectionViewModel
+                {
+                    Capacity = rentalInspection.Capacity,
+                    ChasisSerialNo = rentalInspection.ChasisSerialNo,
+                    EngineModel = rentalInspection.EngineModel,
+                    EngineSerialNo = rentalInspection.EngineSerialNo,
+                   
+                    Hp = rentalInspection.Hp,
+                    Lessor = rentalInspection.Lessor,
+                    Manufacturer = rentalInspection.Manufacturer,
+                    ManufacturingYear = rentalInspection.ManufacturingYear,
+                    MeterReading = rentalInspection.MeterReading,
+                    Model = rentalInspection.Model,
+                    OperatorLicenceNo = rentalInspection.OperatorLicenceNo,
+                    PlateNo = rentalInspection.PlateNo,
+                    OperatorName = rentalInspection.OperatorName,
+                    EquipmentType = db.EquipmentType.FirstOrDefault(x => x.EquipmentTypeID == rentalInspection.EquipmentTypeID)?.EquipmentTypeName,
+                    EquipmentName = db.EquipmentName.FirstOrDefault(x => x.EquipmentNameID == rentalInspection.EquipmentNameID)?.Name,
+                    Branch = db.Branch.FirstOrDefault(x => x.BranchId == rentalInspection.BranchId)?.Name,
+                    CCKW = rentalInspection.CCKW
+                };
+            }
+           
             return rentalInspectionViewModel;
 
         }
-        public class RentalInspectionViewModel
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<RentalInspectionViewModel> GetEquipments(string rentId)
+        {
+            List<RentalInspectionViewModel> list = new List<RentalInspectionViewModel>();
+            if (int.TryParse(rentId, out int id))
+            {
+                var rentalInspection = db.RentalInspections.FirstOrDefault(x => x.RentalInspectionId == id);
+                
+                if (rentalInspection != null)
+                {
+                    var equips = db.RentalMVInspections.Where(x => x.RentalInspectionId == rentalInspection.RentalInspectionId);
+                    foreach (var item in equips)
+                    {
+
+                        list.Add(new RentalInspectionViewModel
+                        {
+                            CriteriaDetail = db.RentalInspectionCriteriaDetails.Find(item.RentalInspectionCriteriaDetailId)?.CriteriaName,
+                            BranchOfficeGoodCondtion = item.BranchOfficeGoodCondtion.ToString(),
+                            BranchOfficePoorCondtion = item.BranchOfficePoorCondtion.ToString(),
+                            HeadOfficeGoodCondtion = item.HeadOfficeGoodCondtion.ToString(),
+                            HeadOfficePoorCondtion = item.HeadOfficePoorCondtion.ToString(),
+                        });
+                    }
+                }
+            }
+            return list;
+
+        }
+    }
+   
+    public class RentalInspectionViewModel
         {
             [DisplayName("Equipment Type")]
             
@@ -87,6 +124,23 @@ namespace ExceedERP.Reporting.Fleet.Printing.DataSource
            
             [DisplayName("Hr./Km Meter Reading")]
             public string MeterReading { get; set; }
+            public string OperatorName { get; set; }
+            public string CCKW { get; set; }
+        [DisplayName("Technical Paramenter")]
+        public string TechnicalParameter { get; set; }
+        [DisplayName("Criterea Detail")]
+        public string CriteriaDetail { get; set; }
+        [DisplayName("Branch Office Good Condition")]
+        public string BranchOfficeGoodCondtion { get; set; }
+        [DisplayName("Branch Office Poor Condition")]
+        public string BranchOfficePoorCondtion { get; set; }
+        [DisplayName("Head Office Good Condition")]
+        public string HeadOfficeGoodCondtion { get; set; }
+        [DisplayName("Head Office Poor Condition")]
+        public string HeadOfficePoorCondtion { get; set; }
+       
+        
+       
         }
     }
-}
+

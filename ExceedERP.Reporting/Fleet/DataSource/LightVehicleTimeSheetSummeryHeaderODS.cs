@@ -3,6 +3,7 @@ using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.Procurement.Supplier;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Fleet.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,8 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 Guid.TryParse(fleetId, out Guid FId);
 
                 var lightVehicle = db.LightVehicleTimeSheets.FirstOrDefault(x => x.FleetsID == FId && DbFunctions.TruncateTime(x.Date) >= from.Date && DbFunctions.TruncateTime(x.Date) <= to.Date);
+                List<LightVehicleTimeSheet> PreparedBy = db.LightVehicleTimeSheets.Where(x => x.FleetsID == FId && DbFunctions.TruncateTime(x.Date) >= from.Date && DbFunctions.TruncateTime(x.Date) <= to.Date).ToList();
+                LightVehicleTimeSheet LastLightVehicleTimeSheet = db.LightVehicleTimeSheets.FirstOrDefault(x => x.FleetsID == FId && DbFunctions.TruncateTime(x.Date) >= from.Date && DbFunctions.TruncateTime(x.Date) <= to.Date);
                 if (lightVehicle != null)
                 {
                     var branch = db.Branch.FirstOrDefault(x => x.BranchId == lightVehicle.BranchId);
@@ -48,7 +51,21 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         if (equipmentName != null)
                             header.EquipmentName = equipmentName.Name;
                         header.PlateNumber = fleet.PlateNumber;
-                        header.OwnerName = procurementSupplier?.Name == null ? db.Companies.FirstOrDefault()?.TradeName : "";
+                        if (fleet.IsExternal)
+                        {
+                            if (procurementSupplier != null)
+                            {
+                                header.OwnerName = procurementSupplier?.Name;
+                            }
+                            else
+                            {
+                                header.OwnerName = "";
+                            }
+                        }
+                        else
+                        {
+                            header.OwnerName = db.Companies.FirstOrDefault()?.TradeName;
+                        }
                         if (operatorName != null)
                             header.OperatorName = operatorName.FullName;
                         if (branch != null)
@@ -58,14 +75,44 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     header.DurationTo = to.Date;
                     header.Duration = from.ToString("MM/dd/yyyy") + "-" + to.ToString("MM/dd/yyyy");
                     header.Period = DateTime.Now.Month.ToString() + "," + DateTime.Now.Year.ToString();
+                    if (LastLightVehicleTimeSheet.CreatedBy != null)
+                    {
+                        header.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastLightVehicleTimeSheet.CreatedBy));
+                    }
+                    if (LastLightVehicleTimeSheet.CostSheetSendForApprovalBy != null)
+                    {
+                        header.CheckedBY = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastLightVehicleTimeSheet.CostSheetSendForApprovalBy));
+                    }
+                    if (LastLightVehicleTimeSheet.CostSheetApprovedBy != null)
+                    {
+                        header.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastLightVehicleTimeSheet.CostSheetApprovedBy));
+                    }
+                    header.PreparedDate = LastLightVehicleTimeSheet.DateCreated?.ToString("yyyy-MM-dd")??"";
+                    header.CheckedDate = LastLightVehicleTimeSheet.TimeSheetSendForApprovalTime?.ToString("yyyy-MM-dd")??"";
+                    header.ApprovedDate = LastLightVehicleTimeSheet.CostSheetApprovedDate?.ToString("yyyy-MM-dd")??"";
+                    if (LastLightVehicleTimeSheet.ModifiedBy != null)
+                    {
+                        header.ModifiedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastLightVehicleTimeSheet.ModifiedBy));
+                    }
+                    header.ModifiedDate = LastLightVehicleTimeSheet.LastModified?.ToString("yyyy-MM-dd")??"";
+                    if (LastLightVehicleTimeSheet.TimeSheetApprovedBy != null)
+                    {
+                        header.TimesheetApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastLightVehicleTimeSheet.TimeSheetApprovedBy));
+                    }
+                    header.TimesheetApprovedDate = LastLightVehicleTimeSheet.TimeSheetApprovedDate?.ToString("yyyy-MM-dd")??"";
+                    if (LastLightVehicleTimeSheet.TimeSheetSendForApprovalBy != null)
+                    {
+                        header.TimesheetSendForApprovalBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastLightVehicleTimeSheet.TimeSheetSendForApprovalBy));
+                    }
+                    header.TimesheetSendForApprovalDate = LastLightVehicleTimeSheet.TimeSheetSendForApprovalTime?.ToString("yyyy-MM-dd")??"";
                 }
             }
-            
+
             return header;
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<MachineryTimeSheetSummeryVM> LightVehicleTimeSheetSummery(string fleetId, DateTime from, DateTime to, string project, string businessUnitId, string categoryId, string subCategoryId)
+        public List<MachineryTimeSheetSummeryVM> LightVehicleTimeSheetSummery(string fleetId, DateTime from, DateTime to, string IntExt, string project, string businessUnitId, string categoryId, string subCategoryId)
         {
 
             var list = new List<MachineryTimeSheetSummeryVM>();
@@ -89,6 +136,32 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 if (!string.IsNullOrWhiteSpace(businessUnitId))
                 {
                     lightVehicleTimeSheets = lightVehicleTimeSheets.Where(x => x.BusinessUnitId == int.Parse(businessUnitId)).ToList();
+                }
+                if (!string.IsNullOrWhiteSpace(IntExt))
+                {
+                    List<LightVehicleTimeSheet> LightList = new List<LightVehicleTimeSheet>();
+                    if (IntExt == "Rent")
+                    {
+
+
+                        var fleetFiltered = db.Fleets.Where(x => x.IsExternal).ToList();
+                        foreach (var item in fleetFiltered)
+                        {
+                            var LightFiltered = lightVehicleTimeSheets.Where(x => x.FleetsID == item.FleetsID).ToList();
+                            LightList.AddRange(LightFiltered);
+                        }
+                        lightVehicleTimeSheets = LightList;
+                    }
+                    else
+                    {
+                        var fleetFiltered = db.Fleets.Where(x => !x.IsExternal).ToList();
+                        foreach (var item in fleetFiltered)
+                        {
+                            var LightFiltered = lightVehicleTimeSheets.Where(x => x.FleetsID == item.FleetsID).ToList();
+                            LightList.AddRange(LightFiltered);
+                        }
+                        lightVehicleTimeSheets = LightList;
+                    }
                 }
                 if (!string.IsNullOrWhiteSpace(categoryId))
                 {
@@ -117,10 +190,16 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 }
                 foreach (var lightVehicleTimeSheet in lightVehicleTimeSheets)
                 {
+                    var netHour = Math.Round((decimal)((lightVehicleTimeSheet.MorningTimeEnd - lightVehicleTimeSheet.MorningTimeStart).TotalHours + (lightVehicleTimeSheet.AfternoonTimeEnd - lightVehicleTimeSheet.AfternoonTimeStart).TotalHours + (lightVehicleTimeSheet.NightTimeEnd - lightVehicleTimeSheet.NightTimeStart).TotalHours), 2);
                     var timeSheet = new MachineryTimeSheetSummeryVM();
                     timeSheet.Date = lightVehicleTimeSheet.Date;
                     timeSheet.WorkItem = lightVehicleTimeSheet.WorkType;
-                    timeSheet.OperationNetworkinHour = 1;
+                    if (netHour > 4)
+                        timeSheet.OperationNetworkinHour = 1;
+                    if (netHour <= 4)
+                        timeSheet.OperationNetworkinHour = 0.5m;
+                    if (netHour <= 0)
+                        timeSheet.OperationNetworkinHour = 0;
                     timeSheet.OperationRatePerHour = lightVehicleTimeSheet.RentalRate;
                     // Calculated
                     timeSheet.OpertionRevenue = timeSheet.OperationNetworkinHour * timeSheet.OperationRatePerHour;

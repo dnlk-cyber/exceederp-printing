@@ -31,17 +31,17 @@
    // .Groupable()
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
+       
                   .Events(events => events.Error("error_handler").Sync("sync_handler"))
         .Model(model =>
               {
                   model.Id(p => p.VehicleReturnID);
                
               })
-                .Create(update => update.Action("VehicleReturn_Create", "VehicleReturn"))
-                .Read(read => read.Action("VehicleReturn_Read", "VehicleReturn"))
-                .Update(update => update.Action("VehicleReturn_Update", "VehicleReturn"))
-                .Destroy(update => update.Action("VehicleReturn_Destroy", "VehicleReturn"))
+                .Create(update => update.Action("VehicleReturn_Create", "VehicleReturn").Data("sendForgery"))
+                .Read(read => read.Action("VehicleReturn_Read", "VehicleReturn").Data("sendForgery"))
+                .Update(update => update.Action("VehicleReturn_Update", "VehicleReturn").Data("sendForgery"))
+                .Destroy(update => update.Action("VehicleReturn_Destroy", "VehicleReturn").Data("sendForgery"))
   )
 )
 

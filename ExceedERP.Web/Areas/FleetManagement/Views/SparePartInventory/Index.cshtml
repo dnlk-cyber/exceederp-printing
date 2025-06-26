@@ -31,7 +31,6 @@
                              .Scrollable(h => h.Height(500))
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
         .Model(model =>
               {
                   model.Id(p => p.InventorySparePartMappingId);
@@ -42,10 +41,10 @@
                                     .Error("error_handler(\"grid\")")
                                     .RequestStart("onRequestStart(\"grid\")")
                                     .RequestEnd("onRequestEnd(\"grid\")"))
-                            .Create(update => update.Action("SparePartInventory_Create", "SparePartInventory"))
-                            .Read(read => read.Action("SparePartInventory_Read", "SparePartInventory"))
-                            .Update(update => update.Action("SparePartInventory_Update", "SparePartInventory"))
-                            .Destroy(update => update.Action("SparePartInventory_Destroy", "SparePartInventory"))
+                            .Create(update => update.Action("SparePartInventory_Create", "SparePartInventory").Data("sendForgery"))
+                            .Read(read => read.Action("SparePartInventory_Read", "SparePartInventory").Data("sendForgery"))
+                            .Update(update => update.Action("SparePartInventory_Update", "SparePartInventory").Data("sendForgery"))
+                            .Destroy(update => update.Action("SparePartInventory_Destroy", "SparePartInventory").Data("sendForgery"))
   )
 )
 

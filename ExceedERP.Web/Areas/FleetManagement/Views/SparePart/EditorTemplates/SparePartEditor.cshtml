@@ -24,7 +24,7 @@
                .Filter("contains")
                .OptionLabel("Select ")
                .HtmlAttributes(new { style = "width:100%" })
-                  .DataSource(d => d.Read(r => r.Action("SparePartDDBind", "FleetDataProvider")))
+                  .DataSource(d => d.Read(r => r.Action("SparePartDDBind", "FleetDataProvider").Data("sendForgery")))
                   .Events(ev => ev.Change("BindPrice")))
                 </div>
             </div>

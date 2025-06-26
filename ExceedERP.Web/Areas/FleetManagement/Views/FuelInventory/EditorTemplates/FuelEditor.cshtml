@@ -21,7 +21,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.SiteName)
         .DataTextField("Name")
                                 .DataValueField("Name").OptionLabel(" Select")
-                    .DataSource(d => d.Read(r => r.Action("BranchDDBind", "Branch"))))
+                    .DataSource(d => d.Read(r => r.Action("BranchDDBind", "Branch").Data("sendForgery"))))
                 </div>
             </div>
 
@@ -36,7 +36,7 @@
                         @(Html.Kendo().DropDownListFor(model => model.FuelType)
                                                                .DataTextField("PlateNumber")
                                                                        .DataValueField("PlateNumber").OptionLabel(" Select ")
-                                                                                       .DataSource(d => d.Read(r => r.Action("FuelTypeDDBind", "FuelType"))).Events(e => e.Change("BindFuelDetail")))
+                                                                                       .DataSource(d => d.Read(r => r.Action("FuelTypeDDBind", "FuelType").Data("sendForgery"))).Events(e => e.Change("BindFuelDetail")))
 
                     </div>
 

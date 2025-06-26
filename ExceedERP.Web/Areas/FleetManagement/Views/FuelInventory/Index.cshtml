@@ -44,7 +44,6 @@
 
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
         .Model(model =>
         {
             model.Id(p => p.FuelInventoryId);
@@ -53,10 +52,10 @@
                               .Error("error_handler(\"grid\")")
                               .RequestStart("onRequestStart(\"grid\")")
                               .RequestEnd("onRequestEnd(\"grid\")"))
-                        .Create(update => update.Action("FuelInventory_Create", "FuelInventory"))
-                            .Read(read => read.Action("FuelInventoryDistinctSite_Read", "FuelInventory"))
-                        .Update(update => update.Action("FuelInventory_Update", "FuelInventory"))
-                        .Destroy(update => update.Action("FuelInventory_Destroy", "FuelInventory"))
+                        .Create(update => update.Action("FuelInventory_Create", "FuelInventory").Data("sendForgery"))
+                            .Read(read => read.Action("FuelInventoryDistinctSite_Read", "FuelInventory").Data("sendForgery"))
+                        .Update(update => update.Action("FuelInventory_Update", "FuelInventory").Data("sendForgery"))
+                        .Destroy(update => update.Action("FuelInventory_Destroy", "FuelInventory").Data("sendForgery"))
   )
 )
 
@@ -200,7 +199,6 @@
  
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
         .Model(model =>
               {
                   model.Id(p => p.FuelInventoryId);
@@ -209,10 +207,10 @@
                                         .Error("error_handler(\"gridLog\")")
                                         .RequestStart("onRequestStart(\"gridLog\")")
                                         .RequestEnd("onRequestEnd(\"gridLog\")"))
-                        .Create(update => update.Action("FuelInventory_Create", "FuelInventory"))
-                                .Read(read => read.Action("FuelInventoryBySite_Read", "FuelInventory", new { Site = "#=SiteName#" }))
-                        .Update(update => update.Action("FuelInventory_Update", "FuelInventory"))
-                        .Destroy(update => update.Action("FuelInventory_Destroy", "FuelInventory"))
+                        .Create(update => update.Action("FuelInventory_Create", "FuelInventory").Data("sendForgery"))
+                                .Read(read => read.Action("FuelInventoryBySite_Read", "FuelInventory", new { Site = "#=SiteName#" }).Data("sendForgery"))
+                        .Update(update => update.Action("FuelInventory_Update", "FuelInventory").Data("sendForgery"))
+                        .Destroy(update => update.Action("FuelInventory_Destroy", "FuelInventory").Data("sendForgery"))
   
 )
                                                .ToClientTemplate())
@@ -250,9 +248,9 @@
                                                     .Error("error_handler(\"FuelApproval#=FuelInventoryId#\")")
                                                     .RequestStart("onRequestStart(\"FuelApproval#=FuelInventoryId#\")")
                                                     .RequestEnd("onRequestEnd(\"FuelApproval#=FuelInventoryId#\")"))
-                                                                                                   .Create(update => update.Action("Fuel_Approve", "FuelIssueApproval", new { EId = "#=FuelInventoryId#" }))
-                                                                                     .Read(read => read.Action("FuelIssueApproval_Read", "FuelIssueApproval", new { EId = "#=FuelInventoryId#" }))
-                                                                   .Update(update => update.Action("Fuel_Approve", "FuelIssueApproval"))
+                                                                                                   .Create(update => update.Action("Fuel_Approve", "FuelIssueApproval", new { EId = "#=FuelInventoryId#" }).Data("sendForgery"))
+                                                                                     .Read(read => read.Action("FuelIssueApproval_Read", "FuelIssueApproval", new { EId = "#=FuelInventoryId#" }).Data("sendForgery"))
+                                                                   .Update(update => update.Action("Fuel_Approve", "FuelIssueApproval").Data("sendForgery"))
 
 
                                                       )

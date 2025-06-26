@@ -10,15 +10,15 @@ namespace ExceedERP.Core.Domain.FleetManagement.EquipmentInspection
 {
     public enum GoodCondition
     {
-        NA,
+        __,
         Normal,
-        NoLeakage,
+        NoLeakage, 
         Good,
         Working
     }
     public enum PoorCondition
     {
-        NA,
+        __,
         Knocking,
         Abnormal,
         ThereIsLeakage,

@@ -89,7 +89,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.FleetsID).Name("FleetsID")
                           .DataTextField("PlateNumber")
                           .DataValueField("FleetsID").OptionLabel(" Select Fleet")
-                          .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration"))))
+                          .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration").Data("sendForgery"))))
 
                 </div>
             </div>

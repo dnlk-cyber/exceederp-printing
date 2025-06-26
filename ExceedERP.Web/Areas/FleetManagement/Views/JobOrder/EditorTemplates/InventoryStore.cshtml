@@ -5,5 +5,5 @@
     @(Html.Kendo().DropDownListFor(model => model.ServiceName).Name("ServiceName")
           .DataTextField("Name")
           .DataValueField("Name").OptionLabel(" Select Service")
-          .DataSource(d => d.Read(r => r.Action("GetStoreList", "DataProvider"))))
+          .DataSource(d => d.Read(r => r.Action("GetStoreList", "DataProvider").Data("sendForgery"))))
 </div>

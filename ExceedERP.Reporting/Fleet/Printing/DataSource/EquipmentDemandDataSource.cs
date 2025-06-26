@@ -20,7 +20,7 @@ namespace ExceedERP.Reporting.Fleet.Printing.DataSource
         ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EquipmentDistributionVewModel> GetEquipmentDemand(string id,int employeeId,int demandCheckerEmployeeId)
+        public List<EquipmentDistributionVewModel> GetEquipmentDemand(string id,string RUName,int employeeId,int demandCheckerEmployeeId)
         {
             List<EquipmentDistributionVewModel> EquipmentDistrbutionList = new List<EquipmentDistributionVewModel>();
             EquipmentDistributionVewModel EquipmentDistrbutionModel;
@@ -94,19 +94,15 @@ namespace ExceedERP.Reporting.Fleet.Printing.DataSource
                     EquipmentDistrbutionModel.Address = Address;
                     EquipmentDistrbutionModel.ReasonForTravel = vehicleDemand.ReasonForTravel;
                     EquipmentDistrbutionModel.RequestDate = vehicleDemand.RequestDate;
+                    EquipmentDistrbutionModel.CheckedBySignature = SignatureHelper.GetUserSignature(RUName);
                     EquipmentDistrbutionModel.CreatedBySignature = SignatureHelper.GetUserSignature(vehicleDemand.CreatedBy);
-                    EquipmentDistrbutionModel.ApproveddBySignature = SignatureHelper.GetUserSignature(vehicleDemand.OnlineApprovedBy);
-                    if (EmployeeName != null)
-                    {
-                        EquipmentDistrbutionModel.EmployeeName = EmployeeName.FirstNameEnglish + " " + EmployeeName.MiddleNameEnglish + " " + EmployeeName.LastNameEnglish;
-
-
-                    }
+                    EquipmentDistrbutionModel.ApproveddBySignature = SignatureHelper.GetUserSignature(VehicleDemandApproval.CreatedBy);
                     EquipmentDistrbutionModel.IsAssigned = vehicleDemand.IsAssigned;
                     EquipmentDistrbutionModel.NumberHourPerKm = AssignedEquipment.NumberHourPerKm;
                     EquipmentDistrbutionModel.Destination = AssignedEquipment.Destination;
                     EquipmentDistrbutionModel.Remark = vehicleDemand.Remark;
                     EquipmentDistrbutionModel.EquipmentName = EquipmentName.Name;
+                    EquipmentDistrbutionModel.PlateNumber = EquipmentNamefleet.PlateNumber;
                     EquipmentDistrbutionModel.PlateNumber = EquipmentNamefleet.PlateNumber;
                     EquipmentDistrbutionModel.EquipmentType = EquipmentType;
                     if (employeeId != 0)
@@ -116,9 +112,9 @@ namespace ExceedERP.Reporting.Fleet.Printing.DataSource
                         
                     }
                     EquipmentDistrbutionModel.demandApprovalDate = VehicleDemandApproval.DateCreated.Value.Date;
-                    if (demandCheckerEmployeeId != 0)
+                    if (vehicleDemand.EmployeeId != 0)
                     {
-                        var checkerEmployee = db.Person_Employee.Find(demandCheckerEmployeeId);
+                        var checkerEmployee = db.Person_Employee.Find(vehicleDemand.EmployeeId);
                         EquipmentDistrbutionModel.RequestedBy = checkerEmployee != null ? checkerEmployee.FirstNameEnglish + " " + checkerEmployee.MiddleNameEnglish + "" + checkerEmployee.LastNameEnglish : "";
 
                     }

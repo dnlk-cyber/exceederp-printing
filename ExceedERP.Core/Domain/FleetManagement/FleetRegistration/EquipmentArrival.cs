@@ -26,12 +26,15 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public Guid FleetsId { get; set; }
         [DisplayName("Equipment Type")]
         public string EquipmentType { get; set; }
+        [DisplayName("Arrival Place")]
+        public string ArrivalPlace { get; set; }
         public string Model { get; set; }
         [DisplayName("Asset No")]
         public string DCENo { get; set; }
         public string OwnedBy { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DisplayName("Arrival Date")]
         public DateTime Date { get; set; }
         [DisplayName("KMHR Reading")]
         public decimal KMHRReading { get; set; }

@@ -108,10 +108,10 @@
                                                             .Error("error_handler(\"grid\")")
                                                             .RequestStart("onRequestStart(\"grid\")")
                                                             .RequestEnd("onRequestEnd(\"grid\")"))
-                            .Read(read => read.Action("TimeSheet_Read", "RentTimeSheet"))
-                                .Create(create => create.Action("TimeSheet_Create", "RentTimeSheet"))
-                                .Update(update => update.Action("TimeSheet_Update", "RentTimeSheet"))
-                                      .Destroy(update => update.Action("TimeSheet_Destroy", "RentTimeSheet"))
+                            .Read(read => read.Action("TimeSheet_Read", "RentTimeSheet").Data("sendForgery"))
+                                .Create(create => create.Action("TimeSheet_Create", "RentTimeSheet").Data("sendForgery"))
+                                .Update(update => update.Action("TimeSheet_Update", "RentTimeSheet").Data("sendForgery"))
+                                      .Destroy(update => update.Action("TimeSheet_Destroy", "RentTimeSheet").Data("sendForgery"))
         )
 )   
 <script id="template" type="text/kendo-tmpl">
@@ -200,9 +200,9 @@
                                                     .Error("error_handler(\"Approval#=TimeSheetID#\")")
                                                     .RequestStart("onRequestStart(\"Approval#=TimeSheetID#\")")
                                                     .RequestEnd("onRequestEnd(\"Approval#=TimeSheetID#\")"))
-                                                                                                                                   .Create(update => update.Action("TimeSheet_Approve", "TimeSheetApproval", new { EId = "#=TimeSheetID#" }))
-                                                                                                                     .Read(read => read.Action("TimeSheetApproval_Read", "TimeSheetApproval", new { EId = "#=TimeSheetID#" }))
-                                                                                                   .Update(update => update.Action("TimeSheet_Approve", "TimeSheetApproval", new { EId = "#=TimeSheetID#" }))
+                                                                                                                                   .Create(update => update.Action("TimeSheet_Approve", "TimeSheetApproval", new { EId = "#=TimeSheetID#" }).Data("sendForgery"))
+                                                                                                                     .Read(read => read.Action("TimeSheetApproval_Read", "TimeSheetApproval", new { EId = "#=TimeSheetID#" }).Data("sendForgery"))
+                                                                                                   .Update(update => update.Action("TimeSheet_Approve", "TimeSheetApproval", new { EId = "#=TimeSheetID#" }).Data("sendForgery"))
 
 
                                                       )

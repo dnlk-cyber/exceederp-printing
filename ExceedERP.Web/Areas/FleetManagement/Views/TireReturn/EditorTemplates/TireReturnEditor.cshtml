@@ -58,7 +58,7 @@
                     <div class="row">
                         <div class="col-md-1">
                         </div>
-                        <div class="col-md-3">
+                        @*<div class="col-md-3">
                             <div class="form-group">
                                 <div class="k-label">
                                     @Html.LabelFor(model => model.Quantity)
@@ -68,7 +68,7 @@
                                     @Html.ValidationMessageFor(model => model.Quantity)
                                 </div>
                             </div>
-                        </div>
+                        </div>*@
 
                         <div class="col-md-3">
                             <div class="form-group">
@@ -101,7 +101,7 @@
                             <div class="form-group">
                                 <div class="k-label">
                                      Tire Type :
-                                    @( Html.Kendo().DropDownListFor(m => m.TireType).Name("TireType")
+                                    @( Html.Kendo().DropDownListFor(m => m.TireType).Name("Tire Type")
         .DataTextField("Text")
                         .DataValueField("Text").OptionLabel(" Select Tire Type ")
         .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssue.TireTypeenum))))
@@ -115,7 +115,7 @@
                                     @Html.LabelFor(model => model.KMReading)
                                 </div>
                                 <div>
-                                    @Html.Kendo().NumericTextBoxFor(model => model.KMReading)
+                                    @Html.Kendo().NumericTextBoxFor(model => model.KMReading).Enable(false)
                                     @Html.ValidationMessageFor(model => model.KMReading)
                                 </div>
                             </div>
@@ -133,35 +133,46 @@
                             </div>
                         </div>
                     </div><div class="row">
-                        <div class="col-md-1">
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <div class="k-label">
-                                    @Html.LabelFor(model => model.DescriptionReason)
-                                </div>
-                                <div>
-                                    @Html.Kendo().TextBoxFor(model => model.DescriptionReason)
-                                    @Html.ValidationMessageFor(model => model.DescriptionReason)
-                                </div>
-                            </div>
-                        </div>
-
-                              <div class="col-md-3">
-                                  <div class="form-group">
-                                      <div class="k-label">
-
-                                          @Html.LabelFor(model => model.PlateNumber)
-                                          @(Html.Kendo().DropDownListFor(model => model.PlateNumber).Name("PlateNumber")
-                                                 .DataTextField("PlateNumber")
-                                                 .DataValueField("PlateNumber").OptionLabel(" Select Equipment")
-                                                 .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration"))))
+                                  <div class="col-md-1">
+                                  </div>
+                                  <div class="col-md-3">
+                                      <div class="form-group">
+                                          <div class="k-label">
+                                              @Html.LabelFor(model => model.DescriptionReason)
+                                          </div>
+                                          <div>
+                                              @Html.Kendo().TextBoxFor(model => model.DescriptionReason)
+                                              @Html.ValidationMessageFor(model => model.DescriptionReason)
+                                          </div>
                                       </div>
                                   </div>
+
+                                  <div class="col-md-3">
+                                      <div class="form-group">
+                                          <div class="k-label">
+
+                                              @Html.LabelFor(model => model.PlateNumber)
+                                              @(Html.Kendo().DropDownListFor(model => model.PlateNumber).Name("PlateNumber")
+                                                  .DataTextField("PlateNumber")
+                                                  .DataValueField("PlateNumber").OptionLabel(" Select Equipment")
+                                                  .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration").Data("sendForgery"))))
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class="col-md-3">
+                                      <div class="form-group">
+                                          <div class="k-label">
+                                              @Html.LabelFor(model => model.ReturnedKMReading)
+                                          </div>
+                                          <div>
+                                              @Html.Kendo().NumericTextBoxFor(model => model.ReturnedKMReading)
+                                              @Html.ValidationMessageFor(model => model.ReturnedKMReading)
+                                          </div>
+                                      </div>
+                                  </div>
+
                               </div>
-
-
-                    </div>
+                            
 
                 </text>);
 

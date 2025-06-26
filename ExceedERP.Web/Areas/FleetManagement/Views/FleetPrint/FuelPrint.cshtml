@@ -38,18 +38,18 @@
         // The URL corresponds to the name of the controller class (ReportsController).
         // For more information on how to configure the service please check http://www.telerik.com/help/reporting/telerik-reporting-rest-conception.html.
         .ServiceUrl(Url.Content("/api/reports/"))
-                                                                                                     // The URL for custom report viewer template. The template can be edited -
-                                                                                                     // new functionalities can be added and unneeded ones can be removed.
-                                                                                                     // For more information please check http://www.telerik.com/help/reporting/html5-report-viewer-templates.html.
-                                                                                                     //
-                                                                                                     // Strongly typed ReportSource - TypeReportSource or UriReportSource.
-                                                                                                     //        .ReportSource(new TypeReportSource().TypeName = typeof(ExceedERP.Reporting.View.SalesQuote).AssemblyQualifiedName)// { TypeName = "ExceedERP.Reporting.View.SalesQuote, ExceedERP.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" })
-                                                                                                     .ReportSource(new TypeReportSource() { TypeName = "ExceedERP.Reporting.Fleet.Printing.View.FuelIssue, ExceedERP.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" , Parameters = { new Parameter("startingDate", ViewBag.from), new Parameter("endingDate", ViewBag.to), new Parameter("PlateNo", ViewBag.plateno) }    })
+        // The URL for custom report viewer template. The template can be edited -
+        // new functionalities can be added and unneeded ones can be removed.
+        // For more information please check http://www.telerik.com/help/reporting/html5-report-viewer-templates.html.
+        //
+        // Strongly typed ReportSource - TypeReportSource or UriReportSource.
+        //        .ReportSource(new TypeReportSource().TypeName = typeof(ExceedERP.Reporting.View.SalesQuote).AssemblyQualifiedName)// { TypeName = "ExceedERP.Reporting.View.SalesQuote, ExceedERP.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" })
+        .ReportSource(new TypeReportSource() { TypeName = "ExceedERP.Reporting.Fleet.Printing.View.FuelIssue, ExceedERP.Reporting, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" , Parameters = { new Parameter("startingDate", ViewBag.from), new Parameter("endingDate", ViewBag.to), new Parameter("PlateNo", ViewBag.plateno) }    })
 
            // Specifies whether the viewer is in interactive or print preview mode.
            // PrintPreview - Displays the paginated report as if it is printed on paper. Interactivity is not enabled.
            // Interactive - Displays the report in its original width and height with no paging. Additionally interactivity is enabled.
-           .ViewMode(ViewMode.Interactive)
+           .ViewMode(ViewMode.PrintPreview)
 
         // Sets the scale mode of the viewer.
         // Three modes exist currently:

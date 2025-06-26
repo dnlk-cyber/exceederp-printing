@@ -1,0 +1,8 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+            .DataTextField("Name")
+            .DataValueField("Id")
+            .Filter(FilterType.Contains)
+            .OptionLabel("Select Category")
+            .HtmlAttributes(new { style = "width:100%" })
+            .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery"))
+            .ServerFiltering(false)).HtmlAttributes(new { style = "width:100%" })))

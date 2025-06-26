@@ -18,11 +18,27 @@ namespace ExceedERP.Reporting.Fleet.ViewModels
         public string PlateNumber { get; set; }
         public string OperatorName { get; set; }
         public string EquipmentName { get; set; }
+        public string PreparedBy { get; set; }
+        public string PreparedDate { get; set; }
+        public string ApprovedBy { get; set; }
+        public string ApprovedDate { get; set; }
+        public string AuthorizedBy { get; set; }
+        public string AuthorizedDate { get; set; }
+        public string CheckedBY { get; set; }
+        public string CheckedDate { get; set; }
+        public string ModifiedBy { get; set; }
+        public string ModifiedDate { get; set; }
+        public string TimesheetapprovedBy { get; set; }
+        public string TimesheetApprovedDate { get; set; }
+        public string TimesheetSendforapprovalBy { get; set; }
+        public string TimesheetSendforapprovalDate { get; set; }
     }
     public class DumpTruckTimesheetViewModel
     {
         public int SN { get; set; }
         public string PlateNo { get; set; }
+        public string Category { get; set; }
+        public string EquipmentName { get; set; }
         public string Branch { get; set; }
         public DateTime Date { get; set; }    
         public string WorkItem { get; set; }       

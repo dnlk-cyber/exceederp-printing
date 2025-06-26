@@ -1,46 +1,122 @@
 ﻿
 
 @model ExceedERP.Core.Domain.FleetManagement.RentalPayment.RentalPaymentRequestLine
-
 <div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Category</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentCategoryId)
+                                    .AutoBind(true)
+                                    .ValuePrimitive(true)
+                                    .DataTextField("Name")
+                                    .DataValueField("Id")
+                                    .Filter(FilterType.Contains)
+                                    .OptionLabel("Select Category")
+                                    .HtmlAttributes(new { style = "width:100%" })
+                                    .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery"))
+                                    .ServerFiltering(false)))
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmnetTypeId) 
+                                    .AutoBind(true)
+                                    .ValuePrimitive(true)
+                                    .DataTextField("Name")
+                                    .DataValueField("Id")
+                                    .OptionLabel("Select Equipment Type")
+                                    .Filter(FilterType.Contains)
+                                    .DataSource(d =>
+                                    {
+                                        d.Read(r =>
+                                        {
+                                            r.Action("GetEquipmentTypes", "FleetManagementDataProvider")
+                                            .Data("filterCategory");
+                                        })
+                                        .ServerFiltering(true);
+                                    })
+                                    .Enable(false)
+                                    .AutoBind(true)
+                                    .CascadeFrom("EquipmentCategoryId")
+                )
+            </div>
+        </div>
+    </div>
     <div class="col-sm-2">
         <div class="form-group">
             <label>Equipment Name</label>
             <div>
-
-                @(Html.Kendo().DropDownListFor(m => m.FleetId)
-                                        .ValuePrimitive(true)
-                                        .OptionLabel("Select Equipment Name...")
-                                        .DataTextField("Text")
-                                        .DataValueField("Value")
-                                        .Filter("contains")
-                                        //.Events(e => e.Change("handleFleetNameChange"))
-                                        .DataSource(dataSource =>
-                                        {
-                                            dataSource.Read(read => read.Action("GetFleetRentalRequest", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("getSupplierAndBranchId"))
-                                                .ServerFiltering(true);
-                                        }).HtmlAttributes(new { style = "width:100%" }))
-
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentNameId)
+                                    .AutoBind(true)
+                                    .ValuePrimitive(true)
+                                    .Enable(false)
+                                    .DataTextField("Name")
+                                    .DataValueField("Id")
+                                    .Filter(FilterType.Contains)
+                                    .OptionLabel("Select")
+                                    .DataSource(d => d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider").Data("sendForgery")
+                                    .Data("filterEquipmentNames"))
+                                    .ServerFiltering(true))
+                                    .CascadeFrom("EquipmnetTypeId"))
             </div>
         </div>
     </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Plate/Serial</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.FleetId)
+                                    .AutoBind(true)
+                                    .ValuePrimitive(true)
+                                    .Enable(false)
+                                    .DataTextField("Text")
+                                    .DataValueField("Value")
+                                    .Filter(FilterType.Contains)
+                                    .OptionLabel("Select")
+                                    .DataSource(d => d.Read(r => r.Action("GetFleetRentalRequest", "FleetManagementDataProvider").Data("sendForgery")
+                                    .Data("filterFleet"))
+                                    .ServerFiltering(true))
+                                    .CascadeFrom("EquipmentNameId"))
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row">
+   
     <div class="col-sm-2">
         <div class="form-group">
             <label>Tax Rate</label>
             <div>
 
                 @(Html.Kendo().DropDownListFor(m => m.GLTaxRateID)
-                                        .ValuePrimitive(true)
-                                        .OptionLabel("Select Tax rate...")
-                                        .DataTextField("Text")
-                                        .DataValueField("Value")
-                                        .Filter("contains")
-                                        
-                                        .DataSource(dataSource =>
-                                        {
-                                            dataSource.Read(read => read.Action("GetTaxRate", "FleetManagementDataProvider", new { area = "FleetManagement" }))
-                                                .ServerFiltering(true);
-                                        }).HtmlAttributes(new { style = "width:100%" }))
+                    .ValuePrimitive(true)
+                    .AutoBind(true)
+                    .Enable(true)
+                    .OptionLabel("Select Tax rate...")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Filter("contains")
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetTaxRate", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                            .ServerFiltering(true);
+                    }).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Advance Payment</label>
+            <div>
+
+                @(Html.Kendo().NumericTextBoxFor(k => k.AdvancedPayment).HtmlAttributes(new { style = "width:100%" }))
+
 
             </div>
         </div>

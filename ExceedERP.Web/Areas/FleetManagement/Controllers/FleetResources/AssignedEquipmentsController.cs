@@ -10,12 +10,15 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetResources
 {
+    
     public class AssignedEquipmentsController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
         // GET: FleetManagement/AssignedEquipments
-        public ActionResult Index()
+        public ActionResult Index(FleetReturnType type)
         {
+
+            ViewBag.Type = type == FleetReturnType.R ? "Fleet Return" : "Assigned Equipment";
             ViewData["EquipmentNames"] = db.EquipmentName.ToList().Select(s => new {
                 Id = s.EquipmentNameID,
                 Name = s.Name
@@ -32,20 +35,20 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetResources
             
             return View();
         }
-
+        
         public ActionResult AssignedEquipment_Read([DataSourceRequest]DataSourceRequest request)
         {
             var assignedEquipments = db.AssignedEquipment.Where(x => x.IsAssigned);
             var result = assignedEquipments.ToDataSourceResult(request, model => new AssignedEquipment
             {
                 AssignedEquipmentID = model.AssignedEquipmentID,
-
                 AssignedDate = model.AssignedDate,
                 EquipmentNameID = model.EquipmentNameID,
                 FleetId = model.FleetId,
                 OperatorId = model.OperatorId,
                 StartDate = model.StartDate,
                 EndDate = model.EndDate,
+                ArrivalPlace = model.ArrivalPlace,
                 CreatedBy = model.CreatedBy,
                 DateCreated = model.DateCreated,
                 Destination = model.Destination,

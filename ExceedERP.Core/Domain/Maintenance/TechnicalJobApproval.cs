@@ -9,6 +9,8 @@ namespace ExceedERP.Core.Domain.Maintenance
         [Key]
         public int TechnicalJobApprovalID { get; set; }
         public Guid TechnicalJobId { get; set; }
+        public bool IsFromWorkShop { get;set; }
+        public bool IsApproved { get;set; }
       //  public virtual JobOrder TechnicalJob { get; set; }
         public ApprovalStatuses Status { get; set; }
         public string Remark { get; set; }

@@ -13,6 +13,6 @@
                     .OptionLabel("Select Unit of Measurement")
                     .Filter("contains")
                     .IgnoreCase(true)
-                    .DataSource(d => d.Read(r => r.Action("getUnitOfMeasurement", "FleetManagementDataProvider")
+                    .DataSource(d => d.Read(r => r.Action("getUnitOfMeasurement", "FleetManagementDataProvider").Data("sendForgery")
                     .Data("filterEquipmentTypes"))
                     .ServerFiltering(true)))

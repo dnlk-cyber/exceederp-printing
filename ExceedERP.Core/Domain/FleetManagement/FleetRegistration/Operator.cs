@@ -27,6 +27,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public Guid OperatorID { get; set; }
         [DisplayName(" Employee ")]
         public int EmployeeId { get; set; }
+        public string EmployeeCode { get; set; }
         [DisplayName(" Equipment ")]
         public Guid? FleetsID { get; set; }
         [Required]

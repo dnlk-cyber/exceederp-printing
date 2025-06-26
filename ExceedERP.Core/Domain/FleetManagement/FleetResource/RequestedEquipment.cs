@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
 {
-    public class RequestedEquipment : Operations
+    public class RequestedEquipment : DepartmentNewOperations
     {
         public Guid RequestedEquipmentId { get; set; }
         public Guid RequestNumber { get; set; }
@@ -35,6 +35,13 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? AssignedDate { get; set; }
         public DateTime? RequestedDate { get; set; }
+        public DateTime? ReturnDate { get; set; }
+        public DateTime? ArrivalDate { get; set; }
+        public DateTime? SentDate { get; set; }
+        public string ArrivalPlace { get; set; }
+        public decimal AsphaltKm { get; set; }
+        public decimal GravelKm { get; set; }
+
         [DisplayName("Number (Hour / Km)")]
         public string NumberHourPerKm { get; set; }
         [DisplayName("Destination")]

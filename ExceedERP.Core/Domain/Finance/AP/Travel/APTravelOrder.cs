@@ -69,6 +69,7 @@ namespace ExceedERP.Core.Domain.Finance.AP.Travel
         public virtual ICollection<ApTravelOrdertAttachment> Attachments { get; set; }
         //public virtual ICollection<ApTravelOrderDistribution> ApTravelOrderDistributions { get; set; }
         public Guid ? VehicleDistributionID { get; set; }
+        public string BankAccount { get; set; }
     }
 
     public class ApTravelOrdertAttachment

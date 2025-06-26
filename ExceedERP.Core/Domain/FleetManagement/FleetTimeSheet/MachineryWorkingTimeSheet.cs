@@ -70,6 +70,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public decimal GreaseConsumption { get; set; }
         [Display(Name = "Idle Hours")]
         public decimal IdleHours { get; set; }
+        public decimal OilConsumption { get; set; }
         [Display(Name = "Idle Reason")]
         public string IdleReason { get; set; }
         [Display(Name = "Down Hours")]

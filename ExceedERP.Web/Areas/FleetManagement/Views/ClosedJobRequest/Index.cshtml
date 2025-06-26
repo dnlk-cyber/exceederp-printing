@@ -67,7 +67,7 @@
 
         .DataSource(dataSource => dataSource
                 .Ajax()
-                .ServerOperation(false)
+            
                 .Sort(x => x.Add(s => s.Num).Descending())
                 //.Group(g=>g.Add(c=>c.Source))
                 .PageSize(20)
@@ -82,7 +82,7 @@
                     .RequestStart("onRequestStart(\"grid\")")
                     .RequestEnd("onRequestEnd(\"grid\")"))
                 
-                .Read(read => read.Action("ClosedJobRequest_Read", "ClosedJobRequest"))
+                .Read(read => read.Action("ClosedJobRequest_Read", "ClosedJobRequest").Data("sendForgery"))
                 
             )
     //.Events(events => events.DataBound("dataBound"))
@@ -157,10 +157,10 @@
                                                                                           .Error("error_handler(\"JobCauses_#=JobRequestId#\")")
                                                                                           .RequestStart("onRequestStart(\"JobCauses_#=JobRequestId#\")")
                                                                                           .RequestEnd("onRequestEnd(\"JobCauses_#=JobRequestId#\")"))
-                                                                              .Create(create => create.Action("JobCauses_Create", "FleetJobCauses", new { jobRequstId = "#=JobRequestId#" }))
-                                                                              .Read(read => read.Action("FleetJobCauses_Read", "FleetJobCauses", new { jobRequstId = "#=JobRequestId#" }))
-                                                                              .Update(update => update.Action("JobCauses_Update", "FleetJobCauses"))
-                                                                              .Destroy(d => d.Action("JobCauses_Destroy", "FleetJobCauses"))
+                                                                              .Create(create => create.Action("JobCauses_Create", "FleetJobCauses", new { jobRequstId = "#=JobRequestId#" }).Data("sendForgery"))
+                                                                              .Read(read => read.Action("FleetJobCauses_Read", "FleetJobCauses", new { jobRequstId = "#=JobRequestId#" }).Data("sendForgery"))
+                                                                              .Update(update => update.Action("JobCauses_Update", "FleetJobCauses").Data("sendForgery"))
+                                                                              .Destroy(d => d.Action("JobCauses_Destroy", "FleetJobCauses").Data("sendForgery"))
 
 
                                                                           )
@@ -198,9 +198,9 @@
                                                                                     .Error("error_handler(\"JobServicegrid_#=JobRequestId#\")")
                                                                                     .RequestStart("onRequestStart(\"JobServicegrid_#=JobRequestId#\")")
                                                                                     .RequestEnd("onRequestEnd(\"JobServicegrid_#=JobRequestId#\")"))
-                                                                            .Create(create => create.Action("JobOrderDetail_Create", "JobOrderDetail", new { jobDetailOrderID = "#=JobRequestId#" }))
-                                                                              .Read(read => read.Action("RequestService", "JobOrderDetail", new { jobOrderID = "#=JobRequestId#" }))
-                                                              .Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail"))
+                                                                            .Create(create => create.Action("JobOrderDetail_Create", "JobOrderDetail", new { jobDetailOrderID = "#=JobRequestId#" }).Data("sendForgery"))
+                                                                              .Read(read => read.Action("RequestService", "JobOrderDetail", new { jobOrderID = "#=JobRequestId#" }).Data("sendForgery"))
+                                                              .Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail").Data("sendForgery"))
 
 
                                                                               )
@@ -248,9 +248,9 @@
                                                                                                        .Error("error_handler(\"JobOrderAdmingrid_#=JobRequestId#\")")
                                                                                                        .RequestStart("onRequestStart(\"JobOrderAdmingrid_#=JobRequestId#\")")
                                                                                                        .RequestEnd("onRequestEnd(\"JobOrderAdmingrid_#=JobRequestId#\")"))
-                                                                                                                       .Create(create => create.Action("Admin_Approve", "FleetJobRequest", new { Id = "#=JobRequestId#" }))
-                                                                                                                       .Read(read => read.Action("Admin_Read", "FleetJobRequest", new { Id = "#=JobRequestId#" }))
-                                                                                                                       .Update(update => update.Action("Admin_Approve", "FleetJobRequest", new { Id = "#=JobRequestId#" }))
+                                                                                                                       .Create(create => create.Action("Admin_Approve", "FleetJobRequest", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
+                                                                                                                       .Read(read => read.Action("Admin_Read", "FleetJobRequest", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
+                                                                                                                       .Update(update => update.Action("Admin_Approve", "FleetJobRequest", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
                                                                                                                       )
                                                                                         .ToClientTemplate())
                                                 </text>

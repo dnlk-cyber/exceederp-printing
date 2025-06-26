@@ -12,6 +12,7 @@ using Kendo.Mvc.UI;
 using ExceedERP.Web.Areas.FleetManagement.Models;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using System.Data.Entity.Validation;
+using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
 
@@ -116,7 +117,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(new[] { BatteryReturn }.ToDataSourceResult(request));
         }
 
-        [AllowAnonymous]
+        
         public ActionResult GetReturnBatteryInfo(Guid Id)
         {
             string Response = string.Empty;

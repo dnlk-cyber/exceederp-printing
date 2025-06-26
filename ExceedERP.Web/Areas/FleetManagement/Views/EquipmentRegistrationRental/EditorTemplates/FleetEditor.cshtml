@@ -193,7 +193,7 @@
                                                                                     .DataValueField("Id").Filter(FilterType.Contains)
                                                                                     .OptionLabel("Select Equipment Category")
                                                                                     //.HtmlAttributes(new { style = "width:100%" })
-                                                                                    .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider"))
+                                                                                    .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery"))
                                                                                     .ServerFiltering(false)))
                                                          @Html.ValidationMessageFor(model => model.EquipmentIdentityID, "", new { @class = "text-danger" })
                                                      </div>
@@ -213,7 +213,7 @@
                                                                 .Filter(FilterType.Contains)
                                                                 //.HtmlAttributes(new { style = "width:100%" })
                                                                 .Events(ev => ev.Change("PopulateFixedAsset"))
-                                                                .DataSource(d => d.Read(r => r.Action("FixedAssetDDBind", "FleetManagementDataProvider")
+                                                                .DataSource(d => d.Read(r => r.Action("FixedAssetDDBind", "FleetManagementDataProvider").Data("sendForgery")
                                                                 .Data("filterFixedAssetCategory")).ServerFiltering(true)).CascadeFrom("EquipmentNameID"))
 
                                                          @Html.ValidationMessageFor(model => model.UnitNum, "", new { @class = "text-danger" })
@@ -369,7 +369,7 @@
                                                                                                                                                    .DataValueField("Id")
                                                                                                                                                    .Filter(FilterType.Contains)
                                                                                                                                                    .OptionLabel("Select")
-                                                                                                                                                   .DataSource(d => d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider")
+                                                                                                                                                   .DataSource(d => d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider").Data("sendForgery")
                                                                                                                                                    .Data("filterEquipmentNames")).ServerFiltering(true)).CascadeFrom("EquipmentTypeID"))
                                                          @Html.ValidationMessageFor(model => model.EquipmentNameID, "", new { @class = "text-danger" })
                                                      </div>
@@ -460,7 +460,7 @@
                                                          @(Html.Kendo().DropDownListFor(model => model.PlannerID).Name("PlannerID")
                                                                .DataTextField("PlannerName")
                                                                .DataValueField("PlannerID").OptionLabel("Select")
-                                                               .DataSource(d => d.Read(r => r.Action("PlannerDDBind", "FleetManagementDataProvider"))))
+                                                               .DataSource(d => d.Read(r => r.Action("PlannerDDBind", "FleetManagementDataProvider").Data("sendForgery"))))
                                                          @Html.ValidationMessageFor(model => model.PlannerID, "", new { @class = "text-danger" })
                                                      </div>
                                                  </div>
@@ -555,7 +555,7 @@
                                                          @(Html.Kendo().DropDownListFor(model => model.Condition)
                                    .DataTextField("Name")
                                    .DataValueField("Name").OptionLabel("Select").Filter(FilterType.Contains)
-                                   .DataSource(d => d.Read(r => r.Action("FleetConditionDDBind", "FleetManagementDataProvider")).ServerFiltering(false)))
+                                   .DataSource(d => d.Read(r => r.Action("FleetConditionDDBind", "FleetManagementDataProvider").Data("sendForgery")).ServerFiltering(false)))
                                                          @Html.ValidationMessageFor(model => model.Condition, "", new { @class = "text-danger" })
                                                      </div>
                                                  </div>

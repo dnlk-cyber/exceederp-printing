@@ -14,7 +14,7 @@ using ExceedERP.ApplicationServices.FleetManagement.FleetResource;
 using ExceedERP.Helpers.Common;  
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.Global;
-
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
 	[AuthorizeRoles(FleetManagementRoles.FleetAdmin)] 
@@ -122,7 +122,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
 			return Json(new[] { RentRequest }.ToDataSourceResult(request));
 		}
-		 [AllowAnonymous]
+		 
 		public JsonResult RentRequestDDBind(string requestType)
 			{
 				_RentRequestService = new RentRequestService();

@@ -1,12 +1,10 @@
 ﻿using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
 using Kendo.Mvc.UI;
-using System; 
+using System;
 using ExceedERP.Web.Helpers;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;     
- using ExceedERP.Core.Domain.Common;
+using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using Kendo.Mvc.Extensions;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.FleetManagement;

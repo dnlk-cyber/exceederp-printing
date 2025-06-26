@@ -12,7 +12,7 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
 {
-    [Authorize]
+ [Authorize]
 
     public class FuelRequsitionItemController : Controller
     {
@@ -24,7 +24,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
         }
 
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment)]
+     [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment)]
         public ActionResult FuelStoreRequisitionItems_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<StoreRequisitionItem> storerequisitionItems = db.StoreRequisitionItems.Where(p => p.StoreRequisitionID == id);
@@ -50,7 +50,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
         }
 
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
+     [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FuelStoreRequisitionItems_Create([DataSourceRequest]DataSourceRequest request, StoreRequisitionItem storeRequisitionItem, int id)
         {
@@ -145,7 +145,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
         }
 
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
+       [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FuelStoreRequisitionItems_Destroy([DataSourceRequest]DataSourceRequest request, StoreRequisitionItem storeRequisitionItem)
         {

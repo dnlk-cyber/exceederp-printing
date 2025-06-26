@@ -39,7 +39,6 @@
 
       .DataSource(dataSource => dataSource
           .Ajax()
-          .ServerOperation(false)
                     .Sort(x => x.Add(s => s.RequestNumber).Descending())
           .Model(model =>
               {
@@ -50,10 +49,10 @@
                                     .Error("error_handler(\"grid\")")
                                     .RequestStart("onRequestStart(\"grid\")")
                                     .RequestEnd("onRequestEnd(\"grid\")"))
-          .Create(update => update.Action("VehicleDistribution_Create", "EquipmentDistribution"))
-              .Read(read => read.Action("VehicleReturn_Read", "EquipmentDistribution"))
-          .Update(update => update.Action("VehicleDistribution_Update", "EquipmentDistribution"))
-          .Destroy(update => update.Action("VehicleDistribution_Destroy", "EquipmentDistribution"))
+          .Create(update => update.Action("VehicleDistribution_Create", "EquipmentDistribution").Data("sendForgery"))
+              .Read(read => read.Action("VehicleReturn_Read", "EquipmentDistribution").Data("sendForgery"))
+          .Update(update => update.Action("VehicleDistribution_Update", "EquipmentDistribution").Data("sendForgery"))
+          .Destroy(update => update.Action("VehicleDistribution_Destroy", "EquipmentDistribution").Data("sendForgery"))
       )
       .Events(events => events.DataBound("dataBound")))
 
@@ -106,11 +105,11 @@
                                                    .Error("error_handler(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")")
                                                    .RequestStart("onRequestStart(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")")
                                                    .RequestEnd("onRequestEnd(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")"))
-                                                       .Create(update => update.Action("AssignedEquipment_Create", "AssignedEquipment", new { createRequestNumber = "#=RequestID#", createType = "R" }))
-                                                       //.Update(update => update.Action("AssignEquipment", "AssignedEquipment"))
-                                                       .Update(update => update.Action("AssignEqupment_Update", "AssignedEquipment"))
-                                                       .Read(read => read.Action("ArrivedEquipment", "AssignedEquipment", new { readRequestNumber = "#=RequestID#", type = "R" }))
-                                                       .Destroy(update => update.Action("AcceptEquipment", "AssignedEquipment", new { acceptId = "#=RequestID#", type = "R" })))
+                                                       .Create(update => update.Action("AssignedEquipment_Create", "AssignedEquipment", new { createRequestNumber = "#=RequestID#", createType = "R" }).Data("sendForgery"))
+                                                       //.Update(update => update.Action("AssignEquipment", "AssignedEquipment").Data("sendForgery"))
+                                                       .Update(update => update.Action("AssignEqupment_Update", "AssignedEquipment").Data("sendForgery"))
+                                                       .Read(read => read.Action("ArrivedEquipment", "AssignedEquipment", new { readRequestNumber = "#=RequestID#", type = "R" }).Data("sendForgery"))
+                                                       .Destroy(update => update.Action("AcceptEquipment", "AssignedEquipment", new { acceptId = "#=RequestID#", type = "R" }).Data("sendForgery")))
 
                         .Sortable()
                         .ToClientTemplate())
@@ -147,9 +146,9 @@
                                                             .Error("error_handler(\"VehicleDistributionApproval#=VehicleDistributionID#\")")
                                                             .RequestStart("onRequestStart(\"VehicleDistributionApproval#=VehicleDistributionID#\")")
                                                             .RequestEnd("onRequestEnd(\"VehicleDistributionApproval#=VehicleDistributionID#\")"))
-                                                                                                                                   .Create(update => update.Action("VehicleReturn_Approve", "VehicleReturnApproval", new { EId = "#=VehicleDistributionID#" }))
-                                                                                                                                             .Read(read => read.Action("VehicleReturnApproval_Read", "VehicleReturnApproval", new { EId = "#=VehicleDistributionID#" }))
-                                                                                                                                           .Update(update => update.Action("VehicleReturn_Approve", "VehicleReturnApproval"))
+                                                                                                                                   .Create(update => update.Action("VehicleReturn_Approve", "VehicleReturnApproval", new { EId = "#=VehicleDistributionID#" }).Data("sendForgery"))
+                                                                                                                                             .Read(read => read.Action("VehicleReturnApproval_Read", "VehicleReturnApproval", new { EId = "#=VehicleDistributionID#" }).Data("sendForgery"))
+                                                                                                                                           .Update(update => update.Action("VehicleReturn_Approve", "VehicleReturnApproval").Data("sendForgery"))
 
 
                                                       )

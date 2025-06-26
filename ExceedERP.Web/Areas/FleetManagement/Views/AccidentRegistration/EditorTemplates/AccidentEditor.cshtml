@@ -40,7 +40,7 @@
                                   .OptionLabel(" Select Equipment")
                                   .Filter(FilterType.Contains)
                                   .HtmlAttributes(new { style = "width:100%" })
-                                  .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "FleetManagementDataProvider")).ServerFiltering(false)))
+                                  .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "FleetManagementDataProvider").Data("sendForgery")).ServerFiltering(false)))
             </div>
         </div>
     </div>
@@ -204,7 +204,7 @@
                             .DataValueField("Value")
                             .OptionLabel("Select")
                             .Filter("contains")
-                            .DataSource(d => d.Read(r => r.Action("Operators", "FleetManagementDataProvider")
+                            .DataSource(d => d.Read(r => r.Action("Operators", "FleetManagementDataProvider").Data("sendForgery")
                             .Data("filterOperators"))
                             ).HtmlAttributes(new { style="width:100%"}))
             </div>

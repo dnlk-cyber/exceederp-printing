@@ -27,7 +27,7 @@
                         @(Html.Kendo().DropDownListFor(model => model.FromOperatorId).Name("FromOperatorId")
                                        .DataTextField("FullName")
                                        .DataValueField("Remark").OptionLabel("From Operator").Filter(FilterType.Contains)
-                                       .DataSource(d => d.Read(r => r.Action("OperatorTransferDDBind", "OperatorRegistration")).ServerFiltering(false)))
+                                       .DataSource(d => d.Read(r => r.Action("OperatorTransferDDBind", "OperatorRegistration").Data("sendForgery")).ServerFiltering(false)))
                     </div>
                 </div>
             </div>
@@ -41,7 +41,7 @@
                         @(Html.Kendo().DropDownListFor(model => model.ToOperatorId).Name("ToOperatorId")
                                       .DataTextField("FullName")
                                       .DataValueField("Remark").OptionLabel(" Select To").Filter(FilterType.Contains)
-                                      .DataSource(d => d.Read(r => r.Action("OperatorTransferDDBind", "OperatorRegistration")).ServerFiltering(false)))
+                                      .DataSource(d => d.Read(r => r.Action("OperatorTransferDDBind", "OperatorRegistration").Data("sendForgery")).ServerFiltering(false)))
                     </div>
                 </div>
             </div>

@@ -15,6 +15,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         public string CategoryCode { get; set; }
         [DisplayName("Service Group")]
         public ServiceGroup ServiceGroup { get; set; }
+       // public int ServiceGroupSettingId { get; set; }
         [Required]
         [DisplayName("Vehicle Category")]
         public string SubCategoryCode { get; set; }
@@ -25,6 +26,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         [Required]
         [DisplayName("Repair Type ")]
         public string Name { get; set; }
+        public decimal Weight { get; set; }
         [Required]
         [DisplayName("Standared Time")]
         public decimal StandaredTime { get; set; }

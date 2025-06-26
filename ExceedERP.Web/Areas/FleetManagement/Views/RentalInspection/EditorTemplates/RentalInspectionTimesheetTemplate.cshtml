@@ -23,7 +23,7 @@
                           .MinLength(2)
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetEquipmentType", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                              dataSource.Read(read => read.Action("GetEquipmentType", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
                               .ServerFiltering(false);
                           })
                     )
@@ -79,22 +79,22 @@
                 <div class="col-md-6">
                     <div class="col-md-6">
                         @(Html.Kendo().DropDownListFor(model => model.EquipmentNameID)
-                                      .ValuePrimitive(true)
-                                      .OptionLabel("Equipment Name ")
-                                      .DataTextField("Name")
-                                      .DataValueField("Id")
-                                      .Filter("contains")
-                                      //.Events(ev => ev.Change("PopulateEquipmentType"))
-                                      .MinLength(2)
-                                      .DataSource(dataSource =>
-                                      {
-                                          dataSource.Read(read => read.Action("GetEquipmentName", "FleetManagementDataProvider", new { area = "FleetManagement" }))
-                                          .ServerFiltering(false);
-                                      })
+                                              .ValuePrimitive(true)
+                                              .OptionLabel("Equipment Name ")
+                                              .DataTextField("Name")
+                                              .DataValueField("Id")
+                                              .Filter("contains")
+                                              //.Events(ev => ev.Change("PopulateEquipmentType"))
+                                              .MinLength(2)
+                                              .DataSource(dataSource =>
+                                              {
+                                                  dataSource.Read(read => read.Action("GetEquipmentName", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                                  .ServerFiltering(false);
+                                              })
                         )
                         @Html.ValidationMessageFor(model => model.EquipmentNameID, "", new { @class = "text-danger" })
                     </div>
-                     </div>
+                </div>
             </div>
             <div class="row"></div>
 
@@ -126,24 +126,30 @@
                 @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.BranchId)
-                                                                  .ValuePrimitive(true)
-                                                                  .OptionLabel(" Select Branch ")
-                                                                  .DataTextField("Name")
-                                                                  .DataValueField("BranchId")
-                                                                  .Filter("contains")
-                                                                  .MinLength(2)
-                                                                  .DataSource(dataSource =>
-                                                                  {
-                                                                      dataSource.Read(read => read.Action("GetBranch", "FleetManagementDataProvider", new { area = "FleetManagement" }))
-                                                                          .ServerFiltering(false);
-                                                                  })
+                                                                          .ValuePrimitive(true)
+                                                                          .OptionLabel(" Select Branch ")
+                                                                          .DataTextField("Name")
+                                                                          .DataValueField("BranchId")
+                                                                          .Filter("contains")
+                                                                          .MinLength(2)
+                                                                          .DataSource(dataSource =>
+                                                                          {
+                                                                              dataSource.Read(read => read.Action("GetBranch", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                                                                  .ServerFiltering(false);
+                                                                          })
                     )
                     @Html.ValidationMessageFor(model => model.BranchId, "", new { @class = "text-danger" })
                 </div>
             </div>
 
             <div class="row"></div>
-
+            <div class="form-group">
+                @Html.LabelFor(model => model.OperatorName, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.OperatorName)
+                    @Html.ValidationMessageFor(model => model.OperatorName, "", new { @class = "text-danger" })
+                </div>
+            </div>
 
 
 

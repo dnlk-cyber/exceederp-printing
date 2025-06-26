@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,6 +35,7 @@ namespace ExceedERP.Core.Domain.FleetManagement
         public decimal? CapacityTo { get; set; }
 
         public decimal Rate { get; set; }
+        public decimal IdleRate { get; set; }
 
         public int FleetRentalRateId { get; set; }
         public FleetRentalRate FleetRentalRate { get; set; }
@@ -41,24 +43,26 @@ namespace ExceedERP.Core.Domain.FleetManagement
         // DumpTruck
         public decimal DistanceFrom { get; set; }
         public decimal DistanceTo { get; set; }
-        public DumpTruckTypeOfWork DumpTruckTypeOfWork { get; set; }
-
+        public DumpTruckTypeOfWork? DumpTruckTypeOfWork { get; set; }
+       
         // Shower Truck
         public SprayingType SprayingType { get; set; }
         public string Remark { get; set; }
 
-        public FleetRoadType RoadType { get; set; }
+        public FleetRoadType? RoadType { get; set; }
 
         //Light-Vehicle
         public int NumberOfSeatsFrom { get; set; }
-        public int NumberOfSeatsTo { get; set; } 
+        public int NumberOfSeatsTo { get; set; }       
+        public bool IsDump { get; set; }
+
 
     }
 
     public enum FleetRoadType
     {
         Asphalt,
-        Non_Asphalt 
+        Gravel
 
     }
     public enum SprayingType

@@ -12,7 +12,7 @@ using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Web.Areas.FleetManagement.Models;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
-
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
 	public class FuelIssueApprovalController : Controller

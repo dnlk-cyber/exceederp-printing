@@ -28,7 +28,7 @@
                         @(Html.Kendo().DropDownListFor(model => model.RentRequestID).Name("RentRequestID")
             .DataTextField("ProjectSite")
             .DataValueField("RentRequestID").OptionLabel("Select Request")
-                    .DataSource(d => d.Read(r => r.Action("RentRequestDDBind", "RentRequest"))))
+                    .DataSource(d => d.Read(r => r.Action("RentRequestDDBind", "RentRequest").Data("sendForgery"))))
 
                         
                     </div>

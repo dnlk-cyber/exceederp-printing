@@ -8,6 +8,6 @@
                                   .Text("PlateNumber")
                                   .OptionLabel(" Select Equipment ")
                                   .Filter(FilterType.Contains)
-                          .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "FleetManagementDataProvider"))
+                          .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "FleetManagementDataProvider").Data("sendForgery"))
                           .ServerFiltering(false)))
              

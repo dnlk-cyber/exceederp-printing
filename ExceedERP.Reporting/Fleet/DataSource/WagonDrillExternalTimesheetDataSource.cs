@@ -1,6 +1,7 @@
 ﻿using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.Procurement.Supplier;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Fleet.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,10 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 Guid FId = Guid.Parse(fleetId);
 
                 var wagonDrillTimesheet = db.WagonDrillTimesheets.FirstOrDefault(x => x.FleetsID == FId && DbFunctions.TruncateTime(x.Date) >= from.Date && DbFunctions.TruncateTime(x.Date) <= to.Date);
-                if (wagonDrillTimesheet != null)
+                List<WagonDrillTimesheet> PreparedBy = db.WagonDrillTimesheets.Where(x => x.FleetsID == FId && DbFunctions.TruncateTime(x.Date) >= from.Date && DbFunctions.TruncateTime(x.Date) <= to.Date).ToList();
+                WagonDrillTimesheet LastWagonDrillTimeSheet = PreparedBy.LastOrDefault();
+
+                 if (wagonDrillTimesheet != null)
                 {
                     var branch = db.Branch.FirstOrDefault(x => x.BranchId == wagonDrillTimesheet.BranchId);
                     var fleet = db.Fleets.Find(FId);
@@ -58,6 +62,34 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     header.Duration = from.ToString("MM/dd/yyyy") + "-" + to.ToString("MM/dd/yyyy");
 
                     header.Period = DateTime.Now.Month.ToString() + "," + DateTime.Now.Year.ToString();
+                    header.PreparedBy = LastWagonDrillTimeSheet.CreatedBy;
+
+                    if (LastWagonDrillTimeSheet.CostSheetApprovedBy != null)
+                    {
+                        header.ApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastWagonDrillTimeSheet.CostSheetApprovedBy));
+                    }
+                    header.PreparedDate = LastWagonDrillTimeSheet.DateCreated?.ToString("yyyy-MM-dd")??"";
+                    if (LastWagonDrillTimeSheet.CostSheetSendForApprovalBy != null)
+                    {
+                        header.CheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastWagonDrillTimeSheet.CostSheetSendForApprovalBy));
+                    }
+                    header.CheckedDate = LastWagonDrillTimeSheet.CostSheetSendForApprovalTime?.ToString("yyyy-MM-dd")??"";
+                    header.ApprovedDate = LastWagonDrillTimeSheet.CostSheetApprovedDate?.ToString("yyyy-MM-dd")??"";
+                    if (LastWagonDrillTimeSheet.CostSheetApprovedBy != null)
+                    {
+                        header.ModifiedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastWagonDrillTimeSheet.ModifiedBy));
+                    }
+                    header.ModifiedDate = LastWagonDrillTimeSheet.LastModified?.ToString("yyyy-MM-dd")??"";
+                    if (LastWagonDrillTimeSheet.TimeSheetApprovedBy != null)
+                    {
+                        header.TimesheetApprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastWagonDrillTimeSheet.TimeSheetApprovedBy));
+                    }
+                    header.TimesheetApprovedDate = LastWagonDrillTimeSheet.TimeSheetApprovedDate?.ToString("yyyy-MM-dd")??"";
+                    if (LastWagonDrillTimeSheet.TimeSheetSendForApprovalBy != null)
+                    {
+                        header.TimesheetSendForApprovalBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastWagonDrillTimeSheet.TimeSheetSendForApprovalBy));
+                    }
+                    header.TimesheetSendForApprovalDate = LastWagonDrillTimeSheet.TimeSheetSendForApprovalTime?.ToString("yyyy-MM-dd")??"";
                 }
 
             }

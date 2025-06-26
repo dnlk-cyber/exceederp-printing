@@ -128,7 +128,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(new[] { Service }.ToDataSourceResult(request));
         }
-        [AllowAnonymous]
+        
         public ActionResult ServiceDDBind(bool IsPm)
         {
             var Service = new List<Service>();

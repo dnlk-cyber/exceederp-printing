@@ -7,18 +7,35 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(o => o.AssetCode);
-          columns.Bound(o => o.PlateNo);
-          columns.Bound(o => o.SerialNo);
-          columns.Bound(o => o.ChasisNo);
-          columns.ForeignKey(e => e.OperatorId, (System.Collections.IEnumerable)ViewData["Operators"], "Id", "Name").Title("Operator Name").Width(140);
-          columns.Bound(o => o.AccidentLocation);
-          columns.Bound(o => o.Status);
-          columns.Bound(o => o.DateOfOccurrence).Format("{0:d}");
+          columns.Bound(o => o.AssetCode).Width(120);
+          columns.Bound(o => o.PlateNo).Width(120);
+          columns.Bound(o => o.SerialNo).Width(120);
+          columns.Bound(o => o.ChasisNo).Width(120);
+          columns.ForeignKey(e => e.OperatorId, (System.Collections.IEnumerable)ViewData["Operators"], "Id", "Name").Title("Operator Name").Width(100);
+          columns.Bound(o => o.AccidentLocation).Width(120);
+          columns.Bound(o => o.Accountablebody).Width(120);
+          columns.Bound(o => o.Address).Width(120);
+          columns.Bound(o => o.AssetCode).Width(120);
+          columns.Bound(o => o.AssetDamage).Width(120);
+          columns.Bound(o => o.CauseOfAccident).Width(120);
+          columns.Bound(o => o.ChasisNo).Width(120);
+          columns.Bound(o => o.CostcoveredbyCompany).Width(120);
+          columns.Bound(o => o.CostcoveredbyInsurance).Width(120);
+          columns.Bound(o => o.CostcoveredbyOtherBodies).Width(120);
+          columns.Bound(o => o.DateOfOccurrence).Width(120);
+          columns.Bound(o => o.DescriptionForWhyNotTakeWitness).Width(120);
+          columns.Bound(o => o.EngineNo).Width(120);
+          columns.Bound(o => o.InjuredPersons).Width(120);
+          columns.Bound(o => o.LevelOfDamage).Width(120);
+          columns.Bound(o => o.ManufacturedYear).Width(120);
+          columns.Bound(o => o.Model).Width(120);
+          columns.Bound(o => o.Occupation).Width(120);        
+          columns.Bound(o => o.Status).Width(120);
+          columns.Bound(o => o.DateOfOccurrence).Format("{0:d}").Width(120);
 
 
 
-          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250).Title("Action");
 
       })
       .ToolBar(commands => commands.Create())
@@ -48,7 +65,7 @@
       .DataSource(dataSource => dataSource
           .Ajax()
           .Sort(sort => sort.Add(e => e.DateCreated).Descending())
-          .ServerOperation(false)
+   
           .Model(model =>
           {
               model.Id(p => p.AccidentID);
@@ -59,10 +76,10 @@
                             .Error("error_handler(\"grid\")")
                             .RequestStart("onRequestStart(\"grid\")")
                             .RequestEnd("onRequestEnd(\"grid\")"))
-          .Create(update => update.Action("Accident_Create", "AccidentRegistration"))
-          .Read(read => read.Action("Accident_Read", "AccidentRegistration"))
-          .Update(update => update.Action("Accident_Update", "AccidentRegistration"))
-          .Destroy(update => update.Action("Accident_Destroy", "AccidentRegistration"))
+          .Create(update => update.Action("Accident_Create", "AccidentRegistration").Data("sendForgery"))
+          .Read(read => read.Action("Accident_Read", "AccidentRegistration").Data("sendForgery"))
+          .Update(update => update.Action("Accident_Update", "AccidentRegistration").Data("sendForgery"))
+          .Destroy(update => update.Action("Accident_Destroy", "AccidentRegistration").Data("sendForgery"))
       ))
 
 <script id="template" type="text/kendo-tmpl">

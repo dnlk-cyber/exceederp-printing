@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
+using ExceedERP.Core.Domain.Maintenance;
 using System.Web.Mvc;     
 using ExceedERP.Helpers.Common;  
 using ExceedERP.Web.Areas.FleetManagement.Models;
@@ -148,7 +149,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(new[] { CheckList }.ToDataSourceResult(request));
         }
-        [AllowAnonymous]
+        
         public ActionResult GetCheckList()
         {
             List<CheckListViewModel> list = new List<CheckListViewModel>();

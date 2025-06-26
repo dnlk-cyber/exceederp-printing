@@ -60,7 +60,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.EquipmentIdentityID).Name("EquipmentIdentityID")
                                           .DataTextField("EquipmentCategoryName")
                                           .DataValueField("EquipmentIdentityID").OptionLabel("Select").HtmlAttributes(new { style = "width:100%" }).Filter(FilterType.Contains)
-                                          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory")).ServerFiltering(false)))
+                                          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory").Data("sendForgery")).ServerFiltering(false)))
 
                 </div>
             </div>
@@ -137,7 +137,7 @@
                         @(Html.Kendo().DropDownListFor(model => model.ProjectLocation)
                                                   .DataTextField("Name")
                                                   .DataValueField("Name").OptionLabel("Select").HtmlAttributes(new { style = "width:100%" })
-                                          .DataSource(d => d.Read(r => r.Action("BranchDDBind", "Branch"))))
+                                          .DataSource(d => d.Read(r => r.Action("BranchDDBind", "Branch").Data("sendForgery"))))
 
 
 

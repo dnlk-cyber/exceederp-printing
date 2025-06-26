@@ -22,7 +22,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             {
 
                 Guid FId = Guid.Parse(fleetId);
-                var dryLoadingTimesheets = db.DryLoadingTimeSheets.Where(x => x.FleetsID == FId && x.TimeSheetApproved).ToList();
+                var dryLoadingTimesheets = db.DryLoadingTimeSheets.Where(x => x.FleetsID == FId && x.TimeSheetApproved&&x.TripStartDate!=null).ToList();
 
                 dryLoadingTimesheets = dryLoadingTimesheets.Where(x => x.TripStartDate.Date >= from.Date && x.TripStartDate <= to.Date).ToList();
 
@@ -69,9 +69,12 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     dryLoadingTimesheets = dryLoadingTimesheets.Where(x => x.BranchId == branchId).ToList();
 
                 }
+               
                 foreach (var item in dryLoadingTimesheets)
                 {
+                   
                     var fleet = db.Fleets.FirstOrDefault(x => x.FleetsID == item.FleetsID);
+
                     DryLoadingTimeSheetDTO dryLoadingTimeSheet = new DryLoadingTimeSheetDTO
                     {
                         PlateNo = fleet?.PlateNumber,
@@ -79,9 +82,16 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         FuelInLiter = item.FuelInLiter,
                         IdleHour = item.IdleHour,
                         LoadedType = item.LoadedType,
+                        //PreparedBy=item.CreatedBy,                        
+                        //Name =item.CreatedBy,
+                        //PreparedDate=item.DateCreated,
+                        //ApprovedBy=item.ModifiedBy,
+                        //ApprovedDate=item.LastModified,
+                        //ApproverName=item.ModifiedBy,
                         //Quantity = item.,
                         ReasonForIdle = item.ReasonForIdle,
-                        //RoadType = item.,
+                        Lubricant=item.OilConsumption,
+                        DownReason =item.DownReason,
                         TotalKmTravelled = item.TotalKmTravelled,
                         TripArrivalDate = item.TripArrivalDate,
                         TripArrivalPlace = item.TriplArrivalPlace,
@@ -90,7 +100,8 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         WorkingHour = item.WorkingHour,
                         WorkItem = item.WorkItem,
                         AsphaltKm = item.Asphalt,
-                        GravelKm = item.Gravel
+                        GravelKm = item.Gravel,
+                        DownHour = item.Downhour
 
                     };
                     list.Add(dryLoadingTimeSheet);
@@ -102,6 +113,16 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         }
 
     }
+    public class approvalDto
+    {
+        public string PreparedBy { get; set; }
+        public DateTime? PreparedDate { get; set; }
+        public string Name { get; set; }
+        public string ApprovedBy { get; set; }
+        public DateTime? ApprovedDate { get; set; }
+        public string ApproverName { get; set; }
+
+    }
     public class DryLoadingTimeSheetDTO
     {
         public string PlateNo { get; set; }
@@ -110,7 +131,9 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         public string TripStartPlace { get; set; }
         public decimal TotalKmTravelled { get; set; }
         public string TripArrivalPlace { get; set; }
+        public string DownReason { get; set; }
         public string WorkItem { get; set; }
+        public decimal Lubricant { get; set; }
         public decimal FuelInLiter { get; set; }
         public string ReasonForIdle { get; set; }
         public decimal WorkingHour { get; set; }
@@ -121,7 +144,14 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         public string LoadedType { get; set; }
         public decimal AsphaltKm { get; set; }
         public decimal GravelKm { get; set; }
-
+        public decimal DownHour { get; set; }
+        public string PreparedBy { get; set; }
+        public string PreparedDate { get; set; }
+        public string CheckedBy { get; set; }
+        public string ApprovedBy { get; set; }
+        public string ApprovedDate { get; set; }
+        public string CheckedDate { get; set; }
+      
 
     }
 }

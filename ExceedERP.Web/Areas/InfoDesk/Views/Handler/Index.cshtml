@@ -13,10 +13,16 @@
           columns.Bound(c => c.TicketPriority).HtmlAttributes(new { style = "background-color:#:PriorityColor#;" }).Width(70);
           columns.Bound(c => c.TicketStatus)/*.HtmlAttributes(new { style = "background-color:#:StatusColor#;" })*/.Width(80);
           columns.ForeignKey(c => c.SupportGroup_HelpDeskId, (System.Collections.IEnumerable)ViewData["Group"], "SupportGroup_HelpDeskId", "Name").Title("Group").Width(180);
-          //columns.Command(
-          //    command => {
-          //        command.Edit().UpdateText("Update").CancelText("Cancel").Text("Edit");
-          //    }).Width(200);
+          columns.Bound(c => c.RequesterIPAddress).Width(150);
+          columns.Bound(c => c.PendingReason).Width(150);
+          columns.Command(
+             command =>
+             {
+                 command.Custom("pend").Text("Pend").Click("pendTicket").HtmlAttributes(new { @class = "btn btn-primary", @title = "pend Ticket " });
+
+                 //command.Edit().UpdateText("Update").CancelText("Cancel").Text("Edit");
+
+             }).Width(200);
 
 
       })
@@ -31,7 +37,6 @@
       {
           events.DetailExpand("onDetailExpandUser");
           events.DataBound("onMasterDataBound");
-
       })
       .Pageable(pageable => pageable
       .Input(true)
@@ -81,22 +86,41 @@
         {
             items.Add().Text("Ticket").Content(
               @<text>
+                    <a href='@Url.Action("ITSupportReport", "HelpDeskReport")/?id=#=CustomerTicket_HelpDeskId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
               @(Html.Kendo().Grid<AssignTicket_HelpDesk>()
                      .Name("Assigngrid_#=CustomerTicket_HelpDeskId#")
                      .Columns(columns =>
                      {
                          columns.ForeignKey(c => c.AssinedTo, (System.Collections.IEnumerable)ViewData["AssignTo"], "AssinedTo", "FullNameaEnglish").EditorTemplateName("EmployeesList").Width(160);
                          //columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList").Width(160);
+                         columns.Bound(c => c.Handler).Width(140);
                          columns.Bound(c => c.Role).Width(140);
                          columns.Bound(c => c.PhoneNumber).Width(140);
                          columns.Bound(c => c.Address).Width(140);
                          columns.Bound(c => c.AssignedDate).Width(150);
+                         //columns.Bound(c => c.IsSendToKB).ClientTemplate(
+                         //    "<input type='checkbox' disabled='true' " +
+                         //    "\\# if (IsSendToKB) { \\#" +
+                         //    "checked='checked'" +
+                         //    "\\# } \\#" +
+                         //    " />"
+                         //).Width(100);
+
+
+                         columns.Bound(c => c.IsSendToKB).ClientTemplate(
+                                           "<input type='checkbox' disabled = 'true' value='\\#= IsSendToKB\\#' " +
+                                           "\\# if (IsSendToKB) { \\#" +
+                                           "checked='checked'" +
+                                           "\\# } \\#" +
+                                           "/>"
+                                           ).Width(100);
                          columns.Bound(c => c.RootCause).Width(160);
                          columns.Bound(c => c.Solution).Width(160);
                          columns.Command(command =>
                          {
                              command.Edit();
-                             command.Custom("sendF").Text(" ").Click("SendForClosing").IconClass("k-icon k-i-forward").HtmlAttributes(new { @class = "btn btn-primary ", title = "Send for Closing", id = "sendForApproval" });
+                             command.Custom("sendF").Text(" ").Click("sendForClosing").IconClass("k-icon k-i-forward").HtmlAttributes(new { @class = "btn btn-primary ", title = "Send for Closing", id = "send for cosing" });
 
                          }).Width(180);
 
@@ -118,7 +142,7 @@
                                 model.Id(p => p.AssignTicket_HelpDeskId);
                                 //model.Field(p => p.CustomerTicket_HelpDeskId).Editable(false);
                                 //model.Field(p => p.AgeOfTicket).Editable(false);
-                                //model.Field(p => p.AssignedTo).Editable(false);
+                                model.Field(p => p.AssinedTo).Editable(false);
                                 model.Field(p => p.Role).Editable(false);
                                 model.Field(p => p.Address).Editable(false);
                                 model.Field(p => p.PhoneNumber).Editable(false);
@@ -222,33 +246,79 @@
         CurtomerTicketId_Global = masterDataItem.CustomerTicket_HelpDeskId;
      
     }
+    function sendForClosing(e) {
+        var row = $(e.target).closest("tr");
+        var grid = $("#Assigngrid_" + CurtomerTicketId_Global).data("kendoGrid");
 
-    function SendForClosing(e) {
+        if (!grid) {
+            alert("Grid not found!");
+            return;
+        }
 
-        var masterId = CurtomerTicketId_Global;
+        var dataItem = grid.dataItem(row);
+
+        if (!dataItem) {
+            alert("Please select a row first!!");
+            return;
+        }
+
+        var childId = dataItem.AssignTicket_HelpDeskId;
+        if (!childId) {
+            alert("Invalid ticket data!");
+            return;
+        }
+
+        //if (confirm("Are you sure you want to send for close?")) {
+            $.ajax({
+                    //contentType: "application/json; charset=utf-8",
+
+                url: '@Url.Action("SendForClosing", "Handler", new { area= "InfoDesk" })',
+                data: { id: childId },
+                    type: 'POST',
+                    cache: false,
+                    success: function (result) {
+                        alert(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+
+
+            });
+           
+        //}
+    }
+
+    @*function SendForClosing(e) {
+
 
         var row = $(e.target).closest("tr");
-        var grid = $("#Assigngrid_" + masterId).data("kendoGrid");
+        var grid = $("#Assigngrid_" + CurtomerTicketId_Global).data("kendoGrid");
         var dataItem = grid.dataItem(row);
        // var masterId = dataItem.CustomerTicket_HelpDeskId;
         var childId = dataItem.AssignTicket_HelpDeskId;
      
         if (confirm('Are you sure you want to send for close?')) {
+            try {
+                 //var BookNo = dataItem.BookNo;
+                 $.ajax({
+                     //contentType: "application/json; charset=utf-8",
+                     url: '@Url.Action("SendForClosing", "Handler")',
+                     data: { childId: childId },
+                     type: 'POST',
+                     cache: false,
+                     success: function (result) {
+                         alert(result.Message);
+                         $("#grid").data("kendoGrid").dataSource.read();
+                     }
 
-            $.ajax({
-                url: '@Url.Action("SendForClosing", "Handler")',
+                 });
 
-                data: { childId: childId },
-                type: 'POST',
-                cache: false,
-                success: function (result) {
-                   
-                    alert(result);
-                    $("#grid").data("kendoGrid").dataSource.read();
-                }
-            });
+            } catch (ee) {
+                 alert("Please select the row first!!");
+
+            }
+           
         }
-    }
+    }*@
 </script>
 <script>
     function DetailDataBound(e) {
@@ -257,27 +327,28 @@
         for (var i = 0; i < gridRows.length; i++) {
             var row = $(gridRows[i]);
             var dataItem = grid.dataItem(row);
-            if (dataItem.IsSendForClosing === true && dataItem.IsSolved === false) {
+            if (dataItem.IsSendForClosing) {
                 //answer.hide(true);
                 //transfer.hide(true);
-                row.find(".k-grid-edit").show
-                    ();
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-edit").hide();
                 row.find(".k-grid-sendF").hide();
                 row.css("background-color", "yellow");
                 //$(".k-grid-top", gridName).hide();
             }
-            if (dataItem.IsSolved === true) {
+            if (dataItem.IsSolved) {
                 //answer.hide(true);
                 //transfer.hide(true);
                 row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
                 row.find(".k-grid-sendF").hide();
                 row.css("background-color", "gray");
                 //$(".k-grid-top", gridName).hide();
             }
-            else {
-                  row.find(".k-grid-edit").show();
-                // row.css("background-color", "red");
-            }
+            //else {
+            //      //row.find(".k-grid-edit").show();
+            //    // row.css("background-color", "red");
+            //}
         }
     }
     function onMasterDataBound(e) {
@@ -293,18 +364,18 @@
             }
             if (dataItem.TicketStatus == "1") {
                 row.find(".k-grid-edit").show();
-              //  row.find(".k-grid-confirm").hide();
+                row.find(".k-grid-pend").show();
                 row.css("background-color", "yellow");
             }
             if (dataItem.TicketStatus == "2") {
                 row.find(".k-grid-edit").show();
-               // row.find(".k-grid-closeT").show();
+                row.find(".k-grid-pend").hide();
                 row.css("background-color", "aqua");
             }
             if (dataItem.TicketStatus == "3") {
 
                 row.find(".k-grid-edit").hide();
-               // row.find(".k-grid-closeT").hide();
+                row.find(".k-grid-pend").hide();
                 row.css("background-color", "gray");
             }
             if (dataItem.TicketStatus == "4") {
@@ -317,6 +388,11 @@
 
                 // row.find(".k-grid-closeT").hide();
                 row.css("background-color", "gold");
+            }
+            if (dataItem.TicketStatus == "6") {
+                $(this).css("background-color", "Orange");
+                row.find(".k-grid-pend").hide();
+
             }
             if (dataItem.IsClosed) {
                 row.find(".k-grid-edit").hide();
@@ -359,5 +435,69 @@
                 console.log("third");
             }
         });
-     }
+    }
+    function pendTicket(e)
+    {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        if (!dataItem) {
+            alert("Please select a row first!");
+            return;
+        }
+
+        var id = dataItem.CustomerTicket_HelpDeskId;
+
+        if (confirm("Are you sure you want to pend this ticket?")) {
+            var acceptedReason = prompt("Please provide a reason for Pending:");
+        
+            // Check if the user entered a reason
+            if (!acceptedReason || acceptedReason.trim() === "") {
+                alert("Pending reason is required.");
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("PendingTicket", "Handler")',
+                type: 'POST',
+                data: { id: id, reason: acceptedReason }, // ✅ Fixed typo (reason instead of resaon)
+                cache: false,
+                success: function (result) {
+                    alert(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read(); // ✅ Refresh grid after success
+                },
+                error: function (xhr, status, error) {
+                    alert("Error: " + xhr.responseText);
+                }
+            });
+        }
+
+    }
+
+    @*function pendTicket(e)
+    {
+         var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+         var id = dataItem.CustomerTicket_HelpDeskId;
+         if (confirm('Are you sure you want to pend this ticket'))
+         {
+             var acceptedReason = prompt("Please provide a reason for Pending:");
+             try {
+                 
+                 $.ajax({
+                   
+                     url: '@Url.Action("PendingTicket", "Handler")',
+                     data: { id: id, resaon: acceptedReason },
+                     type: 'POST',
+                     cache: false,
+                     success: function (result) {
+                         alert(result.Message);
+                         $("#grid").data("kendoGrid").dataSource.read();
+                     }
+
+                 });
+             }
+             catch (ee) {
+                 alert("Please select the row first!!");
+             }
+         }
+
+    }*@
 </script>

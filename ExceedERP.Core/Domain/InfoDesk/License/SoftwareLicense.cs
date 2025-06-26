@@ -1,7 +1,8 @@
-using ExceedERP.Core.Domain.Common;
+﻿using ExceedERP.Core.Domain.Common;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExceedERP.Core.Domain.InfoDesk.License
 {
@@ -41,7 +42,7 @@ namespace ExceedERP.Core.Domain.InfoDesk.License
         public LicenseStatus LicenseStatus { get; set; }
         [DisplayName("Usage Limitations")]
         public string UsageLimitations { get; set; }
-        [DisplayName("Renewal Notification Date")]
+        [DisplayName("Renewal/Expire Notif. Date")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime? RenewalNotificationDate { get; set; }
         [DisplayName(" Is Renewal Notified")]
@@ -62,6 +63,8 @@ namespace ExceedERP.Core.Domain.InfoDesk.License
         public string  UserName{get;set;}
         public string  Remark{get;set;}
         public int SoftwareLicenseId { get; set; }
+        [NotMapped]
+        public bool IsNotified { get; set; }
         public virtual SoftwareLicense SoftwareLicense { get; set; }
 
     }

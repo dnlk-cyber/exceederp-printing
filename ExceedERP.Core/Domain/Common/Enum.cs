@@ -8,6 +8,7 @@ namespace ExceedERP.Core.Domain.Common
     {
         ICT_Directorate_Maintainance_Form,
         Software_License,
+        IT_Support_Report
     }
     public enum HealthAndInsuranceModuleReportType
     {

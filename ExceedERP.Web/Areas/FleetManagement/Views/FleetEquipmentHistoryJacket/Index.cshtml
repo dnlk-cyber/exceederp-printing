@@ -1,206 +1,478 @@
-﻿
+﻿@using ExceedERP.Core.Domain.FleetManagement.FleetViewModel
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Fleet Equipment History Jacket</h2>
+<label>Fleet Equipment History Jacket</label>
 
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetViewModel.FleetEquipmentHistoryJacketViewModel>()
-                        .Name("grid")
-                        .Columns(columns =>
-                        {
-                            columns.Bound(c => c.EquipmentCategoryName);
-                            columns.Bound(c => c.EquipmentTypeName);
-                            columns.Bound(c => c.EquipmentName);
-                            columns.Bound(c => c.PlateNo);
-                            columns.Bound(c => c.SerialNo);
-                        })
-                        .Filterable()
-                        .Scrollable()
-                        .DataSource(dataSource => dataSource
-                            .Ajax()
-                            .Model(model => model.Id(p => p.FleetId))
-                            .Read(read => read.Action("Equipment_Read", "FleetEquipmentHistoryJacket"))
+@(Html.Kendo().Grid<FleetEquipmentHistoryJacketViewModel>()
+                                                            .Name("grid")
+                                                            .Columns(columns =>
+                                                            {
+                                                                columns.Bound(c => c.EquipmentCategoryName);
+                                                                columns.Bound(c => c.EquipmentTypeName);
+                                                                columns.Bound(c => c.EquipmentName);
+                                                                columns.Bound(c => c.PlateNo);
+                                                                columns.Bound(c => c.PurchasingCost);
+                                                                columns.Bound(c => c.SerialNo);
+                                                            })
+                                                            .Filterable()
+                                                             .Scrollable(h => h.Height(500)).Scrollable()
+                                                            .DataSource(dataSource => dataSource
+                                                                .Ajax()
+                                                                .Model(model => model.Id(p => p.FleetId))
+                                                                .Read(read => read.Action("Equipment_Read", "FleetEquipmentHistoryJacket").Data("sendForgery"))
 
-                        ).ClientDetailTemplateId("tabs")
+                                                            ).ClientDetailTemplateId("tabs")
 )
 
 <script id="tabs" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                                .Name("tabstrip_grid_#=FleetId#")
-                                                .SelectedIndex(0)
-                                                .Items(itemn =>
-                                                {
-                                                    itemn.Add().Text("Insurance History").Content(@<text>@Insurance()</text>);
-                                                            itemn.Add().Text("Accident History").Content(@<text>@Accident()</text>);
-                                                                    itemn.Add().Text("Timesheet History").Content(@<text>@FleetTimesheet()</text>);
-                                                                            itemn.Add().Text("Costsheet History").Content(@<text>@Costsheet()</text>);
-                                                                                    itemn.Add().Text("Tire and Battery History").Content(@<text>@TireAndBattery()</text>);
-                                                                                            itemn.Add().Text("Maintenance History").Content(@<text></text>);
-                                                                                                    itemn.Add().Text("Distribution History").Content(@<text></text>);
-                                                                                                            itemn.Add().Text("Fuel Consumption History").Content(@<text></text>);
+                                                                                .Name("tabstrip_grid_#=FleetId#")
+                                                                                .SelectedIndex(0)
+                                                                                .Items(itemn =>
+                                                                                {
+                                                                        //itemn.Add().Text("Equipment Distribution").Content(@<text>@EquipmentDistribution()</text>);
+                                                                        itemn.Add().Text("Insurance History").Content(@<text>@Insurance()</text>);
+                                                                                itemn.Add().Text("Bolo Registration History").Content(@<text>@FleetBoloRegistrationHistory()</text>);
+                                                                                        itemn.Add().Text("Accident History").Content(@<text>@Accident()</text>);
+                                                                                                itemn.Add().Text("Timesheet History").Content(@<text>@FleetTimesheet()</text>);
+                                                                                            @*itemn.Add().Text("Dry Loading Timesheet History").Content(@<text>@DryLoadingTimeSheet()</text>);*@
+                                                                                            //itemn.Add().Text("Dump Truck Timesheet History").Content(@<text>@DumptruckTimeSheetHistory()</text>);
+                                                                                            // itemn.Add().Text("Timesheet History").Content(@<text>@FleetTimesheet()</text>);
+                                                                                            // itemn.Add().Text("Timesheet History").Content(@<text>@FleetTimesheet()</text>);
+                                                                                            itemn.Add().Text("Annual Inspection ").Content(@<text>@AnnualInspection()</text>);
+                                                                                                    itemn.Add().Text("Costsheet History").Content(@<text>@Costsheet()</text>);
+                                                                                                            itemn.Add().Text("Tire and Battery History").Content(@<text>@TireAndBattery()</text>);
+                                                                                                                    itemn.Add().Text("Maintenance History").Content(@<text>@Maintenance()</text>);
+                                                                                                                            itemn.Add().Text("Distribution History").Content(@<text>@Distribution()</text>);
+                                                                                                                                    itemn.Add().Text("Fuel Consumption History").Content(@<text>@Fuel()</text>);
 
-                                                                                                                }).ToClientTemplate())
+                                                                                                                                        }).ToClientTemplate())
 </script>
 
+@*@helper DryLoadingTimeSheet()
+    {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetViewModel.DryLoadingTimesheetHistoryVM>()
+                                             .Name("dryloadingTS#=FleetId#")
+                                                .Columns(columns =>
+                                                {
+                                                    //columns.Bound(c => c.DryLoadingTimeSheetId).Title("#").Hidden(true).Width(60);
+                                                    columns.Bound(c => c.EquipmentCategoryId).Width(120);
+                                                    columns.Bound(c => c.EquipmentTypeId).Width(120);
+                                                    columns.Bound(c => c.EquipmentNameId).Width(120);
+                                                    columns.Bound(c => c.FleetsID).Title("Plate Number").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+                                                    columns.Bound(c => c.BranchId).Width(100);
+                                                    columns.Bound(c => c.BusinessUnitId).Width(100);
+                                                    columns.Bound(c => c.OperatorId).Title("Operator").Width(100);
+                                                    columns.Bound(c => c.OilConsumption).Width(100);
+                                                    columns.Bound(c => c.WorkItem).Width(100);
+                                                    columns.Bound(c => c.FuelInLiter).Width(100);
+                                                    columns.Bound(c => c.WorkingHour).Width(100);
+                                                    columns.Bound(c => c.Downhour).Width(100);
+                                                    columns.Bound(c => c.DownReason).Width(100);
+                                                    columns.Bound(c => c.IdleHour).Width(100);
+                                                    columns.Bound(c => c.TripStartPlace).Title("Start Place").Width(100);
+                                                    columns.Bound(c => c.TriplArrivalPlace).Title("Arrival Place").Width(100);
+                                                    columns.Bound(c => c.TripStartDate).Title("Start Date").Width(100);
+                                                    columns.Bound(c => c.TripArrivalDate).Title("Arrival Date").Width(100);
+                                                    columns.Bound(c => c.Asphalt).Title("Asphalt(Km)").Width(120);
+                                                    columns.Bound(c => c.Gravel).Title("Gravel(Km)").Width(120);
+                                                    //  columns.Bound(c => c.TimeSheetStatus).Width(100);
+                                                    // columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(100);
+
+                                                })                                  .Filterable()
+                                                                    .Scrollable()
+                                                                    .DataSource(dataSource => dataSource
+                                                                        .Ajax()
+                                                                        .Model(model => model.Id(p => p.DryLoadingTimeSheetId))
+                                                                        .Read(read => read.Action("Read_DryLoadingTimeSheetHistory", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }).Data("sendForgery"))
+
+                                                                    ).ToClientTemplate()
+    )
+    }@helper DumptruckTimeSheetHistory()
+    {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetViewModel.DumpTruckTimeSheetViewModel>()
+                                             .Name("DumpTruckTS#=FleetId#")
+                                                .Columns(columns =>
+                                                {
+                                                    //columns.Bound(c => c.DryLoadingTimeSheetId).Title("#").Hidden(true).Width(60);
+                                                    columns.Bound(c => c.EquipmentCategoryId).Width(120);
+                                                    columns.Bound(c => c.EquipmentTypeId).Width(120);
+                                                    columns.Bound(c => c.EquipmentNameId).Width(120);
+                                                    columns.Bound(c => c.FleetsID).Title("Plate Number").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+                                                    columns.Bound(c => c.BranchId).Width(100);
+                                                    columns.Bound(c => c.BusinessUnitId).Width(100);
+                                                    columns.Bound(c => c.OperatorId).Title("Operator").Width(100);
+                                                    columns.Bound(c => c.OilConsumption).Width(100);
+                                                    columns.Bound(c => c.NetworkingHour).Width(100);
+                                                    columns.Bound(c => c.DownHour).Width(100);
+                                                    columns.Bound(c => c.ReasonForDown).Width(100);
+                                                    columns.Bound(c => c.IdleHour).Width(100);
+                                                   //columns.Bound(c => c.TimeSheetStatus).Width(100);
+                                                    columns.Bound(c => c.OilConsumption).Width(100);
+                                                    columns.Bound(c => c.FuelConsumption).Width(100);
+                                                    columns.Bound(c => c.GreaseConsumption).Width(120);
+                                                    columns.Bound(c => c.IdleHour).Width(100);
+                                                    //  columns.Bound(c => c.TimeSheetStatus).Width(100);
+                                                    // columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(100);
+
+                                                })                                  .Filterable()
+                                                                    .Scrollable()
+                                                                    .DataSource(dataSource => dataSource
+                                                                        .Ajax()
+                                                                        .Model(model => model.Id(p => p.DumpTruckTimeSheetId))
+                                                                        .Read(read => read.Action("Read_DumpTruckTimeSheetHistory", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }).Data("sendForgery"))
+
+                                                                    ).ToClientTemplate()
+    )
+    }*@
+@*@helper EquipmentDistribution()
+    {
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetViewModel.VehicleDistributionVM>()
+                                    .Name("VehicleDistrubution#=FleetID#")
+                                        .Columns(columns =>
+                                    {
+                    columns.Bound(e => e.RequestNumber).Title(" Request Number").Width(70);
+                    columns.ForeignKey(e => e.EmployeeId, (System.Collections.IEnumerable)ViewData["Employee"], "Id", "Name").Width(130);
+                    columns.Bound(e => e.FromBranchName).Title("Branch").Width(100);
+                    columns.Bound(e => e.FromStructureName).Title("Department").Width(100);
+                    columns.Bound(e => e.ReasonForTravel).Width(120);
+                    columns.Bound(e => e.RequestDate).Title("Assign Date").Width(100);
+                    columns.Bound(e => e.Status).Width(100);
+                    columns.Bound(o => o.DistrubtionNumber).Title("Referance").Width(80);
+                    columns.Bound(o => o.Num).Visible(false);
+                    columns.Command(command =>
+                    {  }).Width(10);
+                                    })
+
+            .Events(e => e.DataBound("dataBound"))
+            .HtmlAttributes(new { style = "height: 520px;" })
+                        .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Scrollable(h => h.Height(500))
+        .ClientDetailTemplateId("template")
+        //.Events(ev => ev.DetailExpand("onDetailExpand"))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            //.ServerOperation(false)
+            .Sort(x => x.Add(s => s.RequestNumber).Descending())
+            .Model(model =>
+            {
+                model.Id(p => p.VehicleDistributionID);
+            })
+            .Events(ev => ev
+            .Error("error_handler(\"VehicleDistrubution#=FleetId#\")")
+            .RequestStart("onRequestStart(\"VehicleDistrubution#=FleetId#\")")
+            .RequestEnd("onRequestEnd(\"VehicleDistrubution#=FleetId#\")"))
+            // .Create(update => update.Action("VehicleDistribution_Create", "EquipmentDistribution").Data("sendForgery"))
+            .Read(read => read.Action("VehicleDistributionHistory_Read", "EquipmentDistribution",new { id="#=FleetId#"}).Data("sendForgery"))
+        // .Destroy(update => update.Action("VehicleDistribution_Destroy", "EquipmentDistribution").Data("sendForgery"))
+        ).ToClientTemplate()
+    )
+    }*@
 @helper Insurance()
 {
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetViewModel.FleetInsuranceViewModel>()
-                                            .Name("ins_#=FleetId#")
-                                            .Columns(columns =>
-                                            {
-                                                columns.Bound(c => c.PolicyNo).Width(100);
-                                                columns.Bound(c => c.PremiumCost).Width(100);
-                                                columns.Bound(c => c.InsuranceType).Width(100);
-                                                columns.Bound(c => c.InsuranceCompanyName).Width(100);
-                                                columns.Bound(c => c.DueDate).Width(100);
-                                            })
-                                            .Filterable()
-                                            .Scrollable()
-                                            .DataSource(dataSource => dataSource
-                                                .Ajax()
-                                                .Model(model => model.Id(p => p.FleetInsuranceId))
-                                                .Read(read => read.Action("Insurance_Read", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }))
+                                        .Name("ins_#=FleetId#")
+                                        .Columns(columns =>
+                                        {
+                                            columns.Bound(c => c.PolicyNo).Width(100);
+                                            columns.Bound(c => c.PremiumCost).Width(100);
+                                            columns.Bound(c => c.InsuranceType).Width(100);
+                                            columns.Bound(c => c.InsuranceCompanyName).Width(100);
+                                            columns.Bound(c => c.DueDate).Width(100);
+                                        })
+                                        .Filterable()
+                                        .Scrollable()
+                                        .DataSource(dataSource => dataSource
+                                            .Ajax()
+                                            .Model(model => model.Id(p => p.FleetInsuranceId))
+                                            .Read(read => read.Action("Insurance_Read", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }).Data("sendForgery"))
 
-                                            ).ToClientTemplate()
+                                        ).ToClientTemplate()
     )
 }
 
 @helper Accident()
 {
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetViewModel.FleetAcidentViewModel>()
-                                            .Name("acc_#=FleetId#")
-                                            .Columns(columns =>
-                                            {
-                                                columns.Bound(c => c.AccidentLocation).Width(100);
-                                                columns.Bound(c => c.Accountablebody).Width(100);
-                                                columns.Bound(c => c.AssetDamage).Width(100);
-                                                columns.Bound(c => c.CauseOfAccident).Width(100);
-                                                columns.Bound(c => c.DateOfOccurrence).Width(100);
-                                                columns.Bound(c => c.InjuredPersons).Width(100);
-                                                columns.Bound(c => c.LevelOfDamage).Width(100);
-                                                columns.Bound(c => c.OperatorName).Width(100);
-                                                columns.Bound(c => c.PolicyIdNo).Width(100);
-                                                columns.Bound(c => c.ThirdPartyDamage).Width(100);
-                                                columns.Bound(c => c.TimeOfAccident).Width(100);
-                                //columns.Bound(c => c.VehicleDistanceFromRoadEdge);
-                                //columns.Bound(c => c.VehicleSpeed);
-                            })
-                                            .Filterable()
-                                            .Scrollable()
-                                            .DataSource(dataSource => dataSource
-                                                .Ajax()
-                                                .Model(model => model.Id(p => p.AccidentId))
-                                                .Read(read => read.Action("Accident_Read", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }))
+                                                                                                                    .Name("acc_#=FleetId#")
+                                                                                                                    .Columns(columns =>
+                                                                                                                    {
+                                                                                                                        columns.Bound(c => c.AccidentLocation).Width(100);
+                                                                                                                        columns.Bound(c => c.Accountablebody).Width(100);
+                                                                                                                        columns.Bound(c => c.AssetDamage).Width(100);
+                                                                                                                        columns.Bound(c => c.CauseOfAccident).Width(100);
+                                                                                                                        columns.Bound(c => c.DateOfOccurrence).Width(100);
+                                                                                                                        columns.Bound(c => c.InjuredPersons).Width(100);
+                                                                                                                        columns.Bound(c => c.LevelOfDamage).Width(100);
+                                                                                                                        columns.Bound(c => c.OperatorName).Width(100);
+                                                                                                                        columns.Bound(c => c.PolicyIdNo).Width(100);
+                                                                                                                        columns.Bound(c => c.ThirdPartyDamage).Width(100);
+                                                                                                                        columns.Bound(c => c.TimeOfAccident).Width(100);
+                                                                                                        //columns.Bound(c => c.VehicleDistanceFromRoadEdge);
+                                                                                                        //columns.Bound(c => c.VehicleSpeed);
+                                                                                                    })
+                                                                                                                    .Filterable()
+                                                                                                                    .Scrollable()
+                                                                                                                    .DataSource(dataSource => dataSource
+                                                                                                                        .Ajax()
+                                                                                                                        .Model(model => model.Id(p => p.AccidentId))
+                                                                                                                        .Read(read => read.Action("Accident_Read", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }).Data("sendForgery"))
 
-                                            ).ToClientTemplate()
+                                                                                                                    ).ToClientTemplate()
     )
+}
+@helper AnnualInspection()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.AnnualEquipmentInventoryInspectionVM>()
+            .Name("AnnualI_#=FleetId#")
+            .Columns(columns =>
+            {
+                //columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text").EditorTemplateName("EquipmentIdentity").Width(120);
+                columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").EditorTemplateName("EquipmentType").Width(120);
+                columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["Name"], "Value", "Text").EditorTemplateName("EquipmentName").Width(120);
+                columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["Fleet"], "Value", "Text").EditorTemplateName("FleetTemplate").Width(120);
+                 columns.Bound(e => e.InspectedBy).Width(140);
+                columns.Bound(e => e.DateofInspection).Title("Date").Format("{0:d}").Width(100);
+
+            })
+
+                            .Filterable()
+                            .Scrollable()
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                    .Model(model => model.Id(p => p.AnnualEquipmentInventoryInspectionID))
+                                    .Read(read => read.Action("AnnualEquipmentInventoryInspection_Read", "AnnualEquipmentInventoryInspectionVM", new { id = "#=FleetId#" }).Data("sendForgery"))
+          ).ToClientTemplate()
+    )
+}
+
+@helper FleetBoloRegistrationHistory()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetViewModel.BoloRegistrationHistoryVM>()
+                                                                .Name("FBRH_#=FleetId#")
+                                                                .Columns(columns =>
+                                                                {
+                                                                    columns.Bound(c => c.EquipmentCategoryId).Width(120).Title("Category");
+                                                                    columns.Bound(c => c.EquipmentTypeId).Width(120).Title("Type");
+                                                                    columns.Bound(c => c.EquipmentNameId).Width(120).Title("Name");
+                                                                    columns.Bound(c => c.FleetId).Width(120).Filterable(ftb => ftb.Multi(true).Search(true)).Title("Plate No");
+                                                                    columns.Bound(c => c.SerialNo).Width(120).Filterable(ftb => ftb.Multi(true).Search(true)).Title("Serial No");
+                                                                    columns.Bound(c => c.BoloRegistrationDate).Width(100).Title("Registration Date");
+                                                                    columns.Bound(c => c.BoloExpireDate).Width(120).Title("Expiry Date");
+                                                                    columns.Bound(c => c.Remark).Width(100);
+
+                                                                })
+                                                                   //.ToolBar(toolbar =>
+                                                                   //{
+                                                                   //    toolbar.Create();
+                                                                   //})
+
+                                                                   .Pageable()
+                                                                     .Filterable()
+                                                                     .Scrollable(s => s.Height(550))
+                                                                  .DataSource(dataSource => dataSource
+                                                                      .Ajax()
+                                                                      .Model(model => model.Id(p => p.FleetBoloRegistrationId))
+                                                                       .Read(read => read.Action("Read_BoloRegistrationHistory", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }).Data("sendForgery"))
+
+                                                                  ).ToClientTemplate()
+    )
+
 }
 
 @helper FleetTimesheet()
 {
 
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetViewModel.TimesheetVm>()
-                                            .Name("timesheet_#=FleetId#")
-                                            .Columns(columns =>
-                                            {
+                                                                                                                    .Name("timesheet_#=FleetId#")
+                                                                                                                    .Columns(columns =>
+                                                                                                                    {
 
-                                                columns.Bound(c => c.TimeSheetType).Width(100);
-                                                columns.Bound(c => c.ActualDistance).Width(100);
-                                                columns.Bound(c => c.AfternoonTimeEnd).Width(100);
-                                                columns.Bound(c => c.AsphaltKm).Width(100);
-                                                columns.Bound(c => c.BusinessUnitName).Width(100);
-                                                columns.Bound(c => c.BranchName).Width(100);
-                                                columns.Bound(c => c.OperatorName).Width(100);
-                                                columns.Bound(c => c.Quantity).Width(100);
-                                                columns.Bound(c => c.ReasonForDown).Width(100);
-                                                columns.Bound(c => c.ReasonForIdle).Width(100);
-                                                columns.Bound(c => c.RoadType).Width(100);
-                                                columns.Bound(c => c.ServiceCharge).Width(100);
-                                                columns.Bound(c => c.TotalHaulage).Width(100);
-                                                columns.Bound(c => c.TotalKmTravelled).Width(100);
-                                                columns.Bound(c => c.TotalWorkingHour).Width(100);
-                                                columns.Bound(c => c.TripArrivalDate).Width(100);
-                                                columns.Bound(c => c.TripArrivalPlace).Width(100);
-                                                columns.Bound(c => c.TripStartDate).Width(100);
-                                                columns.Bound(c => c.TripStartPlace).Width(100);
-                                                columns.Bound(c => c.TypeOfWorkExcuted).Width(100);
-                                                columns.Bound(c => c.WorkingHour).Width(100);
-                                                columns.Bound(c => c.WorkItem).Width(100);
-                                                columns.Bound(c => c.WorkType).Width(100);
+                                                                                                                        columns.Bound(c => c.TimeSheetType).Width(100);
+                                                                                                                        columns.Bound(c => c.ActualDistance).Width(100);
+                                                                                                                        columns.Bound(c => c.AfternoonTimeEnd).Width(100);
+                                                                                                                        columns.Bound(c => c.AsphaltKm).Width(100);
+                                                                                                                        columns.Bound(c => c.BusinessUnitName).Width(100);
+                                                                                                                        columns.Bound(c => c.BranchName).Width(100);
+                                                                                                                        columns.Bound(c => c.OperatorName).Width(100);
+                                                                                                                        columns.Bound(c => c.Quantity).Width(100);
+                                                                                                                        columns.Bound(c => c.ReasonForDown).Width(100);
+                                                                                                                        columns.Bound(c => c.ReasonForIdle).Width(100);
+                                                                                                                        columns.Bound(c => c.RoadType).Width(100);
+                                                                                                                        columns.Bound(c => c.ServiceCharge).Width(100);
+                                                                                                                        columns.Bound(c => c.TotalHaulage).Width(100);
+                                                                                                                        columns.Bound(c => c.TotalKmTravelled).Width(100);
+                                                                                                                        columns.Bound(c => c.TotalWorkingHour).Width(100);
+                                                                                                                        columns.Bound(c => c.TripArrivalDate).Width(100);
+                                                                                                                        columns.Bound(c => c.TripArrivalPlace).Width(100);
+                                                                                                                        columns.Bound(c => c.TripStartDate).Width(100);
+                                                                                                                        columns.Bound(c => c.TripStartPlace).Width(100);
+                                                                                                                        columns.Bound(c => c.TypeOfWorkExcuted).Width(100);
+                                                                                                                        columns.Bound(c => c.WorkingHour).Width(100);
+                                                                                                                        columns.Bound(c => c.WorkItem).Width(100);
+                                                                                                                        columns.Bound(c => c.WorkType).Width(100);
 
-                                            })
-                                            .Filterable()
-                                            .Scrollable()
-                                            .DataSource(dataSource => dataSource
-                                                .Ajax()
-                                                .Model(model => model.Id(p => p.FleetTimeSheetId))
-                                                .Read(read => read.Action("Read_TimeSheet", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }))
+                                                                                                                    })
+                                                                                                                    .Filterable()
+                                                                                                                    .Scrollable()
+                                                                                                                    .DataSource(dataSource => dataSource
+                                                                                                                        .Ajax()
+                                                                                                                        .Model(model => model.Id(p => p.FleetTimeSheetId))
+                                                                                                                        .Read(read => read.Action("Read_TimeSheet", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }).Data("sendForgery"))
 
-                                            ).ToClientTemplate()
+                                                                                                                    ).ToClientTemplate()
     )
 }
 
 @helper Costsheet()
 {
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetViewModel.CostSheetVm>()
-                                       .Name("costsheet_#=FleetId#")
-                                       .Columns(columns =>
-                                       {
+                                                                                                               .Name("costsheet_#=FleetId#")
+                                                                                                               .Columns(columns =>
+                                                                                                               {
 
-                                           columns.Bound(c => c.TimeSheetType).Width(100);
+                                                                                                                   columns.Bound(c => c.TimeSheetType).Width(100);
 
-                                           columns.Bound(c => c.BusinessUnitName).Width(100);
-                                           columns.Bound(c => c.BranchName).Width(100);
-                                           columns.Bound(c => c.OperatorName).Width(100);
-                                           columns.Bound(c => c.MaintenanceCost).Width(100);
-                                           columns.Bound(c => c.LubricantCost).Width(100);
-                                           columns.Bound(c => c.FuelRate).Width(100);
-                                           columns.Bound(c => c.Perdium).Width(100);
-                                           columns.Bound(c => c.Salary).Width(100);
-                                           columns.Bound(c => c.TireCost).Width(100);
-                                           columns.Bound(c => c.FuelInLiter).Width(100);
+                                                                                                                   columns.Bound(c => c.BusinessUnitName).Width(100);
+                                                                                                                   columns.Bound(c => c.BranchName).Width(100);
+                                                                                                                   columns.Bound(c => c.OperatorName).Width(100);
+                                                                                                                   columns.Bound(c => c.MaintenanceCost).Width(100);
+                                                                                                                   columns.Bound(c => c.LubricantCost).Width(100);
+                                                                                                                   columns.Bound(c => c.FuelRate).Width(100);
+                                                                                                                   columns.Bound(c => c.Perdium).Width(100);
+                                                                                                                   columns.Bound(c => c.Salary).Width(100);
+                                                                                                                   columns.Bound(c => c.TireCost).Width(100);
+                                                                                                                   columns.Bound(c => c.FuelInLiter).Width(100);
 
 
-                                       })
-                                       .Filterable()
-                                       .Scrollable()
-                                       .DataSource(dataSource => dataSource
-                                           .Ajax()
-                                           .Model(model => model.Id(p => p.CostSheetId))
-                                           .Read(read => read.Action("Read_CostSheet", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }))
+                                                                                                               })
+                                                                                                               .Filterable()
+                                                                                                               .Scrollable()
+                                                                                                               .DataSource(dataSource => dataSource
+                                                                                                                   .Ajax()
+                                                                                                                   .Model(model => model.Id(p => p.CostSheetId))
+                                                                                                                   .Read(read => read.Action("Read_CostSheet", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }).Data("sendForgery"))
 
-                                       ).ToClientTemplate()
+                                                                                                               ).ToClientTemplate()
     )
 }
 
 @helper TireAndBattery()
 {
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetViewModel.TyreAndBatteryViewModel>()
-                                      .Name("tyre_#=FleetId#")
-                                      .Columns(columns =>
-                                      {
+                                                                                                              .Name("tyre_#=FleetId#")
+                                                                                                              .Columns(columns =>
+                                                                                                              {
 
-                                          columns.Bound(c => c.IssueType).Width(100);
+                                                                                                                  columns.Bound(c => c.IssueType).Width(100);
 
-                                          columns.Bound(c => c.Brand).Width(100);
-                                          columns.Bound(c => c.OperatorName).Width(100);
-                                          columns.Bound(c => c.OperatorName).Width(100);
-                                          columns.Bound(c => c.PlateNumber).Width(100);
-                                          columns.Bound(c => c.SerialNumber).Width(100);
-                                          columns.Bound(c => c.TireSize).Width(100);
-                                          columns.Bound(c => c.UnitPrice).Width(100);
-                                          columns.Bound(c => c.Status).Width(100);
-                                         
-                                      })
-                                      .Filterable()
-                                      .Scrollable()
-                                      .DataSource(dataSource => dataSource
-                                          .Ajax()
-                                          .Model(model => model.Id(p => p.TyreAndBatteryId))
-                                          .Read(read => read.Action("TireAndBattery_Read", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }))
+                                                                                                                  columns.Bound(c => c.Brand).Width(100);
+                                                                                                                  columns.Bound(c => c.OperatorName).Width(100);
+                                                                                                                  columns.Bound(c => c.OperatorName).Width(100);
+                                                                                                                  columns.Bound(c => c.PlateNumber).Width(100);
+                                                                                                                  columns.Bound(c => c.SerialNumber).Width(100);
+                                                                                                                  columns.Bound(c => c.TireSize).Width(100);
+                                                                                                                  columns.Bound(c => c.UnitPrice).Width(100);
+                                                                                                                  columns.Bound(c => c.Status).Width(100);
 
-                                      ).ToClientTemplate()
+                                                                                                              })
+                                                                                                              .Filterable()
+                                                                                                              .Scrollable()
+                                                                                                              .DataSource(dataSource => dataSource
+                                                                                                                  .Ajax()
+                                                                                                                  .Model(model => model.Id(p => p.TyreAndBatteryId))
+                                                                                                                  .Read(read => read.Action("TireAndBattery_Read", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }).Data("sendForgery"))
+
+                                                                                                              ).ToClientTemplate()
+    )
+}
+
+@helper Distribution()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetViewModel.EquipmentDistributionViewModel>()
+                                                                                                              .Name("dist_#=FleetId#")
+                                                                                                              .Columns(columns =>
+                                                                                                              {
+
+                                                                                                                  columns.Bound(c => c.OperatorName).Width(100);
+                                                                                                                  columns.Bound(c => c.Destination).Width(100);
+                                                                                                                  columns.Bound(c => c.StartDate).Width(100);
+                                                                                                                  columns.Bound(c => c.EndDate).Width(100);
+                                                                                                                  columns.Bound(c => c.StartOdometer).Width(100);
+                                                                                                                  columns.Bound(c => c.EndOdometer).Width(100);
+                                                                                                                  columns.Bound(c => c.NetOdometer).Width(100);
+                                                                                                  //columns.Bound(c => c.Quantity).Width(100);
+                                                                                                  columns.Bound(c => c.TotalCost).Width(100);
+
+                                                                                                              })
+                                                                                                              .Filterable()
+                                                                                                              .Scrollable()
+                                                                                                              .DataSource(dataSource => dataSource
+                                                                                                                  .Ajax()
+                                                                                                                  .Model(model => model.Id(p => p.AssignedEqiupmentId))
+                                                                                                                  .Read(read => read.Action("Distribution_Read", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }).Data("sendForgery"))
+
+                                                                                                              ).ToClientTemplate()
+    )
+}
+
+@helper Maintenance()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetViewModel.MaintenanceViewModel>()
+                                                                                                              .Name("maint_#=FleetId#")
+                                                                                                              .Columns(columns =>
+                                                                                                              {
+                                                                                                                  columns.Bound(c => c.JobNumber).Width(100);
+                                                                                                                  columns.Bound(c => c.MaintenanceCenter).Width(100);
+                                                                                                                  columns.Bound(c => c.ServiceType).Width(100);
+                                                                                                                  columns.Bound(c => c.MaitenanceServiceCost).Width(100);
+                                                                                                                  columns.Bound(c => c.SparePartsCost).Width(100);
+                                                                                                                  columns.Bound(c => c.AdditionalCost).Width(100);
+                                                                                                  //columns.Bound(c => c.TotalCost).Width(100);
+
+                                                                                              })
+                                                                                                              .Filterable()
+                                                                                                              .Scrollable()
+                                                                                                              .DataSource(dataSource => dataSource
+                                                                                                                  .Ajax()
+                                                                                                                  .Model(model => model.Id(p => p.JobNumber))
+                                                                                                                  .Read(read => read.Action("Maintenace_Read", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }).Data("sendForgery"))
+
+                                                                                                              ).ToClientTemplate()
+    )
+}
+
+
+@helper Fuel()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetViewModel.FuelConsumptionViewModel>()
+                                                                                                              .Name("fuel_#=FleetId#")
+                                                                                                              .Columns(columns =>
+                                                                                                              {
+
+                                                                                                                  columns.Bound(c => c.TotalFuelFromStore).Width(100);
+                                                                                                                  columns.Bound(c => c.TotalFuelFromTravelOrder).Width(100);
+                                                                                                                  columns.Bound(c => c.TotalFuelConsumption).Width(100);
+
+                                                                                                              })
+                                                                                                              .Filterable()
+                                                                                                              .Scrollable()
+                                                                                                              .DataSource(dataSource => dataSource
+                                                                                                                  .Ajax()
+                                                                                                                  .Model(model => model.Id(p => p.FleetId))
+                                                                                                                  .Read(read => read.Action("Fuel_Read", "FleetEquipmentHistoryJacket", new { id = "#=FleetId#" }).Data("sendForgery"))
+
+                                                                                                              ).ToClientTemplate()
     )
 }

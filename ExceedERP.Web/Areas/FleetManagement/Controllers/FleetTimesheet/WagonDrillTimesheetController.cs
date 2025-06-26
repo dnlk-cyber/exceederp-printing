@@ -12,12 +12,14 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Reporting.Fleet.ViewModel;
-using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 
+using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using ExceedERP.Reporting.Fleet.ViewModel;
+//using ExceedERP.Reporting.Fleet.ViewModel;
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 {
-    [AuthorizeRoles(FleetManagementRoles.FleetTimeSheet)]
+    [AuthorizeRoles(FleetManagementRoles.FleetTimeSheetUser, FleetManagementRoles.FleetTimeSheetApprover)]
     public class WagonDrillTimesheetController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();        
@@ -50,11 +52,22 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 Value = s.BranchId,
                 Text = s.Name
             }).ToList();
+            ViewData["operator"] = db.Operator.Select(s => new
+            {
+                Value = s.OperatorID,
+                Text = s.FullName
+            }).ToList();
+            ViewData["businessunit"] = db.BusinessUnits.Select(s => new
+            {
+                Value = s.BusinessUnitId,
+                Text = s.Name
+            }).ToList();
+
             ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
-            RepopulateTimeSheet();
+            
             return View();
         }
-        public void RepopulateTimeSheet()
+        public JsonResult RepopulateTimeSheet()
         {
             var timesheets = db.WagonDrillTimesheets.ToList();
             if (timesheets.Any())
@@ -68,11 +81,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 }
                 db.SaveChanges();
             }
-
+            return Json("success", JsonRequestBehavior.AllowGet);
         }
         public ActionResult WagonDrillTimesheets_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var wagonDrillTimesheets = db.WagonDrillTimesheets;
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var wagonDrillTimesheets = db.WagonDrillTimesheets.Where(x => mybraches.Contains(x.BranchId));
             DataSourceResult result = wagonDrillTimesheets.ToDataSourceResult(request, wagonDrillTimesheet => new WagonDrillTimesheet
             {
                 WagonDrillTimesheetId = wagonDrillTimesheet.WagonDrillTimesheetId,
@@ -113,7 +127,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 CostSheetApprovedBy = wagonDrillTimesheet.CostSheetApprovedBy,
                 CostSheetApprovedDate = wagonDrillTimesheet.CostSheetApprovedDate,
                 CostSheetSendForAproval = wagonDrillTimesheet.CostSheetSendForAproval,
-                
                 TimeSheetStatus = wagonDrillTimesheet.TimeSheetStatus,
                 TimeSheetApproved = wagonDrillTimesheet.TimeSheetApproved,
                 TimeSheetApprovedBy = wagonDrillTimesheet.TimeSheetApprovedBy,
@@ -122,14 +135,34 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 OperatorId = wagonDrillTimesheet.OperatorId,
                 ReasonForDown = wagonDrillTimesheet.ReasonForDown,
                 ReasonForIdle = wagonDrillTimesheet.ReasonForIdle,
-                //EquipmentCategoryId = wagonDrillTimesheet.EquipmentCategoryId,
-                //EquipmentTypeId = wagonDrillTimesheet.EquipmentTypeId,
-                //EquipmentNameId = wagonDrillTimesheet.EquipmentNameId
+                EquipmentCategoryId = wagonDrillTimesheet.EquipmentCategoryId,
+                EquipmentTypeId = wagonDrillTimesheet.EquipmentTypeId,
+                EquipmentNameId = wagonDrillTimesheet.EquipmentNameId
             });
             return Json(result);
         }
         public ActionResult WagonDrillTimesheets_Create([DataSourceRequest] DataSourceRequest request, WagonDrillTimesheet wagonDrillTimesheet)
         {
+          
+            var fetchSettings = db.TimeSheetSetting.ToList();
+
+            if (fetchSettings.Any())
+            {
+                var fetchSetting = fetchSettings.First();
+                var fetchException = db.TimeSheetException.FirstOrDefault(x => x.TimeSheetSettingId == fetchSetting.TimeSheetSettingId && x.BranchId == wagonDrillTimesheet.BranchId.ToString());
+                if (fetchException == null)
+                {
+                    if (fetchSetting != null && fetchSetting.IsSet == true)
+                    {
+                        int hoursDifference = (int)(DateTime.Now - wagonDrillTimesheet.Date).TotalHours;
+
+                        if (fetchSetting.SettedHours < hoursDifference)
+                        {
+                            ModelState.AddModelError("date expired", "The timesheet recording date is passed");
+                        }
+                    }
+                }
+            }
             if (ModelState.IsValid)
             {
                 var entity = new WagonDrillTimesheet
@@ -172,9 +205,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     TimeSheetStatus = MaintenanceConst.Pending,
                     ReasonForDown = wagonDrillTimesheet.ReasonForDown,
                     ReasonForIdle = wagonDrillTimesheet.ReasonForIdle,
-                    //EquipmentCategoryId = wagonDrillTimesheet.EquipmentCategoryId,
-                    //EquipmentTypeId = wagonDrillTimesheet.EquipmentTypeId,
-                    //EquipmentNameId = wagonDrillTimesheet.EquipmentNameId
+                    EquipmentCategoryId = wagonDrillTimesheet.EquipmentCategoryId,
+                    EquipmentTypeId = wagonDrillTimesheet.EquipmentTypeId,
+                    EquipmentNameId = wagonDrillTimesheet.EquipmentNameId,
+                    
                 };
                 db.WagonDrillTimesheets.Add(entity);
                 db.SaveChanges();
@@ -229,9 +263,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     OperatorId = wagonDrillTimesheet.OperatorId,
                     ReasonForDown = wagonDrillTimesheet.ReasonForDown,
                     ReasonForIdle = wagonDrillTimesheet.ReasonForIdle,
-                    //EquipmentCategoryId = wagonDrillTimesheet.EquipmentCategoryId,
-                    //EquipmentTypeId = wagonDrillTimesheet.EquipmentTypeId,
-                    //EquipmentNameId = wagonDrillTimesheet.EquipmentNameId
+                    EquipmentCategoryId = wagonDrillTimesheet.EquipmentCategoryId,
+                    EquipmentTypeId = wagonDrillTimesheet.EquipmentTypeId,
+                    EquipmentNameId = wagonDrillTimesheet.EquipmentNameId,
+                    
                 };
                 db.WagonDrillTimesheets.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
@@ -285,9 +320,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     OperatorId = wagonDrillTimesheet.OperatorId,
                     ReasonForDown = wagonDrillTimesheet.ReasonForDown,
                     ReasonForIdle = wagonDrillTimesheet.ReasonForIdle,
-                    //EquipmentCategoryId = wagonDrillTimesheet.EquipmentCategoryId,
-                    //EquipmentTypeId = wagonDrillTimesheet.EquipmentTypeId,
-                    //EquipmentNameId = wagonDrillTimesheet.EquipmentNameId
+                    EquipmentCategoryId = wagonDrillTimesheet.EquipmentCategoryId,
+                    EquipmentTypeId = wagonDrillTimesheet.EquipmentTypeId,
+                    EquipmentNameId = wagonDrillTimesheet.EquipmentNameId
                 };
                 db.WagonDrillTimesheets.Attach(entity);
                 db.WagonDrillTimesheets.Remove(entity);
@@ -337,6 +372,39 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
 
         }
+        public JsonResult VoidTimeSheet(int id)
+        {
+
+            var wagonDrillTimesheets = db.WagonDrillTimesheets.Find(id);
+
+            if (wagonDrillTimesheets != null)
+            {
+                wagonDrillTimesheets.TimeSheetSendForAproval = false;
+                wagonDrillTimesheets.TimeSheetApproved = false;
+                wagonDrillTimesheets.TimeSheetApprovedDate = DateTime.Now;
+                wagonDrillTimesheets.TimeSheetApprovedBy = User.Identity.Name;
+                wagonDrillTimesheets.TimeSheetStatus = MaintenanceConst.Rejected;
+
+                db.WagonDrillTimesheets.Attach(wagonDrillTimesheets);
+                db.Entry(wagonDrillTimesheets).State = EntityState.Modified;
+                db.SaveChanges();
+                var returnMessage = new
+                {
+                    Message = "Successfully Sent!",
+
+                };
+                return Json(returnMessage.Message, JsonRequestBehavior.AllowGet);
+
+            }
+
+            var jsonData = new
+            {
+                Message = "Error Sending!",
+
+            };
+            return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
+
+        }
         public ActionResult WagonDrillTimeSheetApproval_Read([DataSourceRequest] DataSourceRequest request, int id)
         {
 
@@ -356,6 +424,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             });
             return Json(result);
         }
+        [AuthorizeRoles(FleetManagementRoles.FleetTimeSheetApprover)]
         public ActionResult WagonDrillTimeSheetApproval_Create([DataSourceRequest] DataSourceRequest request, TimeSheetApprovalNew model, int id)
         {
             if (ModelState.IsValid)

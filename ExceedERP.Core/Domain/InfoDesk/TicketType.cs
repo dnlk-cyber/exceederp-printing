@@ -22,6 +22,8 @@ namespace ExceedERP.Core.Domain.InfoDesk
         public string TicketCode { get; set; }
         [DisplayName("Due Days")]
         public decimal DueDays { get; set; }
+        [DisplayName("Estimated Cost")]
+        public decimal? EstimatedCost { get; set; }
         public TicketPriority TicketPriority { get; set; }
         public TicketCategory TicketCategory { get; set; }
         public string Description { get; set; }
@@ -33,6 +35,7 @@ namespace ExceedERP.Core.Domain.InfoDesk
         Event,
         Problem,
         Issue,
-        Incident
+        Incident,
+        Change
     }
 }

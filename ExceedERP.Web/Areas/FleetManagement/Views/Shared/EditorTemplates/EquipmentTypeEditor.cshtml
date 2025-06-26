@@ -10,6 +10,6 @@
         .Filter("contains")
         .IgnoreCase(true)
         .CascadeFrom("EquipmentIdentityID")
-        .DataSource(d => d.Read(r => r.Action("GetEquipmentTypes", "FleetManagementDataProvider")
+        .DataSource(d => d.Read(r => r.Action("GetEquipmentTypes", "FleetManagementDataProvider").Data("sendForgery")
         .Data("filterEquipmentTypes"))
         .ServerFiltering(true)))

@@ -23,8 +23,33 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         ExceedDbContext db = new ExceedDbContext();
         public ActionResult Index()
         {
-            ViewData["EquipmentType"] = db.EquipmentType.Select(x => new { x.EquipmentTypeID, x.EquipmentTypeName }).ToList();
-            ViewData["EquipmentName"] = db.EquipmentName.Select(x => new { Value = x.EquipmentNameID, Text = x.Name }).ToList();
+            ViewData["BusinessUnit"] = db.BusinessUnits.Select(s => new
+            {
+                Value = s.BusinessUnitId,
+                Text = s.Name
+            }).ToList();
+            ViewData["Category"] = db.EquipmentIdentity.Select(s => new
+            {
+                Value = s.EquipmentIdentityID,
+                Text = s.EquipmentCategoryName
+            }).ToList();
+            ViewData["Type"] = db.EquipmentType.Select(s => new
+            {
+                Value = s.EquipmentTypeID,
+                Text = s.EquipmentTypeName
+            }).ToList();
+
+            ViewData["Name"] = db.EquipmentName.Select(s => new
+            {
+                Value = s.EquipmentNameID,
+                Text = s.Name
+            }).ToList();
+            ViewData["Fleet"] = db.Fleets.Select(s => new
+            {
+                Value = s.FleetsID,
+                Text = s.PlateNumber + " " + s.SerialNo
+            }).ToList();
+            
             ViewData["Employee"] = db.Person_Employee.Select(x => new { x.EmployeeId, FullName = x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish }).ToList();
             ViewData["Branch"] = db.Branch.Select(x => new { x.BranchId, x.Name }).ToList();
             ViewData["Department"] = db.MainCompanyStructures.Select(x => new { x.OrgStructureId, x.Name }).ToList();
@@ -32,13 +57,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             ViewData["GLPeriod"] = db.GLPeriods.Select(x => new { x.GLPeriodId, x.Name }).ToList();
             ViewData["GlFiscalYear"] = db.GLFiscalYears.Select(x => new { x.GlFiscalYearId, x.Name }).ToList();
 
-            var fleet = db.Fleets.Select(s => new
-            {
-                Text = s.PlateNumber,
-                Value = s.FleetsID
-            }).ToList();
-            ViewData["Fleets"] = fleet;
-
+            
             ViewData["Taxes"] = db.GLTaxRates.Select(s => new
             {
                 Value = s.GLTaxRateID,
@@ -112,19 +131,19 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         public ActionResult RentalPaymentRequests_Create([DataSourceRequest] DataSourceRequest request, RentalPaymentRequest rentalPaymentRequest)
          {
             var durations = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == rentalPaymentRequest.GLPeriodId);
-            var result = CheckNull(rentalPaymentRequest);
-            if (result == RentalValidation.RentFromExternaNotFound)
-            {
-                ModelState.AddModelError(string.Empty, "No equipment was found under the supplier name in rent from external");
-            }
-            if (result == RentalValidation.FleetNotFound)
-            {
-                ModelState.AddModelError(string.Empty, "no fleet was found under rent from external fleet registration");
-            }
-            if (result == RentalValidation.DateInvalid)
-            {
-                ModelState.AddModelError(string.Empty, $"No Timesheet was found under the period {durations.DateFrom} to {durations.DateTo}");
-            }
+            //var result = CheckNull(rentalPaymentRequest);
+            //if (result == RentalValidation.RentFromExternaNotFound)
+            //{
+            //    ModelState.AddModelError(string.Empty, "No equipment was found under the supplier name in rent from external");
+            //}
+            //if (result == RentalValidation.FleetNotFound)
+            //{
+            //    ModelState.AddModelError(string.Empty, "no fleet was found under rent from external fleet registration");
+            //}
+            //if (result == RentalValidation.DateInvalid)
+            //{
+            //    ModelState.AddModelError(string.Empty, $"No Timesheet was found under the period {durations.DateFrom} to {durations.DateTo}");
+            //}
 
             if (ModelState.IsValid)
 
@@ -179,13 +198,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     IsFinanceApproved = rentalPaymentRequest.IsFinanceApproved,
                     FinanceApprovedBy = rentalPaymentRequest.FinanceApprovedBy,
                     FinanceApprovedTime = rentalPaymentRequest.FinanceApprovedTime,
-                };
+                    
+                };     
 
                 db.RentalPaymentRequests.Add(entity);
                 db.SaveChanges();
                 rentalPaymentRequest.RentalPaymentRequestId = entity.RentalPaymentRequestId;
 
-                GenerateRentalPaymentRequestDetail(entity);
+               // GenerateRentalPaymentRequestDetail(entity);
 
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "Rental payment request registration", "Success", User.Identity.Name, $"created rental payment request number {entity.RentalPaymentRequestId} ", Modules.FleetManagement);
@@ -210,59 +230,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     db.Entry(rentalPaymentRequest).State = EntityState.Modified;
                     db.SaveChanges();
                 }
-                //var entity = new RentalPaymentRequest
-                //{
-                //    RentalPaymentRequestId = rentalPaymentRequest.RentalPaymentRequestId,
-                //    EmployeeId = rentalPaymentRequest.EmployeeId,
-                //    BranchId = rentalPaymentRequest.BranchId,
-                //    ReasonofPayment = rentalPaymentRequest.ReasonofPayment,
-                //    RequestDate = rentalPaymentRequest.RequestDate,
-                //    Refference = rentalPaymentRequest.Refference,
-                //    Remark = rentalPaymentRequest.Remark,
-                //    GLPeriodId = rentalPaymentRequest.GLPeriodId,
-                //    GLFiscalYearId = rentalPaymentRequest.GLFiscalYearId,
-                //    DurationFrom = durations.DateFrom,
-                //    DurationTo = durations.DateTo,
-                //    OrgStructureId = rentalPaymentRequest.OrgStructureId,
-                //    ProcurementSupplierID = rentalPaymentRequest.ProcurementSupplierID,
-                //    BusinessUnitId = rentalPaymentRequest.BusinessUnitId,
-                //    IsBudgetApproved = rentalPaymentRequest.IsBudgetApproved,
-                //    BudgetApprovedBy = rentalPaymentRequest.BudgetApprovedBy,
-                //    BudgetApprovedTime = rentalPaymentRequest.BudgetApprovedTime,
-                //    ForwardedFrom = rentalPaymentRequest.ForwardedFrom,
-                //    ForwardedTo = rentalPaymentRequest.ForwardedTo,
-                //    IsFinalApproval = rentalPaymentRequest.IsFinalApproval,
-                //    CurrentApprovalStep = rentalPaymentRequest.CurrentApprovalStep,
-                //    IsDepartmentOnlineApproved = rentalPaymentRequest.IsDepartmentOnlineApproved,
-                //    DepartmentOnlineApprovedBy = rentalPaymentRequest.DepartmentOnlineApprovedBy,
-                //    DepartmentOnlineApprovedTime = rentalPaymentRequest.DepartmentOnlineApprovedTime,
-                //    IsDepartmentSendForApproval = rentalPaymentRequest.IsDepartmentSendForApproval,
-                //    DepartmentSendForApprovalBy = rentalPaymentRequest.DepartmentSendForApprovalBy,
-                //    DepartmentSendForApprovalTime = rentalPaymentRequest.DepartmentSendForApprovalTime,
-                //    IsOnlineApproved = rentalPaymentRequest.IsOnlineApproved,
-                //    OnlineApprovedBy = rentalPaymentRequest.OnlineApprovedBy,
-                //    OnlineApprovedTime = rentalPaymentRequest.OnlineApprovedTime,
-                //    IsSendForApproval = rentalPaymentRequest.IsSendForApproval,
-                //    SendForApprovalBy = rentalPaymentRequest.SendForApprovalBy,
-                //    SendForApprovalTime = rentalPaymentRequest.SendForApprovalTime,
-                //    IsOnlineTransferred = rentalPaymentRequest.IsOnlineTransferred,
-                //    IsOnlineTransferredBy = rentalPaymentRequest.IsOnlineTransferredBy,
-                //    OnlineTransferredTime = rentalPaymentRequest.OnlineTransferredTime,
-                //    OrgBranchName = rentalPaymentRequest.OrgBranchName,
-                //    IsVoid = rentalPaymentRequest.IsVoid,
-                //    VoidBy = rentalPaymentRequest.VoidBy,
-                //    VoidTime = rentalPaymentRequest.VoidTime,
-                //    DateCreated = rentalPaymentRequest.DateCreated,
-                //    CreatedBy = rentalPaymentRequest.CreatedBy,
-                //    LastModified = DateTime.Now,
-                //    ModifiedBy = User.Identity.Name,
-                //    IsFinanceSendForApproval = rentalPaymentRequest.IsFinanceSendForApproval,
-                //    FinanceSendForApprovalBy = rentalPaymentRequest.FinanceSendForApprovalBy,
-                //    FinanceSendForApprovalTime = rentalPaymentRequest.FinanceSendForApprovalTime,
-                //    IsFinanceApproved = rentalPaymentRequest.IsFinanceApproved,
-                //    FinanceApprovedBy = rentalPaymentRequest.FinanceApprovedBy,
-                //    FinanceApprovedTime = rentalPaymentRequest.FinanceApprovedTime,
-                //};
+                
                 
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "Rental payment request update", "Success", User.Identity.Name, $"updated rental payment request {rentalPaymentRequest.RentalPaymentRequestId} ", Modules.FleetManagement);
@@ -332,15 +300,16 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 record.DepartmentSendForApprovalTime = DateTime.Now;
                 db.Entry(record).State = EntityState.Modified;
                 db.SaveChanges();
-                //#region approval workflow
-                //bool isNewRecord = true;
-                //var validations = record.RentalPaymentRequestDepartmentValidation.Where(x => x.Status == ApprovalStatuses.Approve).AsQueryable();
-                //if (validations.Any())
-                //    isNewRecord = false;
-                //decimal docamount = record.RentalPaymentRequestLines.Where(x => x.RentalPaymentRequestLineId == id).Sum(x => x.TotalAmount);
-                //int docid = record.RentalPaymentRequestId;
-                ////DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", record.ForwardedTo, ApprovalDocumentType.ApPaymentRequestSelfCare, isNewRecord);
-                //#endregion
+                #region approval workflow
+                bool isNewRecord = true;
+                var validations = db.RentalPaymentRequestDepartmentValidations.Where(x => x.Status == ApprovalStatuses.Approve && x.RentalPaymentRequestId == id).AsQueryable();
+                if (validations.Any())
+                    isNewRecord = false;
+                decimal docamount = db.RentalPaymentRequestLines.Where(x => x.RentalPaymentRequestId == id).Sum(x => x.TotalAmount);
+                int docid = record.RentalPaymentRequestId;
+                int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
+                DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", record.ForwardedTo, Core.Domain.Common.DocumentApproval.ApprovalDocumentType.FleetRentalPaymentRequest, isNewRecord, step);
+                #endregion
                 var formattedData = new
                 {
                     Message = "Successfully Sent.",

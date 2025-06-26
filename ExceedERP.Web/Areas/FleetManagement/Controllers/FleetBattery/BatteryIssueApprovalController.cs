@@ -8,6 +8,7 @@ using Kendo.Mvc.Extensions;
 using System.Data.Entity;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.FleetManagement.BatteryManagement;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;

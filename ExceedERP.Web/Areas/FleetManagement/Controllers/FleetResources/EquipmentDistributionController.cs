@@ -18,7 +18,11 @@ using ExceedERP.Helpers.Fleet;
 using ExceedERP.DataAccess.Context;
 using System.Data.Entity;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
-
+using ExceedERP.Core.Domain.Finance.AP;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Maintenance;
+using ExceedERP.Core.Domain.Inventory;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
       [AuthorizeRoles(FleetManagementRoles.ResourceRequestor, FleetManagementRoles.ResourceRequestApprover)] 
@@ -90,7 +94,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             var items = db.InventoryItems;
             var costCenter = db.BranchCostCenter;
             var branches = db.Branch;
-
+            ViewData["Branches"] = branches;
 
             var inventoryPeriods = db.InventoryPeriods;
             var selectedinventoryPeriods = inventoryPeriods.Select(
@@ -101,7 +105,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
              }).AsQueryable();
             ViewData["inventoryPeriods"] = selectedinventoryPeriods;
 
-            ViewData["Branches"] = branches;
+            
             var selecteditems = items.Select(
                 i => new
                 {
@@ -118,14 +122,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
 
 
-            var employee = db.Person_Employee;
-            var selectedEmployee = employee.Select(
-                i => new
-                {
-                    Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
-                    Code = i.EmployeeId
-                }).AsQueryable();
-            ViewData["personEmployees"] = selectedEmployee;
+            //var employee = db.Person_Employee;
+            //var selectedEmployee = employee.Select(
+            //    i => new
+            //    {
+            //        Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+            //        Code = i.EmployeeId
+            //    }).AsQueryable();
+            //ViewData["personEmployees"] = selectedEmployee;
 
             var selectedcostCenter = costCenter.Select(
                i => new
@@ -147,25 +151,25 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     Code = i.EmployeeId
                 }).AsQueryable();
             ViewData["personEmployees"] = selectedEmployee;
-            var branches = db.Branch;
+           // var branches = db.Branch;
             var structure = db.MainCompanyStructures;
 
-            var subAccountSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
-            var subAccounts = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId);
-            var chartOfAccountSubAccounts = subAccounts;
-            var subaccounts = chartOfAccountSubAccounts.Select(
-                i => new
-                {
-                    Name = i.Description,
-                    Code = i.Values
-                }).AsQueryable();
+            //var subAccountSeg = db.GlSegmentSetups.FirstOrDefault(x => x.SegmentType == DynamicSegmentTypes.SubAccount);
+            //var subAccounts = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == subAccountSeg.GLSegmentSetupId);
+            ////var chartOfAccountSubAccounts = subAccounts;
+            //var subaccounts = chartOfAccountSubAccounts.Select(
+            //    i => new
+            //    {
+            //        Name = i.Description,
+            //        Code = i.Values
+            //    }).AsQueryable();
 
 
-            ViewData["SubAccounts"] = subaccounts;
+            //ViewData["SubAccounts"] = subaccounts;
 
             ViewData["Structure"] = structure;
 
-            ViewData["Branches"] = branches;
+           // ViewData["Branches"] = branches;
             var items = db.ApSetupItems.Select(s => new
             {
                 s.ApSetupItemId,
@@ -175,11 +179,16 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
         public ActionResult VehicleDistribution_Read([DataSourceRequest] DataSourceRequest request)
         {
-            FleetMaintenaceHelper FleetMaintenaceHelper = new FleetMaintenaceHelper();
-            var VehicleDistribution = _VehicleDistributionService.GetAll().Where(x=>x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(v => new  
-                {
+            //FleetMaintenaceHelper FleetMaintenaceHelper = new FleetMaintenaceHelper();
+            //var VehicleDistribution = _VehicleDistributionService.GetAll().Where(x=>x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(v => new  
+            //    {
+           string userBranch = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+            IQueryable<VehicleDistribution> vehicleDistributions = db.VehicleDistribution
+              .Where(x => x.OrgBranchName == userBranch);
+            DataSourceResult result = vehicleDistributions.ToDataSourceResult(request, v => new
+            {
 
-                    RequestID = v.RequestID,
+                RequestID = v.RequestID,
                     AssignedQuantity = v.AssignedQuantity,
                     EmployeeId=v.EmployeeId,
                     RequestDate=v.RequestDate,
@@ -190,6 +199,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     ToDate = v.ToDate,
                     RequestNumber = v.RequestNumber,
                     Status = v.Status,
+                    IsVoid = v.IsVoid,
+                    IsExternal = v.IsExternal,
                     VehicleDistributionID = v.VehicleDistributionID,
                     FromBranchName = v.FromBranchName,
                     FromStructureName = v.FromStructureName,
@@ -201,16 +212,67 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     DateCreated = v.DateCreated,
                     LastModified = v.LastModified,
                     ModifiedBy= v.ModifiedBy,
-                    Remark = FleetMaintenaceHelper.GetFleetDistributionDuration(v)
+                    
+                    Remark =v.Remark //FleetMaintenaceHelper.GetFleetDistributionDuration(v)
                    
 
                 }
                 );
 
-            return Json(VehicleDistribution.ToDataSourceResult(request));
+            return Json(result);
         }
+        //    public ActionResult VehicleDistributionHistory_Read([DataSourceRequest] DataSourceRequest request,string id)
+        //{
+        //    //FleetMaintenaceHelper FleetMaintenaceHelper = new FleetMaintenaceHelper();
+        //    //var VehicleDistribution = _VehicleDistributionService.GetAll().Where(x=>x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(v => new  
+        //    //    {
+        //    var FetchFleet = db.Fleets.FirstOrDefault(x => x.FleetsID.ToString() == id);
+             
+        //   string userBranch = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+        //    IQueryable<VehicleDistribution> vehicleDistributions = db.VehicleDistribution
+        //      .Where(x => x.OrgBranchName == userBranch&&x.PlateNumber==FetchFleet.PlateNumber);
+        //    DataSourceResult result = vehicleDistributions.ToDataSourceResult(request, v => new VehicleDistributionVM
+        //    {
 
-        public ActionResult VehicleReturn_Read([DataSourceRequest] DataSourceRequest request)
+        //        RequestID = v.RequestID,
+        //        AssignedQuantity = v.AssignedQuantity,
+        //        EmployeeId = v.EmployeeId,
+        //        RequestDate = v.RequestDate,
+        //        ReasonForTravel = v.ReasonForTravel,
+        //        DistrubtionNumber = v.DistrubtionNumber,
+        //        StartingDate = v.StartingDate,
+        //        ToDate = v.ToDate,
+        //        RequestNumber = v.RequestNumber,
+        //        Status = v.Status,
+        //        VehicleDistributionID = v.VehicleDistributionID,
+        //        FromBranchName = v.FromBranchName,
+        //        FromStructureName = v.FromStructureName,
+        //        EquipmentStatus = v.EquipmentStatus,
+        //        Reference = v.Reference,
+        //        OperatorName = GetOperatorById(
+        //                    db.AssignedEquipment
+        //                      .Where(x => x.VehicleDemandId.ToString() == v.RequestID.ToString())
+        //                      .Select(x => x.OperatorId.ToString())
+        //                      .FirstOrDefault()
+        //                )
+
+
+        //    }
+        //        );
+
+        //    return Json(result);
+        //}
+        private string GetOperatorById(string operatorSelector)
+        {
+            if (string.IsNullOrEmpty(operatorSelector)) return string.Empty;
+
+            var fetchOperatorName = db.Operator
+                .FirstOrDefault(x => x.OperatorID.ToString() == operatorSelector)?.FullName;
+
+            return fetchOperatorName ?? string.Empty;
+
+        }
+            public ActionResult VehicleReturn_Read([DataSourceRequest] DataSourceRequest request)
         {
             var VehicleDistribution = _VehicleDistributionService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Where(x => x.IsOnlineApproved == true).Select(v => new VehicleDistribution
             {
@@ -261,7 +323,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 if (rentRequest != null)
                 {
                     VehicleDistribution.VehicleDistributionID = Guid.NewGuid();
-
                     VehicleDistribution.DistrubtionNumber = rentRequest.RequestNumber;
                     VehicleDistribution.StartingDate = rentRequest.StartingDate;
                     VehicleDistribution.ToDate = rentRequest.ToDate;
@@ -302,7 +363,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     {
 
                         VehicleDistribution.VehicleDistributionID = Guid.NewGuid();
-
                         VehicleDistribution.DistrubtionNumber = vehicleDemand.RequestNumber;
                         VehicleDistribution.ReasonForTravel = vehicleDemand.ReasonForTravel;
                         VehicleDistribution.EmployeeId = vehicleDemand.EmployeeId;
@@ -436,5 +496,117 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(message.Error);
             
         }
-    }
+        public JsonResult ToggleIsExternal(string id,bool newIsExternal)
+        {
+            var record = db.VehicleDistribution.FirstOrDefault(x => x.VehicleDistributionID.ToString() == id);
+            if (record != null)
+            {
+                record.IsExternal = newIsExternal;
+                db.Entry(record).State = EntityState.Modified;
+                db.SaveChanges();
+                return Json(new { success = true });
+            }
+
+            return Json(new { success = false, message = "Record not found." });
+        }
+       
+        public JsonResult Void(string id)
+        {
+            Guid Id = Guid.Parse(id);
+            var record = db.VehicleDistribution.Find(Id);
+            if (record != null && record.IsOnlineApproved && !record.IsVoid)
+            {
+                record.Status = Enum.GetName(typeof(OperationStatuses), 10);
+                record.IsVoid = true;
+                record.IsSendForApproval = false;
+                record.IsOnlineApproved = false;
+                record.VoidBy = User.Identity.Name;
+                record.VoidTime = DateTime.Now;
+                db.VehicleDistribution.Attach(record);
+                db.Entry(record).State = EntityState.Modified;
+                db.SaveChanges();
+
+                
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Vehicle Distribution Voided", "Success", User.Identity.Name, $"void Vehicle Distribution {id} ", Modules.Inventory);
+                #endregion
+
+                var formattedData = new
+                {
+                    Message = "Void Successful.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+           
+            if (record.IsVoid)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already void.You can not void again.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            
+            if (!record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not approved hence you can modify by editing.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            return null;
+        }
+        //public JsonResult Void(int id)
+        //{
+        //    var record = db.VehicleDistribution.Find(id);
+        //    if (record != null && record.IsOnlineApproved && !record.IsVoid)
+        //    {
+
+               
+        //            record.IsSendForApproval = false;
+        //            record.IsOnlineApproved = false;
+                   
+        //          //  record.OnlineApprovedBy = User.Identity.Name;
+        //            record.Status = MaintenanceConst.Rejected;
+        //        record.IsVoid = true;
+        //        record.VoidBy = User.Identity.Name; ;
+        //        record.IsVoid = true;
+        //            //db.VehicleDistribution.Attach(record);
+        //            db.Entry(record).State = EntityState.Modified;
+        //            db.SaveChanges();
+        //            var returnMessage = new
+        //            {
+        //                Message = "Successfully Sent!",
+
+        //            };
+        //            return Json(returnMessage.Message, JsonRequestBehavior.AllowGet);
+
+        //        }
+
+        //        var jsonData = new
+        //        {
+        //            Message = "Error Sending!",
+
+        //        };
+        //        return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
+
+        //    }
+
+        }
 }

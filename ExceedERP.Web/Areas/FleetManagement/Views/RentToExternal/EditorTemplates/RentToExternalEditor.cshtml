@@ -58,7 +58,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.ProjectLocation)
                                           .DataTextField("Name")
                                           .DataValueField("Id").OptionLabel("Select").HtmlAttributes(new { style = "width:100%" })
-                                          .DataSource(d => d.Read(r => r.Action("BranchDDBind", "Branch"))))
+                                          .DataSource(d => d.Read(r => r.Action("BranchDDBind", "Branch").Data("sendForgery"))))
                     @Html.ValidationMessageFor(model => model.ProjectLocation, "", new { @class = "text-danger" })
                 </div>
             </div>

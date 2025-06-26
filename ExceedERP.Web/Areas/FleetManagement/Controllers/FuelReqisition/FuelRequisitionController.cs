@@ -89,7 +89,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
 
 
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment)]
+       [AuthorizeRoles(InventoryConstants.PropertyRequistion, InventoryConstants.UserDepartment)]
 
         public ActionResult FuelRequisitions_Read([DataSourceRequest] DataSourceRequest request, string vdId)
         {
@@ -136,11 +136,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
             {
                 storeRequisitions = storeRequisitions.Where(x => x.CreatedBy == User.Identity.Name).AsQueryable();
             }
-
-
-            //old
-            // List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
-            // IQueryable<StoreRequisition> storerequisitions = db.StoreRequisitions.Where(x => x.IsFuel).Where(x => userStores.Contains(x.StoreCode));
+            // var storeRequisitions = _db.StoreRequisitions.Where(xyz => xyz.VehicleDistributionID == vehicleDistributionID).ToList();
             var result = storeRequisitions.ToDataSourceResult(request, storeRequisition => new StoreRequisition
             {
                 StoreRequisitionID = storeRequisition.StoreRequisitionID,
@@ -204,7 +200,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
             return Json(result);
         }
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
+       [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FuelRequisitions_Create([DataSourceRequest] DataSourceRequest request, StoreRequisition storeRequisition, string vdId)
@@ -276,7 +272,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
                 var entity = new StoreRequisition
                 {
                     Reference = storeRequisition.Reference,
-                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById((int)storeRequisition.EmployeeId),
+                    OrgStructureId = UserInformationHelper.GetEmployeeWorkUnitById(storeRequisition.EmployeeId),
                     BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(storeRequisition.StoreCode), //UserInformationHelper.GetEmployeeBranchId(User.Identity.Name),
                     BusinessUnitId = UserInformationHelper.GetUserDefaultBusinessUnitId(User.Identity.Name),
                     EmployeeId = storeRequisition.EmployeeId, // UserInformationHelper.GetEmployeeId(User.Identity.Name),
@@ -333,7 +329,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
         }
 
 
-        [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
+       [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult FuelRequisitions_Update([DataSourceRequest] DataSourceRequest request, StoreRequisition storeRequisition)
@@ -432,7 +428,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
                     DifferenceKm = storeRequisition.DifferenceKm,
                     Consumption = storeRequisition.Consumption,
                     StandardConsumption = storeRequisition.StandardConsumption,
-
                     IsVoid = storeRequisition.IsVoid,
                     VoidBy = storeRequisition.VoidBy,
                     VoidTime = storeRequisition.VoidTime,
@@ -493,14 +488,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
                     IsForOther = storeRequisition.IsForOther,
                     ForBranchId = storeRequisition.ForBranchId,
                     ModelNo = storeRequisition.ModelNo,
-
                     PrevKm = storeRequisition.PrevKm,
                     PrevLT = storeRequisition.PrevLT,
                     CurrentKm = storeRequisition.CurrentKm,
                     DifferenceKm = storeRequisition.DifferenceKm,
                     Consumption = storeRequisition.Consumption,
                     StandardConsumption = storeRequisition.StandardConsumption,
-
                     VoidBy = storeRequisition.VoidBy,
                     VoidTime = storeRequisition.VoidTime,
                     IsOnlineApproved = storeRequisition.IsOnlineApproved,
@@ -670,9 +663,38 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Requisitions
         public JsonResult FuelRequisitions_Approval(int id)
         {
             var record = _db.StoreRequisitions.Find(id);
-            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.StoreRequisitionItem.Count > 0)
+            if(record==null)
             {
-                record.Status = Enum.GetName(typeof(OperationStatuses), 4);
+                var formattedData = new
+                {
+                    Message = "No record found on parent table",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            var checkParentApproval = _db.VehicleDistribution.FirstOrDefault(vdi => vdi.VehicleDistributionID == record.VehicleDistributionID);
+            if (!checkParentApproval.IsOnlineApproved)
+            {               
+                var formattedData = new
+                {
+                    Message = "You have to approve the vehicle distribution first",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (!checkParentApproval.IsSendForApproval)
+            {
+                var formattedData = new
+                {
+                    Message = "Vehicle distribution should be send for approval first",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+           if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.StoreRequisitionItem.Count > 0)
+               
+                {
+                    record.Status = Enum.GetName(typeof(OperationStatuses), 4);
                 record.IsSendForApproval = true;
                 record.SendForApprovalBy = User.Identity.Name;
                 record.SendForApprovalTime = DateTime.Now;

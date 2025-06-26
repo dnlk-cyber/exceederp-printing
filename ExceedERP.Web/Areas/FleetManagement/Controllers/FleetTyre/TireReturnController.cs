@@ -13,13 +13,14 @@ using ExceedERP.ApplicationServices.FleetManagement.FleetTireManagement;
 using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     public class TireReturnController : Controller
     {
       ITireReturnService _TireReturnService;
-
+        ExceedDbContext db = new ExceedDbContext();
         public TireReturnController()
         {
             _TireReturnService = new TireReturnService();
@@ -102,7 +103,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TireReturn_Destroy([DataSourceRequest] DataSourceRequest request, TireReturn tireReturn)
         {
-            var TireReturn = _TireReturnService.GetById(tireReturn.TireReturnID);
+            //var TireReturn = _TireReturnService.GetById(tireReturn.TireReturnID);
+            var TireReturn = db.TireReturn.Find(tireReturn.TireReturnID);
             if (TireReturn != null)
             {
                 _TireReturnService.Delete(TireReturn);

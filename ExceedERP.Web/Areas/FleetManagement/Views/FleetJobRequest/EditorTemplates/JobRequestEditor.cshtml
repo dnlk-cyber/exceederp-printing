@@ -47,7 +47,7 @@
                                       .Events(ev => ev.Change("onCustomerSelect"))
                                       .DataSource(dataSource =>
                                       {
-                                          dataSource.Read(read => read.Action("GetOrgnizationalCustomers", "MaintenanceDataProvider", new { area = "Maintenance" }))
+                                          dataSource.Read(read => read.Action("GetOrgnizationalCustomers", "MaintenanceDataProvider", new { area = "Maintenance" }).Data("sendForgery"))
                                           .ServerFiltering(false);
                                       }).HtmlAttributes(new { style = "width:100%" }))
             </div>
@@ -68,7 +68,7 @@
                                     .CascadeFrom("Source")
                                     .DataSource(d =>
                                     {
-                                        d.Read(r => r.Action("GetPlateNos", "MaintenanceDataProvider", new { area = "Maintenance" }).Data("handleJobRequestSource"))
+                                        d.Read(r => r.Action("GetPlateNos", "MaintenanceDataProvider", new { area = "Maintenance" }).Data("sendForgery").Data("handleJobRequestSource"))
                                             .ServerFiltering(true);
                                     }).HtmlAttributes(new { style = "width:100%" })
                 )
@@ -149,7 +149,7 @@
                                           .OptionLabel("Select...")
                                           .DataSource(dataSource =>
                                           {
-                                              dataSource.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
+                                              dataSource.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployees"))
                                                             .ServerFiltering(true);
                                           }).HtmlAttributes(new { style = "width:100%" })
 

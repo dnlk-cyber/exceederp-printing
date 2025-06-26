@@ -61,7 +61,7 @@
                                 @(Html.Kendo().DropDownListFor(model => model.EquipmentTypeId).Name("EquipmentTypeId")
                                           .DataTextField("EquipmentCategoryName")
                                           .DataValueField("EquipmentIdentityID").Filter(FilterType.Contains).OptionLabel("Select ").HtmlAttributes(new { style = "width:100%" })
-                                          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory")).ServerFiltering(false)))
+                                          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory").Data("sendForgery")).ServerFiltering(false)))
 
                             </div>
                         </div>
@@ -132,7 +132,7 @@
                                                               .DataValueField("FleetsID").OptionLabel(" Select ")
                                                               .Filter(FilterType.Contains)
                                                                                                               .DataSource(d => 
-                                                                                                              d.Read(r => r.Action("EquipmentDDBind", "EquipmentRegistration")
+                                                                                                              d.Read(r => r.Action("EquipmentDDBind", "EquipmentRegistration").Data("sendForgery")
                                                                                                               .Data("filterEquipment"))
                                                                                                               .ServerFiltering(true))
                                                                                                               .CascadeFrom("EquipmentTypeId"))

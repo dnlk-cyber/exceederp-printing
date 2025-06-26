@@ -18,7 +18,21 @@ namespace ExceedERP.Reporting.Fleet.ViewModel
         public string Period { get; set; }
         public string PlateNumber { get; set; }
         public string Project { get; set; }
-        
+        public string PreparedBy { get; set; }
+        public string PreparedDate { get; set; }
+        public string CheckedBy { get; set; }
+        public string CheckedDate { get; set; }
+        public string ApprovedBy { get; set; }
+        public string ApprovedDate { get; set; }
+        public string AuthorizedBy { get; set; }
+        public string AuthorizedDate { get; set; }
+         public string ModifiedBy { get; set; }
+        public string ModifiedDate { get; set; }
+        public string TimesheetSendForApprovalBy { get; set; }
+        public string TimesheetSendForApprovalDate { get; set; }
+        public string TimesheetApprovedBy { get; set; }
+        public string TimesheetApprovedDate { get; set; }
+
     }
     public class WagonDrillExternalTimesheetViewModel
     {

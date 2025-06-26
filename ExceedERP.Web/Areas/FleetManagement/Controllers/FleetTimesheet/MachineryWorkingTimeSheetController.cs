@@ -13,12 +13,14 @@ using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.FleetManagement.FleetInsurances;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Reporting.Fleet.ViewModel;
-using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 
+using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using ExceedERP.Reporting.Fleet.ViewModel;
+//using ExceedERP.Reporting.Fleet.ViewModel;
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
 {
-    //[AuthorizeRoles(FleetManagementRoles.FleetTimeSheet)]
+    [AuthorizeRoles(FleetManagementRoles.FleetTimeSheetUser, FleetManagementRoles.FleetTimeSheetApprover)]
     public class MachineryWorkingTimeSheetController : Controller
     {
 
@@ -52,11 +54,16 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 Value = s.BranchId,
                 Text = s.Name
             }).ToList();
+            ViewData["operator"] = db.Operator.Select(s => new
+            {
+                Value = s.OperatorID,
+                Text = s.FullName
+            }).ToList();
             ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
-            RepopulateTimeSheet();
+            
             return View();
         }
-        public void RepopulateTimeSheet()
+        public JsonResult RepopulateTimeSheet()
         {
             var timesheets = db.MachineryWorkingTimeSheets.ToList();
             if (timesheets.Any())
@@ -70,12 +77,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 }
                 db.SaveChanges();
             }
-
+            return Json("success", JsonRequestBehavior.AllowGet);
         }
         public ActionResult MachineryWorkingTimeSheets_Read([DataSourceRequest] DataSourceRequest request)
         {
-          
-            var machineryWorkingTimeSheets = db.MachineryWorkingTimeSheets;           
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var machineryWorkingTimeSheets = db.MachineryWorkingTimeSheets.Where(x => mybraches.Contains(x.BranchId));           
             DataSourceResult result = machineryWorkingTimeSheets.ToDataSourceResult(request, machineryWorkingTimeSheet => new MachineryWorkingTimeSheet
             {
                 
@@ -109,13 +116,13 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 TotalAmountBeforeVAT = machineryWorkingTimeSheet.TotalAmountBeforeVAT,
                 VAT = machineryWorkingTimeSheet.VAT,
                 TotalAmount = machineryWorkingTimeSheet.TotalAmount,
+                OilConsumption = machineryWorkingTimeSheet.OilConsumption,
                 FuelCost = machineryWorkingTimeSheet.FuelCost,
                 ServiceRecharge = machineryWorkingTimeSheet.ServiceRecharge,
                 LubricantCost = machineryWorkingTimeSheet.LubricantCost,
                 MaintenanceCost = machineryWorkingTimeSheet.MaintenanceCost,
                 TotalCost = machineryWorkingTimeSheet.TotalCost,
                 NetAmount = machineryWorkingTimeSheet.NetAmount,
-
                 DownHourRate = machineryWorkingTimeSheet.DownHourRate,
                 OperationRevenue = machineryWorkingTimeSheet.OperationRevenue,
                 Perdium = machineryWorkingTimeSheet.Perdium,
@@ -142,7 +149,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                 GreaseRate = machineryWorkingTimeSheet.GreaseRate,
                 EquipmentCategoryId = machineryWorkingTimeSheet.EquipmentCategoryId,
                 EquipmentTypeId = machineryWorkingTimeSheet.EquipmentTypeId,
-                EquipmentNameId = machineryWorkingTimeSheet.EquipmentNameId
+                EquipmentNameId = machineryWorkingTimeSheet.EquipmentNameId,
+                
 
             });
             return Json(result);
@@ -160,6 +168,26 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
             var totalCost = fuelCost + machineryWorkingTimeSheet.MaintenanceCost + machineryWorkingTimeSheet.LubricantCost + machineryWorkingTimeSheet.ServiceRecharge;
 
             #endregion
+            
+            var fetchSettings = db.TimeSheetSetting.ToList();
+
+            if (fetchSettings.Any())
+            {
+                var fetchSetting = fetchSettings.First();
+                var fetchException = db.TimeSheetException.FirstOrDefault(x => x.TimeSheetSettingId == fetchSetting.TimeSheetSettingId && x.BranchId == machineryWorkingTimeSheet.BranchId.ToString());
+                if (fetchException == null)
+                {
+                    if (fetchSetting != null && fetchSetting.IsSet == true)
+                    {
+                        int hoursDifference = (int)(DateTime.Now - machineryWorkingTimeSheet.Date).TotalHours;
+
+                        if (fetchSetting.SettedHours < hoursDifference)
+                        {
+                            ModelState.AddModelError("date expired", "The timesheet recording date is passed");
+                        }
+                    }
+                }
+            }
             if (ModelState.IsValid)
             {
                 var entity = new MachineryWorkingTimeSheet
@@ -200,7 +228,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
                     MaintenanceCost = machineryWorkingTimeSheet.MaintenanceCost,
                     TotalCost = totalCost,
                     NetAmount = totalAmount-totalCost,
-
+                    OilConsumption = machineryWorkingTimeSheet.OilConsumption,
                     DownHourRate = machineryWorkingTimeSheet.DownHourRate,
                     OperationRevenue = machineryWorkingTimeSheet.OperationRevenue,
                     Perdium = machineryWorkingTimeSheet.Perdium,
@@ -439,6 +467,39 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
             return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
 
         }
+        public JsonResult voidRecord(int machineryWorkingTimeSheetId)
+        {
+
+            var machineryTimeSheet = db.MachineryWorkingTimeSheets.Find(machineryWorkingTimeSheetId);
+
+            if (machineryTimeSheet != null)
+            {
+                machineryTimeSheet.TimeSheetSendForAproval = false;
+                machineryTimeSheet.TimeSheetApproved = false;
+                machineryTimeSheet.TimeSheetApprovedDate = DateTime.Now;
+                machineryTimeSheet.TimeSheetApprovedBy = User.Identity.Name;
+                machineryTimeSheet.TimeSheetStatus = MaintenanceConst.Rejected;
+
+                db.MachineryWorkingTimeSheets.Attach(machineryTimeSheet);
+                db.Entry(machineryTimeSheet).State = EntityState.Modified;
+                db.SaveChanges();
+                var returnMessage = new
+                {
+                    Message = "Successfully Sent!",
+
+                };
+                return Json(returnMessage.Message, JsonRequestBehavior.AllowGet);
+
+            }
+
+            var jsonData = new
+            {
+                Message = "Error Sending!",
+
+            };
+            return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
+
+        }
         public ActionResult MachineryTimeSheetApproval_Read([DataSourceRequest] DataSourceRequest request, int id)
         {
 
@@ -458,6 +519,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetTimesheet
             });
             return Json(result);
         }
+        [AuthorizeRoles(FleetManagementRoles.FleetTimeSheetApprover)]
         public ActionResult MachineryTimeSheetApproval_Create([DataSourceRequest] DataSourceRequest request, TimeSheetApprovalNew model, int id)
         {
             if (ModelState.IsValid)

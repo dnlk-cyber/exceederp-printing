@@ -34,7 +34,7 @@
                             .Scrollable(h => h.Height(500))
       .DataSource(dataSource => dataSource
           .Ajax()
-          .ServerOperation(false)
+       
               .Model(model =>
               {
               model.Id(p => p.ManufacturerID);
@@ -46,8 +46,8 @@
                                             .Error("error_handler(\"grid\")")
                                             .RequestStart("onRequestStart(\"grid\")")
                                             .RequestEnd("onRequestEnd(\"grid\")"))
-          .Create(update => update.Action("Manufacturer_Create", "EquipmentManufacturer"))
-          .Read(read => read.Action("Manufacturer_Read", "EquipmentManufacturer"))
-          .Update(update => update.Action("Manufacturer_Update", "EquipmentManufacturer"))
-          .Destroy(update => update.Action("Manufacturer_Destroy", "EquipmentManufacturer"))
+          .Create(update => update.Action("Manufacturer_Create", "EquipmentManufacturer").Data("sendForgery"))
+          .Read(read => read.Action("Manufacturer_Read", "EquipmentManufacturer").Data("sendForgery"))
+          .Update(update => update.Action("Manufacturer_Update", "EquipmentManufacturer").Data("sendForgery"))
+          .Destroy(update => update.Action("Manufacturer_Destroy", "EquipmentManufacturer").Data("sendForgery"))
       ))

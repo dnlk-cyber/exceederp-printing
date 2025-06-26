@@ -48,7 +48,6 @@
     .Events(ev => ev.DetailExpand("onDetailExpandUser"))
                       .DataSource(dataSource => dataSource
             .Ajax()
-            .ServerOperation(false)
         .Sort(x => x.Add(s => s.JobOrderNum).Descending())
             .PageSize(6)
             .Model(model =>
@@ -60,10 +59,10 @@
                                                     .Error("error_handler(\"grid\")")
                                                     .RequestStart("onRequestStart(\"grid\")")
                                                     .RequestEnd("onRequestEnd(\"grid\")"))
-                    .Create(update => update.Action("JobOrder_Create", "JobOrder"))
-                                .Read(read => read.Action("OutSource_Read", "JobOrder"))
-                    .Update(update => update.Action("JobOrder_Update", "JobOrder"))
-                          .Destroy(update => update.Action("TransferJob", "ServiceCenter"))
+                    .Create(update => update.Action("JobOrder_Create", "JobOrder").Data("sendForgery"))
+                                .Read(read => read.Action("OutSource_Read", "JobOrder").Data("sendForgery"))
+                    .Update(update => update.Action("JobOrder_Update", "JobOrder").Data("sendForgery"))
+                          .Destroy(update => update.Action("TransferJob", "ServiceCenter").Data("sendForgery"))
 
         )
    .Events(events => events.DataBound("dataBound"))
@@ -111,8 +110,8 @@
                                                         .Error("error_handler(\"JobOrderDetailgrid_#=JobOrderID#\")")
                                                         .RequestStart("onRequestStart(\"JobOrderDetailgrid_#=JobOrderID#\")")
                                                         .RequestEnd("onRequestEnd(\"JobOrderDetailgrid_#=JobOrderID#\")"))
-                                                       .Read(read => read.Action("SingleJobOrder", "JobOrderDetail", new { jobOrderID = "#=JobOrderID#" }))
-                                                      .Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail"))
+                                                       .Read(read => read.Action("SingleJobOrder", "JobOrderDetail", new { jobOrderID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                      .Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail").Data("sendForgery"))
 
 
                                                               ).Events(events => events.DataBound("servicedataBound"))
@@ -154,8 +153,8 @@
                                                                                 .Error("error_handler(\"SuperVisorApprovalgrid_#=JobOrderID#\")")
                                                                                 .RequestStart("onRequestStart(\"SuperVisorApprovalgrid_#=JobOrderID#\")")
                                                                                 .RequestEnd("onRequestEnd(\"SuperVisorApprovalgrid_#=JobOrderID#\")"))
-                .Read(read => read.Action("SingleJobOrder", "JobOrderDetail", new { jobOrderID = "#=JobOrderID#" }))
-                    .Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail"))
+                .Read(read => read.Action("SingleJobOrder", "JobOrderDetail", new { jobOrderID = "#=JobOrderID#" }).Data("sendForgery"))
+                    .Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail").Data("sendForgery"))
 
 
                                                                               ).Events(events => events.DataBound("ServiceApprovaldataBound"))
@@ -196,9 +195,9 @@
                                                                                     .Error("error_handler(\"Componentgrid_#=JobOrderID#\")")
                                                                                     .RequestStart("onRequestStart(\"Componentgrid_#=JobOrderID#\")")
                                                                                     .RequestEnd("onRequestEnd(\"Componentgrid_#=JobOrderID#\")"))
-                                                                                                                                        .Create(create => create.Action("ExternalComponent_Create", "ExternalComponent", new { jobOrderID = "#=JobOrderID#" }))
-                                                                                                            .Read(read => read.Action("ExternalComponent_Read", "ExternalComponent", new { jobOrderID = "#=JobOrderID#" }))
-                                                                                  .Update(update => update.Action("ExternalComponent_Update", "ExternalComponent"))
+                                                                                                                                        .Create(create => create.Action("ExternalComponent_Create", "ExternalComponent", new { jobOrderID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                            .Read(read => read.Action("ExternalComponent_Read", "ExternalComponent", new { jobOrderID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                  .Update(update => update.Action("ExternalComponent_Update", "ExternalComponent").Data("sendForgery"))
                                                                           
 
 
@@ -225,7 +224,6 @@
                         })
                                                                          .DataSource(dataSource => dataSource
                             .Ajax()
-                            .ServerOperation(false)
                                       .PageSize(6)
                                                                              .Model(model =>
                                                                              {
@@ -238,9 +236,9 @@
                                                                                                                     .Error("error_handler(\"PropertyAdmingrid_#=JobOrderID#\")")
                                                                                                                     .RequestStart("onRequestStart(\"PropertyAdmingrid_#=JobOrderID#\")")
                                                                                                                     .RequestEnd("onRequestEnd(\"PropertyAdmingrid_#=JobOrderID#\")"))
-                                                                                     .Create(update => update.Action("OutsourceMaintenance_Approve", "OutsourceMaintenanceApproval", new { Id = "#=JobOrderID#" }))
-                                                                                                          .Read(read => read.Action("OutsourceMaintenanceApproval_Read", "OutsourceMaintenanceApproval", new { EId = "#=JobOrderID#" }))
-                                                                               .Update(update => update.Action("OutsourceMaintenance_Approve", "OutsourceMaintenanceApproval", new { Id = "#=JobOrderID#" }))
+                                                                                     .Create(update => update.Action("OutsourceMaintenance_Approve", "OutsourceMaintenanceApproval", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                          .Read(read => read.Action("OutsourceMaintenanceApproval_Read", "OutsourceMaintenanceApproval", new { EId = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                               .Update(update => update.Action("OutsourceMaintenance_Approve", "OutsourceMaintenanceApproval", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
 
 
 
@@ -302,10 +300,10 @@
                                   .Error("error_handler(\"InternalSparegrid_#=JobOrderDetailID#\")")
                                   .RequestStart("onRequestStart(\"InternalSparegrid_#=JobOrderDetailID#\")")
                                   .RequestEnd("onRequestEnd(\"InternalSparegrid_#=JobOrderDetailID#\")"))
-                              .Create(update => update.Action("OutSourceServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
-                                      .Read(read => read.Action("OutSourceInternalSpareByService", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
-                      .Update(destroy => destroy.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
-                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                              .Create(update => update.Action("OutSourceServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }).Data("sendForgery"))
+                                      .Read(read => read.Action("OutSourceInternalSpareByService", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }).Data("sendForgery"))
+                      .Update(destroy => destroy.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }).Data("sendForgery"))
+                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
                   )
                   .Pageable()
                   .ToClientTemplate())
@@ -346,7 +344,7 @@
                                                                                                                 .Error("error_handler(\"Requisitiongrid_#=JobOrderDetailID#\")")
                                                                                                                 .RequestStart("onRequestStart(\"Requisitiongrid_#=JobOrderDetailID#\")")
                                                                                                                 .RequestEnd("onRequestEnd(\"Requisitiongrid_#=JobOrderDetailID#\")"))
-                                                                                                                            .Read(read => read.Action("GetServiceRequisition", "ServiceCenter", new { Id = "#=JobOrderDetailID#" }))
+                                                                                                                            .Read(read => read.Action("GetServiceRequisition", "ServiceCenter", new { Id = "#=JobOrderDetailID#" }).Data("sendForgery"))
 
                                                                                               )
                             .Pageable()
@@ -387,9 +385,9 @@
                                                                                                         .Error("error_handler(\"SpareExternalMaterialgrid_#=JobOrderDetailID#\")")
                                                                                                         .RequestStart("onRequestStart(\"SpareExternalMaterialgrid_#=JobOrderDetailID#\")")
                                                                                                         .RequestEnd("onRequestEnd(\"SpareExternalMaterialgrid_#=JobOrderDetailID#\")"))
-                           .Create(update => update.Action("ExternalServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
-                       .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=JobOrderDetailID#" }))
-                                                          .Update(destroy => destroy.Action("ExternalServiceSpare_Create", "ServiceSpare", new { cserviceID = "#=JobOrderDetailID#" }))
+                           .Create(update => update.Action("ExternalServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }).Data("sendForgery"))
+                       .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=JobOrderDetailID#" }).Data("sendForgery"))
+                                                          .Update(destroy => destroy.Action("ExternalServiceSpare_Create", "ServiceSpare", new { cserviceID = "#=JobOrderDetailID#" }).Data("sendForgery"))
 
                                                                                               )
                             .Pageable()
@@ -453,10 +451,10 @@
                                       .Error("error_handler(\"ApproveServiceSparegrid_#=JobOrderDetailID#\")")
                                       .RequestStart("onRequestStart(\"ApproveServiceSparegrid_#=JobOrderDetailID#\")")
                                       .RequestEnd("onRequestEnd(\"ApproveServiceSparegrid_#=JobOrderDetailID#\")"))
-                          .Create(update => update.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
-                                  .Read(read => read.Action("OutSourceInternalSpareByService", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
-                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
-                                  .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
+                          .Create(update => update.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }).Data("sendForgery"))
+                                  .Read(read => read.Action("OutSourceInternalSpareByService", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }).Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
+                                  .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }).Data("sendForgery"))
 
                       )
                       .Pageable()
@@ -502,9 +500,9 @@
                                                                                                         .Error("error_handler(\"ExternalMaterialApprovalgrid_#=JobOrderDetailID#\")")
                                                                                                         .RequestStart("onRequestStart(\"ExternalMaterialApprovalgrid_#=JobOrderDetailID#\")")
                                                                                                         .RequestEnd("onRequestEnd(\"ExternalMaterialApprovalgrid_#=JobOrderDetailID#\")"))
-                           .Create(update => update.Action("ExternalServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
-                                       .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=JobOrderDetailID#" }))
-                                                                          .Update(destroy => destroy.Action("ExternalServiceSpare_Approve", "ServiceSpare", new { cserviceID = "#=JobOrderDetailID#" }))
+                           .Create(update => update.Action("ExternalServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }).Data("sendForgery"))
+                                       .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=JobOrderDetailID#" }).Data("sendForgery"))
+                                                                          .Update(destroy => destroy.Action("ExternalServiceSpare_Approve", "ServiceSpare", new { cserviceID = "#=JobOrderDetailID#" }).Data("sendForgery"))
 
                                                                                               )
                             .Pageable()
@@ -565,10 +563,10 @@
                                       .Error("error_handler(\"ComponentServiceSparegrid_#=ExternalComponentDetailId#\")")
                                       .RequestStart("onRequestStart(\"ComponentServiceSparegrid_#=ExternalComponentDetailId#\")")
                                       .RequestEnd("onRequestEnd(\"ComponentServiceSparegrid_#=ExternalComponentDetailId#\")"))
-                                                   .Create(update => update.Action("ExternalServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }))
-                                              .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentDetailId#" }))
-                                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
-                                  .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }))
+                                                   .Create(update => update.Action("ExternalServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }).Data("sendForgery"))
+                                              .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentDetailId#" }).Data("sendForgery"))
+                                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
+                                  .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }).Data("sendForgery"))
 
                       )
                       .Pageable()
@@ -633,10 +631,10 @@
                                               .Error("error_handler(\"ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#\")")
                                               .RequestStart("onRequestStart(\"ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#\")")
                                               .RequestEnd("onRequestEnd(\"ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#\")"))
-                          .Create(update => update.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }))
-                                          .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentDetailId#" }))
-                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
-                                  .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }))
+                          .Create(update => update.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }).Data("sendForgery"))
+                                          .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentDetailId#" }).Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
+                                  .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }).Data("sendForgery"))
 
                       )
                       .Pageable()
@@ -701,9 +699,9 @@
                                                               .Error("error_handler(\"ComponentDetailgrid_#=ExternalComponentId#\")")
                                                               .RequestStart("onRequestStart(\"ComponentDetailgrid_#=ExternalComponentId#\")")
                                                               .RequestEnd("onRequestEnd(\"ComponentDetailgrid_#=ExternalComponentId#\")"))
-                                                                        .Create(create => create.Action("ExternalComponentDetail_Create", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }))
-                                                                                                            .Read(read => read.Action("ExternalComponentDetail_Read", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }))
-                                                                                  .Update(update => update.Action("ExternalComponentDetail_Update", "ExternalComponentDetail"))
+                                                                        .Create(create => create.Action("ExternalComponentDetail_Create", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }).Data("sendForgery"))
+                                                                                                            .Read(read => read.Action("ExternalComponentDetail_Read", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }).Data("sendForgery"))
+                                                                                  .Update(update => update.Action("ExternalComponentDetail_Update", "ExternalComponentDetail").Data("sendForgery"))
                       )
                       .Pageable()
                       .ToClientTemplate())
@@ -749,8 +747,8 @@
                                                       .Error("error_handler(\"ComponentDetailApprovalgrid_#=ExternalComponentId#\")")
                                                       .RequestStart("onRequestStart(\"ComponentDetailApprovalgrid_#=ExternalComponentId#\")")
                                                       .RequestEnd("onRequestEnd(\"ComponentDetailApprovalgrid_#=ExternalComponentId#\")"))
-                                                                                                                    .Read(read => read.Action("ExternalComponentDetail_Read", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }))
-                                                                                          .Update(update => update.Action("ExternalComponentDetail_Update", "ExternalComponentDetail"))
+                                                                                                                    .Read(read => read.Action("ExternalComponentDetail_Read", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }).Data("sendForgery"))
+                                                                                          .Update(update => update.Action("ExternalComponentDetail_Update", "ExternalComponentDetail").Data("sendForgery"))
 
                       )
                       .Pageable()

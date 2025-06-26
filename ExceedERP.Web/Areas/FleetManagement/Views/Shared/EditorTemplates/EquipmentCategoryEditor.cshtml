@@ -4,7 +4,7 @@
     .DataTextField("Name")
     .DataValueField("Id")
     .OptionLabel("Select").Filter(FilterType.Contains)
-    .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider")
+    .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery")
     .Data("filterEquipmentCategories"))
     .ServerFiltering(true)))
 

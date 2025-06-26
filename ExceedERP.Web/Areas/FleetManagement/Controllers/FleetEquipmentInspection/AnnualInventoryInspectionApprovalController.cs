@@ -14,7 +14,7 @@ using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
-
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
 
@@ -40,7 +40,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 		public ActionResult AnnualInventoryInspectionApproval_Create([DataSourceRequest] DataSourceRequest request, AnnualInventoryInspectionApproval AnnualInventoryInspectionApproval)
 		{
 			ModelState.Remove("AnnualInventoryInspectionApprovalID");
-			AnnualEquipmentInventoryInspection AnnualEquipmentInventoryInspection = _AnnualEquipmentInventoryInspectionsService.GetAll().Where(x => x.AnnualEquipmentInventoryInspectionID == AnnualInventoryInspectionApproval.AnnualEquipmentInventoryInspectionId).FirstOrDefault();
+			AnnualEquipmentInventoryInspection AnnualEquipmentInventoryInspection = _AnnualEquipmentInventoryInspectionsService.GetAll().Where(x => x.AnnualEquipmentInventoryInspectionID == AnnualInventoryInspectionApproval.AnnualEquipmentInventoryInspectionID).FirstOrDefault();
 			if (AnnualInventoryInspectionApproval != null)
 			{
 				AnnualInventoryInspectionApproval.DateCreated = DateTime.Now;
@@ -73,7 +73,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 		[AcceptVerbs(HttpVerbs.Post)]
 		public ActionResult AnnualInventoryInspectionApproval_Update([DataSourceRequest] DataSourceRequest request, AnnualInventoryInspectionApproval AnnualInventoryInspectionApproval)
 		{
-			AnnualEquipmentInventoryInspection AnnualEquipmentInventoryInspection = _AnnualEquipmentInventoryInspectionsService.GetAll().Where(x => x.AnnualEquipmentInventoryInspectionID == AnnualInventoryInspectionApproval.AnnualEquipmentInventoryInspectionId).FirstOrDefault();
+			AnnualEquipmentInventoryInspection AnnualEquipmentInventoryInspection = _AnnualEquipmentInventoryInspectionsService.GetAll().Where(x => x.AnnualEquipmentInventoryInspectionID == AnnualInventoryInspectionApproval.AnnualEquipmentInventoryInspectionID).FirstOrDefault();
 		 
 			if (AnnualInventoryInspectionApproval != null)
 			{

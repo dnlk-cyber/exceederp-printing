@@ -21,7 +21,7 @@
                           .Text("PlateNumber")
                           .OptionLabel(" Select Equipment ")
                           .Filter(FilterType.Contains)
-                          .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration"))
+                          .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration").Data("sendForgery"))
                           .ServerFiltering(false)))
                 </div>
 

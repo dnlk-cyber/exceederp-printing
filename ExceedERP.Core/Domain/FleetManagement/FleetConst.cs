@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,13 +12,20 @@ namespace ExceedERP.Core.Domain.FleetManagement
         public const string LightVehicleTimesheet = "LightVehicle Timesheet Report";
         public const string DumpTruckTimesheet = "Dump Truck Timesheet Report";
         public const string DryLoadingTimesheet = "Dry Loading Timesheet Report";
+        
+
         public const string WagondrillTimesheet = "Wagon Drill Timesheet Report";
 
         public const string MachineryCostsheet = "Machinery Costsheet Report";
+        public const string MachineryCostsheetSummary = "Machinery Costsheet Summary Report";
         public const string LightVehicleCostsheet = "LightVehicle Costsheet Report";
+        public const string LightVehicleCostsheetSummary = "LightVehicle Costsheet Summary Report";
         public const string DumpTruckCostsheet = "Dump Truck Costsheet Report";
+        public const string DumpTruckCostsheetSummary = "Dump Truck Costsheet Summary Report";
         public const string DryLoadingCostsheet = "Dry Loading Costsheet Report";
+        public const string DryLoadingCostsheetSummary = "Dry Loading Costsheet Summary Report";
         public const string WagondrillCostsheet = "Wagon Drill Costsheet Report";
+        public const string WagondrillCostsheetSummary = "Wagon Drill Costsheet Summary Report";
 
         public const string ExternalMachineryTimesheet = "External Machinery Timesheet Report";
         public const string ExternalLightVehicleTimeSheet = "External LightVehicle Timesheet Report";
@@ -32,6 +39,7 @@ namespace ExceedERP.Core.Domain.FleetManagement
         public const string ProjectSummaryReport = "Project Summary Report";
 
         public const string TyreReport = "Tyre Report";
+        public const string BatteryConsumption = "Battery Consumption";
         public const string RentFromExternal = "Rent From External Report";
 
         public const string EquipmentMaintenaceSummary = "Equipment Maintenance Summary Report";
@@ -54,7 +62,7 @@ namespace ExceedERP.Core.Domain.FleetManagement
         public const string FleetAccident = "Fleet Accident Report";
         public const string TotalFleetFuelConsumption = "Fleet Fuel Consumption Report";
         public const string FleetAnnualPlanSummary = "Fleet Annual Plan Summary Report";
-        public const string UtilizationSummary = "Weekly Utilizaiton Summary Report";
+        public const string UtilizationSummary = "Utilizaiton Summary Report";
         public const string MonthlyUtilizationSummary = "Monthly Utilizaiton Summary Report"; 
         public const string UtilizationSummaryToDate = "To-Date Utilizaiton Summary Report"; 
     }

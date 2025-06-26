@@ -22,7 +22,7 @@
                                     .MinLength(2)
                                     .DataSource(dataSource =>
                                     {
-                                        dataSource.Read(read => read.Action("GetEmployees", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                                        dataSource.Read(read => read.Action("GetEmployees", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
                                             .ServerFiltering(false);
                                     })
                 )
@@ -41,7 +41,7 @@
                                                  .Filter("contains")
                                                  .DataSource(dataSource =>
                                                  {
-                                                     dataSource.Read(read => read.Action("GetSuppliers", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                                                     dataSource.Read(read => read.Action("GetSuppliers", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
                                                      .ServerFiltering(false);
                                                  })
                 )
@@ -78,7 +78,7 @@
                                          .DataTextField("Name")
                                          .DataSource(dataSource =>
                                          {
-                                             dataSource.Read(read => read.Action("GetOpenYears", "GlobalDataProvider", new { area = "Common" }))
+                                             dataSource.Read(read => read.Action("GetOpenYears", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
                                               .ServerFiltering(false);
                                          }))
             </div>
@@ -86,19 +86,20 @@
     </div>
     <div class="col-sm-2">
         <div class="form-group">
-            <label>Department Name</label>
+            <label>Business Unit</label>
             <div>
-                @(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
-                                                  .ValuePrimitive(true)
-                                                  .OptionLabel("Select Department...")
-                                                  .DataTextField("Name")
-                                                  .DataValueField("OrgStructureId")
-                                                  .Filter("contains")
-                                                  .DataSource(dataSource =>
-                                                  {
-                                                      dataSource.Read(read => read.Action("GetDepartments", "FleetManagementDataProvider", new { area = "FleetManagement" }))
-                                                      .ServerFiltering(false);
-                                                  })
+                @(Html.Kendo().DropDownListFor(model => model.BusinessUnitId)
+                                    .ValuePrimitive(true)
+                                    .OptionLabel("Select Business Unit...")
+                                    .DataTextField("Name")
+                                    .DataValueField("Id")
+                                    .Filter("contains")
+
+                                    .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetBusinessUnits", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                        .ServerFiltering(false);
+                                    })
                 )
             </div>
         </div>
@@ -123,7 +124,7 @@
                                   .CascadeFrom("GLFiscalYearId")
                                   .DataSource(dataSource =>
                                   {
-                                      dataSource.Read(read => read.Action("GetPeriods", "GlobalDataProvider", new { area = "Common" }).Data("getFiscalYear"))
+                                      dataSource.Read(read => read.Action("GetPeriods", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery").Data("getFiscalYear"))
                                       .ServerFiltering(true);
                                   })
                 )
@@ -132,23 +133,24 @@
     </div>
    
 </div>
+
 <div class="row">
     <div class="col-sm-2">
         <div class="form-group">
             <label>Branch Name</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.BranchId)
-                                 .ValuePrimitive(true)
-                                 .OptionLabel("Select Branch...")
-                                 .DataTextField("Name")
-                                 .DataValueField("BranchId")
-                                 .Filter("contains")
-                                 .MinLength(2)
-                                 .DataSource(dataSource =>
-                                 {
-                                     dataSource.Read(read => read.Action("GetBranch", "FleetManagementDataProvider", new { area = "FleetManagement" }))
-                                     .ServerFiltering(false);
-                                 })
+                                         .ValuePrimitive(true)
+                                         .OptionLabel("Select Branch...")
+                                         .DataTextField("Name")
+                                         .DataValueField("BranchId")
+                                         .Filter("contains")
+                                         .MinLength(2)
+                                         .DataSource(dataSource =>
+                                         {
+                                             dataSource.Read(read => read.Action("GetBranch", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                             .ServerFiltering(false);
+                                         })
                 )
             </div>
         </div>
@@ -163,6 +165,3 @@
     </div>
 
 </div>
-
-
-

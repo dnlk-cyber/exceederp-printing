@@ -16,7 +16,7 @@
                         @(Html.Kendo().DropDownListFor(model => model.FleetsID).Name("FleetsID")
                                                                       .DataTextField("PlateNumber")
                                               .DataValueField("FleetsID").OptionLabel(" Select ").Filter(FilterType.Contains)
-                                                              .DataSource(d => d.Read(r => r.Action("OutOfGarageFleetDDBind", "EquipmentRegistration")).ServerFiltering(false)).Events(ev => ev.Change("BindFleetDetail")))
+                                                              .DataSource(d => d.Read(r => r.Action("OutOfGarageFleetDDBind", "EquipmentRegistration").Data("sendForgery")).ServerFiltering(false)).Events(ev => ev.Change("BindFleetDetail")))
                     </div>
                 </div>
 
@@ -29,7 +29,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.Requester)
                                                       .DataTextField("Name")
                                               .DataValueField("Value").OptionLabel(" Select ").Filter(FilterType.Contains)
-                                                                              .DataSource(d => d.Read(r => r.Action("EmployeeDDBind", "FleetDataProvider")).ServerFiltering(false)))
+                                                                              .DataSource(d => d.Read(r => r.Action("EmployeeDDBind", "FleetDataProvider").Data("sendForgery")).ServerFiltering(false)))
                 </div>
 
             </div>

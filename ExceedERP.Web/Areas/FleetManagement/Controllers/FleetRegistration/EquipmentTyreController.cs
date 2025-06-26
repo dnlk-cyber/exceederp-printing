@@ -137,8 +137,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 Tyre.fleetId = Guid.Parse(Id);
                 Tyre.Isattached = true;
                 Tyre.DateCreated = DateTime.Now;
-                Tyre.CreatedBy = User.Identity.Name;
- 
+                Tyre.CreatedBy = User.Identity.Name; 
                 db.EquipmentTyres.Attach(Tyre);
                 db.Entry(Tyre).State = EntityState.Modified;
                 db.SaveChanges();
@@ -169,7 +168,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-        [AllowAnonymous]
+        
         public ActionResult TyreByFleet(string Id)
         {
 
@@ -188,7 +187,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
 
 
-        [AllowAnonymous]
+        
         public ActionResult TyreByFleetByPlate(string Id,string search)
         {
             var Equipment = db.Fleets.Where(x => x.PlateNumber == Id).FirstOrDefault();
@@ -211,12 +210,13 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(string.Empty, JsonRequestBehavior.AllowGet);
             
         }
-        [AllowAnonymous]
+
         public ActionResult GetTyreInfo(Guid Id)
         {
             string Response = string.Empty;
             decimal OdomenterDiff = 0;
-            var Tyre = db.EquipmentTyres.Where(x => x.fleetId == Id &&  x.Isattached == true).FirstOrDefault();
+            var Tyre = db.EquipmentTyres.Where(x => x.fleetId == Id && x.Isattached == true).FirstOrDefault();
+            //var issueDate = db.TireIssue.Where(x => (x.SerialNo == Serial || x.SerialNoB == Serial||x.SerialNoC==Serial||x.SerialNoD==Serial)&&x.PlateNumber==Id.ToString() ).FirstOrDefault();            
             if (Tyre != null)
             {
                 var Fleet = db.Fleets.Where(x => x.FleetsID == Tyre.fleetId).FirstOrDefault();
@@ -224,9 +224,24 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 {
                     OdomenterDiff = decimal.Parse(Fleet.CurentOdoMeter.ToString()) - Tyre.OdoMeter;
 
-                    Response = Tyre.Make + "_" + Tyre.Size + "_" + Tyre.Type + "_" + OdomenterDiff + "_" + Tyre.UnitPrice + "_" + Tyre.StoreCode + "_" + DateTime.Parse(Tyre.DateCreated.ToString()).Date.ToString("dd/mm/yyyy") + "_" + Tyre.Tube;
-            
+                  //  Response = Tyre.Make + "_" + Tyre.Size + "_" + Tyre.Type + "_" + OdomenterDiff + "_" + Tyre.UnitPrice + "_" + Tyre.StoreCode + "_" + DateTime.Parse(Tyre.DateCreated.ToString()).Date.ToString("dd/mm/yyyy") + "_" + Tyre.Tube;
+                   Response = Tyre.Make + "_" + Tyre.Size + "_" + Tyre.Type + "_" + OdomenterDiff + "_" + Tyre.UnitPrice + "_" + Tyre.StoreCode + "_" + DateTime.Parse(Tyre.DateCreated.ToString()).Date.ToString("dd/mm/yyyy") + "_" + Tyre.Tube;            
                 }
+            }
+                    return Json(Response, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult GetIssueDate(Guid Id,string Serial)
+        {
+            string Response = string.Empty;           
+            var issueDate = db.TireIssue.Where(x => (x.SerialNo == Serial || x.SerialNoB == Serial||x.SerialNoC==Serial||x.SerialNoD==Serial)&&x.FleetId==Id ).FirstOrDefault();            
+            if (issueDate!=null)
+            {
+                
+
+                  //  Response = Tyre.Make + "_" + Tyre.Size + "_" + Tyre.Type + "_" + OdomenterDiff + "_" + Tyre.UnitPrice + "_" + Tyre.StoreCode + "_" + DateTime.Parse(Tyre.DateCreated.ToString()).Date.ToString("dd/mm/yyyy") + "_" + Tyre.Tube;
+                   Response =  DateTime.Parse(issueDate.IssueDate.ToString()).Date.ToString("dd/mm/yyyy");
+            
+                
             }
                     return Json(Response, JsonRequestBehavior.AllowGet);
         }

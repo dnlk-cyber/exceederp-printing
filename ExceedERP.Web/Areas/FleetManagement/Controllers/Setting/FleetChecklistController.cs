@@ -1,18 +1,10 @@
 ﻿using System.Data.Entity;
 using Kendo.Mvc.UI;
 using Kendo.Mvc.Extensions;
-using System;
-using ExceedERP.Web.Helpers;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Helpers.Common;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
-using ExceedERP.Core.Domain.FleetManagement;
-using ExceedERP.Core.Domain.FleetManagement.FleetInsurances;
-using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.FleetManagement.EquipmentInspection;
 
@@ -38,13 +30,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 FleetCheckListId = fleetCheckList.FleetCheckListId,
                 EquipmentIdentityID = fleetCheckList.EquipmentIdentityID,
                 EquipmentTypeID = fleetCheckList.EquipmentTypeID,
-                Type = fleetCheckList.Type,
-                Name = fleetCheckList.Name,
-                IsMaintenace = fleetCheckList.IsMaintenace,
-                Code = fleetCheckList.Code,
+                
                 Description = fleetCheckList.Description,
                 Remark = fleetCheckList.Remark,
-                Selected = fleetCheckList.Selected
+                
             });
             return Json(result);
         }
@@ -58,13 +47,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     FleetCheckListId = fleetCheckList.FleetCheckListId,
                     EquipmentIdentityID = fleetCheckList.EquipmentIdentityID,
                     EquipmentTypeID = fleetCheckList.EquipmentTypeID,
-                    Type = fleetCheckList.Type,
-                    Name = fleetCheckList.Name,
-                    IsMaintenace = fleetCheckList.IsMaintenace,
-                    Code = (count + 1).ToString(),
+                    
                     Description = fleetCheckList.Description,
-                    Selected = fleetCheckList.Selected
-
+                   
                 };
                 db.FleetCheckLists.Add(entity);
                 db.SaveChanges();
@@ -85,13 +70,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     FleetCheckListId = fleetCheckList.FleetCheckListId,
                     EquipmentIdentityID = fleetCheckList.EquipmentIdentityID,
                     EquipmentTypeID = fleetCheckList.EquipmentTypeID,
-                    Type = fleetCheckList.Type,
-                    Name = fleetCheckList.Name,
-                    IsMaintenace = fleetCheckList.IsMaintenace,
-                    Code = fleetCheckList.Code,
+                    
                     Description = fleetCheckList.Description,
                     Remark = fleetCheckList.Remark,
-                    Selected = fleetCheckList.Selected
+                    
                 };
                 db.FleetCheckLists.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
@@ -111,13 +93,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     FleetCheckListId = fleetCheckList.FleetCheckListId,
                     EquipmentIdentityID = fleetCheckList.EquipmentIdentityID,
                     EquipmentTypeID = fleetCheckList.EquipmentTypeID,
-                    Type = fleetCheckList.Type,
-                    Name = fleetCheckList.Name,
-                    IsMaintenace = fleetCheckList.IsMaintenace,
-                    Code = fleetCheckList.Code,
+                    
                     Description = fleetCheckList.Description,
                     Remark = fleetCheckList.Remark,
-                    Selected = fleetCheckList.Selected
                 };
                 db.FleetCheckLists.Attach(entity);
                 db.FleetCheckLists.Remove(entity);

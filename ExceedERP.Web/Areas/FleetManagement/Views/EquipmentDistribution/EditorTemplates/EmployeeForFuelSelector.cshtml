@@ -1,0 +1,31 @@
+@*@(Html.Kendo().DropDownListFor(m => m)
+
+                          .OptionLabel("Select Employee")
+                              .DataTextField("FullNameaEnglish")
+                              .DataValueField("EmployeeId")
+                              .Filter("contains")
+                              .ValuePrimitive(true)
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetAllEmployeesForSelfCare", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployees"))
+                                                .ServerFiltering(true);
+                              })
+
+    )
+    @Html.ValidationMessageFor(m => m)*@
+
+
+@(Html.Kendo().DropDownListFor(m => m)
+        .OptionLabel("Select Employee")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter("contains")
+        .ValuePrimitive(true)
+        .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read
+                .Action("GetEmployeeForTravelOrder", "FleetManagementDataProvider", new { area = "FleetManagement" })
+                .Data("sendForgery"))
+            .ServerFiltering(true); // set to true if you want to filter on server
+})
+)

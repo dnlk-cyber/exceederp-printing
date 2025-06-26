@@ -12,12 +12,14 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Reporting.Fleet.ViewModel;
+using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using ExceedERP.Reporting.Fleet.ViewModel;
+//using ExceedERP.Reporting.Fleet.ViewModel;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 {
-    [AuthorizeRoles(FleetManagementRoles.FleetTimeSheet)]
+    [AuthorizeRoles(FleetManagementRoles.FleetTimeSheetUser, FleetManagementRoles.FleetTimeSheetApprover)]
     public class DryLoadingTimeSheetsController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
@@ -46,10 +48,21 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 Value = s.BranchId,
                 Text = s.Name
             }).ToList();
-            RepopulateTimeSheet();
+           
+            ViewData["operator"] = db.Operator.Select(s => new
+            {
+                Value = s.OperatorID,
+                Text = s.FullName
+            }).ToList();
+            ViewData["businessunit"] = db.BusinessUnits.Select(s => new
+            {
+                Value = s.BusinessUnitId,
+                Text = s.Name
+            }).ToList();
+
             return View();
         }
-        public void RepopulateTimeSheet()
+        public JsonResult RepopulateTimeSheet()
         {
             var timesheets = db.DryLoadingTimeSheets.ToList();
             if (timesheets.Any())
@@ -63,11 +76,15 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 }
                 db.SaveChanges();
             }
-            
+
+            return Json("success", JsonRequestBehavior.AllowGet);
         }
         public ActionResult DryLoadingTimeSheets_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var dryLoadingTimeSheets = db.DryLoadingTimeSheets;
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            
+            //var dryLoadingTimeSheets = db.DryLoadingTimeSheets.Where(x => mybraches.Contains(x.BranchId));
+            var dryLoadingTimeSheets = db.DryLoadingTimeSheets.ToList();
             DataSourceResult result = dryLoadingTimeSheets.ToDataSourceResult(request, dryLoadingTimeSheet => new DryLoadingTimeSheet
             {
                 DryLoadingTimeSheetId = dryLoadingTimeSheet.DryLoadingTimeSheetId,
@@ -90,7 +107,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 CreatedBy = dryLoadingTimeSheet.CreatedBy,
                 ModifiedBy = dryLoadingTimeSheet.ModifiedBy,
                 LastModified = dryLoadingTimeSheet.LastModified,
-
+                DownReason = dryLoadingTimeSheet.DownReason,
+                OilConsumption = dryLoadingTimeSheet.OilConsumption,
                 AsphaltRate = dryLoadingTimeSheet.AsphaltRate,
                 FuelRate = dryLoadingTimeSheet.FuelRate,
                 GravelRate = dryLoadingTimeSheet.GravelRate,
@@ -127,8 +145,29 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             });
             return Json(result);
         }
+       
         public ActionResult DryLoadingTimeSheets_Create([DataSourceRequest] DataSourceRequest request, DryLoadingTimeSheet dryLoadingTimeSheet)
         {
+            var fetchSettings = db.TimeSheetSetting.ToList();
+
+            if (fetchSettings.Any())
+            {
+                var fetchSetting = fetchSettings.First();
+                var fetchException = db.TimeSheetException.FirstOrDefault(x => x.TimeSheetSettingId == fetchSetting.TimeSheetSettingId && x.BranchId == dryLoadingTimeSheet.BranchId.ToString());
+                if (fetchException == null)
+                {
+                    if (fetchSetting != null && fetchSetting.IsSet == true)
+                    {
+
+                        int hoursDifference = (int)(DateTime.Now - dryLoadingTimeSheet.TripStartDate).TotalHours;
+
+                        if (fetchSetting.SettedHours < hoursDifference)
+                        {
+                            ModelState.AddModelError("date expired", "The timesheet recording date is passed");
+                        }
+                    }
+                }
+            }
             if (ModelState.IsValid)
             {
                 var entity = new DryLoadingTimeSheet
@@ -153,7 +192,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     CreatedBy = User.Identity.Name,
                     ModifiedBy = dryLoadingTimeSheet.ModifiedBy,
                     LastModified = dryLoadingTimeSheet.LastModified,
-
+                    DownReason = dryLoadingTimeSheet.DownReason,
+                    OilConsumption = dryLoadingTimeSheet.OilConsumption,
                     AsphaltRate = dryLoadingTimeSheet.AsphaltRate,
                     FuelRate = dryLoadingTimeSheet.FuelRate,
                     GravelRate = dryLoadingTimeSheet.GravelRate,
@@ -189,6 +229,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult DryLoadingTimeSheets_Update([DataSourceRequest] DataSourceRequest request, DryLoadingTimeSheet dryLoadingTimeSheet)
         {
+          
             if (ModelState.IsValid)
             {
                 var entity = new DryLoadingTimeSheet
@@ -213,7 +254,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     CreatedBy = dryLoadingTimeSheet.CreatedBy,
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Today,
-
                     AsphaltRate = dryLoadingTimeSheet.AsphaltRate,
                     FuelRate = dryLoadingTimeSheet.FuelRate,
                     GravelRate = dryLoadingTimeSheet.GravelRate,
@@ -341,6 +381,41 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
 
         }
+        public JsonResult TimeSheetVoidDryLoad(int id)
+        {
+
+            var dryLoadingTimeSheet = db.DryLoadingTimeSheets.Find(id);
+
+            if (dryLoadingTimeSheet != null)
+            {
+               
+
+                dryLoadingTimeSheet.TimeSheetSendForAproval = false;
+                dryLoadingTimeSheet.TimeSheetApproved = false;
+                dryLoadingTimeSheet.TimeSheetSendForApprovalTime = DateTime.Now;
+                dryLoadingTimeSheet.TimeSheetApprovedBy = User.Identity.Name;
+                dryLoadingTimeSheet.TimeSheetStatus = MaintenanceConst.Rejected;
+
+                db.DryLoadingTimeSheets.Attach(dryLoadingTimeSheet);
+                db.Entry(dryLoadingTimeSheet).State = EntityState.Modified;
+                db.SaveChanges();
+                var returnMessage = new
+                {
+                    Message = "Successfully Sent!",
+
+                };
+                return Json(returnMessage.Message, JsonRequestBehavior.AllowGet);
+
+            }
+
+            var jsonData = new
+            {
+                Message = "Error Sending!",
+
+            };
+            return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
+
+        }
         public ActionResult DryLoadingTimeSheetApproval_Read([DataSourceRequest] DataSourceRequest request, int dryLoadId)
         {
 
@@ -360,6 +435,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             });
             return Json(result);
         }
+        [AuthorizeRoles(FleetManagementRoles.FleetTimeSheetApprover)]
         public ActionResult DryLoadingTimeSheetApproval_Create([DataSourceRequest] DataSourceRequest request, TimeSheetApprovalNew model, int dryLoadId)
         {
             if (ModelState.IsValid)
@@ -393,6 +469,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             if (dryLoading != null)
             {
                 dryLoading.TimeSheetApproved = true;
+                dryLoading.TimeSheetSendForAproval = true;
                 dryLoading.TimeSheetStatus = MaintenanceConst.Approved;
                 dryLoading.TimeSheetApprovedBy = User.Identity.Name;
                 dryLoading.TimeSheetApprovedDate = DateTime.Now;

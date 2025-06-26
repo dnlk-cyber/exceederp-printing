@@ -18,12 +18,16 @@ namespace ExceedERP.Reporting.Fleet.ViewModel
         public string Period { get; set; }
         public string PlateNumber { get; set; }
         public string Project { get; set; }
+
         
     }
     public class WagonDrillTimesheetViewModel
     {
         public DateTime Date { get; set; }       
         public string WorkItem { get; set; }       
+        public string PlateNumber { get; set; }       
+        public string Category { get; set; }       
+        public string EquipmentName { get; set; }       
         public decimal OperationNetWorkingHour { get; set; }       
         public decimal OperationDrilledHoleDepth { get; set; }        
         public decimal NumberOfHolesDrilled { get; set; }       

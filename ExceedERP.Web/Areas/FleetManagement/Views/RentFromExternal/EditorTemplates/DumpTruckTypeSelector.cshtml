@@ -1,0 +1,6 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+        .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.DumpTruckTypeOfWork))) // Convert Enum to SelectList
+        .OptionLabel("Select Type of Work") // Default placeholder
+        .ValuePrimitive(true)
+        .HtmlAttributes(new { style = "width:100%" }) // Apply styling
+)

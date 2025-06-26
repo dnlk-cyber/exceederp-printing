@@ -1,4 +1,4 @@
-using ExceedERP.Core.Domain.Common;
+﻿using ExceedERP.Core.Domain.Common;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -59,7 +59,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation
         public FleetAnnualPlan FleetAnnualPlan { get; set; }
         [Display(Name ="Period")]
         public int GlPeriodId { get; set; }
+        [DataType(DataType.Date)]
         public DateTime DateFrom { get; set; }
+        [DataType(DataType.Date)]
         public DateTime DateTo { get; set; }
     }
     

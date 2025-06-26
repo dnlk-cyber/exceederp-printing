@@ -1,0 +1,446 @@
+﻿@using System.Collections;
+@using ExceedERP.Core.Domain.InfoDesk.ChangeManagement
+<legend> Change Requests </legend>
+@(Html.Kendo().Grid<ChangeRequest>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ChangeRequestId).Width(100).Title("#");
+          columns.ForeignKey(c => c.RequestorId, (System.Collections.IEnumerable)ViewData["Employees"], "RequestorId", "FullNameaEnglish").Width(150);
+          columns.ForeignKey(c => c.ApproverId, (System.Collections.IEnumerable)ViewData["Employees"], "ApproverId", "FullNameaEnglish").Width(150);
+          columns.Bound(c => c.Title).Width(150);
+          columns.Bound(c => c.ChangeType).Width(150);
+          columns.Bound(c => c.ChangeStatus).Width(150);
+          columns.Bound(c => c.PlannedStartDate).Width(150);
+          columns.Bound(c => c.PlannedEndDate).Width(150);
+          columns.Bound(c => c.Description).Width(150);
+          columns.Bound(c => c.RequestDate).Width(130);
+          columns.Bound(c => c.ImpactAnalysis).Width(120);
+          columns.Bound(c => c.ImplementationTeam).Width(120);
+          columns.Bound(c => c.RollbackPlan).Width(120);
+          columns.Bound(c => c.RiskAssessment).Width(120);
+          columns.Bound(c => c.Description).Width(120);
+          columns.Bound(c => c.Remark).Width(120);
+          columns.Command(command =>
+          {
+
+              command.Edit();
+              command.Destroy();
+
+          }).Width(250);
+
+      })
+      .ToolBar(toolbar =>
+      {
+         toolbar.Create();
+      })
+      .Events(ev =>
+      {
+          ev.DataBound("onDataBound");
+          ev.DetailExpand("onExpand");
+
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("changeEditor").Window(window =>
+      {
+          window.Title("change Request Form");
+          window.Scrollable(false);
+
+      }))
+      .HtmlAttributes(new { style = "height: 520px;" })
+      .Pageable(pageable => pageable
+        .Input(true)
+        .Numeric(false)
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Scrollable(h => h.Height(500))
+   .DataSource(dataSource => dataSource
+        .Ajax()
+        .Sort(x => x.Add(s => s.DateCreated).Descending())
+       //  .Group(x => x.Add(p => p.Status))
+       .Model(model =>
+       {
+           model.Id(p => p.ChangeRequestId);
+           model.Field(p => p.ChangeRequestId).Editable(false);
+           model.Field(p => p.LastModified).Editable(false);
+           model.Field(p => p.ModifiedBy).Editable(false);
+           model.Field(p => p.DateCreated).Editable(false);
+           model.Field(p => p.CreatedBy).Editable(false);
+
+       })
+        .Events(ev => ev
+        .Error("error_handler(\"grid\")")
+        .RequestStart("onRequestStart(\"grid\")")
+        .RequestEnd("onRequestEnd(\"grid\")"))
+    .Read(read => read.Action("ChangeRequests_Read", "ChangeRequestSelfCares").Data("sendForgery"))
+    .Create(create => create.Action("ChangeRequests_Create", "ChangeRequestSelfCares").Data("sendForgery"))
+    .Update(update => update.Action("ChangeRequests_Update", "ChangeRequestSelfCares").Data("sendForgery"))
+    .Destroy(destroy => destroy.Action("ChangeRequests_Destroy", "ChangeRequestSelfCares").Data("sendForgery"))
+).ClientDetailTemplateId("template")
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=ChangeRequestId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Detail  ").Content(
+          @<text>
+            # if (IsSendForApproval){#
+                @*<a href='@Url.Action("ITSupportReport", "HelpDeskReport")/?id=#=ChangeRequestId#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
+            #} if (!IsSendForApproval){#
+            <a onclick='return sendForApproval("#=ChangeRequestId#")' href=' \#' title="Send For approval"><i class="fa fa-share-square fa-4x"></i></a>
+            #}#
+            <dl class="dl-horizontal">
+                <dt>
+                    Created On
+                </dt>
+                <dd>
+                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                </dd>
+                <dt>
+                    Created By
+                </dt>
+                <dd>
+                    #= CreatedBy #
+                </dd>
+                <dt>
+                    Request Date
+                </dt>
+                <dd>
+                    #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                </dd>
+                <dt>
+                    Modified By
+                </dt>
+                <dd>
+                    #= ModifiedBy #
+                </dd>
+                <dt>
+                    Modified Date
+                </dt>
+                <dd>
+                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                </dd>
+                <dt>
+                    Remark
+                </dt>
+                <dd>
+                   #= Remark #
+
+                </dd>
+            </dl>
+        </text>);
+        items.Add().Text(" Change  Task").Content(
+        @<text>
+            @(Html.Kendo().Grid<ChangeTask>()
+                .Name("Assigngrid_#=ChangeRequestId#")
+                .Columns(columns =>
+                {
+
+
+                    columns.Bound(c => c.CompletionDate).Width(120);
+                    columns.ForeignKey(c => c.OrgStructureId, (System.Collections.IEnumerable)ViewData["orgStructure"], "OrgStructureId", "Name")
+                            .EditorTemplateName("Department")
+                            .Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+                    columns.ForeignKey(c => c.EmployeeId, (System.Collections.IEnumerable)ViewData["Employees"], "EmployeeId", "FullNameaEnglish").Width(150);
+                    columns.Bound(c => c.Description).Width(120);
+                    columns.Command(command =>
+                    {
+
+                        command.Edit();
+                        command.Destroy();
+                        //command.Custom("confirm").Text("Confirm").Click("Confirmation").HtmlAttributes(new { @class = "btn-success" });
+
+                    })/*.Width(250)*/;
+
+                })
+                 .ToolBar(toolbar =>
+                 {
+                     toolbar.Create();
+                 })
+                 .Events(ev =>
+                 {
+                     ev.DataBound("onDetailDataBound");
+                     //ev.DetailExpand("onExpand");
+
+                 })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Scrollable(h => h.Height(500))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Model(model =>
+                    {
+                        model.Id(p => p.ChangeTaskId);
+                        model.Field(p => p.EmployeeId);
+
+
+                    })
+                    .Events(ev => ev
+                            .Error("error_handler(\"Assigngrid_#=ChangeRequestId#\")")
+                            .RequestStart("onRequestStart(\"Assigngrid_#=ChangeRequestId#\")")
+                            .RequestEnd("onRequestEnd(\"Assigngrid_#=ChangeRequestId#\")"))
+                        .Read(read => read.Action("ChangeTasks_Read", "ChangeTasks", new { id = "#=ChangeRequestId#" }).Data("sendForgery"))
+                        .Create(create => create.Action("ChangeTasks_Create", "ChangeTasks", new { id = "#=ChangeRequestId#" }).Data("sendForgery"))
+                        .Update(update => update.Action("ChangeTasks_Update", "ChangeTasks").Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("ChangeTasks_Destroy", "ChangeTasks").Data("sendForgery"))
+                        ).ToClientTemplate())
+        </text>);
+        items.Add().Text("Approval  ").Content(
+        @<text>
+        @(Html.Kendo().Grid<ChangeApproval>()
+            .Name("ChangeApprovalgrid_#=ChangeRequestId#")
+            .Columns(columns =>
+            {
+
+
+                columns.Bound(c => c.Status).Width(200);
+                columns.Bound(c => c.Remark).Width(200);
+
+
+                columns.Command(command =>
+                {
+
+                    //command.Edit();
+                    //command.Destroy();
+                    //command.Custom("confirm").Text("Confirm").Click("Confirmation").HtmlAttributes(new { @class = "btn-success" });
+
+                })/*.Width(250)*/;
+            })
+              .ToolBar(toolbar =>
+              {
+                  //toolbar.Create();
+              })
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Scrollable(h => h.Height(500))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Model(model =>
+                        {
+                            model.Id(p => p.ChangeApprovalId);
+                        })
+                    .Events(ev => ev
+                            .Error("error_handler(\"ChangeApprovalgrid_#=ChangeRequestId#\")")
+                            .RequestStart("onRequestStart(\"ChangeApprovalgrid_#=ChangeRequestId#\")")
+                            .RequestEnd("onRequestEnd(\"ChangeApprovalgrid_#=ChangeRequestId#\")"))
+                        .Read(read => read.Action("ChangeApprovals_Read", "ChangeApprovals", new { Id = "#=ChangeRequestId#" }).Data("sendForgery"))
+                        .Create(create => create.Action("ChangeApprovals_Create", "ChangeApprovals", new { Id = "#=ChangeRequestId#" }).Data("sendForgery"))
+                        .Update(update => update.Action("ChangeApprovals_Update", "ChangeApprovals").Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("ChangeApprovals_Destroy", "ChangeApprovals").Data("sendForgery"))
+                        ).ToClientTemplate())
+        </text>);
+        }).ToClientTemplate())
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script>
+    function sendForApproval(id) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ChangeRequestSelfCares", new { area = "InfoDesk" })',
+            data: { id: id },
+            success: function(result) {
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            },
+            error: function(result) {
+                alert(result.Message);
+            }
+        });
+    }
+</script>
+
+<script>
+      //   if ($("#Source").val() == 1) {
+       // }
+    function onDataBound(e) {
+        var grid = this;
+        var Checkgrid = $("#grid").data("kendoGrid");
+        var gridData = Checkgrid.dataSource.view();
+        grid.tbody.find("tr[role='row']").each(function ()
+        {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsSendForApproval) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-update").remove();
+                $(this).css("background-color", "gray");
+
+            }
+            
+        });
+    }
+    function onDetailDataBound(e) {
+        var grid = this;
+        var Checkgrid = $("#grid").data("kendoGrid");
+        grid.tbody.find("tr[role='row']").each(function ()
+        {
+            var dataItem = grid.dataItem(this);
+            if (isSendForApproval) {
+                $(this).find(".k-grid-top").remove();
+                $(this).find(".k-grid-add").remove();
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-update").remove();
+                $(this).css("background-color", "gray");
+
+            }
+            
+        });
+    }
+    function changeSource() {
+        var value = $("#Source").val();
+        if (value == 1) {
+            $(".employee").removeClass("hidden");
+        }
+        if (value != 1 && !($(".employee").hasClass("hidden"))) {
+            $(".employee").addClass("hidden");
+        }
+    }
+    function filterCustomer() {
+        return {
+            CustomerId: $("#CustomerID").val()
+        };
+    }
+</script>
+<script type="text/javascript">
+    var isSendForApproval = false;
+    var masterDataItem1;
+    var masterRow1;
+    var masterGrid1;
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+    var id;
+    function onExpand(e) {
+        var masterRow = e.masterRow;
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+         id = masterDataItem.ChangeRequestId;
+         isSendForApproval = masterDataItem.IsSendForApproval;
+        var gridName = "#Assigngrid_" + id;
+        if (isSendForApproval) {
+            $(gridName).find(".k-toolbar").hide(); //hide toolbar
+            $(".k-grid-top", gridName).hide();
+            $(".k-grid-edit", gridName).hide();
+            $(".k-grid-delete", gridName).hide();
+        }
+        var a = document.getElementById("a");
+
+        // Ensure the 'a' element exists and reset its href
+        if (a) {
+            a.href = "baseURL/";  // Set your base URL here, e.g., "https://example.com/"
+            a.target = "_blank";  // Open in a new tab
+        } else {
+            console.warn("Element with id 'a' not found");
+        }
+    }
+
+    function onExpand1(e){ }
+    function start() { $(".employee").removeClass("hidden");}
+</script>
+<script>
+    function Confirmation(e) {
+        var wnd = $("#Details").data("kendoWindow");
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        //wnd.content(detailsTemplate(dataItem));
+        $("#CustomerTicket_HelpDeskId").val(dataItem.CustomerTicket_HelpDeskId);
+        wnd.center().open();
+    }
+</script>
+<script>
+    function DisableSlider() {
+        $("#Rate").data("kendoSlider").value(0);
+        $("#Rate").data("kendoSlider").enable(false);
+    }
+    function EnableSlider() {
+        $("#Rate").data("kendoSlider").enable(true);
+    }
+</script>
+@(Html.Kendo().Window().Name("Details")
+            .Title(" Confirm If The Problem Solved ")
+            .Visible(false)
+            .Modal(true)
+            .Draggable(true)
+            .Width(400).Content(@<text><div class="form-group">
+            <form action="@Url.Action("Confirmation", "CustomerTicket")" method="post">
+                <input type="hidden" name="Id" id="CustomerTicket_HelpDeskId">
+                <div class="row">
+                    <div class="col-lg-10">
+                        <div class="demo-section k-content">
+                            <h5>Is Solved ?</h5>
+                            @(Html.Kendo().RadioButtonFor(model => model)
+                                   .Name("IsConfirmedByTheRequester")
+                                   .Value("true")
+                                   .Label("Yes").HtmlAttributes(new { @onchange = "EnableSlider()" })
+                            )
+                            &nbsp; &nbsp; &nbsp;
+                            @(Html.Kendo().RadioButtonFor(model => model)
+                                   .Name("IsConfirmedByTheRequester")
+                                   .Value("false")
+                                   .Label("No").HtmlAttributes(new { @onchange = "DisableSlider()" })
+                            )
+                        </div>
+                        <div class="demo-section k-content">
+                            <h5>Rating</h5>
+                            @(Html.Kendo().Slider()
+                              .Name("Rate")
+                              .Min(1)
+                              .Max(5)
+                              .IncreaseButtonTitle("Right")
+                              .DecreaseButtonTitle("Left")
+                              .SmallStep(1)
+                              .LargeStep(1)
+                            )
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                            <textarea type="text" name="Remark" cols="80" rows="10" placeholder="Remark Here..."></textarea>
+                        
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-7"></div>
+                    <input type="submit" class="btn-primary k-button" value=" Update " onclick="return confirm('Are you sure to submit?');" />
+                </div>
+            </form>
+            </div></text>))
+<style>
+    .demo-section {
+        text-align: center;
+    }
+</style>
+<script>
+    function onMasterDataBound(e) {
+        var rows = e.sender.tbody.children();
+        var masterRow = e.masterRow;
+        var masterGrid = $("#grid").data("kendoGrid");
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsClosed === true) {
+                row.css("background-color", "gray");
+                //row.find(".k-grid-closeT").hide();
+            }
+            if (dataItem.Status == "4") {
+              row.css("background-color", "red");
+            }
+        }
+    }
+    function UploadFile(id) {
+        $("#masterId").val(id);
+        var wnd = $("#UploadDoc").data("kendoWindow");
+        wnd.center().open();
+    }
+</script>

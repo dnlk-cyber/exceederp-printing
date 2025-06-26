@@ -46,7 +46,6 @@
             .Events(ev => ev.DetailExpand("onDetailExpand"))
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
         .Model(model =>
               {
                   model.Id(p => p.SalvageStoreID);
@@ -55,10 +54,10 @@
                                                         .Error("error_handler(\"grid\")")
                                                         .RequestStart("onRequestStart(\"grid\")")
                                                         .RequestEnd("onRequestEnd(\"grid\")")) 
-                .Create(update => update.Action("SalvageStore_Create", "SalvageStore"))
-                .Read(read => read.Action("SalvageStore_Read", "SalvageStore"))
-                .Update(update => update.Action("SalvageStore_Update", "SalvageStore"))
-                .Destroy(update => update.Action("SalvageStore_Destroy", "SalvageStore"))
+                .Create(update => update.Action("SalvageStore_Create", "SalvageStore").Data("sendForgery"))
+                .Read(read => read.Action("SalvageStore_Read", "SalvageStore").Data("sendForgery"))
+                .Update(update => update.Action("SalvageStore_Update", "SalvageStore").Data("sendForgery"))
+                .Destroy(update => update.Action("SalvageStore_Destroy", "SalvageStore").Data("sendForgery"))
   )
 )
 
@@ -189,9 +188,9 @@
                                                     .Error("error_handler(\"SalvageStore#=SalvageStoreID#\")")
                                                     .RequestStart("onRequestStart(\"SalvageStore#=SalvageStoreID#\")")
                                                     .RequestEnd("onRequestEnd(\"SalvageStore#=SalvageStoreID#\")"))
-                                                                                                           .Create(update => update.Action("SalvageStore_Approve", "SalvageStoreApproval", new { EId = "#=SalvageStoreID#" }))
-                                                                                             .Read(read => read.Action("SalvageStoreApproval_Read", "SalvageStoreApproval", new { EId = "#=SalvageStoreID#" }))
-                                                                                   .Update(update => update.Action("SalvageStore_Approve", "SalvageStoreApproval"))
+                                                                                                           .Create(update => update.Action("SalvageStore_Approve", "SalvageStoreApproval", new { EId = "#=SalvageStoreID#" }).Data("sendForgery"))
+                                                                                             .Read(read => read.Action("SalvageStoreApproval_Read", "SalvageStoreApproval", new { EId = "#=SalvageStoreID#" }).Data("sendForgery"))
+                                                                                   .Update(update => update.Action("SalvageStore_Approve", "SalvageStoreApproval").Data("sendForgery"))
 
 
                                                       )

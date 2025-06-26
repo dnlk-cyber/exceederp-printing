@@ -118,7 +118,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             return this.Json(new[] { Educationallevel }.ToDataSourceResult(request));
         }
 
-        [AllowAnonymous]
+        
         public ActionResult EducationallevelDDBind()
         {
 

@@ -27,17 +27,17 @@
                 <div class="col-md-6">
                     @Html.Kendo().TextBoxFor(model => model.OrgStructureId).HtmlAttributes(new { @readonly = "readonly" })
                     @*@(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
-                .ValuePrimitive(true)
-                .OptionLabel("Select Work Unit")
-                .DataTextField("Name")
-                .DataValueField("OrgStructureId")
-                .Filter("contains")
-                .DataSource(dataSource =>
-                {
-                    dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new {area = "HRM"}))
-                        .ServerFiltering(false);
-                })
-                )*@
+                        .ValuePrimitive(true)
+                        .OptionLabel("Select Work Unit")
+                        .DataTextField("Name")
+                        .DataValueField("OrgStructureId")
+                        .Filter("contains")
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new {area = "HRM"}).Data("sendForgery"))
+                                .ServerFiltering(false);
+                        })
+                        )*@
                 </div>
             </div>
             <div class="row"></div>
@@ -46,16 +46,16 @@
                 @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.BranchId)
-                          .ValuePrimitive(true)
-                          .OptionLabel("Select Branch...")
-                          .DataTextField("Name")
-                          .DataValueField("Code")
-                          .Filter("contains")
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetBranches", "GlobalDataProvider", new { area = "Common" }))
-                                  .ServerFiltering(false);
-                          })
+                                  .ValuePrimitive(true)
+                                  .OptionLabel("Select Branch...")
+                                  .DataTextField("Name")
+                                  .DataValueField("Code")
+                                  .Filter("contains")
+                                  .DataSource(dataSource =>
+                                  {
+                                      dataSource.Read(read => read.Action("GetBranches", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
+                                          .ServerFiltering(false);
+                                  })
                     )
                     @Html.ValidationMessageFor(model => model.BranchId, "", new { @class = "text-danger" })
                 </div>
@@ -66,18 +66,18 @@
                 @Html.LabelFor(model => model.StoreCode, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.StoreCode)
-                          .ValuePrimitive(true)
-                          .OptionLabel("Select Store...")
-                          .DataTextField("Name")
-                          .DataValueField("StoreCode")
-                          .Filter("contains")
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetStoreByBranchForSR", "DataProvider", new { area = "Inventory" }).Data("filterStoresByBranch"))
-                                  .ServerFiltering(true);
-                          })
-                          .CascadeFrom("BranchId")
-                          )
+                                  .ValuePrimitive(true)
+                                  .OptionLabel("Select Store...")
+                                  .DataTextField("Name")
+                                  .DataValueField("StoreCode")
+                                  .Filter("contains")
+                                  .DataSource(dataSource =>
+                                  {
+                                      dataSource.Read(read => read.Action("GetStoreByBranchForSR", "DataProvider", new { area = "Inventory" }).Data("sendForgery").Data("filterStoresByBranch"))
+                                          .ServerFiltering(true);
+                                  })
+                                  .CascadeFrom("BranchId")
+                    )
                     @Html.ValidationMessageFor(model => model.StoreCode, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -119,22 +119,22 @@
                 @Html.LabelFor(model => model.GLPeriodId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.GLPeriodId)
-                          .ValuePrimitive(true)
-                          .OptionLabel("Select Period...")
-                          .DataTextField("Name")
-                          .DataValueField("GLPeriodId")
-                          .CascadeFrom("StoreCode")
-                          .Filter("contains")
-                          .Events(e =>
-                          {
-                              e.Change("onSelectedPeriod");
-                          })
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetOpenInventoryPeriodsByStore", "DataProvider", new { area = "Inventory" }).Data("filterPeriodsByStore"))
-                                  .ServerFiltering(true);
-                          })
-                          )
+                                  .ValuePrimitive(true)
+                                  .OptionLabel("Select Period...")
+                                  .DataTextField("Name")
+                                  .DataValueField("GLPeriodId")
+                                  .CascadeFrom("StoreCode")
+                                  .Filter("contains")
+                                  .Events(e =>
+                                  {
+                                      e.Change("onSelectedPeriod");
+                                  })
+                                  .DataSource(dataSource =>
+                                  {
+                                      dataSource.Read(read => read.Action("GetOpenInventoryPeriodsByStore", "DataProvider", new { area = "Inventory" }).Data("sendForgery").Data("filterPeriodsByStore"))
+                                          .ServerFiltering(true);
+                                  })
+                    )
                     @Html.ValidationMessageFor(model => model.GLPeriodId, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -165,17 +165,17 @@
                 @Html.LabelFor(model => model.ToStoreCode, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.ToStoreCode)
-                          .ValuePrimitive(true)
-                          .OptionLabel("Select Store...")
-                          .DataTextField("Name")
-                          .DataValueField("StoreCode")
-                          .Filter("contains")
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetAllStores", "DataProvider", new { area = "Inventory" }))
-                                  .ServerFiltering(false);
-                          })
-                          )
+                                  .ValuePrimitive(true)
+                                  .OptionLabel("Select Store...")
+                                  .DataTextField("Name")
+                                  .DataValueField("StoreCode")
+                                  .Filter("contains")
+                                  .DataSource(dataSource =>
+                                  {
+                                      dataSource.Read(read => read.Action("GetAllStores", "DataProvider", new { area = "Inventory" }).Data("sendForgery"))
+                                          .ServerFiltering(false);
+                                  })
+                    )
                     @Html.ValidationMessageFor(model => model.ToStoreCode, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -185,16 +185,16 @@
                 @Html.LabelFor(model => model.PlateNo, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.PlateNo)
-                                  .ValuePrimitive(true)
-                                  .OptionLabel("Select...")
-                                  .DataTextField("PlateNo")
-                                  .DataValueField("PlateNo")
-                                  .Filter("contains")
-                                  .DataSource(dataSource =>
-                                  {
-                                      dataSource.Read(read => read.Action("GetPlateNumbersFromFleetForFuelRequisition", "DataProvider", new { area = "Inventory" }))
-                                          .ServerFiltering(false);
-                                  })
+                                          .ValuePrimitive(true)
+                                          .OptionLabel("Select...")
+                                          .DataTextField("PlateNo")
+                                          .DataValueField("PlateNo")
+                                          .Filter("contains")
+                                          .DataSource(dataSource =>
+                                          {
+                                              dataSource.Read(read => read.Action("GetPlateNumbersFromFleetForFuelRequisition", "DataProvider", new { area = "Inventory" }).Data("sendForgery"))
+                                                  .ServerFiltering(false);
+                                          })
                     )
                     @Html.ValidationMessageFor(model => model.PlateNo, "", new { @class = "text-danger" })
                 </div>
@@ -230,16 +230,16 @@
                 @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
-                                          .ValuePrimitive(true)
-                                          .OptionLabel("Select Employee")
-                                          .DataTextField("Name")
-                                          .DataValueField("Code")
-                                          .Filter("contains")
-                                          .DataSource(dataSource =>
-                                          {
-                                              dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }).Data("filterRequestors"))
-                                                  .ServerFiltering(true);
-                                          })
+                                                  .ValuePrimitive(true)
+                                                  .OptionLabel("Select Employee")
+                                                  .DataTextField("Name")
+                                                  .DataValueField("Code")
+                                                  .Filter("contains")
+                                                  .DataSource(dataSource =>
+                                                  {
+                                                      dataSource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" }).Data("sendForgery").Data("filterRequestors"))
+                                                          .ServerFiltering(true);
+                                                  })
                     )
                     @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
                 </div>
@@ -278,16 +278,16 @@
                 @Html.LabelFor(model => model.ForBranchId, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.ForBranchId)
-                                          .ValuePrimitive(true)
-                                          .OptionLabel("Select Branch...")
-                                          .DataTextField("Name")
-                                          .DataValueField("Code")
-                                          .Filter("contains")
-                                          .DataSource(dataSource =>
-                                          {
-                                              dataSource.Read(read => read.Action("GetAllBranches", "GlobalDataProvider", new { area = "Common" }))
-                                                  .ServerFiltering(false);
-                                          })
+                                                  .ValuePrimitive(true)
+                                                  .OptionLabel("Select Branch...")
+                                                  .DataTextField("Name")
+                                                  .DataValueField("Code")
+                                                  .Filter("contains")
+                                                  .DataSource(dataSource =>
+                                                  {
+                                                      dataSource.Read(read => read.Action("GetAllBranches", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
+                                                          .ServerFiltering(false);
+                                                  })
                     )
                     @Html.ValidationMessageFor(model => model.ForBranchId, "", new { @class = "text-danger" })
                 </div>

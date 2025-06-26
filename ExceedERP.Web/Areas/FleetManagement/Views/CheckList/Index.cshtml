@@ -43,7 +43,7 @@
           .ClientDetailTemplateId("template")
         .DataSource(dataSource => dataSource
             .Ajax()
-            .ServerOperation(false)
+     
             .Model(model =>
             {
                 model.Id(p => p.CheckListId);
@@ -53,10 +53,10 @@
 .Error("error_handler(\"grid\")")
 .RequestStart("onRequestStart(\"grid\")")
 .RequestEnd("onRequestEnd(\"grid\")"))
-                            .Create(update => update.Action("CheckList_Create", "CheckList"))
-                            .Read(read => read.Action("CheckList_Read", "CheckList"))
-                            .Update(update => update.Action("CheckList_Update", "CheckList"))
-                            .Destroy(update => update.Action("CheckList_Destroy", "CheckList"))
+                            .Create(update => update.Action("CheckList_Create", "CheckList").Data("sendForgery"))
+                            .Read(read => read.Action("CheckList_Read", "CheckList").Data("sendForgery"))
+                            .Update(update => update.Action("CheckList_Update", "CheckList").Data("sendForgery"))
+                            .Destroy(update => update.Action("CheckList_Destroy", "CheckList").Data("sendForgery"))
       )
 )
 <script id="template" type="text/kendo-tmpl">
@@ -102,10 +102,10 @@
                          .Error("error_handler(\"linechecklistgrid_#=CheckListId#\")")
                          .RequestStart("onRequestStart(\"linechecklistgrid_#=CheckListId#\")")
                          .RequestEnd("onRequestEnd(\"linechecklistgrid_#=CheckListId#\")"))
-                         .Create(update => update.Action("LineCheckList_Create", "LineCheckList", new { CId = "#=CheckListId#" }))
-                         .Read(read => read.Action("LineCheckList_Read", "LineCheckList", new { Id = "#=CheckListId#" }))
-                         .Update(update => update.Action("LineCheckList_Update", "LineCheckList"))
-                         .Destroy(destroy => destroy.Action("LineCheckList_Destroy", "LineCheckList"))
+                         .Create(update => update.Action("LineCheckList_Create", "LineCheckList", new { CId = "#=CheckListId#" }).Data("sendForgery"))
+                         .Read(read => read.Action("LineCheckList_Read", "LineCheckList", new { Id = "#=CheckListId#" }).Data("sendForgery"))
+                         .Update(update => update.Action("LineCheckList_Update", "LineCheckList").Data("sendForgery"))
+                         .Destroy(destroy => destroy.Action("LineCheckList_Destroy", "LineCheckList").Data("sendForgery"))
                          )
                          .ToClientTemplate())
                         </text>

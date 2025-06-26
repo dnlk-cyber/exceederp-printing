@@ -18,7 +18,7 @@
                            .DataValueField("RentalInspectionCriteriaId")
                            .DataSource(dataSource =>
                            {
-                               dataSource.Read(read => read.Action("GetParameterCategory", "FleetMaintenanceDataProvider", new { Area = "FleetManagement" }))
+                               dataSource.Read(read => read.Action("GetParameterCategory", "FleetMaintenanceDataProvider", new { Area = "FleetManagement" }).Data("sendForgery"))
                                .ServerFiltering(false);
                            })
                            .Filter("contains")

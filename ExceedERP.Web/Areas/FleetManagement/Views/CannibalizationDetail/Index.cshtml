@@ -40,9 +40,9 @@
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.CannibalizationDetailId))
-          .Read(read => read.Action("CannibalizationDetails_Read", "CannibalizationDetail"))
-          .Create(create => create.Action("CannibalizationDetails_Create", "CannibalizationDetail"))
-          .Update(update => update.Action("CannibalizationDetails_Update", "CannibalizationDetail"))
-          .Destroy(destroy => destroy.Action("CannibalizationDetails_Destroy", "CannibalizationDetail"))
+          .Read(read => read.Action("CannibalizationDetails_Read", "CannibalizationDetail").Data("sendForgery"))
+          .Create(create => create.Action("CannibalizationDetails_Create", "CannibalizationDetail").Data("sendForgery"))
+          .Update(update => update.Action("CannibalizationDetails_Update", "CannibalizationDetail").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("CannibalizationDetails_Destroy", "CannibalizationDetail").Data("sendForgery"))
       )
 )

@@ -5,15 +5,30 @@
                         .Columns(columns =>
                         {
                             columns.Bound(c => c.DryLoadingTimeSheetId).Title("#").Width(60);
-                            columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "FleetsID", "PlateNumber").Title("Equipment Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
+                            columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
+                            columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
+                            columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
+                            columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "FleetsID", "PlateNumber").Title("Plate No").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
                             columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(100);
+                            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Value", "Text").Title("Branch").Width(100);
+                            columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessunit"], "Value", "Text").Title("Business unit").Width(100);
+                            columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["operator"], "Value", "Text").Title("Operator").Width(100);
                             columns.Bound(c => c.WorkItem).Width(100);
                             columns.Bound(c => c.WorkingHour).Width(100);
-                            columns.Bound(c => c.CostSheetStatus).Width(100);
-                            
+                            columns.Bound(c => c.BranchId).Width(100);
+                            columns.Bound(c => c.BusinessUnitId).Width(100);
+                            columns.Bound(c => c.LoadingUnloadingCost).Width(100);
+                            columns.Bound(c => c.LubricantCost).Width(100);
+                            columns.Bound(c => c.OilConsumption).Width(100);
+                            columns.Bound(c => c.FuelInLiter).Title("Fuel Consumption").Width(100);
+                            columns.Bound(c => c.FuelRate).Title("Fuel Rate").Width(100);
+                            columns.Bound(c => c.MaintenanceCost).Title("Maintenance Cost").Width(100);
+                            columns.Bound(c => c.Salary).Title("Salary").Width(100);
+                            columns.Bound(c => c.Perdium).Title("Perdium").Width(100);
+                            columns.Bound(c => c.TireCost).Width(100);
                             columns.Command(command => { command.Edit().UpdateText("save").CancelText("Cancel").Text("Edit"); }).Title("Action").Width(200);
                         })
-                        
+
                         .Editable(editable => editable.Mode(GridEditMode.PopUp)
                         .TemplateName("DryLoadingCostSheetTemplate")
                         .Window(win => win.Title("Dry Loading Cost Sheet").Width(800)))
@@ -30,9 +45,9 @@
                                          .Error("error_handler(\"grid\")")
                                          .RequestStart("onRequestStart(\"grid\")")
                                          .RequestEnd("onRequestEnd(\"grid\")"))
-                            .Read(read => read.Action("DryLoadingCostSheet_Read", "DryLoadingCostSheet"))
+                            .Read(read => read.Action("DryLoadingCostSheet_Read", "DryLoadingCostSheet").Data("sendForgery"))
 
-                            .Update(update => update.Action("DryLoadingCostSheet_Update", "DryLoadingCostSheet"))
+                            .Update(update => update.Action("DryLoadingCostSheet_Update", "DryLoadingCostSheet").Data("sendForgery"))
 
                         ).ClientDetailTemplateId("template")
 )
@@ -58,6 +73,12 @@
                                                                         {#
 
                                                                         <a onclick='return sendForApproval("#=DryLoadingTimeSheetId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                                        # }#
+
+                                                                        # if (CostSheetSendForAproval == true&&CostSheetApproved==true)
+                                                                        {#
+
+                                                                        <a onclick='return VoidCostSheet("#=DryLoadingTimeSheetId#")' href=' \#' title="void record"><i class="fa fa-bolt fa-2x" style="color:red"></i></a>
                                                                         # }#
                                                                     </div>
                                                                 </div>
@@ -97,9 +118,9 @@
                                                                         .RequestStart("onRequestStart(\"TimeSheetApproval#=DryLoadingTimeSheetId#\")")
                                                                         .RequestEnd("onRequestEnd(\"TimeSheetApproval#=DryLoadingTimeSheetId#\")"))
 
-                                                                        .Create(update => update.Action("DryLoadingCostSheetApproval_Create", "DryLoadingCostSheet", new { Id = "#=DryLoadingTimeSheetId#" }))
-                                                                        .Read(read => read.Action("DryLoadingCostSheetApproval_Read", "DryLoadingCostSheet", new { Id = "#=DryLoadingTimeSheetId#" }))
-                                                                        .Update(update => update.Action("DryLoadingCostSheetApproval_Create", "DryLoadingCostSheet"))
+                                                                        .Create(update => update.Action("DryLoadingCostSheetApproval_Create", "DryLoadingCostSheet", new { Id = "#=DryLoadingTimeSheetId#" }).Data("sendForgery"))
+                                                                        .Read(read => read.Action("DryLoadingCostSheetApproval_Read", "DryLoadingCostSheet", new { Id = "#=DryLoadingTimeSheetId#" }).Data("sendForgery"))
+                                                                        .Update(update => update.Action("DryLoadingCostSheetApproval_Create", "DryLoadingCostSheet").Data("sendForgery"))
 
 
                                                                     )
@@ -195,10 +216,66 @@
                 alert(result);
             }
         });
+    } function VoidCostSheet(id) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("VoidCostSheet", "DryLoadingCostSheet", new { area = "FleetManagement" })',
+            data: { id: id },
+            success: function (result) {
+
+                alert(result);
+
+                location.reload(true);
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
     }
 
 </script>
+<script type="text/javascript">
+     function filterEquipmentType() {
+        var dropdownlist = $("#EquipmentTypeId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
 
+        return {
+            equipmentIdentityId: $("#EquipmentCategoryId").val(),
+            search: filterInput.val()
+        };
+
+    }
+
+    function filterEquipmentNames() {
+        var dropdownlist = $("#EquipmentNameId").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            equipmentTypeId: $("#EquipmentTypeId").val(),
+            search: filterInput.val()
+        };
+    }
+
+function filterPlateNumber() {
+        return {
+            equipmentNameId: $("#EquipmentNameId").val(),
+            text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function handleFleetId() {
+        return {
+            equipmentNameId: $("#EquipmentNameId").val(),
+
+            text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterOperator() {
+        return {
+            text: $("#OperatorId").data("kendoDropDownList").filterInput.val()
+        }
+    }
+</script>
 <style>
     div.k-edit-form-container {
         width: auto;

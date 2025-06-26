@@ -17,7 +17,7 @@ using ExceedERP.Web.Areas.FleetManagement.Models;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Fleet;
 using ExceedERP.Core.Domain.Global;
-
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
 	[AuthorizeRoles(FleetManagementRoles.SalvageGoodReceivingApprover, FleetManagementRoles.StoreGoodReceivingUser)]
@@ -138,7 +138,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 			return Json(new[] { SalvageStoreGoodReceiving }.ToDataSourceResult(request));
 		}
 
-		[AllowAnonymous]
+		
 		public ActionResult StoreItemDDBind()
 		{
 		 

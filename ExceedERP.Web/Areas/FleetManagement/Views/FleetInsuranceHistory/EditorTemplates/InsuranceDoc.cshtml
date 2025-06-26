@@ -1,0 +1,14 @@
+﻿
+@(Html.Kendo().DropDownListFor(m => m)
+                                .OptionLabel("Select Insurance")
+                                .DataTextField("InsuranceCompanyName")
+                                .DataValueField("InsuranceCompanyId")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetInsuranceCompany", "FleetManagementDataProvider", new { Area = "FleetManagement" }).Data("sendForgery"))
+                                    .ServerFiltering(false);
+                                })
+                                .Filter("contains")
+                                .MinLength(2)
+                                .ValuePrimitive(true).HtmlAttributes(new { style = "width:100%" })
+)

@@ -1,5 +1,7 @@
-﻿using ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation;
+﻿using ExceedERP.Core.Domain.FleetManagement;
+using ExceedERP.Core.Domain.FleetManagement.EquipmentPlanandEvaluation;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -9,6 +11,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
 {
+    [AuthorizeRoles(FleetManagementRoles.FleetAnnualPlanner, FleetManagementRoles.FleetAnnualPlanApprover)]
     public class FleetAnnualPlanController : Controller
     {
         ExceedDbContext db = new ExceedDbContext();
@@ -48,7 +51,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetPlanAndEvaluation
                 Value = s.GLPeriodId,
                 Text = s.Name
             }).ToList();
-            //GenerateDate();
+           
             return View();
         }
         private void GenerateDate()

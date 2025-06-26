@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
 {
-    public class DryLoadingTimeSheet: OperationsCostTimeSheet
+    public class DryLoadingTimeSheet : OperationsCostTimeSheet
     {
         public int DryLoadingTimeSheetId { get; set; }
         [Display(Name = "Equipment Category")]
@@ -24,8 +24,13 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         [Required]
         [DisplayName("Working Hour")]
         public decimal WorkingHour { get; set; }
-        [Display(Name ="Down Hour")]
+        [Display(Name = "Down Hour")]
         public decimal Downhour { get; set; }
+
+        [Display(Name = "Down Reason")]
+        public string DownReason { get; set; }
+        [Display(Name = "Lubricant Consumption")]
+        public decimal OilConsumption {get;set;}
         [Required]
         [DisplayName("Trip Start Place")]
         public string TripStartPlace { get; set; }
@@ -116,6 +121,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         public Guid? OperatorId { get; set; }
         [Display(Name ="External Operator")]
         public string ExternalOperator { get; set; }
+        
     }
     public enum FleetMesuringCategory
     {

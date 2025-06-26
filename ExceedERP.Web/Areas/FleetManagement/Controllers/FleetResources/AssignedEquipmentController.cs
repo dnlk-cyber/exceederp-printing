@@ -18,7 +18,7 @@ using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.DataAccess.Context;
 using System.Data.Entity;
 using ExceedERP.Core.Domain.Global;
-
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     [AuthorizeRoles(FleetManagementRoles.ResourceApprover, FleetManagementRoles.ResourceDistributor, FleetManagementRoles.ResourceRequestApprover)]
@@ -62,12 +62,25 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 ModelState.Clear();
                 ModelState.AddModelError("IncorrectDate", "  Start Date Is Above End Date !!! ");
             }
+           
             else
             {
+                RequestedEquipment.ForwardedFrom = User.Identity.Name;
+                RequestedEquipment.ForwardedTo = User.Identity.Name;
+                RequestedEquipment.IsFinalApproval = RequestedEquipment.IsFinalApproval;
+                RequestedEquipment.CurrentApprovalStep = RequestedEquipment.CurrentApprovalStep;
+                RequestedEquipment.IsDepartmentOnlineApproved = false;
+                RequestedEquipment.DepartmentOnlineApprovedBy = RequestedEquipment.DepartmentOnlineApprovedBy;
+                RequestedEquipment.DepartmentOnlineApprovedTime = RequestedEquipment.DepartmentOnlineApprovedTime;
+                RequestedEquipment.IsDepartmentSendForApproval = RequestedEquipment.IsDepartmentSendForApproval;
+                RequestedEquipment.DepartmentSendForApprovalBy = RequestedEquipment.DepartmentSendForApprovalBy;
+                RequestedEquipment.DepartmentSendForApprovalTime = RequestedEquipment.DepartmentSendForApprovalTime; 
                 RequestedEquipment.RequestedEquipmentId = Guid.NewGuid();
                 RequestedEquipment.RequestNumber = Guid.Parse(createRequestNumber);
                 RequestedEquipment.Remark = MaintenanceConst.R;
                 RequestedEquipment.IsAssigned = false;
+                decimal totalkm = RequestedEquipment.AsphaltKm + RequestedEquipment.GravelKm;
+                RequestedEquipment.NumberHourPerKm = totalkm.ToString();
                 RequestedEquipment.DateCreated = DateTime.Now;
                 RequestedEquipment.CreatedBy = User.Identity.Name;
                 RequestedEquipment.VehicleDemandId = num;
@@ -95,13 +108,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             ModelState.Remove("EndDate");
             if (ModelState.IsValid)
             {
-
-
-                DateTime ExpiredDate = DateTime.Now;
-                DateTime StartDate = DateTime.Now;
+                var FetchRequest = db.RequestedEquipments.FirstOrDefault(x => x.RequestedEquipmentId.ToString() == Id);
+                assignedEquipment.StartDate = FetchRequest.StartDate;
+                assignedEquipment.EndDate = FetchRequest.EndDate;
+                assignedEquipment.ArrivalPlace = FetchRequest.ArrivalPlace;
                 string operatorName = "";
-
-
                 var fleet = db.Fleets.ToList().Where(x => x.FleetsID == assignedEquipment.FleetId).FirstOrDefault();
                 if(fleet!=null)
                 {
@@ -119,18 +130,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                         ModelState.AddModelError("ExistingName", "  Equipment is Already Requested !!! ");
                     }
 
-
-                    //else
-                    //{
-                    //    var requestDetail = db.RequestedEquipments.Where(
-                    //       RequestedEquipment => RequestedEquipment.RequestedEquipmentId == assignedEquipment.RequestedEquipmentId).FirstOrDefault();
-
-                    //var AssignedCount = db.AssignedEquipment.Where(x => x.RequestNumber == assignedEquipment.RequestNumber).ToList();
-                    //if (AssignedCount.Count > requestDetail?.Quantity)
-                    //{
-                    //    ModelState.AddModelError("AssignedEnough", " Already Assigned Requested Amount !");
-
-                    //}
                     else
                     {
                         assignedEquipment.AssignedEquipmentID = Guid.NewGuid();
@@ -138,27 +137,15 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                         assignedEquipment.FleetId = fleet.FleetsID;
                         assignedEquipment.RequestedDate = DateTime.Now;
                         assignedEquipment.RequestNumber = Guid.Parse(createRequestNumber);
-                        assignedEquipment.StartDate = StartDate;
-                        assignedEquipment.EndDate = ExpiredDate;
                         assignedEquipment.NetOdometer = 0;
+                        decimal totalkm = assignedEquipment.AsphaltKm + assignedEquipment.GravelKm;
+                        assignedEquipment.NumberHourPerKm = totalkm.ToString();
                         //  AssignedEquipment.SubEquipmentName = RequestDetail.SubEquipmentName;
                         //assignedEquipment.Quantity = AssignedEquipment.Quantity;
                         assignedEquipment.IsAssigned = true;
-
                         assignedEquipment.DateCreated = DateTime.Now;
                         assignedEquipment.CreatedBy = User.Identity.Name;
                         assignedEquipment.VehicleDemandId = vDemandId;
-                        //var netOdometer = assignedEquipment.EndOdometer - assignedEquipment.StartOdometr;
-
-                        //var entity = new AssignedEquipment
-                        //{
-                        //    StartOdometr = assignedEquipment.StartOdometr,
-                        //    EndOdometer = assignedEquipment.EndOdometer,
-                            
-
-
-                        //};
-                        //assignedEquipment.NetOdometer = netOdometer;
                         if (assignedEquipment != null)
                         {
                             
@@ -190,11 +177,28 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 IEquipmentIdentityService IdentityService = new EquipmentIdentityService();
 
 
-
+                RequestedEquipment.ForwardedFrom = User.Identity.Name;
+                RequestedEquipment.ForwardedTo = User.Identity.Name;
+                RequestedEquipment.IsFinalApproval = RequestedEquipment.IsFinalApproval;
+                RequestedEquipment.CurrentApprovalStep = RequestedEquipment.CurrentApprovalStep;
+                RequestedEquipment.IsDepartmentOnlineApproved = RequestedEquipment.IsDepartmentOnlineApproved;
+                RequestedEquipment.DepartmentOnlineApprovedBy = RequestedEquipment.DepartmentOnlineApprovedBy;
+                RequestedEquipment.DepartmentOnlineApprovedTime = RequestedEquipment.DepartmentOnlineApprovedTime;
+                RequestedEquipment.IsDepartmentSendForApproval = RequestedEquipment.IsDepartmentSendForApproval;
+                RequestedEquipment.DepartmentSendForApprovalBy = RequestedEquipment.DepartmentSendForApprovalBy;
+                RequestedEquipment.DepartmentSendForApprovalTime = RequestedEquipment.DepartmentSendForApprovalTime;
+                RequestedEquipment.IsOnlineApproved = RequestedEquipment.IsOnlineApproved;
+                RequestedEquipment.OnlineApprovedBy = RequestedEquipment.OnlineApprovedBy;
+                RequestedEquipment.OnlineApprovedTime = RequestedEquipment.OnlineApprovedTime;
+                RequestedEquipment.IsVoid = RequestedEquipment.IsVoid;
+                RequestedEquipment.VoidBy = RequestedEquipment.VoidBy;
+                RequestedEquipment.VoidTime = RequestedEquipment.VoidTime;
                 RequestedEquipment.Quantity = RequestedEquipment.Quantity;
                 RequestedEquipment.LastModified = DateTime.Now;
                 RequestedEquipment.ModifiedBy = User.Identity.Name;
-
+                RequestedEquipment.ModifiedBy = User.Identity.Name;
+                decimal totalkm = RequestedEquipment.AsphaltKm + RequestedEquipment.GravelKm;
+                RequestedEquipment.NumberHourPerKm = totalkm.ToString();
                 db.RequestedEquipments.Attach(RequestedEquipment);
                 db.Entry(RequestedEquipment).State = EntityState.Modified;
                 db.SaveChanges();
@@ -261,7 +265,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             _FleetService = new FleetService();
             var fleet = _FleetService.GetById(assignedEquipment.FleetId);
             var AssignedEquipment = _AssignedEquipmentService.GetById(assignedEquipment.AssignedEquipmentID);
-
             if (AssignedEquipment != null)
             {
                 AssignedEquipment.IsAssigned = false;
@@ -291,28 +294,32 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //}
         public JsonResult RequestedViewEquipment(string readRequestNumber, string readType, [DataSourceRequest] DataSourceRequest request)
         {
-
-            var Request = db.RequestedEquipments.Where(RequestedEquipment => RequestedEquipment.RequestNumber.ToString() == readRequestNumber && RequestedEquipment.IsAssigned == false).Select(a => new {
-                RequestedEquipmentId = a.RequestedEquipmentId,
-                RequestNumber = a.RequestNumber,
-                NumberHourKM=a.NumberHourKM,
-                NumberofPersonston=a.NumberofPersonston,
-                Remarks=a.Remarks,
-                EquipmentIdentityID = a.EquipmentIdentityID,
-                EquipmentTypeID = a.EquipmentTypeID,
-                ManufacturedYear = a.ManufacturedYear,
-                AssignedDate = a.AssignedDate,
-                RequestDesc = a.Quantity + " -- Year " + a.ManufacturedYear,
-                Quantity = a.Quantity,
-                StartDate = a.StartDate,
-                EndDate = a.EndDate,
-                NumberHourPerKm = a.NumberHourPerKm,
-                Destination = a.Destination,
-                NumberofPersonOrTon = a.NumberofPersonOrTon,
-                EquipmentStatus = a.EquipmentStatus,
-                VehicleDemandId = a.VehicleDemandId,
-                EquipmentNameId = a.EquipmentNameId
-            }).ToList();
+            var Request = db.RequestedEquipments
+                .Where(x => x.RequestNumber.ToString() == readRequestNumber && x.IsAssigned == false)
+                .Select(a => new
+                {
+                    RequestedEquipmentId = a.RequestedEquipmentId,
+                    RequestNumber = a.RequestNumber,
+                    NumberHourKM = a.NumberHourKM,
+                    NumberofPersonston = a.NumberofPersonston,
+                    Remarks = a.Remarks,
+                    EquipmentIdentityID = a.EquipmentIdentityID,
+                    EquipmentTypeID = a.EquipmentTypeID,
+                    ManufacturedYear = a.ManufacturedYear,
+                    GravelKm = a.GravelKm,
+                    AsphaltKm = a.AsphaltKm,
+                    AssignedDate = a.AssignedDate,
+                    RequestDesc = a.Quantity + " -- Year " + a.ManufacturedYear,
+                    Quantity = a.Quantity,
+                    StartDate = a.StartDate,
+                    EndDate = a.EndDate,
+                    NumberHourPerKm = a.NumberHourPerKm,
+                    Destination = a.Destination,
+                    NumberofPersonOrTon = a.NumberofPersonOrTon,
+                    EquipmentStatus = a.EquipmentStatus,
+                    VehicleDemandId = a.VehicleDemandId,
+                    EquipmentNameId = a.EquipmentNameId
+                }).ToList();
             return Json(Request.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
         }
         public JsonResult AllEquipment(int readRequestNumber, string readType, [DataSourceRequest] DataSourceRequest request)
@@ -389,7 +396,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
             //var assignedEquipment = db.AssignedEquipment.Where(x => x.VehicleDemandId == num);
             var requestEquipment = db.RequestedEquipments.FirstOrDefault(x => x.RequestNumber.ToString() == vDemandId);
-
             var assignedEquipment = db.AssignedEquipment.Where(x => x.VehicleDemandId == requestEquipment.VehicleDemandId);
             DataSourceResult result = assignedEquipment.ToDataSourceResult(request, assignedEquipments => new
             {
@@ -484,6 +490,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     NetOdometer = assignedEquipment.EndOdometer - assignedEquipment.StartOdometr,
 
                 };
+            
                 db.AssignedEquipment.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
@@ -545,6 +552,16 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             ModelState.Remove("EndDate");       
             ModelState.Remove("Quantity");
             ModelState.Remove("NumberofPersonOrTon");
+            var AllassignedE = db.AssignedEquipment;
+            foreach(var assignedE in AllassignedE)
+            {
+                if (assignedE != null)
+                {
+                    assignedE.NumberHourPerKm = assignedE.NumberHourPerKm;
+                    db.Entry(assignedE).State = EntityState.Modified;
+                }
+            }
+            db.SaveChanges();
 
             if (assignedEquipment != null && ModelState.IsValid)
             {

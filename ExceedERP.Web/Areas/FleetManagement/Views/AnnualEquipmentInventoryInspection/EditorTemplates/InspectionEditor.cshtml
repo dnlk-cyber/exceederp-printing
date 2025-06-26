@@ -4,85 +4,98 @@
 @using ExceedERP.Core.Domain.Finance.AP
 @using ExceedERP.Helpers
 @model  ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.AnnualEquipmentInventoryInspection
-<div class="form">
-    <div class="row fullrow">
-        <div class="col-md-3 ro1">
-            <div class="form-group">
-                @Html.LabelFor(model => model.FleetsID, "Equipment", htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-                    @(Html.Kendo().DropDownListFor(model => model.FleetsID)
-                                  .ValuePrimitive(true)
-                                  .OptionLabel("Select Equipment...")
-                                  .DataTextField("PlateNumber")
-                                  .DataValueField("FleetsID")
-                                  .Filter("contains")
-                                  .MinLength(2)
-                                  .DataSource(dataSource =>
-                                  {
-                                      dataSource.Read(read => read.Action("FleetsDDBind", "EquipmentRegistration", new { area = "FleetManagement" }))
-                                          .ServerFiltering(false);
-                                  })
-                    )
-                    @Html.ValidationMessageFor(model => model.FleetsID, "", new { @class = "text-danger" })
 
 
-                </div>
+<div class="row">
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Category</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentCategoryId)
+                            .AutoBind(true)
+                            .DataTextField("Name")
+                            .DataValueField("Id")
+                            .Filter(FilterType.Contains)
+                            .OptionLabel("Select Category")
+                            .HtmlAttributes(new { style = "width:100%" })
+                            .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery"))
+                            .ServerFiltering(false)))
             </div>
-            <div class="row"></div>
-            <div class="form-group">
-                @Html.LabelFor(model => model.InspectedBy, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-                    @Html.TextBoxFor(model => model.InspectedBy)
-                    @Html.ValidationMessageFor(model => model.InspectedBy, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="row"></div>
-
         </div>
-
-        <div class="col-md-3 ro1">
-
-            <div class="form-group">
-                @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-                    @Html.Kendo().TextBoxFor(model => model.Remark)
-                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
-                </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentTypeId)
+                            .AutoBind(true)
+                            .DataTextField("Name")
+                            .DataValueField("Id")
+                            .OptionLabel("Select Equipment Type")
+                            .Filter(FilterType.Contains)
+                            .DataSource(d =>
+                            {
+                                d.Read(r =>
+                                {
+                                    r.Action("GetEquipmentTypes", "FleetManagementDataProvider")
+                                    .Data("filterCategory");
+                                })
+                                .ServerFiltering(true);
+                            })
+                            .Enable(false)
+                            .AutoBind(false)
+                            .CascadeFrom("EquipmentCategoryId")
+                )
             </div>
-            <div class="row"></div>
-            <div class="form-group">
-                @Html.LabelFor(model => model.FindingsOutcome, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-                    @Html.Kendo().TextBoxFor(model => model.FindingsOutcome)
-                    @Html.ValidationMessageFor(model => model.FindingsOutcome, "", new { @class = "text-danger" })
-                </div>
-            </div>
-            <div class="row"></div>
-
-
         </div>
-
-        <div class="col-md-3 ro1">
-
-
-            <div class="form-group">
-                @Html.LabelFor(model => model.DateofInspection, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-                    @Html.Kendo().DatePickerFor(model => model.DateofInspection)
-                    @Html.ValidationMessageFor(model => model.DateofInspection, "", new { @class = "text-danger" })
-                </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Equipment Name</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EquipmentNameId)
+                            .AutoBind(true)
+                            .Enable(false)
+                            .DataTextField("Name")
+                            .DataValueField("Id")
+                            .Filter(FilterType.Contains)
+                            .OptionLabel("Select")
+                            .DataSource(d => d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider").Data("sendForgery")
+                            .Data("filterEquipmentNames"))
+                            .ServerFiltering(true))
+                            .CascadeFrom("EquipmentTypeId"))
             </div>
-            <div class="row"></div>
-
-            <div class="form-group">
-                @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-                    @Html.Kendo().TextBoxFor(model => model.Status)
-                    @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
-                </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Plate/Serial</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.FleetsID)
+                            .AutoBind(true)
+                            .Enable(false)
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .Filter(FilterType.Contains)
+                            .OptionLabel("Select")
+                            .DataSource(d => d.Read(r => r.Action("GetFleetForPlanAndEvaluation", "FleetManagementDataProvider").Data("sendForgery")
+                            .Data("filterFleet"))
+                            .ServerFiltering(true))
+                            .CascadeFrom("EquipmentNameId"))
             </div>
-            <div class="row"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+   
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>Date of Inspection</label>
+            <div>
+                @Html.Kendo().DatePickerFor(model => model.DateofInspection).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
         </div>
     </div>
 </div>

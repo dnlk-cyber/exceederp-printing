@@ -12,8 +12,8 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;     
-
+using System.Web.Mvc;
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     public class TyreTransferController : Controller
@@ -184,7 +184,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-        [AllowAnonymous]
+        
         public ActionResult UnAssignedEquipment()
         {
 
@@ -192,7 +192,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(FixedAssets, JsonRequestBehavior.AllowGet);
         }
-        [AllowAnonymous]
+        
         public ActionResult UnAssigned()
         {
 

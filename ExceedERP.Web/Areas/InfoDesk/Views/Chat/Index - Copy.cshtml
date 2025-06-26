@@ -1,0 +1,122 @@
+﻿@{
+    ViewBag.Title = "Chat";
+}
+
+<h2>Chat Application</h2>
+
+<!-- Select Receiver -->
+<label>Select Receiver:</label>
+<select id="receiverDropdown" class="k-dropdown">
+    <option value="">-- Select User --</option>
+</select>
+
+<!-- Chat Box -->
+<div id="chatBox" style="width: 60%; height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
+    <ul id="chatMessages"></ul>
+</div>
+
+<!-- Message Input -->
+<input type="text" id="messageInput" class="k-textbox" style="width: 70%;" placeholder="Type a message..." />
+<button id="sendButton" class="k-button k-primary">Send</button>
+
+<!-- jQuery & SignalR -->
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/jquery.signalR-2.2.2.min.js"></script>
+<script src="~/signalr/hubs"></script>
+
+<!-- Bootstrap Modal for Notifications -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Popup Notification -->
+<div class="modal fade" id="messagePopup" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Message</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p id="popupMessage">You have received a new message.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var userId;
+    var selectedReceiverId = null;
+    var chatHub = $.connection.chatHub;
+
+    // Fetch the logged-in user's ID
+    $.getJSON('/Chat/GetMyUserId', function (response) {
+        if (response && response.length > 0) {
+            userId = response[0].UserId;
+            console.log("Logged-in User ID:", userId);
+        } else {
+            alert("Error retrieving user ID.");
+        }
+    });
+
+    $(document).ready(function () {
+        // Load users for selection (receiver user)
+        $.getJSON('/Chat/GetUsers', function (users) {
+            $("#receiverDropdown").empty().append('<option value="">-- Select User --</option>');
+            $.each(users, function (index, user) {
+                $("#receiverDropdown").append(`<option value="${user.UserId}">${user.Name}</option>`);
+            });
+        });
+
+        // Load chat history when a receiver is selected
+        $("#receiverDropdown").change(function () {
+            selectedReceiverId = $(this).val();
+            loadChatHistory();
+        });
+
+        // Send message on button click
+        $("#sendButton").click(function () {
+            var message = $("#messageInput").val();
+            if (message.trim() === "" || !selectedReceiverId) return;
+
+            $.post('/Chat/InsertMessage', { senderId: userId, receiverId: selectedReceiverId, content: message }, function (response) {
+                if (response.success) {
+                    $("#messageInput").val('');
+                    loadChatHistory();
+                }
+            });
+        });
+    });
+
+    function loadChatHistory() {
+        if (!selectedReceiverId) return;
+
+        $.getJSON('/Chat/GetChatHistory', { user1Id: userId, user2Id: selectedReceiverId }, function (messages) {
+            $("#chatMessages").empty();
+            $.each(messages, function (index, msg) {
+                $("#chatMessages").append(
+                    `<li><strong>${msg.SenderId}:</strong> ${msg.Content} <small>(${msg.Timestamp})</small></li>`
+                );
+            });
+        });
+    }
+
+    // Receive Message in Real-time
+    chatHub.client.receiveMessage = function (senderId, receiverId, message, timestamp) {
+        if (receiverId == userId) {
+            $("#chatMessages").append(
+                `<li><strong>${senderId}:</strong> ${message} <small>(${timestamp})</small></li>`
+            );
+            $("#popupMessage").text("New message from User " + senderId);
+            $("#messagePopup").modal("show");
+        }
+    };
+
+    // Start SignalR
+    $.connection.hub.start().done(function () {
+        console.log("SignalR connected");
+    });
+
+</script>

@@ -12,6 +12,7 @@ using System.Web.Mvc;
 using ExceedERP.Helpers.Common;  
 using ExceedERP.Web.Areas.FleetManagement.Models;
 using ExceedERP.Core.Domain.FleetManagement;
+using ExceedERP.Core.Domain.Maintenance;
 
 namespace ExceedERP.Web.Areas.Maintenance.Controllers
 {

@@ -16,7 +16,7 @@
                                   .DataTextField("PlateNumber")
                                   .DataValueField("FleetsID")
                                   .OptionLabel("Select ").Filter(FilterType.Contains)
-                                  .DataSource(d => d.Read(r => r.Action("OnDistributionTimeSheetDDBind", "FleetManagementDataProvider"))
+                                  .DataSource(d => d.Read(r => r.Action("OnDistributionTimeSheetDDBind", "FleetManagementDataProvider").Data("sendForgery"))
                                   .ServerFiltering(false))
                                   .Events(e => e.Change("BindFleetDetail")))
                     @Html.ValidationMessageFor(model => model.FleetsID, "", new { @class = "text-danger" })
@@ -163,7 +163,7 @@
                           .DataTextField("Name")
                           .DataValueField("Name")
                           .OptionLabel("Select ")
-                          .DataSource(d => d.Read(r => r.Action("IdealTypeDDBind", "FleetMaintenanceDataProvider"))).Events(e => e.Change("BindFleetDetail")))
+                          .DataSource(d => d.Read(r => r.Action("IdealTypeDDBind", "FleetMaintenanceDataProvider").Data("sendForgery"))).Events(e => e.Change("BindFleetDetail")))
                     @Html.ValidationMessageFor(model => model.ReasonType, "", new { @class = "text-danger" })
                 </div>
             </div>

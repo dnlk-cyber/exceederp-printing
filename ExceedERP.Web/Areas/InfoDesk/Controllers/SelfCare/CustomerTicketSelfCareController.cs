@@ -23,10 +23,42 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         ApplicationDbContext udb = new ApplicationDbContext();
         public ActionResult Index()
         {
-            var employees = db.Person_Employee.Select(x => new { x.EmployeeId, AssinedTo = x.EmployeeId, AssignedTo = x.EmployeeId, FullNameaEnglish = x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish, FullNameAmharic = x.FirstName + " " + x.MiddleName + " " + x.LastName }).ToList();
+            PopulateViewData();
+            return View();
+        }
+        private void PopulateViewData()
+        {
+            var assetCategories = db.FixedAssetCategories.Select(x=>new
+            {
+                FixedAssetCategoryId=x.FixedAssetCategoryID,
+                CategoryName = x.CategoryName
+            });
+            var assetSubCategories = db.FixedAssetSubCategories.Select(x=>new
+            {
+                x.FixedAssetSubCategoryID,
+                x.SubCategoryName
+            });
+            var fixedAsset = db.AssetRegistrations;
+          
+
+            var selectedAsset = fixedAsset.Select(
+              i => new
+              {
+                  Name = i.Tag + "-" + i.Name,
+                  AssetRegistrationId = i.AssetRegistrationId
+              }).AsQueryable();
+            var employees = db.Person_Employee.Select(
+                                    x => new
+                                    {
+                                        x.EmployeeId,
+                                        AssinedTo = x.EmployeeId,
+                                        AssignedTo = x.EmployeeId,
+                                        FullNameaEnglish = x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish,
+                                        FullNameAmharic = x.FirstName + " " + x.MiddleName + " " + x.LastName })
+                                        .AsQueryable();
 
             ViewData["Materials"] = db.MaterialItems.ToList();
-            ViewData["bUnit"] = db.BusinessUnits.Select(x=>new { BusinessUnitId=x.BusinessUnitId, x.Name}).ToList();
+            ViewData["bUnit"] = db.BusinessUnits.Select(x => new { BusinessUnitId = x.BusinessUnitId, x.Name }).ToList();
             ViewData["orgStructure"] = db.MainCompanyStructures.ToList();
             ViewData["branchs"] = db.Branch.ToList();
             ViewData["AssignTo"] = employees;
@@ -44,14 +76,11 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             ViewData["TicketTypes"] = db.TicketType_HelpDesks.ToList();
             ViewData["TicketDefActivity"] = db.TicketActivityDefinition_HelpDesks.ToList();
             ViewData["Employees"] = employees;
-            return View();
+            ViewData["SubCategory"] = assetSubCategories;
+            ViewData["Category"] = assetCategories;
+            ViewData["FixedAsset"] = selectedAsset;
+            ViewData["defaultCategory"] = assetCategories.FirstOrDefault();
         }
-        //public ActionResult TicketStatus()
-        //{
-        //    ViewData["TicketTypes"] = db.TicketType_HelpDesks.ToList();
-        //    ViewData["TicketDefActivity"] = db.TicketActivityDefinition_HelpDesks.ToList();
-        //    return View();
-        //}
         public string GetCustomerAddress(int Id)
         {
             var Address = db.Addresses.Where(x => x.Reference == Id.ToString() && x.ReferenceType == "Organization_Customer").FirstOrDefault();
@@ -64,7 +93,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 return string.Empty;
             }
         }
-
         public ActionResult ResolvedTicket()
         {
             return View();
@@ -89,9 +117,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             var masterIds = db.AssignTicket_HelpDesks.Where(x => x.AssinedTo == employeeId).Select(x => x.CustomerTicketId);
             var customertickets = db.CustomerTicket_HelpDesks
-                                        .Where(x => x.EmployeeId == employeeId
-                                            ||x.AssignedTo ==employeeId
-                                            ||masterIds.Contains(x.CustomerTicket_HelpDeskId)).ToList();
+                                           .Where(x => x.EmployeeId == employeeId).ToList();
             DataSourceResult result = customertickets.ToDataSourceResult(request, customerTicket => new
             {
                 CustomerTicket_HelpDeskId = customerTicket.CustomerTicket_HelpDeskId,
@@ -99,6 +125,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 BranchId = customerTicket.BranchId,
                 BusinessUnitId = customerTicket.BusinessUnitId,
                 OrgStructureId = customerTicket.OrgStructureId,
+                RequesterIPAddress = customerTicket.RequesterIPAddress,
                 Description = customerTicket.Description,
                 TicketPriority = customerTicket.TicketPriority,
                 SupportGroup_HelpDeskId = customerTicket.SupportGroup_HelpDeskId,
@@ -119,13 +146,22 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 Role = customerTicket.Role,
                 RootCuase = customerTicket.RootCuase,
                 SolutionGiven = customerTicket.SolutionGiven,
+                Handler = customerTicket.Handler,
+                FixedAssetCategoryId = customerTicket.FixedAssetCategoryId,
+                FixedAssetSubCategoryId = customerTicket.FixedAssetSubCategoryId,
+                AssetRegistrationId = customerTicket.AssetRegistrationId,
+                ItemName = customerTicket.ItemName,
+                TagNo = customerTicket.TagNo,
+                SendApprovalBy = customerTicket.SendApprovalBy,
+                SendApprovalTime = customerTicket.SendApprovalTime,
+                PendingReason = customerTicket.PendingReason,
+                OrgBranchName = customerTicket.OrgBranchName,
                 TicketType_HelpDeskId = customerTicket.TicketType_HelpDeskId,
                 TicketStatus = customerTicket.TicketStatus,
                 CreatedBy = customerTicket.CreatedBy,
                 DateCreated = customerTicket.DateCreated,
                 LastModified = customerTicket.LastModified,
                 ModifiedBy = customerTicket.ModifiedBy,
-                OrgBranchName = customerTicket.OrgBranchName,
                 PriorityColor = customerTicket.PriorityColor,
                 Remark = customerTicket.Remark,
                 AgeOfTicket = GetAge(customerTicket.DateCreated, customerTicket.ClosedDate,customerTicket.IsClosed).ToString(),
@@ -134,7 +170,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(result);
         }
-     
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult CustomerTickets_Create([DataSourceRequest]DataSourceRequest request, CustomerTicket_HelpDesk customerTicket_HelpDesk)
         {
@@ -144,8 +179,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             customerTicket_HelpDesk.EmployeeId = employeeId;
             var empPlace = db.Placements.FirstOrDefault(x => x.isCurrent
                                         && x.EmployeeId == customerTicket_HelpDesk.EmployeeId);  
-
-
             if(empPlace != null)
             {
                 customerTicket_HelpDesk.BranchId = empPlace.BranchId;
@@ -153,18 +186,37 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 customerTicket_HelpDesk.OrgStructureId = empPlace.OrgStructureId;
             }
             customerTicket_HelpDesk.EmployeeId = employeeId;
+            customerTicket_HelpDesk.TicketStatus = TicketStatus.Waiting;
             customerTicket_HelpDesk.DateCreated = DateTime.Now;
             customerTicket_HelpDesk.CreatedBy = User.Identity.Name;
             customerTicket_HelpDesk.ClosedDate =null;
             customerTicket_HelpDesk.IsAssigned =false;
-            var ticketType = db.TicketType_HelpDesks.Find(customerTicket_HelpDesk.TicketType_HelpDeskId);
-            if(ticketType !=null && ticketType.DueDays > 0)
+            string ipAddress = Request.UserHostAddress;
+
+            // Handle reverse proxy or load balancer headers
+            //string forwardedFor = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+            //if (!string.IsNullOrEmpty(forwardedFor))
+            //{
+            //    ipAddress = forwardedFor.Split(',')[0];
+            //    customerTicket_HelpDesk.RequesterIPAddress = ipAddress;
+            //}
+            string ip = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+            if (string.IsNullOrEmpty(ip))
             {
+                ip = Request.UserHostAddress;
+            }
+            customerTicket_HelpDesk.RequesterIPAddress = ip;
+
+            var ticketType = db.TicketType_HelpDesks.Find(customerTicket_HelpDesk.TicketType_HelpDeskId);
+            if (ticketType != null && ticketType.DueDays > 0)
+            {
+                customerTicket_HelpDesk.OverDue = ticketType.DueDays;
                 customerTicket_HelpDesk.DueDate = DateTime.Now.AddDays((double)ticketType.DueDays);
                 customerTicket_HelpDesk.ClosedDate = DateTime.Now.AddDays((double)ticketType.DueDays);
-                customerTicket_HelpDesk.OverDue = (decimal)(customerTicket_HelpDesk.ClosedDate.Value - customerTicket_HelpDesk.DueDate.Value).TotalDays;
+                customerTicket_HelpDesk.TicketPriority = ticketType.TicketPriority;
 
             }
+           
             if (ModelState.IsValid)
             {
                 
@@ -181,7 +233,8 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                         AssignedDate = DateTime.Now,
                         AssinedTo = groupMember.EmployeeId,
                         ClosedDate = DateTime.Now,
-                        IsAssigned = true,
+                        IsAssigned = false,
+                        Handler = TicketHandledBy.N_A,
                         CustomerTicketId = entity.CustomerTicket_HelpDeskId,
                         CreatedBy = User.Identity.Name,
                         DateCreated = DateTime.Now,
@@ -193,22 +246,23 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                         TicketPriority = TicketPriority.High
                     };
                     db.AssignTicket_HelpDesks.Add(entityAssign);
-
-
+                    
                 }
                 db.SaveChanges();
             }
 
             return Json(new[] { customerTicket_HelpDesk }.ToDataSourceResult(request));
         }
-      
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult CustomerTickets_Update([DataSourceRequest] DataSourceRequest request, CustomerTicket_HelpDesk customerTicket_HelpDesk)
         {
             var ticket = db.CustomerTicket_HelpDesks.Find(customerTicket_HelpDesk.CustomerTicket_HelpDeskId);
             if (ticket == null)
             {
-                return Json("Ticket not found", JsonRequestBehavior.AllowGet);
+
+               return Json("Ticket not found", JsonRequestBehavior.AllowGet);
+               // return Json(new[] { customerTicket_HelpDesk }.ToDataSourceResult(request, ModelState));
+
             }
 
             var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -220,10 +274,21 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 ticket.BusinessUnitId = empPlace.BusinessUnitId;
                 ticket.OrgStructureId = empPlace.OrgStructureId;
             }
-
+            string ip = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+            if (string.IsNullOrEmpty(ip))
+            {
+                ip = Request.UserHostAddress;
+            }
+            customerTicket_HelpDesk.RequesterIPAddress = ip;
             ticket.EmployeeId = employeeId;
             ticket.SupportGroup_HelpDeskId = customerTicket_HelpDesk.SupportGroup_HelpDeskId;
+            ticket.AssetRegistrationId = customerTicket_HelpDesk.AssetRegistrationId;
+            ticket.FixedAssetCategoryId = customerTicket_HelpDesk.FixedAssetCategoryId;
+            ticket.FixedAssetSubCategoryId = customerTicket_HelpDesk.FixedAssetSubCategoryId;
+            ticket.ItemName = customerTicket_HelpDesk.ItemName;
+            ticket.TagNo = customerTicket_HelpDesk.TagNo;
             ticket.Description = customerTicket_HelpDesk.Description;
+            ticket.RequesterIPAddress = customerTicket_HelpDesk.RequesterIPAddress;
             ticket.TicketType_HelpDeskId = customerTicket_HelpDesk.TicketType_HelpDeskId;
             ticket.LastModified = DateTime.Now;
             ticket.ModifiedBy = User.Identity.Name;
@@ -233,30 +298,13 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 ticket.DueDate = DateTime.Now.AddDays((double)ticketType.DueDays);
                 ticket.ClosedDate = DateTime.Now.AddDays((double)ticketType.DueDays);
                 ticket.OverDue = (decimal)(ticket.ClosedDate.Value- ticket.DueDate.Value).TotalDays;
+                customerTicket_HelpDesk.TicketPriority = ticketType.TicketPriority;
 
             }
             db.Entry(ticket).State = EntityState.Modified;
             db.SaveChanges();
-            //if (ModelState.IsValid)
-            //{
-            //    //try
-            //    //{
-            //    //    var entity = GetMappedObject(customerTicket_HelpDesk);
-            //    //    db.CustomerTicket_HelpDesks.Attach(entity);
-            //    //    db.Entry(entity).State = EntityState.Modified;
-            //    //    db.SaveChanges();
-            //    ////}
-            //    //catch (Exception ex)
-            //    //{
-            //    //    // Handle or log the exception as needed
-            //    //    return Json($"Error: {ex.Message}", JsonRequestBehavior.AllowGet);
-            //    //}
-            //}
-
             return Json(new[] { customerTicket_HelpDesk }.ToDataSourceResult(request, ModelState));
         }
-
-
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult CustomerTickets_Destroy([DataSourceRequest]DataSourceRequest request, CustomerTicket_HelpDesk customerTicket)
         {
@@ -280,7 +328,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(new[] { customerTicket }.ToDataSourceResult(request));
         }
-
         private CustomerTicket_HelpDesk GetMappedObject(CustomerTicket_HelpDesk customerTicket_HelpDesk)
         {
             var entity = new CustomerTicket_HelpDesk
@@ -291,9 +338,24 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 IsSendForClosing = customerTicket_HelpDesk.IsSendForClosing,
                 TicketStatus = customerTicket_HelpDesk.TicketStatus,
                 MaterialItemsId = customerTicket_HelpDesk.MaterialItemsId,
+                RequesterIPAddress = customerTicket_HelpDesk.RequesterIPAddress,
                 Quantity = customerTicket_HelpDesk.Quantity,
                 Role = customerTicket_HelpDesk.Role,
                 Rate = customerTicket_HelpDesk.Rate,
+                OverDue = customerTicket_HelpDesk.OverDue,
+                Handler = customerTicket_HelpDesk.Handler,
+                IsMultipleAssign = customerTicket_HelpDesk.IsMultipleAssign,
+                IsSendForApproval = customerTicket_HelpDesk.IsSendForApproval,
+                FixedAssetCategoryId = customerTicket_HelpDesk.FixedAssetCategoryId,
+                FixedAssetSubCategoryId = customerTicket_HelpDesk.FixedAssetSubCategoryId,
+                AssetRegistrationId = customerTicket_HelpDesk.AssetRegistrationId,
+                ItemName = customerTicket_HelpDesk.ItemName,
+                TagNo = customerTicket_HelpDesk.TagNo,
+                RootCuase = customerTicket_HelpDesk.RootCuase,
+                SendApprovalBy = customerTicket_HelpDesk.SendApprovalBy,
+                SendApprovalTime = customerTicket_HelpDesk.SendApprovalTime,
+                PendingReason = customerTicket_HelpDesk.PendingReason,
+                OrgBranchName = customerTicket_HelpDesk.OrgBranchName,
                 LastModified = customerTicket_HelpDesk.LastModified,
                 ModifiedBy = customerTicket_HelpDesk.ModifiedBy,
                 PriorityColor = customerTicket_HelpDesk.PriorityColor,
@@ -370,18 +432,16 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
 
         }
-
         public ActionResult Confirmation(BindingModel model)
         {
 
             int customerTicketId = int.Parse(model.Id);
             var customerTicket = db.CustomerTicket_HelpDesks.FirstOrDefault(x => x.CustomerTicket_HelpDeskId == customerTicketId);
-
             customerTicket.IsConfirmedByTheRequester = Convert.ToBoolean(model.IsConfirmedByTheRequester);
-
             if (customerTicket.IsConfirmedByTheRequester)
             {
                 customerTicket.Rate = Convert.ToInt32(model.Rate);
+                customerTicket.ClosedDate = DateTime.Now;
                 customerTicket.IsClosed = true;
                 customerTicket.Remark = model.Remark;
                 customerTicket.TicketStatus = global::TicketStatus.Closed;
@@ -390,10 +450,9 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             {
                 customerTicket.Rate = 0;
                 customerTicket.Remark = model.Remark;
-                customerTicket.IsClosed = false;
+                customerTicket.IsClosed = false;                                                                                                                    
                 customerTicket.TicketStatus = global::TicketStatus.NOT_SOLVED;
             }
-
             db.Entry(customerTicket).State = EntityState.Modified;
             db.SaveChanges();
             //
@@ -402,27 +461,24 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         public JsonResult SendForApproval(int id)
         {
             var ticket = db.CustomerTicket_HelpDesks.Find(id);
-            if(ticket != null)
+            if (ticket == null)
             {
-                ticket.IsSendForApproval = true;
-                ticket.IsAssigned = true;
-                ticket.TicketStatus = TicketStatus.Assigned;
-                ticket.SendApprovalTime = DateTime.Now;
-                ticket.SendApprovalBy = User.Identity.Name;
-                db.Entry(ticket).State = EntityState.Modified;
-                db.SaveChanges();
-                return Json(new
-                {
-                    Message = "You have successfully sent for approval.",
-                    Status = "OK"
-                }, JsonRequestBehavior.AllowGet);
+                return Json(new { Message = "Record not found.!", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
+            }
+            if (ticket.IsSendForApproval)
+            {
+                return Json(new { Message = "Already Send for approval.", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
 
             }
-            return Json(new
-            {
-                Message = "Record Not Found.",
-                Status = "NOT-OK"
-            }, JsonRequestBehavior.AllowGet);
+            ticket.IsSendForApproval = true;
+            ticket.IsAssigned = false;
+            ticket.TicketStatus = TicketStatus.Assigned;
+            ticket.SendApprovalTime = DateTime.Now;
+            ticket.SendApprovalBy = User.Identity.Name;
+            db.Entry(ticket).State = EntityState.Modified;
+            db.SaveChanges();
+            return Json(new { Message = "You have successfully sent for approval.", Status = "Ok" }, JsonRequestBehavior.AllowGet);
+            
         }
         public ActionResult UploadSingleFiles(int masterId, HttpPostedFileBase file, string Description)
         {
@@ -451,14 +507,13 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                     ShortPath = shortPath,
                     FileExtension = fileExtension
                 };
-
                 db.CustomerTicketAttachments.Add(entity);
                 db.SaveChanges();
+
             }
 
             return RedirectToAction("Index", "CustomerTicketSelfCare");
         }
-
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

@@ -15,7 +15,7 @@ using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Web.Areas.FleetManagement.Models;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Global;
-
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     [AuthorizeRoles(FleetManagementRoles.ResourceRequestor, FleetManagementRoles.ResourceApprover)]
@@ -32,7 +32,28 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //
         // GET: /FleetManagement/DriverVehicleTransfer/
         public ActionResult Index()
-        {
+        {            
+            ViewData["Category"] = db.EquipmentIdentity.Select(s => new
+            {
+                Value = s.EquipmentIdentityID,
+                Text = s.EquipmentCategoryName
+            }).ToList();
+            ViewData["Type"] = db.EquipmentType.Select(s => new
+            {
+                Value = s.EquipmentTypeID,
+                Text = s.EquipmentTypeName
+            }).ToList();
+
+            ViewData["Name"] = db.EquipmentName.Select(s => new
+            {
+                Value = s.EquipmentNameID,
+                Text = s.Name
+            }).ToList();
+            ViewData["Fleet"] = db.Fleets.Select(s => new
+            {
+                Value = s.FleetsID,
+                Text = s.PlateNumber + " " + s.SerialNo
+            }).ToList();
             ViewData["Operators"] = db.Operator.ToList().Select(s => new {
                 Id = s.OperatorID,
                 Name = s.FullName
@@ -40,6 +61,23 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return View();
         }
 
+        public JsonResult Seed()
+        {
+            var dvt = db.DriverVehicleTransfer.ToList();
+            foreach (var item in dvt)
+            {
+                var fleet = db.Fleets.Find(item.FleetId);
+                if(fleet != null)
+                {
+                    item.EquipmentCategoryId = fleet?.EquipmentIdentityID ?? Guid.Empty;
+                    item.EquipmentTypeId = fleet?.EquipmentTypeID ?? Guid.Empty;
+                    item.EquipmentNameId = fleet?.EquipmentNameID ?? Guid.Empty;
+                    db.Entry(item).State = System.Data.Entity.EntityState.Modified;
+                }
+                db.SaveChanges();
+            }
+            return Json("Success", JsonRequestBehavior.AllowGet);
+        }
 
         public ActionResult DriverVehicleTransfer_Read([DataSourceRequest] DataSourceRequest request)
         {
@@ -57,8 +95,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             ModelState.Remove("DriverVehicleTransferID");
             ModelState.Remove("FromEquipment");
             ModelState.Remove("ToEquipment");
-
-
             if (DriverVehicleTransfer.FromOperatorId == DriverVehicleTransfer.ToOperatorId)
             {
                 ModelState.Clear();
@@ -71,51 +107,77 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
             else
             {
-                var FromFleet =
+                var FetchFromOperator=
                     _FleetService.GetAll()
-                        .Where(x => x.OperatorName == DriverVehicleTransfer.FromOperatorId)
+                        .Where(x => x.OperatorId.ToString() == DriverVehicleTransfer.FromOperatorId)
                         .FirstOrDefault();
-                var ToFleet =
-                _FleetService.GetAll()
-                    .Where(x => x.OperatorName == DriverVehicleTransfer.ToOperatorId)
-                    .FirstOrDefault();
-
-                if (DriverVehicleTransfer != null)
+                var FromFleet = db.DriverAssignments.FirstOrDefault(x => x.FleetId == DriverVehicleTransfer.FleetId);
+                if(FetchFromOperator!=null)
                 {
-                    DriverVehicleTransfer.DriverVehicleTransferID = Guid.NewGuid();
-
-                    DriverVehicleTransfer.FromEquipment = FromFleet.FleetsID;
-                    DriverVehicleTransfer.ToEquipment = ToFleet.FleetsID;
-                    DriverVehicleTransfer.DateCreated = DateTime.Now;
-                    DriverVehicleTransfer.CreatedBy = User.Identity.Name;
-                    DriverVehicleTransfer.Status = MaintenanceConst.Pending;
-                    DriverVehicleTransfer.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-              
-                    _DriverVehicleTransferService.Insert(DriverVehicleTransfer);
 
                 }
 
-                var EquipmentTyres = db.EquipmentTyres.Where(x => (x.fleetId == DriverVehicleTransfer.FromEquipment || x.fleetId == DriverVehicleTransfer.ToEquipment) && x.Isattached).ToList();
+                
 
-                foreach (var EquipmentTyre in EquipmentTyres)
+                var ToFleet = db.DriverAssignments.SingleOrDefault(foid => foid.OperatorId.ToString() == DriverVehicleTransfer.ToOperatorId);
+              
+
+                if (FromFleet == null)
+
                 {
-
-                    var TyreDetail = new SiteVechicleTransferTyreDetail()
+                    ModelState.AddModelError("From fleet is null", "Transfer from Operator is not Registered");
+                }
+                if (ToFleet == null)
+                {
+                    ModelState.AddModelError("To fleet is null", "Transfer to Operator is not Registered");
+                }
+                if ((FromFleet != null) && (ToFleet != null))
+                {
+                    if (DriverVehicleTransfer != null)
                     {
-                        SiteVechicleTransferId = DriverVehicleTransfer.DriverVehicleTransferID,
-                        SerialNo = EquipmentTyre.SerialNo,
-                        Type = EquipmentTyre.Type,
-                        Description = EquipmentTyre.Make + " " + EquipmentTyre.Condition,
-                        CreatedBy = User.Identity.Name,
-                        DateCreated = DateTime.Now
+                        DriverVehicleTransfer.DriverVehicleTransferID = Guid.NewGuid();
+                        if (FromFleet != null)
+                        {
+                            DriverVehicleTransfer.FromEquipment = FromFleet.FleetId;
+                        }
 
-                    };
-                    db.SiteVechicleTransferTyreDetailes.Add(TyreDetail);
-                    db.SaveChanges();
-                    #region operation log
-                    UserHelper.OperationLog(Request.UserHostAddress, "Operator transfer", "Success", User.Identity.Name, $"created driver transfer   {TyreDetail.SiteVechicleTransferTyreDetailId}", Modules.FleetManagement);
-                    #endregion
+                        if (ToFleet!=null)
+                        {
+                            DriverVehicleTransfer.ToEquipment = ToFleet.FleetId;
+                        }
+                        
+                        DriverVehicleTransfer.FromOperatorId =FromFleet.OperatorId.ToString();
+                        //DriverVehicleTransfer.FromEquipment = FromFleet.FleetId;
+                        DriverVehicleTransfer.FromEquipment = FromFleet.FleetId;
+                        DriverVehicleTransfer.ToEquipment = ToFleet.FleetId;
+                        DriverVehicleTransfer.DateCreated = DateTime.Now;
+                        DriverVehicleTransfer.CreatedBy = User.Identity.Name;
+                        DriverVehicleTransfer.Status = MaintenanceConst.Pending;
+                        DriverVehicleTransfer.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+                        _DriverVehicleTransferService.Insert(DriverVehicleTransfer);
+                        var EquipmentTyres = db.EquipmentTyres.Where(x => (x.fleetId == DriverVehicleTransfer.FromEquipment || x.fleetId == DriverVehicleTransfer.ToEquipment) && x.Isattached).ToList();
 
+                        foreach (var EquipmentTyre in EquipmentTyres)
+                        {
+
+                            var TyreDetail = new SiteVechicleTransferTyreDetail()
+                            {
+                                SiteVechicleTransferId = DriverVehicleTransfer.DriverVehicleTransferID,
+                                SerialNo = EquipmentTyre.SerialNo,
+                                Type = EquipmentTyre.Type,
+                                Description = EquipmentTyre.Make + " " + EquipmentTyre.Condition,
+                                CreatedBy = User.Identity.Name,
+                                DateCreated = DateTime.Now
+
+                            };
+                            db.SiteVechicleTransferTyreDetailes.Add(TyreDetail);
+                            db.SaveChanges();
+                            #region operation log
+                            UserHelper.OperationLog(Request.UserHostAddress, "Operator transfer", "Success", User.Identity.Name, $"created driver transfer   {TyreDetail.SiteVechicleTransferTyreDetailId}", Modules.FleetManagement);
+                            #endregion
+
+                        }
+                    }
                 }
             }
 

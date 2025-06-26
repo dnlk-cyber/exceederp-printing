@@ -183,7 +183,7 @@
                                                                                                             @(Html.Kendo().DropDownListFor(model => model.EquipmentIdentityID).Name("EquipmentIdentityID")
                                                                                                                                                                                                       .DataTextField("EquipmentCategoryName")
                                                                                                                                                                                                       .DataValueField("EquipmentIdentityID").Filter(FilterType.Contains).OptionLabel("Select ").HtmlAttributes(new { style = "width:100%" })
-                                                                                                                                                                                                      .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory")).ServerFiltering(false)))
+                                                                                                                                                                                                      .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory").Data("sendForgery")).ServerFiltering(false)))
 
                                                                                                         </div>
                                                                                                     </div>
@@ -560,7 +560,7 @@
                                                 @(Html.Kendo().DropDownListFor(model => model.PlannerID).Name("PlannerID").HtmlAttributes(new { style = "width:100%" })
                                                                                                                     .DataTextField("PlannerName")
                                                                                                                     .DataValueField("PlannerID").OptionLabel("Select")
-                                                                                                                    .DataSource(d => d.Read(r => r.Action("PlannerDDBind", "Planner"))))
+                                                                                                                    .DataSource(d => d.Read(r => r.Action("PlannerDDBind", "Planner").Data("sendForgery"))))
                                             </div>
                                         </div>
 
@@ -632,7 +632,7 @@
                                                     @(Html.Kendo().DropDownListFor(model => model.Condition)
                                                                                                                                                         .DataTextField("Name")
                                                                                                                                                                                             .DataValueField("Name").OptionLabel("Select").Filter(FilterType.Contains)
-                                                                                                                                                                                                            .DataSource(d => d.Read(r => r.Action("FleetConditionDDBind", "EquipmentCondition")).ServerFiltering(false)))
+                                                                                                                                                                                                            .DataSource(d => d.Read(r => r.Action("FleetConditionDDBind", "EquipmentCondition").Data("sendForgery")).ServerFiltering(false)))
 
 
 

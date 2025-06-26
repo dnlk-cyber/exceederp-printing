@@ -5,5 +5,5 @@
       .Filter("contains")
       .IgnoreCase(true)
       .HtmlAttributes(new { style = "width:100%" })
-      .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider")
+      .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery")
       .Data("filterEquipmentCategories")).ServerFiltering(true)))

@@ -22,7 +22,7 @@
                                       .DataTextField("PlateNumber")
                                       .DataValueField("FleetsID")
                                               .Text("PlateNumber").OptionLabel(" Select Fleet ").Filter(FilterType.Contains)
-                                      .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration")).ServerFiltering(false)))
+                                      .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration").Data("sendForgery")).ServerFiltering(false)))
                             </div>
                     <div>
                         @Html.LabelFor(model => model.RecommendedBy)

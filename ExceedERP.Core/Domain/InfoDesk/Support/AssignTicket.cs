@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.InfoDesk.Support
@@ -42,5 +41,8 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
         //[ForeignKey("CustomerTicketId")]
         //public virtual CustomerTicket Ticket { get; set; }
         public int? MaterialItemsId { get; set; }
+        [Display(Name ="Is to Send K. Base or Re. ")]
+        public bool IsSendToKB { get; set; }
+        public TicketHandledBy Handler { get; set; }
     }
 }

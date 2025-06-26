@@ -1,0 +1,35 @@
+﻿<legend>Bolo Registration History</legend>
+
+@using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+@(Html.Kendo().Grid<FleetBoloRegistrationHistory>
+    ()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        //columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120).Title("Category");
+        //columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120).Title("Type");
+        //columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["Name"], "Value", "Text").Width(120).Title("Name");
+        columns.Bound(c => c.FleetBoloRegistrationId).Width(100);
+        columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text").EditorTemplateName("EquipmentIdentity").Width(120).Title("Category");
+        columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").EditorTemplateName("EquipmentType").Width(120).Title("Type");
+        columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["Name"], "Value", "Text").EditorTemplateName("EquipmentName").Width(120).Title("Name");
+        columns.ForeignKey(c => c.FleetId, (IEnumerable)ViewData["Fleet"], "Value", "Text").EditorTemplateName("FleetTemplate").Filterable(ftb => ftb.Multi(true).Search(true)).Title("Plate No").Width(100);
+        columns.Bound(c => c.BoloRegistrationDate).Width(100).Title("Registration Date");
+        columns.Bound(c => c.BoloExpireDate).Width(120).Title("Expiry Date");
+        columns.Bound(c => c.Remark).Width(100);
+
+    })
+    //.Events(e => e.DataBound("onDataBoundMaster"))
+    //.Events(ev => ev.DetailExpand("detailExpand"))
+    // .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("boloregTemp"))
+    .Pageable()
+    .Filterable()
+    .Scrollable(s => s.Height(550))
+    .DataSource(dataSource => dataSource
+    .Ajax()
+    .Model(model => model.Id(p => p.FleetBoloRegistrationHistoryId))
+    .Read(read => read.Action("Read", "BoloRegistrationHistory").Data("sendForgery"))
+    .Sort(sort => sort.Add("FleetBoloRegistrationHistoryId").Descending())
+    )
+    )
+

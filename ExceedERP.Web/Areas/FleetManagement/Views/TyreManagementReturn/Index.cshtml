@@ -9,20 +9,18 @@
     .Columns(columns =>
     {
         columns.Bound(e => e.ReturnType).Width(140);
-        columns.Bound(e => e.StoreCode).Width(140);
+        //columns.Bound(e => e.StoreCode).Width(140);
+        columns.ForeignKey(e => e.StoreCode,(IEnumerable)ViewData["store"],"StoreCode","StoreName").Width(140);
         columns.Bound(e => e.PlateNumber).Width(140);
+        columns.Bound(e => e.SerialNo).Width(140);
+        columns.Bound(e => e.ReturnDate).Width(140).Title("Return Date");
+        columns.Bound(e => e.ReturnedKMReading).Width(140);
         columns.Bound(e => e.SerialNo).Width(140);
         columns.Bound(e => e.Brand).Width(140);
         columns.Bound(e => e.TireSize).Width(120);
-
         columns.Bound(e => e.UnitPrice).Width(120);
         columns.Bound(e => e.Status).Width(100);
-
-
-
         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
-
-
     })
            .ToolBar(toolbar => toolbar.Create())
       .Editable(editable =>
@@ -44,23 +42,24 @@
                                     .Filterable()
                                     //.Groupable()
                                     .Scrollable(h => h.Height(500))
-                                              .ClientDetailTemplateId("template")
-                                                                       .Events(ev => { ev.DetailExpand("onDetailExpandUser"); ev.DataBound("onDataBound"); })
+                                        .ClientDetailTemplateId("template")
+                                        .Events(ev => { ev.DetailExpand("onDetailExpandUser"); ev.DataBound("onDataBound"); })
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
+        .ServerOperation(true)
         .Model(model =>
               {
                   model.Id(p => p.TireReturnID);
+                  model.Field(p => p.TireReturnID).Editable(false);
 
               }).Events(ev => ev
                                                             .Error("error_handler(\"grid\")")
                                                             .RequestStart("onRequestStart(\"grid\")")
                                                             .RequestEnd("onRequestEnd(\"grid\")"))
-                    .Create(update => update.Action("TireReturn_Create", "TyreManagementReturn"))
-                    .Read(read => read.Action("TireReturn_Read", "TyreManagementReturn"))
-                    .Update(update => update.Action("TireReturn_Update", "TyreManagementReturn"))
-                    .Destroy(update => update.Action("TireReturn_Destroy", "TyreManagementReturn"))
+                    .Create(update => update.Action("TireReturn_Create", "TyreManagementReturn").Data("sendForgery"))
+                    .Read(read => read.Action("TireReturn_Read", "TyreManagementReturn").Data("sendForgery"))
+                    .Update(update => update.Action("TireReturn_Update", "TyreManagementReturn").Data("sendForgery"))
+                    .Destroy(update => update.Action("TireReturn_Destroy", "TyreManagementReturn").Data("sendForgery"))
   )
 )
 
@@ -152,9 +151,9 @@
                                                     .Error("error_handler(\"TireReturnApproval#=TireReturnID#\")")
                                                     .RequestStart("onRequestStart(\"TireReturnApproval#=TireReturnID#\")")
                                                     .RequestEnd("onRequestEnd(\"TireReturnApproval#=TireReturnID#\")"))
-                                                                                                           .Create(update => update.Action("TireReturn_Approve", "TireReturnApproval", new { EId = "#=TireReturnID#" }))
-                                                                                             .Read(read => read.Action("TireReturnApproval_Read", "TireReturnApproval", new { EId = "#=TireReturnID#" }))
-                                                                                           .Update(update => update.Action("TireReturn_Approve", "TireReturnApproval", new { EId = "#=TireReturnID#" }))
+                                                                                                           .Create(update => update.Action("TireReturn_Approve", "TireReturnApproval", new { EId = "#=TireReturnID#" }).Data("sendForgery"))
+                                                                                             .Read(read => read.Action("TireReturnApproval_Read", "TireReturnApproval", new { EId = "#=TireReturnID#" }).Data("sendForgery"))
+                                                                                           .Update(update => update.Action("TireReturn_Approve", "TireReturnApproval", new { EId = "#=TireReturnID#" }).Data("sendForgery"))
 
 
                                                       )
@@ -168,12 +167,13 @@
 <script type="text/javascript">
 
     function BindDetail() {
-
         var fleetIdDropDown = $("#FleetId").data("kendoDropDownList");
+     //   var SerialNumber = $("#SerialNo").data("kendoDropDownList");
         var fleetId = fleetIdDropDown.value();
+        //var serialnum = SerialNumber.Value();
         $.ajax({
             url: '@Url.Action("GetTyreInfo", "EquipmentTyre")',
-            data: { Id: fleetId },
+            data: { Id: fleetId},
             type: 'POST',
             cache: false,
             success: function (result) {
@@ -186,7 +186,7 @@
                     $("#TireType").val(s[2]);
                     $("#TireSize").val(s[1]);
                     $("#UnitPrice").val(s[4]);
-                    $("#InstalledDate").val(s[6]);
+                    $("#InstalledDate").val(s[6]);                    
                     $("#StoreCode").val(s[5]);
                     $("#KMReading").val(s[3]);
                 } else {
@@ -198,6 +198,28 @@
         });
 
     }
+ function BindIssueDateDetail() {
+    var fleetIdDropDown = $("#FleetId").data("kendoDropDownList");
+    var SerialNumber = $("#SerialNo").val();
+    var fleetId = fleetIdDropDown.value();
+    var serialnum = SerialNumber; // Fixed issue here
+
+    $.ajax({
+        url: '@Url.Action("GetIssueDate", "EquipmentTyre")',
+        data: { id: fleetId, Serial: serialnum },
+        type: 'POST',
+        cache: false,
+        success: function (result) {
+            if (result && result.indexOf('_') > -1) {
+                var s = result.split(/_/);
+                $("#IssueDate").val(s[0]);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("Error fetching issue date:", error);
+        }
+    });
+}
 
 </script>
 

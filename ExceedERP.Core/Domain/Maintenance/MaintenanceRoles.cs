@@ -7,6 +7,7 @@
         public const string MaintenanceRequestor = "Maintenance_Requestor";
 
         public const string MaintenanceRequestApprover = "Maintenance_Request_Approver";
+        public const string MaintenanceRequestDepartmentApprover = "Maintenance_Request_Department_Approver";
         public const string MaintenanceOrderUser = "Maintenance_Order_User";
         public const string MaintenanceWorkShopUser = "Maintenance_Work_Shop_User";
         public const string MaintenanceServiceApprover = "Maintenance_Service_Approver";
@@ -14,6 +15,7 @@
 
         public const string ServiceUser = "Service_User";
         public const string MaintenanceReport = "Maintenance_Report";
+        public const string GarageHead = "Garage_Head";
 
         public const string MaintenanceEquipmentRegistrationUser = "Maintenance_Equipment_Registration_User";
         public const string MileageImportAndExport = "Mileage_Import_And_Export_User";

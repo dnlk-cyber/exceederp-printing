@@ -59,7 +59,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("OperatorDDBindFoREmployee", "FleetManagementDataProvider", new { area = "FleetManagement" }))
+                              dataSource.Read(read => read.Action("OperatorDDBindFoREmployee", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
                               .ServerFiltering(false);
                           })
                     )
@@ -110,7 +110,7 @@
                     @(Html.Kendo().DropDownListFor(m => m.LicenseType).Name("LicenseType")
                           .DataTextField("Name")
                           .DataValueField("Name").OptionLabel("Select ").Filter(FilterType.Contains)//.HtmlAttributes(new { style = "width:100%" })
-                          .DataSource(d => d.Read(r => r.Action("LicenseTypeDDBind", "FleetManagementDataProvider")).ServerFiltering(false)))
+                          .DataSource(d => d.Read(r => r.Action("LicenseTypeDDBind", "FleetManagementDataProvider").Data("sendForgery")).ServerFiltering(false)))
                     @Html.ValidationMessageFor(model => model.LicenseType, "", new { @class = "text-danger" })
                     <div class="row"></div>
                 </div>
@@ -140,7 +140,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.Postion).Name("Postion")
                                                                     .DataTextField("Name")
                                                                     .DataValueField("Name").OptionLabel("Select Postion")//.HtmlAttributes(new { style = "
-                                                                    .DataSource(d => d.Read(r => r.Action("OperatorPositionDDBind", "OperatorPosition"))))
+                                                                    .DataSource(d => d.Read(r => r.Action("OperatorPositionDDBind", "OperatorPosition").Data("sendForgery"))))
                     @Html.ValidationMessageFor(model => model.Postion, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -168,7 +168,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.EducationLevel).Name("EducationLevel")
                                   .DataTextField("Name")
                                   .DataValueField("Name").OptionLabel("Select Education Level").Filter(FilterType.Contains)//.HtmlAttributes(new { style = "width:100%" })
-                                  .DataSource(d => d.Read(r => r.Action("EducationallevelDDBind", "Educationallevel")).ServerFiltering(false)))
+                                  .DataSource(d => d.Read(r => r.Action("EducationallevelDDBind", "Educationallevel").Data("sendForgery")).ServerFiltering(false)))
 
                     @Html.ValidationMessageFor(model => model.EducationLevel, "", new { @class = "text-danger" })
                 </div>

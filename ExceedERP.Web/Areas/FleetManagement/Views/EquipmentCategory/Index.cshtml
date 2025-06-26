@@ -46,9 +46,9 @@
                                         .Error("error_handler(\"grid\")")
                                         .RequestStart("onRequestStart(\"grid\")")
                                         .RequestEnd("onRequestEnd(\"grid\")"))
-          .Create(update => update.Action("EquipmentIdentity_Create", "EquipmentCategory"))
-          .Read(read => read.Action("EquipmentIdentity_Read", "EquipmentCategory"))
-          .Update(update => update.Action("EquipmentIdentity_Update", "EquipmentCategory"))
-          .Destroy(update => update.Action("EquipmentIdentity_Destroy", "EquipmentCategory"))
+          .Create(update => update.Action("EquipmentIdentity_Create", "EquipmentCategory").Data("sendForgery"))
+          .Read(read => read.Action("EquipmentIdentity_Read", "EquipmentCategory").Data("sendForgery"))
+          .Update(update => update.Action("EquipmentIdentity_Update", "EquipmentCategory").Data("sendForgery"))
+          .Destroy(update => update.Action("EquipmentIdentity_Destroy", "EquipmentCategory").Data("sendForgery"))
       ))
 

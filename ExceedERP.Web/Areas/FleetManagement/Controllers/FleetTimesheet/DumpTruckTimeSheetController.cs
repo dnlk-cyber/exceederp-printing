@@ -12,18 +12,20 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Reporting.Fleet.ViewModel;
-using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 
+using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using ExceedERP.Reporting.Fleet.ViewModel;
+//using ExceedERP.Reporting.Fleet.ViewModel;
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 {
-    [AuthorizeRoles(FleetManagementRoles.FleetTimeSheet)]
+    [AuthorizeRoles(FleetManagementRoles.FleetTimeSheetUser, FleetManagementRoles.FleetTimeSheetApprover)]
     public class DumpTruckTimeSheetController : Controller
     {
 
         ExceedDbContext db = new ExceedDbContext();
-         
-        public ActionResult Index(TimeSheetType dumpTruck)
+       
+public ActionResult Index(TimeSheetType dumpTruck)
         {
             ViewData["category"] = db.EquipmentIdentity.Select(s => new
             {
@@ -50,16 +52,26 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 Value = s.BranchId,
                 Text = s.Name
             }).ToList();
+            ViewData["operator"] = db.Operator.Select(s => new
+            {
+                Value = s.OperatorID,
+                Text = s.FullName
+            }).ToList();
+            ViewData["businessunit"] = db.BusinessUnits.Select(s => new
+            {
+                Value = s.BusinessUnitId,
+                Text = s.Name
+            }).ToList();
 
             ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
 
             ViewBag.dumpTruck = dumpTruck;
-            RepopulateTimeSheet();
+            
             return View();
         }
 
 
-        public void RepopulateTimeSheet()
+        public JsonResult RepopulateTimeSheet()
         {
             var timesheets = db.DumpTruckTimeSheets.ToList();
             if (timesheets.Any())
@@ -73,11 +85,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 }
                 db.SaveChanges();
             }
-
+            return Json("success", JsonRequestBehavior.AllowGet);
         }
         public ActionResult DumpTruckTimeSheets_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var dumpTruckTimeSheets = db.DumpTruckTimeSheets;
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var dumpTruckTimeSheets = db.DumpTruckTimeSheets.Where(x => mybraches.Contains(x.BranchId));
 
             DataSourceResult result = dumpTruckTimeSheets.ToDataSourceResult(request, dumpTruckTimeSheet => new DumpTruckTimeSheet
             {
@@ -135,7 +148,25 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
         public ActionResult DumpTruckTimeSheets_Create([DataSourceRequest] DataSourceRequest request, DumpTruckTimeSheet dumpTruckTimeSheet)
         {
 
+            var fetchSettings = db.TimeSheetSetting.ToList();
 
+            if (fetchSettings.Any())
+            {
+                var fetchSetting = fetchSettings.First();
+                var fetchException = db.TimeSheetException.FirstOrDefault(x => x.TimeSheetSettingId == fetchSetting.TimeSheetSettingId && x.BranchId == dumpTruckTimeSheet.BranchId.ToString());
+                if (fetchException == null)
+                {
+                    if (fetchSetting != null && fetchSetting.IsSet == true)
+                    {
+                        int hoursDifference = (int)(DateTime.Now - dumpTruckTimeSheet.Date).TotalHours;
+
+                        if (fetchSetting.SettedHours < hoursDifference)
+                        {
+                            ModelState.AddModelError("date expired", "The timesheet recording date is passed");
+                        }
+                    }
+                }
+            }
             if (ModelState.IsValid)
             {
                 var entity = new DumpTruckTimeSheet
@@ -350,6 +381,39 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
 
         }
+        public JsonResult VoidTimeSheet(int id)
+        {
+
+            var dumpTruckTimeSheet = db.DumpTruckTimeSheets.Find(id);
+
+            if (dumpTruckTimeSheet != null)
+            {
+                dumpTruckTimeSheet.TimeSheetSendForAproval = false;
+                dumpTruckTimeSheet.TimeSheetApproved = false;
+                dumpTruckTimeSheet.TimeSheetApprovedDate = DateTime.Now;
+                dumpTruckTimeSheet.TimeSheetApprovedBy = User.Identity.Name;
+                dumpTruckTimeSheet.TimeSheetStatus = MaintenanceConst.Rejected;
+
+                db.DumpTruckTimeSheets.Attach(dumpTruckTimeSheet);
+                db.Entry(dumpTruckTimeSheet).State = EntityState.Modified;
+                db.SaveChanges();
+                var returnMessage = new
+                {
+                    Message = "Successfully Sent!",
+
+                };
+                return Json(returnMessage.Message, JsonRequestBehavior.AllowGet);
+
+            }
+
+            var jsonData = new
+            {
+                Message = "Error Sending!",
+
+            };
+            return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
+
+        }
         public ActionResult DumpTruckTimeSheetApproval_Read([DataSourceRequest] DataSourceRequest request, int id)
         {
 
@@ -369,6 +433,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             });
             return Json(result);
         }
+        [AuthorizeRoles(FleetManagementRoles.FleetTimeSheetApprover)]
         public ActionResult DumpTruckTimeSheetApproval_Create([DataSourceRequest] DataSourceRequest request, TimeSheetApprovalNew model, int id)
         {
             if (ModelState.IsValid)

@@ -1,5 +1,4 @@
 ﻿@model  ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Fleets
-
 <script>
 
     function filterFixedAssetSubCategory() {
@@ -90,21 +89,19 @@
               tabstrip.Add().Text("Equipment")
                  .Selected(true)
                  .Content(@<text>
-
-
-
                     <div class="row">
                         <div class="col-md-1">
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <div class="k-label">
+                                    jjkhjklds;lfk
                                     @Html.LabelFor(model => model.EquipmentIdentityID)
                                 </div>
                                 @(Html.Kendo().DropDownListFor(model => model.EquipmentIdentityID).Name("EquipmentIdentityID")
                                           .DataTextField("EquipmentCategoryName")
                                           .DataValueField("EquipmentIdentityID").Filter(FilterType.Contains).OptionLabel("Select ").HtmlAttributes(new { style = "width:100%" })
-                                          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory")).ServerFiltering(false)))
+                                          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory").Data("sendForgery")).ServerFiltering(false)))
 
                             </div>
                         </div>
@@ -201,8 +198,6 @@
                       .AutoBind(false).Events(ev => ev.Change("PopulateFixedAsset"))
                                .CascadeFrom("SubType")
                                 )
-
-
                             </div>
                         </div>
 
@@ -459,7 +454,7 @@
                                 @(Html.Kendo().DropDownListFor(model => model.PlannerID).Name("PlannerID").HtmlAttributes(new { style = "width:100%" })
                     .DataTextField("PlannerName")
                     .DataValueField("PlannerID").OptionLabel("Select")
-                    .DataSource(d => d.Read(r => r.Action("PlannerDDBind", "Planner"))))
+                    .DataSource(d => d.Read(r => r.Action("PlannerDDBind", "Planner").Data("sendForgery"))))
                             </div>
                         </div>
 

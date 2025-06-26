@@ -36,10 +36,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             var TireIssue = _TireIssueService.GetAll().Select(t => new TireIssue
                 {
 
-                FleetId = t.FleetId,
-                EquipmentIdentityID = t.EquipmentIdentityID,
-                EquipmentTypeID = t.EquipmentTypeID,
-                EquipmentNameID = t.EquipmentNameID,
+                    FleetId = t.FleetId,
+                    EquipmentIdentityID = t.EquipmentIdentityID,
+                    EquipmentTypeID = t.EquipmentTypeID,
+                    EquipmentNameID = t.EquipmentNameID,
                     UnitPrice = t.UnitPrice,
                     OperatorName = t.OperatorName,
                     Brand = t.Brand,
@@ -48,6 +48,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     InstalledDate = t.InstalledDate,
                     KMReading = t.KMReading,
                     //Quantity = t.Quantity,
+                    //=t.StoreCode
                     SerialNo = t.SerialNo,
                     TireIssueID = t.TireIssueID,
                     TireSize = t.TireSize,

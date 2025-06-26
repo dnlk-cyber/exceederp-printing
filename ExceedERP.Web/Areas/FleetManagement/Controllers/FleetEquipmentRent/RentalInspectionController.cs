@@ -65,12 +65,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 BranchId = rentalInspection.BranchId,
                 EngineSerialNo=rentalInspection.EngineSerialNo,
                 MeterReading = rentalInspection.MeterReading,
+                IsOnlineApproved = rentalInspection.IsOnlineApproved,
                 IsSendForApproval = rentalInspection.IsSendForApproval,
                 SendForApprovalBy = rentalInspection.SendForApprovalBy,
                 SendForApprovalTime = rentalInspection.SendForApprovalTime,
                 IsOnlineTransferred = rentalInspection.IsOnlineTransferred,
                 IsOnlineTransferredBy = rentalInspection.IsOnlineTransferredBy,
                 OnlineTransferredTime = rentalInspection.OnlineTransferredTime,
+                OperatorName = rentalInspection.OperatorName,
                 validationStatus = GetValidationStaus(rentalInspection.RentalInspectionId)
             });
             return Json(result);
@@ -147,7 +149,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     IsOnlineTransferred = rentalInspection.IsOnlineTransferred,
                     IsOnlineTransferredBy = rentalInspection.IsOnlineTransferredBy,
                     OnlineTransferredTime = rentalInspection.OnlineTransferredTime,
-                    CCKW = rentalInspection.CCKW
+                    CCKW = rentalInspection.CCKW,
+                    OperatorName = rentalInspection.OperatorName
                 };
                 db.RentalInspections.Add(entity);
                 db.SaveChanges();
@@ -169,10 +172,10 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                             Index = criteriaDetail.Index,
                            
                         };
-                        detail.HeadOfficeGoodCondtion = branchName == "Head Office" ? GoodCondition.Good : GoodCondition.NA;
-                        detail.HeadOfficePoorCondtion = branchName == "Head Office" ? PoorCondition.NA : PoorCondition.NA;
-                        detail.BranchOfficeGoodCondtion = branchName == "Head Office" ? GoodCondition.NA : GoodCondition.Good;
-                        detail.BranchOfficePoorCondtion = branchName == "Head Office" ? PoorCondition.NA : PoorCondition.NA;
+                        detail.HeadOfficeGoodCondtion = GoodCondition.__;
+                        detail.HeadOfficePoorCondtion = PoorCondition.__;
+                        detail.BranchOfficeGoodCondtion = GoodCondition.__;
+                        detail.BranchOfficePoorCondtion = PoorCondition.__;
 
                         db.RentalMVInspections.Add(detail);
                         db.SaveChanges();
@@ -221,7 +224,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     IsOnlineTransferred = rentalInspection.IsOnlineTransferred,
                     IsOnlineTransferredBy = rentalInspection.IsOnlineTransferredBy,
                     OnlineTransferredTime = rentalInspection.OnlineTransferredTime,
-                    CCKW = rentalInspection.CCKW
+                    CCKW = rentalInspection.CCKW,
+                    OperatorName = rentalInspection.OperatorName
                 };
                 db.RentalInspections.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
@@ -251,9 +255,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 if (rentalInspectionValidation.Status == ApprovalStatuses.Approve)
                 {
                     var inspectedEquipment = db.RentalInspections.FirstOrDefault(x => x.RentalInspectionId == rentalInspectionValidation.RentalInspectionId);
-
-
-                    //var equipmentName = db.EquipmentName.Where(x => x.EquipmentTypeId == inspectedEquipment.EquipmentTypeID).FirstOrDefault();
+                   //var equipmentName = db.EquipmentName.Where(x => x.EquipmentTypeId == inspectedEquipment.EquipmentTypeID).FirstOrDefault();
                     var equipmntCategory = db.EquipmentType.FirstOrDefault(x => x.EquipmentTypeID == inspectedEquipment.EquipmentTypeID);
                     var planner = db.Planner.Select(x => x.PlannerID).FirstOrDefault();
                     var equipment = new Fleets
@@ -364,7 +366,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                     IsOnlineTransferred = rentalInspection.IsOnlineTransferred,
                     IsOnlineTransferredBy = rentalInspection.IsOnlineTransferredBy,
                     OnlineTransferredTime = rentalInspection.OnlineTransferredTime,
-                    CCKW = rentalInspection.CCKW
+                    CCKW = rentalInspection.CCKW,
+                    OperatorName = rentalInspection.OperatorName
                 };
 
                 db.RentalInspections.Attach(entity);
@@ -453,6 +456,43 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
             return null;
+        }
+        public JsonResult VoidRentalInspection(int id)
+        {
+
+            var rentalInspection = db.RentalInspections.Find(id);
+
+            if (rentalInspection != null)
+            {
+
+
+                rentalInspection.IsSendForApproval = false;
+                rentalInspection.IsOnlineApproved = false;
+                rentalInspection.SendForApprovalTime = DateTime.Now;
+                rentalInspection.OnlineApprovedBy = User.Identity.Name;
+                rentalInspection.Status = "Rejected";
+                rentalInspection.IsVoid = true;
+                rentalInspection.VoidBy = User.Identity.Name;
+
+                //db.rent.Attach(dryLoadingTimeSheet);
+                db.Entry(rentalInspection).State = EntityState.Modified;
+                db.SaveChanges();
+                var returnMessage = new
+                {
+                    Message = "Inspection Void!",
+
+                };
+                return Json(returnMessage.Message, JsonRequestBehavior.AllowGet);
+
+            }
+
+            var jsonData = new
+            {
+                Message = "Error Sending!",
+
+            };
+            return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
+
         }
         protected override void Dispose(bool disposing)
         {

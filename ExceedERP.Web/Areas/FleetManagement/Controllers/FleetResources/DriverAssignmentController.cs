@@ -13,7 +13,7 @@ using System.Data.Entity;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
-
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     public class DriverAssignmentController : Controller
@@ -23,7 +23,32 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         // GET: /FleetManagement/DriverAssignment/
         public ActionResult Index()
         {
+            ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            {
+                Text = s.EquipmentCategoryName,
+                Value = s.EquipmentIdentityID
+            }).ToList();
+            ViewData["type"] = db.EquipmentType.Select(s => new
+            {
+                Text = s.EquipmentTypeName,
+                Value = s.EquipmentTypeID
+            }).ToList();
+            ViewData["name"] = db.EquipmentName.Select(s => new
+            {
+                Text = s.Name,
+                Value = s.EquipmentNameID
+            }).ToList();
+
+            ViewData["Branch"] = db.Branch.Select(s => new
+            {
+                Text = s.Name,
+                Value = s.BranchId
+            }).ToList();
             ViewData["Operators"] = db.Operator.ToList().Select(s => new {
+                Id = s.OperatorID,
+                Name = s.FullName
+            });
+            ViewData["OperatorTwo"] = db.Operator.ToList().Select(s => new {
                 Id = s.OperatorID,
                 Name = s.FullName
             });
@@ -34,11 +59,27 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return View();
         }
 
-
+        public JsonResult Seed()
+        {
+            var fleets = db.Fleets.ToList();
+            foreach (var item in fleets)
+            {
+                var driverassigned = db.DriverAssignments.FirstOrDefault(x => x.FleetId == item.FleetsID);
+                if (driverassigned != null)
+                {
+                    driverassigned.EquipmentCategoryId = item?.EquipmentIdentityID ?? Guid.Empty;
+                    driverassigned.EquipmentNameId = item?.EquipmentNameID ?? Guid.Empty;
+                    driverassigned.EquipmentTypeId = item?.EquipmentTypeID ?? Guid.Empty;
+                }
+                db.Entry(driverassigned).State = EntityState.Modified;
+            }
+            db.SaveChanges();
+            return Json("Success", JsonRequestBehavior.AllowGet);
+        }
         public ActionResult DriverAssignment_Read([DataSourceRequest] DataSourceRequest request)
         {
 
-            var DriverAssignment = db.DriverAssignments.ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(e => new
+            var DriverAssignment = db.DriverAssignments.ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).Select(e => new DriverAssignment
 
             {
                 DriverAssignmentId = e.DriverAssignmentId,
@@ -55,7 +96,14 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 ToDate = e.ToDate,
                 IsOnlineApproved = e.IsOnlineApproved,
                 IsSendForApproval = e.IsSendForApproval,
-                Status = e.Status
+                Status = e.Status,
+                BranchId = e.BranchId,
+                EquipmentCategoryId = e.EquipmentCategoryId,
+                EquipmentNameId = e.EquipmentNameId,
+                EquipmentTypeId = e.EquipmentTypeId,
+                OperatorId = e.OperatorId,
+                SecondOperatorId = e.SecondOperatorId,
+                
 
             }
         ).ToList();
@@ -67,7 +115,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public ActionResult DriverAssignmentByFleet_Read([DataSourceRequest] DataSourceRequest request, string Id)
         {
 
-            var DriverAssignment = db.DriverAssignments.Where(x => x.FleetId.ToString() == Id).Select(e => new
+            var DriverAssignment = db.DriverAssignments.Where(x => x.FleetId.ToString() == Id).Select(e => new DriverAssignment
 
             {
                 DriverAssignmentId = e.DriverAssignmentId,
@@ -84,7 +132,15 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 DateCreated = e.DateCreated,
                 Remark = e.Remark,
                 Status = e.IsOnlineApproved ? MaintenanceConst.Assigned : MaintenanceConst.Pending,
-                BranchId = e.BranchId
+                BranchId = e.BranchId,
+                OperatorId = e.OperatorId,
+                SecondOperatorId = e.SecondOperatorId,
+                EquipmentCategoryId = e.EquipmentCategoryId,
+                EquipmentTypeId = e.EquipmentTypeId,
+                EquipmentNameId = e.EquipmentNameId,
+                IsOnlineApproved = e.IsOnlineApproved,
+                IsOnlineTransferred = e.IsOnlineTransferred,
+                
 
             }
         ).ToList();
@@ -94,44 +150,47 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-        public ActionResult DriverAssignment_Create([DataSourceRequest] DataSourceRequest request, DriverAssignment DriverAssignment)
+        public ActionResult DriverAssignment_Create([DataSourceRequest] DataSourceRequest request, DriverAssignment model)
         {
             ModelState.Remove("DriverAssignmentId");
             ModelState.Remove("FromOperatorName");
             ModelState.Remove("EquipmentName");
 
-            if (DriverAssignment != null)
+            if (model != null)
             {
-                Fleets fleet = db.Fleets.Where(x => x.FleetsID == DriverAssignment.FleetId).FirstOrDefault();
+                Fleets fleet = db.Fleets.Where(x => x.FleetsID == model.FleetId).FirstOrDefault();
 
                 if (fleet != null)
                 {
                     var entity = new DriverAssignment
                     {
-
+                        EquipmentCategoryId = model.EquipmentCategoryId,
+                        EquipmentNameId = model.EquipmentNameId,
+                        EquipmentTypeId = model.EquipmentTypeId,
+                        
                         DriverAssignmentId = Guid.NewGuid(),
-                        FleetId = DriverAssignment.FleetId,
+                        FleetId = model.FleetId,
                         EquipmentName = fleet.PlateNumber + " - " + fleet.EquipmentName,
                         FromOperatorName = fleet.OperatorName,
-                        ToOperatorName = DriverAssignment.ToOperatorName,
+                        ToOperatorName = db.Operator.Find(model.OperatorId).FullName,
                         CreatedBy = User.Identity.Name,
                         Status = MaintenanceConst.Pending,
-                        StartingDate = DriverAssignment.StartingDate,
-                        ToDate = DriverAssignment.ToDate,
+                        StartingDate = model.StartingDate,
+                        ToDate = model.ToDate,
                         OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
               
                         DateCreated = DateTime.Now,
-                        Remark = DriverAssignment.Remark,
-                        BranchId = DriverAssignment.BranchId
+                        Remark = model.Remark,
+                        BranchId = model.BranchId,
+                        OperatorId = model.OperatorId,
+                        SecondOperatorId = model.SecondOperatorId
                     };
-
-                    db = new ExceedDbContext();
-
+                    
                     db.DriverAssignments.Add(entity);
                     db.SaveChanges();
-                    DriverAssignment.DriverAssignmentId = entity.DriverAssignmentId;
-
-                    Operator Operator = db.Operator.Where(x => x.FullName == DriverAssignment.ToOperatorName).FirstOrDefault();
+                    model.DriverAssignmentId = entity.DriverAssignmentId;
+                    
+                    Operator Operator = db.Operator.FirstOrDefault(x => x.OperatorID == entity.OperatorId);
                     if (Operator != null)
                     {
                         Operator.IsActive = true;
@@ -143,10 +202,22 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                         UserHelper.OperationLog(Request.UserHostAddress, "Operator Assignment", "Success", User.Identity.Name, $" assgined opertor  {Operator.EmployeeId}", Modules.FleetManagement);
                         #endregion
                     }
+                    Operator OperatorTwo = db.Operator.FirstOrDefault(x => x.OperatorID == entity.SecondOperatorId);
+                    if (OperatorTwo != null)
+                    {
+                        OperatorTwo.IsActive = true;
+
+                        db.Operator.Attach(OperatorTwo);
+                        db.Entry(OperatorTwo).State = EntityState.Modified;
+                        db.SaveChanges();
+                        #region operation log
+                        UserHelper.OperationLog(Request.UserHostAddress, "Operator Assignment", "Success", User.Identity.Name, $" assgined opertor  {OperatorTwo.EmployeeId}", Modules.FleetManagement);
+                        #endregion
+                    }
                 }
             }
 
-            return Json(new[] { DriverAssignment }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -190,7 +261,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-        [AllowAnonymous]
+        
         public ActionResult UnAssignedEquipment()
         {
 
@@ -198,7 +269,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(FixedAssets, JsonRequestBehavior.AllowGet);
         }
-        [AllowAnonymous]
+        
         public ActionResult UnAssigned()
         {
 

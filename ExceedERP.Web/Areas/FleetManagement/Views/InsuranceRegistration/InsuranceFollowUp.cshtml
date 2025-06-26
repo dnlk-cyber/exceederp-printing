@@ -43,7 +43,7 @@
                                  .Scrollable(h => h.Height(500)).ClientDetailTemplateId("template")
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
+       
               .Model(model =>
               {
                   model.Id(p => p.FleetInsuranceId);
@@ -56,10 +56,10 @@
                                         .Error("error_handler(\"grid\")")
                                         .RequestStart("onRequestStart(\"grid\")")
                                         .RequestEnd("onRequestEnd(\"grid\")"))
-                    .Create(update => update.Action("Insurance_Create", "InsuranceRegistration"))
-                    .Read(read => read.Action("Insurance_Read", "InsuranceRegistration"))
-                    .Update(update => update.Action("Insurance_Update", "InsuranceRegistration"))
-                    .Destroy(update => update.Action("Insurance_Destroy", "InsuranceRegistration"))
+                    .Create(update => update.Action("Insurance_Create", "InsuranceRegistration").Data("sendForgery"))
+                    .Read(read => read.Action("Insurance_Read", "InsuranceRegistration").Data("sendForgery"))
+                    .Update(update => update.Action("Insurance_Update", "InsuranceRegistration").Data("sendForgery"))
+                    .Destroy(update => update.Action("Insurance_Destroy", "InsuranceRegistration").Data("sendForgery"))
   )
 )
 
@@ -168,9 +168,9 @@
                 .RequestStart("onRequestStart(\"FleetInsuranceTypegrid#=FleetInsuranceID#\")")
                 .RequestEnd("onRequestEnd(\"FleetInsuranceTypegrid#=FleetInsuranceID#\")"))
 
-                .Create(update => update.Action("FleetInsuranceTypeDetails_Create", "FleetInsuranceTypeDetail", new { Id = "#=FleetInsuranceID#" }))
-                .Read(read => read.Action("FleetInsuranceTypeDetails_Read", "FleetInsuranceTypeDetail", new { Id = "#=FleetInsuranceID#" }))
-                .Update(update => update.Action("FleetInsuranceTypeDetails_Update", "FleetInsuranceTypeDetail"))
+                .Create(update => update.Action("FleetInsuranceTypeDetails_Create", "FleetInsuranceTypeDetail", new { Id = "#=FleetInsuranceID#" }).Data("sendForgery"))
+                .Read(read => read.Action("FleetInsuranceTypeDetails_Read", "FleetInsuranceTypeDetail", new { Id = "#=FleetInsuranceID#" }).Data("sendForgery"))
+                .Update(update => update.Action("FleetInsuranceTypeDetails_Update", "FleetInsuranceTypeDetail").Data("sendForgery"))
 
 
                 )
@@ -205,9 +205,9 @@
                                                                 .Error("error_handler(\"SitesVehicleTransfer#=FleetInsuranceID#\")")
                                                                 .RequestStart("onRequestStart(\"SitesVehicleTransfer#=FleetInsuranceID#\")")
                                                                 .RequestEnd("onRequestEnd(\"SitesVehicleTransfer#=FleetInsuranceID#\")"))
-                                                                                                                               .Create(update => update.Action("SiteVehicle_Approve", "SiteVehicleApproval", new { EId = "#=FleetInsuranceID#" }))
-                                                                                                                         .Read(read => read.Action("SiteVehicleApproval_Read", "SiteVehicleApproval", new { EId = "#=FleetInsuranceID#" }))
-                                                                                                                       .Update(update => update.Action("SiteVehicle_Approve", "SiteVehicleApproval"))
+                                                                                                                               .Create(update => update.Action("SiteVehicle_Approve", "SiteVehicleApproval", new { EId = "#=FleetInsuranceID#" }).Data("sendForgery"))
+                                                                                                                         .Read(read => read.Action("SiteVehicleApproval_Read", "SiteVehicleApproval", new { EId = "#=FleetInsuranceID#" }).Data("sendForgery"))
+                                                                                                                       .Update(update => update.Action("SiteVehicle_Approve", "SiteVehicleApproval").Data("sendForgery"))
 
 
                                                           )

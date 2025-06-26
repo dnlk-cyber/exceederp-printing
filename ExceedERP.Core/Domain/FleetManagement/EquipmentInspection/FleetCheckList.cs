@@ -12,36 +12,40 @@ namespace ExceedERP.Core.Domain.FleetManagement.EquipmentInspection
     public class FleetCheckList : TrackUserSettingOperation
     {
         public int FleetCheckListId { get; set; }
-
         [Required]
         public Guid EquipmentIdentityID { get; set; }
-        public Guid EquipmentTypeID { get; set; }
-        [Required]
-        public CheckListType Type { get; set; }
-        [NotMapped]
-        public string Name { get; set; }
-        public bool IsMaintenace { get; set; }
-
+        public Guid? EquipmentTypeID { get; set; }      
         public string Code { get; set; }
-
         public string Description { get; set; }
-        //public bool IsNormal { get; set; }
-
         public string Remark { get; set; }
 
-        [NotMapped]
-        public bool Selected { get; set; }
+        
     }
     public class FleetLineCheckList : Operations
     {
         public int FleetLineCheckListId { get; set; }
         public int FleetCheckListId { get; set; }
         [Required]
-        public string Name { get; set; }
+        public string SystemName { get; set; }
+        public string CheckList { get; set; }
         public string Description { get; set; }
         public string Code { get; set; }
         public bool IsActive { get; set; }
-        //public bool IsNormal { get; set; }
         public virtual FleetCheckList FleetCheckList { get; set; }
+    }
+    public enum StatusKey
+    {
+        [Display(Name ="--")]
+        NA,
+        [Display(Name = "Excellent Condition")]
+        ExcellentCondition,
+        [Display(Name = "Good Condition")]
+        GoodCondition,
+        [Display(Name = "Fair Condition")]
+        FairCondition,
+        [Display(Name = "Workable MinorRepair")]
+        Workable_MinorRepair,
+        [Display(Name = "Workable MajorRepair")]
+        Workable_MajorRepair
     }
 }

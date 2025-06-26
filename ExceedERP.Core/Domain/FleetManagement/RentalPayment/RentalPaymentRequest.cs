@@ -14,7 +14,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.RentalPayment
 {
     public class RentalPaymentRequest: DepartmentNewOperations
     {
-        public int RentalPaymentRequestId { get; set; }
+        public int RentalPaymentRequestId { get; set; }       
+
         [DisplayName("Employee Name")]
         public int EmployeeId { get; set; }
         [DisplayName("Supplier Name")]
@@ -60,4 +61,54 @@ namespace ExceedERP.Core.Domain.FleetManagement.RentalPayment
         public DateTime? FinanceApprovedTime { get; set; }
        
     }
+    public class RequestEmployeeVM
+    {
+        public int EmployeeId { get; set; }
+        public string FullName { get; set; }
+    }  public class RequestProcurementVM
+    {
+        public int ProcurementSupplierID { get; set; }
+        public string Name { get; set; }
+    }
+    public class RequestBusinessUnitVM
+    {
+        public int Value { get; set; }
+        public string Text { get; set; }
+    }
+    public class RequestFiscalYearVM
+    {
+        public int GLFiscalYearId { get; set; }
+        public string Name { get; set; }
+    }
+    public class RequestBranchVM
+    {
+        public int BranchId { get; set; }
+        public string Name { get; set; }
+    }
+    public class RequestGlPeriodVM
+    {
+        public int GLPeriodId { get; set; }
+        public string Name { get; set; }
+    }
+    public class RequestIdentityVM
+    {
+        public Guid Value { get; set; }
+        public string Text { get; set; }
+    }
+    public class RequestTypeVM
+    {
+        public Guid Value { get; set; }
+        public string Text { get; set; }
+    }
+    public class RequestNameVM
+    {
+        public Guid Value { get; set; }
+        public string Text { get; set; }
+    }
+    public class RequestFleetsVM
+    {
+        public Guid Value { get; set; }
+        public string Text { get; set; }
+    }
+
 }

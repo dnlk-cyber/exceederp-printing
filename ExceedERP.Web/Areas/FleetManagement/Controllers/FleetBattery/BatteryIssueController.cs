@@ -14,6 +14,7 @@ using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using System.Data.Entity.Validation;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Maintenance;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
@@ -143,7 +144,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-        [AllowAnonymous]
+        
         public ActionResult BatteryForIssue()
         {
 

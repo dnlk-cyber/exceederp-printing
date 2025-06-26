@@ -10,7 +10,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
 {
-    public partial class VehicleDemand : OperationWithSecondValidation
+    public partial class VehicleDemand : DepartmentNewOperationWithSecondValidation
     {
         [Key]
         [DisplayName(" Request Number ")]

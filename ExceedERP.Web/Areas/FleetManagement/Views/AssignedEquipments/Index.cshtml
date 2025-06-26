@@ -1,6 +1,6 @@
-﻿
+﻿    
 
-<legend>Assinged Equipments</legend>
+<label> @ViewBag.Type </label>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.AssignedEquipment>()
                         .Name("grid")
@@ -13,6 +13,9 @@
                             columns.Bound(e => e.StartOdometr).Width(100);
                             columns.Bound(e => e.EndOdometer).Width(100);
                             columns.Bound(e => e.NetOdometer).Width(100);
+                            columns.Bound(e => e.StartDate).Title("Sent Date").Width(100);
+                            columns.Bound(e => e.EndDate).Title("Arrival Date").Width(100);
+                            columns.Bound(e => e.ArrivalPlace).Title("Arrival Place").Width(100);
                             //columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); }).Title("Action").Width(200);
                             columns.Command(command => { command.Destroy().Text(" Accept Equipment "); command.Edit(); }).Width(200);
 
@@ -35,16 +38,16 @@
                                 model.Field(p => p.FleetId).Editable(false);
                                 model.Field(p => p.StartOdometr).Editable(false);
                                 model.Field(p => p.ReturnDate).Editable(false);
+                                model.Field(p => p.ArrivalPlace).Editable(false);
                             })
                             .Events(ev => ev
                                          .Error("error_handler(\"grid\")")
                                          .RequestStart("onRequestStart(\"grid\")")
                                          .RequestEnd("onRequestEnd(\"grid\")"))
-                            .Read(read => read.Action("AssignedEquipment_Read", "AssignedEquipments"))
-                            .Update(update => update.Action("AssignEqupment_Update", "AssignedEquipment"))
-
-                            .Destroy(update => update.Action("AcceptEquipment", "AssignedEquipment"))
-
+                            .Read(read => read.Action("AssignedEquipment_Read", "AssignedEquipments").Data("sendForgery"))
+                            .Update(update => update.Action("AssignEqupment_Update", "AssignedEquipment").Data("sendForgery"))
+                            .Destroy(update => update.Action("AcceptEquipment", "AssignedEquipment").Data("sendForgery"))
+                           
                             )
 )
 

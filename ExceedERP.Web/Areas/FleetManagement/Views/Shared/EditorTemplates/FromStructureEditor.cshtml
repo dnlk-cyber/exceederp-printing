@@ -7,6 +7,6 @@
             .DataValueField("Id")
             .OptionLabel("Select")
             .Filter("contains")
-            .DataSource(d => d.Read(r => r.Action("StructureDDBind", "Structure")
+            .DataSource(d => d.Read(r => r.Action("StructureDDBind", "Structure").Data("sendForgery")
             .Data("filterEquipmentTypes"))
             ))

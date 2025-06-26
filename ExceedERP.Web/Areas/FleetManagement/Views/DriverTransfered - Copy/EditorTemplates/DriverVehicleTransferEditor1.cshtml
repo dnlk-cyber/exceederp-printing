@@ -1,0 +1,90 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetResource.DriverVehicleTransfer
+
+
+<script>
+    function filterOperator() {
+        return {
+            FromOperatorId: $("#FromOperatorId").val()
+        };
+    }
+</script>
+
+<div class="demo-section k-content">
+    <form>
+
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model=>model.FromOperatorId)
+                    </div>
+
+                    <div>
+
+                        @(Html.Kendo().DropDownListFor(model => model.FromOperatorId).Name("FromOperatorId")
+                                       .DataTextField("FullName")
+                                       .DataValueField("Remark").OptionLabel("From Operator").Filter(FilterType.Contains)
+                                       .DataSource(d => d.Read(r => r.Action("OperatorTransferDDBind", "OperatorRegistration").Data("sendForgery")).ServerFiltering(false)))
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model=>model.ToOperatorId)
+                     </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.ToOperatorId).Name("ToOperatorId")
+                                      .DataTextField("FullName")
+                                      .DataValueField("Remark").OptionLabel(" Select To").Filter(FilterType.Contains)
+                                      .DataSource(d => d.Read(r => r.Action("OperatorTransferDDBind", "OperatorRegistration").Data("sendForgery")).ServerFiltering(false)))
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.StartingDate)
+                    </div>
+                    <div>
+                        @Html.Kendo().DatePickerFor(model => model.StartingDate)
+                        @Html.ValidationMessageFor(model => model.StartingDate)
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.ToDate)
+                    </div>
+                    <div>
+                        @Html.Kendo().DatePickerFor(model => model.ToDate)
+                        @Html.ValidationMessageFor(model => model.ToDate)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Description)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Description)
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </form>
+</div>

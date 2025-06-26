@@ -99,7 +99,21 @@ namespace ExceedERP.Reporting.Fleet.Printing.DataSource
                             EquipmentDistrbutionModel.EmployeeName = EmployeeName.FirstNameEnglish + " " + EmployeeName.MiddleNameEnglish + " " + EmployeeName.LastNameEnglish;
                         }
                         EquipmentDistrbutionModel.ReasonForTravel = vehicleDistribution.ReasonForTravel;
-                        EquipmentDistrbutionModel.IsAssigned = vehicleDistribution.IsAssigned;
+                       // var bankid=
+                       // var employeeBank = db.BankReferences
+                       //.Where(x => x.BankId == bankid)
+                       //.Where(x => x.Reference == payrolldata.EmployeeId.ToString())
+                       //.Where(x => x.Type == BankAccountType.PAYROLL).FirstOrDefault();
+                       // if (employeeBank != null)
+                       // {
+                       //     EmployeeInfo.BankAccount = employeeBank.AccountNumber;
+                       // }
+                       // else
+                       // {
+                       //     EmployeeInfo.BankAccount = "";
+                       // }
+                       // EquipmentDistrbutionModel.AccountNumber=
+                        //EquipmentDistrbutionModel.IsAssigned = vehicleDistribution.IsAssigned;
                         EquipmentDistrbutionModel.StartingDate = assignedEqupment.StartDate;
                         EquipmentDistrbutionModel.ToDate = assignedEqupment.EndDate;
                         EquipmentDistrbutionModel.CategoryRef = EquipmentSpecifcation;

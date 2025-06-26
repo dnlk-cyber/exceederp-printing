@@ -11,20 +11,28 @@ namespace ExceedERP.Reporting.Fleet.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<AnnualPlanSummaryViewModel> GenerateAnnualPlanSummaryReport(string fiscalYearId, string equipmentTypeId)
+        public List<AnnualPlanSummaryViewModel> GenerateAnnualPlanSummaryReport(string fiscalYearId, string equipmentTypeId, string grade, string glPeriod)
         {
             List<AnnualPlanSummaryViewModel> summaryList = new List<AnnualPlanSummaryViewModel>();
 
             if (int.TryParse(fiscalYearId, out int fId))
             {
-                var annualPlans = db.FleetAnnualPlans.Where(x => x.GlFiscalYearId == fId);
-
+                var annualPlans = db.FleetAnnualPlans.Where(x => x.GlFiscalYearId == fId).ToList();
+                var planDetail = db.FleetAnnualPlanDetails.ToList();
                 if (!string.IsNullOrWhiteSpace(equipmentTypeId) && Guid.TryParse(equipmentTypeId, out Guid eTypeId))
                 {
-                    annualPlans = annualPlans.Where(x => x.EquipmentTypeId == eTypeId);
-                }                
+                    annualPlans = annualPlans.Where(x => x.EquipmentTypeId == eTypeId).ToList();
+                }
+                if (!string.IsNullOrWhiteSpace(grade))
+                {
+                    annualPlans = annualPlans.Where(x => x.EquipmentGrade.ToString() == grade).ToList();
+                }
+                if (int.TryParse(glPeriod, out int glPeriodId))
+                {
+                    planDetail = planDetail.Where(x => x.GlPeriodId == glPeriodId).ToList();
+                }
                 var planDetails = from plan in annualPlans
-                                  join detail in db.FleetAnnualPlanDetails on plan.FleetAnnualPlanId equals detail.FleetAnnualPlanId
+                                  join detail in planDetail on plan.FleetAnnualPlanId equals detail.FleetAnnualPlanId
                                   select new
                                   {
                                       plan.EquipmentTypeId,
@@ -32,18 +40,21 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                                       detail.GlPeriodId,
                                       detail.ExpectedEffectiveWorkingHrPerMonth,
                                       detail.ExpectedMonthlyIncome,
-                                      Quantity = detail.NumberOfEquipmentInMonth
+                                      Quantity = detail.NumberOfEquipmentInMonth,
+                                      Grade = plan.EquipmentGrade
                                   };
 
                 var groupedDetails = planDetails
-                    .GroupBy(x => new { x.EquipmentTypeId, x.GlPeriodId })
+                    .GroupBy(x => new { x.EquipmentTypeId, x.GlPeriodId, x.Grade })
                     .Select(g => new
                     {
                         g.Key.EquipmentTypeId,
                         g.Key.GlPeriodId,
                         TotalExpectedEffectiveWorkingHour = g.Sum(x => x.ExpectedEffectiveWorkingHrPerMonth),
                         ExpectedMonthlyIncome = g.Sum(x => x.ExpectedMonthlyIncome),
-                        Quantity = g.Sum(x => (decimal?)x.Quantity) ?? 0
+                        Quantity = g.Sum(x => (decimal?)x.Quantity) ?? 0,
+                        Grade = g.Key.Grade,
+                        
                         //Quantity = g.Select(x => x.FleetId).Distinct().Count(),
                     })
                     .ToList();
@@ -57,6 +68,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     {
                         summaryList.Add(new AnnualPlanSummaryViewModel
                         {
+                            Grade = detailGroup.Grade.ToString(),
                             EquipmentTypeName = equipmentType.EquipmentTypeName,
                             Month = month,
                             TotalExpectedEffectiveWorkingHour = detailGroup.TotalExpectedEffectiveWorkingHour,
@@ -74,6 +86,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
     public class AnnualPlanSummaryViewModel
     {
+        public string Grade { get; set; }
         public string Month { get; set; }
         public string EquipmentTypeName { get; set; }
         public int Quantity { get; set; }

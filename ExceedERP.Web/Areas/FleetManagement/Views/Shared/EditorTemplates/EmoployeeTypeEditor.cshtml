@@ -5,7 +5,7 @@
         .DataValueField("Value")
         .OptionLabel("Select")
         .Filter(FilterType.Contains)
-        .DataSource(d => d.Read(r => r.Action("JobTitleDDBind", "EmployeeFleetMap"))
+        .DataSource(d => d.Read(r => r.Action("JobTitleDDBind", "EmployeeFleetMap").Data("sendForgery"))
         .ServerFiltering(false)))
 
 

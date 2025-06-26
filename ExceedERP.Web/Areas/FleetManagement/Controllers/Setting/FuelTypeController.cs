@@ -88,7 +88,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             return Json(new[] { FuelType }.ToDataSourceResult(request));
         }
 
-        [AllowAnonymous]
+        
         public ActionResult FuelTypeDDBind()
         {
 

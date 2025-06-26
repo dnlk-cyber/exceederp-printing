@@ -22,9 +22,9 @@
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.DailyCareDetailLogId))
-          .Read(read => read.Action("DailyCareDetailLogs_Read", "DailyCareDetailLog"))
-          .Create(create => create.Action("DailyCareDetailLogs_Create", "DailyCareDetailLog"))
-          .Update(update => update.Action("DailyCareDetailLogs_Update", "DailyCareDetailLog"))
-          .Destroy(destroy => destroy.Action("DailyCareDetailLogs_Destroy", "DailyCareDetailLog"))
+          .Read(read => read.Action("DailyCareDetailLogs_Read", "DailyCareDetailLog").Data("sendForgery"))
+          .Create(create => create.Action("DailyCareDetailLogs_Create", "DailyCareDetailLog").Data("sendForgery"))
+          .Update(update => update.Action("DailyCareDetailLogs_Update", "DailyCareDetailLog").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("DailyCareDetailLogs_Destroy", "DailyCareDetailLog").Data("sendForgery"))
       )
 )

@@ -16,6 +16,8 @@ namespace ExceedERP.Reporting.HelpDesk.ViewModel
         public string Solution { get; set; }
         public string MaterialUsed { get; set; }
         public string SupportGroup { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? ClosedDate { get; set; }
 
     }
 }

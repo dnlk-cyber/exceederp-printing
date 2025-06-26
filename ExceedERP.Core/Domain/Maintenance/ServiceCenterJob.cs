@@ -17,12 +17,9 @@ namespace ExceedERP.Core.Domain.Maintenance
       
         public int Num { get; set; }
         public int? JobOrderNum { get; set; }
-
         public int? CustomerId;
-
         public Guid ServiceCenterJobId { get; set; }
         public Guid JobOrderID { get; set; }
-
         [DisplayName(" Is Rework?")]
         public bool IsRework { get; set; }
         [DisplayName(" Equipment")]
@@ -30,8 +27,6 @@ namespace ExceedERP.Core.Domain.Maintenance
 
         [DisplayName(" Equipment (License Plate)")]
         public Guid EquipmentInformationId { get; set; }
-
-
         [DisplayName("Type ")]
         public string Type { get; set; }
         [DisplayName("Equipment")]
@@ -110,6 +105,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         public string RejectionReason { get; set; }
         public bool IsSentToWorkShop { get; set; }
         public bool IsSubmittedToServiceCenter { get; set; }
+        public bool IsTransferedToGarage { get; set; }
         public DateTime? OnlineAssignedTime { get; set; }
         public DateTime? OnlineSubmittedTime { get; set; }
         public string WorkShopRejectedReason { get; set; }
@@ -182,5 +178,99 @@ namespace ExceedERP.Core.Domain.Maintenance
 
         //fk
         public Guid ServiceCenterJobId { get; set; }
+    }
+    public class JobServiceVM
+    {
+        public string FleetID { get; set; }
+        public Guid ServiceCenterJobId { get; set; }
+        public string ServiceCenter {get;set;}
+        public string JobOrderNum { get; set; }
+        public string CustomerName;
+        [DisplayName(" Is Rework?")]
+        public bool IsRework { get; set; }
+        [DisplayName("Type ")]
+        public string Type { get; set; }
+        [DisplayName("Equipment")]
+        public string EquipmentName { get; set; }
+        [DisplayName(" Operator Name ")]
+        public string OperatorName { get; set; }
+        [DisplayName(" Asset Num ")]
+        public string AssetNum { get; set; }
+        [DisplayName(" Is External ")]
+        public bool IsExternal { get; set; }
+        [DisplayName("Maintenance Center")]
+        public string MaintenanceCenter { get; set; }
+        //[Required]
+        [DisplayName(" Project ")]
+        public string ProjectName { get; set; }
+        public string PercentCompleted { get; set; }
+
+        public decimal Odometer { get; set; }
+        public string Site { get; set; }
+        public string FailureReason { get; set; }
+        public string AdvanceMeasure { get; set; }
+        public string EquipmentNo { get; set; }
+        public string EquipmentType { get; set; }
+        //public Guid EquipmentTypeId { get; set; }
+        public string CurrentFuel { get; set; }
+        public string Referance { get; set; }
+
+        [DisplayName("Date Issued  ")]
+        public DateTime? DateIssued { get; set; }
+        [DisplayName("Date Completed   ")]
+        public DateTime? DateCompleted { get; set; }
+        [DisplayName("Requested By")]
+        public string InspectedBy { get; set; }
+
+        public bool IsPM { get; set; }
+        [DisplayName(" Reason For Job ")]
+        [DataType(DataType.MultilineText)]
+        public string InspectorComments { get; set; }
+
+
+        [NotMapped]
+        public decimal Efficiency { get; set; }
+        [NotMapped]
+        [DisplayName("Spare Cost")]
+        public decimal SpareCost { get; set; }
+        [NotMapped]
+        [DisplayName("Tyre Cost")]
+        public decimal TyreCost { get; set; }
+        [NotMapped]
+        [DisplayName("Oil Lubricant Cost")]
+        public decimal OilLubricantCost { get; set; }
+        [NotMapped]
+        [DisplayName("Other Cost")]
+        public decimal OtherCost { get; set; }
+        [NotMapped]
+        [DisplayName("Salvage Cost")]
+        public decimal SalvageCost { get; set; }
+        [NotMapped]
+        [DisplayName(" Labor Cost ")]
+        public decimal LabourCost { get; set; }
+        [NotMapped]
+        [DisplayName(" Battery Cost ")]
+        public decimal BattreyCost { get; set; }
+        [NotMapped]
+        [DisplayName(" Component Cost ")]
+        public decimal ComponentCost { get; set; }
+        [NotMapped]
+        [DisplayName(" Progress ")]
+        public string Progress { get; set; }
+        public string LicensePlate { get; set; }
+        public string RejectionReason { get; set; }
+        public bool IsSentToWorkShop { get; set; }
+        public bool IsSubmittedToServiceCenter { get; set; }
+        public bool IsTransferedToGarage { get; set; }
+        public DateTime? OnlineAssignedTime { get; set; }
+        public DateTime? OnlineSubmittedTime { get; set; }
+        public string WorkShopRejectedReason { get; set; }
+        public ServiceCenterStatus ServiceCenterStatus { get; set; }
+        //public virtual Fleets Fleets { get; set; }
+
+        public bool IsExternalMaintenanceCenter { get; set; }
+        [Display(Name = "Is Insured")]
+        public bool IsInsured { get; set; }
+
     }
 }

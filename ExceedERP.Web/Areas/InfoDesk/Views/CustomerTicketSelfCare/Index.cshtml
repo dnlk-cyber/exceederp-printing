@@ -1,7 +1,19 @@
-﻿@using ExceedERP.Core.Domain.InfoDesk.Support
+﻿@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.InfoDesk.Support
 @model ExceedERP.Core.Domain.InfoDesk.Support.CustomerTicket_HelpDesk
-<legend> Open Ticket</legend>
 
+
+<legend> Open Ticket</legend>
+<div class="row">
+    <p>
+        <span class="fa fa-circle" style="color:yellow;"></span>&nbsp;&nbsp;Ticket Assigned &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:aqua;"></span>&nbsp;&nbsp;Ticket Solved &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:gray;"></span>&nbsp;&nbsp;Ticket Closed &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:red;"></span>&nbsp;&nbsp;Ticket Not-Solved &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:gold;"></span>&nbsp;&nbsp;Ticket Confirmed &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:orange;"></span>&nbsp;&nbsp;Ticket Pending .&nbsp;&nbsp;
+    </p>
+</div>
 @(Html.Kendo().Grid<CustomerTicket_HelpDesk>()
       .Name("grid")
       .Columns(columns =>
@@ -30,11 +42,20 @@
           columns.ForeignKey(c => c.SupportGroup_HelpDeskId, (System.Collections.IEnumerable)ViewData["Group"], "SupportGroup_HelpDeskId", "Name")
              .Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
           columns.Bound(c => c.TicketStatus)/*.HtmlAttributes(new { style = "background-color:#:StatusColor#;" })*/.Width(100);
-          columns.Bound(c => c.Rate).Width(120);
           columns.Bound(c => c.DueDate).Width(120);
           columns.Bound(c => c.OverDue).Width(120);
+          columns.Bound(c => c.RequesterIPAddress).Width(120);
+          columns.ForeignKey(p => p.FixedAssetCategoryId, (System.Collections.IEnumerable)ViewData["Category"], "FixedAssetCategoryId", "CategoryName").Title("Category").EditorTemplateName("FixedAssetCategorySelector").Width(130);
+          columns.ForeignKey(p => p.FixedAssetSubCategoryId, (System.Collections.IEnumerable)ViewData["SubCategory"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").EditorTemplateName("FixedAssetSubCategorySelector").Width(130);
+          columns.ForeignKey(p => p.AssetRegistrationId, (System.Collections.IEnumerable)ViewData["FixedAsset"], "AssetRegistrationId", "Name").Title("Item").EditorTemplateName("FixedAssetReturnSelector").Width(130);
+          columns.Bound(c => c.ItemName).Width(120);
+          columns.Bound(c => c.TagNo).Width(120);
           columns.Bound(c => c.Remark).Width(120);
+          columns.ForeignKey(c => c.AssignedTo, (System.Collections.IEnumerable)ViewData["Employees"], "AssignedTo", "FullNameaEnglish")
+                                  .Filterable(ftb => ftb.Multi(true).Search(true))
+                                  .Width(140);
           columns.Bound(c => c.ClosedDate).Width(100).Title("Closed Date");
+          columns.Bound(c => c.Rate).Width(120);
           columns.Command(command =>
           {
               command.Edit();
@@ -94,151 +115,155 @@
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-        .Name("tabstrip_#=CustomerTicket_HelpDeskId#")
-        .SelectedIndex(0)
-        .Items(items =>
-        {
-        items.Add().Text("  Detail  ").Content(
-              @<text>
-            # if (!IsSendForApproval){#
-            <a onclick='return sendForApproval("#=CustomerTicket_HelpDeskId#")' href=' \#' title="send For Approval"><i class="fa fa-share-square fa-2x"></i></a>
-            #}#
-          <dl class="dl-horizontal">
-              <dt>
-                  Created On
-              </dt>
-              <dd>
-                  #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
-              </dd>
-              <dt>
-                  Created By
-              </dt>
-              <dd>
-               #= CreatedBy #
-           </dd>
-           <dt>
-               DueDate
-           </dt>
-           <dd>
-               #=kendo.toString(kendo.parseDate(DueDate), 'dd/MM/yyyy') #
-           </dd>
-                 <dt>
-                     Modified By
-                 </dt>
-           <dd>
-               #= ModifiedBy #
-           </dd>
-                 <dt>
-                     Modified Date
-                 </dt>
-           <dd>
-               #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
-           </dd>
-                 <dt>
-                     Remark
-                 </dt>
-           <dd>
-               @Html.LabelFor(model => model.Remark)
+                .Name("tabstrip_#=CustomerTicket_HelpDeskId#")
+                .SelectedIndex(0)
+                .Items(items =>
+                {
+                    items.Add().Text("  Detail  ").Content(
+            @<text>
+                # if (IsSendForApproval){#
+                <a href='@Url.Action("ITSupportReport", "HelpDeskReport")/?id=#=CustomerTicket_HelpDeskId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                #} if (!IsSendForApproval){#
+                <a onclick='return sendForApproval("#=CustomerTicket_HelpDeskId#")' href=' \#' title="send For Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                #}#
+                <dl class="dl-horizontal">
+                    <dt>
+                        Created On
+                    </dt>
+                    <dd>
+                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                    </dd>
+                    <dt>
+                        Created By
+                    </dt>
+                    <dd>
+                        #= CreatedBy #
+                    </dd>
+                    <dt>
+                        DueDate
+                    </dt>
+                    <dd>
+                        #=kendo.toString(kendo.parseDate(DueDate), 'dd/MM/yyyy') #
+                    </dd>
+                    <dt>
+                        Modified By
+                    </dt>
+                    <dd>
+                        #= ModifiedBy #
+                    </dd>
+                    <dt>
+                        Modified Date
+                    </dt>
+                    <dd>
+                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                    </dd>
+                    <dt>
+                        Remark
+                    </dt>
+                    <dd>
+                        @Html.LabelFor(model => model.Remark)
 
-           </dd>
-         </dl>  
-            </text> );
-           items.Add().Text("Ticket  ").Content(
-           @<text>
-             @(Html.Kendo().Grid<AssignTicket_HelpDesk>()
-                    .Name("Assigngrid_#=CustomerTicket_HelpDeskId#")
-                    .Columns(columns =>
+                    </dd>
+                </dl>
+                </text> );
+                  items.Add().Text("Ticket  ").Content(
+                @<text>
+                    @(Html.Kendo().Grid<AssignTicket_HelpDesk>()
+                       .Name("Assigngrid_#=CustomerTicket_HelpDeskId#")
+                       .Columns(columns =>
+                       {
+                           // columns.Bound(c => c.AssignTicket_HelpDeskId).Width(100);
+                           columns.ForeignKey(c => c.AssinedTo, (System.Collections.IEnumerable)ViewData["AssignTo"], "AssinedTo", "FullNameaEnglish").EditorTemplateName("EmployeesList");
+                           columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList");
+                           columns.Bound(c => c.Role);
+                           columns.Bound(c => c.AssignedDate);
+                           columns.Bound(c => c.RootCause);
+                           columns.Bound(c => c.Solution);
+
+
+
+                       })
+                       .Editable(editable => editable.Mode(GridEditMode.InLine))
+                           .ClientDetailTemplateId("MaterialsUsed___template")
+                             //    }))
+                             .Scrollable(h => h.Height(500))
+                             .DataSource(dataSource => dataSource
+                                 .Ajax()
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.AssignTicket_HelpDeskId);
+                                        //model.Field(p => p.CustomerTicket_HelpDeskId).Editable(false);
+                                        //model.Field(p => p.AgeOfTicket).Editable(false);
+                                        //model.Field(p => p.AssignedTo).Editable(false);
+                                        //model.Field(p => p.Role).Editable(false);
+                                        //model.Field(p => p.AssignedDate).Editable(false);
+                                    })
+                                    .Events(ev => ev
+                                            .Error("error_handler(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")")
+                                            .RequestStart("onRequestStart(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")")
+                                            .RequestEnd("onRequestEnd(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")"))
+                                      .Read(read => read.Action("AssignTickets_Read", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }).Data("sendForgery"))
+                                      .Create(create => create.Action("AssignTickets_Create", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }).Data("sendForgery"))
+                                      .Update(update => update.Action("Handler_Update", "Handler").Data("sendForgery"))
+                                      .Destroy(destroy => destroy.Action("AssignTickets_Destroy", "AssignTicket").Data("sendForgery"))
+                                        ).ToClientTemplate())
+   
+                 </text>);
+                 items.Add().Text("Attachments").Content(
+                 @<text>
+                 <button onclick='UploadFile(#=CustomerTicket_HelpDeskId#)' class='fa fa-upload btn btn-primary'>&nbsp;Upload </button>
+                @(Html.Kendo().Grid<CustomerTicketAttachment>()
+                      .Name("AttachmentGrid#=CustomerTicket_HelpDeskId#")
+                      .Columns(columns =>
+                      {
+
+                          columns.Bound(c => c.FileName).ClientTemplate("<a href='/InfoDesk/CustomerTicketAttachments/DownloadAttachment?attachmentId=\\#=CustomerTicketAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+
+                          columns.Template(e => { }).ClientTemplate("<a href='/InfoDesk/CustomerTicketAttachments/DownloadAttachment?attachmentId=\\#=CustomerTicketAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
+                          columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+
+                          columns.Command(command =>
+                          {
+                              command.Destroy().Text("Delete");
+
+                          }).Width(300);
+
+
+
+                      })
+                    //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument")
+                    //.Window(window =>
+                    //{
+                    //    window.Title("");
+                    //    window.Scrollable(false);
+
+
+
+
+                    //}))
+                    .Scrollable(h => h.Height("auto"))
+                    .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Sort(sort => sort.Add(c => c.CustomerTicketAttachmentId).Descending())
+                    .Events(events =>
                     {
-                        // columns.Bound(c => c.AssignTicket_HelpDeskId).Width(100);
-                        columns.ForeignKey(c => c.AssinedTo, (System.Collections.IEnumerable)ViewData["AssignTo"], "AssinedTo", "FullNameaEnglish").EditorTemplateName("EmployeesList");
-                        columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList");
-                        columns.Bound(c => c.Role);
-                        columns.Bound(c => c.AssignedDate);
-                        columns.Bound(c => c.RootCause);
-                        columns.Bound(c => c.Solution);
+                        events.Error("error_handler(\"AttachmentGrid#=CustomerTicket_HelpDeskId#\")");
+                        events.RequestStart("onRequestStart(\"AttachmentGrid#=CustomerTicket_HelpDeskId#\")");
+                        events.RequestEnd("onRequestEnd(\"AttachmentGrid#=CustomerTicket_HelpDeskId#\")");
+
 
 
                     })
-                       .Editable(editable => editable.Mode(GridEditMode.InLine))
-                        .ClientDetailTemplateId("MaterialsUsed___template")
-                          //    }))               
-                          .Scrollable(h => h.Height(500))
-                          .DataSource(dataSource => dataSource
-                              .Ajax()
-                                 .Model(model =>
-                                 {
-                                     model.Id(p => p.AssignTicket_HelpDeskId);
-                                     //model.Field(p => p.CustomerTicket_HelpDeskId).Editable(false);
-                                     //model.Field(p => p.AgeOfTicket).Editable(false);
-                                     //model.Field(p => p.AssignedTo).Editable(false);
-                                     //model.Field(p => p.Role).Editable(false);
-                                     //model.Field(p => p.AssignedDate).Editable(false);
-                                 })
-                                 .Events(ev => ev
-                                         .Error("error_handler(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")")
-                                         .RequestStart("onRequestStart(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")")
-                                         .RequestEnd("onRequestEnd(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")"))
-                                   .Read(read => read.Action("AssignTickets_Read", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }).Data("sendForgery"))
-                                   .Create(create => create.Action("AssignTickets_Create", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }).Data("sendForgery"))
-                                   .Update(update => update.Action("Handler_Update", "Handler").Data("sendForgery"))
-                                   .Destroy(destroy => destroy.Action("AssignTickets_Destroy", "AssignTicket").Data("sendForgery"))
-                                     ).ToClientTemplate())
-                  </text>);
-           items.Add().Text("Attachments").Content(
-          @<text>
-
-            <button onclick='UploadFile(#=CustomerTicket_HelpDeskId#)' class='fa fa-upload btn btn-primary'>&nbsp;Upload </button>
-
-            @(Html.Kendo().Grid<CustomerTicketAttachment>()
-                .Name("AttachmentGrid#=CustomerTicket_HelpDeskId#")
-                .Columns(columns =>
-                {
-
-                    columns.Bound(c => c.FileName).ClientTemplate("<a href='/InfoDesk/CustomerTicketAttachments/DownloadAttachment?attachmentId=\\#=CustomerTicketAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
-
-                    columns.Template(e => { }).ClientTemplate("<a href='/InfoDesk/CustomerTicketAttachments/DownloadAttachment?attachmentId=\\#=CustomerTicketAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
-                    columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
-
-                    columns.Command(command =>
-                    {
-                        command.Destroy().Text("Delete");
-
-                    }).Width(300);
-
-
-                })
-                //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument")
-                //.Window(window =>
-                //{
-                //    window.Title("");
-                //    window.Scrollable(false);
-
-
-
-
-                //}))
-                .Scrollable(h => h.Height("auto"))
-                .DataSource(dataSource => dataSource
-                .Ajax()
-                .Sort(sort => sort.Add(c => c.CustomerTicketAttachmentId).Descending())
-                .Events(events =>
-                {
-                    events.Error("error_handler(\"AttachmentGrid#=CustomerTicket_HelpDeskId#\")");
-                    events.RequestStart("onRequestStart(\"AttachmentGrid#=CustomerTicket_HelpDeskId#\")");
-                    events.RequestEnd("onRequestEnd(\"AttachmentGrid#=CustomerTicket_HelpDeskId#\")");
-
-
-
-                })
-                .Model(model => model.Id(p => p.CustomerTicketAttachmentId))
-                .Read(read => read.Action("CustomerTicketAttachments_Read", "CustomerTicketAttachments", new { eACSId = "#=CustomerTicket_HelpDeskId#", area = "InfoDesk" }).Data("sendForgery"))
-                .Create(create => create.Action("CustomerTicketAttachments_Create", "CustomerTicketAttachments", new { eACSId = "#=CustomerTicket_HelpDeskId#", area = "InfoDesk" }).Data("sendForgery"))
-                .Update(update => update.Action("CustomerTicketAttachments_Update", "CustomerTicketAttachments").Data("sendForgery"))
-                .Destroy(destroy => destroy.Action("CustomerTicketAttachments_Destroy", "CustomerTicketAttachments").Data("sendForgery"))
-                ).ToClientTemplate())
+                    .Model(model => model.Id(p => p.CustomerTicketAttachmentId))
+                    .Read(read => read.Action("CustomerTicketAttachments_Read", "CustomerTicketAttachments", new { eACSId = "#=CustomerTicket_HelpDeskId#", area = "InfoDesk" }).Data("sendForgery"))
+                    .Create(create => create.Action("CustomerTicketAttachments_Create", "CustomerTicketAttachments", new { eACSId = "#=CustomerTicket_HelpDeskId#", area = "InfoDesk" }).Data("sendForgery"))
+                    .Update(update => update.Action("CustomerTicketAttachments_Update", "CustomerTicketAttachments").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("CustomerTicketAttachments_Destroy", "CustomerTicketAttachments").Data("sendForgery"))
+                    ).ToClientTemplate())
 
                 </text>);
-        }).ToClientTemplate())
+
+                }).ToClientTemplate())
 </script>
 <script id="MaterialsUsed___template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
@@ -320,6 +345,62 @@
     }
 </script>
 <script>
+      function filterAssetsForReturn() {
+       
+        return {
+            subCategoryCode: $("#FixedAssetSubCategoryId").val(),
+            text: $("#AssetRegistrationId").data("kendoDropDownList").filterInput.val()
+        };
+    }
+
+    function filterSubCategory() {
+
+        return {
+            categoryCode: $("#FixedAssetCategoryId").data("kendoDropDownList").value(),
+            text: $("#FixedAssetSubCategoryId").data("kendoDropDownList").filterInput.val()
+        };
+    }
+
+    function onSelectFixedAssetId() {
+    var id = $("#AssetRegistrationId").data("kendoDropDownList").value();
+
+    if (!id) return; // Skip if no selection
+
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("GetAssetDetails", "FixedAssetDataProvider", new { area = "FixedAsset" })',
+        data: { id: id },
+        success: function (result) {
+            // Fill form fields with returned asset data
+            $("#TagNo").val(result.Tag).trigger("change");
+            $("#ItemName").val(result.Name).trigger("change");
+        },
+        error: function (xhr, status, error) {
+            console.error("Asset fetch failed:", error);
+            alert("Unable to fetch asset details.");
+        }
+    });
+
+    }
+
+    @*function onSelectFixedAssetId() {
+
+        var id = $("#AssetRegistrationId").data("kendoDropDownList").value();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetAssetDetails", "FixedAssetDataProvider", new { area = "FixedAsset" })',
+            data: { id: id },
+            success: function (result) {
+                $("#TagNo").val(result.Tag).trigger("change");
+                $("#ItemName").val(result.Name).trigger("change");
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }*@
+</script>
+<script>
       //   if ($("#Source").val() == 1) {
        // }
     function onDataBound(e) {
@@ -374,6 +455,9 @@
             if (dataItem.TicketStatus == "5") {
                 $(this).find(".k-grid-confirm").show();
                 $(this).css("background-color", "gold");
+            }
+            if (dataItem.TicketStatus == "6") {
+                $(this).css("background-color", "Orange");
             }
             if (dataItem.IsClosed) {
                 $(this).find(".k-grid-confirm").hide();

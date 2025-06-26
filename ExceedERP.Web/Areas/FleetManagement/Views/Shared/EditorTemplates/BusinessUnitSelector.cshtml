@@ -9,7 +9,7 @@
                           .Filter("contains")
                   .DataSource(dataSource =>
                   {
-                      dataSource.Read(read => read.Action("GetAllBusinessUnits", "GlobalDataProvider", new { area = "Common" }))
+                      dataSource.Read(read => read.Action("GetAllBusinessUnits", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
                                             .ServerFiltering(false);
                   })
 )

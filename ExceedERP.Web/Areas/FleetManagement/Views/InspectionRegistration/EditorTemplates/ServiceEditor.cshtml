@@ -18,7 +18,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.RepairTypeID).Name("RepairTypeID")
                           .DataTextField("Name").Filter(FilterType.Contains)
                           .DataValueField("Value").OptionLabel("Select ").HtmlAttributes(new {style = "width:100%"})
-                          .DataSource(d => d.Read(r => r.Action("RepairTypeDDBind", "RepairType")).ServerFiltering(false)))
+                          .DataSource(d => d.Read(r => r.Action("RepairTypeDDBind", "RepairType").Data("sendForgery")).ServerFiltering(false)))
                 </div>
            
         </div>
@@ -47,7 +47,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.PlannerID).HtmlAttributes(new { @class = "form-control" }).Name("PlannerID").HtmlAttributes(new { style = "width:100%" })
                                   .DataTextField("PlannerName")
                                           .DataValueField("PlannerID").OptionLabel(" Select ").Filter(FilterType.Contains)
-                                  .DataSource(d => d.Read(r => r.Action("PlannerDDBind", "Planner")).ServerFiltering(false)))
+                                  .DataSource(d => d.Read(r => r.Action("PlannerDDBind", "Planner").Data("sendForgery")).ServerFiltering(false)))
                 </div>
 
             </div>
@@ -67,7 +67,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.SectionId).HtmlAttributes(new { @class = "form-control", @required = "required" })
                                 .DataTextField("Name")
                                                 .DataValueField("WorkUnitSectionId").OptionLabel(" Select  ").Filter(FilterType.Contains)
-                                                .DataSource(d => d.Read(r => r.Action("SectionDDBind", "WorkUnitSection")).ServerFiltering(false)).ValuePrimitive(true))
+                                                .DataSource(d => d.Read(r => r.Action("SectionDDBind", "WorkUnitSection").Data("sendForgery")).ServerFiltering(false)).ValuePrimitive(true))
 
 
                 </div>

@@ -43,7 +43,7 @@
  
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
+       
         .Model(model =>
               {
                   model.Id(p => p.TyreTransferId);
@@ -52,10 +52,10 @@
                                     .Error("error_handler(\"grid\")")
                                     .RequestStart("onRequestStart(\"grid\")")
                                     .RequestEnd("onRequestEnd(\"grid\")"))
-                        .Create(update => update.Action("TyreTransfer_Create", "TyreTransfer"))
-                                    .Read(read => read.Action("TyreTransferByFleet_Read", "TyreTransfer"))
-                        .Update(update => update.Action("TyreTransfer_Update", "TyreTransfer"))
-                        .Destroy(update => update.Action("TyreTransfer_Destroy", "TyreTransfer"))
+                        .Create(update => update.Action("TyreTransfer_Create", "TyreTransfer").Data("sendForgery"))
+                                    .Read(read => read.Action("TyreTransferByFleet_Read", "TyreTransfer").Data("sendForgery"))
+                        .Update(update => update.Action("TyreTransfer_Update", "TyreTransfer").Data("sendForgery"))
+                        .Destroy(update => update.Action("TyreTransfer_Destroy", "TyreTransfer").Data("sendForgery"))
   )
 )
 
@@ -200,9 +200,9 @@
                                                     .Error("error_handler(\"TyreTransferApproval#=TyreTransferId#\")")
                                                     .RequestStart("onRequestStart(\"TyreTransferApproval#=TyreTransferId#\")")
                                                     .RequestEnd("onRequestEnd(\"TyreTransferApproval#=TyreTransferId#\")"))
-                                                                                                           .Create(update => update.Action("TyreTransfer_Approve", "TyreTransferApproval", new { EId = "#=TyreTransferId#" }))
-                                                                                             .Read(read => read.Action("TyreTransferApproval_Read", "TyreTransferApproval", new { EId = "#=TyreTransferId#" }))
-                                                                           .Update(update => update.Action("TyreTransfer_Approve", "TyreTransferApproval"))
+                                                                                                           .Create(update => update.Action("TyreTransfer_Approve", "TyreTransferApproval", new { EId = "#=TyreTransferId#" }).Data("sendForgery"))
+                                                                                             .Read(read => read.Action("TyreTransferApproval_Read", "TyreTransferApproval", new { EId = "#=TyreTransferId#" }).Data("sendForgery"))
+                                                                           .Update(update => update.Action("TyreTransfer_Approve", "TyreTransferApproval").Data("sendForgery"))
 
 
                                                       )

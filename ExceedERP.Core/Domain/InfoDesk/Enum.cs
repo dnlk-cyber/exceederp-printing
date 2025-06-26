@@ -17,12 +17,20 @@ namespace ExceedERP.Core.Domain.InfoDesk
     }
     public enum InfoDeskFinalizeType
     {
-        WAITING,
-        ASSIGNED,
-        RESOLVED,
-        CLOSED,
+        [Display(Name = "Waiting for Response")]
+        Waiting,
+        [Display(Name = "Ticket Assigned")]
+        Assigned,
+        [Display(Name = "Issue Resolved")]
+        Resolved,
+        [Display(Name = "Ticket Closed")]
+        Closed,
+        [Display(Name = "Not Solved")]
         NOT_SOLVED,
-        WAITING_FOR_CONFIRMATION
+        [Display(Name = "Waiting for Confirmation")]
+        WAITING_FOR_CONFIRMATION,
+        [Display(Name = "Pending")]
+        Pending
 
     }
 

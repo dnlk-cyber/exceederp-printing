@@ -52,16 +52,15 @@
 
                               .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
               .Model(model => model.Id(p => p.FleetReturnId))
                                        .Events(ev => ev
                                       .Error("error_handler(\"grid\")")
                                       .RequestStart("onRequestStart(\"grid\")")
                                       .RequestEnd("onRequestEnd(\"grid\")"))
-                                   .Create(update => update.Action("FleetReturns_Create", "FleetReturn"))
-                                              .Read(read => read.Action("FleetReturns_Read", "FleetReturn"))
-                                          .Update(update => update.Action("FleetReturns_Update", "FleetReturn"))
-                                    .Destroy(update => update.Action("FleetReturn_Destroy", "FleetReturn"))
+                                   .Create(update => update.Action("FleetReturns_Create", "FleetReturn").Data("sendForgery"))
+                                              .Read(read => read.Action("FleetReturns_Read", "FleetReturn").Data("sendForgery"))
+                                          .Update(update => update.Action("FleetReturns_Update", "FleetReturn").Data("sendForgery"))
+                                    .Destroy(update => update.Action("FleetReturn_Destroy", "FleetReturn").Data("sendForgery"))
   )
 )
 
@@ -208,10 +207,10 @@
                                                             .Error("error_handler(\"FleetReturnItem#=FleetReturnId#\")")
                                                             .RequestStart("onRequestStart(\"FleetReturnItem#=FleetReturnId#\")")
                                                             .RequestEnd("onRequestEnd(\"FleetReturnItem#=FleetReturnId#\")"))
-                                                                                                                                           .Create(update => update.Action("FleetReturnItems_Create", "FleetReturnItem", new { Id = "#=FleetReturnId#" }))
-                                                                                                                     .Read(read => read.Action("FleetReturnItems_Read", "FleetReturnItem", new { Id = "#=FleetReturnId#" }))
-                                                                                                                           .Update(update => update.Action("FleetReturnItems_Update", "PlanAndEvaluationApproval"))
-                                                                                                                           .Destroy(update => update.Action("FleetReturnItems_Destroy", "FleetReturnItem"))
+                                                                                                                                           .Create(update => update.Action("FleetReturnItems_Create", "FleetReturnItem", new { Id = "#=FleetReturnId#" }).Data("sendForgery"))
+                                                                                                                     .Read(read => read.Action("FleetReturnItems_Read", "FleetReturnItem", new { Id = "#=FleetReturnId#" }).Data("sendForgery"))
+                                                                                                                           .Update(update => update.Action("FleetReturnItems_Update", "PlanAndEvaluationApproval").Data("sendForgery"))
+                                                                                                                           .Destroy(update => update.Action("FleetReturnItems_Destroy", "FleetReturnItem").Data("sendForgery"))
 
 
                                                       )
@@ -250,9 +249,9 @@
                                                     .Error("error_handler(\"Approval#=FleetReturnId#\")")
                                                     .RequestStart("onRequestStart(\"Approval#=FleetReturnId#\")")
                                                     .RequestEnd("onRequestEnd(\"Approval#=FleetReturnId#\")"))
-                                                                                                                           .Create(update => update.Action("FleetReturn_Approve", "FleetReturn", new { Id = "#=FleetReturnId#" }))
-                                                                                                                     .Read(read => read.Action("FleetReturnApproval_Read", "FleetReturn", new { Id = "#=FleetReturnId#" }))
-                                                                                           .Update(update => update.Action("FleetReturn_Approve", "FleetReturn"))
+                                                                                                                           .Create(update => update.Action("FleetReturn_Approve", "FleetReturn", new { Id = "#=FleetReturnId#" }).Data("sendForgery"))
+                                                                                                                     .Read(read => read.Action("FleetReturnApproval_Read", "FleetReturn", new { Id = "#=FleetReturnId#" }).Data("sendForgery"))
+                                                                                           .Update(update => update.Action("FleetReturn_Approve", "FleetReturn").Data("sendForgery"))
 
 
                                                       )

@@ -106,7 +106,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
 
 			return this.Json(new[] { OperatorPosition }.ToDataSourceResult(request));
 		}
-		  [AllowAnonymous]
+		  
 		public ActionResult OperatorPositionDDBind()
 		{
 

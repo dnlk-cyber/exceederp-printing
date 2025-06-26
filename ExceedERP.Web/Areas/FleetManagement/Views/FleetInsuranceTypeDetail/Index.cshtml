@@ -20,9 +20,9 @@
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.FleetInsuranceTypeDetailId))
-          .Read(read => read.Action("FleetInsuranceTypeDetails_Read", "FleetInsuranceTypeDetail"))
-          .Create(create => create.Action("FleetInsuranceTypeDetails_Create", "FleetInsuranceTypeDetail"))
-          .Update(update => update.Action("FleetInsuranceTypeDetails_Update", "FleetInsuranceTypeDetail"))
-          .Destroy(destroy => destroy.Action("FleetInsuranceTypeDetails_Destroy", "FleetInsuranceTypeDetail"))
+          .Read(read => read.Action("FleetInsuranceTypeDetails_Read", "FleetInsuranceTypeDetail").Data("sendForgery"))
+          .Create(create => create.Action("FleetInsuranceTypeDetails_Create", "FleetInsuranceTypeDetail").Data("sendForgery"))
+          .Update(update => update.Action("FleetInsuranceTypeDetails_Update", "FleetInsuranceTypeDetail").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("FleetInsuranceTypeDetails_Destroy", "FleetInsuranceTypeDetail").Data("sendForgery"))
       )
 )

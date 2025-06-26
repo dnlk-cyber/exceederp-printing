@@ -112,7 +112,6 @@
     .DataSource(dataSource => dataSource
         .Ajax()
         .Sort(sort => sort.Add(e => e.DateCreated).Descending())
-        .ServerOperation(false)
                     .Model(model =>
                     {
                         model.Id(p => p.RentToExternalID);
@@ -122,10 +121,10 @@
                                                           .Error("error_handler(\"grid\")")
                                                           .RequestStart("onRequestStart(\"grid\")")
                                                           .RequestEnd("onRequestEnd(\"grid\")"))
-                    .Create(create => create.Action("RentOtherSuppliers_Create", "RentToExternal"))
-                    .Read(read => read.Action("RentOtherSuppliers_Read", "RentToExternal"))
-                    .Update(read => read.Action("RentOtherSuppliers_Update", "RentToExternal"))
-                    .Destroy(read => read.Action("RentOtherSuppliers_Destroy", "RentToExternal"))
+                    .Create(create => create.Action("RentOtherSuppliers_Create", "RentToExternal").Data("sendForgery"))
+                    .Read(read => read.Action("RentOtherSuppliers_Read", "RentToExternal").Data("sendForgery"))
+                    .Update(read => read.Action("RentOtherSuppliers_Update", "RentToExternal").Data("sendForgery"))
+                    .Destroy(read => read.Action("RentOtherSuppliers_Destroy", "RentToExternal").Data("sendForgery"))
   )
 )
 
@@ -225,7 +224,6 @@
                                                              .Scrollable(h => h.Height(400))
  .DataSource(dataSource => dataSource
           .Ajax()
-          .ServerOperation(false)
                .PageSize(6)
           .Model(model =>
           {
@@ -239,10 +237,10 @@
                                           .Error("error_handler(\"Equipment#=RentToExternalID#\")")
                                           .RequestStart("onRequestStart(\"Equipment#=RentToExternalID#\")")
                                           .RequestEnd("onRequestEnd(\"Equipment#=RentToExternalID#\")"))
-                                          .Create(update => update.Action("ExternalRentedEquipments_Create", "ToExternalRentedEquipment", new { Id = "#=RentToExternalID#" }))
-                                          .Read(read => read.Action("ExternalRentedEquipments_Read", "ToExternalRentedEquipment", new { Id = "#=RentToExternalID#" }))
-                                  .Update(update => update.Action("ExternalRentedEquipments_Update", "ToExternalRentedEquipment"))
-                                  .Destroy(update => update.Action("ExternalRentedEquipments_Destroy", "ToExternalRentedEquipment"))
+                                          .Create(update => update.Action("ExternalRentedEquipments_Create", "ToExternalRentedEquipment", new { Id = "#=RentToExternalID#" }).Data("sendForgery"))
+                                          .Read(read => read.Action("ExternalRentedEquipments_Read", "ToExternalRentedEquipment", new { Id = "#=RentToExternalID#" }).Data("sendForgery"))
+                                  .Update(update => update.Action("ExternalRentedEquipments_Update", "ToExternalRentedEquipment").Data("sendForgery"))
+                                  .Destroy(update => update.Action("ExternalRentedEquipments_Destroy", "ToExternalRentedEquipment").Data("sendForgery"))
 
       )
 
@@ -281,9 +279,9 @@
                                  .Error("error_handler(\"RentOtherSuppliersApproval#=RentToExternalID#\")")
                                  .RequestStart("onRequestStart(\"RentOtherSuppliersApproval#=RentToExternalID#\")")
                                  .RequestEnd("onRequestEnd(\"RentOtherSuppliersApproval#=RentToExternalID#\")"))
-                                                                                                           .Create(update => update.Action("RentOtherSuppliers_Approve", "RentOtherSuppliersApproval", new { EId = "#=RentToExternalID#" }))
-                                                                                     .Read(read => read.Action("RentOtherSuppliersApproval_Read", "RentOtherSuppliersApproval", new { EId = "#=RentToExternalID#" }))
-                                                                                   .Update(update => update.Action("RentOtherSuppliers_Approve", "RentOtherSuppliersApproval"))
+                                                                                                           .Create(update => update.Action("RentOtherSuppliers_Approve", "RentOtherSuppliersApproval", new { EId = "#=RentToExternalID#" }).Data("sendForgery"))
+                                                                                     .Read(read => read.Action("RentOtherSuppliersApproval_Read", "RentOtherSuppliersApproval", new { EId = "#=RentToExternalID#" }).Data("sendForgery"))
+                                                                                   .Update(update => update.Action("RentOtherSuppliers_Approve", "RentOtherSuppliersApproval").Data("sendForgery"))
 
 
                                                       )

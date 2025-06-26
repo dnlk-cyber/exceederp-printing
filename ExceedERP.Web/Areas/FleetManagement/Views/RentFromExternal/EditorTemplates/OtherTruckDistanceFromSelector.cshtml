@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                //.Name("ProductID")
+                .OptionLabel("Select Distance From...")
+                .DataTextField("text")
+                .DataValueField("value")
+                .ValuePrimitive(true)
+                .Filter("contains")
+                .DataSource(dataSource =>
+                {
+
+                    dataSource.Read(read => read.Action("OtherTruckDistanceFrom", "DistanceSelectorDataProvider", new { area = "FleetManagement" }))
+      .ServerFiltering(true);
+                })
+)
+@Html.ValidationMessageFor(m => m)

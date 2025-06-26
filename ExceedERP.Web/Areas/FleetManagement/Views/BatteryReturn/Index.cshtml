@@ -49,7 +49,7 @@
 
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
+       
         .Model(model =>
         {
             model.Id(p => p.BatteryReturnId);
@@ -58,10 +58,10 @@
                                                       .Error("error_handler(\"grid\")")
                                                       .RequestStart("onRequestStart(\"grid\")")
                                                       .RequestEnd("onRequestEnd(\"grid\")"))
-                    .Create(update => update.Action("BatteryReturn_Create", "BatteryReturn"))
-                    .Read(read => read.Action("BatteryReturn_Read", "BatteryReturn"))
-                    .Update(update => update.Action("BatteryReturn_Update", "BatteryReturn"))
-                    .Destroy(update => update.Action("BatteryReturn_Destroy", "BatteryReturn"))
+                    .Create(update => update.Action("BatteryReturn_Create", "BatteryReturn").Data("sendForgery"))
+                    .Read(read => read.Action("BatteryReturn_Read", "BatteryReturn").Data("sendForgery"))
+                    .Update(update => update.Action("BatteryReturn_Update", "BatteryReturn").Data("sendForgery"))
+                    .Destroy(update => update.Action("BatteryReturn_Destroy", "BatteryReturn").Data("sendForgery"))
   )
 )
  
@@ -189,9 +189,9 @@
                                                     .Error("error_handler(\"BatteryReturnApproval#=BatteryReturnId#\")")
                                                     .RequestStart("onRequestStart(\"BatteryReturnApproval#=BatteryReturnId#\")")
                                                     .RequestEnd("onRequestEnd(\"BatteryReturnApproval#=BatteryReturnId#\")"))
-                                                                                                                           .Create(update => update.Action("BatteryReturn_Approve", "BatteryReturnApproval", new { EId = "#=BatteryReturnId#" }))
-                                                                                                             .Read(read => read.Action("BatteryReturnApproval_Read", "BatteryReturnApproval", new { EId = "#=BatteryReturnId#" }))
-                                                                                                           .Update(update => update.Action("BatteryReturn_Approve", "BatteryReturnApproval", new { EId = "#=BatteryReturnId#" }))
+                                                                                                                           .Create(update => update.Action("BatteryReturn_Approve", "BatteryReturnApproval", new { EId = "#=BatteryReturnId#" }).Data("sendForgery"))
+                                                                                                             .Read(read => read.Action("BatteryReturnApproval_Read", "BatteryReturnApproval", new { EId = "#=BatteryReturnId#" }).Data("sendForgery"))
+                                                                                                           .Update(update => update.Action("BatteryReturn_Approve", "BatteryReturnApproval", new { EId = "#=BatteryReturnId#" }).Data("sendForgery"))
 
 
                                                       )

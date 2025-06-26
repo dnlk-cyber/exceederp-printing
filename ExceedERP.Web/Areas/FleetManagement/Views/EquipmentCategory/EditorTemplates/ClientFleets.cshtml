@@ -23,5 +23,5 @@
 @Html.Kendo().DropDownList().Name("Fleets")
     .DataTextField("PlateNumber")
     .DataValueField("FleetsID")
-.DataSource(d => d.Read(r => r.Action("FleetsDropDown", "Fleets")))
+.DataSource(d => d.Read(r => r.Action("FleetsDropDown", "Fleets").Data("sendForgery")))
 

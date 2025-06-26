@@ -16,17 +16,16 @@
             @Html.LabelFor(model => model.Source, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.Source)
-                                         .Name("Source")
-                                         .DataTextField("Text")
-                                         .DataValueField("Value")
-                                        
-                                         .Filter(FilterType.Contains)
-                                         .BindTo(EnumExtension.EnumToSelectList(typeof(JobRequestSource)))
-                                         .Events(ev =>
-                                         {
-                                             ev.Change("SourceSelectorChanged");
-                                             ev.DataBound("SourceSelectorDataBound");
-                                         }).HtmlAttributes(new { style = "width:100%" })
+                                                 .Name("Source")
+                                                 .DataTextField("Text")
+                                                 .DataValueField("Value")
+                                                 .Filter(FilterType.Contains)
+                                                 .BindTo(EnumExtension.EnumToSelectList(typeof(JobRequestSource)))
+                                                 .Events(ev =>
+                                                 {
+                                                     ev.Change("SourceSelectorChanged");
+                                                     ev.DataBound("SourceSelectorDataBound");
+                                                 }).HtmlAttributes(new { style = "width:100%" })
                 )
             </div>
         </div>
@@ -38,39 +37,39 @@
             @Html.LabelFor(model => model.CustomerId, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.CustomerId)
-                                      .Name("CustomerId")
-                                      .ValuePrimitive(true)
-                                      .OptionLabel("Select...")
-                                      .DataTextField("TradeName")
-                                      .DataValueField("OrganizationCustomerID")
-                                      .Filter("contains")
-                                      .Events(ev => ev.Change("onCustomerSelect"))
-                                      .DataSource(dataSource =>
-                                      {
-                                          dataSource.Read(read => read.Action("GetOrgnizationalCustomers", "MaintenanceDataProvider"))
-                                          .ServerFiltering(false);
-                                      }).HtmlAttributes(new { style = "width:100%" }))
+                                              .Name("CustomerId")
+                                              .ValuePrimitive(true)
+                                              .OptionLabel("Select...")
+                                              .DataTextField("TradeName")
+                                              .DataValueField("OrganizationCustomerID")
+                                              .Filter("contains")
+                                              .Events(ev => ev.Change("onCustomerSelect"))
+                                              .DataSource(dataSource =>
+                                              {
+                                                  dataSource.Read(read => read.Action("GetOrgnizationalCustomers", "MaintenanceDataProvider").Data("sendForgery"))
+                                                  .ServerFiltering(false);
+                                              }).HtmlAttributes(new { style = "width:100%" }))
             </div>
         </div>
 
     </div>
     <div class="col-sm-2">
         <div class="form-group">
-            @Html.LabelFor(model => model.LicensePlate,"Plate No/Serial No", htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            @Html.LabelFor(model => model.LicensePlate, "Plate No/Serial No", htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.LicensePlate)
-                                    .Name("LicensePlate")
-                                    .DataTextField("Name")
-                                    .DataValueField("PlateNumber")
-                                    .OptionLabel(" ...Select... ")
-                                    .Filter(FilterType.Contains)
-                                    .Events(e => e.Change("handlePlateNoChange"))
-                                    .CascadeFrom("Source")
-                                    .DataSource(d =>
-                                    {
-                                        d.Read(r => r.Action("GetPlateNos", "MaintenanceDataProvider", new { area = "Maintenance" }).Data("handleJobRequestSource"))
-                                            .ServerFiltering(true);
-                                    }).HtmlAttributes(new { style = "width:100%" })
+                                            .Name("LicensePlate")
+                                            .DataTextField("Name")
+                                            .DataValueField("PlateNumber")
+                                            .OptionLabel(" ...Select... ")
+                                            .Filter(FilterType.Contains)
+                                            .Events(e => e.Change("handlePlateNoChange"))
+                                            .CascadeFrom("Source")
+                                            .DataSource(d =>
+                                            {
+                                                d.Read(r => r.Action("GetPlateNoss", "MaintenanceDataProvider", new { area = "Maintenance" }).Data("sendForgery").Data("handleJobRequestSource"))
+                                                    .ServerFiltering(true);
+                                            }).HtmlAttributes(new { style = "width:100%" })
                 )
             </div>
         </div>
@@ -78,7 +77,7 @@
     </div>
 
     <div class="col-sm-2">
-       
+
         <div class="form-group">
             @Html.LabelFor(model => model.EquipmentName, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
             <div>
@@ -88,7 +87,7 @@
     </div>
 </div>
 
-    
+
 <div class="row">
 
 
@@ -99,20 +98,20 @@
 
                 @(Html.Kendo().DropDownListFor(model => model.MaintenanceCenterId)
 
-                            .HtmlAttributes(new { @class = "form-control" })
-                            .DataTextField("Name")
-                            .DataValueField("Id")
-                            .OptionLabel("Select...")
-                            .HtmlAttributes(new { style = "width:100%" })
-                            .DataSource(d =>
-                            {
-                                d.Read(r =>
-                                {
-                                    //r.Action("GetAllMaintenanceCenters", "MaintenanceCenter"); // takes the name as a value
-                                    r.Action("GetAllMaintenanceCentersById", "MaintenanceCenter", new { area= "Maintenance" }); // takes the MaintenanceCenterId as a value
-                                })
-                                .ServerFiltering(false);
-                            }).ValuePrimitive(true)
+                                    .HtmlAttributes(new { @class = "form-control" })
+                                    .DataTextField("Name")
+                                    .DataValueField("Id")
+                                    .OptionLabel("Select...")
+                                    .HtmlAttributes(new { style = "width:100%" })
+                                    .DataSource(d =>
+                                    {
+                                        d.Read(r =>
+                                        {
+                                            //r.Action("GetAllMaintenanceCenters", "MaintenanceCenter"); // takes the name as a value
+                                            r.Action("GetAllMaintenanceCentersById", "MaintenanceCenter"); // takes the MaintenanceCenterId as a value
+                                        })
+                                        .ServerFiltering(false);
+                                    }).ValuePrimitive(true)
                 )
             </div>
         </div>
@@ -136,22 +135,23 @@
         </div>
 
     </div>
-    <div class="col-sm-2">
+    <div class="col-sm-2" id="ReqesterSwitch">
         <div class="form-group">
             @Html.LabelFor(model => model.RequesterId, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
             <div>
                 @(Html.Kendo().DropDownListFor(m => m.RequesterId)
 
-                                      .OptionLabel("Select Employee")
-                                          .DataTextField("FullNameaEnglish")
-                                          .DataValueField("EmployeeId")
-                                          .Filter("contains")
-                                          .OptionLabel("Select...")
-                                          .DataSource(dataSource =>
-                                          {
-                                              dataSource.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
-                                                            .ServerFiltering(true);
-                                          }).HtmlAttributes(new { style = "width:100%" })
+                                              .OptionLabel("Select Employee")
+                                                  //.Name("Requester")
+                                                  .DataTextField("FullNameaEnglish")
+                                                  .DataValueField("EmployeeId")
+                                                  .Filter("contains")
+                                                  .OptionLabel("Select...")
+                                                  .DataSource(dataSource =>
+                                                  {
+                                                      dataSource.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery").Data("filterEmployees"))
+                                                                           .ServerFiltering(true);
+                                                  }).HtmlAttributes(new { style = "width:100%" })
 
                 )
             </div>
@@ -178,22 +178,62 @@
         </div>
 
     </div>
+    @*<div class="col-sm-2">
+            <div class="form-group">
+                @Html.LabelFor(model => model.KMReading, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+                <div>
+                    @(Html.Kendo().TextBoxFor(x => x.KMReading).HtmlAttributes(new { style = "width:100%" }))
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                @Html.LabelFor(model => model.GPSInfo, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+                <div>
+                    @(Html.Kendo().TextBoxFor(x => x.GPSInfo).HtmlAttributes(new { style = "width:100%" }))
+                </div>
+            </div>
+
+        </div>*@
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.FromBranchId, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @(Html.Kendo().DropDownListFor(m => m.FromBranchId)
+                                               .ValuePrimitive(true)
+                                                .AutoBind(false)
+                                                .OptionLabel("Select Branch...")
+                                                    .DataTextField("Text")
+                                                            .DataValueField("Value")
+                                                        .Filter("contains")
+                                                .DataSource(dataSource =>
+                                                {
+                                                    dataSource.Read(read => read.Action("GetBranchForMaintenanceCenter", "MaintenanceDataProvider", new { area = "Maintenance" }))
+                                                                          .ServerFiltering(false);
+                                                })
+                )
+            </div>
+        </div>
+
+    </div>
 </div>
 
-    <style>
-        div.k-edit-form-container {
-            width: auto;
-            height: auto;
-        }
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
 
-        .row .col-sm-2 {
-            width: 150px;
-        }
+    .row .col-sm-2 {
+        width: 150px;
+    }
 
-        .row {
-            margin: auto;
-        }
-    </style>
+    .row {
+        margin: auto;
+    }
+</style>
 
 
 

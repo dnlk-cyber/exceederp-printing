@@ -39,10 +39,10 @@
                                          .Error("error_handler(\"grid\")")
                                          .RequestStart("onRequestStart(\"grid\")")
                                          .RequestEnd("onRequestEnd(\"grid\")"))
-                            .Read(read => read.Action("WagonDrillTimesheets_Read", "WagonDrillTimesheetSimple"))
-                            .Create(create => create.Action("WagonDrillTimesheets_Create", "WagonDrillTimesheetSimple"))
-                            .Update(update => update.Action("WagonDrillTimesheets_Update", "WagonDrillTimesheetSimple"))
-                            .Destroy(destroy => destroy.Action("WagonDrillTimesheets_Destroy", "WagonDrillTimesheetSimple"))
+                            .Read(read => read.Action("WagonDrillTimesheets_Read", "WagonDrillTimesheetSimple").Data("sendForgery"))
+                            .Create(create => create.Action("WagonDrillTimesheets_Create", "WagonDrillTimesheetSimple").Data("sendForgery"))
+                            .Update(update => update.Action("WagonDrillTimesheets_Update", "WagonDrillTimesheetSimple").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("WagonDrillTimesheets_Destroy", "WagonDrillTimesheetSimple").Data("sendForgery"))
                         ).ClientDetailTemplateId("template")
 )
 
@@ -124,9 +124,9 @@
                                                                                                                                                             .RequestStart("onRequestStart(\"TimeSheetApproval#=WagonDrillTimesheetId#\")")
                                                                                                                                                             .RequestEnd("onRequestEnd(\"TimeSheetApproval#=WagonDrillTimesheetId#\")"))
 
-                                                                                                                                                            .Create(update => update.Action("WagonDrillTimeSheetApproval_Create", "WagonDrillTimesheetSimple", new { Id = "#=WagonDrillTimesheetId#" }))
-                                                                                                                                                            .Read(read => read.Action("DumpTruckTimeSheetApproval_Read", "WagonDrillTimesheetSimple", new { Id = "#=WagonDrillTimesheetId#" }))
-                                                                                                                                                            .Update(update => update.Action("WagonDrillTimeSheetApproval_Create", "WagonDrillTimesheetSimple"))
+                                                                                                                                                            .Create(update => update.Action("WagonDrillTimeSheetApproval_Create", "WagonDrillTimesheetSimple", new { Id = "#=WagonDrillTimesheetId#" }).Data("sendForgery"))
+                                                                                                                                                            .Read(read => read.Action("DumpTruckTimeSheetApproval_Read", "WagonDrillTimesheetSimple", new { Id = "#=WagonDrillTimesheetId#" }).Data("sendForgery"))
+                                                                                                                                                            .Update(update => update.Action("WagonDrillTimeSheetApproval_Create", "WagonDrillTimesheetSimple").Data("sendForgery"))
 
 
                                                                                                                                                         )

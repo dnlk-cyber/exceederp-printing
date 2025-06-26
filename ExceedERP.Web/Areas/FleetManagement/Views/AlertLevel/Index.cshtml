@@ -46,9 +46,9 @@
                                         .Error("error_handler(\"grid\")")
                                         .RequestStart("onRequestStart(\"grid\")")
                                         .RequestEnd("onRequestEnd(\"grid\")"))
-          .Create(update => update.Action("FuelConsumptionAlertLevel_Create", "AlertLevel"))
-              .Read(read => read.Action("FuelConsumptionAlertLevel_Read", "AlertLevel"))
-              .Update(update => update.Action("FuelConsumptionAlertLevel_Update", "AlertLevel"))
-              .Destroy(update => update.Action("FuelConsumptionAlertLevel_Destroy", "AlertLevel"))
+          .Create(update => update.Action("FuelConsumptionAlertLevel_Create", "AlertLevel").Data("sendForgery"))
+              .Read(read => read.Action("FuelConsumptionAlertLevel_Read", "AlertLevel").Data("sendForgery"))
+              .Update(update => update.Action("FuelConsumptionAlertLevel_Update", "AlertLevel").Data("sendForgery"))
+              .Destroy(update => update.Action("FuelConsumptionAlertLevel_Destroy", "AlertLevel").Data("sendForgery"))
       ))
 

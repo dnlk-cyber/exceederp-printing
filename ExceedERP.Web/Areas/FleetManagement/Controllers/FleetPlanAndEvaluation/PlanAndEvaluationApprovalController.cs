@@ -10,6 +10,7 @@ using System.Data.Entity;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Web.Areas.FleetManagement.Models;
+using ExceedERP.Core.Domain.Maintenance;
 
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
@@ -69,7 +70,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             if (EquipmentPlanandEvaluations != null)
             {
                 EquipmentPlanandEvaluations.IsSendForApproval = true;
-                EquipmentPlanandEvaluations.Status = MaintenanceConst.WaitingApproval;
+                EquipmentPlanandEvaluations.Status =MaintenanceConst.WaitingApproval;
 
                 db.EquipmentPlanandEvaluation.Attach(EquipmentPlanandEvaluations);
                 db.Entry(EquipmentPlanandEvaluations).State = EntityState.Modified;

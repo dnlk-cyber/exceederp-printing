@@ -26,7 +26,7 @@
         .Groupable()
         .DataSource(dataSource => dataSource
             .Ajax()
-            .ServerOperation(false)
+            //.ServerOperation(false)
             .Events(events => events.Error("error_handler"))
             .Model(model =>
                   {
@@ -35,10 +35,10 @@
                       model.Field(p => p.Fleet).DefaultValue(
                           ViewData["defaultfleets"] as FleetViewModel);
                   })
-                            .Create(update => update.Action("Accessories_Create", "Accessories"))
-                            .Read(read => read.Action("Accessories_Read", "Accessories"))
-                            .Update(update => update.Action("Accessories_Update", "Accessories"))
-                            .Destroy(update => update.Action("Accessories_Destroy", "Accessories"))
+                            .Create(update => update.Action("Accessories_Create", "Accessories").Data("sendForgery"))
+                            .Read(read => read.Action("Accessories_Read", "Accessories").Data("sendForgery"))
+                            .Update(update => update.Action("Accessories_Update", "Accessories").Data("sendForgery"))
+                            .Destroy(update => update.Action("Accessories_Destroy", "Accessories").Data("sendForgery"))
       )
 )
 

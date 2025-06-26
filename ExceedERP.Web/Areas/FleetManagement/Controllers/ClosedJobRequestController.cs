@@ -1,8 +1,10 @@
 ﻿using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Hubs;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -19,7 +21,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         private readonly IFleetService _FleetService;
         private ExceedDbContext db = new ExceedDbContext();
         public ClosedJobRequestController()
-        {       
+        {
             _FleetService = new FleetService();
         }
         // GET: FleetManagement/ClosedJobRequest
@@ -35,6 +37,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             PopulateViewData();
             return View();
         }
+        
         private void PopulateViewData()
         {
             var employee = db.Person_Employee;
@@ -66,8 +69,17 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
 
             var JobRequest = db.JobRequest.Where(x => x.JobOrderStatus == JobOrderStatus.Delivered).ToList();
-            
+          
+           
             return Json(JobRequest.ToDataSourceResult(request));
         }
+
     }
 }
+    
+
+
+
+
+
+

@@ -1,0 +1,107 @@
+﻿@{
+    ViewBag.Title = "Chat";
+}
+
+<h2>Chat Application</h2>
+
+<!-- Select Receiver -->
+<label>Select Receiver:</label>
+<select id="receiverDropdown" class="k-dropdown">
+    <option value="">-- Select User --</option>
+</select>
+
+<!-- Chat Box -->
+<div id="chatBox" style="width: 60%; height: 400px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
+    <ul id="chatMessages"></ul>
+</div>
+
+<!-- Message Input -->
+<input type="text" id="messageInput" class="k-textbox" style="width: 70%;" placeholder="Type a message..." />
+<button id="sendButton" class="k-button k-primary">Send</button>
+
+<!-- jQuery -->
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+
+<script>
+    var userId ;  // Logged-in user ID (replace with actual user)
+    var selectedReceiverId = null;
+
+    // Get logged-in user ID
+    function getUserIdAndLoadChat() {
+        $.getJSON('/Chat/GetMyUserId', function (users) {
+            $.each(users, function (index, user) {
+                userId = user.UserId
+            });
+        });
+      
+           
+    }
+    // Call this function when the page loads
+    $.getJSON('/Chat/GetUsers', function (users) {
+        let userOptions = users.map(user => `<option value="${user.UserId}">${user.Name}</option>`).join('');
+        $("#receiverDropdown").html('<option value="">-- Select User --</option>' + userOptions);
+
+        // Initialize Select2 with search
+        $("#receiverDropdown").select2({
+            placeholder: "Select a user",
+            allowClear: true
+        });
+    });
+    // Load chat history when a receiver is selected
+    $("#receiverDropdown").change(function () {
+        selectedReceiverId = $(this).val();
+        getUserIdAndLoadChat()
+
+        loadChatHistory();
+    });
+
+    function loadChatHistory() {
+        $.getJSON('/Chat/GetChatHistory', { user1Id: userId, user2Id: selectedReceiverId }, function (messages) {
+            $("#chatMessages").empty();
+            $.each(messages, function (index, msg) {
+
+                let messageType = (msg.SenderId == userId) ? "sent-message" : "received-message";
+                let senderName = (msg.SenderId == userId) ? "Me" : msg.Sender;
+
+                $("#chatMessages").append(
+                    `<li class="${messageType}">
+                    <strong>${senderName}:</strong> ${msg.Content} <small>(${msg.Timestamp})</small>
+                </li>`
+                );
+            });
+        });
+    }
+
+
+    //// Send Message
+    // Show confirmation dialog
+  
+    $("#sendButton").click(function () {
+        var message = $("#messageInput").val();
+        if (message.trim() === "" || !selectedReceiverId) return;
+        if (selectedReceiverId == userId) {
+            alert("you can't sent message to yourself.");
+            return;
+        }
+        if (confirm("Are you sure you want to send this message?")) {
+            $.post('/Chat/InsertMessage', { senderId: userId, receiverId: selectedReceiverId, content: message }, function (response) {
+                if (response.success) {
+                    $("#messageInput").val('');
+                    loadChatHistory();  // Refresh chat
+                }
+                else {
+                    alert("Failed to send message. Please try again.");
+                }
+            }).fail(function () {
+                alert("Error: Could not connect to the server.");
+            });
+        }
+        //$.post('/Chat/InsertMessage', { senderId: userId, receiverId: selectedReceiverId, content: message }, function (response) {
+        //    if (response.success) {
+        //        $("#messageInput").val('');
+        //        loadChatHistory();  // Refresh chat
+        //    }
+        //});
+    });
+
+</script>

@@ -13,7 +13,7 @@ using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Web.Areas.FleetManagement.Models;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.FixedAsset.Registrations;
-
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     [Authorize]
@@ -182,8 +182,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
                 
                 
-                fleet.Location = Location.Name;
-
+                fleet.Location = db.Branch.Find(entity.BranchId)?.Name ?? "";
+                fleet.BranchId = entity.BranchId;
                 db.Fleets.Attach(fleet);
                 db.Entry(fleet).State = EntityState.Modified;
                 db.SaveChanges();

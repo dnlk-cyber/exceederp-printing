@@ -7,17 +7,355 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetViewModel
 {
+    public class DryLoadingTimesheetHistoryVM
+    {
+      
+        public int DryLoadingTimeSheetId { get; set; }
+        [Display(Name = "Equipment Category")]
+        public string EquipmentCategoryId { get; set; }
+        [Display(Name = "Equipment Type")]
+        public string EquipmentTypeId { get; set; }
+        [Display(Name = "Equipment Name")]
+        public string EquipmentNameId { get; set; }
+        [DisplayName("Supplier Name")]
+        public string ProcurementSupplierID { get; set; }
+        public string TimeSheetStatus { get; set; }
+      
+        [DisplayName("Work Item")]
+        public string WorkItem { get; set; }
+       
+        [DisplayName("Working Hour")]
+        public decimal WorkingHour { get; set; }
+        [Display(Name = "Down Hour")]
+        public decimal Downhour { get; set; }
+
+        [Display(Name = "Down Reason")]
+        public string DownReason { get; set; }
+        [Display(Name = "Lubricant Consumption")]
+        public decimal OilConsumption { get; set; }
+       
+        [DisplayName("Trip Start Place")]
+        public string TripStartPlace { get; set; }
+      
+        [DisplayName("Trip Arrival Place")]
+        public string TriplArrivalPlace { get; set; }
+       
+        [DisplayName("Trip Start Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime TripStartDate { get; set; }
+       
+        [DisplayName("Trip Arrival Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime TripArrivalDate { get; set; }
+        
+        [DisplayName("Road Type (Asphalt(Km))")]
+        public decimal Asphalt { get; set; }
+
+        [DisplayName("Road Type (Gravel(Km))")]
+        public decimal Gravel { get; set; }
+   
+        [DisplayName("Total Km Travelled")]
+        public decimal TotalKmTravelled { get; set; }
+     
+        [DisplayName("Fuel(Lit)/")]
+        public decimal FuelInLiter { get; set; }
+    
+        [DisplayName("Per Diem")]
+        public decimal PerDiem { get; set; }
+
+     
+        [DisplayName("Idle Hour")]
+        public decimal IdleHour { get; set; }
+      
+        [DisplayName("Reason For Idle")]
+        public string ReasonForIdle { get; set; }
+
+        [Display(Name = "Equipment Name")]
+        public string FleetsID { get; set; }    
+
+        public decimal NetworkingHour { get; set; } // Added
+        [Display(Name = "Fuel Rate")]
+        public decimal FuelRate { get; set; } // Added
+        [Display(Name = "Lubricant Cost")]
+        public decimal LubricantCost { get; set; } //Added
+        [Display(Name = "Maintenance Cost")]
+        public decimal MaintenanceCost { get; set; } //
+        [Display(Name = "Tire Cost")]
+        public decimal TireCost { get; set; } // 
+        [Display(Name = "Salary")]
+        public decimal Salary { get; set; } // 
+        [Display(Name = "Perdium")]
+        public decimal Perdium { get; set; } // 
+        public string Category { get; set; }
+
+        [Display(Name = "Quantity")]
+        public int NoOfTripe { get; set; } // 
+
+
+        [Display(Name = "Asphalt Rate")]
+        public decimal AsphaltRate { get; set; } // 
+        [Display(Name = "Gravel Rate")]
+        public decimal GravelRate { get; set; } // 
+        [Display(Name = "Loaded Type")]
+        public string LoadedType { get; set; } // 
+        [Display(Name = "Loading/Unloading Cost")]
+        public decimal LoadingUnloadingCost { get; set; } //
+
+        [Display(Name = "Rental Rate")]
+        public decimal RentalRate { get; set; }
+
+        [Display(Name = "Branch")]
+        public string BranchId { get; set; }
+        [Display(Name = "Business Unit")]
+        public string BusinessUnitId { get; set; }
+
+        [Display(Name = "Operator")]
+        public string OperatorId { get; set; }
+        [Display(Name = "External Operator")]
+        public string ExternalOperator { get; set; }
+
+    }
+  
+ public class DumpTruckTimeSheetViewModel
+    {
+        public int DumpTruckTimeSheetId { get; set; }
+        [Display(Name = "Equipment Category")]
+        public string EquipmentCategoryId { get; set; }
+        [Display(Name = "Equipment Type")]
+        public string EquipmentTypeId { get; set; }
+        [Display(Name = "Equipment Name")]
+        public string EquipmentNameId { get; set; }
+      
+        [DisplayName("Date")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [DataType(DataType.Date)]
+        public DateTime Date { get; set; }
+        //[Required]
+        [DisplayName("Type Of Work Excuted")]
+        public string TypeOfWorkExcuted { get; set; }
+        [DisplayName("Supplier Name")]
+        public int? ProcurementSupplierID { get; set; }
+        //[Required]
+        [DisplayName("Loading Location From")]
+        public string LoadingLocationFrom { get; set; }
+        //[Required]nt
+        [DisplayName("Loading Location To")]
+        public string LoadingLOactionTo { get; set; }
+        //[Required]
+        [DisplayName("Capacity (m3/ quintal)")]
+        public decimal Capacity { get; set; }
+        //[Required]
+        [DisplayName("Actual Distance")]
+        public decimal ActualDistance { get; set; }
+        //[Required]
+        [DisplayName("No.of Trip")]
+        public int NumberOfTrip { get; set; }
+        //[Required]
+        [DisplayName("Total Haulage (m3)")]
+        public decimal TotalHaulage { get; set; }
+       
+        [DisplayName("Fuel Consumption(Lit)")]
+        public decimal FuelConsumption { get; set; }
+        
+        [DisplayName("Oil Consumption(Lit)")]
+        public decimal OilConsumption { get; set; }
+      
+        [DisplayName("Grease Consumption(Kg)")]
+        public decimal GreaseConsumption { get; set; }
+
+       
+        [DisplayName("Idle Hour")]
+        public decimal IdleHour { get; set; }
+        [DisplayName("Reson for Idle")]
+        public string ReasonForIdle { get; set; }
+
+        [DisplayName("Down Hour")]
+        public decimal DownHour { get; set; }
+        [DisplayName("Reason for Down")]
+        public string ReasonForDown { get; set; }
+        [DisplayName("Rental Rate")]
+        public decimal RentalRate { get; set; }
+        [DisplayName("Idle Rental Rate")]
+        public decimal IdealRentalRate { get; set; }
+
+        public string FleetsID { get; set; } // 5
+
+        
+        [Display(Name = "Net Working Hour")]
+        public decimal NetworkingHour { get; set; } // Added
+        [Display(Name = "Fuel Rate")]
+        public decimal FuelRate { get; set; } // Added
+        [Display(Name = "Lubricant Cost")]
+        public decimal LubricantCost { get; set; } //Added
+        [Display(Name = "Maintenance Cost")]
+        public decimal MaintenanceCost { get; set; } //
+        [Display(Name = "Tire Cost")]
+        public decimal TireCost { get; set; } // 
+        public decimal Salary { get; set; } // 
+        public decimal Perdium { get; set; } // 
+
+        [Display(Name = "Branch")]
+        public string BranchId { get; set; }
+        [Display(Name = "Business Unit")]
+        public string BusinessUnitId { get; set; }
+        [Display(Name = "Operator")]
+        public string OperatorId { get; set; }
+        [Display(Name = "External Operator")]
+        public string ExternalOperator { get; set; }
+    }
+    public class LightVehicleTimeSheetViewModel
+    {
+
+    } public class MachineryWorkingTimeSheetViewModel
+    {
+
+    } public class WagonDrillTimeSheetViewModel
+    {
+
+    }
+
+    public class EquipmentDistributionViewModel
+    {
+        
+        public string OperatorName { get; set; } //
+        public decimal StartOdometer { get; set; }
+        public decimal EndOdometer { get; set; }
+        public decimal NetOdometer { get; set; }
+        public int Quantity { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime? StartDate { get; set; } //
+        [DataType(DataType.Date)]
+        public DateTime? EndDate { get; set; } //
+        public string Destination { get; set; } //
+        
+        public string RequestNumber { get; set; }
+        public Guid AssignedEqiupmentId { get; set; }
+
+        public decimal TotalCost { get; set; }
+    }
+    public class MaintenanceViewModel
+    {
+        public string MaintenanceCenter { get; set; }
+        public string JobNumber { get; set; }
+        public decimal MaitenanceServiceCost { get; set; }
+        public decimal SparePartsCost { get; set; }
+        public decimal AdditionalCost { get; set; }
+        public string ServiceType { get; set; }
+        public decimal TotalCost { get; set; }
+    }
+    public class BoloRegistrationHistoryVM
+    {
+        public int FleetBoloRegistrationId { get; set; }
+        public string EquipmentCategoryId { get; set; }
+        public string EquipmentTypeId { get; set; }
+        public string EquipmentNameId { get; set; }
+
+        [Display(Name = "Plate Number")]
+        public string FleetId { get; set; }[Display(Name = "Plate Number")]
+        public string SerialNo { get; set; }
+
+        [DataType(DataType.Date), Display(Name = "Bolo Registration Date")]
+        public DateTime BoloRegistrationDate { get; set; }
+        [DataType(DataType.Date), Display(Name = "Bolo Expiration Date")]
+        public DateTime BoloExpireDate { get; set; }
+        public string Remark { get; set; }
+    }
+    public class PurchasingCostVM
+    {
+        public string FleetId { get; set; }
+        [DisplayName("Purchasing Cost   ")]
+        public decimal PurchasingCost { get; set; }
+       
+    }
+    public class FuelConsumptionViewModel
+    {
+        public Guid FleetId { get; set; }
+        public decimal TotalFuelFromStore { get; set; }
+        public decimal TotalFuelFromTravelOrder { get; set; }
+        public decimal TotalFuelConsumption { get; set; }
+    }
     public class FleetEquipmentHistoryJacketViewModel 
     {
         public string EquipmentCategoryName { get; set; }
         public string EquipmentTypeName { get; set; }
         public string EquipmentName { get; set; }
+        public string PurchasingCost { get; set; }
         public Guid FleetId { get; set; }
         public string PlateNo { get; set; }
+        public string PlateNumber { get; set; }
         public string SerialNo { get; set; }
 
     }
-    
+    public class VehicleDistributionVM
+    {public int Num { get; set; }
+        public Guid VehicleDistributionID { get; set; }
+
+        [Required]
+        [DisplayName(" Request")]
+        public Guid RequestID { get; set; }
+        public enum CompanyRequestType { Company }
+        public enum RequestType { Rent, Company }
+        public string OperatorSelector { get; set; }
+        public RequestType Type { get; set; }
+        [DisplayName("Plate Number")]
+        public string PlateNumber { get; set; }
+        [DisplayName("Manufacturing Year")]
+        public string ManufacturingYear { get; set; }
+
+        [DisplayName(" Start Date ")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public Nullable<DateTime> StartingDate { get; set; }
+        [DisplayName(" End Date ")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public Nullable<DateTime> ToDate { get; set; }
+        public string Status { get; set; }
+        public string OperatorName { get; set; }
+        [Required]
+        [DisplayName("  Branch ")]
+        public string FromBranchName { get; set; }
+        [Required]
+        [DisplayName("  Work Unit ")]
+        public string FromStructureName { get; set; }
+
+        [DisplayName(" Branch ")]
+        public string RequestingBranchName { get; set; }
+        [DisplayName(" Employee Name")]
+        public int EmployeeId { get; set; }
+        public string ReasonForTravel { get; set; }
+        [DisplayName("Request Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime RequestDate { get; set; }
+        [DisplayName("Assignment Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime AssignmentDate { get; set; }
+        public bool IsAssigned { get; set; }
+        [DisplayName(" Work Unit ")]
+        public string RequestingStructureName { get; set; }
+        public string Reference { get; set; }
+        [DisplayName(" # Distribution  ")]
+        public int? RequestNumber { get; set; }
+        public Nullable<int> DistrubtionNumber { get; set; }
+        public decimal Duration { get; set; }
+        public string NumberHourKM { get; set; }
+
+        public Nullable<int> AssignedQuantity { get; set; }
+        [DisplayName("Equipment Status")]
+        public string EquipmentStatus { get; set; }
+        [DisplayName("Equipment Type")]
+        public string EquipmentType { get; set; }
+        [DisplayName("Equipment Name")]
+        public string EquipmentName { get; set; }
+        public string Destination { get; set; }
+        public decimal NumberofPersonston { get; set; }
+        public string Remarks { get; set; }
+
+    }
     public class FleetInsuranceViewModel 
     {
         public int FleetInsuranceId { get; set; }

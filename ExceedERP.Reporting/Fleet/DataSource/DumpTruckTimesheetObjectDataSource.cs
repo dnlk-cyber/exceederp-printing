@@ -1,6 +1,7 @@
 ﻿using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.Procurement.Supplier;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Fleet.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -25,8 +26,9 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             {
                 Guid FId = Guid.Parse(fleetId);
                 var dumpTruckTimeSheet = db.DumpTruckTimeSheets.FirstOrDefault(x => x.FleetsID == FId && DbFunctions.TruncateTime(x.Date) >= from.Date && DbFunctions.TruncateTime(x.Date) <= to.Date);
+                List<DumpTruckTimeSheet> PreparedBy = db.DumpTruckTimeSheets.Where(x => x.FleetsID == FId && DbFunctions.TruncateTime(x.Date) >= from.Date && DbFunctions.TruncateTime(x.Date) <= to.Date).ToList();
+                DumpTruckTimeSheet LastDumpTrucktimeSheet = PreparedBy.LastOrDefault();
 
-                
                 if (dumpTruckTimeSheet != null)
                 {
                     var branch = db.Branch.FirstOrDefault(x => x.BranchId == dumpTruckTimeSheet.BranchId);
@@ -47,7 +49,25 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         if (equipmentName != null)
                             header.EquipmentName = equipmentName.Name;
                         header.PlateNumber = fleet.PlateNumber;
-                        header.OwnerName = procurementSupplier?.Name == null ? db.Companies.FirstOrDefault()?.TradeName : "";
+                        if(fleet.IsExternal==true)
+                        {
+
+                            if (fleet.OperatorId != null)
+                            {
+                               
+                           
+                       var FetchSupplierId = db.RentFromExternal.FirstOrDefault(x => x.OperatorId != null && x.OperatorId == fleet.OperatorId)?.ProcurementSupplierID ?? 0;
+                                if(FetchSupplierId!=0)
+                                {
+                                    header.OwnerName = db.ProcurementSuppliers.FirstOrDefault(x => x.ProcurementSupplierID == FetchSupplierId).Name;
+                                }
+                            }
+                            
+                        }
+                        else
+                        {
+                            header.OwnerName = procurementSupplier?.Name == null ? db.Companies.FirstOrDefault()?.TradeName : "";
+                        }
                         if (operatorName != null)
                             header.OperatorName = operatorName.FullName;
                         if (branch != null)
@@ -60,6 +80,32 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     header.Duration = from.ToString("MM/dd/yyyy") + "-" + to.ToString("MM/dd/yyyy");
 
                     header.Period = DateTime.Now.Month.ToString() + "," + DateTime.Now.Year.ToString();
+                    if (LastDumpTrucktimeSheet.CreatedBy != null)
+                    {
+                        header.PreparedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastDumpTrucktimeSheet.CreatedBy));
+                    }
+                    if (LastDumpTrucktimeSheet.TimeSheetSendForApprovalBy != null)
+                    {
+                        header.CheckedBY = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastDumpTrucktimeSheet.TimeSheetSendForApprovalBy));
+                    }
+                    header.PreparedDate = LastDumpTrucktimeSheet.DateCreated?.ToString("yyyy-MM-dd")??"";
+                    header.CheckedDate = LastDumpTrucktimeSheet.CostSheetSendForApprovalTime?.ToString("yyyy-MM-dd")??"";
+                    header.ApprovedDate = LastDumpTrucktimeSheet.CostSheetApprovedDate?.ToString("yyyy-MM-dd")??"";
+                    if (LastDumpTrucktimeSheet.ModifiedBy != null)
+                    {
+                        header.ModifiedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastDumpTrucktimeSheet.ModifiedBy));
+                    }
+                    header.ModifiedDate = LastDumpTrucktimeSheet.LastModified?.ToString("yyyy-MM-dd")??"";
+                    if (LastDumpTrucktimeSheet.ModifiedBy != null)
+                    {
+                        header.TimesheetapprovedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastDumpTrucktimeSheet.TimeSheetApprovedBy));
+                    }
+                    header.TimesheetApprovedDate = LastDumpTrucktimeSheet.TimeSheetApprovedDate?.ToString("yyyy-MM-dd")??"";
+                    header.TimesheetSendforapprovalDate = LastDumpTrucktimeSheet.TimeSheetSendForApprovalTime?.ToString("yyyy-MM-dd")??"";
+                    if (LastDumpTrucktimeSheet.TimeSheetApprovedBy != null)
+                    {
+                        header.TimesheetSendforapprovalBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(LastDumpTrucktimeSheet.TimeSheetApprovedBy));
+                    }
                 }
             }
             
@@ -67,7 +113,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
         }
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<DumpTruckTimesheetViewModel> DumpTruckTimesheet(string fleetId, DateTime from, DateTime to, string businessUnitId, string categoryId, string subCategoryId, string project)
+        public List<DumpTruckTimesheetViewModel> DumpTruckTimesheet(string fleetId, DateTime from, DateTime to,string IntExt, string businessUnitId, string categoryId, string subCategoryId, string project)
         {
 
             var list = new List<DumpTruckTimesheetViewModel>();
@@ -76,13 +122,37 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
                 Guid FId = Guid.Parse(fleetId);
                 var dumpTruckTimeSheets = db.DumpTruckTimeSheets.Where(x => x.FleetsID == FId && x.CostSheetApproved).ToList();
-
                 dumpTruckTimeSheets = dumpTruckTimeSheets.Where(x => x.Date.Date >= from.Date && x.Date.Date <= to.Date).ToList();
-               
-                if (!string.IsNullOrWhiteSpace(businessUnitId))
+                               if (!string.IsNullOrWhiteSpace(businessUnitId))
                 {
                     int.TryParse(businessUnitId, out int bUId);
                     dumpTruckTimeSheets = dumpTruckTimeSheets.Where(x => x.BusinessUnitId == bUId).ToList();
+                }
+                if (!string.IsNullOrWhiteSpace(IntExt))
+                {
+                    List<DumpTruckTimeSheet> dumpTruckList = new List<DumpTruckTimeSheet>();
+                    if (IntExt == "Rent")
+                    {
+
+
+                        var fleetFiltered = db.Fleets.Where(x => x.IsExternal).ToList();
+                        foreach (var item in fleetFiltered)
+                        {
+                            var dumptruckFiltered = dumpTruckTimeSheets.Where(x => x.FleetsID == item.FleetsID).ToList();
+                            dumpTruckList.AddRange(dumptruckFiltered);
+                        }
+                        dumpTruckTimeSheets = dumpTruckList;
+                    }
+                    else
+                    {
+                        var fleetFiltered = db.Fleets.Where(x => !x.IsExternal).ToList();
+                        foreach (var item in fleetFiltered)
+                        {
+                            var dumptruckFiltered = dumpTruckTimeSheets.Where(x => x.FleetsID == item.FleetsID).ToList();
+                            dumpTruckList.AddRange(dumptruckFiltered);
+                        }
+                        dumpTruckTimeSheets = dumpTruckList;
+                    }
                 }
                 if (!string.IsNullOrWhiteSpace(categoryId))
                 {
@@ -119,33 +189,31 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     bool checker = true;
                     var dumptruckDetails = db.DumpTruckTimeSheetDetails.Where(x => x.DumpTruckTimeSheetId == dumpTruckTimeSheet.DumpTruckTimeSheetId).ToList();
                     var branch = db.Branch.FirstOrDefault(x => x.BranchId == dumpTruckTimeSheet.BranchId);
-                    foreach (var detail in dumptruckDetails)
+                    if (!dumptruckDetails.Any())
                     {
-
                         var item = new DumpTruckTimesheetViewModel();
                         var fleet = db.Fleets.Find(dumpTruckTimeSheet.FleetsID);
                         var equipmentId = fleet != null ? fleet.EquipmentTypeID.ToString() : "0";
                         var equipment = db.EquipmentType.FirstOrDefault(x => x.EquipmentTypeID.ToString() == equipmentId);
-                        item.PlateNo = fleet.PlateNumber;
+                        if(fleet.PlateNumber!=null)
+                        {
+                            item.PlateNo = fleet.PlateNumber;
+                        }
                         item.Branch = branch.Name;
                         item.SN = dumpTruckTimeSheet.DumpTruckTimeSheetId;
                         item.Date = dumpTruckTimeSheet.Date;
-                        item.WorkItem = detail.TypeOfWork;
+                        item.WorkItem = "";
                         item.OperationNetWorkingHour = dumpTruckTimeSheet.NetworkingHour;
-                        item.NumberOfTrips = detail.NumberOfTrip;
-                        item.ActualDistance = detail.ActualDistance;
-                        item.capacity = detail.Capacity;
-                        item.TotalHaulage = detail.TotalHaulage;
-
-                        item.OperationRateperHour = detail.RentalRate;
+                        item.NumberOfTrips = 0;
+                        item.ActualDistance = 0;
+                        item.capacity = 0;
+                        item.TotalHaulage = 0;
+                        item.OperationRateperHour = 0;
                         item.OperationRevenue = item.capacity * item.ActualDistance * item.NumberOfTrips * item.OperationRateperHour;
-
                         item.IdleRateperHour = dumpTruckTimeSheet.IdealRentalRate;
                         item.IdleRevenue = item.IdleRateperHour * item.IdleHour;
                         item.TotalRevenue = item.IdleRevenue + item.OperationRevenue;
                         item.DownHour = dumpTruckTimeSheet.DownHour;
-
-
                         if (checker)
                         {
                             item.IdleHour = dumpTruckTimeSheet.IdleHour;
@@ -182,7 +250,72 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         item = null;
                         checker = false;
                     }
+                    else
+                    {
+                        foreach (var detail in dumptruckDetails)
+                        {
 
+                            var item = new DumpTruckTimesheetViewModel();
+                            var fleet = db.Fleets.Find(dumpTruckTimeSheet.FleetsID);
+                            var equipmentId = fleet != null ? fleet.EquipmentTypeID.ToString() : "0";
+                            var equipment = db.EquipmentType.FirstOrDefault(x => x.EquipmentTypeID.ToString() == equipmentId);
+                            if(fleet.PlateNumber!=null)
+                            {
+                                item.PlateNo = fleet.PlateNumber;
+
+                            }
+                            item.Branch = branch.Name;
+                            item.SN = dumpTruckTimeSheet.DumpTruckTimeSheetId;
+                            item.Date = dumpTruckTimeSheet.Date;
+                            item.WorkItem = detail.TypeOfWork;
+                            item.OperationNetWorkingHour = dumpTruckTimeSheet.NetworkingHour;
+                            item.NumberOfTrips = detail.NumberOfTrip;
+                            item.ActualDistance = detail.ActualDistance;
+                            item.capacity = detail.Capacity;
+                            item.TotalHaulage = detail.TotalHaulage;
+                            item.OperationRateperHour = detail.RentalRate;
+                            item.OperationRevenue = item.capacity * item.ActualDistance * item.NumberOfTrips * item.OperationRateperHour;
+                            item.IdleRateperHour = dumpTruckTimeSheet.IdealRentalRate;
+                            item.IdleRevenue = item.IdleRateperHour * item.IdleHour;
+                            item.TotalRevenue = item.IdleRevenue + item.OperationRevenue;
+                            item.DownHour = dumpTruckTimeSheet.DownHour;
+                            if (checker)
+                            {
+                                item.IdleHour = dumpTruckTimeSheet.IdleHour;
+                                item.FuelInLiter = dumpTruckTimeSheet.FuelConsumption;
+                                item.FuelRate = dumpTruckTimeSheet.FuelRate;
+                                item.FuelCost = item.FuelRate * item.FuelInLiter;
+                                item.LubricantCost = dumpTruckTimeSheet.LubricantCost;
+                                item.MaintenaceCost = dumpTruckTimeSheet.MaintenanceCost;
+                                item.TireCost = dumpTruckTimeSheet.TireCost;
+                                item.Salary = dumpTruckTimeSheet.Salary;
+                                item.Perdium = dumpTruckTimeSheet.Perdium;
+                                item.TotalCost = item.Perdium + item.Salary + item.TireCost + item.MaintenaceCost + item.LubricantCost + item.FuelCost;
+                                //item.TotalCost = item.NumberOfTrips * item.ActualDistance * item.capacity * item.OperationRateperHour; 
+                                item.NetIncome = item.TotalRevenue - item.TotalCost;
+                            }
+                            else
+                            {
+                                item.FuelInLiter = 0;
+                                item.FuelRate = 0;
+                                item.FuelCost = 0;
+                                item.LubricantCost = 0;
+                                item.MaintenaceCost = 0;
+                                item.TireCost = 0;
+                                item.Salary = 0;
+                                item.Perdium = 0;
+                                item.TotalCost = 0;
+                                //item.TotalCost = item.NumberOfTrips * item.ActualDistance * item.capacity * item.OperationRateperHour; 
+                                item.NetIncome = item.TotalRevenue - item.TotalCost;
+                            }
+
+
+
+                            list.Add(item);
+                            item = null;
+                            checker = false;
+                        }
+                    }
                 }
                 return list.OrderBy(x => x.Date.Date).ToList();
             }

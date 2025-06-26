@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExceedERP.Core.Domain.Maintenance
 {
-    public class JobRequest : Operations
+    public class JobRequest : OperationWithSecondValidation
     {
         [Key]
         [DisplayName(" Request Number ")]
@@ -17,38 +17,32 @@ namespace ExceedERP.Core.Domain.Maintenance
         public int VeheicleReceptionFormId { get; set; }
         [DisplayName(" Customer")]
         public int? CustomerId { get; set; }
-       
         public bool IsPM { get; set; }
         public JobRequestSource Source { get; set; }
         //[Required]
         [DisplayName(" Equipment (License Plate)")]
         public Guid? EquipmentInformationId { get; set; }
-
         [DisplayName("Plate No/Serial No")]
         public string LicensePlate { get; set; }
-        
-       
+        public string FromBranchId { get; set; }
         [DisplayName(" Equipment Name ")]
         public string EquipmentName { get; set; }
-
         public string Requester { get; set; }
-
         [DisplayName(" Operator Name ")]
         public string OperatorName { get; set; }
-
         [DisplayName(" Fuel Amount ")]
         public string FuelAmount { get; set; }
-
         public decimal Odometer { get; set; }
-
 
         //[DisplayName(" Asset Num ")]
         //public string AssetNum { get; set; }
 
         //[DisplayName(" Project Name")]
         //public string ProjectName { get; set; }
-
+        public string KMReading { get; set; }
+        public string GPSInfo { get; set; }
         public decimal LastKmHr { get; set; }
+        public decimal EstmatedCostAmount { get; set; }
 
         [NotMapped]
         public string Model { get; set; }
@@ -78,6 +72,46 @@ namespace ExceedERP.Core.Domain.Maintenance
         [Display(Name ="Job Order Status")]
         public JobOrderStatus JobOrderStatus { get; set; }
         [Display(Name ="delivered Date"), DataType(DataType.Date)]
+        public DateTime? DeliveredDate { get; set; }
+        public bool IsSentBackToReception { get; set; }
+        public bool CreateJobOrder { get; set; }
+    }
+    public class JobRequestVM
+    {
+        
+        public string JobRequestId { get; set; }
+        public DateTime? DateCreated { get; set; }
+        public DateTime DateApproved { get; set; }
+        public int? RequestNumber { get; set; }
+        [DisplayName(" Customer")]
+        public string CustomerName { get; set; }
+        public bool IsPM { get; set; }
+        public string Source { get; set; }
+        //[Required]
+        
+        [DisplayName(" Equipment Name ")]
+        public string EquipmentName { get; set; }
+        public string Requester { get; set; }
+        [DisplayName(" Operator Name ")]
+        public string OperatorName { get; set; }
+        [DisplayName(" Fuel Amount ")]
+        public decimal Odometer { get; set; }
+
+        public decimal LastKmHr { get; set; }
+        public decimal EstmatedCostAmount { get; set; }
+           
+        [Display(Name = "Maintenance Center")]
+        public string MaintenanceCenter { get; set; }
+       
+             // Added
+        [Display(Name = "Branch")]
+        public string BranchName { get; set; }
+        [Display(Name = "Business Unit")]
+        public string BusinessUnit { get; set; }
+        [Display(Name = "Org Structure")]
+        public int OrgStructure { get; set; }
+        public string JobOrderStatus { get; set; }
+        [Display(Name = "delivered Date"), DataType(DataType.Date)]
         public DateTime? DeliveredDate { get; set; }
     }
     public enum JobOrderStatus

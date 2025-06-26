@@ -1,0 +1,14 @@
+﻿
+
+@(Html.Kendo().DropDownListFor(m => m)
+    .ValuePrimitive(true)
+    .OptionLabel("Select...")
+    .DataTextField("Text")
+    .DataValueField("Value")
+    .Filter("contains")
+    .DataSource(dataSource =>
+    {
+        dataSource.Read(read => read.Action("FleetFiltered", "FleetMaintenanceDataProvider", new { area = "FleetManagement" }).Data("sendForgery").Data("filterFleet"))
+            .ServerFiltering(true);
+    }).HtmlAttributes(new { style = "width:100%" }))
+

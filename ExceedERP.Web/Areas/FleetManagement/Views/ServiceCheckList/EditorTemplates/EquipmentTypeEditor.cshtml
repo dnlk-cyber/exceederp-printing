@@ -4,7 +4,7 @@
     @(Html.Kendo().DropDownListFor(model => model.CategoryName).HtmlAttributes(new { @class = "form-control" }).Name("CategoryName")
           .DataTextField("EquipmentCategoryName")
           .DataValueField("EquipmentCategoryName").OptionLabel("Select Fleet Category")
-          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory"))))
+          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory").Data("sendForgery"))))
 
 
 </div>

@@ -14,6 +14,7 @@ using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Hubs;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
+using ApprovalDocumentType = ExceedERP.Core.Domain.Common.DocumentApproval.ApprovalDocumentType;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Travel
 {
@@ -57,9 +58,19 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Travel
             if (record != null && record.IsDepartmentOnlineApproved)
                 ModelState.AddModelError("approved","cannot manipulate this record,it is already approved");
 
-            var lines = _db.ApTravelOrderDepartures.Where(x => x.ApTravelOrderId == id);
-            if (!lines.Any())
-                ModelState.AddModelError("lines", "Please add line items");
+            bool hasNonFuelAdvance = _db.ApTravelOrderAdvancePayments
+                 .Any(x => x.ApTravelOrderId == id && x.Type != TravelPaymentType.Fuel);
+
+            if (hasNonFuelAdvance)
+            {
+                bool hasDepartureLines = _db.ApTravelOrderDepartures
+                    .Any(x => x.ApTravelOrderId == id);
+
+                if (!hasDepartureLines)
+                {
+                    ModelState.AddModelError("lines", "Please add line items");
+                }
+            }
 
             if (record != null && record.IsOnlineApproved)
                 ModelState.AddModelError("approved", "You cannot manipulate this record,it is already approved");

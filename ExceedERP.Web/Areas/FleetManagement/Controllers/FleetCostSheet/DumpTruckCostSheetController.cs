@@ -12,12 +12,14 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Reporting.Fleet.ViewModel;
+using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using ExceedERP.Reporting.Fleet.ViewModel;
+//using ExceedERP.Reporting.Fleet.ViewModel;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
 {
-    [AuthorizeRoles(FleetManagementRoles.FleetTimeSheet)]
+    [AuthorizeRoles(FleetManagementRoles.FleetCostSheetUser, FleetManagementRoles.FleetCostSheetApprover)]
     public class DumpTruckCostSheetController : Controller
     {
 
@@ -25,9 +27,39 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
         
         public ActionResult Index()
         {
+            ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            {
+                Text = s.EquipmentCategoryName,
+                Value = s.EquipmentIdentityID
+            }).ToList();
+            ViewData["type"] = db.EquipmentType.Select(s => new
+            {
+                Text = s.EquipmentTypeName,
+                Value = s.EquipmentTypeID
+            }).ToList();
+            ViewData["name"] = db.EquipmentName.Select(s => new
+            {
+                Text = s.Name,
+                Value = s.EquipmentNameID
+            }).ToList();
             ViewData["Fleets"] = db.Fleets.Select(x => new { x.FleetsID, x.PlateNumber }).ToList();
             ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
-            
+            ViewData["branch"] = db.Branch.Select(s => new
+            {
+                Value = s.BranchId,
+                Text = s.Name
+            }).ToList();
+            ViewData["operator"] = db.Operator.Select(s => new
+            {
+                Value = s.OperatorID,
+                Text = s.FullName
+            }).ToList();
+            ViewData["businessunit"] = db.BusinessUnits.Select(s => new
+            {
+                Value = s.BusinessUnitId,
+                Text = s.Name
+            }).ToList();
+
             return View();
         }
 
@@ -35,7 +67,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
 
         public ActionResult DumpTruckCostSheet_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var dumpTruckTimeSheets = db.DumpTruckTimeSheets.Where(x => x.TimeSheetApproved);
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var dumpTruckTimeSheets = db.DumpTruckTimeSheets.Where(x => x.TimeSheetApproved)
+            .Where(x => mybraches.Contains(x.BranchId));
 
             DataSourceResult result = dumpTruckTimeSheets.ToDataSourceResult(request, dumpTruckTimeSheet => new DumpTruckTimeSheet
             {
@@ -86,7 +120,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                 CostSheetSendForApprovalBy = dumpTruckTimeSheet.CostSheetSendForApprovalBy,
                 CostSheetSendForApprovalTime = dumpTruckTimeSheet.CostSheetSendForApprovalTime,
                 TimeSheetSendForApprovalBy = dumpTruckTimeSheet.TimeSheetSendForApprovalBy,
-                TimeSheetSendForApprovalTime = dumpTruckTimeSheet.TimeSheetSendForApprovalTime
+                TimeSheetSendForApprovalTime = dumpTruckTimeSheet.TimeSheetSendForApprovalTime,
+                EquipmentCategoryId = dumpTruckTimeSheet.EquipmentCategoryId,
+                EquipmentNameId = dumpTruckTimeSheet.EquipmentNameId,
+                EquipmentTypeId = dumpTruckTimeSheet.EquipmentTypeId,
+                
                 
 
             });
@@ -101,6 +139,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
             {
                 var entity = new DumpTruckTimeSheet
                 {
+                    
                     DumpTruckTimeSheetId = dumpTruckTimeSheet.DumpTruckTimeSheetId,
                     FleetsID = dumpTruckTimeSheet.FleetsID,
                     ProcurementSupplierID = dumpTruckTimeSheet.ProcurementSupplierID,
@@ -144,7 +183,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                     TimeSheetApprovedBy = dumpTruckTimeSheet.TimeSheetApprovedBy,
                     TimeSheetApprovedDate = dumpTruckTimeSheet.TimeSheetApprovedDate,
                     TimeSheetSendForAproval = dumpTruckTimeSheet.TimeSheetSendForAproval,
-                    TimeSheetStatus = dumpTruckTimeSheet.TimeSheetStatus
+                    TimeSheetStatus = dumpTruckTimeSheet.TimeSheetStatus,
+                    EquipmentCategoryId = dumpTruckTimeSheet.EquipmentCategoryId,
+                    EquipmentNameId = dumpTruckTimeSheet.EquipmentNameId,
+                    EquipmentTypeId = dumpTruckTimeSheet.EquipmentTypeId,
+                    OperatorId = dumpTruckTimeSheet.OperatorId,
+                    ExternalOperator = dumpTruckTimeSheet.ExternalOperator
 
                 };
 
@@ -162,7 +206,40 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
 
         #region Approval
 
-        public JsonResult CostSheetSendForApproval(int id)
+        public JsonResult VoidCostSheet(int id)
+        {
+
+            var dumpTruckTimeSheet = db.DumpTruckTimeSheets.Find(id);
+
+            if (dumpTruckTimeSheet != null)
+            {
+                dumpTruckTimeSheet.CostSheetSendForAproval = false;
+                dumpTruckTimeSheet.CostSheetApproved = false;
+                dumpTruckTimeSheet.CostSheetApprovedDate = DateTime.Now;
+                dumpTruckTimeSheet.CostSheetApprovedBy = User.Identity.Name;
+                dumpTruckTimeSheet.CostSheetStatus = MaintenanceConst.Rejected;
+
+                db.DumpTruckTimeSheets.Attach(dumpTruckTimeSheet);
+                db.Entry(dumpTruckTimeSheet).State = EntityState.Modified;
+                db.SaveChanges();
+                var returnMessage = new
+                {
+                    Message = "Successfully Sent!",
+
+                };
+                return Json(returnMessage.Message, JsonRequestBehavior.AllowGet);
+
+            }
+
+            var jsonData = new
+            {
+                Message = "Error Sending!",
+
+            };
+            return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
+
+        }
+         public JsonResult CostSheetSendForApproval(int id)
         {
 
             var dumpTruckTimeSheet = db.DumpTruckTimeSheets.Find(id);
@@ -214,6 +291,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
             });
             return Json(result);
         }
+        [AuthorizeRoles(FleetManagementRoles.FleetCostSheetApprover)]
         public ActionResult DumpTruckCostSheetApproval_Create([DataSourceRequest] DataSourceRequest request, CostSheetApproval model, int id)
         {
             if (ModelState.IsValid)

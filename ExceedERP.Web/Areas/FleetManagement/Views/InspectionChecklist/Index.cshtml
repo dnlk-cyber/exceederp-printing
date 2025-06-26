@@ -1,0 +1,43 @@
+﻿
+@using System.Collections
+@using ExceedERP.Core.Domain.FleetManagement.EquipmentInspection;
+@using ExceedERP.Helpers.Common;
+<legend>PM Setting</legend>
+@(Html.Kendo().Grid<InspectionStatusKey>()
+                .Name("grid")
+               .Columns(
+                columns =>
+                {
+                    columns.Bound(c => c.StatusKey);
+                    columns.Bound(c => c.Remark).Title("Description");
+                    columns.Command(command =>
+                    {
+                        command.Edit();
+                        command.Destroy();
+
+                    });
+                }
+                )
+                .Editable(editable =>
+                {
+                    editable.Mode(GridEditMode.InLine);
+                })
+                .Sortable()
+                .ToolBar(toolbar => toolbar.Create())
+                .DataSource(datasource => datasource
+                .Ajax()
+                .Model(model => model.Id(m => m.InspectionStatusKeyId))
+                 .Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+                .Read(read => read.Action("Status_Read", "InspectionChecklist", new { area = "FleetManagement" }).Data("sendForgery"))
+                .Create(create => create.Action("Status_Create", "InspectionChecklist", new { area = "FleetManagement" }).Data("sendForgery"))
+                .Update(update => update.Action("Status_Update", "InspectionChecklist", new { area = "FleetManagement" }).Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("Status_Destroy", "InspectionChecklist", new { area = "FleetManagement" }).Data("sendForgery"))
+                .Sort(x => x.Add("InspectionStatusKeyId").Descending())
+                )
+
+    // .ToClientTemplate()
+)
+

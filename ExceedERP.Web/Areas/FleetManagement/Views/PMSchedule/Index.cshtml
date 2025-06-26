@@ -38,10 +38,10 @@
                                                                 .Error("error_handler(\"grid\")")
                                                                 .RequestStart("onRequestStart(\"grid\")")
                                                                 .RequestEnd("onRequestEnd(\"grid\")"))
-          .Read(read => read.Action("PMSchedules_Read", "PMSchedule"))
-          .Create(create => create.Action("PMSchedules_Create", "PMSchedule"))
-          .Update(update => update.Action("PMSchedules_Update", "PMSchedule"))
-          .Destroy(destroy => destroy.Action("PMSchedules_Destroy", "PMSchedule"))
+          .Read(read => read.Action("PMSchedules_Read", "PMSchedule").Data("sendForgery"))
+          .Create(create => create.Action("PMSchedules_Create", "PMSchedule").Data("sendForgery"))
+          .Update(update => update.Action("PMSchedules_Update", "PMSchedule").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("PMSchedules_Destroy", "PMSchedule").Data("sendForgery"))
       )
 )
 
@@ -83,10 +83,10 @@
                                                                             .Error("error_handler(\"Detail_#=PMScheduleId#\")")
                                                                             .RequestStart("onRequestStart(\"Detail_#=PMScheduleId#\")")
                                                                             .RequestEnd("onRequestEnd(\"Detail_#=PMScheduleId#\")"))
-                          .Read(read => read.Action("PMScheduleDetails_Read", "PMScheduleDetail", new { Id = "#=PMScheduleId#" }))
-                  .Create(create => create.Action("PMScheduleDetails_Create", "PMScheduleDetail", new { Id = "#=PMScheduleId#" }))
-          .Update(update => update.Action("PMScheduleDetails_Update", "PMScheduleDetail"))
-          .Destroy(destroy => destroy.Action("PMScheduleDetails_Destroy", "PMScheduleDetail"))
+                          .Read(read => read.Action("PMScheduleDetails_Read", "PMScheduleDetail", new { Id = "#=PMScheduleId#" }).Data("sendForgery"))
+                  .Create(create => create.Action("PMScheduleDetails_Create", "PMScheduleDetail", new { Id = "#=PMScheduleId#" }).Data("sendForgery"))
+          .Update(update => update.Action("PMScheduleDetails_Update", "PMScheduleDetail").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("PMScheduleDetails_Destroy", "PMScheduleDetail").Data("sendForgery"))
       )
 
 
@@ -123,9 +123,9 @@
                                                                                     .Error("error_handler(\"JobOrderAdmingrid_#=PMScheduleId#\")")
                                                                                     .RequestStart("onRequestStart(\"JobOrderAdmingrid_#=PMScheduleId#\")")
                                                                                     .RequestEnd("onRequestEnd(\"JobOrderAdmingrid_#=PMScheduleId#\")"))
-                                                                                                                       .Create(create => create.Action("Admin_Approve", "JobRequest", new { Id = "#=PMScheduleId#" }))
-                                                                                                   .Read(read => read.Action("Admin_Read", "JobRequest", new { Id = "#=PMScheduleId#" }))
-                                                                                                 .Update(update => update.Action("Admin_Approve", "JobRequest", new { Id = "#=PMScheduleId#" }))
+                                                                                                                       .Create(create => create.Action("Admin_Approve", "JobRequest", new { Id = "#=PMScheduleId#" }).Data("sendForgery"))
+                                                                                                   .Read(read => read.Action("Admin_Read", "JobRequest", new { Id = "#=PMScheduleId#" }).Data("sendForgery"))
+                                                                                                 .Update(update => update.Action("Admin_Approve", "JobRequest", new { Id = "#=PMScheduleId#" }).Data("sendForgery"))
 
 
                                                       )

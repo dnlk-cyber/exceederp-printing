@@ -15,7 +15,7 @@ using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
-
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
 
@@ -190,7 +190,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(new[] { EquipmentArrival }.ToDataSourceResult(request));
         }
 
-        [AllowAnonymous]
+        
         public ActionResult DistrubutedEquipmentDDBind()
         {
 

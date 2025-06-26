@@ -24,10 +24,10 @@
                                                 .DataSource(dataSource => dataSource
                                                     .Ajax()
                                                     .Model(model => model.Id(p => p.FleetRentalRateId))
-                                                    .Read(read => read.Action("RentalRate_Read", "FleetRentalRate"))
-                                                    .Create(create => create.Action("FleetRentalRate_Create", "FleetRentalRate"))
-                                                    .Update(update => update.Action("FleetRentalRate_Update", "FleetRentalRate"))
-                                                    .Destroy(delete => delete.Action("FleetRentalRate_Delete", "FleetRentalRate"))
+                                                    .Read(read => read.Action("RentalRate_Read", "FleetRentalRate").Data("sendForgery"))
+                                                    .Create(create => create.Action("FleetRentalRate_Create", "FleetRentalRate").Data("sendForgery"))
+                                                    .Update(update => update.Action("FleetRentalRate_Update", "FleetRentalRate").Data("sendForgery"))
+                                                    .Destroy(delete => delete.Action("FleetRentalRate_Delete", "FleetRentalRate").Data("sendForgery"))
 
                                                 ).ClientDetailTemplateId("tabs")
 )
@@ -53,13 +53,12 @@
                                                     {
                                                         columns.ForeignKey(c => c.EquipmentCatagoryId, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120);
                                                         columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120);
-                                                        columns.Bound(c => c.UoM).Width(120);
-                                                        columns.Bound(c => c.CapacityFrom).Width(120);
-                                                        columns.Bound(c => c.CapacityTo).Width(120);
-                                                        columns.Bound(c => c.ManufacturingYearFrom).Width(120);
-                                                        columns.Bound(c => c.ManufacturingYearTo).Width(120);
+                                                        columns.Bound(c => c.DistanceFrom).Width(120);
+                                                        columns.Bound(c => c.DistanceTo).Width(120);
+                                                        columns.Bound(c => c.DumpTruckTypeOfWork).Width(120);
+                                                        columns.Bound(c => c.RoadType).Width(120);
                                                         columns.Bound(c => c.Rate).Width(120);
-
+                                                        columns.Bound(c => c.IdleRate).Width(120);
                                                         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
                                                     })
                                                     .ToolBar(commands => commands.Create())
@@ -73,10 +72,10 @@
                                                     .DataSource(dataSource => dataSource
                                                         .Ajax()
                                                         .Model(model => model.Id(p => p.EquipmentRateId))
-                                                        .Read(read => read.Action("EquipmentRent_Read", "EquipmentRate", new { id = "#=FleetRentalRateId#" }))
-                                                        .Create(create => create.Action("EquipmentRate_Create", "EquipmentRate", new { id = "#=FleetRentalRateId#" }))
-                                                        .Update(update => update.Action("EquipmentRate_Update", "EquipmentRate"))
-                                                        .Destroy(delete => delete.Action("EquipmentRate_Delete", "EquipmentRate"))
+                                                        .Read(read => read.Action("EquipmentRent_Read", "EquipmentRate", new { id = "#=FleetRentalRateId#" }).Data("sendForgery"))
+                                                        .Create(create => create.Action("EquipmentRate_Create", "EquipmentRate", new { id = "#=FleetRentalRateId#" }).Data("sendForgery"))
+                                                        .Update(update => update.Action("EquipmentRate_Update", "EquipmentRate").Data("sendForgery"))
+                                                        .Destroy(delete => delete.Action("EquipmentRate_Delete", "EquipmentRate").Data("sendForgery"))
 
                                                     ).ToClientTemplate()
     )
@@ -94,6 +93,35 @@
             search: filterInput.val()
         };
 
+    }
+    //$(document).ready(function () {
+    //    // Hide the Road Type dropdown on page load
+    //    $("#RoadType").closest('.form-group').hide();
+    //    $("#RoadType").data("kendoDropDownList").enable(false);
+    //    $("#RoadType").data("kendoDropDownList").value("");  // Clear selection
+
+    //});
+
+    function SelectRateType()
+    {
+        var isChecked = $('#IsDump').is(':checked');
+        if (isChecked)
+        {
+            $("#DumpTruckTypeOfWork").data("kendoDropDownList").value("");  
+            $("#DumpTruckTypeOfWork").data("kendoDropDownList").enable(false); // Disable the dropdown
+            $("#DumpTruckTypeOfWork").closest('.form-group').hide(); // Hide the entire div
+            $("#DumpTruckTypeOfWork").attr("name", "");
+            $("#RoadType").data("kendoDropDownList").enable(true);  // Enable the dropdown
+            $("#RoadType").closest('.form-group').show(); // Show the div
+        }
+        else
+        {
+            $("#DumpTruckTypeOfWork").data("kendoDropDownList").enable(true);
+            $("#DumpTruckTypeOfWork").closest('.form-group').show(); 
+            $("#RoadType").data("kendoDropDownList").value("");  
+            $("#RoadType").data("kendoDropDownList").enable(false);
+            $("#RoadType").closest('.form-group').hide();
+        }
     }
 </script>
 

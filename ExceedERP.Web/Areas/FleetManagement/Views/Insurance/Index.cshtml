@@ -39,17 +39,16 @@
                                 .Scrollable(h => h.Height(500))
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
             .Events(events => events.Error("error_handler").Sync("sync_handler"))
         .Model(model =>
               {
                   model.Id(p => p.FleetInsuranceID);
                
               })
-                .Create(update => update.Action("Insurance_Create", "Insurance"))
-                .Read(read => read.Action("Insurance_Read", "Insurance"))
-                .Update(update => update.Action("Insurance_Update", "Insurance"))
-                .Destroy(update => update.Action("Insurance_Destroy", "Insurance"))
+                .Create(update => update.Action("Insurance_Create", "Insurance").Data("sendForgery"))
+                .Read(read => read.Action("Insurance_Read", "Insurance").Data("sendForgery"))
+                .Update(update => update.Action("Insurance_Update", "Insurance").Data("sendForgery"))
+                .Destroy(update => update.Action("Insurance_Destroy", "Insurance").Data("sendForgery"))
   )
 )
 

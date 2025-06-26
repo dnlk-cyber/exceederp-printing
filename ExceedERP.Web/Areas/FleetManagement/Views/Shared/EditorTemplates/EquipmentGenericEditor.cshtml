@@ -4,5 +4,5 @@
       .DataValueField("FleetsID")
       .Filter(FilterType.Contains)
       .OptionLabel("Select")
-      .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "FleetManagementDataProvider"))
+      .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "FleetManagementDataProvider").Data("sendForgery"))
       .ServerFiltering(false)))

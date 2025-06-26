@@ -47,7 +47,7 @@
                             .Scrollable(h => h.Height(500))
       .DataSource(dataSource => dataSource
           .Ajax()
-          .ServerOperation(false)
+        
           .Model(model =>
           {
               model.Id(p => p.EquipmentArrivalId);
@@ -58,10 +58,10 @@
                             .Error("error_handler(\"grid\")")
                             .RequestStart("onRequestStart(\"grid\")")
                             .RequestEnd("onRequestEnd(\"grid\")"))
-              .Create(update => update.Action("EquipmentArrival_Create", "EquipmentArrival"))
-          .Read(read => read.Action("EquipmentArrival_Read", "EquipmentArrival"))
-          .Update(update => update.Action("EquipmentArrival_Update", "EquipmentArrival"))
-          .Destroy(update => update.Action("EquipmentArrival_Destroy", "EquipmentArrival"))
+              .Create(update => update.Action("EquipmentArrival_Create", "EquipmentArrival").Data("sendForgery"))
+          .Read(read => read.Action("EquipmentArrival_Read", "EquipmentArrival").Data("sendForgery"))
+          .Update(update => update.Action("EquipmentArrival_Update", "EquipmentArrival").Data("sendForgery"))
+          .Destroy(update => update.Action("EquipmentArrival_Destroy", "EquipmentArrival").Data("sendForgery"))
       ))
 
 
@@ -152,9 +152,9 @@
                                                             .Error("error_handler(\"EquipmentArrivalApproval#=EquipmentArrivalId#\")")
                                                             .RequestStart("onRequestStart(\"EquipmentArrivalApproval#=EquipmentArrivalId#\")")
                                                             .RequestEnd("onRequestEnd(\"EquipmentArrivalApproval#=EquipmentArrivalId#\")"))
-                                                                                                                                                                           .Create(update => update.Action("EquipmentArrival_Approve", "EquipmentArrivalApproval", new { EId = "#=EquipmentArrivalId#" }))
-                                                                                                                                                                             .Read(read => read.Action("EquipmentArrivalApproval_Read", "EquipmentArrivalApproval", new { EId = "#=EquipmentArrivalId#" }))
-                                                                                                                   .Update(update => update.Action("EquipmentArrival_Approve", "EquipmentArrivalApproval", new { EId = "#=EquipmentArrivalId#" }))
+                                                                                                                                                                           .Create(update => update.Action("EquipmentArrival_Approve", "EquipmentArrivalApproval", new { EId = "#=EquipmentArrivalId#" }).Data("sendForgery"))
+                                                                                                                                                                             .Read(read => read.Action("EquipmentArrivalApproval_Read", "EquipmentArrivalApproval", new { EId = "#=EquipmentArrivalId#" }).Data("sendForgery"))
+                                                                                                                   .Update(update => update.Action("EquipmentArrival_Approve", "EquipmentArrivalApproval", new { EId = "#=EquipmentArrivalId#" }).Data("sendForgery"))
 
 
                                                       )

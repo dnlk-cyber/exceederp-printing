@@ -129,6 +129,7 @@ using static ExceedERP.DataAccess.Context.JobCostingEntityConfiguration;
 using ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting;
 using ExceedERP.Core.Domain.Manufacturing.JobCosting;
 using ExceedERP.Core.Domain.Printing.PrintingProduction;
+using ExceedERP.Core.Domain.InfoDesk.ChangeManagement;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -892,6 +893,16 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region FleetManagement
+
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TimeSheetExceptionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TimeSheetSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.InspectionStatusKeyEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RequestToInspectionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.HeavyORDumpTruckEntitytypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RoadORLoadEntitytypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RateOfRoadORLoadEntitytypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentFromExternalEquipmentRateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetInsuranceDocumentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetRentalRateEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.EquipmentRateEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.FleetAnnualPlanEntitytypeConfiguration());
@@ -1014,6 +1025,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TimeSheetEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TireIssueApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TireIssueEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TireIssueDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TireReturnApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.TireReturnEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.VehicleDemandApprovalEntityTypeConfiguration());
@@ -1022,7 +1034,6 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.VehicleDistributionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.VehicleReturnApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.VehicleReturnEntityTypeConfiguration());
-
             #endregion
 
             #region Maintenance
@@ -1954,6 +1965,15 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region Info Desk
+            #region change mgt
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.ChangeRequestEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.ChangeTaskEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.ChangeApprovalEntityTypeConfiguration());
+            #endregion
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.ChatSessionEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.MessageEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.MaterialItemsEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.MaterialsUsedEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.SoftwareLicenseEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.AssignedUserEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new InfoDeskEntityConfiguration.InfoDeskKnowledgeBaseEntityTypeConfiguration());
@@ -3068,6 +3088,10 @@ namespace ExceedERP.DataAccess.Context
 
 
         #region 1 - Fleet Module
+        public DbSet<TimeSheetException> TimeSheetException { get; set; }
+        public DbSet<HeavyORDumpTruck> HaeavyOrDumpTruckSelectors { get; set; }
+        public DbSet<RoadORLoad> RoadORLoads { get; set; }
+        public DbSet<RateOfRoadORLoad> RateOfRoadORLoads { get; set; }
         public DbSet<OwningandOperatingCost> OwningandOperatingCosts { get; set; }
         public DbSet<FleetPettyCashType> FleetPettyCashTypes { get; set; }
         public DbSet<OwningandOperatingCostConstant> OwningandOperatingCostConstants { get; set; }
@@ -3155,6 +3179,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<InspectionApproval> InspectionApprovals { get; set; }
 
         public DbSet<AnnualEquipmentInventoryInspection> AnnualEquipmentInventoryInspection { get; set; }
+        public DbSet<InspectionStatusKey> InspectionStatusKeys { get; set; }
         public DbSet<EquipmentPlanandEvaluations> EquipmentPlanandEvaluation { get; set; }
         public DbSet<EquipmentPlanEvaluationApproval> EquipmentPlanEvaluationApprovals { get; set; }
 
@@ -3220,11 +3245,11 @@ namespace ExceedERP.DataAccess.Context
 
         #region 8 Tire
         public DbSet<TireIssue> TireIssue { get; set; }
+        public DbSet<TireIssueDetail> TireIssueDetails { get; set; }
         public DbSet<TireReturn> TireReturn { get; set; }
         public DbSet<TireIssueApproval> TireIssueApproval { get; set; }
         public DbSet<TireReturnApproval> TireReturnApproval { get; set; }
         public DbSet<TyreTransfer> TyreTransfers { get; set; }
-
         public DbSet<TyreTransferApproval> TyreTransferApprovals { get; set; }
 
         #endregion
@@ -3236,17 +3261,24 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<BatteryApproval> BatteryApproval { get; set; }
 
         #endregion
+        public DbSet<RentFromExternalEquipmentRate> RentFromExternalEquipmentRates { get; set; }
         public DbSet<FleetRentalRate> FleetRentalRates { get; set; }
         public DbSet<EquipmentRate> EquipmentRates { get; set; }
         public DbSet<FleetAnnualPlan> FleetAnnualPlans { get; set; }
         public DbSet<FleetAnnualPlanDetail> FleetAnnualPlanDetails { get; set; }
         public DbSet<FleetBatteryAndTire> FleetBatteryAndTires { get; set; }
         public DbSet<FleetBoloRegistration> FleetBoloRegistrations { get; set; }
+        public DbSet<FleetBoloRegistrationHistory> FleetBoloRegistrationsHistorys { get; set; }
+        //  public DbSet<DryLoadingTimeSheetViewModel> DryLoadingTimeSheetViewModels { get; set; }
+        public DbSet<TimeSheetSetting> TimeSheetSetting { get; set; }
         public DbSet<LightVehicleTimeSheet> LightVehicleTimeSheets { get; set; }
         public DbSet<DumpTruckTimeSheetDetail> DumpTruckTimeSheetDetails { get; set; }
         public DbSet<TimeSheetApprovalNew> TimeSheetApprovalNew { get; set; }
         public DbSet<CostSheetApproval> CostSheetApprovals { get; set; }
         public DbSet<AssignedEquipmentAdditionalInfo> AssignedEquipmentAdditionalInfos { get; set; }
+        public DbSet<FleetInsuranceDocument> FleetInsuranceDocuments { get; set; }
+        public DbSet<FleetInsuranceHistory> FleetInsuranceHistorys { get; set; }
+        public DbSet<BoloRegistrationDocument> BoloRegistrationDocuments { get; set; }
         #endregion
         #region Maintenance
         public DbSet<MaintenanceCompanyDocumentType> MaintenanceCompanyDocumentTypes { get; set; }
@@ -4377,6 +4409,14 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region  InfoDesk
+        #region Change Mgt
+        public DbSet<ChangeRequest> ChangeRequests { get; set; }
+        public DbSet<ChangeTask> ChangeTasks { get; set; }
+        public DbSet<ChangeApproval> ChangeApprovals { get; set; }
+        #endregion
+        public DbSet<ChatSession> ChatSessions { get; set; }
+        public DbSet<Message> Messages { get; set; }
+
         public DbSet<SoftwareLicense> SoftwareLicenses { get; set; }
         public DbSet<AssignedUser> AssignedUsers { get; set; }
         public DbSet<InfoDeskKnowledgeBase> InfoDeskKnowledgeBases { get; set; }
@@ -4465,7 +4505,7 @@ namespace ExceedERP.DataAccess.Context
         //public DbSet<JobLaborCost> JobLaborCosts { get; set; }
         //public DbSet<JobMaterialCost> JobMaterialCosts { get; set; }
         //public DbSet<JobMaterialReturn> JobMaterialReturns { get; set; }
-       // public DbSet<FinishedJob> FinishedJobs { get; set; }
+        // public DbSet<FinishedJob> FinishedJobs { get; set; }
         //public DbSet<DeliveredJob> DeliveredJobs { get; set; }
         //public DbSet<DailyLaborRate> DailyLaborRates { get; set; }
         //public DbSet<DLRSalary> DLRSalaries { get; set; }

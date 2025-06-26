@@ -1,0 +1,242 @@
+﻿@model ExceedERP.Core.Domain.InfoDesk.ChangeManagement.ChangeRequest
+<form>
+
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.Label("Change Type")
+                </div>
+                <div>
+                    @(Html.EnumDropDownListFor(model => model.ChangeType))
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 employee">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.Label("Requester")
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.RequestorId)
+                          .Name("RequestorId")
+                          .OptionLabel("Select Employee ...")
+                          .DataTextField("FullNameaEnglish")
+                          .Filter("contains")
+                          .DataValueField("RequestorId")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetAllEmployees", "InfoDeskDataProvider", new { area = "InfoDesk" }).Data("sendForgery"))
+                              .ServerFiltering(false);
+
+                          }).ValuePrimitive(true))
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ChangeStatus)
+                </div>
+                <div>
+                    @(Html.EnumDropDownListFor(model => model.ChangeStatus))
+                    @Html.ValidationMessageFor(model => model.ChangeStatus)
+                </div>
+            </div>
+        </div>
+
+      
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.Label("Implementation Team")
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.ImplementationTeam))
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 employee">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.Label("Title")
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Title))
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.RequestDate)
+                </div>
+                <div>
+                    @(Html.Kendo().DatePickerFor(model => model.RequestDate))
+                    @Html.ValidationMessageFor(model => model.RequestDate)
+                </div>
+            </div>
+        </div>
+
+      
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.RollbackPlan)
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.RollbackPlan).Min(0))
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 employee">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PlannedStartDate)
+                </div>
+                <div>
+                    @(Html.Kendo().DatePickerFor(model => model.PlannedStartDate))
+                    @Html.ValidationMessageFor(model => model.PlannedStartDate)
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PlannedEndDate)
+                </div>
+                <div>
+                    @(Html.Kendo().DatePickerFor(model => model.PlannedEndDate))
+
+                    @Html.ValidationMessageFor(model => model.PlannedEndDate)
+                </div>
+            </div>
+        </div>
+
+      
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.Label("Risk Assessment")
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.RiskAssessment))
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 employee">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.Label("Approver")
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.ApproverId)
+                          .Name("ApproverId")
+                          .OptionLabel("Select Employee ...")
+                          .DataTextField("FullNameaEnglish")
+                          .Filter("contains")
+                          .DataValueField("ApproverId")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetAllEmployees", "InfoDeskDataProvider", new { area = "InfoDesk" }).Data("sendForgery"))
+                              .ServerFiltering(false);
+
+                          }).ValuePrimitive(true))
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ImpactAnalysis)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.ImpactAnalysis))
+                    @Html.ValidationMessageFor(model => model.ImpactAnalysis)
+                </div>
+            </div>
+        </div>
+
+      
+    </div>
+
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-4">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model=>model.ChangeTypeDetail)
+                </div>
+                <div>
+                    @Html.TextAreaFor(model=>model.ChangeTypeDetail, new { @class ="form-control rounded",style="color:red;height:100px;font-family:arial;"  })
+                </div>
+            </div>
+
+        </div> 
+        <div class="col-sm-4">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model=>model.Description)
+                </div>
+                <div>
+                    @Html.TextAreaFor(model=>model.Description, new { @class ="form-control rounded",style="color:red;height:100px;font-family:arial;"  })
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</form>
+<script>
+    if ($("#Source").val() == 1)
+        $(".employee").removeClass("hidden");
+   // start();
+    //  alert("hello");
+    //lert($("#Source").val());
+</script>

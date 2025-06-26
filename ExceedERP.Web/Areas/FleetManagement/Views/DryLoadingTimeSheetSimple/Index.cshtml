@@ -38,10 +38,10 @@
                                                      .Error("error_handler(\"grid\")")
                                                      .RequestStart("onRequestStart(\"grid\")")
                                                      .RequestEnd("onRequestEnd(\"grid\")"))
-                                        .Read(read => read.Action("DryLoadingTimeSheets_Read", "DryLoadingTimeSheetSimple"))
-                                        .Create(create => create.Action("DryLoadingTimeSheets_Create", "DryLoadingTimeSheetSimple"))
-                                        .Update(update => update.Action("DryLoadingTimeSheets_Update", "DryLoadingTimeSheetSimple"))
-                                        .Destroy(destroy => destroy.Action("DryLoadingTimeSheets_Destroy", "DryLoadingTimeSheetSimple"))
+                                        .Read(read => read.Action("DryLoadingTimeSheets_Read", "DryLoadingTimeSheetSimple").Data("sendForgery"))
+                                        .Create(create => create.Action("DryLoadingTimeSheets_Create", "DryLoadingTimeSheetSimple").Data("sendForgery"))
+                                        .Update(update => update.Action("DryLoadingTimeSheets_Update", "DryLoadingTimeSheetSimple").Data("sendForgery"))
+                                        .Destroy(destroy => destroy.Action("DryLoadingTimeSheets_Destroy", "DryLoadingTimeSheetSimple").Data("sendForgery"))
                                     ).ClientDetailTemplateId("template")
 )
 <script id="template" type="text/kendo-tmpl">
@@ -122,9 +122,9 @@
                                                                                                                                                                                     .RequestStart("onRequestStart(\"TimeSheetApproval#=DryLoadingTimeSheetId#\")")
                                                                                                                                                                                     .RequestEnd("onRequestEnd(\"TimeSheetApproval#=DryLoadingTimeSheetId#\")"))
 
-                                                                                                                                                                                    .Create(update => update.Action("DryLoadingTimeSheetApproval_Create", "DryLoadingTimeSheetSimple", new { Id = "#=DryLoadingTimeSheetId#" }))
-                                                                                                                                                                                    .Read(read => read.Action("DryLoadingTimeSheetApproval_Read", "DryLoadingTimeSheetSimple", new { Id = "#=DryLoadingTimeSheetId#" }))
-                                                                                                                                                                                    .Update(update => update.Action("DryLoadingTimeSheetApproval_Create", "DryLoadingTimeSheetSimple"))
+                                                                                                                                                                                    .Create(update => update.Action("DryLoadingTimeSheetApproval_Create", "DryLoadingTimeSheetSimple", new { Id = "#=DryLoadingTimeSheetId#" }).Data("sendForgery"))
+                                                                                                                                                                                    .Read(read => read.Action("DryLoadingTimeSheetApproval_Read", "DryLoadingTimeSheetSimple", new { Id = "#=DryLoadingTimeSheetId#" }).Data("sendForgery"))
+                                                                                                                                                                                    .Update(update => update.Action("DryLoadingTimeSheetApproval_Create", "DryLoadingTimeSheetSimple").Data("sendForgery"))
 
 
                                                                                                                                                                                 )

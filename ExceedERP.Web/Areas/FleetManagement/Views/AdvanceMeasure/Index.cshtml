@@ -26,9 +26,9 @@
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(model => model.Id(p => p.AdvanceMeasureId))
-          .Read(read => read.Action("AdvanceMeasures_Read", "AdvanceMeasure"))
-          .Create(create => create.Action("AdvanceMeasures_Create", "AdvanceMeasure"))
-          .Update(update => update.Action("AdvanceMeasures_Update", "AdvanceMeasure"))
-          .Destroy(destroy => destroy.Action("AdvanceMeasures_Destroy", "AdvanceMeasure"))
+          .Read(read => read.Action("AdvanceMeasures_Read", "AdvanceMeasure").Data("sendForgery"))
+          .Create(create => create.Action("AdvanceMeasures_Create", "AdvanceMeasure").Data("sendForgery"))
+          .Update(update => update.Action("AdvanceMeasures_Update", "AdvanceMeasure").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("AdvanceMeasures_Destroy", "AdvanceMeasure").Data("sendForgery"))
       )
 )

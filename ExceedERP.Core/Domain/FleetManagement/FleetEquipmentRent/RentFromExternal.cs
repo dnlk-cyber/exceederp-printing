@@ -11,13 +11,18 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
 {
     public partial class RentFromExternal : Operations
-    {
+    { 
 
         [ScaffoldColumn(false)]
         public Guid RentFromExternalID { get; set; }
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Num { get; set; }
+        public Guid? ExpKey { get; set; } // self-ref when it expires
+        public bool IsExpired { get; set; }
+        public bool IsReplaced { get; set; }
+        [Display(Name = "Operator")]
+        public Guid? OperatorId { get; set; }
         public enum EquipmentTypeenum { DoubleCap, Dump, Track, Excavator }
         public enum FuelCoveredenum { Supplier, Customer }
 
@@ -101,6 +106,7 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
         public string PlateNo { get; set; }
         [Display(Name = "Hp/Cc")]
         public string HP_CC { get; set; }
+        public string Operator { get; set; } 
     }
 
 
@@ -122,10 +128,57 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
         [DisplayName(" Rental Rate  ")]
         public decimal RentalRate { get; set; }
         [DisplayName("Idle Rental Rate  ")]
+        public bool IsDumpTruck { get; set; }
         public decimal IdleRentalRate { get; set; }
         //fk
         public Guid RentFromExternalId { get; set; }
         public string Status { get; set; }
 
+        [NotMapped]
+        public string EquipmentType { get; set; }
+
     }
+    public class RentFromExternalEquipmentRate : TrackUserSettingOperation
+    {
+        [Key]
+        public int RentFromExternalEquipmentRateId { get; set; }
+        public int RentFromExternalEquipmentId { get; set; } 
+        public decimal RentalRate { get; set; }
+        public decimal IdleRentalRate { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime ManufacturingYearFrom { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime ManufacturingYearTo { get; set; }
+        public decimal DistanceFrom { get; set; }
+        public decimal DistanceTo { get; set; }
+        public DumpTruckTypeOfWork? DumpTruckTypeOfWork { get; set; }
+        public FleetRoadType? RoadType { get; set; }
+
+        [DisplayName("Rent Type")]
+        public RentType RentType { get; set; }
+        public string Description { get; set; }
+
+    }
+    public class HeavyORDumpTruck:TrackUserSettingOperation
+    {
+        public int HeavyORDumpTruckId { get; set;}
+        public string Name { get; set; }
+        public string Description { get; set; }
+
+    }
+    public class RoadORLoad : TrackUserSettingOperation
+    {
+        public int RoadOrLoadId { get; set; }
+        public int HeavyORDumpTruckId { get; set; }
+        public string Name { get; set;}
+        public string Description { get; set; }
+    }
+    public class RateOfRoadORLoad:TrackUserSettingOperation
+    {
+        public int RateOfRoadORLoadId { get; set; }
+        public int RoadOrLoadId { get; set; }
+        public string Name { get; set; }
+        public decimal Rate { get; set; }
+    }
+
 }

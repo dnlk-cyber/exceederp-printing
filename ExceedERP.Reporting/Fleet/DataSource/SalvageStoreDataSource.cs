@@ -6,6 +6,7 @@ using ExceedERP.Reporting.SharedDataSources;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using ExceedERP.Core.Domain.Maintenance;
 using System.Drawing;
 using System.Linq;
 using System.Text;

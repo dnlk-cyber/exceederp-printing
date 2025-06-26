@@ -23,6 +23,7 @@
               columns.Bound(c => c.Capacity).Title("Capacity").Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
               columns.Bound(c => c.Hp).Title("HP").Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
               columns.Bound(c => c.OperatorLicenceNo).Width(140).Filterable(ftb => ftb.Multi(true).Search(true));
+              columns.Bound(c => c.OperatorName).Width(140).Filterable(ftb => ftb.Multi(true).Search(true));
               columns.Bound(c => c.Lessor).Title("Lessor").Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
               columns.Bound(c => c.PlateNo).Width(80).Filterable(ftb => ftb.Multi(true).Search(true));
               columns.Command(command => { command.Edit().UpdateText("save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(200);
@@ -51,10 +52,10 @@
               .RequestStart("onRequestStart(\"grid\")")
               .RequestEnd("onRequestEnd(\"grid\")"))
 
-              .Read(read => read.Action("RentalInspection_Read", "RentalInspection"))
-              .Create(create => create.Action("RentalInspection_Create", "RentalInspection"))
-              .Update(update => update.Action("RentalInspection_Update", "RentalInspection"))
-              .Destroy(destroy => destroy.Action("RentalInspection_Destroy", "RentalInspection"))
+              .Read(read => read.Action("RentalInspection_Read", "RentalInspection").Data("sendForgery"))
+              .Create(create => create.Action("RentalInspection_Create", "RentalInspection").Data("sendForgery"))
+              .Update(update => update.Action("RentalInspection_Update", "RentalInspection").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("RentalInspection_Destroy", "RentalInspection").Data("sendForgery"))
           )
           .ClientDetailTemplateId("detailTemplate")
 )
@@ -65,187 +66,192 @@
 <script type="text/kendo-template" id="detailTemplate">
     #if (IsSendForApproval){#
     @(Html.Kendo().TabStrip()
-                           .Name("tab_Strip_#=RentalInspectionId#")
-                           .SelectedIndex(0)
-                           .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-                           .Items(items =>
-                           {
-                               items.Add().Text("Inspection Parameters").Content(@<text>
-                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.RentalMVInspection>()
-                                                          .Name("RentalInspectionCriteriaDetail_grid#=RentalInspectionId#")
-                                                          .Columns(columns =>
-                                                          {
-                                                                   columns.Bound(o => o.Index).Title("S.N").Filterable(false).Width(40);
-                                                                   columns.ForeignKey(c => c.RentalInspectionCriteriaId, (IEnumerable)ViewData["RentalInspectionCriteria"], "RentalInspectionCriteriaId", "CriteriaCategory").Title("Technical Parameter").Width(150);
-                                                                   columns.ForeignKey(c => c.RentalInspectionCriteriaDetailId, (IEnumerable)ViewData["RentalInspectionCriteriaDetail"], "RentalInspectionCriteriaDetailId", "CriteriaName").Title("Criteria Detail").Width(150);
-                                                                   columns.Bound(o => o.HeadOfficeGoodCondtion).Title("Head.off Good Condtion").Width(120);
-                                                                   columns.Bound(o => o.HeadOfficePoorCondtion).Title("Head Office Poor Condtion").Width(120);
-                                                                   columns.Bound(o => o.BranchOfficeGoodCondtion).Title("Branch Office Good Condtion").Width(120);
-                                                                   columns.Bound(o => o.BranchOfficePoorCondtion).Title("Branch Office Poor Condtion").Width(120);
+                .Name("tab_Strip_#=RentalInspectionId#")
+                .SelectedIndex(0)
+                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                .Items(items =>
+                {
+                    items.Add().Text("Detail").Content(
+@<text>
+    # if (!IsSendForApproval)
+    {#
+    <a onclick='return sendForApproval("#=RentalInspectionId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+    <br />
+    # } #
+    #if(IsOnlineApproved || validationStatus == 0)
+    {#
 
-                                                       //columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit");
-                                                       //command.Destroy().Text("Delete"); }).Title("Action").Width(160);
-                                                   })
-                                                          .ToolBar(toolbar => toolbar.Save())
-                                                          .Editable(editable => editable.Mode(GridEditMode.InCell))
+    <a href='@Url.Action("RentalInspectionPrint", "FleetPrint")/?Id=#=RentalInspectionId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+    #}#
 
-                                                          .DataSource(dataSource => dataSource
-                                                          .Ajax()
-                                                          .Batch(false)
-                                                          .ServerOperation(false)
-                                                          .Model(model =>
-                                                          {
-                                                                   model.Id(p => p.RentalMVInspectionId);
-                                                                   model.Field(x => x.RentalMVInspectionId).Editable(false);
-                                                                   model.Field(x => x.Index).Editable(false);
-                                                                   model.Field(x => x.RentalInspectionCriteriaId).Editable(false);
-                                                                   model.Field(x => x.RentalInspectionCriteriaDetailId).Editable(false);
-                                                               })
-                                                              .PageSize(5)
-                                                              .Events(ev => ev
-                                                              .Error("error_handler(\"RentalInspectionCriteriaDetail_grid#=RentalInspectionId#\")")
-                                                              .RequestStart("onRequestStart(\"RentalInspectionCriteriaDetail_grid#=RentalInspectionId#\")")
-                                                              .RequestEnd("onRequestEnd(\"RentalInspectionCriteriaDetail_grid#=RentalInspectionId#\")"))
-                                                              .Read(read => read.Action("RentalMVInspections_Read", "RentalInspection", new { id = "#=RentalInspectionId#" }))
-                                                              .Create(create => create.Action("RentalInspectionCriteriaDetail_Create", "RentalInspectionCriteria", new { id = "#=RentalInspectionId#" }))
-                                                              .Update(update => update.Action("RentalMVInspection_Update", "RentalMVInspection"))
-                                                              .Destroy(destroy => destroy.Action("RentalInspectionCriteriaDetail_Destroy", "RentalMVInspection"))
-                                                              )
+    <hr />
+    <h6>Rental inspection detail</h6>
+    <hr />
+    <p>Rental Inspection Id: #=RentalInspectionId#</p>
+    <p>Send For Approval: #=IsSendForApproval#</p>
+    <p>Send For Approval By: #=SendForApprovalBy#</p>
+    <p>Send For Approval Time: #=SendForApprovalTime#</p>
+    #if(IsOnlineApproved)
+    {#
+    <a onclick='return VoidRecord("#=RentalInspectionId#")' href=' \#' title="Void Rental Inspection"><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+    # }#
+</text>);
+                items.Add().Text("Inspection Parameters").Content(@<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.RentalMVInspection>()
+                                                                .Name("RentalInspectionCriteriaDetail_grid#=RentalInspectionId#")
+                                                                .Columns(columns =>
+                                                                {
+                                                                            columns.Bound(o => o.Index).Title("S.N").Filterable(false).Width(40);
+                                                                            columns.ForeignKey(c => c.RentalInspectionCriteriaId, (IEnumerable)ViewData["RentalInspectionCriteria"], "RentalInspectionCriteriaId", "CriteriaCategory").Title("Technical Parameter").Width(150);
+                                                                            columns.ForeignKey(c => c.RentalInspectionCriteriaDetailId, (IEnumerable)ViewData["RentalInspectionCriteriaDetail"], "RentalInspectionCriteriaDetailId", "CriteriaName").Title("Criteria Detail").Width(150);
+                                                                            columns.Bound(o => o.HeadOfficeGoodCondtion).Title("Head.off Good Condtion").Width(120);
+                                                                            columns.Bound(o => o.HeadOfficePoorCondtion).Title("Head Office Poor Condtion").Width(120);
+                                                                            columns.Bound(o => o.BranchOfficeGoodCondtion).Title("Branch Office Good Condtion").Width(120);
+                                                                            columns.Bound(o => o.BranchOfficePoorCondtion).Title("Branch Office Poor Condtion").Width(120);
 
-                                                              .Pageable()
-                                                              .Sortable()
-                                                              .ToClientTemplate()
-                                )
-                            </text>
-                                                );
-                                    items.Add().Text("Detail").Content(
-    @<text>
-        # if (!IsSendForApproval)
-        {#
-        <a onclick='return sendForApproval("#=RentalInspectionId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-        <br />
-        # } #
-        #if(IsOnlineApproved || validationStatus == 0)
-        {#
+                                                                //columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit");
+                                                                //command.Destroy().Text("Delete"); }).Title("Action").Width(160);
+                                                            })
+                                                                .ToolBar(toolbar => toolbar.Save())
+                                                                .Editable(editable => editable.Mode(GridEditMode.InCell))
 
-        <a href='@Url.Action("RentalInspectionPrint", "FleetPrint")/?Id=#=RentalInspectionId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-        #}#
-        <hr />
-        <h6>Rental inspection detail</h6>
-        <hr />
-        <p>Rental Inspection Id: #=RentalInspectionId#</p>
-        <p>Send For Approval: #=IsSendForApproval#</p>
-        <p>Send For Approval By: #=SendForApprovalBy#</p>
-        <p>Send For Approval Time: #=SendForApprovalTime#</p>
-    </text>);
-                           items.Add().Text("Validation").Content(@<text>
+                                                                .DataSource(dataSource => dataSource
+                                                                .Ajax()
+                                                                .Batch(false)
+                                                                .Model(model =>
+                                                                {
+                                                                            model.Id(p => p.RentalMVInspectionId);
+                                                                            model.Field(x => x.RentalMVInspectionId).Editable(false);
+                                                                            model.Field(x => x.Index).Editable(false);
+                                                                            model.Field(x => x.RentalInspectionCriteriaId).Editable(false);
+                                                                            model.Field(x => x.RentalInspectionCriteriaDetailId).Editable(false);
+                                                                        })
+                                                                    .PageSize(5)
+                                                                    .Events(ev => ev
+                                                                    .Error("error_handler(\"RentalInspectionCriteriaDetail_grid#=RentalInspectionId#\")")
+                                                                    .RequestStart("onRequestStart(\"RentalInspectionCriteriaDetail_grid#=RentalInspectionId#\")")
+                                                                    .RequestEnd("onRequestEnd(\"RentalInspectionCriteriaDetail_grid#=RentalInspectionId#\")"))
+                                                                    .Read(read => read.Action("RentalMVInspections_Read", "RentalInspection", new { id = "#=RentalInspectionId#" }).Data("sendForgery"))
+                                                                    .Create(create => create.Action("RentalInspectionCriteriaDetail_Create", "RentalInspectionCriteria", new { id = "#=RentalInspectionId#" }).Data("sendForgery"))
+                                                                    .Update(update => update.Action("RentalMVInspection_Update", "RentalMVInspection").Data("sendForgery"))
+                                                                    .Destroy(destroy => destroy.Action("RentalInspectionCriteriaDetail_Destroy", "RentalMVInspection").Data("sendForgery"))
+                                                                    )
+
+                                                                    .Pageable()
+                                                                    .Sortable()
+                                                                    .ToClientTemplate()
+                    )
+                </text>
+                                                                                 );
+
+                        items.Add().Text("Validation").Content(@<text>
                             @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentalInspectionValidation>()
-                                                    .Name("RentalInspectionValidation_grid#=RentalInspectionId#")
-                                                    .Columns(columns =>
-                                                    {
-                                                                     columns.Bound(o => o.Status).Title("Status").Width(120);
-                                                                     columns.Bound(o => o.Remark).Title("Remark").Width(120);
-                                                                     columns.Command(command =>
-                                                         {
-                                                                 command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit");
-                                                                 command.Destroy().Text("Delete");
-                                                             }).Title("Action").Width(160);
-                                                                 })
-                                                    .Events(ev =>
+                                                                                        .Name("RentalInspectionValidation_grid#=RentalInspectionId#")
+                                                                                        .Columns(columns =>
+                                                                                        {
+                                                                                            columns.Bound(o => o.Status).Title("Status").Width(120);
+                                                                                            columns.Bound(o => o.Remark).Title("Remark").Width(120);
+                                                                                            columns.Command(command =>
                                             {
-                                                             ev.DataBound("onValidationDataBound");
-                                                         })
-                                                    .DataSource(dataSource => dataSource
-                                                    .Ajax()
-                                                    .Model(model =>
-                                                    {
-                                                                     model.Id(p => p.RentalInspectionValidationId);
-                                                                     model.Field(x => x.RentalInspectionId).Editable(false);
+                                                                                                command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit");
+                                                                                                command.Destroy().Text("Delete");
+                                                                                            }).Title("Action").Width(160);
+                                                                                        })
+                                                                                        .Events(ev =>
+                                                                                {
+                                                                                    ev.DataBound("onValidationDataBound");
+                                                                                })
+                                                                                        .DataSource(dataSource => dataSource
+                                                                                        .Ajax()
+                                                                                        .Model(model =>
+                                                                                        {
+                                                                                            model.Id(p => p.RentalInspectionValidationId);
+                                                                                            model.Field(x => x.RentalInspectionId).Editable(false);
 
-                                                                 })
-                                                    .PageSize(5)
-                                                    .Events(ev => ev
-                                                    .Error("error_handler(\"RentalInspectionValidation_grid#=RentalInspectionId#\")")
-                                                    .RequestStart("onRequestStart(\"RentalInspectionValidation_grid#=RentalInspectionId#\")")
-                                                    .RequestEnd("onRequestEnd(\"RentalInspectionValidation_grid#=RentalInspectionId#\")"))
-                                                    .Read(read => read.Action("RentalInspectionValidation_Read", "RentalInspection", new { id = "#=RentalInspectionId#" }))
-                                                    .Update(update => update.Action("RentalInspectionValidation_Update", "RentalInspection"))
-                                                    .Destroy(destroy => destroy.Action("RentalInspectionValidation_Destroy", "RentalInspection"))
-                                                    )
-                                                    .Pageable()
-                                                    .Sortable()
-                                                    .ToClientTemplate()
+                                                                                        })
+                                                                                        .PageSize(5)
+                                                                                        .Events(ev => ev
+                                                                                        .Error("error_handler(\"RentalInspectionValidation_grid#=RentalInspectionId#\")")
+                                                                                        .RequestStart("onRequestStart(\"RentalInspectionValidation_grid#=RentalInspectionId#\")")
+                                                                                        .RequestEnd("onRequestEnd(\"RentalInspectionValidation_grid#=RentalInspectionId#\")"))
+                                                                                        .Read(read => read.Action("RentalInspectionValidation_Read", "RentalInspection", new { id = "#=RentalInspectionId#" }).Data("sendForgery"))
+                                                                                        .Update(update => update.Action("RentalInspectionValidation_Update", "RentalInspection").Data("sendForgery"))
+                                                                                        .Destroy(destroy => destroy.Action("RentalInspectionValidation_Destroy", "RentalInspection").Data("sendForgery"))
+                                                                                        )
+                                                                                        .Pageable()
+                                                                                        .Sortable()
+                                                                                        .ToClientTemplate()
                             )
                         </text>);
                             })
-                              .ToClientTemplate())
+                                                                               .ToClientTemplate())
     #} else{#
     @(Html.Kendo().TabStrip()
-                          .Name("tab_Strip_#=RentalInspectionId#")
-                          .SelectedIndex(0)
-                          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-                          .Items(items =>
-                          {
-                              items.Add().Text("Inspection Parameters").Content(@<text>
-                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.RentalMVInspection>()
-                                                    .Name("RentalInspectionCriteriaDetail_grid#=RentalInspectionId#")
-                                                    .Columns(columns =>
-                                                    {
-                                                              columns.Bound(o => o.Index).Title("S.N").Filterable(false).Width(40);
-                                                              columns.ForeignKey(c => c.RentalInspectionCriteriaId, (IEnumerable)ViewData["RentalInspectionCriteria"], "RentalInspectionCriteriaId", "CriteriaCategory").Title("Technical Parameter").Width(150);
-                                                              columns.ForeignKey(c => c.RentalInspectionCriteriaDetailId, (IEnumerable)ViewData["RentalInspectionCriteriaDetail"], "RentalInspectionCriteriaDetailId", "CriteriaName").Title("Criteria Detail").Width(150); columns.Bound(o => o.HeadOfficeGoodCondtion).Title("Head.off Good Condtion").Width(120);
-                                                              columns.Bound(o => o.HeadOfficePoorCondtion).Title("Head Office Poor Condtion").Width(120);
-                                                              columns.Bound(o => o.BranchOfficeGoodCondtion).Title("Branch Office Good Condtion").Width(120);
-                                                              columns.Bound(o => o.BranchOfficePoorCondtion).Title("Branch Office Poor Condtion").Width(120);
-                                                              columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(160);
-                                                          })
-                                                    .DataSource(dataSource => dataSource
-                                                    .Ajax()
-                                                    .Model(model =>
-                                                    {
-                                                              model.Id(p => p.RentalMVInspectionId);
-                                                              model.Field(x => x.RentalMVInspectionId).Editable(false);
-                                                              model.Field(x => x.Index).Editable(false);
-                                                              model.Field(x => x.RentalInspectionCriteriaId).Editable(false);
-                                                              model.Field(x => x.RentalInspectionCriteriaDetailId).Editable(false);
-                                                          })
-                                                    .PageSize(5)
-                                                    .Events(ev => ev
-                                                    .Error("error_handler(\"RentalInspectionCriteriaDetail_grid#=RentalInspectionId#\")")
-                                                    .RequestStart("onRequestStart(\"RentalInspectionCriteriaDetail_grid#=RentalInspectionId#\")")
-                                                    .RequestEnd("onRequestEnd(\"RentalInspectionCriteriaDetail_grid#=RentalInspectionId#\")"))
-                                                    .Read(read => read.Action("RentalMVInspections_Read", "RentalInspection", new { id = "#=RentalInspectionId#" }))
-                                                    .Create(create => create.Action("RentalInspectionCriteriaDetail_Create", "RentalInspectionCriteria", new { id = "#=RentalInspectionId#" }))
-                                                    .Update(update => update.Action("RentalMVInspection_Update", "RentalMVInspection"))
-                                                    .Destroy(destroy => destroy.Action("RentalInspectionCriteriaDetail_Destroy", "RentalMVInspection"))
-                                                    )
-                                                    .Pageable()
-                                                    .Sortable()
-                                                    .ToClientTemplate()
-                                )
-                            </text>
-                                            );
+                                                  .Name("tab_Strip_#=RentalInspectionId#")
+                                                  .SelectedIndex(0)
+                                                  .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                                  .Items(items =>
+                                                  {
+                                                      items.Add().Text("Inspection Parameters").Content(@<text>
+                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.RentalMVInspection>()
+                                                                                                    .Name("RentalInspectionCriteriaDetail_grid#=RentalInspectionId#")
+                                                                                                    .Columns(columns =>
+                                                                                                    {
+                                                                                                              columns.Bound(o => o.Index).Title("S.N").Filterable(false).Width(40);
+                                                                                                              columns.ForeignKey(c => c.RentalInspectionCriteriaId, (IEnumerable)ViewData["RentalInspectionCriteria"], "RentalInspectionCriteriaId", "CriteriaCategory").Title("Technical Parameter").Width(150);
+                                                                                                              columns.ForeignKey(c => c.RentalInspectionCriteriaDetailId, (IEnumerable)ViewData["RentalInspectionCriteriaDetail"], "RentalInspectionCriteriaDetailId", "CriteriaName").Title("Criteria Detail").Width(150); columns.Bound(o => o.HeadOfficeGoodCondtion).Title("Head.off Good Condtion").Width(120);
+                                                                                                              columns.Bound(o => o.HeadOfficePoorCondtion).Title("Head Office Poor Condtion").Width(120);
+                                                                                                              columns.Bound(o => o.BranchOfficeGoodCondtion).Title("Branch Office Good Condtion").Width(120);
+                                                                                                              columns.Bound(o => o.BranchOfficePoorCondtion).Title("Branch Office Poor Condtion").Width(120);
+                                                                                                              columns.Command(command => { command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit"); command.Destroy().Text("Delete"); }).Title("Action").Width(160);
+                                                                                                          })
+                                                                                                    .DataSource(dataSource => dataSource
+                                                                                                    .Ajax()
+                                                                                                    .Model(model =>
+                                                                                                    {
+                                                                                                              model.Id(p => p.RentalMVInspectionId);
+                                                                                                              model.Field(x => x.RentalMVInspectionId).Editable(false);
+                                                                                                              model.Field(x => x.Index).Editable(false);
+                                                                                                              model.Field(x => x.RentalInspectionCriteriaId).Editable(false);
+                                                                                                              model.Field(x => x.RentalInspectionCriteriaDetailId).Editable(false);
+                                                                                                          })
+                                                                                                    .PageSize(5)
+                                                                                                    .Events(ev => ev
+                                                                                                    .Error("error_handler(\"RentalInspectionCriteriaDetail_grid#=RentalInspectionId#\")")
+                                                                                                    .RequestStart("onRequestStart(\"RentalInspectionCriteriaDetail_grid#=RentalInspectionId#\")")
+                                                                                                    .RequestEnd("onRequestEnd(\"RentalInspectionCriteriaDetail_grid#=RentalInspectionId#\")"))
+                                                                                                    .Read(read => read.Action("RentalMVInspections_Read", "RentalInspection", new { id = "#=RentalInspectionId#" }).Data("sendForgery"))
+                                                                                                    .Create(create => create.Action("RentalInspectionCriteriaDetail_Create", "RentalInspectionCriteria", new { id = "#=RentalInspectionId#" }).Data("sendForgery"))
+                                                                                                    .Update(update => update.Action("RentalMVInspection_Update", "RentalMVInspection").Data("sendForgery"))
+                                                                                                    .Destroy(destroy => destroy.Action("RentalInspectionCriteriaDetail_Destroy", "RentalMVInspection").Data("sendForgery"))
+                                                                                                    )
+                                                                                                    .Pageable()
+                                                                                                    .Sortable()
+                                                                                                    .ToClientTemplate()
+                                                        )
+                                                    </text>
+                                                                                      );
 
-                                    items.Add().Text("Detail").Content(
-        @<text>
+                                                            items.Add().Text("Detail").Content(
+@<text>
 
 
-            # if (!IsSendForApproval)
-            {#
+    # if (!IsSendForApproval)
+    {#
 
-            <a onclick='return sendForApproval("#=RentalInspectionId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-            <br />
-            # } #
-            <hr />
-            <h6>Rental inspection detail</h6>
-            <hr />
-            <p>Rental Inspection Id: #=RentalInspectionId#</p>
-            <p>Send For Approval: #=IsSendForApproval#</p>
-            <p>Send For Approval By: #=SendForApprovalBy#</p>
-            <p>Send For Approval Time: #=SendForApprovalTime#</p>
-        </text>);
-                      })
-                                 .ToClientTemplate())
+    <a onclick='return sendForApproval("#=RentalInspectionId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+    <br />
+    # } #
+    <hr />
+    <h6>Rental inspection detail</h6>
+    <hr />
+    <p>Rental Inspection Id: #=RentalInspectionId#</p>
+    <p>Send For Approval: #=IsSendForApproval#</p>
+    <p>Send For Approval By: #=SendForApprovalBy#</p>
+    <p>Send For Approval Time: #=SendForApprovalTime#</p>
+</text>);
+                                                  })
+                                                 .ToClientTemplate())
 
     #}#
 </script>
@@ -325,11 +331,9 @@
 <script>
     function onDataBound() {
         var grid = this;
-
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-            if (dataItem.validationStatus == 0 || dataItem.IsOnlineApproved) {
-
+            if (dataItem.IsOnlineApproved) { 
                 $(this).find(".k-grid-edit").remove();
                 $(this).find(".k-grid-delete").remove();
                 $(this).css("background-color", "#b7ff9e");
@@ -345,6 +349,22 @@
 
                 $(this).find(".k-grid-edit").remove();
                 $(this).find(".k-grid-delete").remove();               
+            }
+        });
+    }
+    function VoidRecord(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("VoidRentalInspection", "RentalInspection", new { area = "FleetManagement" })',
+            data: { id: id },
+            success: function (result) {
+
+                alert(result);
+
+                location.reload(true);
+            },
+            error: function (result) {
+                alert(result);
             }
         });
     }

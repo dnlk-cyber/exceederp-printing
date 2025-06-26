@@ -65,6 +65,11 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     {
                         var dtVm = new DumpTruckTimeSheetDTO();
 
+                        dtVm.PlateNo ="";
+                        if(fleet.PlateNumber!=null)
+                        {
+                            dtVm.PlateNo = fleet.PlateNumber;
+                        }
                         dtVm.PlateNo = fleet?.PlateNumber;
                         dtVm.Branch = branch?.Name;
                         dtVm.ActualDistance = detail.ActualDistance;

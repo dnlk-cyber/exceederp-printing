@@ -11,7 +11,7 @@ using System.Web;
 using System.Web.Mvc;     
 using System.Data.Entity;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
-
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     public class DriverAssignmentApprovalController : Controller
@@ -93,8 +93,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     db.Entry(entity).State = EntityState.Modified;
                     db.SaveChanges();
 
-
                     fleet.OperatorName = entity.ToOperatorName;
+                    fleet.OperatorId = entity.OperatorId;
                     db.DriverAssignments.Attach(entity);
                     db.Entry(entity).State = EntityState.Modified;
                     db.SaveChanges();

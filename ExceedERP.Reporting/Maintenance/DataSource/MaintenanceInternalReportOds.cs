@@ -1,4 +1,5 @@
-﻿using ExceedERP.DataAccess.Context;
+﻿using ExceedERP.Core.Domain.Maintenance;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Fleet.ViewModel;
 using ExceedERP.Reporting.Maintenance.ViewModel;
 using System;

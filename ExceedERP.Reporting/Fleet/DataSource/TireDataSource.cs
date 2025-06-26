@@ -33,6 +33,17 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             return result;
 
         }
+       
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<SelectListItem> GetTireOrBatteryType()
+        {
+
+            var result = EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.FleetBatteryOrTyreType));
+
+            return result;
+
+        }
+      
         public List<SelectListItem> GetTireTube()
         {
 
@@ -44,7 +55,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
        [DataObjectMethod(DataObjectMethodType.Select)]
         public List<TireViewModel> GetTireList(string Location, string Identity, string category, string EquipmentName, string Manufacturer, string tyretype, string tyretube,
-           DateTime startingDate, DateTime endingDate)
+           DateTime startingDate, DateTime endingDate, string tyreOrBattery)
        {
            List<TireViewModel> TireList = new List<TireViewModel>();
            TireViewModel FleetViewModel;
@@ -113,42 +124,94 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                    {
                        OperatorName = operators.FullName;
                    }
-                   List<EquipmentTyre> Issues = db.EquipmentTyres.Where(x => x.fleetId == sov.FleetsID && x.DateCreated >= startingDate && x.DateCreated <= endingDate).ToList();
+
+                 
                    
-                   if(!string.IsNullOrEmpty(tyretype))
+
+                    if (tyreOrBattery == FleetBatteryOrTyreType.Tyre.ToString())
                    {
+                       List<EquipmentTyre> Issues = new List<EquipmentTyre>();
+                        Issues = db.EquipmentTyres.Where(x => x.fleetId == sov.FleetsID && x.DateCreated >= startingDate && x.DateCreated <= endingDate).ToList();
 
-                       Issues = Issues.Where(x => x.Type == tyretype).ToList();
-                   }
+                        if (!string.IsNullOrEmpty(tyretype))
+                        {
+
+                            Issues = Issues.Where(x => x.Type == tyretype).ToList();
+                        }
 
 
-                   if (!string.IsNullOrEmpty(tyretube))
+                        if (!string.IsNullOrEmpty(tyretube))
+                        {
+                            Issues = Issues.Where(x => x.Tube == tyretube).ToList();
+                        }
+                        if (Issues.Any())
+                        {
+                            foreach (var Issue in Issues)
+                            {
+                                FleetViewModel = new TireViewModel();
+                                FleetViewModel.PlateNumber = sov.UnitNum;
+                                FleetViewModel.Brand = Issue.Make;
+                                FleetViewModel.SerialNo = Issue.SerialNo;
+                                FleetViewModel.TireType = Issue.Type;
+                                FleetViewModel.OperatorName = Issues.FirstOrDefault().CreatedBy;
+                                FleetViewModel.UnitPrice = decimal.Parse(Issues.Sum(x => x.UnitPrice).ToString());
+                                FleetViewModel.Quantity = Issues.Count;
+                                FleetViewModel.Location = sov.Location;
+                                FleetViewModel.TotalPrice = decimal.Parse((Issues.Sum(x => x.UnitPrice) * Issues.Count).ToString());
+
+                                FleetViewModel.AmharicName = AmharicName;
+                                FleetViewModel.Name = Name;
+                                FleetViewModel.LogoFileName = LogoFileName;
+                                FleetViewModel.Address = Address;
+                                TireList.Add(FleetViewModel);
+                            }
+                        }
+
+
+
+                    }
+                   if (tyreOrBattery == FleetBatteryOrTyreType.Battery.ToString())
                    {
-                       Issues = Issues.Where(x => x.Tube == tyretube).ToList();
-                   }
-                   if (Issues.Any())
-                   {
-                       foreach (var Issue in Issues)
-                       {
-                           FleetViewModel = new TireViewModel();
-                           FleetViewModel.PlateNumber = sov.UnitNum;
-                           FleetViewModel.Brand = Issue.Make;
-                           FleetViewModel.SerialNo = Issue.SerialNo;
-                           FleetViewModel.TireType = Issue.Type;
-                           FleetViewModel.OperatorName = Issues.FirstOrDefault().CreatedBy;
-                           FleetViewModel.UnitPrice = decimal.Parse(Issues.Sum(x => x.UnitPrice).ToString());
-                           FleetViewModel.Quantity = Issues.Count;
-                           FleetViewModel.Location = sov.Location;
-                           FleetViewModel.TotalPrice = decimal.Parse((Issues.Sum(x => x.UnitPrice) * Issues.Count).ToString());
+                       List<EquipmentBattery> Issues = new List<EquipmentBattery>();
 
-                           FleetViewModel.AmharicName = AmharicName;
-                           FleetViewModel.Name = Name;
-                           FleetViewModel.LogoFileName = LogoFileName;
-                           FleetViewModel.Address = Address;
+                        Issues = db.EquipmentBattery.Where(x => x.fleetId == sov.FleetsID && x.DateCreated >= startingDate && x.DateCreated <= endingDate).ToList();
+                        if (!string.IsNullOrEmpty(tyretype))
+                        {
 
-                           TireList.Add(FleetViewModel);
-                       }
-                   }
+                            Issues = Issues.Where(x => x.Type == tyretype).ToList();
+                        }
+
+
+                        //if (!string.IsNullOrEmpty(tyretube))
+                        //{
+                        //    Issues = Issues.Where(x => x.Tube == tyretube).ToList();
+                        //}
+                        if (Issues.Any())
+                        {
+                            foreach (var Issue in Issues)
+                            {
+                                FleetViewModel = new TireViewModel();
+                                FleetViewModel.PlateNumber = sov.UnitNum;
+                                FleetViewModel.Brand = Issue.Make;
+                                FleetViewModel.SerialNo = Issue.SerialNo;
+                                FleetViewModel.TireType = Issue.Type;
+                                FleetViewModel.OperatorName = Issues.FirstOrDefault().CreatedBy;
+                                FleetViewModel.UnitPrice = decimal.Parse(Issues.Sum(x => x.UnitPrice).ToString());
+                                FleetViewModel.Quantity = Issues.Count;
+                                FleetViewModel.Location = sov.Location;
+                                FleetViewModel.TotalPrice = decimal.Parse((Issues.Sum(x => x.UnitPrice) * Issues.Count).ToString());
+
+                                FleetViewModel.AmharicName = AmharicName;
+                                FleetViewModel.Name = Name;
+                                FleetViewModel.LogoFileName = LogoFileName;
+                                FleetViewModel.Address = Address;
+                                TireList.Add(FleetViewModel);
+                            }
+                        }
+                    }
+                    /*List<EquipmentTyre>*/
+
+                
 
                }
            }

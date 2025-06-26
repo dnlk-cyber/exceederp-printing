@@ -8,10 +8,7 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.InfoDesk.Support;
-using System.Collections.Generic;
-using ExceedERP.Core.Domain.InfoDesk;
 using ExceedERP.Web.Areas.InfoDesk.Models;
-using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
@@ -56,6 +53,28 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         }
         public ActionResult TicketStatus()
         {
+            var employees = db.Person_Employee
+                .Select(x => new { x.EmployeeId,
+                    AssinedTo = x.EmployeeId,
+                    AssignedTo = x.EmployeeId,
+                    FullNameaEnglish = x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish, FullNameAmharic = x.FirstName + " " + x.MiddleName + " " + x.LastName }).ToList();
+            ViewData["Materials"] = db.MaterialItems.ToList();
+            ViewData["branchs"] = db.Branch.ToList();
+            ViewData["bUnit"] = db.BusinessUnits.ToList();
+            ViewData["orgStructure"] = db.MainCompanyStructures.ToList();
+            ViewData["AssignTo"] = employees;
+            ViewData["Group"] = db.SupportGroup_HelpDesks.ToList();
+            var sysusers =
+              udb.Users.Select(o => new
+              {
+                  CustomerID = o.Id,
+                  CustomerName = o.FirstName
+              });
+            var users = sysusers.ToList();
+            ViewData["SysUsers"] = users;
+            ViewData["TicketTypes"] = db.TicketType_HelpDesks.ToList();
+            ViewData["TicketDefActivity"] = db.TicketActivityDefinition_HelpDesks.ToList();
+            ViewData["Employees"] = employees;
             ViewData["TicketTypes"] = db.TicketType_HelpDesks.ToList();
             ViewData["TicketDefActivity"] = db.TicketActivityDefinition_HelpDesks.ToList();
             return View();
@@ -92,6 +111,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 BranchId = customerTicket.BranchId,
                 BusinessUnitId = customerTicket.BusinessUnitId,
                 OrgStructureId = customerTicket.OrgStructureId,
+                RequesterIPAddress = customerTicket.RequesterIPAddress,
                 Description = customerTicket.Description,
                 TicketPriority = customerTicket.TicketPriority,
                 SupportGroup_HelpDeskId = customerTicket.SupportGroup_HelpDeskId,
@@ -112,13 +132,22 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 Role = customerTicket.Role,
                 RootCuase = customerTicket.RootCuase,
                 SolutionGiven = customerTicket.SolutionGiven,
+                Handler = customerTicket.Handler,
+                FixedAssetCategoryId = customerTicket.FixedAssetCategoryId,
+                FixedAssetSubCategoryId = customerTicket.FixedAssetSubCategoryId,
+                AssetRegistrationId = customerTicket.AssetRegistrationId,
+                ItemName = customerTicket.ItemName,
+                TagNo = customerTicket.TagNo,
+                SendApprovalBy = customerTicket.SendApprovalBy,
+                SendApprovalTime = customerTicket.SendApprovalTime,
+                PendingReason = customerTicket.PendingReason,
+                OrgBranchName = customerTicket.OrgBranchName,
                 TicketType_HelpDeskId = customerTicket.TicketType_HelpDeskId,
                 TicketStatus = customerTicket.TicketStatus,
                 CreatedBy = customerTicket.CreatedBy,
                 DateCreated = customerTicket.DateCreated,
                 LastModified = customerTicket.LastModified,
                 ModifiedBy = customerTicket.ModifiedBy,
-                OrgBranchName = customerTicket.OrgBranchName,
                 PriorityColor = customerTicket.PriorityColor,
                 Remark = customerTicket.Remark,
                 AgeOfTicket = GetAge(customerTicket.DateCreated, customerTicket.ClosedDate).ToString(),
@@ -138,6 +167,8 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 customerTicket_HelpDesk.OverDue = ticketType.DueDays;
                 customerTicket_HelpDesk.DueDate = DateTime.Now.AddDays((double)ticketType.DueDays);
                 customerTicket_HelpDesk.ClosedDate = DateTime.Now.AddDays((double)ticketType.DueDays);
+                customerTicket_HelpDesk.TicketPriority = ticketType.TicketPriority;
+
             }
             var empPlace = db.Placements
                                   .FirstOrDefault(x => x.isCurrent
@@ -148,6 +179,16 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 customerTicket_HelpDesk.BusinessUnitId = empPlace.BusinessUnitId;
                 customerTicket_HelpDesk.OrgStructureId = empPlace.OrgStructureId;
             }
+            string ipAddress = Request.UserHostAddress;
+
+            // Handle reverse proxy or load balancer headers
+            string forwardedFor = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+            if (!string.IsNullOrEmpty(forwardedFor))
+            {
+                ipAddress = forwardedFor.Split(',')[0];
+                customerTicket_HelpDesk.RequesterIPAddress = ipAddress;
+            }
+
             customerTicket_HelpDesk.DateCreated = DateTime.Now;
             customerTicket_HelpDesk.CreatedBy = User.Identity.Name;
            
@@ -214,10 +255,22 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 customerTicket_HelpDesk.OverDue = ticketType.DueDays;
                 customerTicket_HelpDesk.DueDate = DateTime.Now.AddDays((double)ticketType.DueDays);
                 customerTicket_HelpDesk.ClosedDate = DateTime.Now.AddDays((double)ticketType.DueDays);
+                customerTicket_HelpDesk.TicketPriority = ticketType.TicketPriority;
+
+            }
+            string ipAddress = Request.UserHostAddress;
+
+            // Handle reverse proxy or load balancer headers
+            string forwardedFor = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+            if (!string.IsNullOrEmpty(forwardedFor))
+            {
+                ipAddress = forwardedFor.Split(',')[0];
+                customerTicket_HelpDesk.RequesterIPAddress = ipAddress;
             }
             if (ModelState.IsValid)
             {
 
+                ticket.RequesterIPAddress = customerTicket_HelpDesk.RequesterIPAddress;
                 ticket.Description = customerTicket_HelpDesk.Description;
                 ticket.TicketPriority = customerTicket_HelpDesk.TicketPriority;
                 ticket.SupportGroup_HelpDeskId = customerTicket_HelpDesk.SupportGroup_HelpDeskId;
@@ -230,8 +283,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 ticket.Remark = customerTicket_HelpDesk.Remark;
                 ticket.SolutionGiven = customerTicket_HelpDesk.SolutionGiven;
                 ticket.EmployeeId = customerTicket_HelpDesk.EmployeeId;
-
-                
                 db.Entry(ticket).State = EntityState.Modified;
                 db.SaveChanges();
             }
@@ -269,7 +320,8 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             DataSourceResult result = customertickets.ToDataSourceResult(request, customerTicket => new CustomerTicket_HelpDesk
             {
                 CustomerTicket_HelpDeskId = customerTicket.CustomerTicket_HelpDeskId,
-                EmployeeId = customerTicket.EmployeeId,
+               RequesterIPAddress = customerTicket.RequesterIPAddress,
+            EmployeeId = customerTicket.EmployeeId,
                 BranchId = customerTicket.BranchId,
                 BusinessUnitId = customerTicket.BusinessUnitId,
                 OrgStructureId = customerTicket.OrgStructureId,
@@ -281,6 +333,11 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 AgeOfTicket = customerTicket.AgeOfTicket,
                 ClosedDate = customerTicket.ClosedDate,
                 IsClosed = customerTicket.IsClosed,
+                FixedAssetCategoryId = customerTicket.FixedAssetCategoryId,
+                FixedAssetSubCategoryId = customerTicket.FixedAssetSubCategoryId,
+                AssetRegistrationId = customerTicket.AssetRegistrationId,
+                ItemName = customerTicket.ItemName,
+                TagNo = customerTicket.TagNo,
                 IsConfirmedByTheRequester = customerTicket.IsConfirmedByTheRequester,
                 AssignedDate = customerTicket.AssignedDate,
                 AssignedTo = customerTicket.AssignedTo,
@@ -317,18 +374,19 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 BranchId = customerTicket.BranchId,
                 BusinessUnitId = customerTicket.BusinessUnitId,
                 OrgStructureId = customerTicket.OrgStructureId,
+                RequesterIPAddress = customerTicket.RequesterIPAddress,
                 Description = customerTicket.Description,
                 TicketPriority = customerTicket.TicketPriority,
                 SupportGroup_HelpDeskId = customerTicket.SupportGroup_HelpDeskId,
                 DueDate = customerTicket.DueDate,
                 OverDue = customerTicket.OverDue,
-                AgeOfTicket = customerTicket.AgeOfTicket,
                 ClosedDate = customerTicket.ClosedDate,
                 IsClosed = customerTicket.IsClosed,
                 IsConfirmedByTheRequester = customerTicket.IsConfirmedByTheRequester,
                 AssignedDate = customerTicket.AssignedDate,
                 AssignedTo = customerTicket.AssignedTo,
                 IsAssigned = customerTicket.IsAssigned,
+                IsSendForApproval = customerTicket.IsSendForApproval,
                 IsMultipleAssign = customerTicket.IsMultipleAssign,
                 IsSendForClosing = customerTicket.IsSendForClosing,
                 Quantity = customerTicket.Quantity,
@@ -337,13 +395,22 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 Role = customerTicket.Role,
                 RootCuase = customerTicket.RootCuase,
                 SolutionGiven = customerTicket.SolutionGiven,
+                Handler = customerTicket.Handler,
+                FixedAssetCategoryId = customerTicket.FixedAssetCategoryId,
+                FixedAssetSubCategoryId = customerTicket.FixedAssetSubCategoryId,
+                AssetRegistrationId = customerTicket.AssetRegistrationId,
+                ItemName = customerTicket.ItemName,
+                TagNo = customerTicket.TagNo,
+                SendApprovalBy = customerTicket.SendApprovalBy,
+                SendApprovalTime = customerTicket.SendApprovalTime,
+                PendingReason = customerTicket.PendingReason,
+                OrgBranchName = customerTicket.OrgBranchName,
                 TicketType_HelpDeskId = customerTicket.TicketType_HelpDeskId,
                 TicketStatus = customerTicket.TicketStatus,
                 CreatedBy = customerTicket.CreatedBy,
                 DateCreated = customerTicket.DateCreated,
                 LastModified = customerTicket.LastModified,
                 ModifiedBy = customerTicket.ModifiedBy,
-                OrgBranchName = customerTicket.OrgBranchName,
                 PriorityColor = customerTicket.PriorityColor,
                 Remark = customerTicket.Remark,
             });
@@ -366,6 +433,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 customerTicket.Remark = model.Remark;
                 customerTicket.IsClosed = true;
                 customerTicket.TicketStatus = global::TicketStatus.Closed;
+
             }
             if (!customerTicket.IsConfirmedByTheRequester)
             {
@@ -390,18 +458,19 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 BranchId = customerTicket.BranchId,
                 BusinessUnitId = customerTicket.BusinessUnitId,
                 OrgStructureId = customerTicket.OrgStructureId,
+                RequesterIPAddress = customerTicket.RequesterIPAddress,
                 Description = customerTicket.Description,
                 TicketPriority = customerTicket.TicketPriority,
                 SupportGroup_HelpDeskId = customerTicket.SupportGroup_HelpDeskId,
                 DueDate = customerTicket.DueDate,
                 OverDue = customerTicket.OverDue,
-                AgeOfTicket = customerTicket.AgeOfTicket,
                 ClosedDate = customerTicket.ClosedDate,
                 IsClosed = customerTicket.IsClosed,
                 IsConfirmedByTheRequester = customerTicket.IsConfirmedByTheRequester,
                 AssignedDate = customerTicket.AssignedDate,
                 AssignedTo = customerTicket.AssignedTo,
                 IsAssigned = customerTicket.IsAssigned,
+                IsSendForApproval = customerTicket.IsSendForApproval,
                 IsMultipleAssign = customerTicket.IsMultipleAssign,
                 IsSendForClosing = customerTicket.IsSendForClosing,
                 Quantity = customerTicket.Quantity,
@@ -410,13 +479,22 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 Role = customerTicket.Role,
                 RootCuase = customerTicket.RootCuase,
                 SolutionGiven = customerTicket.SolutionGiven,
+                Handler = customerTicket.Handler,
+                FixedAssetCategoryId = customerTicket.FixedAssetCategoryId,
+                FixedAssetSubCategoryId = customerTicket.FixedAssetSubCategoryId,
+                AssetRegistrationId = customerTicket.AssetRegistrationId,
+                ItemName = customerTicket.ItemName,
+                TagNo = customerTicket.TagNo,
+                SendApprovalBy = customerTicket.SendApprovalBy,
+                SendApprovalTime = customerTicket.SendApprovalTime,
+                PendingReason = customerTicket.PendingReason,
+                OrgBranchName = customerTicket.OrgBranchName,
                 TicketType_HelpDeskId = customerTicket.TicketType_HelpDeskId,
                 TicketStatus = customerTicket.TicketStatus,
                 CreatedBy = customerTicket.CreatedBy,
                 DateCreated = customerTicket.DateCreated,
                 LastModified = customerTicket.LastModified,
                 ModifiedBy = customerTicket.ModifiedBy,
-                OrgBranchName = customerTicket.OrgBranchName,
                 PriorityColor = customerTicket.PriorityColor,
                 Remark = customerTicket.Remark,
             };

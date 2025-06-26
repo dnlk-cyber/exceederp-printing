@@ -648,6 +648,10 @@
     <Compile Include="Migrations\202506241352200_clearnceprovider.Designer.cs">
       <DependentUpon>202506241352200_clearnceprovider.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202506260914061_fleetandhelpdesk.cs" />
+    <Compile Include="Migrations\202506260914061_fleetandhelpdesk.Designer.cs">
+      <DependentUpon>202506260914061_fleetandhelpdesk.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1086,6 +1090,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202506241352200_clearnceprovider.resx">
       <DependentUpon>202506241352200_clearnceprovider.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202506260914061_fleetandhelpdesk.resx">
+      <DependentUpon>202506260914061_fleetandhelpdesk.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

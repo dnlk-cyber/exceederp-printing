@@ -13,9 +13,9 @@
                                           
                                           .DataSource(dataSource =>
                                           {
-                                              dataSource.Read(read => read.Action("GetGlPeriodForPlanAndEvaluation", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("getFiscalYear"))
+                                              dataSource.Read(read => read.Action("GetGlPeriodForPlanAndEvaluation", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery").Data("getFiscalYear"))
                                               .ServerFiltering(true);
-                                          })
+                                          }).Enable(false)
                 )
             </div>
         </div>

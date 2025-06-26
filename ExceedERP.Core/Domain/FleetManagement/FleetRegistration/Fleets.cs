@@ -14,6 +14,7 @@ using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
 {
+   
     public partial class Fleets : Operations
     {      
         public Fleets()
@@ -27,7 +28,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
             this.Fuels = new HashSet<Fuel>();
             this.Insurances = new HashSet<FleetInsurance>();
             this.Operators = new HashSet<Operator>();
+
     }
+
         [ScaffoldColumn(false)]
         public Guid FleetsID { get; set; }
         [DisplayName("  Equipment Category ")]
@@ -49,6 +52,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public string Type { get; set; }
         [DisplayName("Asset Code No")]
         public string UnitNum { get; set; }
+        [NotMapped]
+        public bool IsDumpTruck { get; set; }
         public string Manufacturer { get; set; }
         [DisplayName(" Manufacturer Year")]
         public string ManufacturerYear { get; set; }
@@ -66,7 +71,6 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public string Location { get; set; }
         [DisplayName(" Historical Cost ")]
         public string HistoricalCost { get; set; }
-
         public string Model { get; set; }
         public bool IsReturned { get; set; }
         public string Capacity { get; set; }
@@ -210,7 +214,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
         public virtual ICollection<Fuel> Fuels { get; set; }
         [Display(Name ="Horse Power")]
         public decimal HorsePower { get; set; }
-        public int BranchId { get; set; } 
+        public int BranchId { get; set; }
+        [Display(Name ="Operator")]
+        public Guid? OperatorId { get; set; } 
     }
     public enum WayOfSupplyenum
     {

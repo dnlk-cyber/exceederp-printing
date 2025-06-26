@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExceedERP.Core.Domain.Maintenance
 {
-    public  class MechanicCrew : TrackUserOperation
+    public class MechanicCrew : TrackUserOperation
     {
         public MechanicCrew()
         {
@@ -26,7 +26,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         public Guid SectionId { get; set; }
         [DisplayName(" Mechanic Type ")]
         public MechanicType MechanicType { get; set; }
-        [Display(Name ="Mechanic Type")]
+        [Display(Name = "Mechanic Type")]
         public int MechanicTypeClassId { get; set; }
 
         [DisplayName("Full Name")]
@@ -37,7 +37,10 @@ namespace ExceedERP.Core.Domain.Maintenance
 
         [DisplayName("Hourly Wage")]
         public decimal HourlyWage { get; set; }
-
+        public string MaintenanceCenterId { get; set; }
+        public bool IsActive { get; set; }
+        public string Status { get; set; }
+        public string ServiceCenterId {get;set;}
         public PostionenumCrew Postionenum { get; set; }
         public string Postion { get; set; }
 

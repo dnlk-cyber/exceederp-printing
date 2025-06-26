@@ -185,14 +185,14 @@
 
                 <div class="k-label">
 
-                    @Html.LabelFor(model => model.EquipmentIdentityID)
+                    @Html.LabelFor(x => x.EquipmentIdentityID)
                 </div>
-                @(Html.Kendo().DropDownListFor(model => model.EquipmentIdentityID)
+                @(Html.Kendo().DropDownListFor(x => x.EquipmentIdentityID)
                       .DataTextField("Name")
                       .DataValueField("Id").Filter(FilterType.Contains)
                       .OptionLabel("Select Equipment Category")
                       //.HtmlAttributes(new { style = "width:100%" })
-                      .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider"))
+                      .DataSource(d => d.Read(r => r.Action("GetEquipmentIdentities", "FleetManagementDataProvider").Data("sendForgery"))
                       .ServerFiltering(false)))
 
             </div>
@@ -201,7 +201,7 @@
 
                     <div class="k-label">
 
-                        @Html.LabelFor(model => model.EquipmentTypeID)
+                        @Html.LabelFor(x => x.EquipmentTypeID)
                     </div>
 
                     @(Html.Kendo().DropDownListFor(model => model.EquipmentTypeID)
@@ -243,7 +243,7 @@
                           .DataValueField("Id")
                           .Filter(FilterType.Contains)
                           .OptionLabel("Select")
-                          .DataSource(d => d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider")
+                          .DataSource(d => d.Read(r => r.Action("GetEquipmentNames", "FleetManagementDataProvider").Data("sendForgery")
                           .Data("filterEquipmentNames")).ServerFiltering(true)).CascadeFrom("EquipmentTypeID"))
 
                 </div>
@@ -269,7 +269,7 @@
                .ValuePrimitive(true)
                //.HtmlAttributes(new { style = "width:100%" })
                .Events(ev => ev.Change("PopulateFixedAsset"))
-               .DataSource(d => d.Read(r => r.Action("FixedAssetDDBind", "FleetManagementDataProvider")
+               .DataSource(d => d.Read(r => r.Action("FixedAssetDDBind", "FleetManagementDataProvider").Data("sendForgery")
                .Data("filterFixedAssetCategory"))
                .ServerFiltering(true)).CascadeFrom("EquipmentNameID")
                )                                              
@@ -473,13 +473,13 @@
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                            <div class="col-md-3">
+                                                                            <div class="col-md-3" style="display: none;">
                                                                                 <div class="form-group">
                                                                                     <div class="k-label">
                                                                                         @Html.LabelFor(model => model.Location)
                                                                                     </div>
                                                                                     <div>
-                                                                                        @Html.Kendo().TextBoxFor(model => model.Location).Enable(false)
+                                                                                        @Html.Kendo().TextBoxFor(model => model.Location)
                                                                                         @Html.ValidationMessageFor(model => model.Location)
                                                                                     </div>
                                                                                 </div>
@@ -552,7 +552,7 @@
                                                 @(Html.Kendo().DropDownListFor(model => model.PlannerID).Name("PlannerID").HtmlAttributes(new { style = "width:100%" })
                                                        .DataTextField("PlannerName")
                                                        .DataValueField("PlannerID").OptionLabel("Select")
-                                                       .DataSource(d => d.Read(r => r.Action("PlannerDDBind", "FleetManagementDataProvider"))))
+                                                       .DataSource(d => d.Read(r => r.Action("PlannerDDBind", "FleetManagementDataProvider").Data("sendForgery"))))
                                             </div>
                                         </div>
 
@@ -624,7 +624,7 @@
                                                     @(Html.Kendo().DropDownListFor(model => model.Condition)
                                                           .DataTextField("Name")
                                                           .DataValueField("Name").OptionLabel("Select").Filter(FilterType.Contains)
-                                                          .DataSource(d => d.Read(r => r.Action("FleetConditionDDBind", "FleetManagementDataProvider")).ServerFiltering(false)))
+                                                          .DataSource(d => d.Read(r => r.Action("FleetConditionDDBind", "FleetManagementDataProvider").Data("sendForgery")).ServerFiltering(false)))
 
 
 
@@ -649,6 +649,7 @@
                                                 </div>
                                             </div>
                                         </div>
+
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <div class="k-label">
@@ -686,7 +687,18 @@
                                                     @Html.ValidationMessageFor(model => model.HorsePower)
                                                 </div>
                                             </div>
+                                        </div><div class="col-md-3">
+                                            <div class="form-group">
+                                                <div class="k-label">
+                                                    @Html.LabelFor(model => model.Remark)
+                                                </div>
+                                                <div>
+                                                    @Html.Kendo().TextBoxFor(model => model.Remark)
+                                                    @Html.ValidationMessageFor(model => model.Remark)
+                                                </div>
+                                            </div>
                                         </div>
+
                                     </div>
                                     <div class="row">
                                         <footer class="col-xs-12 form-group text-right">

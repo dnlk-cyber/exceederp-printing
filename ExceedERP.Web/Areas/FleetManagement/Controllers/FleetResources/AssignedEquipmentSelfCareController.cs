@@ -19,7 +19,7 @@ using ExceedERP.DataAccess.Context;
 using System.Data.Entity;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain;
-
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     //[AuthorizeRoles(FleetManagementRoles.ResourceApprover, FleetManagementRoles.ResourceDistributor, FleetManagementRoles.ResourceRequestApprover)]
@@ -39,6 +39,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
             var AssignedEquipment = _AssignedEquipmentService.GetAll().Select(a => new AssignedEquipment
             {
+
                 RequestNumber = a.RequestNumber,
                 EquipmentNameID = a.EquipmentNameID,
                 FleetId = a.FleetId,
@@ -66,6 +67,22 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
             else
             {
+                RequestedEquipment.ForwardedFrom = User.Identity.Name;
+                RequestedEquipment.ForwardedTo = User.Identity.Name;
+                RequestedEquipment.IsFinalApproval = RequestedEquipment.IsFinalApproval;
+                RequestedEquipment.CurrentApprovalStep = RequestedEquipment.CurrentApprovalStep;
+                RequestedEquipment.IsDepartmentOnlineApproved = RequestedEquipment.IsDepartmentOnlineApproved;
+                RequestedEquipment.DepartmentOnlineApprovedBy = RequestedEquipment.DepartmentOnlineApprovedBy;
+                RequestedEquipment.DepartmentOnlineApprovedTime = RequestedEquipment.DepartmentOnlineApprovedTime;
+                RequestedEquipment.IsDepartmentSendForApproval = RequestedEquipment.IsDepartmentSendForApproval;
+                RequestedEquipment.DepartmentSendForApprovalBy = RequestedEquipment.DepartmentSendForApprovalBy;
+                RequestedEquipment.DepartmentSendForApprovalTime = RequestedEquipment.DepartmentSendForApprovalTime;
+                RequestedEquipment.IsOnlineApproved = RequestedEquipment.IsOnlineApproved;
+                RequestedEquipment.OnlineApprovedBy = RequestedEquipment.OnlineApprovedBy;
+                RequestedEquipment.OnlineApprovedTime = RequestedEquipment.OnlineApprovedTime;
+                RequestedEquipment.IsVoid = RequestedEquipment.IsVoid;
+                RequestedEquipment.VoidBy = RequestedEquipment.VoidBy;
+                RequestedEquipment.VoidTime = RequestedEquipment.VoidTime;
                 RequestedEquipment.RequestedEquipmentId = Guid.NewGuid();
                 RequestedEquipment.RequestNumber = Guid.Parse(createRequestNumber);
                 RequestedEquipment.Remark = MaintenanceConst.R;
@@ -142,6 +159,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                         assignedEquipment.RequestNumber = Guid.Parse(createRequestNumber);
                         assignedEquipment.StartDate = StartDate;
                         assignedEquipment.EndDate = ExpiredDate;
+                        decimal totalkm = assignedEquipment.AsphaltKm + assignedEquipment.GravelKm;
+                        assignedEquipment.NumberHourPerKm = totalkm.ToString();
                         //  AssignedEquipment.SubEquipmentName = RequestDetail.SubEquipmentName;
                         //assignedEquipment.Quantity = AssignedEquipment.Quantity;
                         assignedEquipment.IsAssigned = true;
@@ -191,11 +210,27 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 IEquipmentIdentityService IdentityService = new EquipmentIdentityService();
 
 
-
+                RequestedEquipment.ForwardedFrom = User.Identity.Name;
+                RequestedEquipment.ForwardedTo = User.Identity.Name;
+                RequestedEquipment.IsFinalApproval = RequestedEquipment.IsFinalApproval;
+                RequestedEquipment.CurrentApprovalStep = RequestedEquipment.CurrentApprovalStep;
+                RequestedEquipment.IsDepartmentOnlineApproved = RequestedEquipment.IsDepartmentOnlineApproved;
+                RequestedEquipment.DepartmentOnlineApprovedBy = RequestedEquipment.DepartmentOnlineApprovedBy;
+                RequestedEquipment.DepartmentOnlineApprovedTime = RequestedEquipment.DepartmentOnlineApprovedTime;
+                RequestedEquipment.IsDepartmentSendForApproval = RequestedEquipment.IsDepartmentSendForApproval;
+                RequestedEquipment.DepartmentSendForApprovalBy = RequestedEquipment.DepartmentSendForApprovalBy;
+                RequestedEquipment.DepartmentSendForApprovalTime = RequestedEquipment.DepartmentSendForApprovalTime;
+                RequestedEquipment.IsOnlineApproved = RequestedEquipment.IsOnlineApproved;
+                RequestedEquipment.OnlineApprovedBy = RequestedEquipment.OnlineApprovedBy;
+                RequestedEquipment.OnlineApprovedTime = RequestedEquipment.OnlineApprovedTime;
+                RequestedEquipment.IsVoid = RequestedEquipment.IsVoid;
+                RequestedEquipment.VoidBy = RequestedEquipment.VoidBy;
+                RequestedEquipment.VoidTime = RequestedEquipment.VoidTime;
                 RequestedEquipment.Quantity = RequestedEquipment.Quantity;
                 RequestedEquipment.LastModified = DateTime.Now;
                 RequestedEquipment.ModifiedBy = User.Identity.Name;
-
+                decimal totalkm = RequestedEquipment.AsphaltKm + RequestedEquipment.GravelKm;
+                RequestedEquipment.NumberHourPerKm = totalkm.ToString();
                 db.RequestedEquipments.Attach(RequestedEquipment);
                 db.Entry(RequestedEquipment).State = EntityState.Modified;
                 db.SaveChanges();
@@ -294,11 +329,15 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
 
             var Request = db.RequestedEquipments.Where(RequestedEquipment => RequestedEquipment.RequestNumber.ToString() == readRequestNumber && RequestedEquipment.IsAssigned == false).Select(a => new {
+
+                
                 RequestedEquipmentId = a.RequestedEquipmentId,
                 RequestNumber = a.RequestNumber,
                 NumberHourKM=a.NumberHourKM,
                 NumberofPersonston=a.NumberofPersonston,
                 Remarks=a.Remarks,
+                AsphaltKm = a.AsphaltKm,
+                GravelKm = a.GravelKm,
                 EquipmentIdentityID = a.EquipmentIdentityID,
                 EquipmentTypeID = a.EquipmentTypeID,
                 ManufacturedYear = a.ManufacturedYear,
@@ -322,8 +361,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             var requestEquipment = db.RequestedEquipments.FirstOrDefault(x => x.RequestNumber.ToString() == vDemandId);
 
             var assignedEquipment = db.AssignedEquipment.Where(x => x.VehicleDemandId == requestEquipment.VehicleDemandId);
-            DataSourceResult result = assignedEquipment.ToDataSourceResult(request, assignedEquipments => new
-            {
+            DataSourceResult result = assignedEquipment.ToDataSourceResult(request, assignedEquipments => new            {
+                  
                 RequestNumber = assignedEquipments.RequestNumber,
                 AssignedDate = assignedEquipments.AssignedDate,
                 FleetId = assignedEquipments.FleetId,
@@ -416,6 +455,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             var assignedEquipment = db.AssignedEquipment.Where(x => x.VehicleDemandId == num);
             DataSourceResult result = assignedEquipment.ToDataSourceResult(request, assignedEquipments => new
             {
+
                 RequestNumber = assignedEquipments.RequestNumber,
                 AssignedDate = assignedEquipments.AssignedDate,
                 FleetId = assignedEquipments.FleetId,

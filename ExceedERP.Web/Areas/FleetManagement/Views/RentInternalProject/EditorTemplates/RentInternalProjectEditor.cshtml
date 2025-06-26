@@ -27,7 +27,7 @@
                     @(Html.Kendo().DropDownListFor(model => model.EquipmentType).Name("EquipmentIdentity")
                                           .DataTextField("EquipmentCategoryName")
                                                                   .DataValueField("EquipmentCategoryName").OptionLabel("Select").HtmlAttributes(new { style = "width:100%" })
-                                          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory"))))
+                                          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory").Data("sendForgery"))))
 
                 </div>
             </div>

@@ -1,0 +1,18 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+            .Name("InventoryItemId")
+            .OptionLabel("---Select Item---")
+            .DataTextField("Name")
+            .DataValueField("Code")
+            //.DataValueField("Code")
+            .CascadeFrom("CategoryId")
+            .Filter("contains")
+            .ValuePrimitive(true)
+            .DataSource(dataSource =>
+            {
+                dataSource.Read(read => read.Action("GetInventoryItems", "InfoDeskDataProvider").Data("getItemCode"))
+                          .ServerFiltering(true);
+
+            })
+
+)
+@Html.ValidationMessageFor(m => m)

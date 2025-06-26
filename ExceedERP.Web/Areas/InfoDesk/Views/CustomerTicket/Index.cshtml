@@ -23,23 +23,27 @@
           columns.Bound(c => c.DueDate).Width(120);
           columns.Bound(c => c.OverDue).Width(120);
           columns.Bound(c => c.Remark).Width(120);
+          columns.Bound(c => c.RequesterIPAddress).Width(150);
           columns.Bound(c => c.ClosedDate).Width(100).Title("Closed Date");
           columns.Command(command =>
           {
-              command.Edit();
-              command.Destroy();
-              command.Custom("confirm").Text("Confirm").Click("Confirmation").HtmlAttributes(new { @class = "btn-success" });
+
+              //command.Edit();
+              //command.Destroy();
+              //command.Custom("confirm").Text("Confirm").Click("Confirmation").HtmlAttributes(new { @class = "btn-success" });
+
           }).Width(250);
 
       })
       .ToolBar(toolbar =>
       {
-          toolbar.Create();
+          // toolbar.Create();
       })
       .Events(ev =>
       {
           ev.DataBound("onDataBound");
           ev.DetailExpand("onExpand");
+
       })
       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CustomerTicketEditor").Window(window =>
       {
@@ -92,7 +96,9 @@
         {
             items.Add().Text("  Detail  ").Content(
           @<text>
-            # if (!IsSendForApproval){#
+            # if (IsSendForApproval){#
+                <a href='@Url.Action("ITSupportReport", "HelpDeskReport")/?id=#=CustomerTicket_HelpDeskId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+            #} if (!IsSendForApproval){#
             <a onclick='return sendForApproval("#=CustomerTicket_HelpDeskId#")' href=' \#' title="Send For approval"><i class="fa fa-share-square fa-2x"></i></a>
             #}#
             <dl class="dl-horizontal">
@@ -139,33 +145,34 @@
                   items.Add().Text("  Ticket  ").Content(
         @<text>
             @(Html.Kendo().Grid<AssignTicket_HelpDesk>()
-                      .Name("Assigngrid_#=CustomerTicket_HelpDeskId#")
-                      .Columns(columns =>
-                      {
-                  // columns.Bound(c => c.AssignTicket_HelpDeskId).Width(100);
-                  columns.ForeignKey(c => c.AssinedTo, (System.Collections.IEnumerable)ViewData["AssignTo"], "AssinedTo", "FullNameaEnglish").EditorTemplateName("EmployeesList");
-                              columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList");
-                              columns.Bound(c => c.Role);
-                              columns.Bound(c => c.AssignedDate);
-                              columns.Bound(c => c.RootCause);
-                              columns.Bound(c => c.Solution);
+                .Name("Assigngrid_#=CustomerTicket_HelpDeskId#")
+                .Columns(columns =>
+                {
 
-                          })
-                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                    columns.ForeignKey(c => c.AssinedTo, (System.Collections.IEnumerable)ViewData["AssignTo"], "AssinedTo", "FullNameaEnglish").EditorTemplateName("EmployeesList");
+                    columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList");
+                    columns.Bound(c => c.Role);
+                    columns.Bound(c => c.AssignedDate);
+                    columns.Bound(c => c.RootCause);
+                    columns.Bound(c => c.Solution);
+
+
+                })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
                    .ClientDetailTemplateId("MaterialsUsed___template")
-                     //    }))
                      .Scrollable(h => h.Height(500))
                      .DataSource(dataSource => dataSource
                          .Ajax()
                             .Model(model =>
                             {
-                                    model.Id(p => p.AssignTicket_HelpDeskId);
-                        //model.Field(p => p.CustomerTicket_HelpDeskId).Editable(false);
-                        //model.Field(p => p.AgeOfTicket).Editable(false);
-                        //model.Field(p => p.AssignedTo).Editable(false);
-                        //model.Field(p => p.Role).Editable(false);
-                        //model.Field(p => p.AssignedDate).Editable(false);
-                    })
+                                model.Id(p => p.AssignTicket_HelpDeskId);
+                                //model.Field(p => p.CustomerTicket_HelpDeskId).Editable(false);
+                                //model.Field(p => p.AgeOfTicket).Editable(false);
+                                //model.Field(p => p.AssignedTo).Editable(false);
+                                //model.Field(p => p.Role).Editable(false);
+                                //model.Field(p => p.AssignedDate).Editable(false);
+                            })
                             .Events(ev => ev
                                     .Error("error_handler(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")")
                                     .RequestStart("onRequestStart(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")")
@@ -176,58 +183,60 @@
                               .Destroy(destroy => destroy.Action("AssignTickets_Destroy", "AssignTicket").Data("sendForgery"))
                                 ).ToClientTemplate())
         </text>);
-                       items.Add().Text("Attachments").Content(
+        items.Add().Text("Attachments").Content(
         @<text>
 
             <button onclick='UploadFile(#=CustomerTicket_HelpDeskId#)' class='fa fa-upload btn btn-primary'>&nbsp;Upload </button>
 
             @(Html.Kendo().Grid<CustomerTicketAttachment>()
-                        .Name("AttachmentGrid#=CustomerTicket_HelpDeskId#")
-                        .Columns(columns =>
-                        {
+                  .Name("AttachmentGrid#=CustomerTicket_HelpDeskId#")
+                  .Columns(columns =>
+                  {
 
-                                  columns.Bound(c => c.FileName).ClientTemplate("<a href='/InfoDesk/CustomerTicketAttachments/DownloadAttachment?attachmentId=\\#=CustomerTicketAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
+                      columns.Bound(c => c.FileName).ClientTemplate("<a href='/InfoDesk/CustomerTicketAttachments/DownloadAttachment?attachmentId=\\#=CustomerTicketAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; \\#=FileName\\# </a>").Width(150);
 
-                                  columns.Template(e => { }).ClientTemplate("<a href='/InfoDesk/CustomerTicketAttachments/DownloadAttachment?attachmentId=\\#=CustomerTicketAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
-                                  columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
+                      columns.Template(e => { }).ClientTemplate("<a href='/InfoDesk/CustomerTicketAttachments/DownloadAttachment?attachmentId=\\#=CustomerTicketAttachmentId\\#'> <f class = 'fa fa-download'></i>&nbsp;&nbsp; Download </a>").Width(100);
+                      columns.Template(e => { }).ClientTemplate("<a href='\\#=ShortPath\\#/\\#=FileName\\#' target='_blank'> <f class = 'fa fa-folder-open'></i> &nbsp;&nbsp; Open</a>").Width(100);
 
-                                  columns.Command(command =>
-                                  {
-                                      command.Destroy().Text("Delete");
+                      columns.Command(command =>
+                      {
+                          command.Destroy().Text("Delete");
 
-                                  }).Width(300);
-
-
-                              })
-                        //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument")
-                        //.Window(window =>
-                        //{
-                        //    window.Title("");
-                        //    window.Scrollable(false);
+                      }).Width(300);
 
 
 
-
-                        //}))
-                        .Scrollable(h => h.Height("auto"))
-                        .DataSource(dataSource => dataSource
-                        .Ajax()
-                        .Sort(sort => sort.Add(c => c.CustomerTicketAttachmentId).Descending())
-                        .Events(events =>
-                        {
-                                  events.Error("error_handler(\"AttachmentGrid#=CustomerTicket_HelpDeskId#\")");
-                                  events.RequestStart("onRequestStart(\"AttachmentGrid#=CustomerTicket_HelpDeskId#\")");
-                                  events.RequestEnd("onRequestEnd(\"AttachmentGrid#=CustomerTicket_HelpDeskId#\")");
+                  })
+                //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument")
+                //.Window(window =>
+                //{
+                //    window.Title("");
+                //    window.Scrollable(false);
 
 
 
-                              })
-                        .Model(model => model.Id(p => p.CustomerTicketAttachmentId))
-                        .Read(read => read.Action("CustomerTicketAttachments_Read", "CustomerTicketAttachments", new { eACSId = "#=CustomerTicket_HelpDeskId#", area = "InfoDesk" }).Data("sendForgery"))
-                        .Create(create => create.Action("CustomerTicketAttachments_Create", "CustomerTicketAttachments", new { eACSId = "#=CustomerTicket_HelpDeskId#", area = "InfoDesk" }).Data("sendForgery"))
-                        .Update(update => update.Action("CustomerTicketAttachments_Update", "CustomerTicketAttachments").Data("sendForgery"))
-                        .Destroy(destroy => destroy.Action("CustomerTicketAttachments_Destroy", "CustomerTicketAttachments").Data("sendForgery"))
-                        ).ToClientTemplate())
+
+                //}))
+                .Scrollable(h => h.Height("auto"))
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .Sort(sort => sort.Add(c => c.CustomerTicketAttachmentId).Descending())
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"AttachmentGrid#=CustomerTicket_HelpDeskId#\")");
+                    events.RequestStart("onRequestStart(\"AttachmentGrid#=CustomerTicket_HelpDeskId#\")");
+                    events.RequestEnd("onRequestEnd(\"AttachmentGrid#=CustomerTicket_HelpDeskId#\")");
+
+
+
+
+                })
+                .Model(model => model.Id(p => p.CustomerTicketAttachmentId))
+                .Read(read => read.Action("CustomerTicketAttachments_Read", "CustomerTicketAttachments", new { eACSId = "#=CustomerTicket_HelpDeskId#", area = "InfoDesk" }).Data("sendForgery"))
+                .Create(create => create.Action("CustomerTicketAttachments_Create", "CustomerTicketAttachments", new { eACSId = "#=CustomerTicket_HelpDeskId#", area = "InfoDesk" }).Data("sendForgery"))
+                .Update(update => update.Action("CustomerTicketAttachments_Update", "CustomerTicketAttachments").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("CustomerTicketAttachments_Destroy", "CustomerTicketAttachments").Data("sendForgery"))
+                ).ToClientTemplate())
 
         </text>);
               }).ToClientTemplate())
@@ -240,23 +249,24 @@
       {
           items.Add().Text("Materials Used").Content(
             @<text>
-                @(Html.Kendo().Grid<MaterialsUsed>()
-                 .Name("MaterialUsed_#=AssignTicket_HelpDeskId#")
-                 .Columns(columns =>
-                 {
-                     columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList").Width(120);
-                     columns.Bound(c => c.Quantity).Width(120);
-                     columns.Bound(c => c.Remark).Width(120);
-                     columns.Command(command =>
-                     {
-                         //command.Edit();
-                         //command.Destroy();
-                     }).Width(180);
-                 })
-                  .ToolBar(toolbar =>
-                  {
-                      //toolbar.Create();
-                  })
+            @(Html.Kendo().Grid<MaterialsUsed>()
+                .Name("MaterialUsed_#=AssignTicket_HelpDeskId#")
+                .Columns(columns =>
+                {
+                    columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList").Width(120);
+                    columns.Bound(c => c.Quantity).Width(120);
+                    columns.Bound(c => c.Remark).Width(120);
+                    columns.Command(command =>
+                    {
+                        //command.Edit();
+                        //command.Destroy();
+                    }).Width(180);
+
+                })
+                .ToolBar(toolbar =>
+                {
+                    //toolbar.Create();
+                })
 
 
           .Editable(editable => editable.Mode(GridEditMode.InLine))
@@ -370,6 +380,9 @@
                 $(this).find(".k-grid-edit").show();
                 $(this).find(".k-grid-confirm").hide();
                 $(this).css("background-color", "gold");
+            }
+            if (dataItem.TicketStatus == "6") {
+                $(this).css("background-color", "Orange");
             }
             if (dataItem.IsClosed) {
                 $(this).find(".k-grid-edit").hide();

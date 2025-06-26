@@ -1,0 +1,54 @@
+﻿
+<legend>Requst To Inspection</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.RequestToInspection>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+
+            columns.Bound(e => e.Remark).Title(" Name").Width(140);
+            columns.Bound(e => e.GoToInspection).Format("{0:d}").Width(140);
+            columns.Command(command => {
+                command.Edit();
+                command.Destroy();
+            }).Width(250).Title("Action");
+
+        })
+
+             .Editable(editable =>
+             {
+                 editable.Mode(GridEditMode.InLine);
+                 editable.DisplayDeleteConfirmation("Are You Sure To Remove Setting");
+             }).HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                 .Scrollable(h => h.Height(500))
+                                 .ToolBar(toolbar=>toolbar.Create())
+        .DataSource(dataSource => dataSource
+            .Ajax()
+
+
+            .Model(model =>
+            {
+                model.Id(p => p.RequestToInspectionId);
+
+              //  model.Field(p => p.FuelTypeId).Editable(false);
+
+            }).Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+                            .Create(update => update.Action("RequestToInspection_Create", "RequestToInspection").Data("sendForgery"))
+                            .Read(read => read.Action("RequestToInspection_Read", "RequestToInspection").Data("sendForgery"))
+                            .Update(update => update.Action("RequestToInspection_Update", "RequestToInspection").Data("sendForgery"))
+                            .Destroy(update => update.Action("RequestToInspection_Destroy", "RequestToInspection").Data("sendForgery"))
+      )
+)

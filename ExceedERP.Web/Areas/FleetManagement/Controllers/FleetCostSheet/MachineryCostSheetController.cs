@@ -8,11 +8,17 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet;
 using ExceedERP.Core.Domain.Global;
-using ExceedERP.Reporting.Fleet.ViewModel;
+using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.FleetManagement;
+using System.Collections.Generic;
+using ExceedERP.Reporting.Fleet.ViewModel;
+//using ExceedERP.Reporting.Fleet.ViewModel;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
 {
+    [AuthorizeRoles(FleetManagementRoles.FleetCostSheetUser, FleetManagementRoles.FleetCostSheetApprover)]
     public class MachineryCostSheetController : Controller
     {
 
@@ -20,11 +26,40 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
 
         public ActionResult Index()
         {
-
+            ViewData["category"] = db.EquipmentIdentity.Select(s => new
+            {
+                Text = s.EquipmentCategoryName,
+                Value = s.EquipmentIdentityID
+            }).ToList();
+            ViewData["type"] = db.EquipmentType.Select(s => new
+            {
+                Text = s.EquipmentTypeName,
+                Value = s.EquipmentTypeID
+            }).ToList();
+            ViewData["name"] = db.EquipmentName.Select(s => new
+            {
+                Text = s.Name,
+                Value = s.EquipmentNameID
+            }).ToList();
             ViewData["fleet"] = db.Fleets.Select(x => new
             {
                 Value = x.FleetsID,
                 Text = x.SerialNo
+            }).ToList();
+            ViewData["branch"] = db.Branch.Select(s => new
+            {
+                Value = s.BranchId,
+                Text = s.Name
+            }).ToList();
+            ViewData["operator"] = db.Operator.Select(s => new
+            {
+                Value = s.OperatorID,
+                Text = s.FullName
+            }).ToList();
+            ViewData["businessunit"] = db.BusinessUnits.Select(s => new
+            {
+                Value = s.BusinessUnitId,
+                Text = s.Name
             }).ToList();
 
             ViewData["ProcurementSupplier"] = db.ProcurementSuppliers.Select(x => new { x.ProcurementSupplierID, x.Name }).ToList();
@@ -34,8 +69,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
        
         public ActionResult MachineryCostSheet_Read([DataSourceRequest] DataSourceRequest request)
         {
-          
-            var machineryWorkingTimeSheets = db.MachineryWorkingTimeSheets.Where(x => x.TimeSheetApproved);           
+            List<int> mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var machineryWorkingTimeSheets = db.MachineryWorkingTimeSheets.Where(x => x.TimeSheetApproved)
+                .Where(x => mybraches.Contains(x.BranchId));
             DataSourceResult result = machineryWorkingTimeSheets.ToDataSourceResult(request, machineryWorkingTimeSheet => new MachineryWorkingTimeSheet
             {
                 
@@ -96,7 +132,17 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                 TimeSheetApprovedDate = machineryWorkingTimeSheet.TimeSheetApprovedDate,
                 TimeSheetSendForAproval = machineryWorkingTimeSheet.TimeSheetSendForAproval,
                 TimeSheetStatus = machineryWorkingTimeSheet.TimeSheetStatus,
-                CostSheetStatus = machineryWorkingTimeSheet.CostSheetStatus
+                CostSheetStatus = machineryWorkingTimeSheet.CostSheetStatus,
+                EquipmentCategoryId = machineryWorkingTimeSheet.EquipmentCategoryId,
+                EquipmentNameId = machineryWorkingTimeSheet.EquipmentNameId,
+                EquipmentTypeId = machineryWorkingTimeSheet.EquipmentTypeId,
+                TimeSheetSendForApprovalTime = machineryWorkingTimeSheet.TimeSheetSendForApprovalTime,
+                TimeSheetSendForApprovalBy = machineryWorkingTimeSheet.TimeSheetSendForApprovalBy,
+                OperatorId = machineryWorkingTimeSheet.OperatorId,
+                GreaseRate = machineryWorkingTimeSheet.GreaseRate,
+                ExternalOperator = machineryWorkingTimeSheet.ExternalOperator,
+                CostSheetSendForApprovalBy = machineryWorkingTimeSheet.CostSheetSendForApprovalBy,
+                CostSheetSendForApprovalTime = machineryWorkingTimeSheet.CostSheetSendForApprovalTime
 
             });
             return Json(result);
@@ -171,7 +217,16 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
                     TimeSheetSendForAproval = machineryWorkingTimeSheet.TimeSheetSendForAproval,
                     TimeSheetStatus = machineryWorkingTimeSheet.TimeSheetStatus,
                     CostSheetStatus = machineryWorkingTimeSheet.CostSheetStatus,
-                    
+                    CostSheetSendForApprovalBy = machineryWorkingTimeSheet.CostSheetSendForApprovalBy,
+                    CostSheetSendForApprovalTime = machineryWorkingTimeSheet.CostSheetSendForApprovalTime,
+                    EquipmentCategoryId = machineryWorkingTimeSheet.EquipmentCategoryId,
+                    EquipmentNameId = machineryWorkingTimeSheet.EquipmentNameId,
+                    EquipmentTypeId = machineryWorkingTimeSheet.EquipmentTypeId,
+                    ExternalOperator = machineryWorkingTimeSheet.ExternalOperator,
+                    GreaseRate = machineryWorkingTimeSheet.GreaseRate,
+                    OperatorId = machineryWorkingTimeSheet.OperatorId,
+                    TimeSheetSendForApprovalBy = machineryWorkingTimeSheet.TimeSheetSendForApprovalBy,
+                    TimeSheetSendForApprovalTime = machineryWorkingTimeSheet.TimeSheetSendForApprovalTime
                 };
 
                 
@@ -303,6 +358,39 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
             return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
 
         }
+        public JsonResult VoidCostSheet(int machineryWorkingTimeSheetId)
+        {
+
+            var machineryCostSheet = db.MachineryWorkingTimeSheets.Find(machineryWorkingTimeSheetId);
+
+            if (machineryCostSheet != null)
+            {
+                machineryCostSheet.CostSheetSendForAproval = false;
+                machineryCostSheet.CostSheetApproved = false;
+                machineryCostSheet.CostSheetApprovedDate = DateTime.Now;
+                machineryCostSheet.CostSheetApprovedBy = User.Identity.Name;
+                machineryCostSheet.CostSheetStatus = MaintenanceConst.Rejected;
+
+                db.MachineryWorkingTimeSheets.Attach(machineryCostSheet);
+                db.Entry(machineryCostSheet).State = EntityState.Modified;
+                db.SaveChanges();
+                var returnMessage = new
+                {
+                    Message = "Successfully Sent!",
+
+                };
+                return Json(returnMessage.Message, JsonRequestBehavior.AllowGet);
+
+            }
+
+            var jsonData = new
+            {
+                Message = "Error Sending!",
+
+            };
+            return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
+
+        }
         public ActionResult MachineryCostSheetApproval_Read([DataSourceRequest] DataSourceRequest request, int id)
         {
 
@@ -322,6 +410,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.FleetCostSheet
             });
             return Json(result);
         }
+        [AuthorizeRoles(FleetManagementRoles.FleetCostSheetApprover)]
         public ActionResult MachineryCostSheetApproval_Create([DataSourceRequest] DataSourceRequest request, CostSheetApproval model, int id)
         {
             if (ModelState.IsValid)

@@ -20,7 +20,12 @@ namespace ExceedERP.Core.Domain.InfoDesk
         [Required]
         [DisplayName("Solution")]
         public string Solution { get; set; }
+        [DisplayName("Document Type")]
+        public InfoDocumentType DocumentType { get; set; }
         public string Remark { get; set; }
+        public bool IsOnlineApproved { get; set; }
+        public string OnlineApprovedBy { get; set; }
+        public DateTime? OnlineApprovedTime { get; set; }
     }
     public class KnowledgeBaseAttachment
     {
@@ -32,6 +37,14 @@ namespace ExceedERP.Core.Domain.InfoDesk
         public string Description { get; set; }
         public int InfoDeskKnowledgeBaseId { get; set; }
         public virtual InfoDeskKnowledgeBase KnowledgeBase { get; set; }
+    }
+    public enum InfoDocumentType 
+    {
+        [Display(Name ="DocumentResolution")]
+        DocumentResolution,
+        [Display(Name = "Knowledge Base")]
+        KnowledgeBase
+
     }
 
 }

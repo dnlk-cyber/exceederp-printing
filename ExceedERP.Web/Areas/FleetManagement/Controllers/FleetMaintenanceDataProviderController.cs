@@ -35,9 +35,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public JsonResult UpdateWorkShopStatus(MechanicType? mechanicType)
         {
             var jobOrders = db.JobOrder.Where(q => q.IsOnlineTransferred).AsQueryable();
-            foreach(var jobOrder in jobOrders)
+            foreach (var jobOrder in jobOrders)
 
-                {
+            {
                 jobOrder.IsSubmittedToServiceCenter = true;
                 jobOrder.IsSentToWorkShop = true;
 
@@ -65,7 +65,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
         public JsonResult UpdateServiceCenterStatus()
         {
-            var jobOrders = db.JobOrder.Where(q => q.Status =="Open").AsQueryable();
+            var jobOrders = db.JobOrder.Where(q => q.Status == "Open").AsQueryable();
             foreach (var jobOrder in jobOrders)
 
             {
@@ -93,16 +93,18 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         //            Name = s.Person_Employee.FirstName + " " + s.Person_Employee.MiddleName + " " + s.Person_Employee.LastName
         //        }).ToList();
         //    if(mechanicType != null)
-            
+
         //        {
         //        mechanics = mechanics.Where(q=>q.MechanicType== mechanicType).ToList();
         //        } 
         //    return Json(mechanics,JsonRequestBehavior.AllowGet);
         //}
-        public JsonResult GetSubCategories(Guid? jobOrderId,string filterText)
+        public JsonResult GetSubCategories(Guid? jobOrderId, string filterText)
         {
-           
-            var subcategories = db.RepairType.Select(s => new { s.SubCategoryCode,
+
+            var subcategories = db.RepairType.Select(s => new
+            {
+                s.SubCategoryCode,
                 s.RepairTypeID
             })
                 .Distinct()
@@ -113,16 +115,17 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
                 var repairsTypes = db.JobOrderDetail.Where(q => q.JobOrderID == jobOrderId)
                     .Select(s => s.RepairTypeID);
-                 subCategoryIds= subcategories.Where(q => repairsTypes.Contains(q.RepairTypeID)).Select(s=>s.SubCategoryCode);
+                subCategoryIds = subcategories.Where(q => repairsTypes.Contains(q.RepairTypeID)).Select(s => s.SubCategoryCode);
             }
             else
             {
-                 subCategoryIds = subcategories.Select(s=>s.SubCategoryCode);
+                subCategoryIds = subcategories.Select(s => s.SubCategoryCode);
             }
             var serviceSubcategories = db.ItemCategorys.Where(s => subCategoryIds.Contains(s.ItemCategoryCode))
-                .Select(s => new {
-                Code = s.ItemCategoryCode,
-                Name = s.Name
+                .Select(s => new
+                {
+                    Code = s.ItemCategoryCode,
+                    Name = s.Name
                 })
                 .ToList();
 
@@ -133,15 +136,16 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(serviceSubcategories, JsonRequestBehavior.AllowGet);
 
         }
-       
-        public JsonResult GetServiceCategoryEnums(string subCategoryCode, Guid? jobOrderId,string filterText)
+
+        public JsonResult GetServiceCategoryEnums(string subCategoryCode, Guid? jobOrderId, string filterText)
         {
-           
-            var enumCategories = db.RepairType.Where(q=>q.SubCategoryCode == subCategoryCode)
-                .Select(s => new {
-                    Code =  s.ServiceGroup,
+
+            var enumCategories = db.RepairType.Where(q => q.SubCategoryCode == subCategoryCode)
+                .Select(s => new
+                {
+                    Code = s.ServiceGroup,
                     Name = s.ServiceGroup.ToString()
-                } ).Distinct().ToList();
+                }).Distinct().ToList();
             if (jobOrderId != null)
             {
                 var repairTypes = db.JobOrderDetail.Where(q => q.JobOrderID == jobOrderId).Select(s => s.ServiceGroup);
@@ -155,21 +159,23 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(enumCategories, JsonRequestBehavior.AllowGet);
 
         }
-        public JsonResult GetServices(string subCategoryCode , ServiceGroup ServiceGroup, Guid? jobOrderId,string filterText)
+        public JsonResult GetServices(string subCategoryCode, ServiceGroup ServiceGroup, Guid? jobOrderId, string filterText)
         {
-            var repairTypes = db.RepairType.Where(q=>q.SubCategoryCode == subCategoryCode&&q.ServiceGroup == ServiceGroup)
-                .Select(s => new {
+            var repairTypes = db.RepairType.Where(q => q.SubCategoryCode == subCategoryCode && q.ServiceGroup == ServiceGroup)
+                .Select(s => new
+                {
                     Code = s.RepairTypeID,
-                    Name = s.Code +"-"+s.Name
+                    Name = s.Code + "-" + s.Name
 
                 })
                 .ToList();
             if (jobOrderId != null)
             {
                 var jobOrderDetails = db.JobOrderDetail.Where(q => q.JobOrderID == jobOrderId)
-                    .Select(s=>new{
-                        Code= s.JobOrderDetailID,
-                        Name= s.RepairType.Code+"-"+ s.RepairType.Name
+                    .Select(s => new
+                    {
+                        Code = s.JobOrderDetailID,
+                        Name = s.RepairType.Code + "-" + s.RepairType.Name
                     }).ToList();
 
                 if (!string.IsNullOrEmpty(filterText))
@@ -192,12 +198,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             var repairTypeId = db.JobOrderDetail.Find(id)?.RepairTypeID;
             var service = db.RepairType.Find(repairTypeId);
-                 if(service!=null)
+            if (service != null)
             {
                 return Json(new { service.AutomotiveStandaredHour }, JsonRequestBehavior.AllowGet);
 
             }
-            return Json(new {  }, JsonRequestBehavior.AllowGet);
+            return Json(new { }, JsonRequestBehavior.AllowGet);
         }
         //public JsonResult GetJobCategoriesPerJobOrder(Guid jobOrderId)
         //{
@@ -228,27 +234,27 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
             var jobServices = db.JobOrderDetail.Where(q => q.JobOrderID == jobOrderId)
                  .Select(s => new
-                  {
-                      Code = s.JobOrderDetailID,
-                      Name = s.RepairType.Name + "-" + s.JobCauses.Name
-                  }).ToList();
+                 {
+                     Code = s.JobOrderDetailID,
+                     Name = s.RepairType.Name + "-" + s.JobCauses.Name
+                 }).ToList();
             return Json(jobServices, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetStoreByBranch(int? BranchId)
         {
-          
+
             var branches = db.InventoryStores.Where(o => BranchId == null || o.BranchId == BranchId)
                   .Select(s => new
-            {
-                s.Name,
-                s.StoreCode
-            }).ToList();
+                  {
+                      s.Name,
+                      s.StoreCode
+                  }).ToList();
             return Json(branches, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetUom(string itemCode)
         {
             var item = db.InventoryItems.Find(itemCode);
-            return Json(new { item.UoMName, item.ItemCode, item.AvgPrice},JsonRequestBehavior.AllowGet);
+            return Json(new { item.UoMName, item.ItemCode, item.AvgPrice }, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetUoMs()
         {
@@ -259,7 +265,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }).ToList();
             return Json(branches, JsonRequestBehavior.AllowGet);
         }
-        
+
         public JsonResult GetParameterCategory()
         {
             var categoryParameter = db.RentalInspectionCriteria.Select(s => new
@@ -285,7 +291,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
             //var store = db.InventoryStores.Where(x => mybraches.Contains(x.BranchId.ToString())).Where(x => x.Enable).AsQueryable();
 
-           // List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
+            // List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
             var store = db.InventoryStores.Where(x => x.Enable).AsQueryable();
 
             return Json(store.Select(p => new
@@ -395,7 +401,8 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(plate, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetCustomerPlateNos(int customerId)
-        {var cs = User.Identity.Name;
+        {
+            var cs = User.Identity.Name;
             var plates = db.EquipmentInformation.Where(q => q.CustomerId == customerId).ToList().Select(s => new
             {
 
@@ -647,55 +654,55 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         public JsonResult ServiceStatusDDBind()
         {
-          
-                var FollowUPTypes = new List<FleetBindingHelper.HelperObject>();
-                var FollowUPType = new FleetBindingHelper.HelperObject
-                {
-                    Name = "On Maintenance",
-                    Value = "",
-                };
-                FollowUPTypes.Add(FollowUPType);
-                FollowUPType = new FleetBindingHelper.HelperObject
-                {
-                    Name = "Waiting for SparePart",
-                    Value = "",
-                };
-                FollowUPTypes.Add(FollowUPType);
-                FollowUPType = new FleetBindingHelper.HelperObject
-                {
-                    Name = "SparePart Unreachable",
-                    Value = "",
-                };
-                FollowUPTypes.Add(FollowUPType);
-                FollowUPType = new FleetBindingHelper.HelperObject
-                {
-                    Name = "Waiting For Maintenace Tool",
-                    Value = "",
-                };
-                FollowUPTypes.Add(FollowUPType);
-                FollowUPType = new FleetBindingHelper.HelperObject
-                {
-                    Name = " Lack of Mechanics Crew  ",
-                    Value = "",
-                };
-                FollowUPTypes.Add(FollowUPType);
 
-                FollowUPType = new FleetBindingHelper.HelperObject
-                {
-                    Name = " Waiting For Approval",
-                    Value = "",
-                };
-                FollowUPTypes.Add(FollowUPType);
+            var FollowUPTypes = new List<FleetBindingHelper.HelperObject>();
+            var FollowUPType = new FleetBindingHelper.HelperObject
+            {
+                Name = "On Maintenance",
+                Value = "",
+            };
+            FollowUPTypes.Add(FollowUPType);
+            FollowUPType = new FleetBindingHelper.HelperObject
+            {
+                Name = "Waiting for SparePart",
+                Value = "",
+            };
+            FollowUPTypes.Add(FollowUPType);
+            FollowUPType = new FleetBindingHelper.HelperObject
+            {
+                Name = "SparePart Unreachable",
+                Value = "",
+            };
+            FollowUPTypes.Add(FollowUPType);
+            FollowUPType = new FleetBindingHelper.HelperObject
+            {
+                Name = "Waiting For Maintenace Tool",
+                Value = "",
+            };
+            FollowUPTypes.Add(FollowUPType);
+            FollowUPType = new FleetBindingHelper.HelperObject
+            {
+                Name = " Lack of Mechanics Crew  ",
+                Value = "",
+            };
+            FollowUPTypes.Add(FollowUPType);
 
-                FollowUPType = new FleetBindingHelper.HelperObject
-                {
-                    Name = "Completed",
-                    Value = "",
-                };
-                FollowUPTypes.Add(FollowUPType);
+            FollowUPType = new FleetBindingHelper.HelperObject
+            {
+                Name = " Waiting For Approval",
+                Value = "",
+            };
+            FollowUPTypes.Add(FollowUPType);
 
-                return Json(FollowUPTypes, JsonRequestBehavior.AllowGet);
-            
+            FollowUPType = new FleetBindingHelper.HelperObject
+            {
+                Name = "Completed",
+                Value = "",
+            };
+            FollowUPTypes.Add(FollowUPType);
+
+            return Json(FollowUPTypes, JsonRequestBehavior.AllowGet);
+
         }
 
         public JsonResult FollowUpTypeDDBind()
@@ -750,7 +757,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             };
             FollowUPTypes.Add(FollowUPType);
 
-           
+
             return Json(FollowUPTypes, JsonRequestBehavior.AllowGet);
         }
 
@@ -828,7 +835,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(InventoryItems, JsonRequestBehavior.AllowGet);
         }
 
-        [AllowAnonymous]
+
         public JsonResult DailyCareDDBind(string Category)
         {
 
@@ -842,7 +849,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-        [AllowAnonymous]
+
         public JsonResult JobOrderDDBind()
         {
 
@@ -854,7 +861,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(JobOrders, JsonRequestBehavior.AllowGet);
 
         }
-        [AllowAnonymous]
+
         public JsonResult JobDetailDDBind()
         {
 
@@ -868,7 +875,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         }
 
-        [AllowAnonymous]
+
         //public JsonResult GetCheckListByEquipmentDDBind(string Type)
         //{
         //    List<CheckListViewModel> list = new List<CheckListViewModel>();
@@ -1067,7 +1074,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
         }
 
-        [AllowAnonymous]
+
         public ActionResult YearDDBind()
         {
             List<SelectListItem> Years = new List<SelectListItem>();
@@ -1081,7 +1088,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }
             return Json(Years, JsonRequestBehavior.AllowGet);
         }
-        [AllowAnonymous]
+
         public ActionResult ManufacturedYearDDBind()
         {
             var Fleet = db.Fleets.DistinctByField(x => x.ManufacturerYear).Select(s => new
@@ -1093,7 +1100,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
 
 
-        [AllowAnonymous]
+
         public ActionResult InventoryStoresDDBind()
         {
             var Store = db.InventoryStores.Select(s => new
@@ -1238,7 +1245,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         }
         public JsonResult GetSubcategoriesBasedOnCategory(string categoryCode)
         {
-            var inventoryCategories = db.ItemCategorys.Where(q=>q.ParentName== categoryCode).ToList().Select(s => new
+            var inventoryCategories = db.ItemCategorys.Where(q => q.ParentName == categoryCode).ToList().Select(s => new
             {
 
                 s.ItemCategoryCode,
@@ -1260,7 +1267,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             {
                 inventoryItems = inventoryItems.Where(l => l.Name.ToLower().Contains(filterText.ToLower()) || l.ItemCode.Contains(filterText)).ToList();
             }
-           
+
             return Json(inventoryItems, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetRepairTypes()
@@ -1272,7 +1279,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }).ToList();
             return Json(types, JsonRequestBehavior.AllowGet);
         }
-        [AllowAnonymous]
+
         public ActionResult ApprovalDDBind()
         {
             var approvals = new List<ExceedERP.Helpers.Fleet.FleetBindingHelper.HelperObject>();

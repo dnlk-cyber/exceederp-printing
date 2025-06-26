@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -23,6 +23,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         public decimal AverageAvailableQuantity { get; set; }
         public decimal AverageMaintenanceCostPM { get; set; }
         public decimal AverageMaintenanceCostCM { get; set; }
+        public Guid? MaintenanceCenterId { get; set; }  
 
     }
 
@@ -37,7 +38,16 @@ namespace ExceedERP.Core.Domain.Maintenance
         public int CMQuantity { get; set; } 
         public int PMQuantity { get; set; }
         public decimal CMCost { get; set; }
+        
         public decimal PMCost { get; set; }
+
+        //
+        
+        public decimal CMMaterialCost { get; set; }
+        public decimal CMLaborCost { get; set; }
+        public decimal PMMaterialCost { get; set; }
+        public decimal PMLaborCost { get; set; }
+
         public int MaintenancePlanId { get; set; }
         public MaintenancePlan MaintenancePlan { get; set; } 
     }

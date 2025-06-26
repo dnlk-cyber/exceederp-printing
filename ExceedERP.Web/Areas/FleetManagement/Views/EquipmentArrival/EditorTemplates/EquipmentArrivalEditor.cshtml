@@ -19,7 +19,7 @@
                                             .DataValueField("Value")
                                             .OptionLabel(" Select ")
                                             .Filter(FilterType.Contains)
-                                            .DataSource(d => d.Read(r => r.Action("DistrubutedEquipmentDDBind", "EquipmentArrival"))
+                                            .DataSource(d => d.Read(r => r.Action("DistrubutedEquipmentDDBind", "EquipmentArrival").Data("sendForgery"))
                                             .ServerFiltering(false))
                                             .Events(e => e.Change("BindDetail"))
                                             .HtmlAttributes(new { style = "width:100%" }))
@@ -39,6 +39,16 @@
     </div>
 
    
+    <div class="col-sm-2">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(m => m.Date)
+            </div>
+            <div>
+                @Html.Kendo().DatePickerFor(model => model.Date).HtmlAttributes(new { style = "width:100%" })
+            </div>
+        </div>
+    </div> 
     <div class="col-sm-2">
         <div class="form-group">
             <div class="k-label">

@@ -15,7 +15,7 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain;
 using System.Data.Entity;
-
+using ExceedERP.Core.Domain.Maintenance;
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
     [AuthorizeRoles(FleetManagementRoles.ResourceRequestor, FleetManagementRoles.ResourceRequestApprover)] 

@@ -1,184 +1,392 @@
 ﻿using ExceedERP.Core.Domain.FleetManagement.EquipmentInspection;
 using Kendo.Mvc.UI;
-using System; using ExceedERP.Web.Helpers;
+using System;
+using ExceedERP.Web.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Web.Mvc;     
+using System.Web.Mvc;
 using ExceedERP.ApplicationServices.FleetManagement.EquipmentInspection;
 using Kendo.Mvc.Extensions;
-using ExceedERP.Helpers.Common;  
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Areas.FleetManagement.Models;
 using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Fleet;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Reporting.Fleet.ViewModel;
+using System.Data.Entity;
+using ExceedERP.Core.Domain.Maintenance;
 
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
-	[AuthorizeRoles(FleetManagementRoles.InspectionUser, FleetManagementRoles.InspectionApprover)] 
-	
-	public class AnnualEquipmentInventoryInspectionController : Controller
-	{
-		ExceedDbContext db = new ExceedDbContext();
-		IAnnualEquipmentInventoryInspectionService _AnnualEquipmentInventoryInspectionService;
-		public AnnualEquipmentInventoryInspectionController()
-		{
-			_AnnualEquipmentInventoryInspectionService = new AnnualEquipmentInventoryInspectionService();
-		}
-		//
-		// GET: /FleetManagement/AnnualEquipmentInventoryInspection/
-		public ActionResult Index()
-		{
+    [AuthorizeRoles(FleetManagementRoles.InspectionUser, FleetManagementRoles.InspectionApprover)]
 
-			var fleets = db.Fleets.ToList().Select(s => new
-			{
-				Id = s.FleetsID,
-				Name = s.EquipmentName
-			});
-			ViewData["Fleets"] = fleets;
-	   
-			return View();
-		}
+    public class AnnualEquipmentInventoryInspectionController : Controller
+    {
+        ExceedDbContext db = new ExceedDbContext();
+        IAnnualEquipmentInventoryInspectionService _AnnualEquipmentInventoryInspectionService;
+        public AnnualEquipmentInventoryInspectionController()
+        {
+            _AnnualEquipmentInventoryInspectionService = new AnnualEquipmentInventoryInspectionService();
+        }     
+        public ActionResult Index()
+        {
+            ViewData["StatusKey"] = db.InspectionStatusKeys.Select(x => new
+            {
 
+                Value = x.InspectionStatusKeyId,
+                Name = x.StatusKey
+            }).ToList();
+            
+            ViewData["Category"] = db.EquipmentIdentity.Select(s => new
+            {
+                Value = s.EquipmentIdentityID,
+                Text = s.EquipmentCategoryName
+            }).ToList();
+            ViewData["Type"] = db.EquipmentType.Select(s => new
+            {
+                Value = s.EquipmentTypeID,
+                Text = s.EquipmentTypeName
+            }).ToList();
 
-		public ActionResult AnnualInspectionlog_Read([DataSourceRequest] DataSourceRequest request , string Id)
-		{
-			var AnnualEquipmentInventoryInspection = db.InspectionLogs.Where(x=>x.InspectionId == Id).Select(a => new   
-			{
-				InspectionLogId = a.InspectionLogId,
-				CategoryName = a.CategoryName + " - " + a.LineName ,
-				DateCreated = a.DateCreated,
-				IsActive = a.IsActive,
-				Status = a.IsActive ? "Available" : "UnAvailable",
-				IsSendForApproval = a.IsSendForApproval,
-				IsOnlineApproved = a.IsOnlineApproved,
-				OrgBranchName = a.OrgBranchName
+            ViewData["Name"] = db.EquipmentName.Select(s => new
+            {
+                Value = s.EquipmentNameID,
+                Text = s.Name
+            }).ToList();
+            ViewData["Fleet"] = db.Fleets.Select(s => new
+            {
+                Value = s.FleetsID,
+                Text = s.PlateNumber + " " + s.SerialNo
+            }).ToList();
 
-			}).ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).ToList();
-
-			return Json(AnnualEquipmentInventoryInspection.ToDataSourceResult(request));
-		}
-
-
-		public ActionResult AnnualInspectionlogLast_Read([DataSourceRequest] DataSourceRequest request, string Id)
-		{
-			  var LastInspection = db.InspectionLogs.Where(x=>x.IsActive == true).OrderByDescending(x=>x.DateCreated).FirstOrDefault();
-
-			var AnnualEquipmentInventoryInspection = db.InspectionLogs.Where(x=>x.IsActive == true && x.InspectionId == Id).OrderByDescending(x=>x.DateCreated).Select(a => new
-			{
-				InspectionLogId = a.InspectionLogId,
-				CategoryName = a.CategoryName  + " - " + a.LineName ,
-				DateCreated = a.DateCreated,
-			   
-
-			}).ToList();
+            return View();
+        }
 
 
-			return Json( AnnualEquipmentInventoryInspection , JsonRequestBehavior.AllowGet );
-		}
-		public ActionResult GenrericInspectionLog_Read([DataSourceRequest] DataSourceRequest request, string Id)
-		{
-			var LastInspection = db.InspectionLogs.Where(x => x.IsActive == true).OrderByDescending(x => x.DateCreated).FirstOrDefault();
+        public ActionResult AnnualInspectionlog_Read([DataSourceRequest] DataSourceRequest request, Guid Id)
+        {
+            var AnnualEquipmentInventoryInspection = db.InspectionLogs.Where(x => x.AnnualEquipmentInventoryInspectionID == Id);
 
-			var AnnualEquipmentInventoryInspection = db.InspectionLogs.Where(x => x.IsActive == true && x.InspectionId == Id).OrderByDescending(x => x.DateCreated).Select(a => new InspectionLog
-			{
-				InspectionLogId = a.InspectionLogId,
-				CategoryName = a.CategoryName.IfNullDefaultValue(),
-				LineName = a.LineName.IfNullDefaultValue(),
-				DateCreated = a.DateCreated,
+            var result = AnnualEquipmentInventoryInspection
+                        .Select(model => new 
+                        {
+                            InspectionLogId = model.InspectionLogId,
+                            DateCreated = model.DateCreated,
+                            IsSendForApproval = model.IsSendForApproval,
+                            IsOnlineApproved = model.IsOnlineApproved,
+                            OrgBranchName = model.OrgBranchName,
+                            AnnualEquipmentInventoryInspectionID = model.AnnualEquipmentInventoryInspectionID,
+                            CheckList = model.CheckList,
+                            StatusKey = model.StatusKey,
+                            SystemName = model.SystemName,   
+                            CreatedBy = model.CreatedBy,
+                            IsOnlineTransferred = model.IsOnlineTransferred,
+                            IsOnlineTransferredBy = model.IsOnlineTransferredBy,
+                            IsVoid = model.IsVoid,
+                            StatusKeyId = model.StatusKeyId,
+                            LastModified = model.LastModified,
+                            ModifiedBy = model.ModifiedBy,
+                            OnlineApprovedBy = model.OnlineApprovedBy,
+                            OnlineApprovedTime = model.OnlineApprovedTime,
+                            OnlineTransferredTime = model.OnlineTransferredTime,
+                            Remark = model.Remark,
+                            SendForApprovalBy = model.SendForApprovalBy,
+                            SendForApprovalTime = model.SendForApprovalTime,
+                            Status = model.Status,
+                            VoidBy = model.VoidBy,
+                          
+                            VoidTime = model.VoidTime
+                        });
 
-
-			}).ToList();
-
-
-			return Json(AnnualEquipmentInventoryInspection, JsonRequestBehavior.AllowGet);
-		}
-
-		public ActionResult AnnualEquipmentInventoryInspection_Read([DataSourceRequest] DataSourceRequest request)
-		{
-			var AnnualEquipmentInventoryInspection = _AnnualEquipmentInventoryInspectionService.GetAll().Select(a => new AnnualEquipmentInventoryInspection 
-			{
-			AnnualEquipmentInventoryInspectionID=a.AnnualEquipmentInventoryInspectionID,
-			DateofInspection=a.DateofInspection,
-			FindingsOutcome=a.FindingsOutcome,
-			FleetsID=a.FleetsID,
-			EquipmentTypeId = a.Fleets.EquipmentIdentityID.ToString(),
-			Remark=a.Fleets.PlateNumber + " -- " +a.Fleets.EquipmentName,
-			InspectedBy=a.InspectedBy,
-			VoidBy = a.Fleets.PlateNumber,
-			IsOnlineApproved =a.IsOnlineApproved,
-			 IsSendForApproval = a.IsSendForApproval,
-				Status = a.Status
-
-			
-			});
-
-			return Json(AnnualEquipmentInventoryInspection.ToDataSourceResult(request));
-		}
+            return Json(result.ToDataSourceResult(request)); 
+        }
 
 
-		[AcceptVerbs(HttpVerbs.Post)]
-		public ActionResult AnnualEquipmentInventoryInspection_Create([DataSourceRequest] DataSourceRequest request, AnnualEquipmentInventoryInspection AnnualEquipmentInventoryInspection)
-		{
-		   if (AnnualEquipmentInventoryInspection != null)
-			{
-				AnnualEquipmentInventoryInspection.AnnualEquipmentInventoryInspectionID = Guid.NewGuid();
-				AnnualEquipmentInventoryInspection.Status = MaintenanceConst.Pending;
-				AnnualEquipmentInventoryInspection.CreatedBy = User.Identity.Name;
-				AnnualEquipmentInventoryInspection.DateCreated = DateTime.Now;
-				AnnualEquipmentInventoryInspection.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-			  
-		   
-				_AnnualEquipmentInventoryInspectionService.Insert(AnnualEquipmentInventoryInspection);
+        public ActionResult InspectionLog_Update([DataSourceRequest] DataSourceRequest request, InspectionLog model)
+        {
+            if (model != null)
+            {
+                model.LastModified = DateTime.Now;
+                model.ModifiedBy = User.Identity.Name;
+                model.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+                
+                db.Entry(model).State = EntityState.Modified;
+                db.SaveChanges();
                 #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "Annual equipment inventory inspection", "Success", User.Identity.Name, $"created Annual equipment inventory inspection {AnnualEquipmentInventoryInspection.AnnualEquipmentInventoryInspectionID} ", Modules.FleetManagement);
+                UserHelper.OperationLog(Request.UserHostAddress, "InspectionLogId", "Success", User.Identity.Name, $"updated InspectionLog reg {model.InspectionLogId}", Modules.FleetManagement);
                 #endregion
             }
 
-            return Json(new[] { AnnualEquipmentInventoryInspection }.ToDataSourceResult(request));
-		}
+            return Json(new[] { model }.ToDataSourceResult(request));
+        }
 
-		[AcceptVerbs(HttpVerbs.Post)]
-		public ActionResult AnnualEquipmentInventoryInspection_Update([DataSourceRequest] DataSourceRequest request, AnnualEquipmentInventoryInspection AnnualEquipmentInventoryInspection)
-		{
-			if (AnnualEquipmentInventoryInspection != null)
-			{
-				AnnualEquipmentInventoryInspection.LastModified = DateTime.Now;
-				AnnualEquipmentInventoryInspection.ModifiedBy = User.Identity.Name;
-				AnnualEquipmentInventoryInspection.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-			 
-				_AnnualEquipmentInventoryInspectionService.Update(AnnualEquipmentInventoryInspection);
+        public ActionResult AnnualEquipmentInventoryInspection_Read([DataSourceRequest] DataSourceRequest request)
+        {
+            var AnnualEquipmentInventoryInspection = _AnnualEquipmentInventoryInspectionService.GetAll().Select(model => new AnnualEquipmentInventoryInspection
+            {
+                DateofInspection = model.DateofInspection,
+                FleetsID = model.FleetsID,
+                IsOnlineApproved = model.IsOnlineApproved,
+                IsSendForApproval = model.IsSendForApproval,
+                Status = model.Status,
+                CountryOfOrigin = model.CountryOfOrigin,
+                CreatedBy = model.CreatedBy,
+                DateCreated = model.DateCreated,
+                EngineModel = model.EngineModel,
+                EngineSerailNumber = model.EngineSerailNumber,
+                EquipmentCategoryId = model.EquipmentCategoryId,
+                EquipmentNameId = model.EquipmentNameId,
+                EquipmentTypeId = model.EquipmentTypeId,
+                Make = model.Make,
+               // StatuKeyId = model.StatuKeyId,
+                ModelNumber = model.ModelNumber,
+                SerialNumber = model.SerialNumber,
+                Operator = model.Operator,
+                YearOfManufacturing = model.YearOfManufacturing,
+                InspectedBy = model.InspectedBy,
+                IsOnlineTransferred = model.IsOnlineTransferred,
+                IsOnlineTransferredBy = model.IsOnlineTransferredBy,
+                IsVoid = model.IsVoid,
+                LastModified = model.LastModified,
+                ModifiedBy = model.ModifiedBy,
+                OnlineApprovedBy = model.OnlineApprovedBy,
+                OnlineApprovedTime = model.OnlineApprovedTime,
+                OnlineTransferredTime = model.OnlineTransferredTime,
+                SendForApprovalBy = model.SendForApprovalBy,
+                SendForApprovalTime = model.SendForApprovalTime,
+                AnnualEquipmentInventoryInspectionID = model.AnnualEquipmentInventoryInspectionID
+                
+
+            });
+
+            return Json(AnnualEquipmentInventoryInspection.ToDataSourceResult(request));
+        }
+
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult AnnualEquipmentInventoryInspection_Create([DataSourceRequest] DataSourceRequest request, AnnualEquipmentInventoryInspection model)
+        {
+            if (model != null)
+            {
+                model.AnnualEquipmentInventoryInspectionID = Guid.NewGuid();
+                model.Status =MaintenanceConst.Pending;
+                model.CreatedBy = User.Identity.Name;
+                model.InspectedBy = User.Identity.Name;
+                model.DateCreated = DateTime.Now;
+                model.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+
+                _AnnualEquipmentInventoryInspectionService.Insert(model);
+                GenerateInspection(model.EquipmentCategoryId, model.EquipmentTypeId, model.AnnualEquipmentInventoryInspectionID);
+
                 #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "Annual Equipment Inventory Inspection", "Success", User.Identity.Name, $"updated AnnualEquipmentInventoryInspection reg {AnnualEquipmentInventoryInspection.AnnualEquipmentInventoryInspectionID}", Modules.FleetManagement);
+                UserHelper.OperationLog(Request.UserHostAddress, "Annual equipment inventory inspection", "Success", User.Identity.Name, $"created Annual equipment inventory inspection {model.AnnualEquipmentInventoryInspectionID} ", Modules.FleetManagement);
                 #endregion
             }
 
-            return Json(new[] { AnnualEquipmentInventoryInspection }.ToDataSourceResult(request));
-		}
-
-		[AcceptVerbs(HttpVerbs.Post)]
-		public ActionResult AnnualEquipmentInventoryInspection_Destroy([DataSourceRequest] DataSourceRequest request, AnnualEquipmentInventoryInspection annualEquipmentInventoryInspection)
-		{
-			var AnnualEquipmentInventoryInspection = _AnnualEquipmentInventoryInspectionService.GetById(annualEquipmentInventoryInspection.AnnualEquipmentInventoryInspectionID);
-			if (AnnualEquipmentInventoryInspection != null)
-			{
-			   
-				_AnnualEquipmentInventoryInspectionService.Delete(AnnualEquipmentInventoryInspection);
-
-				UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Annual Equipment Inventory Inspection number " + annualEquipmentInventoryInspection.AnnualEquipmentInventoryInspectionID);
-		
-			}
-
-			return Json(new[] { AnnualEquipmentInventoryInspection }.ToDataSourceResult(request));
-		}
+            return Json(new[] { model }.ToDataSourceResult(request));
+        }
 
 
-		public ActionResult AnnualEquipmentInventoryInspectionlog_Read([DataSourceRequest] DataSourceRequest request)
-		{
-			var logs = db.CheckListLogs.ToList();
-			return Json(logs.ToDataSourceResult(request));
-		}
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult AnnualEquipmentInventoryInspection_Update([DataSourceRequest] DataSourceRequest request, AnnualEquipmentInventoryInspection model)
+        {
+            if (model != null)
+            {
+                model.LastModified = DateTime.Now;
+                model.ModifiedBy = User.Identity.Name;
+                model.InspectedBy = User.Identity.Name;
+                model.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
 
-	}
+                var inspectionLogs = db.InspectionLogs.Where(x => x.AnnualEquipmentInventoryInspectionID == model.AnnualEquipmentInventoryInspectionID).ToList();
+                db.InspectionLogs.RemoveRange(inspectionLogs);
+                db.SaveChanges();
+
+
+                _AnnualEquipmentInventoryInspectionService.Update(model);
+                GenerateInspection(model.EquipmentCategoryId, model.EquipmentTypeId, model.AnnualEquipmentInventoryInspectionID);
+
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Annual Equipment Inventory Inspection", "Success", User.Identity.Name, $"updated AnnualEquipmentInventoryInspection reg {model.AnnualEquipmentInventoryInspectionID}", Modules.FleetManagement);
+                #endregion
+            }
+
+            return Json(new[] { model }.ToDataSourceResult(request));
+        }
+        public ActionResult AnnualEquipmentInventoryInspection_Delete([DataSourceRequest] DataSourceRequest request, AnnualEquipmentInventoryInspection model)
+        {
+            if (model != null)
+            {
+
+                var entity = db.AnnualEquipmentInventoryInspection.FirstOrDefault(x => x.AnnualEquipmentInventoryInspectionID == model.AnnualEquipmentInventoryInspectionID);
+                db.AnnualEquipmentInventoryInspection.Remove(entity);
+                db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "Annual Equipment Inventory Inspection", "Success", User.Identity.Name, $"updated AnnualEquipmentInventoryInspection reg {model.AnnualEquipmentInventoryInspectionID}", Modules.FleetManagement);
+                #endregion
+            }
+
+            return Json(new[] { model }.ToDataSourceResult(request));
+        }
+
+        private void GenerateInspection(Guid equipmentIdentityId, Guid equipmentTypeId, Guid AnnualEquipmentInventoryInspectionID)
+        {
+            FleetCheckList fleetCheckList = new FleetCheckList();
+            fleetCheckList = db.FleetCheckLists.FirstOrDefault(x => x.EquipmentTypeID == equipmentTypeId);
+            if (fleetCheckList != null)
+            {
+                var fleetLineCheckLists = db.FleetLineCheckLists.Where(x => x.FleetCheckListId == fleetCheckList.FleetCheckListId).ToList();
+                if (fleetLineCheckLists.Any())
+                {
+                    foreach (var fleetLineCheckList in fleetLineCheckLists)
+                    {
+                        InspectionLog inspectionLog = new InspectionLog
+                        {
+                            CheckList = fleetLineCheckList.CheckList,
+                            SystemName = fleetLineCheckList.SystemName,
+                            AnnualEquipmentInventoryInspectionID = AnnualEquipmentInventoryInspectionID,
+                        };
+
+                        db.InspectionLogs.Add(inspectionLog);
+                    }
+
+                    db.SaveChanges();
+                }
+
+            }
+            else
+            {
+                fleetCheckList = db.FleetCheckLists.FirstOrDefault(x => x.EquipmentIdentityID == equipmentIdentityId);
+                if (fleetCheckList != null)
+                {
+                    var fleetLineCheckLists = db.FleetLineCheckLists.Where(x => x.FleetCheckListId == fleetCheckList.FleetCheckListId).ToList();
+                    if (fleetLineCheckLists.Any())
+                    {
+                        foreach (var fleetLineCheckList in fleetLineCheckLists)
+                        {
+                            InspectionLog inspectionLog = new InspectionLog
+                            {
+                                CheckList = fleetLineCheckList.CheckList,
+                                SystemName = fleetLineCheckList.SystemName,
+                                AnnualEquipmentInventoryInspectionID = AnnualEquipmentInventoryInspectionID,
+
+                            };
+
+                            db.InspectionLogs.Add(inspectionLog);
+                        }
+
+                        db.SaveChanges();
+                    }
+                }
+            }
+
+        }
+
+        public ActionResult SendForOnlineApproval(Guid id)
+        {
+            var annualEquipmentInspection = db.AnnualEquipmentInventoryInspection.FirstOrDefault(x => x.AnnualEquipmentInventoryInspectionID == id);
+            if(annualEquipmentInspection != null)
+            {
+                annualEquipmentInspection.IsSendForApproval = true;
+                annualEquipmentInspection.IsOnlineTransferredBy = User.Identity.Name;
+                db.Entry(annualEquipmentInspection).State = EntityState.Modified;
+                db.SaveChanges();
+                var returnMessage = new
+                {
+                    Message = "Successfully Sent!",
+
+                };
+                return Json(returnMessage.Message, JsonRequestBehavior.AllowGet);
+            }
+            var jsonData = new
+            {
+                Message = "Error Sending!",
+
+            };
+            return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult Approval_Read([DataSourceRequest] DataSourceRequest request, Guid id)
+        {
+
+            var approval = db.InspectionApprovals.Where(x => x.InspectionId == id.ToString());
+            DataSourceResult result = approval.ToDataSourceResult(request, model => new InspectionApproval
+            {
+                InspectionId = model.InspectionId,
+                Status = model.Status,
+                CreatedBy = model.CreatedBy,
+                DateCreated = model.DateCreated,
+                InspectionApprovalId = model.InspectionApprovalId,
+                LastModified = model.LastModified,
+                ModifiedBy = model.ModifiedBy,
+                Remark = model.Remark,
+                IsApproved = model.IsApproved
+            });
+            return Json(result);
+        }
+        public ActionResult Approval_Create([DataSourceRequest] DataSourceRequest request, InspectionApproval model, Guid id)
+        {
+            if (ModelState.IsValid)
+            {
+                if (model.Status == MaintenanceConst.Approved)
+                {
+                    Approved(id);
+                    model.Status = MaintenanceConst.Approved;
+                    model.IsApproved = true;
+                }
+                else
+                {
+                    Rejected(id);
+                    model.Status = MaintenanceConst.Rejected;
+                    model.IsApproved = true;
+                }
+                model.CreatedBy = User.Identity.Name;
+                model.DateCreated = DateTime.Now;
+                model.InspectionId = id.ToString();
+                db.InspectionApprovals.Add(model);
+                db.SaveChanges();
+
+            }
+
+
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
+        }
+
+        private void Approved(Guid id)
+        {
+            var entity = db.AnnualEquipmentInventoryInspection.Find(id);
+            if (entity != null)
+            {
+                entity.IsOnlineApproved = true;
+                entity.Status = MaintenanceConst.Approved;
+                entity.OnlineApprovedBy = User.Identity.Name;
+                entity.OnlineApprovedTime = DateTime.Now;
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+
+            }
+        }
+        private void Rejected(Guid id)
+        {
+            var entity = db.AnnualEquipmentInventoryInspection.Find(id);
+            if (entity != null)
+            {
+                entity.IsOnlineApproved = false;
+                entity.Status = MaintenanceConst.Rejected;
+                
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+
+            }
+        }
+
+        public ActionResult AnnualEquipmentInventoryInspectionlog_Read([DataSourceRequest] DataSourceRequest request)
+        {
+            var logs = db.CheckListLogs.ToList();
+            return Json(logs.ToDataSourceResult(request));
+        }
+
+    }
 }

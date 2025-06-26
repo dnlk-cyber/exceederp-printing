@@ -1,0 +1,167 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+<legend>HeavyLoad or DumpTruck</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.HeavyORDumpTruck>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.Bound(o => o.HeavyORDumpTruckId).Visible(false).Width(80);
+            columns.Bound(o => o.Name).Width(80);
+            columns.Bound(o => o.Description).Width(90).Filterable(ftb => ftb.Multi(true).Search(true));
+
+
+            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+        })
+                        .ToolBar(t => t.Create())
+                        .Editable(editable =>
+                        {
+
+                            editable.DisplayDeleteConfirmation("Are You Sure To Remove Rent Information");
+                        })
+                        .HtmlAttributes(new { style = "height: 520px;" })
+                        .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                        .Scrollable()
+                        .Sortable()
+                        .Filterable()
+                        //.Groupable()
+                        .Scrollable(h => h.Height(500))
+
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Sort(sort => sort.Add(so => so.DateCreated).Descending())
+                    .Model(model =>
+                    {
+                        model.Id(p => p.HeavyORDumpTruckId);
+
+                    }).Events(ev => ev
+                    .Error("error_handler(\"grid\")")
+                    .RequestStart("onRequestStart(\"grid\")")
+                    .RequestEnd("onRequestEnd(\"grid\")"))
+                    .Create(create => create.Action("HaeavyOrDumpTruckSelector_Create", "HaeavyOrDumpTruckSelector").Data("sendForgery"))
+                    .Read(read => read.Action("HaeavyOrDumpTruckSelector_Read", "HaeavyOrDumpTruckSelector").Data("sendForgery"))
+                    .Update(read => read.Action("HaeavyOrDumpTruckSelector_Update", "HaeavyOrDumpTruckSelector").Data("sendForgery"))
+                    .Destroy(read => read.Action("HaeavyOrDumpTruckSelector_Destroy", "HaeavyOrDumpTruckSelector").Data("sendForgery"))
+                    )
+                    .ClientDetailTemplateId("RoadORLoad")
+)
+  <script  type="text/kendo-tmpl" id="RoadORLoad">
+  @(Html.Kendo().TabStrip()
+    .Name("tabStrip__#=HeavyORDumpTruckId#")
+    .SelectedIndex(0)
+    .Items(
+    items=> {
+        items.Add().Text("Road 0r Load").Content(@<text>@LoadOrRoad() </text>);
+    }))    
+  </script>
+@helper LoadOrRoad()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RoadORLoad>()
+    .Name("LoadORRoadSetting-#=HeavyORDumpTruckId#")
+    .Columns(columns => { columns.Bound(c=>c.RoadOrLoadId).Visible(false);
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.Description);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+    })
+                        .ToolBar(t => t.Create())
+                        .Editable(editable =>
+                        {
+
+                            editable.DisplayDeleteConfirmation("Are You Sure To Remove Rent Information");
+                        })
+                        .HtmlAttributes(new { style = "height: 520px;" })
+                        .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                        .Scrollable()
+                        .Sortable()
+                        .Filterable()
+                        //.Groupable()
+                        .Scrollable(h => h.Height(500))
+
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Sort(sort => sort.Add(so => so.DateCreated).Descending())
+                    .Model(model =>
+                    {
+                        model.Id(p => p.RoadOrLoadId);
+
+                    }).Events(ev => ev
+                    .Error("error_handler(\"LoadORRoadSetting-#=HeavyORDumpTruckId#\")")
+                    .RequestStart("onRequestStart(\"LoadORRoadSetting-#=HeavyORDumpTruckId#\")")
+                    .RequestEnd("onRequestEnd(\"LoadORRoadSetting-#=HeavyORDumpTruckId#\")"))
+                    .Create(create => create.Action("LoadOrRoadSelector_Create", "LoadOrRoadSelector", new{id= "#=HeavyORDumpTruckId#" }).Data("sendForgery"))
+                    .Read(read => read.Action("LoadOrRoadSelector_Read", "LoadOrRoadSelector", new { id = "#=HeavyORDumpTruckId#" }).Data("sendForgery"))
+                    .Update(read => read.Action("LoadOrRoadSelector_Update", "LoadOrRoadSelector").Data("sendForgery"))
+                    .Destroy(read => read.Action("LoadOrRoadSelector_Destroy", "LoadOrRoadSelector").Data("sendForgery"))
+                    ).ClientDetailTemplateId("Rates").ToClientTemplate())
+}
+<script  type="text/kendo-tmpl" id="Rates">
+  @(Html.Kendo().TabStrip()
+    .Name("tabStrip_#=RoadOrLoadId#")
+    .SelectedIndex(0)
+    .Items(
+    items=> {
+        items.Add().Text("Rates Of Road 0r Load").Content(@<text>@LoadOrRoadRates() </text>);
+    }))    
+  </script>
+@helper LoadOrRoadRates()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RateOfRoadORLoad>()
+    .Name("RatesOfRoadOrLoadgrid_#=RoadOrLoadId#")
+    .Columns(columns => { columns.Bound(c=>c.RateOfRoadORLoadId).Visible(false);
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.Rate);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+    })
+                        .ToolBar(t => t.Create())
+                        .Editable(editable =>
+                        {
+
+                            editable.DisplayDeleteConfirmation("Are You Sure To Remove Rent Information");
+                        })
+                        .HtmlAttributes(new { style = "height: 520px;" })
+                        .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                        .Scrollable()
+                        .Sortable()
+                        .Filterable()
+                        //.Groupable()
+                        .Scrollable(h => h.Height(500))
+
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Sort(sort => sort.Add(so => so.DateCreated).Descending())
+                    .Model(model =>
+                    {
+                        model.Id(p => p.RateOfRoadORLoadId);
+
+                    }).Events(ev => ev
+                    .Error("error_handler(\"RatesOfRoadOrLoadgrid_#=RoadOrLoadId#\")")
+                    .RequestStart("onRequestStart(\"RatesOfRoadOrLoadgrid_#=RoadOrLoadId#\")")
+                    .RequestEnd("onRequestEnd(\"RatesOfRoadOrLoadgrid_#=RoadOrLoadId#\")"))
+                    .Create(create => create.Action("RatesOfLoadOrRoadSelector_Create", "RatesOfLoadOrRoadSelector", new{id= "#=RoadOrLoadId#" }).Data("sendForgery"))
+                    .Read(read => read.Action("RatesOfLoadOrRoadSelector_Read", "RatesOfLoadOrRoadSelector", new { id = "#=RoadOrLoadId#" }).Data("sendForgery"))
+                    .Update(read => read.Action("RatesOfLoadOrRoadSelector_Update", "RatesOfLoadOrRoadSelector").Data("sendForgery"))
+                    .Destroy(read => read.Action("RatesOfLoadOrRoadSelector_Destroy", "RatesOfLoadOrRoadSelector").Data("sendForgery"))
+                    ).ToClientTemplate())
+}
+

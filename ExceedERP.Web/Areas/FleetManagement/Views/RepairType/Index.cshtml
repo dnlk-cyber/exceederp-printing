@@ -33,7 +33,6 @@
                                 .Scrollable(h => h.Height(500))
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
                   .Model(model =>
               {
                   model.Id(p => p.RepairTypeID);
@@ -44,10 +43,10 @@
                                                         .Error("error_handler(\"grid\")")
                                                         .RequestStart("onRequestStart(\"grid\")")
                                                         .RequestEnd("onRequestEnd(\"grid\")")) 
-                        .Create(update => update.Action("RepairType_Create", "RepairType"))
-                        .Read(read => read.Action("RepairType_Read", "RepairType"))
-                        .Update(update => update.Action("RepairType_Update", "RepairType"))
-                        .Destroy(update => update.Action("RepairType_Destroy", "RepairType"))
+                        .Create(update => update.Action("RepairType_Create", "RepairType").Data("sendForgery"))
+                        .Read(read => read.Action("RepairType_Read", "RepairType").Data("sendForgery"))
+                        .Update(update => update.Action("RepairType_Update", "RepairType").Data("sendForgery"))
+                        .Destroy(update => update.Action("RepairType_Destroy", "RepairType").Data("sendForgery"))
   )
 )
 

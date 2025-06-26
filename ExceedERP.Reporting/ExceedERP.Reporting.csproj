@@ -1275,12 +1275,15 @@
     <Compile Include="Fleet\DataSource\DriverTransferDataSource.cs" />
     <Compile Include="Fleet\DataSource\DryLoadingExternalTimesheetObjectDataSource.cs" />
     <Compile Include="Fleet\DataSource\DryLoadingTimesheetObjectDataSource.cs" />
+    <Compile Include="Fleet\DataSource\DryLoadingTimesheetObjectDataSourceSummary.cs" />
     <Compile Include="Fleet\DataSource\DryLoadingTimeSheetOnlyOds.cs" />
     <Compile Include="Fleet\DataSource\DumpTruckExternalTimesheetObjectDataSource.cs" />
     <Compile Include="Fleet\DataSource\DumpTruckTimesheetObjectDataSource.cs" />
+    <Compile Include="Fleet\DataSource\DumpTruckTimesheetObjectDataSourceSummary.cs" />
     <Compile Include="Fleet\DataSource\DumpTruckTimeSheetOnlyOds.cs" />
     <Compile Include="Fleet\DataSource\EquipmentDetailDataSource.cs" />
     <Compile Include="Fleet\DataSource\EquipmentDistributionDataSource.cs" />
+    <Compile Include="Fleet\DataSource\EquipmentDistributionOdsnew.cs" />
     <Compile Include="Fleet\DataSource\EquipmentMaintenanceCostDataSource.cs" />
     <Compile Include="Fleet\DataSource\EquipmentMaintenanceMechanicDataSource.cs" />
     <Compile Include="Fleet\DataSource\EquipmentPlanEvaluationDataSource.cs" />
@@ -1305,7 +1308,6 @@
     <Compile Include="Fleet\DataSource\FuelDataSource.cs" />
     <Compile Include="Fleet\DataSource\FulelogDataSource.cs" />
     <Compile Include="Fleet\DataSource\HeadOfficeSummaryDataSource.cs" />
-    <Compile Include="Fleet\DataSource\InspectionDataSource.cs" />
     <Compile Include="Fleet\DataSource\JobDataSource.cs" />
     <Compile Include="Fleet\DataSource\JobOrderDataSource.cs" />
     <Compile Include="Fleet\DataSource\JobOrderStatusDataSource.cs" />
@@ -1313,6 +1315,7 @@
     <Compile Include="Fleet\DataSource\LightVehicleExternalTimeSheetSummeryHeaderODS.cs" />
     <Compile Include="Fleet\DataSource\LightVehicleTimeSheetOnlyOds.cs" />
     <Compile Include="Fleet\DataSource\LightVehicleTimeSheetSummeryHeaderODS.cs" />
+    <Compile Include="Fleet\DataSource\LightVehicleTimeSheetSummeryHeaderODSSummary.cs" />
     <Compile Include="Fleet\DataSource\MachineryAndVehiclesStatusODS.cs" />
     <Compile Include="Fleet\DataSource\MachineryAndVehicleStatusParameterOds.cs" />
     <Compile Include="Fleet\DataSource\MachineryExternalTimeSheetSummeryHeaderODS.cs" />
@@ -1320,10 +1323,12 @@
     <Compile Include="Fleet\DataSource\MachineryTimeSheetSummeryHeaderODS.cs" />
     <Compile Include="Fleet\DataSource\MaintainaceDataSource.cs" />
     <Compile Include="Fleet\DataSource\OperatorDataSource.cs" />
+    <Compile Include="Fleet\DataSource\OwnRentalEnum.cs" />
     <Compile Include="Fleet\DataSource\PlanEvaluationDataSource.cs" />
     <Compile Include="Fleet\DataSource\PlanEvaluationPerEquipmentDataSource.cs" />
     <Compile Include="Fleet\DataSource\PlanVsAccomplishmentDataSource.cs" />
     <Compile Include="Fleet\DataSource\RentForInternalDataSource.cs" />
+    <Compile Include="Fleet\DataSource\RentFromExternalPrintOds.cs" />
     <Compile Include="Fleet\DataSource\RentRequestDataSource.cs" />
     <Compile Include="Fleet\DataSource\RentTimeSheetDataSource.cs" />
     <Compile Include="Fleet\DataSource\RentTimeSheetPerformaceDataSource.cs" />
@@ -1441,7 +1446,6 @@
     <Compile Include="Fleet\ViewModel\MachineryAndVehicleViewModel.cs" />
     <Compile Include="Fleet\ViewModel\MachineryExternalTimeSheetSummeryVM.cs" />
     <Compile Include="Fleet\ViewModel\MachineryTimeSheetSummeryVM.cs" />
-    <Compile Include="Fleet\ViewModel\MaintenanceConst.cs" />
     <Compile Include="Fleet\ViewModel\MaintenanceViewModel.cs" />
     <Compile Include="Fleet\ViewModel\OperatorViewModel.cs" />
     <Compile Include="Fleet\ViewModel\PlanEvaluationViewModel.cs" />
@@ -1492,6 +1496,12 @@
     <Compile Include="Fleet\View\DryLoadingTimeSheetOnlyView.Designer.cs">
       <DependentUpon>DryLoadingTimeSheetOnlyView.cs</DependentUpon>
     </Compile>
+    <Compile Include="Fleet\View\DryLoadingTimesheetSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\DryLoadingTimesheetSummary.Designer.cs">
+      <DependentUpon>DryLoadingTimesheetSummary.cs</DependentUpon>
+    </Compile>
     <Compile Include="Fleet\View\DumpTruckExternalTimesheetReport.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1510,6 +1520,12 @@
     <Compile Include="Fleet\View\DumpTruckTimesheetReport.Designer.cs">
       <DependentUpon>DumpTruckTimesheetReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="Fleet\View\DumpTruckTimesheetReportSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\DumpTruckTimesheetReportSummary.Designer.cs">
+      <DependentUpon>DumpTruckTimesheetReportSummary.cs</DependentUpon>
+    </Compile>
     <Compile Include="Fleet\View\EquipmentDetail.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1522,11 +1538,11 @@
     <Compile Include="Fleet\View\EquipmentDistrbution.Designer.cs">
       <DependentUpon>EquipmentDistrbution.cs</DependentUpon>
     </Compile>
-    <Compile Include="Fleet\View\EquipmentInspection.cs">
+    <Compile Include="Fleet\View\EquipmentDistributionDesgn.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Fleet\View\EquipmentInspection.Designer.cs">
-      <DependentUpon>EquipmentInspection.cs</DependentUpon>
+    <Compile Include="Fleet\View\EquipmentDistributionDesgn.Designer.cs">
+      <DependentUpon>EquipmentDistributionDesgn.cs</DependentUpon>
     </Compile>
     <Compile Include="Fleet\View\EquipmentMaintenanceCost.cs">
       <SubType>Component</SubType>
@@ -1654,6 +1670,36 @@
     <Compile Include="Fleet\View\HeadOfficeSummary.Designer.cs">
       <DependentUpon>HeadOfficeSummary.cs</DependentUpon>
     </Compile>
+    <Compile Include="Fleet\View\JobOrder.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\JobOrder.Designer.cs">
+      <DependentUpon>JobOrder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\JobOrderReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\JobOrderReport.Designer.cs">
+      <DependentUpon>JobOrderReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\JobOrderStatus.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\JobOrderStatus.Designer.cs">
+      <DependentUpon>JobOrderStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\JobReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\JobReport.Designer.cs">
+      <DependentUpon>JobReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\JobRequest.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\JobRequest.Designer.cs">
+      <DependentUpon>JobRequest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Fleet\View\LightVehicleExternalTimesheetReport.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1671,6 +1717,12 @@
     </Compile>
     <Compile Include="Fleet\View\LightVehicleTimesheetSummaryReport.Designer.cs">
       <DependentUpon>LightVehicleTimesheetSummaryReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\LightVehicleTimesheetSummaryReportSummary.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\LightVehicleTimesheetSummaryReportSummary.Designer.cs">
+      <DependentUpon>LightVehicleTimesheetSummaryReportSummary.cs</DependentUpon>
     </Compile>
     <Compile Include="Fleet\View\MachinaryTimesheetSummaryReport.cs">
       <SubType>Component</SubType>
@@ -1749,6 +1801,12 @@
     </Compile>
     <Compile Include="Fleet\View\RentFromExternal.Designer.cs">
       <DependentUpon>RentFromExternal.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Fleet\View\RentFromExternalPrintDesgin.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Fleet\View\RentFromExternalPrintDesgin.Designer.cs">
+      <DependentUpon>RentFromExternalPrintDesgin.cs</DependentUpon>
     </Compile>
     <Compile Include="Fleet\View\RentRequest.cs">
       <SubType>Component</SubType>
@@ -1921,6 +1979,7 @@
     <Compile Include="HelpDesk\DataSource\SoftwareLicenseODS.cs" />
     <Compile Include="HelpDesk\DataSource\SoftwareLicenseTypeODS.cs" />
     <Compile Include="HelpDesk\DataSource\SupportGroupODS.cs" />
+    <Compile Include="HelpDesk\DataSource\TIcketODS.cs" />
     <Compile Include="HelpDesk\DataSource\TicketStatusODS.cs" />
     <Compile Include="HelpDesk\DataSource\TicketTypeODS.cs" />
     <Compile Include="HelpDesk\Designer\MaintenanceForm.cs">
@@ -1935,10 +1994,17 @@
     <Compile Include="HelpDesk\Designer\SoftwareLicenseReport.Designer.cs">
       <DependentUpon>SoftwareLicenseReport.cs</DependentUpon>
     </Compile>
+    <Compile Include="HelpDesk\Designer\TicketReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HelpDesk\Designer\TicketReport.Designer.cs">
+      <DependentUpon>TicketReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="HelpDesk\ViewModel\MaintenanceFormVM.cs" />
     <Compile Include="HelpDesk\ViewModel\SoftwareLicenseVM.cs" />
     <Compile Include="HelpDesk\ViewModel\SupportGroupVM.cs" />
     <Compile Include="HelpDesk\ViewModel\TicketTypeVM.cs" />
+    <Compile Include="HelpDesk\ViewModel\TicketVM.cs" />
     <Compile Include="HRM\HRM\AttendanceLetter.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -3495,12 +3561,6 @@
     <Compile Include="Maintenance\Design\JobOrderPrintDesign.Designer.cs">
       <DependentUpon>JobOrderPrintDesign.cs</DependentUpon>
     </Compile>
-    <Compile Include="Maintenance\Design\JobRequest.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Maintenance\Design\JobRequest.Designer.cs">
-      <DependentUpon>JobRequest.cs</DependentUpon>
-    </Compile>
     <Compile Include="Maintenance\Design\JobRequestDesign.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -4832,6 +4892,9 @@
     <EmbeddedResource Include="Fleet\View\DryLoadingTimeSheetOnlyView.resx">
       <DependentUpon>DryLoadingTimeSheetOnlyView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\DryLoadingTimesheetSummary.resx">
+      <DependentUpon>DryLoadingTimesheetSummary.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\DumpTruckExternalTimesheetReport.resx">
       <DependentUpon>DumpTruckExternalTimesheetReport.cs</DependentUpon>
     </EmbeddedResource>
@@ -4841,14 +4904,17 @@
     <EmbeddedResource Include="Fleet\View\DumpTruckTimesheetReport.resx">
       <DependentUpon>DumpTruckTimesheetReport.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\DumpTruckTimesheetReportSummary.resx">
+      <DependentUpon>DumpTruckTimesheetReportSummary.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\EquipmentDetail.resx">
       <DependentUpon>EquipmentDetail.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\EquipmentDistrbution.resx">
       <DependentUpon>EquipmentDistrbution.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Fleet\View\EquipmentInspection.resx">
-      <DependentUpon>EquipmentInspection.cs</DependentUpon>
+    <EmbeddedResource Include="Fleet\View\EquipmentDistributionDesgn.resx">
+      <DependentUpon>EquipmentDistributionDesgn.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\EquipmentMaintenanceCost.resx">
       <DependentUpon>EquipmentMaintenanceCost.cs</DependentUpon>
@@ -4913,6 +4979,21 @@
     <EmbeddedResource Include="Fleet\View\HeadOfficeSummary.resx">
       <DependentUpon>HeadOfficeSummary.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\JobOrder.resx">
+      <DependentUpon>JobOrder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\JobOrderReport.resx">
+      <DependentUpon>JobOrderReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\JobOrderStatus.resx">
+      <DependentUpon>JobOrderStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\JobReport.resx">
+      <DependentUpon>JobReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\JobRequest.resx">
+      <DependentUpon>JobRequest.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\LightVehicleExternalTimesheetReport.resx">
       <DependentUpon>LightVehicleExternalTimesheetReport.cs</DependentUpon>
     </EmbeddedResource>
@@ -4921,6 +5002,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\LightVehicleTimesheetSummaryReport.resx">
       <DependentUpon>LightVehicleTimesheetSummaryReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\LightVehicleTimesheetSummaryReportSummary.resx">
+      <DependentUpon>LightVehicleTimesheetSummaryReportSummary.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\MachinaryTimesheetSummaryReport.resx">
       <DependentUpon>MachinaryTimesheetSummaryReport.cs</DependentUpon>
@@ -4960,6 +5044,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\RentFromExternal.resx">
       <DependentUpon>RentFromExternal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Fleet\View\RentFromExternalPrintDesgin.resx">
+      <DependentUpon>RentFromExternalPrintDesgin.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\RentRequest.resx">
       <DependentUpon>RentRequest.cs</DependentUpon>
@@ -5047,6 +5134,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HelpDesk\Designer\SoftwareLicenseReport.resx">
       <DependentUpon>SoftwareLicenseReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HelpDesk\Designer\TicketReport.resx">
+      <DependentUpon>TicketReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\AttendanceLetter.resx">
       <DependentUpon>AttendanceLetter.cs</DependentUpon>
@@ -5605,9 +5695,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\JobOrderPrintDesign.resx">
       <DependentUpon>JobOrderPrintDesign.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Maintenance\Design\JobRequest.resx">
-      <DependentUpon>JobRequest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Maintenance\Design\JobRequestDesign.resx">
       <DependentUpon>JobRequestDesign.cs</DependentUpon>

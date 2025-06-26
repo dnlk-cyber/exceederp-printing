@@ -10,7 +10,7 @@
                             .Filter("contains")
                           .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("GetPayableItems", "FinanceDataProvider", new { area = "Finance" }))
+                          dataSource.Read(read => read.Action("GetPayableItems", "FinanceDataProvider", new { area = "Finance" }).Data("sendForgery"))
                                                 .ServerFiltering(false);
                       })
                          .ValuePrimitive(true)

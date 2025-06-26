@@ -99,10 +99,10 @@
 
               //model.Field(p => p.RequestDate).Editable(false);
           })
-          .Read(read => read.Action("FuelRequisitions_Read", "FuelRequisition"))
-          .Create(create => create.Action("FuelRequisitions_Create", "FuelRequisition"))
-          .Update(update => update.Action("FuelRequisitions_Update", "FuelRequisition"))
-          .Destroy(destroy => destroy.Action("FuelRequisitions_Destroy", "FuelRequisition"))
+          .Read(read => read.Action("FuelRequisitions_Read", "FuelRequisition").Data("sendForgery"))
+          .Create(create => create.Action("FuelRequisitions_Create", "FuelRequisition").Data("sendForgery"))
+          .Update(update => update.Action("FuelRequisitions_Update", "FuelRequisition").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("FuelRequisitions_Destroy", "FuelRequisition").Data("sendForgery"))
 
       ).Resizable(resize => resize.Columns(true))
       .ClientDetailTemplateId("FuelRequisitions"))
@@ -257,10 +257,10 @@
                               model.Field(p => p.LastModified).Editable(false);
 
                           })
-                          .Read(read => read.Action("FuelStoreRequisitionItems_Read", "FuelRequsitionItem", new { id = "#=StoreRequisitionID#" }))
-                          .Create(create => create.Action("FuelStoreRequisitionItems_Create", "FuelRequsitionItem", new { id = "#=StoreRequisitionID#" }))
-                          .Update(update => update.Action("FuelStoreRequisitionItems_Update", "FuelRequsitionItem"))
-                          .Destroy(destroy => destroy.Action("FuelStoreRequisitionItems_Destroy", "FuelRequsitionItem"))
+                          .Read(read => read.Action("FuelStoreRequisitionItems_Read", "FuelRequsitionItem", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                          .Create(create => create.Action("FuelStoreRequisitionItems_Create", "FuelRequsitionItem", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                          .Update(update => update.Action("FuelStoreRequisitionItems_Update", "FuelRequsitionItem").Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("FuelStoreRequisitionItems_Destroy", "FuelRequsitionItem").Data("sendForgery"))
                       ).ToClientTemplate())
             </text>
               );
@@ -300,10 +300,10 @@
                           {
                               model.Id(p => p.StoreRequisitionValidationID);
                           })
-                          .Read(read => read.Action("FuelRequisitionValidations_Read", "FuelRequsitionValidation", new { id = "#=StoreRequisitionID#" }))
-                          .Create(create => create.Action("FuelRequisitionValidations_Create", "FuelRequsitionValidation", new { id = "#=StoreRequisitionID#" }))
-                          .Update(update => update.Action("FuelRequisitionValidations_Update", "FuelRequsitionValidation"))
-                          .Destroy(destroy => destroy.Action("FuelRequisitionValidations_Destroy", "FuelRequsitionValidation"))
+                          .Read(read => read.Action("FuelRequisitionValidations_Read", "FuelRequsitionValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                          .Create(create => create.Action("FuelRequisitionValidations_Create", "FuelRequsitionValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+                          .Update(update => update.Action("FuelRequisitionValidations_Update", "FuelRequsitionValidation").Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("FuelRequisitionValidations_Destroy", "FuelRequsitionValidation").Data("sendForgery"))
 
                       ).ToClientTemplate())
 
@@ -337,10 +337,10 @@
               model.Id(p => p.StoreRequisitionPropertyValidationID);
               model.Field(p => p.Approver).Editable(false);
           } )
-          .Read(read => read.Action("FuelRequisitionPropertyValidations_Read", "FuelRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
-          .Create(create => create.Action("FuelRequisitionPropertyValidations_Create", "FuelRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }))
-          .Update(update => update.Action("FuelRequisitionPropertyValidations_Update", "FuelRequisitionPropertyValidation"))
-          .Destroy(destroy => destroy.Action("FuelRequisitionPropertyValidations_Destroy", "FuelRequisitionPropertyValidation"))
+          .Read(read => read.Action("FuelRequisitionPropertyValidations_Read", "FuelRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+          .Create(create => create.Action("FuelRequisitionPropertyValidations_Create", "FuelRequisitionPropertyValidation", new { id = "#=StoreRequisitionID#" }).Data("sendForgery"))
+          .Update(update => update.Action("FuelRequisitionPropertyValidations_Update", "FuelRequisitionPropertyValidation").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("FuelRequisitionPropertyValidations_Destroy", "FuelRequisitionPropertyValidation").Data("sendForgery"))
       ).ToClientTemplate()
     )
                                                                       </text>);*@

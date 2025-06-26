@@ -46,10 +46,10 @@
                       model.Field(p => p.LastModified).Editable(false);
                       model.Field(p => p.DateCreated).Editable(false);
                   })
-              .Read(read => read.Action("FleetBatteryAndTire_Read", "FleetBatteryAndTire"))
-              .Create(create => create.Action("FleetBatteryAndTire_Create", "FleetBatteryAndTire"))
-              .Update(update => update.Action("FleetBatteryAndTire_Update", "FleetBatteryAndTire"))
-              .Destroy(destroy => destroy.Action("FleetBatteryAndTire_Destroy", "FleetBatteryAndTire"))
+              .Read(read => read.Action("FleetBatteryAndTire_Read", "FleetBatteryAndTire").Data("sendForgery"))
+              .Create(create => create.Action("FleetBatteryAndTire_Create", "FleetBatteryAndTire").Data("sendForgery"))
+              .Update(update => update.Action("FleetBatteryAndTire_Update", "FleetBatteryAndTire").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("FleetBatteryAndTire_Destroy", "FleetBatteryAndTire").Data("sendForgery"))
           ))
 
 

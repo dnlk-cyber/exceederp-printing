@@ -36,10 +36,10 @@
                                          .Error("error_handler(\"grid\")")
                                          .RequestStart("onRequestStart(\"grid\")")
                                          .RequestEnd("onRequestEnd(\"grid\")"))
-                            .Read(read => read.Action("DumpTruckTimeSheets_Read", "DumpTruckTimeSheetSimple"))
-                            .Create(create => create.Action("DumpTruckTimeSheets_Create", "DumpTruckTimeSheetSimple"))
-                            .Update(update => update.Action("DumpTruckTimeSheets_Update", "DumpTruckTimeSheetSimple"))
-                            .Destroy(destroy => destroy.Action("DumpTruckTimeSheets_Destroy", "DumpTruckTimeSheetSimple"))
+                            .Read(read => read.Action("DumpTruckTimeSheets_Read", "DumpTruckTimeSheetSimple").Data("sendForgery"))
+                            .Create(create => create.Action("DumpTruckTimeSheets_Create", "DumpTruckTimeSheetSimple").Data("sendForgery"))
+                            .Update(update => update.Action("DumpTruckTimeSheets_Update", "DumpTruckTimeSheetSimple").Data("sendForgery"))
+                            .Destroy(destroy => destroy.Action("DumpTruckTimeSheets_Destroy", "DumpTruckTimeSheetSimple").Data("sendForgery"))
                         ).ClientDetailTemplateId("template")
 )
 
@@ -126,9 +126,9 @@
                                                                 .RequestStart("onRequestStart(\"TimeSheetApproval#=DumpTruckTimeSheetId#\")")
                                                                 .RequestEnd("onRequestEnd(\"TimeSheetApproval#=DumpTruckTimeSheetId#\")"))
 
-                                                                .Create(update => update.Action("DumpTruckTimeSheetApproval_Create", "DumpTruckTimeSheetSimple", new { Id = "#=DumpTruckTimeSheetId#" }))
-                                                                .Read(read => read.Action("DumpTruckTimeSheetApproval_Read", "DumpTruckTimeSheetSimple", new { Id = "#=DumpTruckTimeSheetId#" }))
-                                                                .Update(update => update.Action("DumpTruckTimeSheetApproval_Create", "DumpTruckTimeSheetSimple"))
+                                                                .Create(update => update.Action("DumpTruckTimeSheetApproval_Create", "DumpTruckTimeSheetSimple", new { Id = "#=DumpTruckTimeSheetId#" }).Data("sendForgery"))
+                                                                .Read(read => read.Action("DumpTruckTimeSheetApproval_Read", "DumpTruckTimeSheetSimple", new { Id = "#=DumpTruckTimeSheetId#" }).Data("sendForgery"))
+                                                                .Update(update => update.Action("DumpTruckTimeSheetApproval_Create", "DumpTruckTimeSheetSimple").Data("sendForgery"))
 
 
                                                             )

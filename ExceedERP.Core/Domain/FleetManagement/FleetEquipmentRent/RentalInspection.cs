@@ -47,6 +47,8 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent
         [Required]
         [DisplayName("Operator's License No.")]
         public string OperatorLicenceNo { get; set; }
+        [Display(Name ="Operator Name")]
+        public string OperatorName { get; set; }
         [Required]
         [DisplayName("Lessor")]
         public string Lessor { get; set; }

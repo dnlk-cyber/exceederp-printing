@@ -1,14 +1,22 @@
-﻿
+﻿<legend>Material Items</legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.InfoDesk.Support.MaterialItems>()
       .Name("grid")
       .Columns(columns =>
       {
-        columns.Bound(c => c.ItemName);
-        columns.Bound(c => c.Remark);
-        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          columns.Bound(c => c.ItemName).Width(200);
+          columns.ForeignKey(c => c.CategoryId, (System.Collections.IEnumerable)ViewData["category"], "Code", "Name").EditorTemplateName("Category").Width(200);
+          columns.ForeignKey(c => c.InventoryItemId, (System.Collections.IEnumerable)ViewData["inventoryItems"], "Code", "Name").EditorTemplateName("GetItem").Width(200);
+
+          //columns.ForeignKey(c => c.CategoryId);
+          //columns.Bound(c => c.InventoryItemId).EditorTemplateName("Item");
+          columns.Bound(c => c.Remark).Width(120);
+          columns.Command(command => {
+              command.Edit();
+              command.Destroy();
+          })/*.Width(180)*/;
       })
       .ToolBar(toolbar => {
-            toolbar.Create();
+          toolbar.Create();
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .Navigatable()
@@ -23,3 +31,12 @@
           .Destroy(destroy => destroy.Action("MaterialItems_Destroy", "MaterialItems").Data("sendForgery"))
       )
 )
+
+<script>
+    function getItemCode() {
+        return {
+            code: $("#CategoryId").val()
+        };
+
+    }
+</script>

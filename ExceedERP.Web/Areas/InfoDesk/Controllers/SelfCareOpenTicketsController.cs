@@ -10,7 +10,7 @@ using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.InfoDesk.Support;
 using System.Collections.Generic;
 using ExceedERP.Web.Areas.InfoDesk.Models;
-
+using ExceedERP.Core.Domain.InfoDesk;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
@@ -91,6 +91,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 TicketStatus = customerTicket.TicketStatus,
                 PriorityColor = customerTicket.PriorityColor,
                 Remark = customerTicket.Remark,
+                RequesterIPAddress = customerTicket.RequesterIPAddress,
                 TicketType_HelpDeskId = customerTicket.TicketType_HelpDeskId,
                 EmployeeId = customerTicket.EmployeeId,
                 AgeOfTicket = GetAge(customerTicket.DateCreated, customerTicket.ClosedDate, customerTicket.TicketStatus),
@@ -108,8 +109,17 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             var userName = User.Identity.Name;
 
             customerTicket_HelpDesk.EmployeeId = 0;
+            string ipAddress = Request.UserHostAddress;
 
-           var user = udb.Users.FirstOrDefault(x => x.UserName == userName);
+            // Handle reverse proxy or load balancer headers
+            string forwardedFor = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+            if (!string.IsNullOrEmpty(forwardedFor))
+            {
+                ipAddress = forwardedFor.Split(',')[0];
+                customerTicket_HelpDesk.RequesterIPAddress = ipAddress;
+            }
+
+            var user = udb.Users.FirstOrDefault(x => x.UserName == userName);
             if (user != null)
             {
                 customerTicket_HelpDesk.EmployeeId = Convert.ToInt32(user.EmployeeId);
@@ -127,6 +137,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Now,
                     Remark = customerTicket_HelpDesk.Remark,
+                    RequesterIPAddress = customerTicket_HelpDesk.RequesterIPAddress,
                     SolutionGiven = customerTicket_HelpDesk.SolutionGiven,
                     EmployeeId = customerTicket_HelpDesk.EmployeeId,
 
@@ -156,6 +167,8 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 ticket.DueDate = customerTicket_HelpDesk.DueDate;
                 ticket.CreatedBy = customerTicket_HelpDesk.CreatedBy;
                 ticket.DateCreated = customerTicket_HelpDesk.DateCreated;
+                ticket.RequesterIPAddress = customerTicket_HelpDesk.RequesterIPAddress;
+
                 ticket.LastModified = DateTime.Now;
                 ticket.TicketType_HelpDeskId = customerTicket_HelpDesk.TicketType_HelpDeskId;
                 ticket.ModifiedBy = User.Identity.Name;
@@ -223,7 +236,19 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             if (customerTicket.IsConfirmedByTheRequester)
             {
                 customerTicket.Rate = Convert.ToInt32(model.Rate);
-                customerTicket.TicketStatus = TicketStatus.Resolved;
+                customerTicket.TicketStatus =   TicketStatus.Resolved;
+                var entity = new InfoDeskKnowledgeBase
+                {
+                    Problem = customerTicket.RootCuase,
+                    Solution = customerTicket.SolutionGiven,
+                    DateCreated = DateTime.Now,
+                    CreatedBy = User.Identity.Name,
+                    ModifiedBy = null,
+                    LastModified = null
+
+                };
+                db.InfoDeskKnowledgeBases.Add(entity);
+
             }
             if (!customerTicket.IsConfirmedByTheRequester)
             {

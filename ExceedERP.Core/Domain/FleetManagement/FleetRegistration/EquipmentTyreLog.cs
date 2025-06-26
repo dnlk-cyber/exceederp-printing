@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -33,5 +34,16 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
        [NotMapped]
         public decimal DiffrenceOdoMeter { get; set; }
         public virtual Fleets Fleet { get; set; }
+        [DisplayName("Installed Date")]
+        [Required]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime InstalledDate { get; set; }
+        [DisplayName("Returned Date")]
+        [Required]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime ReturnedDate { get; set; }
+        public decimal ReturnedKmReading { get; set; }
     }
 }

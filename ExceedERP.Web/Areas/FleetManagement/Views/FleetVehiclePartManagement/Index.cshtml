@@ -14,6 +14,6 @@
       .Scrollable()
       .DataSource(dataSource => dataSource
           .Ajax()
-          .Read(read => read.Action("VehiclePartManagement_Read", "VehiclePartManagement"))
+          .Read(read => read.Action("VehiclePartManagement_Read", "VehiclePartManagement").Data("sendForgery"))
       )
 )

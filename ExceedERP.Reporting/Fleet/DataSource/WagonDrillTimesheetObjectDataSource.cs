@@ -48,7 +48,21 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                         if (equipmentName != null)
                             header.EquipmentName = equipmentName.Name;
                         header.PlateNumber = fleet.SerialNo;
-                        header.OwnerName = procurementSupplier?.Name == null ? db.Companies.FirstOrDefault()?.TradeName : "";
+                        if (fleet.IsExternal)
+                        {
+                            if (procurementSupplier != null)
+                            {
+                                header.OwnerName = procurementSupplier?.Name;
+                            }
+                            else
+                            {
+                                header.OwnerName = "";
+                            }
+                        }
+                        else
+                        {
+                            header.OwnerName = db.Companies.FirstOrDefault()?.TradeName;
+                        }
                         if (operatorName != null)
                             header.OperatorName = operatorName.FullName;
                         if (branch != null)
@@ -61,101 +75,94 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     header.Duration = from.ToString("MM/dd/yyyy") + "-" + to.ToString("MM/dd/yyyy");
 
                     header.Period = DateTime.Now.Month.ToString() + "," + DateTime.Now.Year.ToString();
+
                 }
             }
             
             return header;
         }
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<WagonDrillTimesheetViewModel> WagonDrillTimesheet(string fleetId, DateTime? from, DateTime? to, string businessUnitId, string categoryId, string subCategoryId)
+        public List<WagonDrillTimesheetViewModel> WagonDrillTimesheet(string fleetId, DateTime? from, DateTime? to, string IntExt, string businessUnitId, string categoryId, string subCategoryId)
         {
-            var list = new List<WagonDrillTimesheetViewModel>();
-            if (fleetId != null)
+            var result = new List<WagonDrillTimesheetViewModel>();
+
+            if (!Guid.TryParse(fleetId, out Guid FId)) return result;
+
+            var query = db.WagonDrillTimesheets.Where(x => x.CostSheetApproved && x.FleetsID == FId);
+
+            if (from.HasValue)
+                query = query.Where(x => x.Date >= from.Value.Date);
+
+            if (to.HasValue)
+                query = query.Where(x => x.Date <= to.Value.Date);
+
+            if (int.TryParse(businessUnitId, out int buId))
+                query = query.Where(x => x.BusinessUnitId == buId);
+
+            // Filter by internal or external fleet
+            if (!string.IsNullOrWhiteSpace(IntExt))
             {
-
-
-                var wagonDrillTimesheets = db.WagonDrillTimesheets.Where(x => x.CostSheetApproved).ToList();
-
-                if (fleetId != null)
-                {
-                    Guid FId = Guid.Parse(fleetId);
-                    wagonDrillTimesheets = wagonDrillTimesheets.Where(x => x.FleetsID == FId).ToList();
-                }
-                if (from.HasValue)
-                {
-                    wagonDrillTimesheets = wagonDrillTimesheets.Where(x => x.Date.Date >= from.Value.Date).ToList();
-                }
-                if (to.HasValue)
-                {
-                    wagonDrillTimesheets = wagonDrillTimesheets.Where(x => x.Date.Date <= to.Value.Date).ToList();
-                }
-                if (!string.IsNullOrWhiteSpace(businessUnitId))
-                {
-                    wagonDrillTimesheets = wagonDrillTimesheets.Where(x => x.BusinessUnitId == int.Parse(businessUnitId)).ToList();
-                }
-                if (!string.IsNullOrWhiteSpace(categoryId))
-                {
-                    Guid.TryParse(categoryId, out Guid id);
-                    List<WagonDrillTimesheet> wagonDrillList = new List<WagonDrillTimesheet>();
-                    var fleetFiltered = db.Fleets.Where(x => x.EquipmentIdentityID == id).ToList();
-                    foreach (var item in fleetFiltered)
-                    {
-                        var wagonDrillFiltered = wagonDrillTimesheets.Where(x => x.FleetsID == item.FleetsID).ToList();
-                        wagonDrillList.AddRange(wagonDrillFiltered);
-                    }
-                    wagonDrillTimesheets = wagonDrillList;
-                }
-                if (!string.IsNullOrWhiteSpace(subCategoryId))
-                {
-                    Guid.TryParse(subCategoryId, out Guid id);
-                    List<WagonDrillTimesheet> wagonDrillList = new List<WagonDrillTimesheet>();
-                    var fleetFiltered = db.Fleets.Where(x => x.EquipmentTypeID == id).ToList();
-                    foreach (var item in fleetFiltered)
-                    {
-                        var wagonDrillFiltered = wagonDrillTimesheets.Where(x => x.FleetsID == item.FleetsID).ToList();
-                        wagonDrillList.AddRange(wagonDrillFiltered);
-                    }
-                    wagonDrillTimesheets = wagonDrillList;
-                }
-                foreach (var wagonDrillTimesheet in wagonDrillTimesheets)
-                {
-                    var item = new WagonDrillTimesheetViewModel();
-                    var fleet = db.Fleets.Find(wagonDrillTimesheet.FleetsID);
-                    var equipmentId = fleet != null ? fleet.EquipmentTypeID.ToString() : "0";
-                    var equipment = db.EquipmentType.FirstOrDefault(x => x.EquipmentTypeID.ToString() == equipmentId);
-                    item.Date = wagonDrillTimesheet.Date;
-
-                    item.WorkItem = wagonDrillTimesheet.WorkItem;
-                    item.OperationNetWorkingHour = wagonDrillTimesheet.OperationNetWorkingHour;
-                    item.OperationDrilledHoleDepth = wagonDrillTimesheet.OperationDrilledHoleDepth;
-                    item.NumberOfHolesDrilled = wagonDrillTimesheet.NumberOfHolesDrilled;
-                    item.OperationRateForMeter = wagonDrillTimesheet.OperationRateForMeter;
-                    item.OperationAmount = Math.Round(item.OperationDrilledHoleDepth * item.NumberOfHolesDrilled * item.OperationRateForMeter, 2);
-                    item.IdleHour = wagonDrillTimesheet.IdleHour;
-                    item.IdleRateHour = wagonDrillTimesheet.IdleRateHour;
-                    item.IdleAmount = item.IdleHour * item.IdleRateHour;
-                    item.DownTime = wagonDrillTimesheet.DownTime;
-                    item.TotalAmountBeforeVAT = item.IdleAmount * item.OperationAmount;
-                    item.VAT = wagonDrillTimesheet.VAT;
-                    item.TotalAmount = item.TotalAmountBeforeVAT + item.TotalAmountBeforeVAT * item.VAT;
-                    item.FuelInLiter = wagonDrillTimesheet.FuelInLiter;
-                    item.FuelRate = wagonDrillTimesheet.FuelRate;
-                    item.FuelCost = item.FuelInLiter * item.FuelRate;
-                    item.LubricantCost = wagonDrillTimesheet.LubricantCost;
-                    item.Perdium = wagonDrillTimesheet.Perdium;
-                    item.Salary = wagonDrillTimesheet.Salary;
-                    item.MaintenanceCost = wagonDrillTimesheet.MaintenanceCost;
-                    item.TireCost = wagonDrillTimesheet.TireCost;
-                    item.Revenue = wagonDrillTimesheet.NumberOfHolesDrilled * wagonDrillTimesheet.OperationDrilledHoleDepth * wagonDrillTimesheet.RateInMeter;
-                    item.TotalCost = item.Perdium + item.Salary + item.LubricantCost + item.FuelCost + item.MaintenanceCost + item.TireCost;
-
-                    item.NetAmount = item.Revenue - item.TotalCost;
-
-                    list.Add(item);
-                }
-                return list.OrderBy(x => x.Date.Date).ToList();
+                bool isExternal = IntExt == "Rent";
+                var fleetIds = db.Fleets.Where(f => f.IsExternal == isExternal).Select(f => f.FleetsID).ToList();
+                query = query.Where(x => fleetIds.Contains(x.FleetsID));
             }
-            return list;
+
+            // Filter by category
+            if (Guid.TryParse(categoryId, out Guid catId))
+            {
+                var fleetIds = db.Fleets.Where(f => f.EquipmentIdentityID == catId).Select(f => f.FleetsID).ToList();
+                query = query.Where(x => fleetIds.Contains(x.FleetsID));
+            }
+
+            // Filter by subcategory
+            if (Guid.TryParse(subCategoryId, out Guid subCatId))
+            {
+                var fleetIds = db.Fleets.Where(f => f.EquipmentTypeID == subCatId).Select(f => f.FleetsID).ToList();
+                query = query.Where(x => fleetIds.Contains(x.FleetsID));
+            }
+
+            var fleetMap = db.Fleets.ToDictionary(f => f.FleetsID, f => f.EquipmentTypeID);
+            var equipmentMap = db.EquipmentType.ToDictionary(e => e.EquipmentTypeID, e => e);
+
+            var timesheets = query.ToList();
+
+            foreach (var ts in timesheets)
+            {
+                var vm = new WagonDrillTimesheetViewModel
+                {
+                    Date = ts.Date,
+                    WorkItem = ts.WorkItem,
+                    OperationNetWorkingHour = ts.OperationNetWorkingHour,
+                    OperationDrilledHoleDepth = ts.OperationDrilledHoleDepth,
+                    NumberOfHolesDrilled = ts.NumberOfHolesDrilled,
+                    OperationRateForMeter = ts.RateInMeter,
+                    OperationAmount = Math.Round(ts.OperationDrilledHoleDepth * ts.NumberOfHolesDrilled * ts.RateInMeter, 2),
+                    IdleHour = ts.IdleHour,
+                    IdleRateHour = ts.IdleRateHour,
+                    IdleAmount = ts.IdleHour * ts.IdleRateHour,
+                    DownTime = ts.DownTime,
+                    VAT = ts.VAT,
+                    FuelInLiter = ts.FuelInLiter,
+                    FuelRate = ts.FuelRate,
+                    FuelCost = ts.FuelInLiter * ts.FuelRate,
+                    LubricantCost = ts.LubricantCost,
+                    Perdium = ts.Perdium,
+                    Salary = ts.Salary,
+                    MaintenanceCost = ts.MaintenanceCost,
+                    TireCost = ts.TireCost,
+                };
+
+                // Computed Fields
+                vm.TotalAmountBeforeVAT = vm.OperationAmount + vm.IdleAmount;
+                vm.TotalAmount = vm.TotalAmountBeforeVAT + (vm.TotalAmountBeforeVAT * vm.VAT);
+                vm.Revenue = vm.OperationAmount + vm.IdleAmount;
+                vm.TotalCost = vm.Perdium + vm.Salary + vm.LubricantCost + vm.FuelCost + vm.MaintenanceCost + vm.TireCost;
+                vm.NetAmount = vm.Revenue - vm.TotalCost;
+
+                result.Add(vm);
+            }
+
+            return result.OrderBy(x => x.Date).ToList();
         }
     }
 }

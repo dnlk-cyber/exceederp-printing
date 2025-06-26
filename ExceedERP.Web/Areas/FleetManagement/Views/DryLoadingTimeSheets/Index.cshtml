@@ -14,17 +14,22 @@
                             .Columns(columns =>
                             {
                                 columns.Bound(c => c.DryLoadingTimeSheetId).Title("#").Width(60);
-                                //columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
-                                //columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
-                                //columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
+                                columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["category"], "Value", "Text").Width(120);
+                                columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["type"], "Value", "Text").Width(120);
+                                columns.ForeignKey(c => c.EquipmentNameId, (IEnumerable)ViewData["name"], "Value", "Text").Width(120);
 
                                 columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["fleet"], "FleetsID", "PlateNumber").Title("Equipment Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
                                 columns.ForeignKey(c => c.ProcurementSupplierID, (IEnumerable)ViewData["ProcurementSupplier"], "ProcurementSupplierID", "Name").Title("Supplier Name").Width(100);
                                 columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Value", "Text").Title("Branch Name").Width(100);
+                                columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessunit"], "Value", "Text").Title("Business unit").Width(100);
+                                columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["operator"], "Value", "Text").Title("Operator").Width(100);
+                                columns.Bound(c => c.OilConsumption).Width(100);
+                                columns.Bound(c => c.LubricantCost).Width(100);
                                 columns.Bound(c => c.WorkItem).Width(100);
                                 columns.Bound(c => c.FuelInLiter).Width(100);
                                 columns.Bound(c => c.WorkingHour).Width(100);
                                 columns.Bound(c => c.Downhour).Width(100);
+                                columns.Bound(c => c.DownReason).Width(100);
                                 columns.Bound(c => c.IdleHour).Width(100);
                                 columns.Bound(c => c.TripStartPlace).Title("Start Place").Width(100);
                                 columns.Bound(c => c.TriplArrivalPlace).Title("Arrival Place").Width(100);
@@ -59,10 +64,10 @@
                                              .Error("error_handler(\"grid\")")
                                              .RequestStart("onRequestStart(\"grid\")")
                                              .RequestEnd("onRequestEnd(\"grid\")"))
-                                .Read(read => read.Action("DryLoadingTimeSheets_Read", "DryLoadingTimeSheets"))
-                                .Create(create => create.Action("DryLoadingTimeSheets_Create", "DryLoadingTimeSheets"))
-                                .Update(update => update.Action("DryLoadingTimeSheets_Update", "DryLoadingTimeSheets"))
-                                .Destroy(destroy => destroy.Action("DryLoadingTimeSheets_Destroy", "DryLoadingTimeSheets"))
+                                .Read(read => read.Action("DryLoadingTimeSheets_Read", "DryLoadingTimeSheets").Data("sendForgery"))
+                                .Create(create => create.Action("DryLoadingTimeSheets_Create", "DryLoadingTimeSheets").Data("sendForgery"))
+                                .Update(update => update.Action("DryLoadingTimeSheets_Update", "DryLoadingTimeSheets").Data("sendForgery"))
+                                .Destroy(destroy => destroy.Action("DryLoadingTimeSheets_Destroy", "DryLoadingTimeSheets").Data("sendForgery"))
                             ).ClientDetailTemplateId("template")
 )
 
@@ -70,91 +75,96 @@
 <script id="template" type="text/kendo-tmpl">
 
     @(Html.Kendo().TabStrip()
-                                                   .Name("tabStrip_#=DryLoadingTimeSheetId#")
-                                                   .SelectedIndex(0)
-                                                   .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-                                                   .Items(items =>
-                                                   {
+                                                                   .Name("tabStrip_#=DryLoadingTimeSheetId#")
+                                                                   .SelectedIndex(0)
+                                                                   .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                                                   .Items(items =>
+                                                                   {
 
-                                                       items.Add().Text("Detail").Content(
-                                                            @<text>
-                                                                <legend>Detail</legend>
-                                                                <div class="box">
-                                                                    <div class="box-col">
+                                                                       items.Add().Text("Detail").Content(
+                                @<text>
+                                    <legend>Detail</legend>
+                                    <div class="box">
+                                        <div class="box-col">
 
-                                                                        # if (TimeSheetSendForAproval == false)
-                                                                        {#
+                                            # if (TimeSheetSendForAproval == false)
+                                            {#
 
-                                                                        <a onclick='return sendForApproval("#=DryLoadingTimeSheetId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
-                                                                        # }#
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row">
-                                                                    <div class="col-md-1">
-                                                                    </div>
-                                                                    <div class="col-md-6" style="margin-top:20px;">
-                                                                        <div class="form-group">
-                                                                            <label>Status</label>: <span>#=TimeSheetStatus#</span>
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label>Created By</label>: <span>#=CreatedBy#</span>
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label>Date Created</label>: <span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label>Approved By</label>: <span>#=TimeSheetApprovedBy#</span>
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label>Approved Date</label>: <span>#=kendo.toString(kendo.parseDate(TimeSheetApprovedDate), 'dd/MM/yyyy')#</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </text>
-                                                                                       ); items.Add().Text("Approval").Content(@<text>
+                                            <a onclick='return sendForApproval("#=DryLoadingTimeSheetId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                            # }#
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-1">
+                                        </div>
+                                        <div class="col-md-6" style="margin-top:20px;">
+                                            <div class="form-group">
+                                                <label>Status</label>: <span>#=TimeSheetStatus#</span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Created By</label>: <span>#=CreatedBy#</span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Date Created</label>: <span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Approved By</label>: <span>#=TimeSheetApprovedBy#</span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Approved Date</label>: <span>#=kendo.toString(kendo.parseDate(TimeSheetApprovedDate), 'dd/MM/yyyy')#</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    # if (TimeSheetSendForAproval == true&& TimeSheetApproved==true)
+                                    {#
 
-                                                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.TimeSheetApprovalNew>()
-                                                                                                                            .Name("TimeSheetApproval#=DryLoadingTimeSheetId#")
-                                                                                                                            .Columns(columns =>
-                                                                                                                            {
-                                                                                                                                columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+                                    <a onclick='return VoidTimeSheetRecord("#=DryLoadingTimeSheetId#")' href=' \#' title="Void TimeSheet Record"><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                    # }#
+                                </text>
+                                                ); items.Add().Text("Approval").Content(@<text>
 
-                                                                                                                                columns.Bound(o => o.Remark).Width(200);
-                                                                                                                                columns.Bound(c => c.CreatedBy).Width(150);
-                                                                                                                                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
-                                                                                                                                columns.Command(command => { command.Edit(); }).Width(250);
+                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet.TimeSheetApprovalNew>()
+                                                                        .Name("TimeSheetApproval#=DryLoadingTimeSheetId#")
+                                                                        .Columns(columns =>
+                                                                        {
+                                                                                    columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
 
-                                                                                                                            })
-                                                                                                                            .ToolBar(commands => commands.Create().Text("Approve Request"))
-                                                                                                                            .Events(ev =>
-                                                                                                                            {
-                                                                                                                                     ev.DataBound("approvalDataBound");
-                                                                                                                                 })
-                                                                                                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                                    .DataSource(dataSource => dataSource
-                                                                                                                                    .Ajax()
-                                                                                                                                    .PageSize(5)
-                                                                                                                                    .Model(model =>
-                                                                                                                                    {
-                                                                                                                                             model.Id(p => p.TimeSheetApprovalNewId);
-                                                                                                                                             model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                                                             model.Field(p => p.DateCreated).Editable(false);
-                                                                                                                                         })
-                                                                                                                                    .Events(ev => ev
-                                                                                                                                    .Error("error_handler(\"TimeSheetApproval#=DryLoadingTimeSheetId#\")")
-                                                                                                                                    .RequestStart("onRequestStart(\"TimeSheetApproval#=DryLoadingTimeSheetId#\")")
-                                                                                                                                    .RequestEnd("onRequestEnd(\"TimeSheetApproval#=DryLoadingTimeSheetId#\")"))
+                                                                                    columns.Bound(o => o.Remark).Width(200);
+                                                                                    columns.Bound(c => c.CreatedBy).Width(150);
+                                                                                    columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                                                                                    columns.Command(command => { command.Edit(); }).Width(250);
 
-                                                                                                                                    .Create(update => update.Action("DryLoadingTimeSheetApproval_Create", "DryLoadingTimeSheets", new { dryLoadId = "#=DryLoadingTimeSheetId#" }))
-                                                                                                                                    .Read(read => read.Action("DryLoadingTimeSheetApproval_Read", "DryLoadingTimeSheets", new { dryLoadId = "#=DryLoadingTimeSheetId#" }))
-                                                                                                                                    .Update(update => update.Action("DryLoadingTimeSheetApproval_Create", "DryLoadingTimeSheets"))
+                                                                                })
+                                                                        .ToolBar(commands => commands.Create().Text("Approve Request"))
+                                                                        .Events(ev =>
+                                                                        {
+                                                                                    ev.DataBound("approvalDataBound");
+                                                                                })
+                                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                .DataSource(dataSource => dataSource
+                                                                                .Ajax()
+                                                                                .PageSize(5)
+                                                                                .Model(model =>
+                                                                                {
+                                                                                            model.Id(p => p.TimeSheetApprovalNewId);
+                                                                                            model.Field(p => p.CreatedBy).Editable(false);
+                                                                                            model.Field(p => p.DateCreated).Editable(false);
+                                                                                        })
+                                                                                .Events(ev => ev
+                                                                                .Error("error_handler(\"TimeSheetApproval#=DryLoadingTimeSheetId#\")")
+                                                                                .RequestStart("onRequestStart(\"TimeSheetApproval#=DryLoadingTimeSheetId#\")")
+                                                                                .RequestEnd("onRequestEnd(\"TimeSheetApproval#=DryLoadingTimeSheetId#\")"))
+
+                                                                                .Create(update => update.Action("DryLoadingTimeSheetApproval_Create", "DryLoadingTimeSheets", new { dryLoadId = "#=DryLoadingTimeSheetId#" }).Data("sendForgery"))
+                                                                                .Read(read => read.Action("DryLoadingTimeSheetApproval_Read", "DryLoadingTimeSheets", new { dryLoadId = "#=DryLoadingTimeSheetId#" }).Data("sendForgery"))
+                                                                                .Update(update => update.Action("DryLoadingTimeSheetApproval_Create", "DryLoadingTimeSheets").Data("sendForgery"))
 
 
-                                                                                                                                )
-                                                                                                                                .ToClientTemplate())
-                                                                                    </text>
-                                                                                                    );
-                                                                }).ToClientTemplate())
+                                                                            )
+                                                                                                                                                                                    .ToClientTemplate())
+                                                </text>
+                                                                                                                                                    );
+                                                                                   }).ToClientTemplate())
 
 
 </script>
@@ -165,7 +175,8 @@
         var filterInput = dropdownlist.filterInput;
 
         return {
-            timeSheetEquipmentType: "@ViewBag.dryLoading",
+           // timeSheetEquipmentType: "@ViewBag.dryLoading",
+           timeSheetEquipmentType: "",
             equipmentIdentityId: $("#EquipmentCategoryId").val(),
             search: filterInput.val()
         };
@@ -258,6 +269,23 @@ function filterPlateNumber() {
             }
         });
     }
+    function VoidTimeSheetRecord(id) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TimeSheetVoidDryLoad", "DryLoadingTimeSheets", new { area = "FleetManagement" })',
+            data: { id: id },
+            success: function (result) {
+
+                alert(result);
+
+                location.reload(true);
+            },
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
 
     function approvalDataBound(e) {
         var grid = this;
@@ -276,6 +304,13 @@ function filterPlateNumber() {
      function fetchTimesheetEquipmentType() {
         return {
             timeSheetEquipmentType: "@ViewBag.dryLoading",
+            text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function handleFleetId() {
+        return {
+            equipmentNameId: $("#EquipmentNameId").val(),
+            
             text: $("#FleetsID").data("kendoDropDownList").filterInput.val(),
         }
     }

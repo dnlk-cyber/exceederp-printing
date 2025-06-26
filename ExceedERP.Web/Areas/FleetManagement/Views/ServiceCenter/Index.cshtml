@@ -111,7 +111,7 @@
               .Events(ev => ev.DetailExpand("MasterOnExpand"))
               .DataSource(dataSource => dataSource
             .Ajax()
-            .ServerOperation(false).Sort(x => x.Add(s => s.Num).Descending())
+            .Sort(x => x.Add(s => s.Num).Descending())
             .PageSize(6)
             .Model(model =>
                 {
@@ -122,10 +122,10 @@
                                                             .Error("error_handler(\"grid\")")
                                                             .RequestStart("onRequestStart(\"grid\")")
                                                             .RequestEnd("onRequestEnd(\"grid\")"))
-                    .Create(update => update.Action("JobOrder_Create", "JobOrder"))
-                                .Read(read => read.Action("ServiceCenter_Read", "ServiceCenter"))
-                        .Update(update => update.Action("JobOrder_Update", "ServiceCenter"))
-                                .Destroy(update => update.Action("JobOrder_Refer", "ServiceCenter"))
+                    .Create(update => update.Action("JobOrder_Create", "JobOrder").Data("sendForgery"))
+                                .Read(read => read.Action("ServiceCenter_Read", "ServiceCenter").Data("sendForgery"))
+                        .Update(update => update.Action("JobOrder_Update", "ServiceCenter").Data("sendForgery"))
+                                .Destroy(update => update.Action("JobOrder_Refer", "ServiceCenter").Data("sendForgery"))
 
         )
    .Events(events => events.DataBound("dataBound"))
@@ -320,8 +320,8 @@
                                                                                                                                                                            .Error("error_handler(\"JobOrderDetailgrid_#=JobOrderID#\")")
                                                                                                                                                                            .RequestStart("onRequestStart(\"JobOrderDetailgrid_#=JobOrderID#\")")
                                                                                                                                                                            .RequestEnd("onRequestEnd(\"JobOrderDetailgrid_#=JobOrderID#\")"))
-                                                                                                                                                                                             .Read(read => read.Action("OrderService", "JobOrderDetail", new { jobOrderID = "#=JobOrderID#" }))
-                                                                                                                                                                                            .Update(update => update.Action("JobOrderDetail_Approve", "JobOrderDetail"))
+                                                                                                                                                                                             .Read(read => read.Action("OrderService", "JobOrderDetail", new { jobOrderID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                                                                                                            .Update(update => update.Action("JobOrderDetail_Approve", "JobOrderDetail").Data("sendForgery"))
 
                               ).Events(events => events.DataBound("ServiceDataBound"))
                                                                                                                                                                                                 .ToClientTemplate())
@@ -340,165 +340,165 @@
                                                                                                 items.Add().Text("Component ").Content(@<text>
 
                                                                                                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ExternalComponent>()
-                                                                                                                                                                                                            .Name("Componentgrid_#=JobOrderID#")
-                                                                                                                                                                            .Columns(columns =>
-                                                                                                                                                                            {
-                                                                                                                                                                                                                columns.Bound(o => o.EnterpriseName).Width(156);
-                                                                                                                                                                                                                columns.Bound(o => o.MaintaingCompany).Width(120);
-                                                                                                                                                                                                                columns.Bound(o => o.Manufacturer).Width(120);
-                                                                                                                                                                                                                columns.Bound(o => o.Code).Width(120);
-                                                                                                                                                                                                                columns.Bound(o => o.Model).Width(120);
+.Name("Componentgrid_#=JobOrderID#")
+.Columns(columns =>
+{
+columns.Bound(o => o.EnterpriseName).Width(156);
+columns.Bound(o => o.MaintaingCompany).Width(120);
+columns.Bound(o => o.Manufacturer).Width(120);
+columns.Bound(o => o.Code).Width(120);
+columns.Bound(o => o.Model).Width(120);
 
-                                                                                                                                                                                                            })
-                                                                                                                                                                                                            .Editable(editable =>
-                                                                                                                                                                        {
-                                                                                                                                                                                                            editable.Mode(GridEditMode.PopUp).TemplateName("ComponentEditor");
-                                                                                                                                                                                                            editable.DisplayDeleteConfirmation("Are You Sure To Remove ");
-                                                                                                                                                                                                        })
-                                                                                                                                                                                               .ClientDetailTemplateId("ComponentDetailItemTemplate")
-                                                                                                                                                                               // .Groupable().Events(ev => ev.DetailExpand("onDetailServiceApproveExpandUser"))
-                                                                                                                                                                               .DataSource(dataSource => dataSource
-                                                                                                                                                                                .Ajax()
-                                                                                                                                                                                          .PageSize(5)
-                                                                                                                                                                                       .Model(model =>
-                                                                                                                                                                  {
-                                                                                                                                                                                                      model.Id(p => p.ExternalComponentId);
-
-
-                                                                                                                                                                                                  }).Events(ev => ev
-                                                                                                                                                                                                                                .Error("error_handler(\"Componentgrid_#=JobOrderID#\")")
-                                                                                                                                                                                                                                .RequestStart("onRequestStart(\"Componentgrid_#=JobOrderID#\")")
-                                                                                                                                                                                                                                .RequestEnd("onRequestEnd(\"Componentgrid_#=JobOrderID#\")"))
-                                                                                                                                                                                                                                                                                        .Create(create => create.Action("ExternalComponent_Create", "ExternalComponent", new { jobOrderID = "#=JobOrderID#" }))
-                                                                                                                                                                                                                                                            .Read(read => read.Action("ExternalComponent_Read", "ExternalComponent", new { jobOrderID = "#=JobOrderID#" }))
-                                                                                                                                                                                                                                          .Update(update => update.Action("ExternalComponent_Update", "ExternalComponent", new { jobOrderID = "#=JobOrderID#" }))
+})
+.Editable(editable =>
+{
+editable.Mode(GridEditMode.PopUp).TemplateName("ComponentEditor");
+editable.DisplayDeleteConfirmation("Are You Sure To Remove ");
+})
+.ClientDetailTemplateId("ComponentDetailItemTemplate")
+// .Groupable().Events(ev => ev.DetailExpand("onDetailServiceApproveExpandUser"))
+.DataSource(dataSource => dataSource
+.Ajax()
+.PageSize(5)
+.Model(model =>
+{
+model.Id(p => p.ExternalComponentId);
 
 
-
-                                                                                                                                                                                                          )
-                                                                                                                                                                                                .ToClientTemplate())
-                                                                                                </text>
-                                                                                    );
-
-
-                                                                                                        items.Add().Text(" Work Sheet").Content(@<text>
-
-                                                                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceCrewWorkLog>()
-                                                                                                                                                                                                            .Name("WorkLogrid_#=JobOrderID#")
-                                                                                                                                                                                    .Columns(columns =>
-                                                                                                                                                                                    {
-                                                                                                                                                                                                                                columns.ForeignKey(o => o.MecanicId, (System.Collections.IEnumerable)ViewData["Mechanic"], "MechanicCrewID", "FullName").EditorTemplateName("MechanicEditor").Width(100);
-                                                                                                                                                                                                                                columns.ForeignKey(o => o.JobOrderDetailId, (System.Collections.IEnumerable)ViewData["JobOrderDetail"], "JobOrderDetailID", "ServiceName").EditorTemplateName("JobDetailEditor").Width(100);
-
-                                                                                                                                                                                                                                columns.Bound(o => o.WorkingHoursMorningFrom).Format("{0:hh-mm}").EditorTemplateName("TimePicker").Width(60);
-                                                                                                                                                                                                                                columns.Bound(o => o.WorkingHoursMorningto).Format("{0:hh-mm}").EditorTemplateName("TimePicker").Width(60);
-                                                                                                                                                                                                                                columns.Bound(o => o.WorkingHoursAfternoonFrom).Format("{0:hh-mm}").EditorTemplateName("TimePicker").Width(60);
-                                                                                                                                                                                                                                columns.Bound(o => o.WorkingHoursAfternoonTo).Format("{0:hh-mm}").EditorTemplateName("TimePicker").Width(60);
-                                                                                                                                                                                                                                columns.Bound(o => o.CreatedBy).Width(80);
-                                                                                                                                                                                                                                columns.Bound(o => o.DateCreated).Format("{0:dd/MM/yyyy}").Width(80);
-                                                                                                                                                                                                                                columns.Bound(c => c.Status).EditorTemplateName("ApprovalEditor").Width(100);
-
-                                                                                                                                                                                                                                columns.Command(command => { command.Edit().Text("Approve"); }).Width(150);
-
-                                                                                                                                                                                                                            }).ToolBar(x => { x.Excel(); x.Pdf(); })
-                                                                                                                                                                                       .DataSource(dataSource => dataSource
-                                                                                                                                                                                        .Ajax()
-
-                                                                                                                                                                                        .PageSize(5)
-                                                                                                                                                                                               .Model(model =>
-                                                                                                                                                                          {
-                                                                                                                                                                                                                      model.Id(p => p.ServiceCrewWorkLogId);
-                                                                                                                                                                                                                      model.Field(p => p.DateCreated).Editable(false);
-                                                                                                                                                                                                                      model.Field(p => p.CreatedBy).Editable(false);
-                                                                                                                                                                                                                      model.Field(p => p.MecanicId).Editable(false);
-                                                                                                                                                                                                                      model.Field(p => p.JobOrderDetailId).Editable(false);
-                                                                                                                                                                                                                      model.Field(p => p.WorkingHoursAfternoonFrom).Editable(false);
-                                                                                                                                                                                                                      model.Field(p => p.WorkingHoursAfternoonTo).Editable(false);
-                                                                                                                                                                                                                      model.Field(p => p.WorkingHoursMorningFrom).Editable(false);
-                                                                                                                                                                                                                      model.Field(p => p.WorkingHoursMorningto).Editable(false);
-                                                                                                                                                                                                                  }).Events(ev => ev
-                                                                                                                                                                                                                                                            .Error("error_handler(\"WorkLogrid_#=JobOrderID#\")")
-                                                                                                                                                                                                                                                    .RequestStart("onRequestStart(\"WorkLogrid_#=JobOrderID#\")")
-                                                                                                                                                                                                                                                    .RequestEnd("onRequestEnd(\"WorkLogrid_#=JobOrderID#\")"))
-                                                                                                                                                                                                                                                                        .Create(c => c.Action("ServiceCrewWorkLog_Approve", "ServiceCrewWorkLog"))
-                                                                                                                                                                                                                                                                                                             .Read(read => read.Action("ServiceCrewWorkLog_Read", "ServiceCrewWorkLog", new { Id = "#=JobOrderID#" }))
-                                                                                                                                                                                                                                                                                                                        .Update(update => update.Action("ServiceCrewWorkLog_Approve", "ServiceCrewWorkLog"))
+}).Events(ev => ev
+.Error("error_handler(\"Componentgrid_#=JobOrderID#\")")
+.RequestStart("onRequestStart(\"Componentgrid_#=JobOrderID#\")")
+.RequestEnd("onRequestEnd(\"Componentgrid_#=JobOrderID#\")"))
+                                                    .Create(create => create.Action("ExternalComponent_Create", "ExternalComponent", new { jobOrderID = "#=JobOrderID#" }).Data("sendForgery"))
+                        .Read(read => read.Action("ExternalComponent_Read", "ExternalComponent", new { jobOrderID = "#=JobOrderID#" }).Data("sendForgery"))
+        .Update(update => update.Action("ExternalComponent_Update", "ExternalComponent", new { jobOrderID = "#=JobOrderID#" }).Data("sendForgery"))
 
 
-                                                                                                                                                                                                                          ).Events(events => events.DataBound("WorkSheetDataBound"))
-                                                                                                                                                                                                        .ToClientTemplate())
-                                                                                                        </text>
-                                                                                            );
 
-                                                                                                                items.Add().Text(" Follow-Ups").Content(@<text>
-
-                                                                                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.FollowUp>()
-                                                                                                                                                                                                                    .Name("Followupsgrid_#=JobOrderID#")
-                                                                                                                                                                                            .Columns(columns =>
-                                                                                                                                                                                            {
-                                                                                                                                                                                                                                                columns.Bound(o => o.DurationHr).EditorTemplateName("NumEditor").Width(100);
-                                                                                                                                                                                                                                                columns.Bound(o => o.Status).EditorTemplateName("FollowupType").Width(200);
-                                                                                                                                                                                                                                                columns.Bound(o => o.DateCreated).Format("{0:yyyy-MM-dd}").Width(100).Width(100);
-
-                                                                                                                                                                                                                                            })
-                                                                                                                                                                                                                     .ToolBar(x => { x.Excel(); x.Pdf(); })
-                                                                                                                                                                                               .DataSource(dataSource => dataSource
-                                                                                                                                                                                                .Ajax()
-
-                                                                                                                                                                                                .PageSize(5)
-                                                                                                                                                                                                       .Model(model =>
-                                                                                                                                                                                  {
-                                                                                                                                                                                                                                      model.Id(p => p.FollowUpId);
-                                                                                                                                                                                                                                      model.Field(p => p.DateCreated).Editable(false);
-
-                                                                                                                                                                                                                                  }).Events(ev => ev
-                                                                                                                                                                                                                                                            .Error("error_handler(\"Followupsgrid_#=JobOrderID#\")")
-                                                                                                                                                                                                                                                            .RequestStart("onRequestStart(\"Followupsgrid_#=JobOrderID#\")")
-                                                                                                                                                                                                                                                            .RequestEnd("onRequestEnd(\"Followupsgrid_#=JobOrderID#\")"))
-                                                                                                                                                                                                                                                                                    .Create(create => create.Action("FollowUp_Create", "FollowUp", new { Id = "#=JobOrderID#" }))
-                                                                                                                                                                                                                                                                                             .Read(read => read.Action("FollowUp_Read", "FollowUp", new { Id = "#=JobOrderID#" }))
-                                                                                                                                                                                                                                                                                                .Update(update => update.Action("FollowUp_Update", "FollowUp"))
-                                                                                                                                                                                                                                                                                                 .Destroy(destroy => destroy.Action("FollowUp_Destory", "FollowUp"))
-
-                                                                                                                                                                                                                          )
-                                                                                                                                                                                                                .ToClientTemplate())
-                                                                                                                </text>
-                                                                                                    );
-
-                                                                                                                        items.Add().Text("Service History").Content(@<text>
-
-                                                                                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.JobOrderDetail>()
-                                                                                                                                                                                                                            .Name("ServiceHistorygrid_#=JobOrderID#")
-                                                                                                                                                                                                   .Columns(columns =>
-                                                                                                                                                                                                    {
-                                                                                                                                                                                                                                                                columns.Bound(o => o.ServiceName).EditorTemplateName("ServiceBinding").Width(156);
-                                                                                                                                                                                                                                                                columns.Bound(o => o.DateCreated).Format("{0:yyyy-MM-dd}").Width(100).Width(200);
-                                                                                                                                                                                                                                                                columns.Bound(o => o.Remark).Width(200);
-                                                                                                                                                                                                                                                                columns.Command(command => { }).Width(50);
-
-                                                                                                                                                                                                                                                            })
-
-                                                                                                                                                                                                       .DataSource(dataSource => dataSource
-                                                                                                                                                                                                        .Ajax()
-                                                                                                                                                                                                                  .Group(x => x.Add(p => p.Section))
-                                                                                                                                                                                                        .PageSize(5)
-                                                                                                                                                                                                               .Model(model =>
-                                                                                                                                                                                          {
-                                                                                                                                                                                                                                                      model.Id(p => p.JobOrderDetailID);
-                                                                                                                                                                                                                                                      model.Field(p => p.Section).Editable(false);
-
-                                                                                                                                                                                                                                                  }).Events(ev => ev
-                                                                                                                                                                                                                                                                    .Error("error_handler(\"ServiceHistorygrid_#=JobOrderID#\")")
-                                                                                                                                                                                                                                                                    .RequestStart("onRequestStart(\"ServiceHistorygrid_#=JobOrderID#\")")
-                                                                                                                                                                                                                                                                    .RequestEnd("onRequestEnd(\"ServiceHistorygrid_#=JobOrderID#\")"))
-                                                                                                                                                                                                                                                                                     .Read(read => read.Action("EquipmentServiceHistory_Read", "ServiceCenter", new { JId = "#=JobOrderID#", Id = "#=FleetsID#" }))
-
-                                                                                                                                                                                                                                   )
-                                                                                                    .ToClientTemplate())
-                                                                                                                        </text>
+)
+.ToClientTemplate())
+</text>
 );
-                                                                                                                            })
-                                                                                                                                                                                                                                                                                                                                                    .ToClientTemplate())
+
+
+items.Add().Text(" Work Sheet").Content(@<text>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceCrewWorkLog>()
+.Name("WorkLogrid_#=JobOrderID#")
+.Columns(columns =>
+{
+columns.ForeignKey(o => o.MecanicId, (System.Collections.IEnumerable)ViewData["Mechanic"], "MechanicCrewID", "FullName").EditorTemplateName("MechanicEditor").Width(100);
+columns.ForeignKey(o => o.JobOrderDetailId, (System.Collections.IEnumerable)ViewData["JobOrderDetail"], "JobOrderDetailID", "ServiceName").EditorTemplateName("JobDetailEditor").Width(100);
+
+columns.Bound(o => o.WorkingHoursMorningFrom).Format("{0:hh-mm}").EditorTemplateName("TimePicker").Width(60);
+columns.Bound(o => o.WorkingHoursMorningto).Format("{0:hh-mm}").EditorTemplateName("TimePicker").Width(60);
+columns.Bound(o => o.WorkingHoursAfternoonFrom).Format("{0:hh-mm}").EditorTemplateName("TimePicker").Width(60);
+columns.Bound(o => o.WorkingHoursAfternoonTo).Format("{0:hh-mm}").EditorTemplateName("TimePicker").Width(60);
+columns.Bound(o => o.CreatedBy).Width(80);
+columns.Bound(o => o.DateCreated).Format("{0:dd/MM/yyyy}").Width(80);
+columns.Bound(c => c.Status).EditorTemplateName("ApprovalEditor").Width(100);
+
+columns.Command(command => { command.Edit().Text("Approve"); }).Width(150);
+
+}).ToolBar(x => { x.Excel(); x.Pdf(); })
+.DataSource(dataSource => dataSource
+.Ajax()
+
+.PageSize(5)
+.Model(model =>
+{
+model.Id(p => p.ServiceCrewWorkLogId);
+model.Field(p => p.DateCreated).Editable(false);
+model.Field(p => p.CreatedBy).Editable(false);
+model.Field(p => p.MecanicId).Editable(false);
+model.Field(p => p.JobOrderDetailId).Editable(false);
+model.Field(p => p.WorkingHoursAfternoonFrom).Editable(false);
+model.Field(p => p.WorkingHoursAfternoonTo).Editable(false);
+model.Field(p => p.WorkingHoursMorningFrom).Editable(false);
+model.Field(p => p.WorkingHoursMorningto).Editable(false);
+}).Events(ev => ev
+                        .Error("error_handler(\"WorkLogrid_#=JobOrderID#\")")
+                .RequestStart("onRequestStart(\"WorkLogrid_#=JobOrderID#\")")
+                .RequestEnd("onRequestEnd(\"WorkLogrid_#=JobOrderID#\")"))
+                                    .Create(c => c.Action("ServiceCrewWorkLog_Approve", "ServiceCrewWorkLog").Data("sendForgery"))
+                                                                            .Read(read => read.Action("ServiceCrewWorkLog_Read", "ServiceCrewWorkLog", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                    .Update(update => update.Action("ServiceCrewWorkLog_Approve", "ServiceCrewWorkLog").Data("sendForgery"))
+
+
+).Events(events => events.DataBound("WorkSheetDataBound"))
+.ToClientTemplate())
+</text>
+);
+
+items.Add().Text(" Follow-Ups").Content(@<text>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.FollowUp>()
+.Name("Followupsgrid_#=JobOrderID#")
+.Columns(columns =>
+{
+            columns.Bound(o => o.DurationHr).EditorTemplateName("NumEditor").Width(100);
+            columns.Bound(o => o.Status).EditorTemplateName("FollowupType").Width(200);
+            columns.Bound(o => o.DateCreated).Format("{0:yyyy-MM-dd}").Width(100).Width(100);
+
+        })
+.ToolBar(x => { x.Excel(); x.Pdf(); })
+.DataSource(dataSource => dataSource
+.Ajax()
+
+.PageSize(5)
+.Model(model =>
+{
+    model.Id(p => p.FollowUpId);
+    model.Field(p => p.DateCreated).Editable(false);
+
+}).Events(ev => ev
+                        .Error("error_handler(\"Followupsgrid_#=JobOrderID#\")")
+                        .RequestStart("onRequestStart(\"Followupsgrid_#=JobOrderID#\")")
+                        .RequestEnd("onRequestEnd(\"Followupsgrid_#=JobOrderID#\")"))
+                                                .Create(create => create.Action("FollowUp_Create", "FollowUp", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+                                                            .Read(read => read.Action("FollowUp_Read", "FollowUp", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+                                                            .Update(update => update.Action("FollowUp_Update", "FollowUp").Data("sendForgery"))
+                                                                .Destroy(destroy => destroy.Action("FollowUp_Destory", "FollowUp").Data("sendForgery"))
+
+)
+.ToClientTemplate())
+</text>
+);
+
+items.Add().Text("Service History").Content(@<text>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.JobOrderDetail>()
+.Name("ServiceHistorygrid_#=JobOrderID#")
+.Columns(columns =>
+{
+                            columns.Bound(o => o.ServiceName).EditorTemplateName("ServiceBinding").Width(156);
+                            columns.Bound(o => o.DateCreated).Format("{0:yyyy-MM-dd}").Width(100).Width(200);
+                            columns.Bound(o => o.Remark).Width(200);
+                            columns.Command(command => { }).Width(50);
+
+                        })
+
+.DataSource(dataSource => dataSource
+.Ajax()
+.Group(x => x.Add(p => p.Section))
+.PageSize(5)
+.Model(model =>
+{
+                    model.Id(p => p.JobOrderDetailID);
+                    model.Field(p => p.Section).Editable(false);
+
+                }).Events(ev => ev
+                                .Error("error_handler(\"ServiceHistorygrid_#=JobOrderID#\")")
+                                .RequestStart("onRequestStart(\"ServiceHistorygrid_#=JobOrderID#\")")
+                                .RequestEnd("onRequestEnd(\"ServiceHistorygrid_#=JobOrderID#\")"))
+                                                    .Read(read => read.Action("EquipmentServiceHistory_Read", "ServiceCenter", new { JId = "#=JobOrderID#", Id = "#=FleetsID#" }).Data("sendForgery"))
+
+)
+.ToClientTemplate())
+</text>
+);
+})
+.ToClientTemplate())
 </script>
 
 
@@ -545,10 +545,10 @@
                                                                                                                     .RequestStart("onRequestStart(\"ServiceToolapproval_#=JobOrderID#\")")
                                                                                                                     .RequestEnd("onRequestEnd(\"ServiceToolapproval_#=JobOrderID#\")"))
 
-                                             .Read(read => read.Action("ServiceToolByService", "ServiceTool", new { tserviceID = "#=JobOrderID#" }))
-                                                                      .Create(update => update.Action("ServiceTool_Create", "ServiceTool", new { tserviceID = "#=JobOrderID#" }))
-                                                                              .Update(destroy => destroy.Action("ServiceTool_Update", "ServiceTool", new { tserviceID = "#=JobOrderID#" }))
-                                                              .Destroy(destroy => destroy.Action("ServiceTool_Destroy", "ServiceTool"))
+                                             .Read(read => read.Action("ServiceToolByService", "ServiceTool", new { tserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                      .Create(update => update.Action("ServiceTool_Create", "ServiceTool", new { tserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                              .Update(destroy => destroy.Action("ServiceTool_Update", "ServiceTool", new { tserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                              .Destroy(destroy => destroy.Action("ServiceTool_Destroy", "ServiceTool").Data("sendForgery"))
                                      )
                                 .Pageable()
                                .ToClientTemplate())
@@ -592,10 +592,10 @@
                                       .Error("error_handler(\"ApproveServiceSparegrid_#=JobOrderID#\")")
                                       .RequestStart("onRequestStart(\"ApproveServiceSparegrid_#=JobOrderID#\")")
                                       .RequestEnd("onRequestEnd(\"ApproveServiceSparegrid_#=JobOrderID#\")"))
-                          .Create(update => update.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                          .Read(read => read.Action("ServiceSpareByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
-                                  .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
+                          .Create(update => update.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                          .Read(read => read.Action("ServiceSpareByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
+                                  .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
 
                       )
                       .Pageable()
@@ -643,10 +643,10 @@
                                               .Error("error_handler(\"ApprovalBatterygrid_#=JobOrderID#\")")
                                               .RequestStart("onRequestStart(\"ApprovalBatterygrid_#=JobOrderID#\")")
                                               .RequestEnd("onRequestEnd(\"ApprovalBatterygrid_#=JobOrderID#\")"))
-                          .Create(create => create.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                                  .Read(read => read.Action("ServiceSpareBatteryByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
-                                  .Update(update => update.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
+                          .Create(create => create.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                  .Read(read => read.Action("ServiceSpareBatteryByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
+                                  .Update(update => update.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
 
                       )
                       .Pageable()
@@ -695,10 +695,10 @@
                                                                                                 .Error("error_handler(\"ApproveOilgrid_#=JobOrderID#\")")
                                                                                                 .RequestStart("onRequestStart(\"ApproveOilgrid_#=JobOrderID#\")")
                                                                                                 .RequestEnd("onRequestEnd(\"ApproveOilgrid_#=JobOrderID#\")"))
-                                                       .Create(update => update.Action("ServiceOilLubricantSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                                                                                                            .Read(read => read.Action("ServiceSpareOilLubricantByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                                                                                                                                                 .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                                  .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                                                       .Create(update => update.Action("ServiceOilLubricantSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                            .Read(read => read.Action("ServiceSpareOilLubricantByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                                                                 .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                  .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
 
                                                                                               )
                             .Pageable()
@@ -744,10 +744,10 @@
                                   .Error("error_handler(\"ApproveTyregrid_#=JobOrderID#\")")
                                   .RequestStart("onRequestStart(\"ApproveTyregrid_#=JobOrderID#\")")
                                   .RequestEnd("onRequestEnd(\"ApproveTyregrid_#=JobOrderID#\")"))
-                      .Create(update => update.Action("ServiceTyreSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                      .Read(read => read.Action("ServiceSpareTyreByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                               .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                      .Create(update => update.Action("ServiceTyreSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                      .Read(read => read.Action("ServiceSpareTyreByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                               .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
                   )
                   .Pageable()
                   .ToClientTemplate())
@@ -791,10 +791,10 @@
                                   .Error("error_handler(\"ApproveOtherMaterialgrid_#=JobOrderID#\")")
                                   .RequestStart("onRequestStart(\"ApproveOtherMaterialgrid_#=JobOrderID#\")")
                                   .RequestEnd("onRequestEnd(\"ApproveOtherMaterialgrid_#=JobOrderID#\")"))
-                      .Create(update => update.Action("ServiceOtherSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                      .Read(read => read.Action("ServiceSpareOtherByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                              .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                      .Create(update => update.Action("ServiceOtherSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                      .Read(read => read.Action("ServiceSpareOtherByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                              .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
                   )
                   .Pageable()
                   .ToClientTemplate())
@@ -857,10 +857,10 @@
                                               .Error("error_handler(\"ComponentServiceSparegrid_#=ExternalComponentId#\")")
                                               .RequestStart("onRequestStart(\"ComponentServiceSparegrid_#=ExternalComponentId#\")")
                                               .RequestEnd("onRequestEnd(\"ComponentServiceSparegrid_#=ExternalComponentId#\")"))
-                                                           .Create(update => update.Action("ExternalServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentId#" }))
-                                                      .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentId#" }))
-                                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
-                                          .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentId#" }))
+                                                           .Create(update => update.Action("ExternalServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentId#" }).Data("sendForgery"))
+                                                      .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentId#" }).Data("sendForgery"))
+                                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
+                                          .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentId#" }).Data("sendForgery"))
 
                       )
                       .Pageable()
@@ -928,10 +928,10 @@
                                                                                     .Error("error_handler(\"ServiceToolgrid_#=JobOrderID#\")")
                                                                                     .RequestStart("onRequestStart(\"ServiceToolgrid_#=JobOrderID#\")")
                                                                                     .RequestEnd("onRequestEnd(\"ServiceToolgrid_#=JobOrderID#\")"))
-                                                   .Read(read => read.Action("ServiceToolByService", "ServiceTool", new { tserviceID = "#=JobOrderID#" }))
-                                                                          .Create(update => update.Action("ServiceTool_Create", "ServiceTool", new { tserviceID = "#=JobOrderID#" }))
-                                                                                  .Update(destroy => destroy.Action("ServiceTool_Update", "ServiceTool", new { tserviceID = "#=JobOrderID#" }))
-                                                                  .Destroy(destroy => destroy.Action("ServiceTool_Destroy", "ServiceTool"))
+                                                   .Read(read => read.Action("ServiceToolByService", "ServiceTool", new { tserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                          .Create(update => update.Action("ServiceTool_Create", "ServiceTool", new { tserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                  .Update(destroy => destroy.Action("ServiceTool_Update", "ServiceTool", new { tserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                  .Destroy(destroy => destroy.Action("ServiceTool_Destroy", "ServiceTool").Data("sendForgery"))
                                       )
                                 .Pageable()
                                .ToClientTemplate())
@@ -977,10 +977,10 @@
                               .Error("error_handler(\"ServiceSparegrid_#=JobOrderID#\")")
                               .RequestStart("onRequestStart(\"ServiceSparegrid_#=JobOrderID#\")")
                               .RequestEnd("onRequestEnd(\"ServiceSparegrid_#=JobOrderID#\")"))
-                          .Create(create => create.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                          .Read(read => read.Action("ServiceSpareByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
-                          .Update(update => update.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
+                          .Create(create => create.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                          .Read(read => read.Action("ServiceSpareByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
+                          .Update(update => update.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
 
                       )
                       .Pageable()
@@ -1028,10 +1028,10 @@
                                       .Error("error_handler(\"Batterygrid_#=JobOrderID#\")")
                                       .RequestStart("onRequestStart(\"Batterygrid_#=JobOrderID#\")")
                                       .RequestEnd("onRequestEnd(\"Batterygrid_#=JobOrderID#\")"))
-                          .Create(create => create.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                                  .Read(read => read.Action("ServiceSpareBatteryByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
-                          .Update(update => update.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
+                          .Create(create => create.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                  .Read(read => read.Action("ServiceSpareBatteryByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
+                          .Update(update => update.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
 
                       )
                       .Pageable()
@@ -1080,10 +1080,10 @@
                                                                                         .Error("error_handler(\"Oilgrid_#=JobOrderID#\")")
                                                                                         .RequestStart("onRequestStart(\"Oilgrid_#=JobOrderID#\")")
                                                                                         .RequestEnd("onRequestEnd(\"Oilgrid_#=JobOrderID#\")"))
-                                                       .Create(update => update.Action("ServiceOilLubricantSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                                                                                                            .Read(read => read.Action("ServiceSpareOilLubricantByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                                                                                                                                         .Update(destroy => destroy.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                                  .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                                                       .Create(update => update.Action("ServiceOilLubricantSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                            .Read(read => read.Action("ServiceSpareOilLubricantByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                                                         .Update(destroy => destroy.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                  .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
 
                                                                                               )
                             .Pageable()
@@ -1130,11 +1130,11 @@
                           .Error("error_handler(\"Tyregrid_#=JobOrderID#\")")
                           .RequestStart("onRequestStart(\"Tyregrid_#=JobOrderID#\")")
                           .RequestEnd("onRequestEnd(\"Tyregrid_#=JobOrderID#\")"))
-                      .Create(update => update.Action("ServiceTyreSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                      .Read(read => read.Action("ServiceSpareTyreByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                      .Update(update => update.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                      .Update(destroy => destroy.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                      .Create(update => update.Action("ServiceTyreSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                      .Read(read => read.Action("ServiceSpareTyreByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                      .Update(update => update.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                      .Update(destroy => destroy.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
                   )
                   .Pageable()
                   .ToClientTemplate())
@@ -1179,10 +1179,10 @@
                           .Error("error_handler(\"OtherMaterialgrid_#=JobOrderID#\")")
                           .RequestStart("onRequestStart(\"OtherMaterialgrid_#=JobOrderID#\")")
                           .RequestEnd("onRequestEnd(\"OtherMaterialgrid_#=JobOrderID#\")"))
-                      .Create(update => update.Action("ServiceOtherSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                      .Read(read => read.Action("ServiceSpareOtherByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                      .Update(destroy => destroy.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
-                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                      .Create(update => update.Action("ServiceOtherSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                      .Read(read => read.Action("ServiceSpareOtherByService", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                      .Update(destroy => destroy.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
                   )
                   .Pageable()
                   .ToClientTemplate())
@@ -1224,7 +1224,7 @@
                                                                                                         .Error("error_handler(\"OtherMaterialgrid_#=JobOrderID#\")")
                                                                                                         .RequestStart("onRequestStart(\"OtherMaterialgrid_#=JobOrderID#\")")
                                                                                                         .RequestEnd("onRequestEnd(\"OtherMaterialgrid_#=JobOrderID#\")"))
-                                                                                                                            .Read(read => read.Action("GetServiceRequisition", "ServiceCenter", new { Id = "#=JobOrderID#" }))
+                                                                                                                            .Read(read => read.Action("GetServiceRequisition", "ServiceCenter", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
 
                                                                                               )
                             .Pageable()
@@ -1268,9 +1268,9 @@
                                                                                                                 .Error("error_handler(\"SalvageStoregrid_#=JobOrderID#\")")
                                                                                                                 .RequestStart("onRequestStart(\"SalvageStoregrid_#=JobOrderID#\")")
                                                                                                                 .RequestEnd("onRequestEnd(\"SalvageStoregrid_#=JobOrderID#\")"))
-                                                                                                                                                                 .Create(update => update.Action("SalvageStoreRequistion_Create", "SalvageStore", new { Id = "#=JobOrderID#" }))
-                                                                                                                   .Read(read => read.Action("SalvageStoreRequstion_Read", "SalvageStore", new { Id = "#=JobOrderID#" }))
-                                                                                                                                               .Update(destroy => destroy.Action("SalvageStoreRequstion_Read", "SalvageStore", new { Id = "#=JobOrderID#" }))
+                                                                                                                                                                 .Create(update => update.Action("SalvageStoreRequistion_Create", "SalvageStore", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                                   .Read(read => read.Action("SalvageStoreRequstion_Read", "SalvageStore", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                                                               .Update(destroy => destroy.Action("SalvageStoreRequstion_Read", "SalvageStore", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
                                                                                           )
                                   .Pageable()
                             .ToClientTemplate())
@@ -1294,7 +1294,7 @@
                                                                                                                 .RequestStart("onRequestStart(\"CrewOnHandgrid_#=JobOrderID#\")")
                                                                                                                 .RequestEnd("onRequestEnd(\"CrewOnHandgrid_#=JobOrderID#\")"))
 
-                                                                                                   .Read(read => read.Action("OnHand_Read", "JobOrder", new { Id = "#=JobOrderID#" }))
+                                                                                                   .Read(read => read.Action("OnHand_Read", "JobOrder", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
 
                                                                                           )
                                   .Pageable()
@@ -1355,10 +1355,10 @@
                                               .Error("error_handler(\"ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#\")")
                                               .RequestStart("onRequestStart(\"ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#\")")
                                               .RequestEnd("onRequestEnd(\"ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#\")"))
-                          .Create(update => update.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }))
-                                          .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentDetailId#" }))
-                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
-                                          .Update(destroy => destroy.Action("ExServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }))
+                          .Create(update => update.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }).Data("sendForgery"))
+                                          .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentDetailId#" }).Data("sendForgery"))
+                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
+                                          .Update(destroy => destroy.Action("ExServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }).Data("sendForgery"))
 
                       )
                       .Pageable()
@@ -1423,9 +1423,9 @@
                                                                     .Error("error_handler(\"ComponentDetailgrid_#=ExternalComponentId#\")")
                                                                     .RequestStart("onRequestStart(\"ComponentDetailgrid_#=ExternalComponentId#\")")
                                                                     .RequestEnd("onRequestEnd(\"ComponentDetailgrid_#=ExternalComponentId#\")"))
-                                                                              .Create(create => create.Action("ExternalComponentDetail_Create", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }))
-                                                                                                                  .Read(read => read.Action("ExternalComponentDetail_Read", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }))
-                                                                                        .Update(update => update.Action("ExternalComponentDetail_Update", "ExternalComponentDetail"))
+                                                                              .Create(create => create.Action("ExternalComponentDetail_Create", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }).Data("sendForgery"))
+                                                                                                                  .Read(read => read.Action("ExternalComponentDetail_Read", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }).Data("sendForgery"))
+                                                                                        .Update(update => update.Action("ExternalComponentDetail_Update", "ExternalComponentDetail").Data("sendForgery"))
                             )
                             .Pageable()
                             .ToClientTemplate())
@@ -1471,8 +1471,8 @@
                                                       .Error("error_handler(\"ComponentDetailApprovalgrid_#=ExternalComponentId#\")")
                                                       .RequestStart("onRequestStart(\"ComponentDetailApprovalgrid_#=ExternalComponentId#\")")
                                                       .RequestEnd("onRequestEnd(\"ComponentDetailApprovalgrid_#=ExternalComponentId#\")"))
-                                                                                                                    .Read(read => read.Action("ExternalComponentDetail_Read", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }))
-                                                                                          .Update(update => update.Action("ExternalComponentDetail_Update", "ExternalComponentDetail"))
+                                                                                                                    .Read(read => read.Action("ExternalComponentDetail_Read", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }).Data("sendForgery"))
+                                                                                          .Update(update => update.Action("ExternalComponentDetail_Update", "ExternalComponentDetail").Data("sendForgery"))
 
                       )
                       .Pageable()
@@ -2098,9 +2098,9 @@
                                                                                                                                                          .Error("error_handler(\"ServiceCrewAssigngrid_#=JobOrderID#\")")
                                                                                                                                                          .RequestStart("onRequestStart(\"ServiceCrewAssigngrid_#=JobOrderID#\")")
                                                                                                                                                          .RequestEnd("onRequestEnd(\"ServiceCrewAssigngrid_#=JobOrderID#\")"))
-                                                                                          .Create(c => c.Action("Crew_Update", "ServiceCrew", new { cserviceID = "#=JobOrderID#" }))
-                                                                                                                                                    .Read(read => read.Action("ServiceCrewByService", "ServiceCrew", new { Id = "#=JobOrderID#" }))
-                                                                                                                                                                                                        .Update(destroy => destroy.Action("ServiceCrew_Update", "ServiceCrew", new { Id = "#=JobOrderID#" }))
+                                                                                          .Create(c => c.Action("Crew_Update", "ServiceCrew", new { cserviceID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                                                                    .Read(read => read.Action("ServiceCrewByService", "ServiceCrew", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                                                                                                                        .Update(destroy => destroy.Action("ServiceCrew_Update", "ServiceCrew", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
                                                                                                                                                )
                                                                                        .Pageable()
                                                                                  .ToClientTemplate())

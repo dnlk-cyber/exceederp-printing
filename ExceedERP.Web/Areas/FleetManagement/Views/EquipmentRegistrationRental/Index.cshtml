@@ -16,7 +16,7 @@
                           columns.Bound(e => e.PlateNumber).Width(100);
                           columns.Bound(e => e.Model).Width(100);
                           columns.Bound(e => e.SerialNo).Title("Serial/Chasis No.").Width(100);
-                          columns.ForeignKey(e => e.Location, (System.Collections.IEnumerable)ViewData["Branch"], "Id", "Name").Width(100);
+                          columns.Bound(e => e.Location).Width(100);
                           columns.Bound(e => e.ApprovalStatus).Hidden();
                           columns.Bound(e => e.LastModified).Hidden();
                           columns.Bound(e => e.EngineNumber).Width(80);
@@ -80,10 +80,10 @@
                                       .Error("error_handler(\"grid\")")
                                       .RequestStart("onRequestStart(\"grid\")")
                                       .RequestEnd("onRequestEnd(\"grid\")"))
-                                      .Create(update => update.Action("Fleets_Create", "EquipmentRegistrationRental"))
-                                      .Read(read => read.Action("RentalFleets_Read", "EquipmentRegistrationRental")/*.Data("FilterFleets")*/)
-                                      .Update(update => update.Action("Fleets_Update", "EquipmentRegistrationRental"))
-                                      .Destroy(update => update.Action("Fleets_Destroy", "EquipmentRegistrationRental"))
+                                      .Create(update => update.Action("Fleets_Create", "EquipmentRegistrationRental").Data("sendForgery"))
+                                      .Read(read => read.Action("RentalFleets_Read", "EquipmentRegistrationRental").Data("sendForgery")/*.Data("FilterFleets")*/)
+                                      .Update(update => update.Action("Fleets_Update", "EquipmentRegistrationRental").Data("sendForgery"))
+                                      .Destroy(update => update.Action("Fleets_Destroy", "EquipmentRegistrationRental").Data("sendForgery"))
                         )
                         .Events(events => events.DataBound("dataBound"))
 )
@@ -237,9 +237,9 @@ model.Field(p => p.Code).Editable(false);
                                                  .Error("error_handler(\"linechecklistgrid_#=FleetsID#\")")
                                                  .RequestStart("onRequestStart(\"linechecklistgrid_#=FleetsID#\")")
                                                  .RequestEnd("onRequestEnd(\"linechecklistgrid_#=FleetsID#\")"))
-                                                 .Read(read => read.Action("EquipmentCheckList_Read", "EquipmentRegistration", new { id = "#=FleetsID#" }))
-                                                 .Update(update => update.Action("EquipmentCheckList_Update", "EquipmentRegistration"))
-                                                 .Destroy(destroy => destroy.Action("EquipmentCheckList_Destroy", "EquipmentRegistration"))
+                                                 .Read(read => read.Action("EquipmentCheckList_Read", "EquipmentRegistration", new { id = "#=FleetsID#" }).Data("sendForgery"))
+                                                 .Update(update => update.Action("EquipmentCheckList_Update", "EquipmentRegistration").Data("sendForgery"))
+                                                 .Destroy(destroy => destroy.Action("EquipmentCheckList_Destroy", "EquipmentRegistration").Data("sendForgery"))
                                                  )
                                                 .ToClientTemplate())
                         </text>

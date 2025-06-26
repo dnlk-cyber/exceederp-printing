@@ -1,4 +1,5 @@
-﻿
+﻿@using DocumentFormat.OpenXml.Bibliography
+
 @{
     ViewBag.Title = "Tire Issue";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -9,18 +10,16 @@
     .Columns(columns =>
     {
         columns.Bound(e => e.IssueType).Width(140);
+        columns.Bound(e => e.DateCreated).Title("Issue Date").Width(140);
         columns.Bound(e => e.Brand).Width(140);
+        columns.Bound(e => e.StoreCode).Width(140);
         //columns.Bound(e => e.Quantity).Width(140);
-        columns.Bound(e => e.TireSize).Width(140);
+        columns.Bound(e => e.TireSize).Title("Tire Size").Width(140);
         columns.Bound(e => e.UnitPrice).Width(140);
-        columns.Bound(e => e.InstalledDate).Format(("{0:d}")).Width(200);
-       
-   
+        columns.Bound(e => e.InstalledDate).Format(("{0:d}")).Width(200);  
         columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
-
-
     })
-                                                  .ToolBar(commands => commands.Create())
+      .ToolBar(commands => commands.Create())
       .Editable(editable =>
       {
           editable.Mode(GridEditMode.PopUp).TemplateName("TireIssueEditor");
@@ -42,17 +41,16 @@
      
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
              .Events(events => events.Error("error_handler").Sync("sync_handler"))
         .Model(model =>
               {
                   model.Id(p => p.TireIssueID);
                
               })
-                .Create(update => update.Action("TireIssue_Create", "TireIssue"))
-                .Read(read => read.Action("TireIssue_Read", "TireIssue"))
-                .Update(update => update.Action("TireIssue_Update", "TireIssue"))
-                .Destroy(update => update.Action("TireIssue_Destroy", "TireIssue"))
+                .Create(update => update.Action("TireIssue_Create", "TireIssue").Data("sendForgery"))
+                .Read(read => read.Action("TireIssue_Read", "TireIssue").Data("sendForgery"))
+                .Update(update => update.Action("TireIssue_Update", "TireIssue").Data("sendForgery"))
+                .Destroy(update => update.Action("TireIssue_Destroy", "TireIssue").Data("sendForgery"))
   )
 )
 

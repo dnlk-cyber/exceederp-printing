@@ -3,6 +3,7 @@ using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Fleet.ViewModel;
 using System;
+using ExceedERP.Core.Domain.Maintenance;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;

@@ -58,16 +58,16 @@
 
                               .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
+       
               .Model(model => model.Id(p => p.EquipmentPlanandEvaluationsID))
                                        .Events(ev => ev
                                       .Error("error_handler(\"grid\")")
                                       .RequestStart("onRequestStart(\"grid\")")
                                       .RequestEnd("onRequestEnd(\"grid\")"))
-                                   .Create(update => update.Action("EquipmentPlanandEvaluations_Create", "EquipmentPlanandEvaluations"))
-                                          .Read(read => read.Action("EquipmentPlanandEvaluations_Read", "EquipmentPlanandEvaluations"))
-                                          .Update(update => update.Action("EquipmentPlanandEvaluations_Update", "EquipmentPlanandEvaluations"))
-                                    .Destroy(update => update.Action("EquipmentPlanandEvaluations_Destroy", "EquipmentPlanandEvaluations"))
+                                   .Create(update => update.Action("EquipmentPlanandEvaluations_Create", "EquipmentPlanandEvaluations").Data("sendForgery"))
+                                          .Read(read => read.Action("EquipmentPlanandEvaluations_Read", "EquipmentPlanandEvaluations").Data("sendForgery"))
+                                          .Update(update => update.Action("EquipmentPlanandEvaluations_Update", "EquipmentPlanandEvaluations").Data("sendForgery"))
+                                    .Destroy(update => update.Action("EquipmentPlanandEvaluations_Destroy", "EquipmentPlanandEvaluations").Data("sendForgery"))
   )
 )
 
@@ -169,9 +169,9 @@
                                                     .Error("error_handler(\"Approval#=EquipmentPlanandEvaluationsID#\")")
                                                     .RequestStart("onRequestStart(\"Approval#=EquipmentPlanandEvaluationsID#\")")
                                                     .RequestEnd("onRequestEnd(\"Approval#=EquipmentPlanandEvaluationsID#\")"))
-                                                                                                                   .Create(update => update.Action("EquipmentPlanandEvaluations_Approve", "PlanAndEvaluationApproval", new { EId = "#=EquipmentPlanandEvaluationsID#" }))
-                                                                                                     .Read(read => read.Action("EquipmentPlanEvaluationApproval_Read", "PlanAndEvaluationApproval", new { EId = "#=EquipmentPlanandEvaluationsID#" }))
-                                                                                   .Update(update => update.Action("EquipmentPlanandEvaluations_Approve", "PlanAndEvaluationApproval"))
+                                                                                                                   .Create(update => update.Action("EquipmentPlanandEvaluations_Approve", "PlanAndEvaluationApproval", new { EId = "#=EquipmentPlanandEvaluationsID#" }).Data("sendForgery"))
+                                                                                                     .Read(read => read.Action("EquipmentPlanEvaluationApproval_Read", "PlanAndEvaluationApproval", new { EId = "#=EquipmentPlanandEvaluationsID#" }).Data("sendForgery"))
+                                                                                   .Update(update => update.Action("EquipmentPlanandEvaluations_Approve", "PlanAndEvaluationApproval").Data("sendForgery"))
 
 
                                                       )
