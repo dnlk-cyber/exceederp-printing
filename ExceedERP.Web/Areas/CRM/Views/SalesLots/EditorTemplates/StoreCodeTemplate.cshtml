@@ -1,0 +1,14 @@
+﻿
+@(Html.Kendo().DropDownListFor(m => m)
+        .OptionLabel("Select Store...")
+        .DataTextField("Name")
+        .DataValueField("Id")
+        .Filter("contains")
+        .CascadeFrom("BranchId") 
+        .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read.Action("GetStore", "TenderDataProvider", new {salesLotParticipantId = "#=SalesLotParticipantId#" }).Data("sendForgery"))
+                      .ServerFiltering(true);
+        })
+)
+@Html.ValidationMessageFor(m => m)

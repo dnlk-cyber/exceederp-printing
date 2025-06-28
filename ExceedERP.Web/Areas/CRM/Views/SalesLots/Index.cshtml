@@ -1,0 +1,962 @@
+﻿@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.CRM.TenderManagement
+@{
+    ViewBag.Title = "Sale Lots";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Sales lots</legend>
+@(Html.Kendo().Grid<SalesLot>()
+                                                .Name("grid")
+                                                .Columns(columns =>
+                                                {
+                                                    columns.Bound(c => c.SalesLotId).Visible(false);
+                                                    columns.Bound(c => c.LotName);
+                                                    columns.Bound(c => c.BidParticpatePlace).Title("Bid Participation Place");
+                                                    columns.ForeignKey(c => c.SaleTenderId, (IEnumerable)ViewData["tender"], "Value", "Text").Title("Tender Name").Width(200).EditorTemplateName("Tender");
+                                                    columns.ForeignKey(c => c.BusinessUnitiId, (IEnumerable)ViewData["businessunit"], "Code", "Name").EditorTemplateName("BusinessUnitSelector").Title("Business Unit").Width(200);
+                                                    columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "Code", "Name").EditorTemplateName("BranchSelector").Title("Branch Name").Width(200);
+                                                    columns.ForeignKey(c => c.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").EditorTemplateName("StoreCodeSelector").Title("Store").Width(200);
+
+                                                    columns.Bound(c => c.Description);/*.ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Description ? checked='checked' :'' \\# />");*/
+                                                    columns.Command(command =>
+                                                    {
+                                                        command.Edit();
+                                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                    }).Width(200);
+
+
+                                                })
+                                                .ToolBar(toolbar =>
+                                                {
+                                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+                                                })
+                                                .Events(ev => ev.DetailExpand("detailExpandMasterDepartment"))
+                                                .Events(x => x.DataBound("onDataBoundMasterSalesLot"))
+                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                 .Scrollable(s => s.Height(900))
+                                                .DataSource(dataSource => dataSource
+                                                    .Ajax()
+                                                    .Events(events =>
+
+                                                        events.Error("error_handler(\"grid\")")
+                                                           .RequestStart("onRequestStart(\"grid\")")
+                                                           .RequestEnd("onRequestEnd(\"grid\")"))
+
+
+
+                                                .Model(model => model.Id(p => p.SalesLotId))
+                                                .Read(read => read.Action("SalesLots_Read", "SalesLots").Data("sendForgery"))
+                                                .Create(create => create.Action("SalesLots_Create", "SalesLots").Data("sendForgery"))
+                                                .Update(update => update.Action("SalesLots_Update", "SalesLots").Data("sendForgery"))
+                                                .Destroy(destroy => destroy.Action("SalesLots_Destroy", "SalesLots").Data("sendForgery"))
+                                                .Sort(sort=>sort.Add("SalesLotId").Descending())
+    ).ClientDetailTemplateId("sales_slot_item")
+)
+
+
+<script id="sales_slot_item" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                                                                        .Name("SalesLotDetails_#=SalesLotId#")
+                                                                                                        .SelectedIndex(0)
+                                                                                                        .Items(items =>
+                                                                                                        {
+                                                                                                            items.Add().Text("Detail").Content( @<text>
+                                                                                                                <hr />
+                                                                                                                # if (!IsOnlineApproved&&!IsSendForApproval)
+                                                                                                                {#
+                                                                                                                <a onclick='return sendForApproval("#=SalesLotId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                                                                                <br />
+                                                                                                                # } #
+                                                                                                                # if (IsOnlineApproved&&!IsVoid&&!IsSendForInvoice)
+                                                                                                                {#
+
+                                                                                                                <a onclick='return ToCashSalesInvoice("#=SalesLotId#")' href='\#' title='To cash sales invoice'><i class='fa  fa-caret-square-o-right fa-2x' style='color:dodgerblue'></i></a>
+
+                                                                                                                # } #
+                                                                                                                @*# if (IsOnlineApproved&&!IsVoid)
+                                                                                                                    {#
+
+                                                                                                                    <a href='@Url.Action("TenderParticipant","TenderParticipantReport")/#=SalesLotId#' target="_blank" title="Print Participants"><i class='fa  fa-print fa-2x' style='color:dodgerblue'></i></a>
+
+                                                                                                                    # } #*@
+                                                                                                                # if (IsOnlineApproved&&!IsVoid)
+                                                                                                                {#
+
+                                                                                                                <a href='@Url.Action("TenderParticipantWinner","TenderParticipantReport")/#=SalesLotId#' target="_blank" title="Print Winner"><i class='fa  fa-print fa-2x' style='color:dodgerblue'></i></a>
+
+                                                                                                                # } #
+                                                                                                                <div>
+                                                                                                                    <hr>
+                                                                                                                    <dl class="dl-horizontal">
+
+                                                                                                                        <dt>
+                                                                                                                            CreatedOn
+                                                                                                                        </dt>
+                                                                                                                        <dd>
+                                                                                                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                                                                                                                        </dd>
+                                                                                                                        <dt>
+                                                                                                                            CreatedBy
+                                                                                                                        </dt>
+                                                                                                                        <dd>
+                                                                                                                            #= CreatedBy #
+
+                                                                                                                        </dd>
+                                                                                                                        <dt>
+                                                                                                                            Modified By
+                                                                                                                        </dt>
+                                                                                                                        <dd>
+                                                                                                                            #= ModifiedBy #
+                                                                                                                        </dd>
+                                                                                                                        <dt>
+                                                                                                                            Modified Date
+                                                                                                                        </dt>
+                                                                                                                        <dd>
+                                                                                                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                                                                        </dd>
+                                                                                                                    </dl>
+
+                                                                                                                </div>
+                                                                                                                <hr>
+
+                                                                                                                # if (IsOnlineApproved&&!IsVoid&&!IsSendForInvoice)
+                                                                                                                {#
+
+                                                                                                                <a onclick='return voidRecord("#=SalesLotId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+
+                                                                                                                # } #
+
+                                                                                                            </text>);
+                                                                                                                    items.Add().Text("Item").Content(
+                                @<text>
+                                    @salesLotDetail()
+                                </text>);
+                                                                                                        items.Add().Text("Purchase").Content(
+                    @<text>
+                        @salesLotPurchase()
+                    </text>);
+                                                                                                        items.Add().Text("Document Validation").Content(
+        @<text>
+            @LotEvaluationByDocument()
+        </text>);
+                                                                                                        items.Add().Text("Participant").Content(
+@<text>
+    @salesLotParticipant()
+</text>);
+
+                                                                                                            items.Add().Text("Winners").Content(
+        @<text>
+
+            @Winner()
+        </text>);
+
+                                                                                                                    items.Add().Text("Validation").Content(
+                @<text>
+
+                    @winnerValidation()
+                </text>);
+
+
+
+
+                                                                                                                        }).ToClientTemplate()
+    )
+</script>
+
+
+@helper salesLotPurchase()
+{
+
+    @(Html.Kendo().Grid<SalesLotPurchase>()
+                                                .Name("SalesLotPurchase_grid#=SalesLotId#")
+                                                .Columns(columns =>
+                                                {
+                                                    columns.Bound(c => c.PurchaseDate).Width(150);
+                                                    columns.Bound(c => c.ReceiptNotRequired).Width(150).Title("Reciept Required?").ClientTemplate(
+                                                                "<input type='checkbox' disabled = 'true' value='\\#= ReceiptNotRequired \\#' " +
+                                                                "\\# if (ReceiptNotRequired) { \\#" +
+                                                                "checked='checked'" +
+                                                                "\\# } \\#" +
+                                                                "/>"
+                                                                );
+                                                    columns.Bound(c => c.ReceiptNo).Width(150);
+                                                    columns.Bound(c => c.CustomerName).Title("Customer Name").Width(150);
+                                                    columns.Bound(c => c.TinNumber).Width(90);
+                                                    columns.Bound(c => c.Representative).Width(150);
+                                                    columns.Bound(c => c.Address).Width(150);
+                                                    columns.Bound(c => c.Telephone).Width(150);
+                                                    columns.Bound(c => c.Remark).Width(150);
+                                                    columns.Command(command =>
+                                                    {
+                                                        command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit");
+                                                        command.Destroy().Text("Delete");
+                                                    }).Title("Action").Width(200);
+
+
+
+                                                })
+                                                .ToolBar(toolbar =>
+                                                {
+                                                    toolbar.Create();
+
+
+                                                })
+                                                .Events(x => x.DataBound("onDataBoundLineDepartment"))
+                                                .Editable(editable => editable.Mode(GridEditMode.InLine)
+                                                // .TemplateName("salesPurchaseTemplate")
+                                                // .Window(window =>
+                                                //{
+                                                //    window.Title("sales Purchase Form").Height(500).Width(500);
+
+                                                //})
+                                                )
+                                                .Pageable()
+                                                .Filterable()
+                                                .Scrollable(s => s.Height(550))
+                                                .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Model(model =>
+                                                {
+                                                    model.Id(p => p.SalesLotPurchaseId);
+                                                    model.Field(x => x.SalesLotPurchaseId).Editable(false);
+
+                                                })
+                                                .Events(ev => ev
+                                                .Error("error_handler(\"SalesLotPurchase_grid#=SalesLotId#\")")
+                                                .RequestStart("onRequestStart(\"SalesLotPurchase_grid#=SalesLotId#\")")
+                                                .RequestEnd("onRequestEnd(\"SalesLotPurchase_grid#=SalesLotId#\")"))
+                                                .Read(read => read.Action("SalesLotPurchases_Read", "SalesLotPurchases", new { id = "#=SalesLotId#" }).Data("sendForgery"))
+                                                .Create(create => create.Action("SalesLotPurchases_Create", "SalesLotPurchases", new { id = "#=SalesLotId#" }).Data("sendForgery"))
+                                                .Update(update => update.Action("SalesLotPurchases_Update", "SalesLotPurchases", new { id = "#=SalesLotId#" }).Data("sendForgery"))
+                                                .Destroy(destroy => destroy.Action("SalesLotPurchases_Destroy", "SalesLotPurchases", new { id = "#=SalesLotId#" }).Data("sendForgery"))
+                                                .Sort(sort => sort.Add("SalesLotPurchaseId").Descending())
+
+                                                ).ToClientTemplate()
+    )
+}
+@helper LotEvaluationByDocument()
+{
+
+    @(Html.Kendo().Grid<SalesLotEvaluationByDocument>()
+                                                    .Name("LotEvaluationByDocument_grid#=SalesLotId#")
+                                                    .Columns(columns =>
+                                                    {
+                                                        columns.ForeignKey(c => c.TinNumber, (IEnumerable)ViewData["participant"], "Value", "Text").EditorTemplateName("customerTemplate").Width(150);
+                                                        columns.Bound(c => c.IsNotAvailable).Width(150).Title("Is not available?").ClientTemplate(
+                                                            "<input type='checkbox' " +
+                                                            "value='\\#= IsNotAvailable \\#' " +
+                                                            "\\# if (IsNotAvailable) { \\#" +
+                                                            "checked='checked'" +
+                                                            "\\# } \\#" +
+                                                            //"onchange='documentNotAvailable(event)' />"
+                                                            "/>"
+                                                        );
+                                                        columns.Bound(c => c.Document).Width(150);
+                                                        columns.Bound(c => c.Remark).Width(150).Title("Remark");
+
+                                                        columns.Command(command =>
+                                                        {
+                                                            command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit");
+                                                            command.Destroy().Text("Delete");
+                                                        }).Title("Action").Width(200);
+
+
+
+                                                    })
+                                                    .ToolBar(toolbar =>
+                                                    {
+                                                        toolbar.Create();
+
+
+                                                    })
+                                                    //  .Events(events => events.DataBound("onGridDataBound"))
+                                                    .Events(x => x.DataBound("onDataBoundLineDepartment"))
+                                                    .Editable(editable => editable.Mode(GridEditMode.InLine)
+                                                    // .TemplateName("salesPurchaseTemplate")
+                                                    // .Window(window =>
+                                                    //{
+                                                    //    window.Title("sales Purchase Form").Height(500).Width(500);
+
+                                                    //})
+                                                    )
+                                                    .Pageable()
+                                                    .Filterable()
+                                                    .Scrollable(s => s.Height(550))
+                                                    .DataSource(dataSource => dataSource
+                                                    .Ajax()
+                                                    .Model(model =>
+                                                    {
+                                                        model.Id(p => p.SalesLotEvaluationByDocumentId);
+
+
+                                                    })
+                                                    .Events(ev => ev
+                                                    .Error("error_handler(\"LotEvaluationByDocument_grid#=SalesLotId#\")")
+                                                    .RequestStart("onRequestStart(\"LotEvaluationByDocument_grid#=SalesLotId#\")")
+                                                    .RequestEnd("onRequestEnd(\"LotEvaluationByDocument_grid#=SalesLotId#\")"))
+                                                    .Read(read => read.Action("doc_Read", "SalesLotEvaluationByDoc", new { id = "#=SalesLotId#" }).Data("sendForgery"))
+                                                    .Create(create => create.Action("doc_Create", "SalesLotEvaluationByDoc", new { id = "#=SalesLotId#" }).Data("sendForgery"))
+                                                    .Update(update => update.Action("doc_Update", "SalesLotEvaluationByDoc").Data("sendForgery"))
+                                                    .Destroy(destroy => destroy.Action("doc_Destroy", "SalesLotEvaluationByDoc").Data("sendForgery"))
+                                                    .Sort(sort => sort.Add("SalesLotEvaluationByDocumentId").Descending())
+
+                                                    ).ToClientTemplate()
+    )
+}
+@helper salesLotParticipant()
+{
+
+    //#if (IsOnlineApproved){#
+
+    // #}#
+    @(Html.Kendo().Grid<SalesLotParticipant>()
+                                                                                    .Name("SalesLotParticpant#=SalesLotId#")
+                                                                                    .Columns(columns =>
+                                                                                    {
+                                                                                        columns.ForeignKey(c => c.PurchaseId, (IEnumerable)ViewData["saleslotPurchase"], "Value", "Text").EditorTemplateName("PurchasedTinNumber").Title("Customer Name")
+                                                                                    .Filterable(ftb => ftb.Multi(true).Search(true))
+                                                                                    .Width(150);
+                                                                        // columns.Bound(c => c.CustomerName).Width("200");
+                                                                        columns.Bound(c => c.TinNumber);
+                                                                                        columns.Bound(c => c.Telephone);
+                                                                                        columns.Bound(c => c.PurchaseDate);
+                                                                                        columns.Bound(c => c.Address);
+
+                                                                        // columns.Command(command =>
+                                                                        //{
+                                                                        // command.Edit();
+                                                                        // command.Destroy().Text("Delete");
+                                                                        // }).Title("Action").Width(200);
+
+
+
+                                                                    })
+                                                                                    //.ToolBar(toolbar =>
+                                                                                    //{
+                                                                                    //    toolbar.Create();
+
+
+                                                                                    //})
+                                                                                    .Events(events => events.DataBound("onDataBoundLineDepartment"))
+                                                                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                    .Pageable()
+                                                                                    .Filterable()
+                                                                                    .Scrollable(s => s.Height(550))
+                                                                                    .DataSource(dataSource => dataSource
+                                                                                    .Ajax()
+                                                                                    .Model(model =>
+                                                                                    {
+                                                                                        model.Id(p => p.SalesLotParticipantId);
+                                                                                        model.Field(x => x.TinNumber).Editable(false);
+                                                                                        model.Field(x => x.Address).Editable(false);
+                                                                                        model.Field(x => x.Telephone).Editable(false);
+                                                                                        model.Field(x => x.PurchaseDate).Editable(false);
+                                                                                    })
+                                                                                    .Events(ev => ev
+                                                                                    .Error("error_handler(\"SalesLotParticpant#=SalesLotId#\")")
+                                                                                    .RequestStart("onRequestStart(\"SalesLotParticpant#=SalesLotId#\")")
+                                                                                    .RequestEnd("onRequestEnd(\"SalesLotParticpant#=SalesLotId#\")"))
+                                                                                    .Read(read => read.Action("SalesLotParticipants_Read", "SalesLotParticipants", new { id = "#=SalesLotId#" }).Data("sendForgery"))
+                                                                                    // .Create(create => create.Action("SalesLotParticipants_Create", "SalesLotParticipants", new { id = "#=SalesLotId#" }).Data("sendForgery"))
+                                                                                    // .Update(update => update.Action("SalesLotParticipants_Update", "SalesLotParticipants", new { id = "#=SalesLotId#" }).Data("sendForgery"))
+                                                                                    //  .Destroy(destroy => destroy.Action("SalesLotParticipants_Destroy", "SalesLotParticipants", new { id = "#=SalesLotId#" }).Data("sendForgery"))
+                                                                                    .Sort(sort => sort.Add("SalesLotParticipantId").Descending())
+                                                                                    )//ToClientTemplate()
+                                                                                    .ClientDetailTemplateId("Itemtemplate").ToClientTemplate()
+    )
+}
+
+@helper Winner()
+{
+    <a href='@Url.Action("ItemWinnerPrint", "WinnerPrintable")/#=SalesLotId#' title="Print" target="_blank"><i class="fa fa-print fa-2x"></i></a>
+
+
+    @(Html.Kendo().Grid<Winner>()
+                                                                                    .Name("WinnerPerItem_grid_#=SalesLotId#")
+                                                                                    .Columns(columns =>
+                                                                                    {
+
+                                                                                        columns.Bound(c => c.SalesLotName);
+                                                                                        columns.Bound(c => c.CustomerName).Width("150");
+                                                                                        columns.Bound(c => c.CustormerAddress);
+                                                                                        columns.Bound(c => c.TinNumber);
+                                                                                        columns.Bound(c => c.ProductCategoryDesc);
+                                                                                        columns.Bound(c => c.ProductName);
+                                                                                        columns.Bound(c => c.UnitPrice);
+                                                                                        columns.Bound(c => c.WinningPrice);
+                                                                                        columns.Command(command =>
+                                                                                        {
+
+                                                                                        }).Width(200);
+
+                                                                                    })
+
+                                                                                    //.ToolBar(toolbar =>
+                                                                                    //{
+                                                                                    //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+                                                                                    //})
+                                                                                    // .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                    .Events(x => x.DataBound("onDataBoundLineDepartment"))
+                                                                                    .Scrollable()
+                                                                                    .DataSource(dataSource => dataSource
+                                                                                    .Ajax()
+                                                                                    .Events(events =>
+                                                                                    {
+                                                                                        events.Error("error_handler(\"WinnerPerItem_grid_#=SalesLotId#\")");
+                                                                                        events.RequestStart("onRequestStart(\"WinnerPerItem_grid_#=SalesLotId#\")");
+                                                                                        events.RequestEnd("onRequestEnd(\"WinnerPerItem_grid_#=SalesLotId#\")");
+
+
+                                                                                    })
+                                                                                    .Model(model => model.Id(p => p.WinnerId))
+                                                                                    .Read(read => read.Action("Winner_Read", "Winner", new { saleLotId = "#=SalesLotId#" }).Data("sendForgery"))
+                                                                                    //.Create(create => create.Action("SalesLotItems_Create", "SalesLotItems", new { saleLotId = "#=SalesLotId#" }).Data("sendForgery"))
+                                                                                    //.Update(update => update.Action("SalesLotItems_Update", "SalesLotItems").Data("sendForgery"))
+                                                                                    //.Destroy(destroy => destroy.Action("SalesLotItems_Destroy", "SalesLotItems").Data("sendForgery"))
+                                                                                    ).ToClientTemplate()
+    )
+}
+
+@helper salesLotDetail()
+{
+
+    @(Html.Kendo().Grid<SalesLotItem>()
+                                                                                        .Name("SalesLotItem_grid_#=SalesLotId#")
+                                                                                        .Columns(columns =>
+                                                                                        {
+                                                                                            columns.ForeignKey(c => c.ProductCategoryId, (IEnumerable)ViewData["productCategories"], "ProductCategoryId", "Description").EditorTemplateName("ProductCatagory")
+                                                                                        .Title("ProductCatagory").Width("150px");
+                                                                                            columns.ForeignKey(c => c.ProductID, (IEnumerable)ViewData["products"], "ProductID", "Name").EditorTemplateName("ProductNamee")
+                                                                                        .Title("ProductNamee").Width("150px");
+                                                                                            columns.Bound(c => c.Quantity).Width("150px");
+                                                                                            columns.Bound(c => c.UOM).Width(150).Title("Unit Of Measurment");
+                                                                                            columns.Bound(c => c.ProductArea).Width(150).Title("Product Area");
+                                                                                            columns.Bound(c => c.ProductAreaNumber).Width(150).Title("Product Area Number");
+                                                                                            columns.Command(command =>
+                                                                                            {
+                                                                                                command.Edit();
+                                                                                                command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                                                            }).Width(200);
+
+                                                                                        })
+                                                                                      .ToolBar(toolbar =>
+            {
+                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+            })
+
+                                                                                        .Events(x => x.DataBound("onDataBoundLineDepartment"))
+                                                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                        .Scrollable()
+                                                                                        .DataSource(dataSource => dataSource
+                                                                                        .Ajax()
+                                                                                        .Events(events =>
+                                                                                        {
+                                                                                            events.Error("error_handler(\"SalesLotItem_grid_#=SalesLotId#\")");
+                                                                                            events.RequestStart("onRequestStart(\"SalesLotItem_grid_#=SalesLotId#\")");
+                                                                                            events.RequestEnd("onRequestEnd(\"SalesLotItem_grid_#=SalesLotId#\")");
+
+
+                                                                                        })
+                                                                                        .Model(model =>
+                                                                                        {
+                                                                                            model.Id(p => p.SalesLotItemId);
+                                                                                            model.Field(f => f.UOM).Editable(false);
+                                                                                        }
+                                                                                                      )
+                                                                                    .Read(read => read.Action("SalesLotItems_Read", "SalesLotItems", new { saleLotId = "#=SalesLotId#" }).Data("sendForgery"))
+                                                                                    .Create(create => create.Action("SalesLotItems_Create", "SalesLotItems", new { saleLotId = "#=SalesLotId#" }).Data("sendForgery"))
+                                                                                    .Update(update => update.Action("SalesLotItems_Update", "SalesLotItems").Data("sendForgery"))
+                                                                                    .Destroy(destroy => destroy.Action("SalesLotItems_Destroy", "SalesLotItems").Data("sendForgery"))
+                                                                                    .Sort(sort => sort.Add("SalesLotItemId").Descending())
+                                                                                    ).ToClientTemplate()
+    )
+
+}
+@helper winnerValidation()
+{
+
+    @(Html.Kendo().Grid<TenderWinnerValidation>
+                                                                                    ()
+                                                                                    .Name("winnerValidation_grid_#=SalesLotId#")
+                                                                                    .Columns(columns =>
+                                                                                    {
+                                                                                        columns.Bound(c => c.SalesLotId).Hidden(true);
+                                                                                        columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                                                                        columns.Bound(c => c.Remark).Width(130);
+                                                                                        columns.Bound(c => c.DateCreated).Width(150).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                                                        columns.Bound(c => c.LastModified).Hidden(true);
+                                                                                        columns.Bound(c => c.CreatedBy).Width(150).Title("User");
+                                                                                        columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                                                        columns.Command(command =>
+                                                                                        {
+                                                                                            command.Edit();
+
+                                                                                        });
+
+                                                                                    })
+                                                                                    .ToolBar(toolbar =>
+                                                                                    {
+                                                                                        toolbar.Create();
+                                                                                    })
+                                                                                    .Events(events => events.DataBound("onDataBoundValidation"))
+                                                                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                    .Pageable(pageable => pageable
+                                                                                    .Input(true)
+                                                                                    .Numeric(false)
+                                                                                    .Refresh(true)
+                                                                                    .PageSizes(true)
+                                                                                    .ButtonCount(5))
+                                                                                    .Sortable(sortable =>
+                                                                                    {
+                                                                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                    })
+                                                                                    //.Filterable()
+                                                                                    .Scrollable()
+                                                                                    //.Events(events => events.DataBound("onDataBoundPaymentValidation"))
+                                                                                    .DataSource(dataSource => dataSource
+                                                                                    .Ajax()
+                                                                                    .Model(
+                                                                                    model =>
+                                                                                    {
+                                                                                        model.Id(p => p.TenderWinnerValidationId);
+                                                                                        model.Field(p => p.CreatedBy).Editable(false);
+                                                                                        model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                        model.Field(p => p.LastModified).Editable(false);
+                                                                                        model.Field(p => p.DateCreated).Editable(false);
+                                                                                    })
+                                                                                    .Events(ev => ev
+                                                                                    .Error("error_handler(\"winnerValidation_grid_#=SalesLotId#\")")
+                                                                                    .RequestStart("onRequestStart(\"winnerValidation_grid_#=SalesLotId#\")")
+                                                                                    .RequestEnd("onRequestEnd(\"winnerValidation_grid_#=SalesLotId#\")"))
+
+
+                                                                                    .Read(read => read.Action("ForeignPurchaseValidations_Read", "WinnerValidation", new { id = "#=SalesLotId#" }).Data("sendForgery"))
+                                                                                    .Create(create => create.Action("ForeignPurchaseValidations_Create", "WinnerValidation", new { id = "#=SalesLotId#" }).Data("sendForgery"))
+                                                                                    .Update(update => update.Action("ForeignPurchaseValidations_Update", "WinnerValidation", new { id = "#=SalesLotId#" }).Data("sendForgery"))
+                                                                                    .Destroy(destroy => destroy.Action("ForeignPurchaseValidations_Destroy", "WinnerValidation").Data("sendForgery"))
+                                                                                    )
+                                                                                    .ToClientTemplate())
+
+
+}
+<style type="text/css">
+    div.k-edit-form-container {
+        width: auto;
+    }
+</style>
+<script>
+
+    function filterCat() {
+        return {
+            categoryId: $("#ProductCategoryId").val(),
+            __RequestVerificationToken: kendo.antiForgeryTokens()
+
+        };
+    }
+
+
+</script>
+
+<script id="Itemtemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                                                                            .Name("tabstripp_#=SalesLotParticipantId#")
+                                                                                                            .SelectedIndex(0)
+                                                                                                            .Items(items =>
+                                                                                                            {
+                                                                                                                items.Add().Text("SalesLot Participant Items").Content(
+                                                                                                                @<text>
+
+
+                                                                                                                    #if (Count>0){#
+                                                                                                                    @saleParticipantDetail()
+                                                                                                                    #}else{#
+                                                                                                                    @saleParticipantDetails()
+                                                                                                                    #}#
+                                                                                                                </text>);
+
+                                                                                                                    }).ToClientTemplate()
+    )
+</script>
+@helper saleParticipantDetail()
+{
+    @(Html.Kendo().Grid<SalesLotParticipantItem>()
+                                                                                    .Name("SalesLot_grid#=SalesLotParticipantId#")
+                                                                                    .Columns(columns =>
+                                                                                    {
+                                                                                        columns.ForeignKey(c => c.ProductCategoryId, (IEnumerable)ViewData["productCategoriess"], "ProductCategoryId", "ProductCategoryDesc").Title("productCategory")
+                                                                                    .EditorTemplateName("ProductCatagorys");
+                                                                                        columns.ForeignKey(c => c.ProductID, (IEnumerable)ViewData["productss"], "ProductID", "ProductName").EditorTemplateName("ProductName")
+                                                                                    .Title("ProductName").Width("95px");
+                                                                                        columns.Bound(c => c.Quantity);
+                                                                                        columns.Bound(c => c.BasePrice);
+                                                                                        columns.Bound(c => c.UnitPrice);
+                                                                                        columns.Bound(c => c.TotalPrice);
+                                                                                        columns.Bound(c => c.EvaluationDate);
+
+                                                                        // Define Command buttons
+
+                                                                    })
+                                                                                    .ToolBar(toolbar =>
+                                                                                    {
+                                                                                        toolbar.Save();
+                                                                                    })
+                                                                                    .Events(x => x.DataBound("onDataBoundLineDepartment"))
+                                                                                    .Editable(editable => editable.Mode(GridEditMode.InCell))
+                                                                                    .Scrollable()
+                                                                                    .DataSource(dataSource => dataSource
+                                                                                    .Ajax()
+                                                                                    .Batch(true)
+                                                                                    .Events(events =>
+                                                                                    {
+                                                                                        events.Error("error_handler(\"SalesLot_grid#=SalesLotParticipantId#\")");
+                                                                                        events.RequestStart("onRequestStart(\"SalesLot_grid#=SalesLotParticipantId#\")");
+                                                                                        events.RequestEnd("onRequestEnd(\"SalesLot_grid#=SalesLotParticipantId#\")");
+                                                                                    })
+                                                                                    .Model(model =>
+                                                                                    {
+                                                                                        model.Id(p => p.SalesLotParticipantItemId);
+                                                                                        model.Field(f => f.Quantity).Editable(false);
+                                                                                        model.Field(f => f.TotalPrice).Editable(false);
+                                                                                        model.Field(f => f.BasePrice).Editable(false);
+                                                                                        model.Field(f => f.EvaluationDate).Editable(false);
+                                                                                    })
+                                                                                    .Read(read => read.Action("SalesLotParticipantItems_Read", "SalesLotParticipantItems", new { saleLotParticipantId = "#=SalesLotParticipantId#" }).Data("sendForgery"))
+                                                                                    .Update(update => update.Action("SalesLotParticipantItems_Update", "SalesLotParticipantItems").Data("sendForgery"))
+                                                                                    .Destroy(destroy => destroy.Action("SalesLotParticipantItems_Destroy", "SalesLotParticipantItems").Data("sendForgery"))
+                                                                                    .Sort(sort => sort.Add("SalesLotParticipantItemId").Descending())
+
+
+                                                                                    )
+                                                                                    .ToClientTemplate()
+    );
+}
+@helper saleParticipantDetails()
+{
+    @(Html.Kendo().Grid<SalesLotParticipantItem>()
+                                                                                    .Name("SalesLot_grid#=SalesLotParticipantId#")
+                                                                                    .Columns(columns =>
+                                                                                    {
+                                                                                        columns.ForeignKey(c => c.ProductCategoryId, (IEnumerable)ViewData["productCategoriess"], "ProductCategoryId", "ProductCategoryDesc").Title("productCategory")
+                                                                                    .EditorTemplateName("ProductCatagorys");
+                                                                                        columns.ForeignKey(c => c.ProductID, (IEnumerable)ViewData["productss"], "ProductID", "ProductName").EditorTemplateName("ProductName")
+                                                                                    .Title("ProductName").Width("95px");
+                                                                                        columns.Bound(c => c.Quantity);
+                                                                                        columns.Bound(c => c.BasePrice);
+                                                                                        columns.Bound(c => c.UnitPrice);
+                                                                                        columns.Bound(c => c.TotalPrice);
+                                                                                        columns.Bound(c => c.EvaluationDate);
+                                                                                        columns.Command(c => { c.Edit(); c.Destroy(); }).Width(210).Title("Action");
+                                                                                        // Define Command buttons
+
+                                                                                    })
+                                                                                    .ToolBar(toolbar =>
+                                                                                    {
+                                                                                        toolbar.Create();
+                                                                                    })
+                                                                                    .Events(x => x.DataBound("onDataBoundLineDepartment"))
+                                                                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                    .Scrollable()
+                                                                                    .DataSource(dataSource => dataSource
+                                                                                    .Ajax()
+                                                                                    .Events(events =>
+                                                                                    {
+                                                                                        events.Error("error_handler(\"SalesLot_grid#=SalesLotParticipantId#\")");
+                                                                                        events.RequestStart("onRequestStart(\"SalesLot_grid#=SalesLotParticipantId#\")");
+                                                                                        events.RequestEnd("onRequestEnd(\"SalesLot_grid#=SalesLotParticipantId#\")");
+                                                                                    })
+                                                                                    .Model(model =>
+                                                                                    {
+                                                                                        model.Id(p => p.SalesLotParticipantItemId);
+                                                                                        model.Field(f => f.Quantity).Editable(false);
+                                                                                        model.Field(f => f.TotalPrice).Editable(false);
+                                                                                        model.Field(f => f.BasePrice).Editable(false);
+                                                                                        model.Field(f => f.EvaluationDate).Editable(false);
+                                                                                    })
+                                                                                    .Read(read => read.Action("SalesLotParticipantItems_Read", "SalesLotParticipantItems", new { saleLotParticipantId = "#=SalesLotParticipantId#" }).Data("sendForgery"))
+                                                                                    .Create(create => create.Action("SalesLotParticipantItems_Create", "SalesLotParticipantItems", new { saleLotParticipantId = "#=SalesLotParticipantId#" }).Data("sendForgery"))
+                                                                                    .Update(update => update.Action("SalesLotParticipantItems_Update", "SalesLotParticipantItems", new { saleLotParticipantId = "#=SalesLotParticipantId#" }).Data("sendForgery"))
+                                                                                    .Destroy(destroy => destroy.Action("SalesLotParticipantItems_Destroy", "SalesLotParticipantItems").Data("sendForgery"))
+                                                                                    .Sort(sort => sort.Add("SalesLotParticipantItemId").Descending())
+
+
+                                                                                    )
+                                                                                    .ToClientTemplate()
+    );
+}
+<style type="text/css">
+    div.k - edit - form - container {
+        width: auto;
+    }
+</style>
+<script>
+
+    function fliterCategory() {
+
+        return {
+            categoryId: $("#ProductCategoryId").val(),
+            __RequestVerificationToken: kendo.antiForgeryTokens()
+        };
+    }
+
+    function saleLotIdList() {
+        return {
+            salesLotID: $("#SalesLotId").val(),
+            __RequestVerificationToken: kendo.antiForgeryTokens()
+        };
+    }
+    function HideShowWinnerCommanButtons(e) {
+        var grid = this;
+        grid.tbody.find("tr").each(function () {
+            var dataItem = grid.dataItem(this);
+            console.log("Row Data: ", dataItem); // Log row data
+            if (dataItem && dataItem.WinningPrice != null) {
+                console.log("Hiding buttons for row: ", dataItem);
+                $(this).find(".k-WinnerPerItem_grid_#=SalesLotId#-Edit").hide();
+                $(this).find(".k-WinnerPerItem_grid_#=SalesLotId#-Destroy").hide();
+            }
+        });
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "SalesLots")',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    function ToCashSalesInvoice(id) {
+        var recordStatus = "";
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("toCashSalesInvoice", "SalesLots")',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+       function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "SalesLots")',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function EnableDisableRecieptNumber(e) {
+        var x = $('#ReceiptNotRequired').is(':checked');;
+        if (x == true) {
+
+            //$("#BenefitType").data("kendoDropDownList").enable(true);
+            // Disable the checkbox
+            $("#ReceiptNo").prop("disabled", true);
+
+
+        }
+        else {
+
+            //$("#BenefitType").data("kendoDropDownList").enable(false);
+            //$("#BenefitType").data("kendoDropDownList").enable(false);
+
+            $("#ReceiptNo").prop("disabled", false);
+
+            //// $("#ProformaId").data("kendoDropDownList").value(0);//.trigger("change");
+            //$("#BenefitType").data("kendoDropDownList").val(0);
+            //$("#BenefitType").trigger("change");
+        }
+
+    }
+
+    //  function documentNotAvailable(e) {
+    //      var x = $('#IsNotAvailable').is(':checked');;
+    //    if (x == true) {
+
+    //        //$("#BenefitType").data("kendoDropDownList").enable(true);
+    //        // Disable the checkbox
+    //        $("#Document").prop("disabled", true);
+
+
+    //    }
+    //    else {
+
+    //        //$("#BenefitType").data("kendoDropDownList").enable(false);
+    //        //$("#BenefitType").data("kendoDropDownList").enable(false);
+
+    //        $("#Document").prop("disabled", false);
+
+    //        //// $("#ProformaId").data("kendoDropDownList").value(0);//.trigger("change");
+    //        //$("#BenefitType").data("kendoDropDownList").val(0);
+    //        //$("#BenefitType").trigger("change");
+    //    }
+
+    //}
+    //function documentNotAvailable(e) {
+    //    var row = $(e.target).closest("tr"); // Get the current row
+    //    var isChecked = $(e.target).is(":checked");
+
+    //    if (isChecked) {
+    //        row.find("#Document").prop("disabled", true);
+    //    } else {
+    //        row.find("#Document").prop("disabled", false);
+    //    }
+    //}
+
+    //function onGridDataBound() {
+    //    // Initialize state for all rows on data bound
+    //    $("#LotEvaluationByDocument_grid").find("tr").each(function () {
+    //        var row = $(this);
+    //        var isChecked = row.find("input[type='checkbox']").is(":checked");
+
+    //        if (isChecked) {
+    //            row.find("#Document").prop("disabled", true);
+    //        }
+    //    });
+    //}
+
+</script>
+<script>
+
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+    var salesLotId;
+    var isOnlineapproved;
+    var isSendForApproval;
+    var expandedLotRow
+    function detailExpandMasterDepartment(e) {
+        e.preventDefault();
+        var masterGrid = e.sender;
+        var masterDataItem = masterGrid.dataItem(e.masterRow);
+        salesLotId = masterDataItem.SalesLotId;
+        isSendForApproval = masterDataItem.IsSendForApproval;
+        isOnlineapproved = masterDataItem.IsOnlineApproved;
+        if (isSendForApproval) {
+
+            var ParticipantgridName = "#SalesLotParticpant" + salesLotId;
+            var purchaseHide = "#SalesLotPurchase_grid" + salesLotId;
+            var winnerHide = "#WinnerPerItem_grid_" + salesLotId;
+            var ItemHide = "#SalesLotItem_grid_" + salesLotId;
+
+            $(ParticipantgridName).find(".k-grid-toolbar").hide(); //hide toolbar
+            $(purchaseHide).find(".k-grid-toolbar").hide(); //hide toolbar
+            $(winnerHide).find(".k-grid-toolbar").hide(); //hide toolbar
+            $(ItemHide).find(".k-grid-toolbar").hide(); //hide toolbar
+            // $(".k-grid-top", linegridName).hide();
+
+        }
+        if (isOnlineapproved) {
+            var ValidationHide = "#winnerValidation_grid_" + salesLotId;
+            $(ValidationHide).find(".k-grid-toolbar").hide(); //hide toolbar
+        }
+        // Only one open at a time
+        if (expandedLotRow != null && expandedLotRow[0] != e.masterRow[0]) {
+            masterGrid.collapseRow(expandedLotRow);
+        }
+        expandedLotRow = e.masterRow;
+
+    }
+    function filterStores() {
+        return {
+            id: $("#BranchId").data("kendoDropDownList").value(),
+            text: $("#StoreCode").data("kendoDropDownList").filterInput.val()
+        }
+    }
+    function onDataBoundLineDepartment(e) {
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isOnlineapproved || isSendForApproval) {
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+    function onDataTenderSetting(e) {
+        var detailGrid = "#grid" + e.sender.element[0].id;
+        if (IsOnlineapproved) {
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+    function onDataBoundValidation(e) {
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isOnlineapproved) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+
+
+    function onDataBoundMasterSalesLot(e) {
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsSendForApproval) {
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-top").hide();
+            }
+            if (dataItem.IsOnlineApproved) {
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-top").hide();
+            }
+
+        }
+    }
+    function onDataBoundMasterSaletender(e) {
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            //alert(IsOnlineApproved);
+            if (dataItem.IsSendForApproval) {
+
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                // row.find(".k-grid-top").remove();
+            }
+            if (dataItem.IsOnlineApproved) {
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                // row.find(".k-grid-top").remove();
+            }
+
+        }
+    }
+
+</script>

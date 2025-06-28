@@ -130,6 +130,7 @@ using ExceedERP.Core.Domain.Manufacturing.JobCosting.Setting;
 using ExceedERP.Core.Domain.Manufacturing.JobCosting;
 using ExceedERP.Core.Domain.Printing.PrintingProduction;
 using ExceedERP.Core.Domain.InfoDesk.ChangeManagement;
+using ExceedERP.Core.Domain.CRM.TenderManagement;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -1272,6 +1273,18 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesReturnEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesReturnLineEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CRMEntityConfiguration.SalesReturnValidationEntityTypeConfiguration());
+
+            #region sales tender
+            modelBuilder.Configurations.Add(new SalesLotEvaluationByDocumentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SaleTenderEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SalesLotEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SalesLotItemEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SalesLotParticipantEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SalesLotParticipantItemEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SalesLotPurchaseEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new WinnerEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TenderWinnerValidationEntityTypeConfiguration());
+            #endregion
             #endregion
 
             #region Construction
@@ -3567,6 +3580,18 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<SalesReturn> SalesReturn { get; set; }
         public DbSet<SalesReturnLine> SalesReturnLines { get; set; }
         public DbSet<SalesReturnValidation> SalesReturnValidation { get; set; }
+
+        #region sales tender
+        public DbSet<SalesLotEvaluationByDocument> SalesLotEvaluationByDocuments { get; set; }
+        public DbSet<SaleTender> SaleTenders { get; set; }
+        public DbSet<SalesLot> SalesLots { get; set; }
+        public DbSet<SalesLotItem> SalesLotItems { get; set; }
+        public DbSet<SalesLotParticipant> SalesLotParticipants { get; set; }
+        public DbSet<SalesLotParticipantItem> SalesLotParticipantItems { get; set; }
+        public DbSet<SalesLotPurchase> SalesLotPurchases { get; set; }
+        public DbSet<Winner> Winners { get; set; }
+        public DbSet<TenderWinnerValidation> TenderWinnerValidations { get; set; }
+        #endregion
         #endregion
 
         #region Budget

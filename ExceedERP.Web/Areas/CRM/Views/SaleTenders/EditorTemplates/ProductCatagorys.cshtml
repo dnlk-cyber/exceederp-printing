@@ -1,0 +1,15 @@
+﻿
+@(Html.Kendo().DropDownListFor(m => m)
+        .Name("ProductCategoryId")
+        .OptionLabel("Select Product Category...")
+        .DataTextField("ProductCategoryDesc")
+        .DataValueField("ProductCategoryId")
+        .Filter("contains")
+        .CascadeFrom("") // No parent to cascade from here
+        .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read.Action("GetSelectedCategories", "TenderDataProvider", new {salesLotParticipantId = "#=SalesLotParticipantId#" }).Data("sendForgery"))
+                      .ServerFiltering(true);
+        })
+)
+@Html.ValidationMessageFor(m => m)

@@ -301,6 +301,47 @@
     <Compile Include="CRM\Printing\View\TicketPrint.Designer.cs">
       <DependentUpon>TicketPrint.cs</DependentUpon>
     </Compile>
+    <Compile Include="CRM\Salesstores\Datasource\CashSalesInvoiceODS.cs" />
+    <Compile Include="CRM\Salesstores\Datasource\ProductbySalesStoreODS.cs" />
+    <Compile Include="CRM\Salesstores\Datasource\SalesStoreODS.cs" />
+    <Compile Include="CRM\Salesstores\Design\CashSalesInvoiceReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\Salesstores\Design\CashSalesInvoiceReport.Designer.cs">
+      <DependentUpon>CashSalesInvoiceReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\Tender\DataSource\InvoiceReportODS.cs" />
+    <Compile Include="CRM\Tender\DataSource\ParticipantsListODS.cs" />
+    <Compile Include="CRM\Tender\DataSource\ParticipantsODS.cs" />
+    <Compile Include="CRM\Tender\DataSource\SaleTenderWinnerODS.cs" />
+    <Compile Include="CRM\Tender\DataSource\TenderReferenceODS.cs" />
+    <Compile Include="CRM\Tender\DataSource\TenderWinnerCustomerNameODS.cs" />
+    <Compile Include="CRM\Tender\DataSource\TenderWinnerRecipieODS.cs" />
+    <Compile Include="CRM\Tender\Design\ParticipantsList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\Tender\Design\ParticipantsList.Designer.cs">
+      <DependentUpon>ParticipantsList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\Tender\Design\TenderParticipant.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\Tender\Design\TenderParticipant.Designer.cs">
+      <DependentUpon>TenderParticipant.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\Tender\Design\TenderWinnerRecipie.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\Tender\Design\TenderWinnerRecipie.Designer.cs">
+      <DependentUpon>TenderWinnerRecipie.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\Tender\Design\WinnerPrintable.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CRM\Tender\Design\WinnerPrintable.Designer.cs">
+      <DependentUpon>WinnerPrintable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CRM\Tender\ViewModel\SaleTenderVM.cs" />
     <Compile Include="CRM\ViewModel\CampaignView.cs" />
     <Compile Include="CRM\ViewModel\CashSales.cs" />
     <Compile Include="CRM\ViewModel\CustomerOrderStatusSummaryViewModel.cs" />
@@ -4480,6 +4521,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CRM\Printing\View\TicketPrint.resx">
       <DependentUpon>TicketPrint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\Salesstores\Design\CashSalesInvoiceReport.resx">
+      <DependentUpon>CashSalesInvoiceReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\Tender\Design\ParticipantsList.resx">
+      <DependentUpon>ParticipantsList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\Tender\Design\TenderParticipant.resx">
+      <DependentUpon>TenderParticipant.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\Tender\Design\TenderWinnerRecipie.resx">
+      <DependentUpon>TenderWinnerRecipie.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CRM\Tender\Design\WinnerPrintable.resx">
+      <DependentUpon>WinnerPrintable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CRM\View\Campain.resx">
       <DependentUpon>Campain.cs</DependentUpon>

@@ -77,7 +77,7 @@
                 || HttpContext.Current.User.IsInRole(CRMRoles.SalesPlanApprover)
                 || HttpContext.Current.User.IsInRole(CRMRoles.SalesPlanUser)
                 || HttpContext.Current.User.IsInRole(CRMRoles.IncompleteShipmentAdmin)
-                
+
                 || HttpContext.Current.User.IsInRole(CRMRoles.SalesReturnUser)
                 || HttpContext.Current.User.IsInRole(CRMRoles.SalesReturnApprover)
 
@@ -116,10 +116,10 @@
                             <li id="crm-sales-06" class="actionlinlk">@Html.ActionLink("Cash Sales Invoice", "Index", "CashSalesInvoice", new { area = "CRM" }, null)<b class="arrow"></b></li>
                         }
                         @*@if (HttpContext.Current.User.IsInRole("Inventory_Issue_User")
-            || HttpContext.Current.User.IsInRole("Inventory_Issue_Approver"))
-        {
-            <li id="crm08923" class="actionlinlk">@Html.ActionLink("Sales Inventory ", "Index", "SalesInventory", new { area = "CRM" }, null)<b class="arrow"></b></li>
-        }*@
+                        || HttpContext.Current.User.IsInRole("Inventory_Issue_Approver"))
+                    {
+                        <li id="crm08923" class="actionlinlk">@Html.ActionLink("Sales Inventory ", "Index", "SalesInventory", new { area = "CRM" }, null)<b class="arrow"></b></li>
+                    }*@
                         @if (HttpContext.Current.User.IsInRole(CRMRoles.ShipmentUser)
                            || HttpContext.Current.User.IsInRole(CRMRoles.ShipmentApprover)
                            || HttpContext.Current.User.IsInRole(CRMRoles.IncompleteShipmentAdmin))
@@ -127,10 +127,10 @@
                             <li id="crm-sales-07" class="actionlinlk">@Html.ActionLink("Shipments ", "Index", "Shipments", new { area = "CRM" }, null)<b class="arrow"></b></li>
                         }
                         @*@if (HttpContext.Current.User.IsInRole("Customer_Service_User")
-            || HttpContext.Current.User.IsInRole("Customer_Service_Approver"))
-        {
-            <li id="crm0922" class="actionlinlk">@Html.ActionLink("Service Usage", "Index", "ServiceUsage", new { area = "CRM" }, null)<b class="arrow"></b></li>
-        }*@
+                        || HttpContext.Current.User.IsInRole("Customer_Service_Approver"))
+                    {
+                        <li id="crm0922" class="actionlinlk">@Html.ActionLink("Service Usage", "Index", "ServiceUsage", new { area = "CRM" }, null)<b class="arrow"></b></li>
+                    }*@
                         @if (HttpContext.Current.User.IsInRole(CRMRoles.IncompleteShipmentAdmin))
                         {
                             <li id="crm-sales-12" class="actionlinlk">@Html.ActionLink("Incomplete Shipments ", "IncompleteShipments", "Shipments", new { area = "CRM" }, null)<b class="arrow"></b></li>
@@ -176,7 +176,27 @@
                     </ul>
                 </li>
             }
+            @if (User.IsInRole(CRMRoles.CRMTenderFollowup))
+            {
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Sales Tender
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        <li id="tender-sale-001" class="actionlinlk">@Html.ActionLink("Tenders", "Index", "SaleTenders", new { area = "CRM" }, null)<b class="arrow"></b></li>
+                        <li id="tender-sale-002" class="actionlinlk">@Html.ActionLink("Lots", "Index", "SalesLots", new { area = "CRM" }, null)<b class="arrow"></b></li>
+                        <li id="tender-sale-003" class="actionlinlk">@Html.ActionLink("Report", "Index", "InvoiceReport", new { area = "CRM" }, null)<b class="arrow"></b></li>
 
+                        @*<li id="tender-002" class="actionlinlk">@Html.ActionLink("Participants", "Index", "SalesLotParticipants", new { area = "CRM" }, null)<b class="arrow"></b></li>
+
+                    <li id="tender-003" class="actionlinlk">@Html.ActionLink("Purchases", "Index", "SalesLotPurchases", new { area = "CRM" }, null)<b class="arrow"></b></li>*@
+
+                    </ul>
+                </li>
+            }
             @if (HttpContext.Current.User.IsInRole(CRMRoles.CRMQueueSetting) ||
                 HttpContext.Current.User.IsInRole(CRMRoles.CRMQueueUser) ||
                 HttpContext.Current.User.IsInRole(CRMRoles.CRMQueueApprover))
@@ -322,28 +342,28 @@
 
                                 <li id="crm-setting-12" class="actionlinlk">@Html.ActionLink("Periods", "Index", "CRMPeriods", new { area = "CRM" }, null)<b class="arrow"></b></li>
                                 @*<li id="crm014" class="actionlinlk">@Html.ActionLink("Account", "Index", "Accounts", new { area = "CRM" }, null)<b class="arrow"></b></li>
-                                    <li id="crm015" class="actionlinlk">@Html.ActionLink("Tax", "Index", "Tax", new { area = "CRM" }, null)<b class="arrow"></b></li>
-                                    <li id="crm016" class="actionlinlk">@Html.ActionLink("Object State Definition", "Index", "ObjectStateDefinition", new { area = "CRM" }, null)<b class="arrow"></b></li>
-                                    <li id="crm017" class="actionlinlk">@Html.ActionLink("Lookup", "Index", "Lookups", new { area = "CRM" }, null)<b class="arrow"></b></li>
-                                    <li id="crm018" class="actionlinlk">@Html.ActionLink("Country", "Index", "Country", new { area = "CRM" }, null)<b class="arrow"></b></li>
-                                    <li id="crm019" class="actionlinlk">@Html.ActionLink("Sub Country", "Index", "SubCountry", new { area = "CRM" }, null)<b class="arrow"></b></li>
-                                    <li id="crm020" class="actionlinlk">@Html.ActionLink("Holiday Definition", "Index", "HolidayDefinition", new { area = "CRM" }, null)<b class="arrow"></b></li>
-                                    <li id="crm021" class="actionlinlk">@Html.ActionLink("Holiday", "Index", "Holiday", new { area = "CRM" }, null)<b class="arrow"></b></li>
-                                    <li id="crm022" class="actionlinlk">@Html.ActionLink("Term Definition", "Index", "Term", new { area = "CRM" }, null)<b class="arrow"></b></li>*@
+                            <li id="crm015" class="actionlinlk">@Html.ActionLink("Tax", "Index", "Tax", new { area = "CRM" }, null)<b class="arrow"></b></li>
+                            <li id="crm016" class="actionlinlk">@Html.ActionLink("Object State Definition", "Index", "ObjectStateDefinition", new { area = "CRM" }, null)<b class="arrow"></b></li>
+                            <li id="crm017" class="actionlinlk">@Html.ActionLink("Lookup", "Index", "Lookups", new { area = "CRM" }, null)<b class="arrow"></b></li>
+                            <li id="crm018" class="actionlinlk">@Html.ActionLink("Country", "Index", "Country", new { area = "CRM" }, null)<b class="arrow"></b></li>
+                            <li id="crm019" class="actionlinlk">@Html.ActionLink("Sub Country", "Index", "SubCountry", new { area = "CRM" }, null)<b class="arrow"></b></li>
+                            <li id="crm020" class="actionlinlk">@Html.ActionLink("Holiday Definition", "Index", "HolidayDefinition", new { area = "CRM" }, null)<b class="arrow"></b></li>
+                            <li id="crm021" class="actionlinlk">@Html.ActionLink("Holiday", "Index", "Holiday", new { area = "CRM" }, null)<b class="arrow"></b></li>
+                            <li id="crm022" class="actionlinlk">@Html.ActionLink("Term Definition", "Index", "Term", new { area = "CRM" }, null)<b class="arrow"></b></li>*@
                             </ul>
                         </li>
                         @*<li id="crm016" class="actionlinlk">@Html.ActionLink("Bank", "Index", "Bank", new { area = "Common" }, null)<b class="arrow"></b></li>*@
                         @*<li class="">
-                                <a href="#" class="dropdown-toggle">
-                                    <i class="menu-icon fa fa-caret-right"></i>
-                                    POS Integration
-                                    <b class="arrow fa fa-angle-down"></b>
-                                </a>
-                                <b class="arrow"></b>
-                                <ul class="submenu">
-                                    <li id="crm001009" class="actionlinlk">@Html.ActionLink("POS Settings", "Index", "PosSetting", new { area = "CRM" }, null)<b class="arrow"></b></li>
-                                </ul>
-                            </li>*@
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            POS Integration
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="crm001009" class="actionlinlk">@Html.ActionLink("POS Settings", "Index", "PosSetting", new { area = "CRM" }, null)<b class="arrow"></b></li>
+                        </ul>
+                    </li>*@
                         @if (User.Identity.Name == "tester")
                         {
                             <li class="">
