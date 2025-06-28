@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.CRM.TenderManagement;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
@@ -10,9 +11,9 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 
-namespace ExceedERP.Web.Areas.CRM.Controllers
+namespace ExceedERP.Web.Areas.CRM.Controllers.TenderManagement
 {
-    [AuthorizeRoles(CRMRoles.CRMTenderFollowup)] 
+	[AuthorizeRoles(CRMRoles.CRMTenderFollowup)] 
     public class TenderFollowupController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

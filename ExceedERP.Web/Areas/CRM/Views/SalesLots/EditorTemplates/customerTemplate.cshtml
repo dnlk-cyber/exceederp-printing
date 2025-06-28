@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                        //.Name("Customer Name")
+                        .OptionLabel("Select Participant...")
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .CascadeFrom("SalesLotId")
+                        .Filter("contains")
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetParticipants", "TenderDataProvider", new { area = "CRM", salesLotId = "#=SalesLotId#" }))
+                            .ServerFiltering(true);
+                        })
+
+)
+@Html.ValidationMessageFor(m => m)

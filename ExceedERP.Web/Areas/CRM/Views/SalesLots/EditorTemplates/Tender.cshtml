@@ -1,0 +1,14 @@
+﻿
+  @(Html.Kendo().DropDownListFor(model => model)
+                                    .ValuePrimitive(true)
+                                    .OptionLabel("Select Tender...")
+                                    .DataTextField("Name")
+                                    .DataValueField("Id")
+                                    .Filter("contains")
+
+                                    .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetTenders", "TenderDataProvider", new { area = "CRM" }).Data("sendForgery"))
+                                        .ServerFiltering(false);
+                                    })
+                )

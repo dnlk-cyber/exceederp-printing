@@ -1,0 +1,102 @@
+@using ExceedERP.Core.Localization
+@model  ExceedERP.Core.Domain.CRM.TenderManagement.SalesLotPurchase
+
+
+<div class="row my-class">
+    <div class="col-sm-3">
+        <div class="k-label">
+            @Html.LabelFor(model => model.ReceiptNotRequired)
+        </div>
+        <div>
+            @Html.Kendo().CheckBoxFor(model => model.ReceiptNotRequired).HtmlAttributes(new { onchange = "EnableDisableRecieptNumber(this);" })
+            @Html.ValidationMessageFor(model => model.ReceiptNotRequired, "", new { @class = "text-danger" })
+
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div class="k-label">
+            @Html.LabelFor(model => model.ReceiptNo)
+        </div>
+        <div>
+            @Html.Kendo().TextBoxFor(model => model.ReceiptNo)
+        </div>
+    </div>
+    <div class="col-md-3">
+
+        <div class="k-label">
+            @Html.LabelFor(model => model.Remark)
+        </div>
+        <div>
+            @Html.Kendo().TextBoxFor(model => model.Remark)
+        </div>
+
+    </div>
+</div>
+
+
+<div class="row my-class">
+
+    <div class="col-sm-3">
+        <div class="k-label">
+            @Html.LabelFor(model => model.PurchaseDate)
+        </div>
+        <div>
+            @Html.Kendo().DatePickerFor(model => model.PurchaseDate)
+        </div>
+    </div>
+    <div class="col-md-3">
+
+        <div class="k-label">
+            @Html.LabelFor(model => model.CustomerName)
+        </div>
+        <div>
+            @Html.Kendo().TextBoxFor(model => model.CustomerName)
+        </div>
+
+    </div>
+    <div class="col-md-3">
+
+        <div class="k-label">
+            @Html.LabelFor(model => model.TinNumber)
+        </div>
+        <div>
+            @Html.Kendo().TextBoxFor(model => model.TinNumber)
+        </div>
+
+    </div>
+    
+
+</div>
+<div class="row my-class">
+    <div class="col-md-3">
+
+        <div class="k-label">
+            @Html.LabelFor(model => model.Representative)
+        </div>
+        <div>
+            @Html.Kendo().TextBoxFor(model => model.Representative)
+        </div>
+
+    </div>
+    <div class="col-sm-3">
+        <div class="k-label">
+            @Html.LabelFor(model => model.Telephone)
+        </div>
+        <div>
+            @Html.Kendo().TextBoxFor(model => model.Telephone)
+        </div>
+    </div>
+    <div class="col-md-3">
+
+        <div class="k-label">
+            @Html.LabelFor(model => model.Address)
+        </div>
+        <div>
+            @Html.Kendo().TextBoxFor(model => model.Address)
+        </div>
+
+    </div>
+
+
+
+</div>

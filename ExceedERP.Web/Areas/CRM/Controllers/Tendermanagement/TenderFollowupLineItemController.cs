@@ -8,10 +8,11 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.CRM;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.CRM.TenderManagement;
 
-namespace ExceedERP.Web.Areas.CRM.Controllers
+namespace ExceedERP.Web.Areas.CRM.Controllers.TenderManagement
 {
-    [AuthorizeRoles(CRMRoles.CRMAdmin)] 
+	[AuthorizeRoles(CRMRoles.CRMAdmin)] 
     public class TenderFollowupLineItemController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+                                        .ValuePrimitive(true)
+                                        .OptionLabel("Select Branch...")
+                                        .DataTextField("Name")
+                                        .DataValueField("Id")
+                                        .Filter("contains")
+
+                                        .DataSource(dataSource =>
+                                        {
+                                            dataSource.Read(read => read.Action("GetBranches", "TenderDataProvider", new { area = "CRM" }).Data("sendForgery"))
+                                            .ServerFiltering(false);
+                                        })
+                                        )
+
+                                        @Html.ValidationMessageFor(model => model)

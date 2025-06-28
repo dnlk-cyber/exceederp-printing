@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.CRM.TenderManagement;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure.Annotations;
@@ -1530,4 +1531,110 @@ namespace ExceedERP.DataAccess.Context
         }
         #endregion
     }
+
+    #region Sales Tender
+    public class SalesLotEvaluationByDocumentEntityTypeConfiguration : EntityTypeConfiguration<SalesLotEvaluationByDocument>
+    {
+
+        public SalesLotEvaluationByDocumentEntityTypeConfiguration()
+        {
+            this.ToTable("SalesLotEvaluationByDocument", "CRM");
+            this.HasKey<int>(t => t.SalesLotEvaluationByDocumentId);
+
+        }
+    }
+    public class SaleTenderEntityTypeConfiguration : EntityTypeConfiguration<SaleTender>
+    {
+
+        public SaleTenderEntityTypeConfiguration()
+        {
+            this.ToTable("SaleTenders", "CRM");
+            this.HasKey<int>(t => t.SaleTenderId);
+
+        }
+    }
+    public class SalesLotEntityTypeConfiguration : EntityTypeConfiguration<SalesLot>
+    {
+
+        public SalesLotEntityTypeConfiguration()
+        {
+            this.ToTable("SalesLots", "CRM");
+            this.HasKey<int>(t => t.SalesLotId);
+
+        }
+    }
+    public class SalesLotItemEntityTypeConfiguration : EntityTypeConfiguration<SalesLotItem>
+    {
+        public SalesLotItemEntityTypeConfiguration()
+        {
+            this.ToTable("SalesLotItems", "CRM");
+            this.HasKey<int>(t => t.SalesLotItemId);
+
+        }
+    }
+    //public class ProductEntityTypeConfiguration : EntityTypeConfiguration<Product>
+    //{
+    //    public ProductEntityTypeConfiguration()
+    //    {
+    //        this.ToTable("Products", "CRM");
+    //        this.HasKey<int>(t => t.ProductID);
+
+    //    }
+    //}
+    //public class ProductCategoryEntityTypeConfiguration : EntityTypeConfiguration<ProductCategory>
+    //{
+    //    public ProductCategoryEntityTypeConfiguration()
+    //    {
+    //        this.ToTable("ProductCategorys", "CRM");
+    //        this.HasKey<int>(t => t.ProductCategoryId);
+
+    //    }
+    //}
+    public class SalesLotParticipantEntityTypeConfiguration : EntityTypeConfiguration<SalesLotParticipant>
+    {
+        public SalesLotParticipantEntityTypeConfiguration()
+        {
+            this.ToTable("SalesLotParticipants", "CRM");
+            this.HasKey<int>(t => t.SalesLotParticipantId);
+
+        }
+    }
+    public class SalesLotParticipantItemEntityTypeConfiguration : EntityTypeConfiguration<SalesLotParticipantItem>
+    {
+        public SalesLotParticipantItemEntityTypeConfiguration()
+        {
+            this.ToTable("SalesLotParticipantItems", "CRM");
+            this.HasKey<int>(t => t.SalesLotParticipantItemId);
+
+        }
+    }
+    public class SalesLotPurchaseEntityTypeConfiguration : EntityTypeConfiguration<SalesLotPurchase>
+    {
+        public SalesLotPurchaseEntityTypeConfiguration()
+        {
+            this.ToTable("SalesLotPurchases", "CRM");
+            this.HasKey<int>(t => t.SalesLotPurchaseId);
+
+        }
+    }
+    public class WinnerEntityTypeConfiguration : EntityTypeConfiguration<Winner>
+    {
+        public WinnerEntityTypeConfiguration()
+        {
+            this.ToTable("Winners", "CRM");
+            this.HasKey<int>(t => t.WinnerId);
+
+        }
+    }
+
+    public class TenderWinnerValidationEntityTypeConfiguration : EntityTypeConfiguration<TenderWinnerValidation>
+    {
+        public TenderWinnerValidationEntityTypeConfiguration()
+        {
+            this.ToTable("TenderWinnerValidations", "CRM");
+            this.HasKey<int>(t => t.TenderWinnerValidationId);
+
+        }
+    }
+    #endregion
 }

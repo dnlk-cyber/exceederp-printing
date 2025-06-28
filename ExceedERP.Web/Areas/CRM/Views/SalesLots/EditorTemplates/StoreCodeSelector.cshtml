@@ -1,0 +1,17 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)                   
+                    .OptionLabel("Select Store...")
+                    .DataTextField("Name")
+                    .DataValueField("StoreCode")
+                    .Filter("contains")
+                    .CascadeFrom("BranchId")
+                    .DataSource(dataSource =>
+                    {
+                        dataSource
+                            .Read(read => read
+                                .Action("GetStoreByBranch", "TenderDataProvider", new { area = "CRM" })
+                                .Data("filterStores"))
+                                                    .ServerFiltering(true);
+                    })
+)
+@Html.ValidationMessageFor(m => m)
+

@@ -1,0 +1,14 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                    .Name("ProductCategoryId")
+                    .OptionLabel("Select Product Catagory...")
+                    .DataTextField("Description")
+                    .DataValueField("ProductCategoryId")
+                    .Filter("contains")
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetAllCategories", "TenderDataProvider", new { area = "CRM" }).Data("sendForgery"))
+                        .ServerFiltering(true);
+                    })
+
+)
+@Html.ValidationMessageFor(m => m)

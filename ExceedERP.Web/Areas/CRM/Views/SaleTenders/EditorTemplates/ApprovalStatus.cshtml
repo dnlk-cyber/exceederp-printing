@@ -1,0 +1,6 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                .DataTextField("Text")
+                        .DataValueField("Value")
+                        .Filter("contains")
+                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CRM.TenderManagement.ApproveStatus)))
+)
