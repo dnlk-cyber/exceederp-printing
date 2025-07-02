@@ -358,8 +358,8 @@
             var isChecked = $('#chkIsInclude').is(':checked');
 
             $.ajax({
-                @*url: '@Url.Action("GetEmployeeLeaveEntitlemntNewAwaj", "LeaveEntitle")',*@
-                url: '@Url.Action("GetEmployeeLeaveEntitlemntNewAwajCopy", "LeaveEntitle")',
+                url: '@Url.Action("GetEmployeeLeaveEntitlemntNewAwaj", "LeaveEntitle")',
+                @*url: '@Url.Action("GetEmployeeLeaveEntitlemntNewAwajCopy", "LeaveEntitle")',*@
                 data: { check: isChecked, period: period },
                 type: 'POST',
                 cache: false,

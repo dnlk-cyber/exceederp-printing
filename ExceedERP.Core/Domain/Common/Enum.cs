@@ -966,7 +966,9 @@ namespace ExceedERP.Core.Domain.Common
         LEAVE_FOR_LEADRES_NEW,
         LEAVE_FOR_PERFORMERS_NEW,
         Old_Initial_Leave_End_Year,
-        MAXIMUM_Leave_For_Leaders
+        MAXIMUM_Leave_For_Leaders,
+        APPLY_WORKING_DAYS_FOR_MATERNITY,
+        LEAVE_ENTITLEMENT_INCREEMENT_YEAR
 
     }
     public enum RecruitmentSetting
