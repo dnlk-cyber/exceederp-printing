@@ -1,4 +1,4 @@
-using ExceedERP.Core.Domain.Common;
+﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Localization;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -11,19 +11,20 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
 
         [Key]
         public int EmployeePerformanceId { get; set; }
-        [Display(Name ="Employee")]
+        [Display(Name ="Employee-")]
         public int EmployeeId { get; set; }
+        public int? EvaluatorEmployeeId { get; set; }
         public int DirectBossId { get; set; }
         public int? SecondLevelApproverId { get; set; }
         [Display(Name = "Fiscal Year")]
         public int GlFiscalYearId { get; set; }
         [Display(Name = "Period")]
         public int GlPeriodId { get; set; }
-        [Display(Name = "Evaluation Criteria Type")]
+        [Display(Name = "Evaluation-Criteria-Type")]
         public int EvaluationCriteriaTypeId { get; set; }
-        [Display(Name = "Criteria Category")]
+        [Display(Name = "Criteria-Category")]
         public int CriteriaCategoryId { get; set; }
-        [Display(Name = "Work Unit")]
+        [Display(Name = "Work-Unit")]
         public int OrgStructureId { get; set; }
         [Display(Name ="DeadLine(Days)")]
         public decimal DeadLine { get; set; }
@@ -54,6 +55,12 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public bool IsSectorApplied { get; set; }
         [Display(Name = "Is Immediate Suppurvisor Approved")]
         public bool IsImmediateSuppurvisorApproved { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}",
+          ApplyFormatInEditMode = true),
+            Display(Name = "Immediate Suppurvisor Approval Date")]
+        public DateTime? ImmediateSuppurvisorApprovalDate { get; set; }
+        [Display(Name = "Immediate Suppurvisor Approver")]
+        public string ImmediateSuppurvisorApprover { get; set; }
         [Display(Name = "Is Accepted")]
         public bool IsAcceptedByEmployee { get; set; }
         [Display(Name = "Is Rejected By Employee ")]
@@ -62,16 +69,34 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public string EmployeeRemark { get; set; }
         [Display(Name = "Reason for Rejection")]
         public string ReasonFor2ndRejection { get; set; }
+        [Display(Name = "Reason for HR Rejection")]
+        public string ReasonForHRRejection { get; set; }
         [Display(Name = "Is Second Level Approved")]
         public bool IsSecondLevelApproved { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}",
+           ApplyFormatInEditMode = true), Display(Name = "SecondLevelApproval Date")]
+        public DateTime? SecondLevelApprovalDate { get; set; }
+        [Display(Name = "Second Level Approver")]
+        public string SecondLevelApprover { get; set; }
         [Display(Name = "Is Second Level Rejected")]
         public bool IsSecondLevelRejected { get; set; }
         [Display(Name = "Is HR Approved")]
         public bool IsHRApproved { get; set; }
+        [Display(Name = "Is HR Rejected")]
+        public bool IsHRRejected { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}",
+           ApplyFormatInEditMode = true),
+            Display(Name = "Final (HR) Approval Date")]
+        public DateTime? FinalApprovalDate { get; set; }
+        [Display(Name = "Final(HR) Approver")]
+        public string FinalApprover { get; set; }
         public bool IsHRLevelEvalution { get; set; }
+        public bool IsPeerAndInternalCustomerHiddenToEmployee { get; set; }
         public bool IsCurrent { get; set; }
         public string Remark { get; set; }
         public string Comment { get; set; }
+        public string EvalutionType { get; set; }
+        public bool IsAveraged { get; set; }
         [NotMapped]
         public string Grade { get; set; }
         [NotMapped]
@@ -107,10 +132,24 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public int BusinessUnitId { get; set; }
         [Display(Name = "Work Unit")]
         public int OrgStructureId { get; set; }
-        [Display(Name = "Weight")]
+        [Display(Name = "HR_EmployeeDetail_Placement_ResponsibilityLevel", ResourceType = typeof(Localization.Resources))]
+        public ResponsibilityLevel ResponsibilityLevel { get; set; }
+        //[Display(Name = "Weight 1")]
+        //public decimal Weight1 { get; set; }
+        //[Display(Name = "Result1")]
+        //public decimal Result1 { get; set; }
+        //[Display(Name = "Period 2")]
+        //public int GlPeriodId2 { get; set; }
+        //[Display(Name = "Weight 2")]
+        //public decimal Weight2 { get; set; }
+        //[Display(Name = "Result")]
+        //public decimal Result2 { get; set; }
+        [Display(Name = "Avg Weight")]
         public decimal Weight { get; set; }
-        [Display(Name = "Result")]
+        [Display(Name = "Avg Result")]
         public decimal Result { get; set; }
+        //[Display(Name = "Average")]
+        //public decimal Average { get; set; }
         [Display(Name = "Days Served in this Fiscal year")]
         public decimal TotalDays { get; set; }
         [Display(Name = "Bonus")]

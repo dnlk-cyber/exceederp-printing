@@ -699,6 +699,8 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new QuarterLengthEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new QuarterEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeaveNewAwajStartYearEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeePeerToPeerAndInternalCustomerPerformanceSettingEntityTypeConfiguration());
+
             #region Payroll Process
             modelBuilder.Configurations.Add(new BonusSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PayrollProcessLongTermDeductionsEntityTypeConfiguration());
@@ -1938,6 +1940,7 @@ namespace ExceedERP.DataAccess.Context
 
 
             modelBuilder.Configurations.Add(new InsuranceEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new InsurancePremiumSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new InsuranceGroupEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AccidentRecordEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AccidentMedicalRecordEntityTypeConfiguration());
@@ -2892,6 +2895,8 @@ namespace ExceedERP.DataAccess.Context
         //public DbSet<DepartmentDefineMeasurment> DepartmentDefineMeasurments { get; set; }
         //public DbSet<DepartmentMeasurment> DepartmentMeasurments { get; set; }
         //public DbSet<DepartmentPerformanceAction> DepartmentPerformanceActions { get; set; }
+        public System.Data.Entity.DbSet<EmployeePeerToPeerAndInternalCustomerPerformanceSetting> EmployeePeerToPeerAndInternalCustomerPerformanceSettings { get; set; }
+
         #endregion
 
         #region Plan
@@ -4389,6 +4394,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
         #region Insurance
         public System.Data.Entity.DbSet<InsuranceGroup> InsuranceGroup { get; set; }
+        public System.Data.Entity.DbSet<InsurancePremiumSetting> InsurancePremiumSettings { get; set; }
         public System.Data.Entity.DbSet<Insurance> Insurance { get; set; }
         public System.Data.Entity.DbSet<AccidentRecord> AccidentRecords { get; set; }
         public System.Data.Entity.DbSet<AccidentMedicalRecord> AccidentMedicalRecords { get; set; }

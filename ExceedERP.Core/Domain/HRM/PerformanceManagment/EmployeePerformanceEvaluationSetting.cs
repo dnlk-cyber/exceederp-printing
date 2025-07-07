@@ -18,6 +18,20 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public int? LookupId { get; set; }
         public decimal Weight { get; set; }
     }
+    public class EmployeePeerToPeerAndInternalCustomerPerformanceSetting : TrackUserSettingOperation
+    {
+        public int EmployeePeerToPeerAndInternalCustomerPerformanceSettingId { get; set; }
+        public bool IsPeerToPeerHasMultipleEvaluator { get; set; }
+        public bool IsInternalCustomerHasMultipleEvaluator { get; set; }
+
+        // Corrected Constructor
+        public EmployeePeerToPeerAndInternalCustomerPerformanceSetting()
+        {
+            IsPeerToPeerHasMultipleEvaluator = false;
+            IsInternalCustomerHasMultipleEvaluator = false;
+        }
+    }
+
 
     public enum PerformanceEvaluationType
     {

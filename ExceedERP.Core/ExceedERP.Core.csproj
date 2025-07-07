@@ -1074,6 +1074,7 @@
     <Compile Include="Domain\Insurance\OtherInsurance.cs" />
     <Compile Include="Domain\Insurance\Restitution.cs" />
     <Compile Include="Domain\Insurance\Setting\InsurancePaymentSetting.cs" />
+    <Compile Include="Domain\Insurance\Setting\InsurancePremiumSetting.cs" />
     <Compile Include="Domain\Insurance\VehicleAccidentDetail.cs" />
     <Compile Include="Domain\Inventory\ArchiveModel\BinCardLine_Archive.cs" />
     <Compile Include="Domain\Inventory\ArchiveModel\StoreRequisition_Archive.cs" />

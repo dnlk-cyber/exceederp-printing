@@ -1,4 +1,4 @@
-
+@using ExceedERP.Core.Localization
 <li class="">
 <a href="#" class="dropdown-toggle">
 	<i class="menu-icon fa fa-user"></i>
@@ -547,75 +547,77 @@
 			</a>
 			<b class="arrow"></b>
 
-			<ul class="submenu">
+            <ul class="submenu">
 
-				@if (HttpContext.Current.User.IsInRole("HR_Performance_Admin"))
-				{
-					<li id="hrm06700100" class="actionlinlk">
-						@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPerformance_PerformanceRank, "Index", "PerformanceRank", new { area = "HRM" }, null)<b class="arrow"></b>
-					</li>
-					<li id="hrm067001000" class="actionlinlk">
-						@Html.ActionLink(ExceedERP.Core.Localization.Resources.Rpt_Criteria + " " + ExceedERP.Core.Localization.Resources.Common_Lookup_Category, "Index", "CriteriaCategories", new { area = "HRM" }, null)<b class="arrow"></b>
-					</li>
+                @if (HttpContext.Current.User.IsInRole("HR_Performance_Admin"))
+                {
+                    <li id="hrm06700100" class="actionlinlk">
+                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPerformance_PerformanceRank, "Index", "PerformanceRank", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="hrm067001000" class="actionlinlk">
+                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.Rpt_Criteria + " " + ExceedERP.Core.Localization.Resources.Common_Lookup_Category, "Index", "CriteriaCategories", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>
 
-					<li id="hrm06800100" class="actionlinlk">
-						@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPerformance_EvaluationCriteria, "Index", "EvaluationCritetias", new { area = "HRM" }, null)<b class="arrow"></b>
-					</li>
-				}
-				@if (HttpContext.Current.User.IsInRole("HR_Performance_Admin")
-				|| HttpContext.Current.User.IsInRole("HR_Performance_User"))
-				{
-					<li id="hrm06900100" class="actionlinlk">
-						@Html.ActionLink("Corporate && Sector Evalution", "Index", "EmployeePerformanceCorporateAndSectorLevels", new { area = "HRM" }, null)<b class="arrow"></b>
-					</li>
-					<li id="hrm06900100" class="actionlinlk">
-						@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPerformance_EmployeePerformance, "Index", "EmployeePerformanceAllSummaries", new { area = "HRM" }, null)<b class="arrow"></b>
-					</li>
-					<li id="hrm07000100" class="actionlinlk">
-						@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPerformance_QuarterLength, "Index", "QuarterLength", new { area = "HRM" }, null)<b class="arrow"></b>
-					</li>
-					<li id="hrm07100100" class="actionlinlk">@Html.ActionLink("Performance Settings", "Index", "PerformanceSettings", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                    <li id="hrm06800100" class="actionlinlk">
+                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPerformance_EvaluationCriteria, "Index", "EvaluationCritetias", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>
+                }
+                @if (HttpContext.Current.User.IsInRole("HR_Performance_Admin")
+                || HttpContext.Current.User.IsInRole("HR_Performance_User"))
+                {
+                    <li id="hrm06900100" class="actionlinlk">
+                        @Html.ActionLink("Corporate && Sector Evalution", "Index", "EmployeePerformanceCorporateAndSectorLevels", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="hrm06900100" class="actionlinlk">
+                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPerformance_EmployeePerformance, "Index", "EmployeePerformanceAllSummaries", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="hrm07000100" class="actionlinlk">
+                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPerformance_QuarterLength, "Index", "QuarterLength", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="hrm07100100" class="actionlinlk">@Html.ActionLink("Performance Settings", "Index", "PerformanceSettings", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                    <li id="hrm071001002" class="actionlinlk">
+                        @Html.ActionLink(Resources.NavigatorReport_Detail_EmployeePerformance + " " + Resources.Settings, "Index", "EmployeePeerToPeerAndInternalCustomerPerformanceSettings", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>
+                }
+                @if (HttpContext.Current.User.IsInRole("HR_Performance_Report")
+                || HttpContext.Current.User.IsInRole("HR_Report"))
+                {
 
-				}
-				@if (HttpContext.Current.User.IsInRole("HR_Performance_Report")
-				|| HttpContext.Current.User.IsInRole("HR_Report"))
-				{
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Report
 
-					<li class="">
-						<a href="#" class="dropdown-toggle">
-							<i class="menu-icon fa fa-caret-right"></i>
-							Report
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
 
-							<b class="arrow fa fa-angle-down"></b>
-						</a>
-						<b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="hrm07100100" class="actionlinlk">@Html.ActionLink("General Summary", "EmployeePerformanceTotalSummary", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                            <li id="hrm07100100" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPerformance_PerformanceSummary, "EmployeePerformanceSummary", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                            @if (HttpContext.Current.User.IsInRole("HR_Performance_Report"))
+                            {
+                                <li id="hrm15100101" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_EmployeePerformance, "EmployeePerformance", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                                <li id="hrm15200102" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_EmployeeYearlyPerformance, "EmployeeYearlyPerformance", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
 
-						<ul class="submenu">
-							<li id="hrm07100100" class="actionlinlk">@Html.ActionLink("General Summary", "EmployeePerformanceTotalSummary", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
-							<li id="hrm07100100" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPerformance_PerformanceSummary, "EmployeePerformanceSummary", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
-							@if (HttpContext.Current.User.IsInRole("HR_Performance_Report"))
-							{
-								<li id="hrm15100101" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_EmployeePerformance, "EmployeePerformance", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
-								<li id="hrm15200102" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_EmployeeYearlyPerformance, "EmployeeYearlyPerformance", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                                <li id="hrm15300103" class="actionlinlk">
+                                    @Html.ActionLink("Employee Performance Detail ", "EmployeeBscPerformance", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                                </li>
+                                <li id="hrm15300104" class="actionlinlk">
+                                    @Html.ActionLink("Employee Performance With Bonus ", "EmployeePerfromanceLeaveDispilineBonusSummary", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                                </li>
+                                <li id="hrm15300105" class="actionlinlk">
+                                    @Html.ActionLink("Employee Perfromance & Planning", "EmployeePerfromanceWithPlanningSummary", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                                </li>
+                                <li id="hrm15300106" class="actionlinlk">
+                                    @Html.ActionLink("Not Evaluated Employee", "NotEvaluatedEmployeeReport", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                                </li>
+                            }
+                        </ul>
 
-								<li id="hrm15300103" class="actionlinlk">
-									@Html.ActionLink("Employee Performance Detail ", "EmployeeBscPerformance", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b>
-								</li>
-								<li id="hrm15300104" class="actionlinlk">
-									@Html.ActionLink("Employee Performance With Bonus ", "EmployeePerfromanceLeaveDispilineBonusSummary", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b>
-								</li>
-								<li id="hrm15300105" class="actionlinlk">
-									@Html.ActionLink("Employee Perfromance & Planning", "EmployeePerfromanceWithPlanningSummary", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b>
-								</li>
-								<li id="hrm15300106" class="actionlinlk">
-									@Html.ActionLink("Not Evaluated Employee", "NotEvaluatedEmployeeReport", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b>
-								</li>
-							}
-						</ul>
-
-					</li>
-				}
-			</ul>
+                    </li>
+                }
+            </ul>
 		</li>
 	}
 

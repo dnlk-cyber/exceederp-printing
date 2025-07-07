@@ -6,286 +6,376 @@
 }
 <legend>@Resources.NavigatorPerformance_EmployeePerformance || HR </legend>
 @(Html.Kendo().Grid<EmployeePerformance>()
-        .Name("EmployeePerformancegrid")
-        .Columns(columns =>
-        {
-            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").Width(200).EditorTemplateName("EmployeeLists").Filterable(ftb => ftb.Multi(true).Search(true));
-            columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["fiscalYearList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(80);
-            columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["Period"], "QuarterId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
-            columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
-            columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
-            columns.Bound(x => x.ResponsibilityLevel).Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
-            columns.Bound(c => c.IsCurrent).ClientTemplate(
-                                       "<input type='checkbox' disabled = 'true' value='#= IsCurrent#' " +
-                                       "# if (IsCurrent) { #" +
-                                       "checked='checked'" +
-                                       "# } #" +
-                                       "/>"
-                                       ).Width(150);
-            columns.Bound(c => c.IsHRApproved).ClientTemplate(
-            "<input type='checkbox' disabled = 'true' value='#= IsHRApproved#' " +
-            "# if (IsHRApproved) { #" +
-            "checked='checked'" +
-            "# } #" +
-            "/>"
-            ).Width(150);
-            columns.Command(command =>
-            {
-                command.Custom("cmd-approve-request").IconClass("fa fa-check ").Text("Approva").Click("thirdLevelApproval").HtmlAttributes(new { @class = "btn btn-success" });
+      .Name("EmployeePerformancegrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").Width(200).EditorTemplateName("EmployeeLists").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["fiscalYearList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(80);
+          columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["Period"], "QuarterId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+          columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+          columns.Bound(x => x.ResponsibilityLevel).Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
+          columns.Bound(c => c.IsCurrent).ClientTemplate(
+                                     "<input type='checkbox' disabled = 'true' value='#= IsCurrent#' " +
+                                     "# if (IsCurrent) { #" +
+                                     "checked='checked'" +
+                                     "# } #" +
+                                     "/>"
+                                     ).Width(150);
+          columns.Bound(c => c.IsHRApproved).ClientTemplate(
+          "<input type='checkbox' disabled = 'true' value='#= IsHRApproved#' " +
+          "# if (IsHRApproved) { #" +
+          "checked='checked'" +
+          "# } #" +
+          "/>"
+          ).Width(150);
+          columns.Bound(c => c.IsSecondLevelRejected).ClientTemplate(
+          "<input type='checkbox' disabled = 'true' value='#= IsSecondLevelRejected#' " +
+          "# if (IsSecondLevelRejected) { #" +
+          "checked='checked'" +
+          "# } #" +
+          "/>"
+          ).Width(150);
+          columns.Bound(c => c.IsRejectedByEmployee).ClientTemplate(
+          "<input type='checkbox' disabled = 'true' value='#= IsRejectedByEmployee#' " +
+          "# if (IsRejectedByEmployee) { #" +
+          "checked='checked'" +
+          "# } #" +
+          "/>"
+          ).Width(150);
+          columns.Bound(c => c.DateCreated).Width(120);
+          columns.Bound(c => c.ImmediateSuppurvisorApprovalDate).Width(120);
+          columns.Bound(c => c.SecondLevelApprovalDate).Width(120);
+          columns.Bound(c => c.FinalApprovalDate).Width(120);
+          columns.Bound(c => c.Date).Width(120);
+          columns.Bound(c => c.IsHRRejected).ClientTemplate(
+         "<input type='checkbox' disabled = 'true' value='#= IsHRRejected#' " +
+         "# if (IsHRRejected) { #" +
+         "checked='checked'" +
+         "# } #" +
+         "/>"
+         ).Width(150);
+          columns.Command(command =>
+          {
+              command.Custom("cmd-approve-request").IconClass("fa fa-check ").Text("Approva").Click("thirdLevelApproval").HtmlAttributes(new { @class = "btn btn-success" });
+              command.Custom("cmd-reject").IconClass("fa fa-check ").Text("Reject").Click("finalLevelRejection").HtmlAttributes(new { @class = "btn btn-warning" });
 
-            }).Width(100);
 
-        })
-        .Editable(editable => editable.Mode(GridEditMode.InLine))
-        .Filterable()
-        .Scrollable(h => h.Height("auto"))
-        .Events(ev=>ev.DataBound("onDataBound"))
-        .Pageable(pageable => pageable
-            .Input(true)
-             .Numeric(false)
-            .Refresh(true)
-            .PageSizes(true)
-             .ButtonCount(5)
-            )
-
-        .DataSource(dataSource => dataSource
-            .Ajax()
-            .Events(events =>
-            {
-                events.Error("error_handler(\"EmployeePerformancegrid\")");
-                events.RequestStart("onRequestStart(\"EmployeePerformancegrid\")");
-                events.RequestEnd("onRequestEnd(\"EmployeePerformancegrid\")");
-            })
-            .Model(model =>
-            {
-                model.Id(p => p.EmployeePerformanceId);
-                model.Field(p => p.Result).Editable(false);
+          }).Width(100);
 
 
-            })
-        .Read(read => read.Action("EmployeePerformanceAllSummaries_Read", "EmployeePerformanceAllSummaries").Data("sendForgery"))
-        ).ClientDetailTemplateId("employee_performance_template")
+      })
+      .ToolBar(toolbar =>
+      {
+      toolbar.Template(@<text>
+               <div class="toolbar">
+                      
+                        @(Html.Kendo().ComboBox()
+                                .Placeholder(Resources.Fiscal_Year)
+                                .Name("GlFiscalYearId")
+                                .Filter("contains")
+                                .DataTextField("Name")
+                                .DataValueField("GlFiscalYearId")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetFiscalYearForPerformance", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
+                                        .ServerFiltering(false);
+                                })
+
+                                .HtmlAttributes(new { style = "width: 120px;" })
+                                .Events(e => e.Change("onChangeGrid"))
+
+                        )
+                       
+                    @(Html.Kendo().Button()
+                                    .Name("btnrefresh")
+                                    .HtmlAttributes(new { type = "button", @class = "k-primary btn btn-primary btn-xs " })
+                                    .Events(e => e.Click("refreshPerformanceData"))
+                                    .Content(Resources.Ecabinet_DashBoard_RefreshData))
+
+
+                       
+                    @(Html.Kendo().Button()
+                     .Name("btnExcelExport")
+                     .HtmlAttributes(new { type = "button", @class = "k-primary pull-right" })
+                     .Content("Export to Excel")
+                     .Events(events => events.Click("onExcelExportClick")))
+                    </div>
+                </text>);
+
+
+
+
+      })
+    //.Excel(excel => excel
+    // .FileName(Resources.Employee_Performance + ".xlsx")
+    // .Filterable(true)
+    // .AllPages(true)
+    // .ProxyURL(Url.Action("Excel_Export_Save", "EmployeePerformanceAllSummaries")))
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .Filterable()
+    .Scrollable(h => h.Height("auto"))
+    .Events(ev =>
+    {
+        ev.DataBound("onDataBound");
+        ev.DetailExpand("onMasterDetailExpand");
+    })
+    .Pageable(pageable => pageable
+        .Input(true)
+        .Numeric(false)
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5)
         )
 
-<script id="employee_performance_template" type="text/kendo-tmpl">
-  @(Html.Kendo().TabStrip()
-        .Name("tabstrip_#=EmployeePerformanceId#")
-        .SelectedIndex(0)
-        .Items(items =>
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .Events(events =>
         {
-            items.Add().Text(Resources.NavigatorPerformance_EmployeePerformance).Content(
-            @<text>
-          @(Html.Kendo().Grid<EmployeePerformance>()
-              .Name("EmployeePerformancedetailgrid_#=EmployeePerformanceId#")
-              .Columns(columns =>
-              {
-
-                  columns.ForeignKey(c => c.EvaluationCriteriaTypeId, (IEnumerable)ViewData["EvalutionCrateria"], "MeasurementDefinitionId", "Name").Width(200);
-                  // columns.Bound(c => c.Weight).Width(80);
-                  // columns.Bound(c => c.Result).Width(80);
-                  columns.Bound(c => c.Weight).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-                  columns.Bound(c => c.Result).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
-
-                  columns.Bound(c => c.IsSecondLevelApproved).ClientTemplate(
-                             "<input type='checkbox' disabled = 'true' value='#=IsSecondLevelApproved#' " +
-                             "# if (IsSecondLevelApproved) { #" +
-                             "checked='checked'" +
-                             "# } #" +
-                             "/>").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
-                  columns.Bound(c => c.Remark).Width(50);
-
-              })
-
-              .ClientDetailTemplateId("Action")
-              .Editable(editable => editable.Mode(GridEditMode.InLine))
-              .Scrollable(h => h.Height("auto"))
-                .Pageable(pageable => pageable
-                      //.Input(true)
-                      // .Numeric(false)
-                      .Refresh(true)
-                     //.PageSizes(true)
-                     // .ButtonCount(5)
-                     )
-
-              .DataSource(dataSource => dataSource
-                     .Ajax()
-                     .Aggregates(aggregates =>
-                     {
-                         aggregates.Add(p => p.Weight).Sum();
-                         aggregates.Add(p => p.Result).Sum();
-                     })
-                     .Events(events =>
-                     {
-                         events.Error("error_handler(\"EmployeePerformancedetailgrid_#=EmployeePerformanceId#\")");
-                         events.RequestStart("onRequestStart(\"EmployeePerformancedetailgrid_#=EmployeePerformanceId#\")");
-                         events.RequestEnd("onRequestEnd(\"EmployeePerformancedetailgrid_#=EmployeePerformanceId#\")");
-                     })
-                     .Model(model =>
-                     {
-                         model.Id(p => p.EmployeePerformanceId);
-                         model.Field(p => p.Result).Editable(false);
+            events.Error("error_handler(\"EmployeePerformancegrid\")");
+            events.RequestStart("onRequestStart(\"EmployeePerformancegrid\")");
+            events.RequestEnd("onRequestEnd(\"EmployeePerformancegrid\")");
+        })
+        .Model(model =>
+        {
+            model.Id(p => p.EmployeePerformanceId);
+            model.Field(p => p.Result).Editable(false);
 
 
-                     })
-                    .Read(read => read.Action("EmployeePerformanceSummaries_OnePerson_Read", "EmployeePerformanceAllSummaries", new { employeeId= "#=EmployeeId#", fiscalyearId= "#=GlFiscalYearId#", quarterId= "#=GlPeriodId#" }).Data("sendForgery"))
+        })
+    .Read(read => read.Action("EmployeePerformanceAllSummaries_Read", "EmployeePerformanceAllSummaries").Data("sendForgery"))
+    ).ClientDetailTemplateId("employee_performance_template")
+)
 
-                    ).ClientDetailTemplateId("employee_performance_detail_template")
-                    .ToClientTemplate()
-                    )
-                   </text> );
+<script id="employee_performance_template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip_#=EmployeePerformanceId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+                    items.Add().Text(Resources.NavigatorPerformance_EmployeePerformance).Content(
+                    @<text>
+                        @(Html.Kendo().Grid<EmployeePerformance>()
+                                    .Name("EmployeePerformancedetailgrid_#=EmployeePerformanceId#")
+                                    .Columns(columns =>
+                                    {
+
+                                        columns.ForeignKey(c => c.EvaluationCriteriaTypeId, (IEnumerable)ViewData["EvalutionCrateria"], "MeasurementDefinitionId", "Name").Width(200);
+                                        // columns.Bound(c => c.Weight).Width(80);
+                                        // columns.Bound(c => c.Result).Width(80);
+                                        columns.Bound(c => c.Weight).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                                        columns.Bound(c => c.Result).Width(100).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                                        columns.Bound(c => c.Date).Width(120);
+
+                                        columns.Bound(c => c.IsSecondLevelApproved).ClientTemplate(
+                                                   "<input type='checkbox' disabled = 'true' value='#=IsSecondLevelApproved#' " +
+                                                   "# if (IsSecondLevelApproved) { #" +
+                                                   "checked='checked'" +
+                                                   "# } #" +
+                                                   "/>").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+                                        columns.Bound(c => c.Remark).Width(50);
 
 
-                }).ToClientTemplate())
-                                            
+                                    })
+
+                                    .ClientDetailTemplateId("Action")
+                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                    .Scrollable(h => h.Height("auto"))
+                                      .Pageable(pageable => pageable
+                                            //.Input(true)
+                                            // .Numeric(false)
+                                            .Refresh(true)
+                                           //.PageSizes(true)
+                                           // .ButtonCount(5)
+                                           )
+                                    .Events(ev =>
+                                    {
+                                        ev.DataBound("onDataBound");
+                                        ev.DetailExpand("onDetailExpand");
+                                    })
+
+                                    .DataSource(dataSource => dataSource
+                                           .Ajax()
+                                           .Aggregates(aggregates =>
+                                           {
+                                               aggregates.Add(p => p.Weight).Sum();
+                                               aggregates.Add(p => p.Result).Sum();
+                                           })
+                                           .Events(events =>
+                                           {
+                                               events.Error("error_handler(\"EmployeePerformancedetailgrid_#=EmployeePerformanceId#\")");
+                                               events.RequestStart("onRequestStart(\"EmployeePerformancedetailgrid_#=EmployeePerformanceId#\")");
+                                               events.RequestEnd("onRequestEnd(\"EmployeePerformancedetailgrid_#=EmployeePerformanceId#\")");
+                                           })
+                                           .Model(model =>
+                                           {
+                                               model.Id(p => p.EmployeePerformanceId);
+                                               model.Field(p => p.Result).Editable(false);
+
+
+                                           })
+                                          .Read(read => read.Action("EmployeePerformanceSummaries_OnePerson_Read", "EmployeePerformanceAllSummaries", new { employeeId = "#=EmployeeId#", fiscalyearId = "#=GlFiscalYearId#", quarterId = "#=GlPeriodId#" }).Data("sendForgery"))
+
+                                          ).ClientDetailTemplateId("employee_performance_detail_template")
+                                          .ToClientTemplate()
+                        )
+                    </text> );
+
+
+
+          }).ToClientTemplate())
+
 </script>
 
 <script id="employee_performance_detail_template" type="text/kendo-tmpl">
-        @(Html.Kendo().TabStrip()
-                .Name("tabstrip_#EmployeePerformanceId#")
-                .SelectedIndex(0)
-                .Items(items =>
-                {
-                    items.Add().Text(Resources.HR_PerformanceManagment_PerformanceAction_PerformanceAction).Content(
-                    @<text>
-                        @(Html.Kendo().Grid<EmployeeMeasurement>()
-                                .Name("Measurement_grid_#=EmployeePerformanceId#")
-                                .Columns(columns =>
-                                {
-                                    columns.ForeignKey(c => c.MeasurmentId, (IEnumerable)ViewData["Measurments"], "MeasurementId", "MeasurementName").Width(200);
-                                    columns.Bound(c => c.Weight).Width(80);
-                                    columns.Bound(c => c.Result).Width(80);
-                                    columns.Bound(c => c.Remark).Width(50);
-
-                                })
-
-                                .ClientDetailTemplateId("Action")
-
-                                .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                .Scrollable(h => h.Height("auto"))
-                                    .Pageable(pageable => pageable
-                                        //.Input(true)
-                                        // .Numeric(false)
-                                        .Refresh(true)
-                                        //.PageSizes(true)
-                                        // .ButtonCount(5)
-                                        )
-                                .DataSource(dataSource => dataSource
-                                .Ajax()
-                                .Events(events =>
-                                {
-                                    events.Error("error_handler(\"Measurement_grid_#=EmployeePerformanceId#\")");
-                                    events.RequestStart("onRequestStart(\"Measurement_grid_#=EmployeePerformanceId#\")");
-                                    events.RequestEnd("onRequestEnd(\"Measurement_grid_#=EmployeePerformanceId#\")");
-
-
-                                })
-
-                                .Model(model =>
-                                {
-                                    model.Id(p => p.EmpMeasurementId);
-                                    model.Field(p => p.Result).Editable(false);
-
-
-
-                                })
-                                .Read(read => read.Action("EmployeeMeasurements_Read", "EmployeePerformanceAllSummaries", new { performanceId = "#=EmployeePerformanceId#" }).Data("sendForgery")/*.Data("filterdata")*/)
-
-                                ).ClientDetailTemplateId("template")
-                                .ToClientTemplate()
-                                )
-
-        
-                                               
-                   </text> );
-
-
-                }).ToClientTemplate())
-                                            
-</script>
-<script  id = "template" type= "text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-            .Name("tabstrip_#EmpMeasurementId#")
-            .SelectedIndex(0)
-            .Items(items =>
-            {
-                items.Add().Text(Resources.HR_PerformanceManagment_PerformanceAction_PerformanceAction).Content(
-                @<text>
+                    .Name("tabstrip_#EmployeePerformanceId#")
+                    .SelectedIndex(0)
+                    .Items(items =>
+                    {
+                        items.Add().Text(Resources.HR_PerformanceManagment_PerformanceAction_PerformanceAction).Content(
+                        @<text>
+                            @(Html.Kendo().Grid<EmployeeMeasurement>()
+                                            .Name("Measurement_grid_#=EmployeePerformanceId#")
+                                            .Columns(columns =>
+                                            {
+                                                    columns.ForeignKey(c => c.MeasurmentId, (IEnumerable)ViewData["Measurments"], "MeasurementId", "MeasurementName").Width(200);
+                                                    columns.Bound(c => c.Weight).Width(80);
+                                                    columns.Bound(c => c.Result).Width(80);
+                                                    columns.Bound(c => c.Remark).Width(50);
 
-                    @(Html.Kendo().Grid<EmployeePerformanceScore>()
-                        .Name("PerformanceActiongrid_#=EmpMeasurementId#")
-                            .Columns(columns =>
-                            {
+                                                })
 
-                                columns.ForeignKey(c => c.PerformanceActionId, (IEnumerable)ViewData["PerformanceActions"], "ActionId", "ActionName").Title("Action Name").Width(200);
-                                columns.Bound(c => c.Weight).Width(50);
-                                columns.Bound(c => c.Score).Width(40);
-                                columns.Bound(c => c.Remark).Width(80);
-                                columns.Command(command =>
-                                {
-                                   // command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                    //command.Destroy().Text(Resources.ActionButton_Cancel);
-                                }).Width(100);
+                                            .ClientDetailTemplateId("Action")
 
-
-
-                            })
-
-                            .Editable(editable => editable.Mode(GridEditMode.InLine))
-                            .Scrollable(h => h.Height("auto"))
-                            .DataSource(dataSource => dataSource
-                                .Ajax()
-                                    .Events(events =>
-                                    {
-                                        events.Error("error_handler(\"PerformanceActiongrid_#=EmpMeasurementId#\")");
-                                        events.RequestStart("onRequestStart(\"PerformanceActiongrid_#=EmpMeasurementId#\")");
-                                        events.RequestEnd("onRequestEnd(\"PerformanceActiongrid_#=EmpMeasurementId#\")");
-                                    })
-
-                                .Model(model =>
-                                {
-                                    model.Id(p => p.EmployeePerformanceScoreId);
-                                    model.Field(p => p.Weight).Editable(false);
-                                    model.Field(p => p.PerformanceActionId).Editable(false);
-                                }
-                                )
-                            .Read(read => read.Action("PerformanceActions_Read", "EmployeePerformanceAllSummaries", new { empMeasurId = "#=EmpMeasurementId#" }).Data("sendForgery"))
-                            .Update(update => update.Action("PerformanceActions_Update", "EmployeePerformanceAllSummaries", new { /*defid = "#=MeasurementDefinitionId#",*/ /*mesid = "#=MeasurementId#" */}).Data("sendForgery"))
-                                //.Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformance").Data("sendForgery"))
-                                ).ToClientTemplate()
-                    )
+                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                            .Scrollable(h => h.Height("auto"))
+                                                .Pageable(pageable => pageable
+                                                    //.Input(true)
+                                                    // .Numeric(false)
+                                                    .Refresh(true)
+                                                    //.PageSizes(true)
+                                                    // .ButtonCount(5)
+                                                    )
+                                            .DataSource(dataSource => dataSource
+                                            .Ajax()
+                                            .Events(events =>
+                                            {
+                                                    events.Error("error_handler(\"Measurement_grid_#=EmployeePerformanceId#\")");
+                                                    events.RequestStart("onRequestStart(\"Measurement_grid_#=EmployeePerformanceId#\")");
+                                                    events.RequestEnd("onRequestEnd(\"Measurement_grid_#=EmployeePerformanceId#\")");
 
 
-                </text>
-                );
+                                                })
 
-
-            }).ToClientTemplate())
-</script >
-
-        @*</div>*@
-
-
-        @*</div>*@
-
-
-        <script>
-
-            function sync_handler(e) {
-                this.read();
-
-            }
-        </script>
+                                            .Model(model =>
+                                            {
+                                                    model.Id(p => p.EmpMeasurementId);
+                                                    model.Field(p => p.Result).Editable(false);
 
 
 
-        <style>
-                #approveButtonStyle {
-                    border-radius: 5%;
-                    padding-top: 1px;
-                    padding-bottom: 1px;
-                }
-                /*#grid .k-grid-toolbar {
+                                                })
+                                            .Read(read => read.Action("EmployeeMeasurements_Read", "EmployeePerformanceAllSummaries", new { performanceId = "#=EmployeePerformanceId#" }).Data("sendForgery")/*.Data("filterdata")*/)
+
+                                            ).ClientDetailTemplateId("template")
+                                            .ToClientTemplate()
+                            )
+
+
+
+                        </text> );
+
+
+                        }).ToClientTemplate())
+
+</script>
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                    .Name("tabstrip_#EmpMeasurementId#")
+                    .SelectedIndex(0)
+                    .Items(items =>
+                    {
+                        items.Add().Text(Resources.HR_PerformanceManagment_PerformanceAction_PerformanceAction).Content(
+                        @<text>
+
+                            @(Html.Kendo().Grid<EmployeePerformanceScore>()
+                                        .Name("PerformanceActiongrid_#=EmpMeasurementId#")
+                                            .Columns(columns =>
+                                            {
+
+                                                columns.ForeignKey(c => c.PerformanceActionId, (IEnumerable)ViewData["PerformanceActions"], "ActionId", "ActionName").Title("Action Name").Width(200);
+                                                columns.Bound(c => c.Weight).Width(50);
+                                                columns.Bound(c => c.Score).Width(40);
+                                                columns.Bound(c => c.Remark).Width(80);
+                                                columns.Command(command =>
+                                                {
+                                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                    //command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                }).Width(100);
+
+
+
+
+                                            })
+
+                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                            .Scrollable(h => h.Height("auto"))
+                                            .Events(ev=>ev.DataBound("onDetaiDetainDataBound"))
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                    .Events(events =>
+                                                    {
+                                                        events.Error("error_handler(\"PerformanceActiongrid_#=EmpMeasurementId#\")");
+                                                        events.RequestStart("onRequestStart(\"PerformanceActiongrid_#=EmpMeasurementId#\")");
+                                                        events.RequestEnd("onRequestEnd(\"PerformanceActiongrid_#=EmpMeasurementId#\")");
+                                                    })
+
+                                                .Model(model =>
+                                                {
+                                                    model.Id(p => p.EmployeePerformanceScoreId);
+                                                    model.Field(p => p.Weight).Editable(false);
+                                                    model.Field(p => p.PerformanceActionId).Editable(false);
+                                                }
+                                                )
+                                            .Read(read => read.Action("PerformanceActions_Read", "EmployeePerformanceAllSummaries", new { empMeasurId = "#=EmpMeasurementId#" }).Data("sendForgery"))
+                                            .Update(update => update.Action("PerformanceActions_Update", "EmployeePerformanceAllSummaries", new { /*defid = "#=MeasurementDefinitionId#",*/ /*mesid = "#=MeasurementId#" */}).Data("sendForgery"))
+                                                //.Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformance").Data("sendForgery"))
+                                                ).ToClientTemplate()
+                            )
+
+
+                        </text>
+                                );
+
+
+                            }).ToClientTemplate())
+</script>
+
+@*</div>*@
+
+
+@*</div>*@
+
+
+<script>
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+
+
+
+<style>
+    #approveButtonStyle {
+        border-radius: 5%;
+        padding-top: 1px;
+        padding-bottom: 1px;
+    }
+    /*#grid .k-grid-toolbar {
                 padding: .6em 1.3em;
             }
 
@@ -301,30 +391,36 @@
             .toolbar {
                 float: right;
             }*/
-      
-        </style>
+
+</style>
 
 
- <script>
-            function onDataBound(e) {
-                var grid = this;
-                grid.tbody.find("tr[role='row']").each(function (e) {
-                    var model = grid.dataItem(this);
-                    if (model.IsHRApproved && model.AreAllHRLevelApproved) {
-                        $(this).find(".k-grid-cmd-approve-request").hide();
-                    }
-                    else {
-                        $(this).find(".k-grid-cmd-approve-request").show();
-
-                    }
-
-                });
-               
+<script>
+    function onDataBound(e) {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function (e) {
+            var model = grid.dataItem(this);
+            if (model.IsHRApproved && model.AreAllHRLevelApproved) {
+                $(this).find(".k-grid-cmd-approve-request").hide();
+                $(this).find(".k-grid-cmd-reject").hide();
+            }
+            else if (model.IsHRRejected && model.AreAllHRLevelApproved) {
+                $(this).find(".k-grid-cmd-approve-request").hide();
+                $(this).find(".k-grid-cmd-reject").hide();
+            }
+            else {
+                $(this).find(".k-grid-cmd-approve-request").show();
+                $(this).find(".k-grid-cmd-reject").show();
 
             }
-          
 
-        </script>
+        });
+
+
+    }
+
+
+</script>
 
 <script>
     function thirdLevelApproval(e) {
@@ -346,7 +442,7 @@
                     type: 'POST',
                     cache: false,
                     success: function (result) {
-                        
+
                         alert(result.Message);
 
                         $('#loading-image').hide();
@@ -362,7 +458,7 @@
                         //    $('#loading-image').hide();
                         //    grid.dataSource.read();
                         //}
-                        
+
                     },
                     error: function (xhr, status, error) {
                         $('#loading-image').hide();
@@ -377,6 +473,163 @@
     }
 
 
- </script>
+</script>
 
-     
+<script>
+    function onChangeGrid(e) {
+        var grid = $("#EmployeePerformancegrid").data("kendoGrid");
+        grid.dataSource.read();
+    }
+
+    function refreshPerformanceData() {
+
+        var year = $("#GlFiscalYearId").data("kendoComboBox");
+        var yearId = year.value();
+        if (yearId == "") {
+            alert("Please select the Fiscal year first!!");
+        }
+       
+        $.ajax({
+            url: '@Url.Action("RefreshPerformanceData", "EmployeePerformanceAllSummaries")',
+            data: { yearId: yearId},
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+              
+                alert(result.Message);
+               
+            }
+
+        });
+    }
+    var isCorprat = false;
+    var isSector = false;
+    var masterId = 0;
+    var detailId = 0;
+    function onMasterDetailExpand(e) {
+        var masterRow = e.masterRow;
+        var masterGrid = $("#EmployeePerformancegrid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.EmployeePerformanceId;
+        //isSector = masterDataItem.IsSectorApplied;
+        //isCorprat = masterDataItem.IsCorporateApplied;
+        //var gridName = "#PolicyRenewalDepartmentApprovalgrid_" + masterId;
+
+        //if (masterDataItem.IsDepartmentOnlineApproved) {
+        //    $(gridName).find(".k-toolbar").show();
+        //    $(".k-grid-top", gridName).show();
+        //    $(".k-grid-edit", gridName).show();
+        //    $(".k-grid-delete", gridName).hide();
+
+        //}
+        //if (masterDataItem.IsOnlineApproved) {
+        //    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+        //    $(".k-grid-top", gridName).hide();
+        //    $(".k-grid-edit", gridName).hide();
+        //    $(".k-grid-delete", gridName).hide();
+
+        //}
+        
+    }
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+        var masterGrid = $("#EmployeePerformancedetailgrid_" + masterId).data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        detailId = masterDataItem.EmployeePerformanceId;
+        isSector = masterDataItem.IsSectorApplied;
+        isCorprat = masterDataItem.IsCorporateApplied;
+
+        //if (masterDataItem.IsDepartmentOnlineApproved) {
+        //    $(gridName).find(".k-toolbar").show();
+        //    $(".k-grid-top", gridName).show();
+        //    $(".k-grid-edit", gridName).show();
+        //    $(".k-grid-delete", gridName).hide();
+
+        //}
+        //if (masterDataItem.IsOnlineApproved) {
+        //    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+        //    $(".k-grid-top", gridName).hide();
+        //    $(".k-grid-edit", gridName).hide();
+        //    $(".k-grid-delete", gridName).hide();
+
+        //}
+        
+    }
+    function onDetaiDetainDataBound(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+
+            if (isSector == true || isCorprat == true) {
+                row.find(".k-grid-edit").show();
+            }
+            else {
+                row.find(".k-grid-edit").hide();
+
+            }
+
+        }
+    }
+</script>
+<script>
+   function onExcelExportClick() {
+        // Get the reference to the grid
+       var grid = $("#EmployeePerformancegrid").data("kendoGrid");
+        // Get the URL for the Excel export action
+        var excelExportUrl = "@Url.Action("Excel_Export_Save", "EmployeePerformanceAllSummaries")";
+        // Trigger the Excel export
+        grid.saveAsExcel({
+            fileName: "EmployeePerformanceData.xlsx",
+            proxyURL: excelExportUrl,
+            allPages: true
+        });
+    }
+
+   function finalLevelRejection(e) {
+    var grid = this,
+        dataItem = grid.dataItem(e.currentTarget.closest("tr")),
+        year = dataItem.GlFiscalYearId,
+        period = dataItem.GlPeriodId,
+        employee = dataItem.EmployeeId;
+
+    var confirmed = confirm("Are you sure you want to reject this performance evaluation?");
+    if (!confirmed) return;
+
+    var reason = prompt("Please provide a reason for rejection:");
+    if (!reason || reason.trim() === "") {
+        alert("Rejection reason is required.");
+        return;
+    }
+
+    $('#loading-image').show();
+
+    $.ajax({
+        url: '@Url.Action("HRRejectionWithReason_Create", "EmployeePerformanceAllSummaries")',
+        type: 'POST',
+        data: {
+            yearId: year,
+            periodId: period,
+            employeeId: employee,
+            reason: reason
+        },
+        success: function (response) {
+            $('#loading-image').hide();
+            if (response.success) {
+                alert(response.message);
+                grid.dataSource.read();
+            } else {
+                alert("Error: " + response.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            $('#loading-image').hide();
+            alert("Server error: " + error);
+        }
+    });
+}
+
+</script>

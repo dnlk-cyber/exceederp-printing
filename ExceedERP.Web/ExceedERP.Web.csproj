@@ -7266,6 +7266,7 @@
     <Content Include="Areas\CRM\Views\SaleTenders\EditorTemplates\salesPurchaseTemplate.cshtml" />
     <Content Include="Areas\CRM\Views\SaleTenders\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all.min.intellisense.js" />

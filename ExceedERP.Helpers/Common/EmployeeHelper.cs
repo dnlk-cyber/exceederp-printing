@@ -664,7 +664,7 @@ namespace ExceedERP.Helpers.Common
                 var subordinates = db.Placements
                     .Where(x => x.isCurrent
                                 && (x.HeadId == empid
-                                || x.HeadId == delegatorId))
+                                || (delegatorId != 0 && x.HeadId == delegatorId)))
                     .Select(x => x.EmployeeId)
                     .Distinct()
                     .ToList();

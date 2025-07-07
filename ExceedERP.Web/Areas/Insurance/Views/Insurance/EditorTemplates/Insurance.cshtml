@@ -2,7 +2,9 @@
 @using Kendo.Mvc.UI
 @model ExceedERP.Core.Domain.Insurance.Insurance   
 @using ExceedERP.Core.Localization
-
+@{
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
+}
 <div class="form">
     <div class="row fullrow myclass">
         <div class="col-md-3 ro1">
@@ -12,24 +14,25 @@
                 <div>@Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
                 <div class="form-group">
                     @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
-
                             .OptionLabel(Resources.Select)
-
+                            .Name("EmployeeId")
                             .DataValueField("EmployeeId")
                             .DataTextField("FullNameaEnglish")
+                            .Value(Model.EmployeeId.ToString())
                             .Filter("contains")
                             // .MinLength(2)
                             .HtmlAttributes(new { style = "width:150px" })
-
+                            .Events(ev=>ev.Change("onEmployeeChange"))
                             .DataSource(source =>
                             {
-                                //source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider"));
-
-                                source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider", new { area = "HRM" }).Data("filterEmployees"))
-
-                                .ServerFiltering(true);
+                                source.Read(read => read
+                                        .Action("GetAllEmployeesForPlacement", "InsuranceDataProvider", new { area = "Insurance" })
+                                        .Data("filterEmployees"))
+                                        .ServerFiltering(true);
                             })
                             .ValuePrimitive(true)
+                             .AutoBind(false)
+
                     )
                 </div>
             </div>
@@ -47,7 +50,7 @@
                 // .BindTo((IEnumerable)ViewData["classList"])
                 .DataSource(dataSource =>
                 {
-                    dataSource.Read(read => read.Action("GetInsuranceType", "Insurance", new { area = "Insurance" }))
+                    dataSource.Read(read => read.Action("GetInsuranceType", "Insurance", new { area = "Insurance" }).Data("sendForgery"))
                         .ServerFiltering(false);
                 })
 
@@ -95,52 +98,71 @@
         </div>
         <div class="col-md-3 ro1">
 
-            <div class="form-group">
-                <div> @Html.LabelFor(model => model.FromAmharic, htmlAttributes: new { @class = "control-label col-md-8" })</div>
-                <div class="col-md-6">
+            @if (useEthiopian)
+            {
+                <div class="form-group">
+                    @Html.LabelFor(model => model.FromAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-6">
+                        @Html.TextBoxFor(model => model.FromAmharic, htmlAttributes: new {  disabled = "disabled",@class = "et-popup-picker"
+                    }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
 
-                    @Html.TextBoxFor(model => model.FromAmharic, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker " }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                        @Html.ValidationMessageFor(model => model.FromAmharic, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ToAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-6">
+                        @Html.TextBoxFor(model => model.ToAmharic, htmlAttributes: new {  disabled = "disabled",@class = "et-popup-picker"}) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                        @Html.ValidationMessageFor(model => model.ToAmharic, "", new { @class = "text-danger" })
 
-                    @Html.ValidationMessageFor(model => model.FromAmharic, "", new { @class = "text-danger" })
-
+                    </div>
                 </div>
 
-            </div>
+            }
+            else
+            {
+                <div class="form-group">
+                    @Html.LabelFor(model => model.From, htmlAttributes: new { @class = "control-label col-md-8" })
 
-            <div class="form-group">
-                @Html.LabelFor(model => model.ToAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
+                    <div class="col-md-6">
 
-                    @Html.TextBoxFor(model => model.ToAmharic, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
-
-
-                    @Html.ValidationMessageFor(model => model.ToAmharic, "", new { @class = "text-danger" })
-
+                        @Html.Kendo().DatePickerFor(model => model.From)
+                        @Html.ValidationMessageFor(model => model.From, "", new { @class = "text-danger" })
+                    </div>
                 </div>
-            </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.To, htmlAttributes: new { @class = "control-label col-md-8" })
 
-           
+                    <div class="col-md-6">
+
+                        @Html.Kendo().DatePickerFor(model => model.To)
+                        @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+            }
+            
             <div class="form-group">
-               @Html.LabelFor(model => model.Number, htmlAttributes: new { @class = "control-label col-md-8" })
+                @Html.LabelFor(model => model.Number, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
 
-                  @(Html.Kendo().TextBoxFor(model => model.Number))
-                  @Html.ValidationMessageFor(model => model.Number, "", new { @class = "text-danger" })
+                    @(Html.Kendo().TextBoxFor(model => model.Number))
+                    @Html.ValidationMessageFor(model => model.Number, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>
         <div class="col-md-3 ro1">
-            @*<div class="form-group">
+            <div class="form-group">
                 @Html.LabelFor(model => model.Salary, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().TextBoxFor(model => model.Salary).Enable(false))
                     @Html.ValidationMessageFor(model => model.Salary, "", new { @class = "text-danger" })
                 </div>
-            </div>*@
+            </div>
             <div class="form-group">
                 @Html.LabelFor(model => model.SumofInsured, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
-                    @(Html.Kendo().TextBoxFor(model => model.SumofInsured).Enable(true))
+                    @(Html.Kendo().TextBoxFor(model => model.SumofInsured).Enable(false))
                     @Html.ValidationMessageFor(model => model.SumofInsured, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -148,7 +170,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.Premium, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
-                    @(Html.Kendo().TextBoxFor(model => model.Premium).Enable(true))
+                    @(Html.Kendo().TextBoxFor(model => model.Premium).Enable(false))
                     @Html.ValidationMessageFor(model => model.Premium, "", new { @class = "text-danger" })
                 </div>
             </div>

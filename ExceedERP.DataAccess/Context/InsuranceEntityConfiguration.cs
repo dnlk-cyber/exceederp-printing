@@ -255,11 +255,20 @@ namespace ExceedERP.DataAccess
 
 
         }
-    
+
     #endregion
     #region old Insurance
+    public class InsurancePremiumSettingEntityTypeConfiguration : EntityTypeConfiguration<InsurancePremiumSetting>
+    {
+        public InsurancePremiumSettingEntityTypeConfiguration()
+        {
+            this.ToTable("InsurancePremiumSettings", "Insurance");
+            this.HasKey<int>(x => x.InsurancePremiumSettingId);
+        }
 
-        public class InsuranceGroupEntityTypeConfiguration : EntityTypeConfiguration<InsuranceGroup>
+
+    }
+    public class InsuranceGroupEntityTypeConfiguration : EntityTypeConfiguration<InsuranceGroup>
         {
             public InsuranceGroupEntityTypeConfiguration()
             {

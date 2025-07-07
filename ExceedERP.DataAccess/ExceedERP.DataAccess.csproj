@@ -657,6 +657,14 @@
     <Compile Include="Migrations\202506280846454_salestender.Designer.cs">
       <DependentUpon>202506280846454_salestender.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202507071331369_InsuranceUpdates.cs" />
+    <Compile Include="Migrations\202507071331369_InsuranceUpdates.Designer.cs">
+      <DependentUpon>202507071331369_InsuranceUpdates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202507071441288_InsuranceUpdates1.cs" />
+    <Compile Include="Migrations\202507071441288_InsuranceUpdates1.Designer.cs">
+      <DependentUpon>202507071441288_InsuranceUpdates1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1101,6 +1109,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202506280846454_salestender.resx">
       <DependentUpon>202506280846454_salestender.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507071331369_InsuranceUpdates.resx">
+      <DependentUpon>202507071331369_InsuranceUpdates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507071441288_InsuranceUpdates1.resx">
+      <DependentUpon>202507071441288_InsuranceUpdates1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

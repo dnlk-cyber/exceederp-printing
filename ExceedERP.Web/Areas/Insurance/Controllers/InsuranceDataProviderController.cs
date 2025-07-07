@@ -88,7 +88,34 @@ namespace ExceedERP.Web.Areas.Insurance.Controllers
             ViewData["insuraceGroup"] = insurace;
             return Json(insurace.Select(s => new { InsuranceCategoryId = s.InsuranceCategoryId, Name = s.Name }), JsonRequestBehavior.AllowGet);
         }
-        
+        public JsonResult GetAllEmployeesForPlacement(string text)
+        {
+            var query = db.Person_Employee.Where(x => x.IsActive);
+
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                text = text.ToUpper();
+                query = query.Where(x =>
+                    x.EmployeeCode.ToUpper().Contains(text) ||
+                    x.FirstNameEnglish.ToUpper().Contains(text) ||
+                    x.MiddleNameEnglish.ToUpper().Contains(text) ||
+                    x.LastNameEnglish.ToUpper().Contains(text) ||
+                    (x.FirstName + " " + x.MiddleName + " " + x.LastName).ToUpper().Contains(text) ||
+                    (x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish).ToUpper().Contains(text)
+                );
+            }
+
+
+            var list = query.Select(x => new
+            {
+                EmployeeId = x.EmployeeId,
+                FullNameaEnglish = x.EmployeeCode + " - " + x.FirstNameEnglish + " " + x.MiddleNameEnglish + " " + x.LastNameEnglish,
+                FullNameAmharic = x.EmployeeCode + " - " + x.FirstName + " " + x.MiddleName + " " + x.LastName
+            }).ToList();
+
+            return Json(list, JsonRequestBehavior.AllowGet);
+        }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

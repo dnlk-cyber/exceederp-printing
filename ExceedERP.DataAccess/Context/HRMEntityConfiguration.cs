@@ -54,6 +54,14 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.EmployeePerformanceSummaryId);
         }
     }
+    public class EmployeePeerToPeerAndInternalCustomerPerformanceSettingEntityTypeConfiguration : EntityTypeConfiguration<EmployeePeerToPeerAndInternalCustomerPerformanceSetting>
+    {
+        public EmployeePeerToPeerAndInternalCustomerPerformanceSettingEntityTypeConfiguration()
+        {
+            this.ToTable("EmployeePeerToPeerAndInternalCustomerPerformanceSettings", "HRM");
+            this.HasKey<int>(o => o.EmployeePeerToPeerAndInternalCustomerPerformanceSettingId);
+        }
+    }
 
     public class EmployeeProbationSettingEntityTypeConfiguration : EntityTypeConfiguration<EmployeeProbationSetting>
     {
