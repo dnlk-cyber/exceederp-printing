@@ -70,6 +70,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Acting.
+        /// </summary>
+        public static string Acting {
+            get {
+                return ResourceManager.GetString("Acting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Back to List.
         /// </summary>
         public static string Action_Button_Back_to_List {
@@ -250,6 +259,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Actual.
+        /// </summary>
+        public static string Actual {
+            get {
+                return ResourceManager.GetString("Actual", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Address.
         /// </summary>
         public static string Address {
@@ -273,6 +291,24 @@ namespace ExceedERP.Core.Localization {
         public static string Age {
             get {
                 return ResourceManager.GetString("Age", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Annual Increment.
+        /// </summary>
+        public static string Annual_Increment {
+            get {
+                return ResourceManager.GetString("Annual_Increment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Annual Leave.
+        /// </summary>
+        public static string Annual_Leave {
+            get {
+                return ResourceManager.GetString("Annual_Leave", resourceCulture);
             }
         }
         
@@ -340,6 +376,24 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Application Screening.
+        /// </summary>
+        public static string Application_Screening {
+            get {
+                return ResourceManager.GetString("Application_Screening", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application  Screening For women.
+        /// </summary>
+        public static string Application_Screening_for_Women {
+            get {
+                return ResourceManager.GetString("Application_Screening_for_Women", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Application Form.
         /// </summary>
         public static string ApplicationForm {
@@ -354,6 +408,15 @@ namespace ExceedERP.Core.Localization {
         public static string Approve_Attendance {
             get {
                 return ResourceManager.GetString("Approve_Attendance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Archive.
+        /// </summary>
+        public static string Archive {
+            get {
+                return ResourceManager.GetString("Archive", resourceCulture);
             }
         }
         
@@ -376,6 +439,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Assignment.
+        /// </summary>
+        public static string Assignment {
+            get {
+                return ResourceManager.GetString("Assignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attendance.
         /// </summary>
         public static string Attendance {
@@ -385,11 +457,65 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Attendance Exception.
+        /// </summary>
+        public static string Attendance_Exception {
+            get {
+                return ResourceManager.GetString("Attendance_Exception", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attendance Date.
         /// </summary>
         public static string AttendanceDate {
             get {
                 return ResourceManager.GetString("AttendanceDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Audit Document Personal Requests.
+        /// </summary>
+        public static string Audit_Document_Personal_Requests {
+            get {
+                return ResourceManager.GetString("Audit_Document_Personal_Requests", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Audit Document Requests.
+        /// </summary>
+        public static string Audit_Document_Requests {
+            get {
+                return ResourceManager.GetString("Audit_Document_Requests", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Budget.
+        /// </summary>
+        public static string Budget {
+            get {
+                return ResourceManager.GetString("Budget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Budget Balance.
+        /// </summary>
+        public static string Budget_Balance {
+            get {
+                return ResourceManager.GetString("Budget_Balance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Budget Plan.
+        /// </summary>
+        public static string Budget_Plan {
+            get {
+                return ResourceManager.GetString("Budget_Plan", resourceCulture);
             }
         }
         
@@ -466,6 +592,24 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Camp Per Diem.
+        /// </summary>
+        public static string Camp_PerDiem {
+            get {
+                return ResourceManager.GetString("Camp_PerDiem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CC.
+        /// </summary>
+        public static string CC {
+            get {
+                return ResourceManager.GetString("CC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Certeficate Name.
         /// </summary>
         public static string CerteficateName {
@@ -480,6 +624,33 @@ namespace ExceedERP.Core.Localization {
         public static string CerteficateType {
             get {
                 return ResourceManager.GetString("CerteficateType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Change Request.
+        /// </summary>
+        public static string Change_Request {
+            get {
+                return ResourceManager.GetString("Change_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat.
+        /// </summary>
+        public static string Chat {
+            get {
+                return ResourceManager.GetString("Chat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clearance Provider.
+        /// </summary>
+        public static string Clearance_Provider {
+            get {
+                return ResourceManager.GetString("Clearance_Provider", resourceCulture);
             }
         }
         
@@ -1348,6 +1519,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Company Structure.
+        /// </summary>
+        public static string Company_Structure {
+            get {
+                return ResourceManager.GetString("Company_Structure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Password.
         /// </summary>
         public static string CompanyEmail_Password {
@@ -1362,6 +1542,42 @@ namespace ExceedERP.Core.Localization {
         public static string Complain_Description {
             get {
                 return ResourceManager.GetString("Complain_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Complain Request.
+        /// </summary>
+        public static string Complain_Request {
+            get {
+                return ResourceManager.GetString("Complain_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Contract Hirement.
+        /// </summary>
+        public static string Contract_Hirement {
+            get {
+                return ResourceManager.GetString("Contract_Hirement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Convert.
+        /// </summary>
+        public static string Convert {
+            get {
+                return ResourceManager.GetString("Convert", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Corporate &amp;&amp; Sector Evalution.
+        /// </summary>
+        public static string Corporate_Sector_Performance_Evalution {
+            get {
+                return ResourceManager.GetString("Corporate_Sector_Performance_Evalution", resourceCulture);
             }
         }
         
@@ -1384,6 +1600,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Daily Laborer.
+        /// </summary>
+        public static string Daily_Laborer {
+            get {
+                return ResourceManager.GetString("Daily_Laborer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Dashboard.
         /// </summary>
         public static string Dashboard {
@@ -1402,6 +1627,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Date Converter.
+        /// </summary>
+        public static string Date_Converter {
+            get {
+                return ResourceManager.GetString("Date_Converter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Decisions.
         /// </summary>
         public static string Decisions {
@@ -1416,6 +1650,15 @@ namespace ExceedERP.Core.Localization {
         public static string Department {
             get {
                 return ResourceManager.GetString("Department", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Department Level Criteria.
+        /// </summary>
+        public static string Department_Level_Criteria {
+            get {
+                return ResourceManager.GetString("Department_Level_Criteria", resourceCulture);
             }
         }
         
@@ -2473,6 +2716,33 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Education Plan.
+        /// </summary>
+        public static string Education_Plan {
+            get {
+                return ResourceManager.GetString("Education_Plan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Education Setting.
+        /// </summary>
+        public static string Education_Setting {
+            get {
+                return ResourceManager.GetString("Education_Setting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Education Vaccancy.
+        /// </summary>
+        public static string Education_Vaccancy {
+            get {
+                return ResourceManager.GetString("Education_Vaccancy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Education Field.
         /// </summary>
         public static string EducationField {
@@ -2518,11 +2788,164 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Employee Accident Request.
+        /// </summary>
+        public static string Employee_Accident_Request {
+            get {
+                return ResourceManager.GetString("Employee_Accident_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Bonus Summary.
+        /// </summary>
+        public static string Employee_Bonus_Summary {
+            get {
+                return ResourceManager.GetString("Employee_Bonus_Summary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Bonus Summary for manager.
+        /// </summary>
+        public static string Employee_Bonus_Summary_for_manager {
+            get {
+                return ResourceManager.GetString("Employee_Bonus_Summary_for_manager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Bonus Summary for Sector.
+        /// </summary>
+        public static string Employee_Bonus_Summary_for_Sector {
+            get {
+                return ResourceManager.GetString("Employee_Bonus_Summary_for_Sector", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Card.
+        /// </summary>
+        public static string Employee_Card {
+            get {
+                return ResourceManager.GetString("Employee_Card", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Evaluation.
+        /// </summary>
+        public static string Employee_Evaluation {
+            get {
+                return ResourceManager.GetString("Employee_Evaluation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Experience.
+        /// </summary>
+        public static string Employee_Experience {
+            get {
+                return ResourceManager.GetString("Employee_Experience", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Total.
         /// </summary>
         public static string Employee_LeavePlan_Total {
             get {
                 return ResourceManager.GetString("Employee_LeavePlan_Total", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Performance.
+        /// </summary>
+        public static string Employee_Performance {
+            get {
+                return ResourceManager.GetString("Employee_Performance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Performance Detail.
+        /// </summary>
+        public static string Employee_Performance_Detail {
+            get {
+                return ResourceManager.GetString("Employee_Performance_Detail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Performance With Bonus.
+        /// </summary>
+        public static string Employee_Performance_With_Bonus {
+            get {
+                return ResourceManager.GetString("Employee_Performance_With_Bonus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Perfromance &amp; Planning.
+        /// </summary>
+        public static string Employee_Perfromance_Planning {
+            get {
+                return ResourceManager.GetString("Employee_Perfromance_Planning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Promotion Summay.
+        /// </summary>
+        public static string Employee_Promotion_Summay {
+            get {
+                return ResourceManager.GetString("Employee_Promotion_Summay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Rewards.
+        /// </summary>
+        public static string Employee_Rewards {
+            get {
+                return ResourceManager.GetString("Employee_Rewards", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Summary By BusinessUnit.
+        /// </summary>
+        public static string Employee_Summary_By_BusinessUnit {
+            get {
+                return ResourceManager.GetString("Employee_Summary_By_BusinessUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Summary By Status.
+        /// </summary>
+        public static string Employee_Summary_By_Status {
+            get {
+                return ResourceManager.GetString("Employee_Summary_By_Status", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee termination  Summary By Business Unit.
+        /// </summary>
+        public static string Employee_termination_Summary {
+            get {
+                return ResourceManager.GetString("Employee_termination_Summary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Employee Transfer Request.
+        /// </summary>
+        public static string Employee_Transfer_Request {
+            get {
+                return ResourceManager.GetString("Employee_Transfer_Request", resourceCulture);
             }
         }
         
@@ -3112,6 +3535,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SCALE PROMOTION.
+        /// </summary>
+        public static string Enum_AssignmentType_SCALE_PROMOTION {
+            get {
+                return ResourceManager.GetString("Enum_AssignmentType_SCALE_PROMOTION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to STRUCTURE_CHANGE.
         /// </summary>
         public static string Enum_AssignmentType_STRUCTURE_CHANGE {
@@ -3670,6 +4102,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fayda ID or National ID.
+        /// </summary>
+        public static string Enum_IdentificationType_Fayda_ID_Or_National_ID {
+            get {
+                return ResourceManager.GetString("Enum_IdentificationType_Fayda_ID_Or_National_ID", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to LICENSE_NUMBER.
         /// </summary>
         public static string Enum_IdentificationType_LICENSE_NUMBER {
@@ -4102,11 +4543,38 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Bereavement.
+        ///   Looks up a localized string similar to Bereavement Close Family.
         /// </summary>
         public static string Enum_LeaveType_Bereavement {
             get {
                 return ResourceManager.GetString("Enum_LeaveType_Bereavement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bereavement Far Family.
+        /// </summary>
+        public static string Enum_LeaveType_Bereavement_Far_Family {
+            get {
+                return ResourceManager.GetString("Enum_LeaveType_Bereavement_Far_Family", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bereavement Friend.
+        /// </summary>
+        public static string Enum_LeaveType_Bereavement_Friend {
+            get {
+                return ResourceManager.GetString("Enum_LeaveType_Bereavement_Friend", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DayOff.
+        /// </summary>
+        public static string Enum_LeaveType_DayOff {
+            get {
+                return ResourceManager.GetString("Enum_LeaveType_DayOff", resourceCulture);
             }
         }
         
@@ -5812,6 +6280,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Experiance Affan Oromo.
+        /// </summary>
+        public static string Enum_Template_Type_Experiance_Affan_Oromo {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Experiance_Affan_Oromo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Experiance Amharic.
         /// </summary>
         public static string Enum_Template_Type_Experiance_Amharic {
@@ -5826,6 +6303,15 @@ namespace ExceedERP.Core.Localization {
         public static string Enum_Template_Type_Experiance_English {
             get {
                 return ResourceManager.GetString("Enum_Template_Type_Experiance_English", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Promotion Affan Oromo.
+        /// </summary>
+        public static string Enum_Template_Type_Promotion__Affan_Oromo {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Promotion__Affan_Oromo", resourceCulture);
             }
         }
         
@@ -5857,6 +6343,24 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Recruitment Letter Affan Oromo.
+        /// </summary>
+        public static string Enum_Template_Type_Recruitment_Letter_Affan_Oromo {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Recruitment_Letter_Affan_Oromo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reemployement Affan Oromo.
+        /// </summary>
+        public static string Enum_Template_Type_Reemployement_Affan_Oromo {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Reemployement_Affan_Oromo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reemployement Amharic.
         /// </summary>
         public static string Enum_Template_Type_Reemployement_Amharic {
@@ -5875,6 +6379,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Salary Incremen Affan Oromo.
+        /// </summary>
+        public static string Enum_Template_Type_Salary_Incremen_Affan_Oromo {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Salary_Incremen_Affan_Oromo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Salary Incremen Amharic.
         /// </summary>
         public static string Enum_Template_Type_Salary_Incremen_Amharic {
@@ -5889,6 +6402,15 @@ namespace ExceedERP.Core.Localization {
         public static string Enum_Template_Type_Salary_Incremen_English {
             get {
                 return ResourceManager.GetString("Enum_Template_Type_Salary_Incremen_English", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Termination Acceptance Affan Oromo.
+        /// </summary>
+        public static string Enum_Template_Type_Termination_Acceptance_Affan_Oromo {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Termination_Acceptance_Affan_Oromo", resourceCulture);
             }
         }
         
@@ -5916,6 +6438,15 @@ namespace ExceedERP.Core.Localization {
         public static string Enum_Template_Type_Title_Change_English {
             get {
                 return ResourceManager.GetString("Enum_Template_Type_Title_Change_English", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transfer Affan Oromo.
+        /// </summary>
+        public static string Enum_Template_Type_Transfer_Affan_Oromo {
+            get {
+                return ResourceManager.GetString("Enum_Template_Type_Transfer_Affan_Oromo", resourceCulture);
             }
         }
         
@@ -6064,11 +6595,74 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Equipment Accident Notification.
+        /// </summary>
+        public static string Equipment_Accident_Notification {
+            get {
+                return ResourceManager.GetString("Equipment_Accident_Notification", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ethiopian Date.
+        /// </summary>
+        public static string Ethiopian_Date {
+            get {
+                return ResourceManager.GetString("Ethiopian_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to  Convert Ethiopian Date to Gergorian Date.
+        /// </summary>
+        public static string Ethiopian_Date_to_Gergorian_Date {
+            get {
+                return ResourceManager.GetString("Ethiopian_Date_to_Gergorian_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Evaluation 2nd Level Approval.
+        /// </summary>
+        public static string Evaluation_2nd_Level_Approval {
+            get {
+                return ResourceManager.GetString("Evaluation_2nd_Level_Approval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Evaluation Approval.
+        /// </summary>
+        public static string Evaluation_Approval {
+            get {
+                return ResourceManager.GetString("Evaluation_Approval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Evaluation Criteria Action Type.
         /// </summary>
         public static string Evaluation_Criteria_Action_Type {
             get {
                 return ResourceManager.GetString("Evaluation_Criteria_Action_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Evaluators Request.
+        /// </summary>
+        public static string Evaluators_Request {
+            get {
+                return ResourceManager.GetString("Evaluators_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Evaluators Response.
+        /// </summary>
+        public static string Evaluators_Response {
+            get {
+                return ResourceManager.GetString("Evaluators_Response", resourceCulture);
             }
         }
         
@@ -6096,6 +6690,15 @@ namespace ExceedERP.Core.Localization {
         public static string ExamTypeSetting {
             get {
                 return ResourceManager.GetString("ExamTypeSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exception Evalution.
+        /// </summary>
+        public static string Exception_Evalution {
+            get {
+                return ResourceManager.GetString("Exception_Evalution", resourceCulture);
             }
         }
         
@@ -6132,6 +6735,24 @@ namespace ExceedERP.Core.Localization {
         public static string External_Applicant_Screening {
             get {
                 return ResourceManager.GetString("External_Applicant_Screening", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External Letter.
+        /// </summary>
+        public static string External_Letter {
+            get {
+                return ResourceManager.GetString("External_Letter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to External Transfer.
+        /// </summary>
+        public static string External_Transfer {
+            get {
+                return ResourceManager.GetString("External_Transfer", resourceCulture);
             }
         }
         
@@ -6190,6 +6811,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Finance Audit.
+        /// </summary>
+        public static string Finance_Audit {
+            get {
+                return ResourceManager.GetString("Finance_Audit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Payment Request.
         /// </summary>
         public static string Finance_Selfcare_Payment {
@@ -6208,11 +6838,65 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Fixed Asset Purchase Request.
+        /// </summary>
+        public static string Fixed_Asset_Purchase_Request {
+            get {
+                return ResourceManager.GetString("Fixed_Asset_Purchase_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fleet_Requisition.
+        /// </summary>
+        public static string Fleet_Requisition {
+            get {
+                return ResourceManager.GetString("Fleet_Requisition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to For.
+        /// </summary>
+        public static string For {
+            get {
+                return ResourceManager.GetString("For", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to From.
         /// </summary>
         public static string From {
             get {
                 return ResourceManager.GetString("From", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fuel .
+        /// </summary>
+        public static string Fuel {
+            get {
+                return ResourceManager.GetString("Fuel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fuel request.
+        /// </summary>
+        public static string Fuel_request {
+            get {
+                return ResourceManager.GetString("Fuel_request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fund Transfer.
+        /// </summary>
+        public static string Fund_Transfer {
+            get {
+                return ResourceManager.GetString("Fund_Transfer", resourceCulture);
             }
         }
         
@@ -6226,6 +6910,33 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to General Leave Setting.
+        /// </summary>
+        public static string General_Leave_Setting {
+            get {
+                return ResourceManager.GetString("General_Leave_Setting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to General Service.
+        /// </summary>
+        public static string General_Service {
+            get {
+                return ResourceManager.GetString("General_Service", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to General Summary.
+        /// </summary>
+        public static string General_Summary {
+            get {
+                return ResourceManager.GetString("General_Summary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Generate Leave Entitlement.
         /// </summary>
         public static string Generate_Leave_Entitlement {
@@ -6235,11 +6946,29 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Koodii Duwwaa Miidiyaa Uumaman.
+        ///   Looks up a localized string similar to Generated Media Vacancy Codes.
         /// </summary>
         public static string Generated_Media_Vacancy_Codes {
             get {
                 return ResourceManager.GetString("Generated_Media_Vacancy_Codes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gergorian Date.
+        /// </summary>
+        public static string Gergorian_Date {
+            get {
+                return ResourceManager.GetString("Gergorian_Date", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Convert Gergorian Date to Ethiopian Date.
+        /// </summary>
+        public static string Gergorian_Date_ToEthiopian_Date {
+            get {
+                return ResourceManager.GetString("Gergorian_Date_ToEthiopian_Date", resourceCulture);
             }
         }
         
@@ -6249,6 +6978,15 @@ namespace ExceedERP.Core.Localization {
         public static string Get_Attendance {
             get {
                 return ResourceManager.GetString("Get_Attendance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Global Indicators.
+        /// </summary>
+        public static string Global_Indicators {
+            get {
+                return ResourceManager.GetString("Global_Indicators", resourceCulture);
             }
         }
         
@@ -6285,6 +7023,15 @@ namespace ExceedERP.Core.Localization {
         public static string GLPeriod_Name {
             get {
                 return ResourceManager.GetString("GLPeriod_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Guarantor.
+        /// </summary>
+        public static string Guarantor {
+            get {
+                return ResourceManager.GetString("Guarantor", resourceCulture);
             }
         }
         
@@ -14902,6 +15649,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to HRM.
+        /// </summary>
+        public static string HRM {
+            get {
+                return ResourceManager.GetString("HRM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Job Title and Rank Mapping.
         /// </summary>
         public static string HRM_JobTitle_and_Rank_Mapping {
@@ -14943,6 +15699,33 @@ namespace ExceedERP.Core.Localization {
         public static string Insurance_Insurance_Type {
             get {
                 return ResourceManager.GetString("Insurance_Insurance_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Insuranced Vehicle &amp;&amp; Machineries.
+        /// </summary>
+        public static string Insuranced_Vehicle_Machineries {
+            get {
+                return ResourceManager.GetString("Insuranced_Vehicle_Machineries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal Audit.
+        /// </summary>
+        public static string Internal_Audit {
+            get {
+                return ResourceManager.GetString("Internal_Audit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Internal Customer Evaluation.
+        /// </summary>
+        public static string Internal_Performance_Evalution {
+            get {
+                return ResourceManager.GetString("Internal_Performance_Evalution", resourceCulture);
             }
         }
         
@@ -14992,6 +15775,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Iso Documents.
+        /// </summary>
+        public static string Iso_Documents {
+            get {
+                return ResourceManager.GetString("Iso_Documents", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Job Code.
         /// </summary>
         public static string JobCode {
@@ -15028,6 +15820,24 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Knowledge Base.
+        /// </summary>
+        public static string Knowledge_Base {
+            get {
+                return ResourceManager.GetString("Knowledge_Base", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Labour Schedule.
+        /// </summary>
+        public static string Labour_Schedule {
+            get {
+                return ResourceManager.GetString("Labour_Schedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Language.
         /// </summary>
         public static string Language {
@@ -15055,6 +15865,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Leave Management.
+        /// </summary>
+        public static string Leave_Management {
+            get {
+                return ResourceManager.GetString("Leave_Management", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Leave new declaration start year.
         /// </summary>
         public static string Leave_new_declaration_start_year {
@@ -15073,11 +15892,29 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Leave Request.
+        /// </summary>
+        public static string Leave_Request {
+            get {
+                return ResourceManager.GetString("Leave_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Leave Request Id.
         /// </summary>
         public static string Leave_Request_Id {
             get {
                 return ResourceManager.GetString("Leave_Request_Id", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Leave Return.
+        /// </summary>
+        public static string Leave_Return {
+            get {
+                return ResourceManager.GetString("Leave_Return", resourceCulture);
             }
         }
         
@@ -15105,15 +15942,6 @@ namespace ExceedERP.Core.Localization {
         public static string Leave_Usage_Status {
             get {
                 return ResourceManager.GetString("Leave_Usage_Status", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Leave Voids.
-        /// </summary>
-        public static string Leave_Voids {
-            get {
-                return ResourceManager.GetString("Leave_Voids", resourceCulture);
             }
         }
         
@@ -16189,11 +17017,47 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Letter in Affan_Oromo.
+        /// </summary>
+        public static string Letter_in_Affan_Oromo {
+            get {
+                return ResourceManager.GetString("Letter_in_Affan_Oromo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Letter Sent To Employee.
+        /// </summary>
+        public static string Letter_Sent_To_Employee {
+            get {
+                return ResourceManager.GetString("Letter_Sent_To_Employee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Letters For Employee.
+        /// </summary>
+        public static string Letters_For_Employee {
+            get {
+                return ResourceManager.GetString("Letters_For_Employee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Location.
         /// </summary>
         public static string Location {
             get {
                 return ResourceManager.GetString("Location", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maintenance Request.
+        /// </summary>
+        public static string Maintenance_Request {
+            get {
+                return ResourceManager.GetString("Maintenance_Request", resourceCulture);
             }
         }
         
@@ -16207,11 +17071,38 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Manager.
+        /// </summary>
+        public static string Manager {
+            get {
+                return ResourceManager.GetString("Manager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Man Power Planning.
         /// </summary>
         public static string ManPowerPlanning {
             get {
                 return ResourceManager.GetString("ManPowerPlanning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Material.
+        /// </summary>
+        public static string Material {
+            get {
+                return ResourceManager.GetString("Material", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Medical Expense Refunds.
+        /// </summary>
+        public static string Medical_Expense_Refunds {
+            get {
+                return ResourceManager.GetString("Medical_Expense_Refunds", resourceCulture);
             }
         }
         
@@ -16239,6 +17130,24 @@ namespace ExceedERP.Core.Localization {
         public static string MorningOrAfternoon {
             get {
                 return ResourceManager.GetString("MorningOrAfternoon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My Evaluation Reults.
+        /// </summary>
+        public static string My_Evaluation_Reults {
+            get {
+                return ResourceManager.GetString("My_Evaluation_Reults", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My Performance.
+        /// </summary>
+        public static string My_Performance {
+            get {
+                return ResourceManager.GetString("My_Performance", resourceCulture);
             }
         }
         
@@ -16531,7 +17440,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Employee Profile.
+        ///   Looks up a localized string similar to Employee Profile(Active and Placed).
         /// </summary>
         public static string Navigator_Employee_EmployeeProfile {
             get {
@@ -17125,6 +18034,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Late Coming Report.
+        /// </summary>
+        public static string NavigatorAttendance_LateCommingReport1 {
+            get {
+                return ResourceManager.GetString("NavigatorAttendance_LateCommingReport1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Weekly Attendance.
         /// </summary>
         public static string NavigatorAttendance_WeeklyAttendance {
@@ -17260,7 +18178,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Complain.
+        ///   Looks up a localized string similar to Complain .
         /// </summary>
         public static string NavigatorComplain {
             get {
@@ -17854,7 +18772,7 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Over Time List.
+        ///   Looks up a localized string similar to Over Time.
         /// </summary>
         public static string NavigatorPayroll_OverTime {
             get {
@@ -19411,6 +20329,24 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Needs.
+        /// </summary>
+        public static string Needs {
+            get {
+                return ResourceManager.GetString("Needs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New Assignment Letter.
+        /// </summary>
+        public static string New_Assignment_Letter {
+            get {
+                return ResourceManager.GetString("New_Assignment_Letter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No of current staff.
         /// </summary>
         public static string NoOfCurrentStaff {
@@ -19438,6 +20374,42 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not Evaluated Employee.
+        /// </summary>
+        public static string Not_Evaluated_Employee {
+            get {
+                return ResourceManager.GetString("Not_Evaluated_Employee", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Notifications.
+        /// </summary>
+        public static string Notifications {
+            get {
+                return ResourceManager.GetString("Notifications", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Not Placed Employees.
+        /// </summary>
+        public static string NotPlacedEmployees {
+            get {
+                return ResourceManager.GetString("NotPlacedEmployees", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Objective.
+        /// </summary>
+        public static string Objective {
+            get {
+                return ResourceManager.GetString("Objective", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Off Day.
         /// </summary>
         public static string OffDay {
@@ -19452,6 +20424,15 @@ namespace ExceedERP.Core.Localization {
         public static string OfficeLocation {
             get {
                 return ResourceManager.GetString("OfficeLocation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Ticket.
+        /// </summary>
+        public static string Open_Ticket {
+            get {
+                return ResourceManager.GetString("Open_Ticket", resourceCulture);
             }
         }
         
@@ -19497,6 +20478,15 @@ namespace ExceedERP.Core.Localization {
         public static string PassSetting {
             get {
                 return ResourceManager.GetString("PassSetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Payment Request.
+        /// </summary>
+        public static string Payment_Request {
+            get {
+                return ResourceManager.GetString("Payment_Request", resourceCulture);
             }
         }
         
@@ -19564,11 +20554,65 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Peer Evalution.
+        /// </summary>
+        public static string Peer_Performance_Evalution {
+            get {
+                return ResourceManager.GetString("Peer_Performance_Evalution", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Performance Audit.
+        /// </summary>
+        public static string Performance_Audit {
+            get {
+                return ResourceManager.GetString("Performance_Audit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Performance Settings.
+        /// </summary>
+        public static string Performance_Settings {
+            get {
+                return ResourceManager.GetString("Performance_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Performance Summary.
+        /// </summary>
+        public static string Performance_Summary {
+            get {
+                return ResourceManager.GetString("Performance_Summary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Performance Summary (Generated).
+        /// </summary>
+        public static string Performance_Summary_Generated {
+            get {
+                return ResourceManager.GetString("Performance_Summary_Generated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Performance Criteria Action Type.
         /// </summary>
         public static string PerformanceCriteriaActionType {
             get {
                 return ResourceManager.GetString("PerformanceCriteriaActionType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Personal  Evalution.
+        /// </summary>
+        public static string Personal_Performance_Evalution {
+            get {
+                return ResourceManager.GetString("Personal_Performance_Evalution", resourceCulture);
             }
         }
         
@@ -19627,6 +20671,60 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Plan.
+        /// </summary>
+        public static string Plan {
+            get {
+                return ResourceManager.GetString("Plan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plan Management.
+        /// </summary>
+        public static string Plan_Management {
+            get {
+                return ResourceManager.GetString("Plan_Management", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Planning.
+        /// </summary>
+        public static string Planning {
+            get {
+                return ResourceManager.GetString("Planning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PPE Purchase Request.
+        /// </summary>
+        public static string PPE_Purchase_Request {
+            get {
+                return ResourceManager.GetString("PPE_Purchase_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PPE Return Request.
+        /// </summary>
+        public static string PPE_Return_Request {
+            get {
+                return ResourceManager.GetString("PPE_Return_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PPE Store Request.
+        /// </summary>
+        public static string PPE_Store_Request {
+            get {
+                return ResourceManager.GetString("PPE_Store_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Internal Vacancy.
         /// </summary>
         public static string Printable_Vacancy_For_Internal {
@@ -19641,6 +20739,105 @@ namespace ExceedERP.Core.Localization {
         public static string Printable_Warranty_Letters {
             get {
                 return ResourceManager.GetString("Printable_Warranty_Letters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Probation-Eligible.
+        /// </summary>
+        public static string Probation_Eligible {
+            get {
+                return ResourceManager.GetString("Probation_Eligible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Probation Performance.
+        /// </summary>
+        public static string Probation_Performance {
+            get {
+                return ResourceManager.GetString("Probation_Performance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Probation Performance Setting.
+        /// </summary>
+        public static string Probation_Performance_Setting {
+            get {
+                return ResourceManager.GetString("Probation_Performance_Setting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Procurement Need.
+        /// </summary>
+        public static string Procurement_Need {
+            get {
+                return ResourceManager.GetString("Procurement_Need", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Production.
+        /// </summary>
+        public static string Production {
+            get {
+                return ResourceManager.GetString("Production", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Production Requistions.
+        /// </summary>
+        public static string Production_Requistions {
+            get {
+                return ResourceManager.GetString("Production_Requistions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Production Work Order.
+        /// </summary>
+        public static string Production_Work_Order {
+            get {
+                return ResourceManager.GetString("Production_Work_Order", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project Actual.
+        /// </summary>
+        public static string Project_Actual {
+            get {
+                return ResourceManager.GetString("Project_Actual", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project Plan.
+        /// </summary>
+        public static string Project_Plan {
+            get {
+                return ResourceManager.GetString("Project_Plan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Promoted  Employees.
+        /// </summary>
+        public static string Promoted_Employees {
+            get {
+                return ResourceManager.GetString("Promoted_Employees", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Promotion-Eligible.
+        /// </summary>
+        public static string Promotion_Eligible {
+            get {
+                return ResourceManager.GetString("Promotion_Eligible", resourceCulture);
             }
         }
         
@@ -19699,6 +20896,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rehirement Letter.
+        /// </summary>
+        public static string Rehirement_Letter {
+            get {
+                return ResourceManager.GetString("Rehirement_Letter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Remark.
         /// </summary>
         public static string Remark {
@@ -19731,6 +20937,15 @@ namespace ExceedERP.Core.Localization {
         public static string Report_Training_Onebyone {
             get {
                 return ResourceManager.GetString("Report_Training_Onebyone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Request.
+        /// </summary>
+        public static string Request {
+            get {
+                return ResourceManager.GetString("Request", resourceCulture);
             }
         }
         
@@ -19794,6 +21009,15 @@ namespace ExceedERP.Core.Localization {
         public static string Return_Attendance {
             get {
                 return ResourceManager.GetString("Return_Attendance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Risk Mitigation Plan.
+        /// </summary>
+        public static string Risk_Mitigation_Plan {
+            get {
+                return ResourceManager.GetString("Risk_Mitigation_Plan", resourceCulture);
             }
         }
         
@@ -21238,6 +22462,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Salary Increement.
+        /// </summary>
+        public static string Salary_Increement {
+            get {
+                return ResourceManager.GetString("Salary_Increement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Salary Calculator.
         /// </summary>
         public static string SalaryCalculator {
@@ -21319,6 +22552,24 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Service Receive.
+        /// </summary>
+        public static string Service_Receive {
+            get {
+                return ResourceManager.GetString("Service_Receive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Service Request.
+        /// </summary>
+        public static string Service_Request {
+            get {
+                return ResourceManager.GetString("Service_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Settings.
         /// </summary>
         public static string Settings {
@@ -21333,6 +22584,24 @@ namespace ExceedERP.Core.Localization {
         public static string SettingValue {
             get {
                 return ResourceManager.GetString("SettingValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settlement.
+        /// </summary>
+        public static string Settlement {
+            get {
+                return ResourceManager.GetString("Settlement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Severance Payable with Death Prob..
+        /// </summary>
+        public static string Severance_with_Death_Prob {
+            get {
+                return ResourceManager.GetString("Severance_with_Death_Prob", resourceCulture);
             }
         }
         
@@ -21355,11 +22624,74 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Stock Purchase Request.
+        /// </summary>
+        public static string Stock_Purchase_Request {
+            get {
+                return ResourceManager.GetString("Stock_Purchase_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stock Return Request.
+        /// </summary>
+        public static string Stock_Return_Request {
+            get {
+                return ResourceManager.GetString("Stock_Return_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stock Store Request.
+        /// </summary>
+        public static string Stock_Store_Request {
+            get {
+                return ResourceManager.GetString("Stock_Store_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stock Store Request for Sub Con.
+        /// </summary>
+        public static string Stock_Store_Request_for_Sub_Con {
+            get {
+                return ResourceManager.GetString("Stock_Store_Request_for_Sub_Con", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Subject Type.
+        /// </summary>
+        public static string Subject_Type {
+            get {
+                return ResourceManager.GetString("Subject_Type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Swap.
+        /// </summary>
+        public static string Swap {
+            get {
+                return ResourceManager.GetString("Swap", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to HRM.
         /// </summary>
         public static string System_HRM {
             get {
                 return ResourceManager.GetString("System_HRM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Temination for Manager.
+        /// </summary>
+        public static string Temination_Letter_for_Manager {
+            get {
+                return ResourceManager.GetString("Temination_Letter_for_Manager", resourceCulture);
             }
         }
         
@@ -21387,6 +22719,15 @@ namespace ExceedERP.Core.Localization {
         public static string To {
             get {
                 return ResourceManager.GetString("To", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to to.
+        /// </summary>
+        public static string To_Wede {
+            get {
+                return ResourceManager.GetString("To_Wede", resourceCulture);
             }
         }
         
@@ -21454,6 +22795,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Training Need Request.
+        /// </summary>
+        public static string Training_Need_Request {
+            get {
+                return ResourceManager.GetString("Training_Need_Request", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No..
         /// </summary>
         public static string Training_no {
@@ -21477,6 +22827,15 @@ namespace ExceedERP.Core.Localization {
         public static string Training_Provider {
             get {
                 return ResourceManager.GetString("Training_Provider", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Training Requests.
+        /// </summary>
+        public static string Training_Requests {
+            get {
+                return ResourceManager.GetString("Training_Requests", resourceCulture);
             }
         }
         
@@ -21544,6 +22903,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updated.
+        /// </summary>
+        public static string Updated {
+            get {
+                return ResourceManager.GetString("Updated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to UploadFile.
         /// </summary>
         public static string UploadFile {
@@ -21603,6 +22971,24 @@ namespace ExceedERP.Core.Localization {
         public static string View_Outgoing {
             get {
                 return ResourceManager.GetString("View_Outgoing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning Letter for.
+        /// </summary>
+        public static string Warning_Letter_for_ {
+            get {
+                return ResourceManager.GetString("Warning_Letter_for_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Water Mark.
+        /// </summary>
+        public static string Water_Mark {
+            get {
+                return ResourceManager.GetString("Water_Mark", resourceCulture);
             }
         }
         

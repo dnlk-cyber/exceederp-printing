@@ -1,14 +1,21 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
 using System;
 using ExceedERP.Core.Domain;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.HRM.HRMPlan;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain.HRM.LeaveManagment;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.Severance;
 
@@ -27,13 +34,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
             {
                 SeverancePayableDetailId = payableDetail.SeverancePayableDetailId,
                 SeverancePayableId = payableDetail.SeverancePayableId,
+                PaymentRequestId = payableDetail.PaymentRequestId,
                 EmployeeCode = payableDetail.EmployeeCode,
                 EmployeeId = payableDetail.EmployeeId,
                 BranchId = payableDetail.BranchId,
                 BusinessUnitId = payableDetail.BusinessUnitId,
                 OrgStructureId = payableDetail.OrgStructureId,
                 Balance = payableDetail.Balance,
+                Years = payableDetail.Years,
+                Months = payableDetail.Months,
+                Days = payableDetail.Days,
+                ServicePeriod = payableDetail.ServicePeriod,
                 BasicSalary = payableDetail.BasicSalary,
+                TotalServiceMonths = payableDetail.TotalServiceMonths,
+                GrossCompensationPayment = payableDetail.GrossCompensationPayment,
+                CompensationPaymentT = payableDetail.CompensationPaymentT,
+                TaxOnMonthlySalaryAndCompensation = payableDetail.TaxOnMonthlySalaryAndCompensation,
+                TaxOnBasicSalary = payableDetail.TaxOnBasicSalary,
+                TaxDifference = payableDetail.TaxDifference,
+                AccTaxDifference = payableDetail.AccTaxDifference,
+                Remark = payableDetail.Remark,
                 GrossComponsation = payableDetail.GrossComponsation,
                 NetPay = payableDetail.NetPay,
                 NoneTaxableTotal = payableDetail.NoneTaxableTotal,
@@ -42,6 +62,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                 TaxWithheldComTax = payableDetail.TaxWithheldComTax,
                 TaxWithheldIncomeTax = payableDetail.TaxWithheldIncomeTax,
                 TotalDeductions = payableDetail.TotalDeductions,
+                IsSendForPayment = payableDetail.IsSendForPayment,
+                SendBy = payableDetail.SendBy,
+                DateSent = payableDetail.DateSent,
                 DateCreated = payableDetail.DateCreated,
                 CreatedBy = payableDetail.CreatedBy,
                 LastModified = payableDetail.LastModified,
@@ -55,18 +78,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SeverancePayableDetails_Create([DataSourceRequest]DataSourceRequest request, SeverancePayableDetail severance,int sPId)
         {
+
+            severance.SeverancePayableId = sPId;
             if (ModelState.IsValid)
             {
-                severance.SeverancePayableId = sPId;
                 severance.DateCreated = DateTime.Now.Date;
                 severance.CreatedBy = User.Identity.Name;
                 var entity = GetMappedObject(severance);
                 db.SeverancePayableDetails.Add(entity);
                 db.SaveChanges();
                 #region operation log
-
-                        UserHelper.OperationLog(Request.UserHostAddress, "Severance Payable Detail ", "Success", User.Identity.Name, "Severance Payable Detail is Created By  " + User.Identity.Name,Modules.HRM);
-                
+                    UserHelper.OperationLog(Request.UserHostAddress, "Severance Payable Detail ", "Success", User.Identity.Name, "Severance Payable Detail is Created By  " + User.Identity.Name,Modules.HRM);
                 #endregion
             }
             return Json(new[] { severance }.ToDataSourceResult(request, ModelState));
@@ -103,8 +125,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
             {
                 var entity = GetMappedObject(severance);
                 #region delete log
-                var leaves = db.Person_Employee.Find(severance.EmployeeId);
-                var delete = leaves.FullNameaEnglish;
+                var employee = db.Person_Employee.Find(severance.EmployeeId);
+                var delete = "";
+                if (employee != null)
+                {
+                    delete = employee.FullNameaEnglish;
+
+                }
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted   employee"  + delete);
                 #endregion
                 db.SeverancePayableDetails.Attach(entity);
@@ -126,7 +153,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                 BusinessUnitId = payableDetail.BusinessUnitId,
                 OrgStructureId = payableDetail.OrgStructureId,
                 Balance = payableDetail.Balance,
+                Years = payableDetail.Years,
+                Months = payableDetail.Months,
+                Days = payableDetail.Days,
+                ServicePeriod = payableDetail.ServicePeriod,
                 BasicSalary = payableDetail.BasicSalary,
+                TotalServiceMonths = payableDetail.TotalServiceMonths,
+                GrossCompensationPayment = payableDetail.GrossCompensationPayment,
+                CompensationPaymentT = payableDetail.CompensationPaymentT,
+                TaxOnMonthlySalaryAndCompensation = payableDetail.TaxOnMonthlySalaryAndCompensation,
+                TaxOnBasicSalary = payableDetail.TaxOnBasicSalary,
+                TaxDifference = payableDetail.TaxDifference,
+                AccTaxDifference = payableDetail.AccTaxDifference,
+                Remark = payableDetail.Remark,
                 GrossComponsation = payableDetail.GrossComponsation,
                 NetPay = payableDetail.NetPay,
                 NoneTaxableTotal = payableDetail.NoneTaxableTotal,
@@ -135,6 +174,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                 TaxWithheldComTax = payableDetail.TaxWithheldComTax,
                 TaxWithheldIncomeTax = payableDetail.TaxWithheldIncomeTax,
                 TotalDeductions = payableDetail.TotalDeductions,
+                PaymentRequestId = payableDetail.PaymentRequestId,
+                IsSendForPayment = payableDetail.IsSendForPayment,
+                SendBy = payableDetail.SendBy,
+                DateSent = payableDetail.DateSent,
+                OrgBranchName = payableDetail.OrgBranchName,
                 DateCreated = payableDetail.DateCreated,
                 CreatedBy = payableDetail.CreatedBy,
                 LastModified = payableDetail.LastModified,

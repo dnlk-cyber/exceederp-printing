@@ -1508,6 +1508,16 @@ namespace ExceedERP.DataAccess
            
         }
     }
+    public class LeaveTypeSettingEntityTypeConfiguration : EntityTypeConfiguration<LeaveTypeSetting>
+    {
+        public LeaveTypeSettingEntityTypeConfiguration()
+        {
+            this.ToTable("LeaveTypeSetting", "HRM");
+            this.HasKey<int>(o => o.LeaveTypeSettingId);
+        }
+
+
+    }
     #region Severance
     public class SeverancePayableEntityTypeConfiguration : EntityTypeConfiguration<SeverancePayable>
     {
@@ -1543,6 +1553,16 @@ namespace ExceedERP.DataAccess
             this.Property(d => d.EV1).HasPrecision(18, 6);
             this.Property(d => d.EV2).HasPrecision(18, 6);
             this.Property(d => d.TotalEV).HasPrecision(18, 6);
+        }
+    }
+    public class SeverancePayableSettingEntityTypeConfiguration : EntityTypeConfiguration<SeverancePayableSetting>
+    {
+        public SeverancePayableSettingEntityTypeConfiguration()
+        {
+            this.ToTable("SeverancePayableSettings", "HRM");
+            this.HasKey<int>(o => o.SeverancePayableSettingId);
+            this.Property(d => d.SalaryValue).HasPrecision(18, 6);
+
         }
     }
     #endregion
@@ -1887,6 +1907,7 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.SickLeaveSalarySettingId);
         }
     }
+
     public class EmployeeCardEntityTypeConfiguration : EntityTypeConfiguration<EmployeeCard>
     {
         public EmployeeCardEntityTypeConfiguration()

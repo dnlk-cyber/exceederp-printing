@@ -2196,6 +2196,7 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveOneByOneDetailObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveOneByOneDetailSelfCareObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\LeavePayableObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeavePeriodsObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeavePlanObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveSummaryObjectDataSource.cs" />
@@ -2222,6 +2223,7 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\ReferalSheetObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ReferralSheetObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\RestitutionListObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\SeverancePayableObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TerminationObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TerminationReasonObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingAndEducationOneByOneODS.cs" />
@@ -2324,6 +2326,7 @@
     <Compile Include="HRM\HRM\HRMViewModel\LeaveBalanceViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveFromOther.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveOneByOne.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\LeavePayableVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeavePlan.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeavePlanList.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveRequestLetterVM.cs" />
@@ -2353,6 +2356,7 @@
     <Compile Include="HRM\HRM\HRMViewModel\ReferalSheetVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ReferralSheet.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\RestitutionList.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\SeverancePayablesVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\Structure.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TerminationAcceptanceLetterVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TrainingAndEducationOneByeOneVM.cs" />
@@ -2400,6 +2404,12 @@
     </Compile>
     <Compile Include="HRM\HRM\LeaveOnebyOneSelfCare.designer.cs">
       <DependentUpon>LeaveOnebyOneSelfCare.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\LeavePayableReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\LeavePayableReport.designer.cs">
+      <DependentUpon>LeavePayableReport.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\Letters\AmharicExperienceLetter.cs">
       <SubType>Component</SubType>
@@ -2966,6 +2976,12 @@
     </Compile>
     <Compile Include="HRM\HRM\rtpInternalVcancySelfCare.designer.cs">
       <DependentUpon>rtpInternalVcancySelfCare.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\SeverancePayableReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\SeverancePayableReport.designer.cs">
+      <DependentUpon>SeverancePayableReport.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\TrainingAndEducationOneByOne.cs">
       <SubType>Component</SubType>
@@ -5243,6 +5259,9 @@
     <EmbeddedResource Include="HRM\HRM\LeaveOnebyOneSelfCare.resx">
       <DependentUpon>LeaveOnebyOneSelfCare.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\LeavePayableReport.resx">
+      <DependentUpon>LeavePayableReport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\AmharicExperienceLetter.resx">
       <DependentUpon>AmharicExperienceLetter.cs</DependentUpon>
     </EmbeddedResource>
@@ -5518,6 +5537,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\rtpInternalVcancySelfCare.resx">
       <DependentUpon>rtpInternalVcancySelfCare.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\SeverancePayableReport.resx">
+      <DependentUpon>SeverancePayableReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\TrainingAndEducationOneByOne.resx">
       <DependentUpon>TrainingAndEducationOneByOne.cs</DependentUpon>

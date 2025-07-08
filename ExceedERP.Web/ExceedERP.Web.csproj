@@ -1338,6 +1338,7 @@
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveReturnController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveReturnPersonalController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveReturnStatusController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Leave\LeaveTypeSettingsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\MonthlyLeavePlanController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\MonthlyLeavePlanDetailController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\SickLeaveSettingController.cs" />
@@ -1631,6 +1632,8 @@
     <Compile Include="Areas\HRM\Controllers\SelfCare\WorkunitIncomingController.cs" />
     <Compile Include="Areas\HRM\Controllers\Severance\SeverancePayableDetailsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Severance\SeverancePayablesController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Severance\SeverancePayableSettingController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Severance\SeveranceWithProbabilitiesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Template\TemplateController.cs" />
     <Compile Include="Areas\HRM\Controllers\Template\TemplatesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Termination\LeaveTerminationController.cs" />
@@ -7265,6 +7268,9 @@
     <Content Include="Areas\CRM\Views\SaleTenders\EditorTemplates\PurchasedTinNumber.cshtml" />
     <Content Include="Areas\CRM\Views\SaleTenders\EditorTemplates\salesPurchaseTemplate.cshtml" />
     <Content Include="Areas\CRM\Views\SaleTenders\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\SeverancePayableSetting\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\SickLeaveSetting\EditorTemplates\FiscalYear.cshtml" />
+    <Content Include="Areas\HRM\Views\SickLeaveSetting\EditorTemplates\Setting.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

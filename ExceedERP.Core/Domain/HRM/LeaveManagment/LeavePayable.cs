@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
@@ -40,8 +40,6 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         public int EmployeeId { get; set; }
         public virtual Person_Employee Employee { get; set; }
         [Required]
-        //[Display(Name = Localization.Resources.HR_LeaveManagment_Leave_Payable__Days, ResourceType = typeof(Localization.Resources))]
-        //[Display(ResourceType = typeof(Localization.Resources), Name = nameof(Resources.Rpt_Total +" "+Resources.HR_LeaveManagment_Leave_Payable__Days))]
         [Display(Name = "Total Payable Days")]
         public decimal PayableDays { get; set; }
         [Required]
@@ -51,10 +49,29 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         public decimal Year1 { get; set; }
         [Display(Name = "Year 2")]
         public decimal Year2 { get; set; }
+        //[Display(Name = "Total Annual leave")]
+        //public decimal TotalAnnualLeave { get; set; }
+        [Display(Name = "Annual leave per month")]
+        public decimal AnnualLeavePerMonth { get; set; }
+       
+        [Display(Name = "Basic Salary ")]
+        public decimal BasicSalary  { get; set; }
+        [Display(Name = "Agregate taxable Amount ")]
+        public decimal AgregateTaxableAmount { get; set; }
+        [Display(Name = "Agregate Income Tax")]
+        public decimal AgregateIncomeTax { get; set; }
+        [Display(Name = "Basic Salary Income Tax ")]
+        public decimal BasicSalaryIncomeTax  { get; set; }
+        [Display(Name = "Tax difference")]
+        public decimal TaxDifference  { get; set; }
+        [Display(Name = "Net Payment ")]
+        public decimal NetPayment   { get; set; }
+        public string Remark { get; set; }
         public int LeavePayableId { get; set; }
         public virtual LeavePayable Payable { get; set; }
 
     }
+
     public class LeavePayableWithDetailFiscalYear
     {
         public int LeavePayableWithDetailFiscalYearId { get; set; }
@@ -66,6 +83,13 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         public decimal Balance { get; set; }
         public int LeavePayableDetailId { get; set; }
         public virtual LeavePayableDetail PayableDetail { get; set; }
+        
+    }
+    public class LeaveEmployeeVM
+    {
+        public int EmployeeId { get; set; }
+        public string FullNameEnglish { get; set; }
+        public string FullName { get; set; }
 
     }
 }

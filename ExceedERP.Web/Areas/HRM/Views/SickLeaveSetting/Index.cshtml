@@ -1,10 +1,10 @@
 ﻿@using System.Collections
 @using ExceedERP.Core.Domain.HRM.LeaveManagment
+@using ExceedERP.Core.Domain.Common.HRM
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 
 @(Html.Kendo().TabStrip()
     .Name("tabstrip")
@@ -13,13 +13,41 @@
             effect.Fade(FadeDirection.In)))
      .Items(tabstrip =>
      {
-     tabstrip.Add().Text(Resources.SickLeaveSetting)
+          tabstrip.Add().Text(Resources.NavigatorLeave_LeaveSetting)
+         .Content(@<text>
+              @leaveSetting()
+
+            </text>);
+         tabstrip.Add().Text(Resources.Rpt_LeaveType + " "+ Resources.Settings)
+         .Content(@<text>
+              @leaveTypeSetting()
+
+            </text>);
+        tabstrip.Add().Text(Resources.SickLeaveSetting)
         .Selected(true)
         .Content(@<text>
-
         <Legend>@Resources.SickLeaveSetting</Legend>
-                            
-        @(Html.Kendo().Grid<SickLeaveSetting>()
+         @sickLeaveSetting()
+        </text>);
+
+        tabstrip.Add().Text(Resources.SickLeaveSetting+" "+Resources.Rpt_Salary)
+         .Content(@<text>
+              @sickLeaveWithSalary()
+
+            </text>);
+
+
+  tabstrip.Add().Text(Resources.NavigatorLeave_LeavePayable +" "+Resources.Settings + "|| No of working days")
+      .Content(@<text>
+              @leavePayableSetting()
+
+            </text>);
+     })
+)
+
+@helper sickLeaveSetting()
+{ 
+    @(Html.Kendo().Grid<SickLeaveSetting>()
               .Name("SickLeaveSettinggrid")
               .Columns(columns =>
               {
@@ -43,11 +71,11 @@
                               })
                   .Filterable()
                      .Pageable(pageable => pageable
-                                                .Input(true)
-                                                .Numeric(false)
-                                                .Refresh(true)
-                                                .PageSizes(true)
-                                                .ButtonCount(5))
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
               .DataSource(dataSource => dataSource
                   .Ajax()
                       .Events(events =>
@@ -58,79 +86,357 @@
                       })
 
                   .Model(model => model.Id(p => p.SickLeaveSettingId))
-                  .Read(read => read.Action("SickLeaveSetting_Read", "SickLeaveSetting"))
-                  .Create(create => create.Action("SickLeaveSetting_Create", "SickLeaveSetting"))
-                  .Update(update => update.Action("SickLeaveSetting_Update", "SickLeaveSetting"))
-                  .Destroy(destroy => destroy.Action("SickLeaveSetting_Destroy", "SickLeaveSetting"))
+                  .Read(read => read.Action("SickLeaveSetting_Read", "SickLeaveSetting").Data("sendForgery"))
+                  .Create(create => create.Action("SickLeaveSetting_Create", "SickLeaveSetting").Data("sendForgery"))
+                  .Update(update => update.Action("SickLeaveSetting_Update", "SickLeaveSetting").Data("sendForgery"))
+                  .Destroy(destroy => destroy.Action("SickLeaveSetting_Destroy", "SickLeaveSetting").Data("sendForgery"))
               )
         )
+}
+ 
+@helper sickLeaveWithSalary()
+{ 
+    
+        <legend>@Resources.SickLeaveSetting @Resources.Rpt_Salary </legend>
+        @(Html.Kendo().Grid<SickLeaveSalarySetting>()
+            .Name("SickLeaveSalarySettinggrid")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.SickLeaveSalarySettingId).Title("#").Width(80);
+                columns.Bound(c => c.FromDays).Width(120);
+                columns.Bound(c => c.ToDays).Width(120);
+                columns.Bound(c => c.PayableSalaryInPercent).Width(150);
+                columns.Bound(c => c.IsTerminated).Width(120).ClientTemplate(
+                    "<input type='checkbox' disabled = 'true' value='#=IsTerminated#' " +
+                    "# if (IsTerminated) { #" +
+                    "checked='checked'" +
+                    "# } #" +
+                    "/>");
+                columns.Command(command =>
+                {
+                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                }).Width(200);
+            })
+            .ToolBar(toolbar =>
+            {
+                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
 
-     </text>);
+            })
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(500))
+            .Sortable(sortable =>
+            {
+                sortable.SortMode(GridSortMode.SingleColumn);
 
-       tabstrip.Add().Text(Resources.Enum_LeaveType_SICK_LEAVE.ToLowerInvariant()+"-"+Resources.SalarySetting)
-         .Content(@<text>
 
-            <legend>@Resources.NavigatorEmployeeCodeSetting</legend>
-            @(Html.Kendo().Grid<SickLeaveSalarySetting>()
-              .Name("SickLeaveSalarySettinggrid")
-              .Columns(columns =>
+            })
+            .Filterable()
+            .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                    .Events(events =>
+                    {
+                        events.Error("error_handler(\"SickLeaveSalarySettinggrid\")");
+                        events.RequestStart("onRequestStart(\"SickLeaveSalarySettinggrid\")");
+                        events.RequestEnd("onRequestEnd(\"SickLeaveSalarySettinggrid\")");
+                    })
+
+                .Model(model => { model.Id(p => p.SickLeaveSalarySettingId);
+                    model.Field(p => p.SickLeaveSalarySettingId).Editable(false);
+                })
+                .Read(read => read.Action("SickLeaveSalarySetting_Read", "SickLeaveSalarySetting").Data("sendForgery"))
+                .Create(create => create.Action("SickLeaveSalarySetting_Create", "SickLeaveSalarySetting").Data("sendForgery"))
+                .Update(update => update.Action("SickLeaveSalarySetting_Update", "SickLeaveSalarySetting").Data("sendForgery"))
+                .Destroy(destroy => destroy.Action("SickLeaveSalarySetting_Destroy", "SickLeaveSalarySetting").Data("sendForgery"))
+            )
+    )             
+}
+@helper leaveTypeSetting()
+{ 
+    <Legend>@Resources.Rpt_LeaveType @Resources.Settings</Legend>
+@(Html.Kendo().Grid<LeaveTypeSetting>()
+          .Name("LeaveTypeSettinggrid")
+          .Columns(columns =>
+          {
+
+              columns.Bound(c => c.LeaveTypeSettingId).Title("#").Width(100);
+              columns.Bound(c => c.LeaveType).Width(150);
+              columns.Bound(c => c.IsConsecutiveDays).ClientTemplate(
+                     "<input type='checkbox' disabled = 'true' value='#=IsConsecutiveDays#' " +
+                     "# if (IsConsecutiveDays) { #" +
+                     "checked='checked'" +
+                     "# } #" +
+                     "/>").Width(140);
+              columns.Bound(c => c.IsWorkingDays).ClientTemplate(
+                     "<input type='checkbox' disabled = 'true' value='#=IsWorkingDays#' " +
+                     "# if (IsWorkingDays) { #" +
+                     "checked='checked'" +
+                     "# } #" +
+                     "/>").Width(140);
+              columns.Bound(c => c.MaximumAmount).Width(150);
+              columns.Command(command => {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              })/*.Width(200)*/;
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(550))
+            .Sortable(sortable =>
+            {
+                sortable.SortMode(GridSortMode.SingleColumn);
+
+            })
+            .Filterable()
+            .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Sort(sort=>sort.Add(x=>x.LeaveTypeSettingId).Descending())
+              .Events(events =>
               {
-                  columns.Bound(c => c.SickLeaveSalarySettingId).Title("#").Width(80);
-                  columns.Bound(c => c.FromDays).Width(120);
-                  columns.Bound(c => c.ToDays).Width(120);
-                  columns.Bound(c => c.PayableSalaryInPercent).Width(150);
-                  columns.Command(command =>
-                  {
-                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                      command.Destroy().Text(Resources.ActionButton_Cancel);
-                  }).Width(200);
+                  events.Error("error_handler(\"LeaveTypeSettinggrid\")");
+                  events.RequestStart("onRequestStart(\"LeaveTypeSettinggrid\")");
+                  events.RequestEnd("onRequestEnd(\"LeaveTypeSettinggrid\")");
+
               })
-              .ToolBar(toolbar =>
-              {
-                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              .Model(model => {
+                  model.Id(p => p.LeaveTypeSettingId);
+                  model.Field(p => p.LeaveTypeSettingId).Editable(false);
               })
-              .Editable(editable => editable.Mode(GridEditMode.InLine))
-                .Scrollable(h => h.Height(500))
-                     .Groupable()
-                              .Sortable(sortable =>
-                              {
-                                  sortable.SortMode(GridSortMode.SingleColumn);
-                              })
-                  .Filterable()
-                     .Pageable(pageable => pageable
-                                                .Input(true)
-                                                .Numeric(false)
-                                                .Refresh(true)
-                                                .PageSizes(true)
-                                                .ButtonCount(5))
-              .DataSource(dataSource => dataSource
-                  .Ajax()
-                      .Events(events =>
-                      {
-                          events.Error("error_handler(\"SickLeaveSalarySettinggrid\")");
-                          events.RequestStart("onRequestStart(\"SickLeaveSalarySettinggrid\")");
-                          events.RequestEnd("onRequestEnd(\"SickLeaveSalarySettinggrid\")");
-                      })
-
-                  .Model(model => { model.Id(p => p.SickLeaveSalarySettingId);
-                      model.Field(p => p.SickLeaveSalarySettingId).Editable(false);
-                  })
-                  .Read(read => read.Action("SickLeaveSalarySetting_Read", "SickLeaveSalarySetting"))
-                  .Create(create => create.Action("SickLeaveSalarySetting_Create", "SickLeaveSalarySetting"))
-                  .Update(update => update.Action("SickLeaveSalarySetting_Update", "SickLeaveSalarySetting"))
-                  .Destroy(destroy => destroy.Action("SickLeaveSalarySetting_Destroy", "SickLeaveSalarySetting"))
-              )
-        )
-
-                          
-     </text>);
-
-
-
-
-     })
+              .Read(read => read.Action("LeaveTypeSettings_Read", "LeaveTypeSettings").Data("sendForgery"))
+              .Create(create => create.Action("LeaveTypeSettings_Create", "LeaveTypeSettings").Data("sendForgery"))
+              .Update(update => update.Action("LeaveTypeSettings_Update", "LeaveTypeSettings").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("LeaveTypeSettings_Destroy", "LeaveTypeSettings").Data("sendForgery"))
+          )
 )
 
+    
+ }
+
+@helper leaveSetting()
+{ 
+    <Legend>@Resources.NavigatorLeave_LeaveSetting</Legend>
+     @(Html.Kendo().Grid<Configuration>()
+          .Name("LeaveMainSettinggrid")
+          .Columns(columns =>
+          {
+
+              columns.ForeignKey(c => c.Attribute, (IEnumerable)ViewData["LeaveSetting"], "Text", "Text").EditorTemplateName("Setting");
+              columns.Bound(c => c.CurrentValue);
+              // columns.Bound(c => c.PreviousValue);
+              // columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYeaer"], "GlFiscalYearId", "Name").EditorTemplateName("FiscalYear");
+              columns.Bound(c => c.Remark);
+              columns.Command(command => 
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }).Width(200);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(250))
+            .Sortable(sortable =>
+            {
+                sortable.SortMode(GridSortMode.SingleColumn);
+
+            })
+            .Filterable()
+            .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(events =>
+              {
+                  events.Error("error_handler(\"LeaveMainSettinggrid\")");
+                  events.RequestStart("onRequestStart(\"LeaveMainSettinggrid\")");
+                  events.RequestEnd("onRequestEnd(\"LeaveMainSettinggrid\")");
+
+              })
+              .Model(model => model.Id(p => p.ConfigurationId))
+              .Read(read => read.Action("Configurations_Read", "LeaveSetting").Data("sendForgery"))
+              .Create(create => create.Action("Configurations_Create", "LeaveSetting").Data("sendForgery"))
+              .Update(update => update.Action("Configurations_Update", "LeaveSetting").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("Configurations_Destroy", "LeaveSetting").Data("sendForgery"))
+          )
+)
+<br/>
+
+<div class="row">
+    <div class="col-md-6 col-sm-6 col-lg-6">
+
+        <legend>@Resources.Leave_new_declaration_start_year <text> this also used for Increemental year setting</text></legend>
+
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.LeaveManagment.LeaveNewAwajStartYear>()
+          .Name("LeaveNewAwajStartYearGrid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.GlFisicalYearId, (IEnumerable)ViewData["FisicalYear"], "GlFiscalYearId", "Name").EditorTemplateName("FiscalYear");
+          
+
+              columns.Command(command =>
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().HtmlAttributes(new { id="deleteButtonId"});
+              });
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().HtmlAttributes(new { id = "toolBarId" });
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .Filterable()
+
+         //.Pageable(pageable => pageable
+         //      .Input(true)
+         //      .Numeric(false)
+         //      .Refresh(true)
+         //      .PageSizes(true)
+         //      .ButtonCount(5))
+         .Scrollable(h => h.Height("auto"))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+               .Events(events =>
+               {
+                   events.Error("error_handler(\"LeaveNewAwajStartYearGrid\")");
+                   events.RequestStart("onRequestStart(\"LeaveNewAwajStartYearGrid\")");
+                   events.RequestEnd("onRequestEnd(\"LeaveNewAwajStartYearGrid\")");
+               })
+              .Model(model => model.Id(p => p.LeaveNewAwajStartYearId))
+              .Read(read => read.Action("LeaveNewAwajStartYears_Read", "LeaveNewAwajStartYears").Data("sendForgery"))
+              .Create(create => create.Action("LeaveNewAwajStartYears_Create", "LeaveNewAwajStartYears").Data("sendForgery"))
+              .Update(update => update.Action("LeaveNewAwajStartYears_Update", "LeaveNewAwajStartYears").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("LeaveNewAwajStartYears_Destroy", "LeaveNewAwajStartYears").Data("sendForgery"))
+          )
+        )
+
+
+
+
+    </div>
+
+    <div class="col-md-6 col-sm-6 col-lg-6">
+
+        <legend>@Resources.Leave_entitle_start_date</legend>
+
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.LeaveManagment.LeaveEntitleStartingDate>()
+          .Name("LeaveEntitleStartingDateGrid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Start).EditorTemplateName("Enum");
+              columns.Bound(c => c.Remark);
+
+              columns.Command(command =>
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  // command.Destroy();
+              });
+          })
+          .ToolBar(toolbar =>
+          {
+              // toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .Filterable()
+          //.Pageable(pageable => pageable
+          //      .Input(true)
+          //      .Numeric(false)
+          //      .Refresh(true)
+          //      .PageSizes(true)
+          //      .ButtonCount(5))
+          .Scrollable(h=>h.Height("auto"))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+               .Events(events =>
+               {
+                   events.Error("error_handler(\"LeaveEntitleStartingDateGrid\")");
+                   events.RequestStart("onRequestStart(\"LeaveEntitleStartingDateGrid\")");
+                   events.RequestEnd("onRequestEnd(\"LeaveEntitleStartingDateGrid\")");
+               })
+              .Model(model => model.Id(p => p.LeaveEntitleStartingDateId))
+              .Read(read => read.Action("LeaveEntitleStartingDate_Read", "LeaveEntitleStartingDate").Data("sendForgery"))
+          .Create(create => create.Action("LeaveEntitleStartingDate_Create", "LeaveEntitleStartingDate").Data("sendForgery"))
+          .Update(update => update.Action("LeaveEntitleStartingDate_Update", "LeaveEntitleStartingDate").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("LeaveEntitleStartingDate_Destroy", "LeaveEntitleStartingDate").Data("sendForgery"))
+          )
+        )
+
+
+    </div>
+
+</div>
+
+
+}
+
+@helper leavePayableSetting() { 
+    <Legend>@Resources.NavigatorLeave_LeavePayable @Resources.Settings</Legend>
+@(Html.Kendo().Grid<LeavePayableSetting>()
+          .Name("LeavePayableSetting_grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.CurrentValue).Width(200);
+              columns.Command(command =>
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }).Width(200);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+                  .Events(events =>
+                  {
+                      events.Error("error_handler(\"LeavePayableSetting_grid\")");
+                      events.RequestStart("onRequestStart(\"LeavePayableSetting_grid\")");
+                      events.RequestEnd("onRequestEnd(\"LeavePayableSetting_grid\")");
+                  })
+
+              .Model(model => model.Id(p => p.LeavePayableSettingId))
+              .Read(read => read.Action("LeavePayableSetting_Read", "LeavePayableSetting").Data("sendForgery"))
+              .Create(create => create.Action("LeavePayableSetting_Create", "LeavePayableSetting").Data("sendForgery"))
+              .Update(update => update.Action("LeavePayableSetting_Update", "LeavePayableSetting").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("LeavePayableSetting_Destroy", "LeavePayableSetting").Data("sendForgery"))
+          )
+)
+    }
 <script>
     //function error_handler(e) {
     //    if (e.errors) {
@@ -152,4 +458,27 @@
         this.read();
 
     }
+    document.addEventListener('DOMContentLoaded', function () {
+
+         $.ajax({
+                url: '@Url.Action("CheckNewAwajDataIfExists", "LeaveSetting")',
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+
+                    if (r.Message == "OK")
+                    {
+                        $("#deleteButtonId").hide();
+                        $("#toolBarId").hide();
+
+                        $("#LeaveNewAwajStartYearGrid").find(".k-toolbar").hide(); //hide toolbar
+                        $(".k-grid-top", "#LeaveNewAwajStartYearGrid").hide();
+                    }
+                   
+                }
+
+            });
+
+    }, false);
 </script>

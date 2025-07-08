@@ -903,6 +903,7 @@
     <Compile Include="Domain\HRM\LeaveManagment\LeavePayable.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\LeavePayableSetting.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\LeaveReturn.cs" />
+    <Compile Include="Domain\HRM\LeaveManagment\LeaveSetting.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\LeaveTransfer.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\LeaveUsageTrackingForVoid.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\MonthlyLeavePlan.cs" />
@@ -1018,6 +1019,7 @@
     <Compile Include="Domain\HRM\SelfCare\SelfCare.cs" />
     <Compile Include="Domain\HRM\SelfCare\TrainingApplicant.cs" />
     <Compile Include="Domain\HRM\Severance\SeverancePayable.cs" />
+    <Compile Include="Domain\HRM\Severance\SeverancePayableSetting.cs" />
     <Compile Include="Domain\HRM\Severance\SeveranceWithProbability.cs" />
     <Compile Include="Domain\HRM\Templates\Template.cs" />
     <Compile Include="Domain\HRM\TrainingEducation\CourseTracking.cs" />

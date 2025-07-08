@@ -44,10 +44,10 @@
                   })
 
               .Model(model => model.Id(p => p.LeavePayableSettingId))
-              .Read(read => read.Action("LeavePayableSetting_Read", "LeavePayableSetting"))
-              .Create(create => create.Action("LeavePayableSetting_Create", "LeavePayableSetting"))
-              .Update(update => update.Action("LeavePayableSetting_Update", "LeavePayableSetting"))
-              .Destroy(destroy => destroy.Action("LeavePayableSetting_Destroy", "LeavePayableSetting"))
+              .Read(read => read.Action("LeavePayableSetting_Read", "LeavePayableSetting").Data("sendForgery"))
+              .Create(create => create.Action("LeavePayableSetting_Create", "LeavePayableSetting").Data("sendForgery"))
+              .Update(update => update.Action("LeavePayableSetting_Update", "LeavePayableSetting").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("LeavePayableSetting_Destroy", "LeavePayableSetting").Data("sendForgery"))
           )
 )
 <script>

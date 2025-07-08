@@ -5410,7 +5410,7 @@
     <value>Qacaramaa</value>
   </data>
   <data name="Navigator_Employee_EmployeeProfile" xml:space="preserve">
-    <value>Profaayilii Hojjetaa</value>
+    <value>Profaayilii Hojjetaa(sochii fi kaa’ame)</value>
   </data>
   <data name="Navigator_Employee_Experience" xml:space="preserve">
     <value>Muuxannoo</value>
@@ -6580,7 +6580,7 @@
     <value>Saagi Boqonnaa Kaffaltii</value>
   </data>
   <data name="Navigator_Severance_Payable" xml:space="preserve">
-    <value>Severance Payable</value>
+    <value>Hojii irraa ari’uu Kaffaltii</value>
   </data>
   <data name="Enum_AssignmentType_TEMPORARY_Job_Title_Change" xml:space="preserve">
     <value>Jijjiirama ejjennoo</value>
@@ -7334,5 +7334,473 @@
   </data>
   <data name="HRM_JobTitle_and_Rank_Mapping" xml:space="preserve">
     <value>Job Title and Rank Mapping</value>
+  </data>
+  <data name="Leave_Return" xml:space="preserve">
+    <value>Duwwaa Dhiisaa</value>
+  </data>
+  <data name="Enum_LeaveType_Bereavement_Far_Family" xml:space="preserve">
+    <value>Gadda Maatii Fagootiif</value>
+  </data>
+  <data name="Enum_LeaveType_Bereavement_Friend" xml:space="preserve">
+    <value>Gadda Firaaf</value>
+  </data>
+  <data name="Enum_LeaveType_DayOff" xml:space="preserve">
+    <value>GuyyaaOf</value>
+  </data>
+  <data name="Convert" xml:space="preserve">
+    <value>Jijjiiruu</value>
+  </data>
+  <data name="Date_Converter" xml:space="preserve">
+    <value>Jijjiirraa Guyyaa</value>
+  </data>
+  <data name="Ethiopian_Date" xml:space="preserve">
+    <value>Ethiopian Date</value>
+  </data>
+  <data name="Ethiopian_Date_to_Gergorian_Date" xml:space="preserve">
+    <value>Guyyaa Itiyoophiyaa gara Guyyaa Gergooriyaanitti jijjiiri</value>
+  </data>
+  <data name="Gergorian_Date" xml:space="preserve">
+    <value>Guyyaa Giriigooriyaan</value>
+  </data>
+  <data name="Gergorian_Date_ToEthiopian_Date" xml:space="preserve">
+    <value>Guyyaa Gergorian gara Guyyaa Habashaatti jijjiiri</value>
+  </data>
+  <data name="To_Wede" xml:space="preserve">
+    <value>gara</value>
+  </data>
+  <data name="Archive" xml:space="preserve">
+    <value>Kuusaa</value>
+  </data>
+  <data name="Internal_Performance_Evalution" xml:space="preserve">
+    <value>Madaallii Maamilaa Keessaa</value>
+  </data>
+  <data name="My_Evaluation_Reults" xml:space="preserve">
+    <value>Bu'aa Madaallii Koo</value>
+  </data>
+  <data name="My_Performance" xml:space="preserve">
+    <value>Raawwii Hojii Koo</value>
+  </data>
+  <data name="Peer_Performance_Evalution" xml:space="preserve">
+    <value>Madaallii Hiriyaa</value>
+  </data>
+  <data name="Personal_Performance_Evalution" xml:space="preserve">
+    <value>Madaallii Dhuunfaa</value>
+  </data>
+  <data name="Complain_Request" xml:space="preserve">
+    <value>Gaaffii Iyyannoo</value>
+  </data>
+  <data name="Needs" xml:space="preserve">
+    <value>Needs</value>
+  </data>
+  <data name="Request" xml:space="preserve">
+    <value>Request</value>
+  </data>
+  <data name="Acting" xml:space="preserve">
+    <value>Acting</value>
+  </data>
+  <data name="Camp_PerDiem" xml:space="preserve">
+    <value>Kaampii Per Diem</value>
+  </data>
+  <data name="Daily_Laborer" xml:space="preserve">
+    <value>Hojjetaa Guyyaa Guyyaa</value>
+  </data>
+  <data name="Fleet_Requisition" xml:space="preserve">
+    <value>Fleet_Requisition</value>
+  </data>
+  <data name="Guarantor" xml:space="preserve">
+    <value>Wabii</value>
+  </data>
+  <data name="Maintenance_Request" xml:space="preserve">
+    <value>Gaaffii Suphaa</value>
+  </data>
+  <data name="Open_Ticket" xml:space="preserve">
+    <value>Open Ticket</value>
+  </data>
+  <data name="Promotion_Eligible" xml:space="preserve">
+    <value>Hojjettoota mana keessa jiran</value>
+  </data>
+  <data name="Salary_Increement" xml:space="preserve">
+    <value>Daballii Mindaa</value>
+  </data>
+  <data name="Swap" xml:space="preserve">
+    <value>Swap</value>
+  </data>
+  <data name="Annual_Increment" xml:space="preserve">
+    <value>Dabala Waggaa</value>
+  </data>
+  <data name="Annual_Leave" xml:space="preserve">
+    <value>Boqonnaa Waggaa</value>
+  </data>
+  <data name="Application_Screening" xml:space="preserve">
+    <value>Sakatta'iinsa Iyyannoo</value>
+  </data>
+  <data name="Application_Screening_for_Women" xml:space="preserve">
+    <value>Sakatta'iinsa Iyyannoo Dubartootaaf</value>
+  </data>
+  <data name="Assignment" xml:space="preserve">
+    <value>Hojii manaa</value>
+  </data>
+  <data name="CC" xml:space="preserve">
+    <value>CC</value>
+  </data>
+  <data name="Company_Structure" xml:space="preserve">
+    <value>Caasaa Dhaabbataa</value>
+  </data>
+  <data name="Contract_Hirement" xml:space="preserve">
+    <value>Qaxarrii Kontiraataa</value>
+  </data>
+  <data name="Corporate_Sector_Performance_Evalution" xml:space="preserve">
+    <value>Raawwii Hojii Dhaabbilee &amp;&amp; Damee</value>
+  </data>
+  <data name="Education_Plan" xml:space="preserve">
+    <value>Karoora Barnootaa</value>
+  </data>
+  <data name="Education_Setting" xml:space="preserve">
+    <value>Haala Barnootaa</value>
+  </data>
+  <data name="Education_Vaccancy" xml:space="preserve">
+    <value>Bakka Duwwaa Barnootaa</value>
+  </data>
+  <data name="Employee_Bonus_Summary" xml:space="preserve">
+    <value>Cuunfaa Bonus Hojjetaa</value>
+  </data>
+  <data name="Employee_Bonus_Summary_for_manager" xml:space="preserve">
+    <value>Cuunfaa Bonus Hojjetaa hogganaa</value>
+  </data>
+  <data name="Employee_Bonus_Summary_for_Project_manager" xml:space="preserve">
+    <value>Cuunfaa Bonus Hojjetaa hoggantoota Pirojektii</value>
+  </data>
+  <data name="Employee_Bonus_Summary_for_Sector" xml:space="preserve">
+    <value>Cuunfaa Bonus Hojjetaa Damee</value>
+  </data>
+  <data name="Employee_Card" xml:space="preserve">
+    <value>Kaardii Hojjetaa</value>
+  </data>
+  <data name="Employee_Experience" xml:space="preserve">
+    <value>Muuxannoo Hojjetaa</value>
+  </data>
+  <data name="Employee_Performance_Detail" xml:space="preserve">
+    <value>Bal'ina Raawwii Hojii Hojjetaa</value>
+  </data>
+  <data name="Employee_Performance_With_Bonus" xml:space="preserve">
+    <value>Raawwii Hojii Hojjetaa Bonus Waliin</value>
+  </data>
+  <data name="Employee_Perfromance_Planning" xml:space="preserve">
+    <value>Raawwii Hojii fi Karoora Hojjetaa</value>
+  </data>
+  <data name="Employee_Promotion_Summay" xml:space="preserve">
+    <value>Cuunfaa Guddina Guddina Hojjetaa</value>
+  </data>
+  <data name="Employee_Rewards" xml:space="preserve">
+    <value>Badhaasa Hojjetaa</value>
+  </data>
+  <data name="Employee_Summary_By_BusinessUnit" xml:space="preserve">
+    <value>Cuunfaa Hojjetaa Kutaa Daldalaatiin</value>
+  </data>
+  <data name="Employee_Summary_By_Status" xml:space="preserve">
+    <value>Cuunfaa Hojjetaa Haalaan</value>
+  </data>
+  <data name="Employee_termination_Summary" xml:space="preserve">
+    <value>Hojjetaa addaan kutuu Cuunfaa BusinessUnit tiin</value>
+  </data>
+  <data name="Exception_Evalution" xml:space="preserve">
+    <value>Madaallii Raawwii Hojii Alaa</value>
+  </data>
+  <data name="External_Letter" xml:space="preserve">
+    <value>Xalayaa Alaa</value>
+  </data>
+  <data name="External_Transfer" xml:space="preserve">
+    <value>Jijjiirraa Alaa</value>
+  </data>
+  <data name="Fuel" xml:space="preserve">
+    <value>Boba'aa</value>
+  </data>
+  <data name="Fuel_request" xml:space="preserve">
+    <value>Gaaffii Boba'aa</value>
+  </data>
+  <data name="Fund_Transfer" xml:space="preserve">
+    <value>Dabarsa Maallaqaa</value>
+  </data>
+  <data name="General_Summary" xml:space="preserve">
+    <value>Cuunfaa Waliigalaa</value>
+  </data>
+  <data name="HRM" xml:space="preserve">
+    <value>HR</value>
+  </data>
+  <data name="Internal_Audit" xml:space="preserve">
+    <value>Odiitii Keessaa</value>
+  </data>
+  <data name="Iso_Documents" xml:space="preserve">
+    <value>Sanadoota Iso</value>
+  </data>
+  <data name="Labour_Schedule" xml:space="preserve">
+    <value>Sagantaa Hojii</value>
+  </data>
+  <data name="Leave_Request" xml:space="preserve">
+    <value>Gaaffii Boqonnaa</value>
+  </data>
+  <data name="Letters_For_Employee" xml:space="preserve">
+    <value>Xalayaa Hojjetaaf</value>
+  </data>
+  <data name="Letter_in_Affan_Oromo" xml:space="preserve">
+    <value>Xalayaa Afaan Oromoo Affan</value>
+  </data>
+  <data name="Letter_Sent_To_Employee" xml:space="preserve">
+    <value>Xalayaa Hojjetaaf Ergame</value>
+  </data>
+  <data name="Manager" xml:space="preserve">
+    <value>Hoji-geggeessaa</value>
+  </data>
+  <data name="Material" xml:space="preserve">
+    <value>Meeshaa</value>
+  </data>
+  <data name="New_Assignment_Letter" xml:space="preserve">
+    <value>Xalayaa Ramaddii Haaraa</value>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Beeksisa</value>
+  </data>
+  <data name="NotPlacedEmployees" xml:space="preserve">
+    <value>Hojjettoota hin ramadamne</value>
+  </data>
+  <data name="Not_Evaluated_Employee" xml:space="preserve">
+    <value>Hojjetaa Hin Madaalamne</value>
+  </data>
+  <data name="Payment_Request" xml:space="preserve">
+    <value>Gaaffii Kaffaltii</value>
+  </data>
+  <data name="Performance_Settings" xml:space="preserve">
+    <value>Sajoo Raawwii Hojii</value>
+  </data>
+  <data name="Performance_Summary_Generated" xml:space="preserve">
+    <value>Cuunfaa Raawwii Hojii Uumame</value>
+  </data>
+  <data name="PPE_Purchase_Request" xml:space="preserve">
+    <value>Gaaffii Bittaa PPE</value>
+  </data>
+  <data name="PPE_Return_Request" xml:space="preserve">
+    <value>Gaaffii Deebi’uu PPE </value>
+  </data>
+  <data name="PPE_Store_Request" xml:space="preserve">
+    <value>Gaaffii Kuusaa PPE</value>
+  </data>
+  <data name="Probation_Eligible" xml:space="preserve">
+    <value>Hojjetaa Yeroo Yaaliif Ulaagaa Qabu</value>
+  </data>
+  <data name="Promoted_Employees" xml:space="preserve">
+    <value>Hojjettoota Guddina Guddina Qaban</value>
+  </data>
+  <data name="Rehirement_Letter" xml:space="preserve">
+    <value>Xalayaa Irra Deebiin Qacarrii</value>
+  </data>
+  <data name="Settlement" xml:space="preserve">
+    <value>Qubsuma</value>
+  </data>
+  <data name="Severance_with_Death_Prob" xml:space="preserve">
+    <value>Carraa Du'aa Waliin Addaan Bahuu</value>
+  </data>
+  <data name="Stock_Purchase_Request" xml:space="preserve">
+    <value>Gaaffii Bittaa Istookii</value>
+  </data>
+  <data name="Stock_Return_Request" xml:space="preserve">
+    <value>Gaaffii Deebi’uu Istookii</value>
+  </data>
+  <data name="Stock_Store_Request" xml:space="preserve">
+    <value>Gaaffii Mana Kuusaa Istookii</value>
+  </data>
+  <data name="Temination_Letter_for_Manager" xml:space="preserve">
+    <value>Xalayaa Temination Manaajaraaf</value>
+  </data>
+  <data name="Training_Need_Request" xml:space="preserve">
+    <value>Gaaffii Barbaachisummaa Leenjii</value>
+  </data>
+  <data name="Training_Requests" xml:space="preserve">
+    <value>Gaaffii Leenjii</value>
+  </data>
+  <data name="Warning_Letter_for_" xml:space="preserve">
+    <value>Xalayaa Akeekkachiisaa for</value>
+  </data>
+  <data name="Water_Mark" xml:space="preserve">
+    <value>Water Mark</value>
+  </data>
+  <data name="For" xml:space="preserve">
+    <value>-f</value>
+  </data>
+  <data name="Leave_Management" xml:space="preserve">
+    <value>Hoggansa Boqonnaa</value>
+  </data>
+  <data name="Planning" xml:space="preserve">
+    <value>Karoora baasuu</value>
+  </data>
+  <data name="Plan_Management" xml:space="preserve">
+    <value>Bulchiinsa Karoora</value>
+  </data>
+  <data name="Production" xml:space="preserve">
+    <value>Oomisha</value>
+  </data>
+  <data name="Production_Requistions" xml:space="preserve">
+    <value>Gaaffii Omishaa</value>
+  </data>
+  <data name="Production_Work_Order" xml:space="preserve">
+    <value>Ajaja Hojii Omishaa</value>
+  </data>
+  <data name="Actual" xml:space="preserve">
+    <value>Isa dhugaa</value>
+  </data>
+  <data name="Attendance_Exception" xml:space="preserve">
+    <value>Argamuu irraa kan hafe</value>
+  </data>
+  <data name="Audit_Document_Personal_Requests" xml:space="preserve">
+    <value>Gaaffii Dhuunfaa Sanada Odiitii</value>
+  </data>
+  <data name="Audit_Document_Requests" xml:space="preserve">
+    <value>Gaaffii Sanada Odiitii</value>
+  </data>
+  <data name="Clearance_Provider" xml:space="preserve">
+    <value>clearance Kennaan</value>
+  </data>
+  <data name="Equipment_Accident_Notification" xml:space="preserve">
+    <value>Beeksisa Balaa Meeshaalee</value>
+  </data>
+  <data name="Finance_Audit" xml:space="preserve">
+    <value>Odiitii Faayinaansii</value>
+  </data>
+  <data name="Fixed_Asset_Purchase_Request" xml:space="preserve">
+    <value>Gaaffii Bittaa Qabeenya Dhaabbataa</value>
+  </data>
+  <data name="General_Service" xml:space="preserve">
+    <value>Tajaajila Waliigalaa</value>
+  </data>
+  <data name="Global_Indicators" xml:space="preserve">
+    <value>Agarsiistota Addunyaa</value>
+  </data>
+  <data name="Knowledge_Base" xml:space="preserve">
+    <value>Bu'uura Beekumsaa</value>
+  </data>
+  <data name="Medical_Expense_Refunds" xml:space="preserve">
+    <value>Baasii Yaalaa Deebi'uu</value>
+  </data>
+  <data name="Objective" xml:space="preserve">
+    <value>Kaayyoo</value>
+  </data>
+  <data name="Performance_Audit" xml:space="preserve">
+    <value>Odiitii raawwii hojii</value>
+  </data>
+  <data name="Plan" xml:space="preserve">
+    <value>Karoora</value>
+  </data>
+  <data name="Procurement_Need" xml:space="preserve">
+    <value>Barbaachisummaa Bittaa</value>
+  </data>
+  <data name="Project_Actual" xml:space="preserve">
+    <value>Dhugaa Pirojektii</value>
+  </data>
+  <data name="Project_Plan" xml:space="preserve">
+    <value>Karoora Pirojektii</value>
+  </data>
+  <data name="Risk_Mitigation_Plan" xml:space="preserve">
+    <value>Karoora Balaa Hir’isuu</value>
+  </data>
+  <data name="Service_Receive" xml:space="preserve">
+    <value>Tajaajila Fudhachuu</value>
+  </data>
+  <data name="Service_Request" xml:space="preserve">
+    <value>Gaaffii Tajaajilaa</value>
+  </data>
+  <data name="Stock_Store_Request_for_Sub_Con" xml:space="preserve">
+    <value>Gaaffii Mana Kuusaa Istookii Sub Con</value>
+  </data>
+  <data name="Subject_Type" xml:space="preserve">
+    <value>Gosa Mata duree</value>
+  </data>
+  <data name="Budget" xml:space="preserve">
+    <value>Bajata</value>
+  </data>
+  <data name="Budget_Balance" xml:space="preserve">
+    <value>Madaallii Baajata</value>
+  </data>
+  <data name="Budget_Plan" xml:space="preserve">
+    <value>Karoora Baajata</value>
+  </data>
+  <data name="Chat" xml:space="preserve">
+    <value>Waliin dubbii</value>
+  </data>
+  <data name="Department_Level_Criteria" xml:space="preserve">
+    <value>Ulaagaalee Sadarkaa Kutaa Kutaa</value>
+  </data>
+  <data name="Employee_Accident_Request" xml:space="preserve">
+    <value>Gaaffii Balaa Hojjetaa</value>
+  </data>
+  <data name="Employee_Evaluation" xml:space="preserve">
+    <value>Madaallii Hojjetaa</value>
+  </data>
+  <data name="Employee_Performance" xml:space="preserve">
+    <value>Raawwii Hojii Hojjetaa</value>
+  </data>
+  <data name="Employee_Transfer_Request" xml:space="preserve">
+    <value>Gaaffii Jijjiirraa Hojjetaa</value>
+  </data>
+  <data name="Evaluation_2nd_Level_Approval" xml:space="preserve">
+    <value>Madaallii Sadarkaa 2ffaa Raggaasisuu</value>
+  </data>
+  <data name="Evaluation_Approval" xml:space="preserve">
+    <value>Raggaasifamuu Madaallii</value>
+  </data>
+  <data name="Evaluators_Request" xml:space="preserve">
+    <value>Gaaffii Madaaltootaa</value>
+  </data>
+  <data name="Evaluators_Response" xml:space="preserve">
+    <value>Deebii Madaaltootaa</value>
+  </data>
+  <data name="Insuranced_Vehicle_Machineries" xml:space="preserve">
+    <value>Konkolaataa fi Maashinoota Inshuraansii Qaban</value>
+  </data>
+  <data name="NavigatorAttendance_LateCommingReport1" xml:space="preserve">
+    <value>Gabaasa Booda Dhufaatii</value>
+  </data>
+  <data name="Performance_Summary" xml:space="preserve">
+    <value>Cuunfaa Raawwii Hojii</value>
+  </data>
+  <data name="Probation_Performance" xml:space="preserve">
+    <value>Saagiinsa Raawwii</value>
+  </data>
+  <data name="Probation_Performance_Setting" xml:space="preserve">
+    <value>Saagiinsa Raawwii Yaali</value>
+  </data>
+  <data name="Updated" xml:space="preserve">
+    <value>Haaromfame</value>
+  </data>
+  <data name="Enum_IdentificationType_Fayda_ID_Or_National_ID" xml:space="preserve">
+    <value>Fayda ID ykn Eenyummaa Biyyaalessaa</value>
+  </data>
+  <data name="Enum_Template_Type_Experiance_Affan_Oromo" xml:space="preserve">
+    <value>Mudannoo Affan Oromoo</value>
+  </data>
+  <data name="Enum_Template_Type_Promotion__Affan_Oromo" xml:space="preserve">
+    <value>Guddina Affan Oromoo</value>
+  </data>
+  <data name="Enum_Template_Type_Recruitment_Letter_Affan_Oromo" xml:space="preserve">
+    <value>Xalayaa Qaxarrii Affan Oromo</value>
+  </data>
+  <data name="Enum_Template_Type_Reemployement_Affan_Oromo" xml:space="preserve">
+    <value>Deebiin qaxaramuu Affan Oromo</value>
+  </data>
+  <data name="Enum_Template_Type_Salary_Incremen_Affan_Oromo" xml:space="preserve">
+    <value>Daballii Mindaa Affan Oromo</value>
+  </data>
+  <data name="Enum_Template_Type_Termination_Acceptance_Affan_Oromo" xml:space="preserve">
+    <value>Fudhatama hojii dhaabuu Afaan Oromo</value>
+  </data>
+  <data name="Enum_Template_Type_Transfer_Affan_Oromo" xml:space="preserve">
+    <value>Jijjiirraa Afaan Oromoo</value>
+  </data>
+  <data name="Change_Request" xml:space="preserve">
+    <value>Gaaffii Jijjiiramaa</value>
+  </data>
+  <data name="General_Leave_Setting" xml:space="preserve">
+    <value>Haala Boqonnaa Waliigalaa</value>
+  </data>
+  <data name="Enum_AssignmentType_SCALE_PROMOTION" xml:space="preserve">
+    <value>GUDDINA ISKAALEE</value>
   </data>
 </root>

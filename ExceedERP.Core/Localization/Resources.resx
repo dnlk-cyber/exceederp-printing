@@ -4201,7 +4201,7 @@
     <value>Project Type</value>
   </data>
   <data name="NavigatorComplain" xml:space="preserve">
-    <value>Complain</value>
+    <value>Complain </value>
   </data>
   <data name="NavigatorComplain_Detail" xml:space="preserve">
     <value>Complain &amp; Response</value>
@@ -4468,7 +4468,7 @@
     <value>Loan</value>
   </data>
   <data name="NavigatorPayroll_OverTime" xml:space="preserve">
-    <value>Over Time List</value>
+    <value>Over Time</value>
   </data>
   <data name="NavigatorPayroll_OverTimePerDay" xml:space="preserve">
     <value>Over Time Per Day</value>
@@ -4864,7 +4864,7 @@
     <value>Employee</value>
   </data>
   <data name="Navigator_Employee_EmployeeProfile" xml:space="preserve">
-    <value>Employee Profile</value>
+    <value>Employee Profile(Active and Placed)</value>
   </data>
   <data name="Navigator_Employee_Experience" xml:space="preserve">
     <value>Experience</value>
@@ -5884,7 +5884,7 @@
     <value>Patient Result</value>
   </data>
   <data name="Enum_LeaveType_Bereavement" xml:space="preserve">
-    <value>Bereavement</value>
+    <value>Bereavement Close Family</value>
   </data>
   <data name="Enum_LeaveType_Leave_With_Out_Pay" xml:space="preserve">
     <value>Leave With Out Pay</value>
@@ -6229,7 +6229,7 @@
     <value>Type</value>
   </data>
   <data name="Generated_Media_Vacancy_Codes" xml:space="preserve">
-    <value>Koodii Duwwaa Miidiyaa Uumaman</value>
+    <value>Generated Media Vacancy Codes</value>
   </data>
   <data name="HR_Employee_Code_Sequence_setting_Index_Count" xml:space="preserve">
     <value>Index Count</value>
@@ -6405,8 +6405,8 @@
   <data name="Leave_Request_Id" xml:space="preserve">
     <value>Leave Request Id</value>
   </data>
-  <data name="Leave_Voids" xml:space="preserve">
-    <value>Leave Voids</value>
+  <data name="Leave_Return" xml:space="preserve">
+    <value>Leave Return</value>
   </data>
   <data name="Man_power_Planning_Requests" xml:space="preserve">
     <value>Manpower Planning Requests</value>
@@ -7304,5 +7304,467 @@
   </data>
   <data name="HRM_JobTitle_and_Rank_Mapping" xml:space="preserve">
     <value>Job Title and Rank Mapping</value>
+  </data>
+  <data name="Enum_LeaveType_Bereavement_Far_Family" xml:space="preserve">
+    <value>Bereavement Far Family</value>
+  </data>
+  <data name="Enum_LeaveType_Bereavement_Friend" xml:space="preserve">
+    <value>Bereavement Friend</value>
+  </data>
+  <data name="Enum_LeaveType_DayOff" xml:space="preserve">
+    <value>DayOff</value>
+  </data>
+  <data name="Convert" xml:space="preserve">
+    <value>Convert</value>
+  </data>
+  <data name="Date_Converter" xml:space="preserve">
+    <value>Date Converter</value>
+  </data>
+  <data name="Ethiopian_Date" xml:space="preserve">
+    <value>Ethiopian Date</value>
+  </data>
+  <data name="Ethiopian_Date_to_Gergorian_Date" xml:space="preserve">
+    <value> Convert Ethiopian Date to Gergorian Date</value>
+  </data>
+  <data name="Gergorian_Date" xml:space="preserve">
+    <value>Gergorian Date</value>
+  </data>
+  <data name="Gergorian_Date_ToEthiopian_Date" xml:space="preserve">
+    <value>Convert Gergorian Date to Ethiopian Date</value>
+  </data>
+  <data name="To_Wede" xml:space="preserve">
+    <value>to</value>
+  </data>
+  <data name="Archive" xml:space="preserve">
+    <value>Archive</value>
+  </data>
+  <data name="Internal_Performance_Evalution" xml:space="preserve">
+    <value>Internal Customer Evaluation</value>
+  </data>
+  <data name="My_Evaluation_Reults" xml:space="preserve">
+    <value>My Evaluation Reults</value>
+  </data>
+  <data name="My_Performance" xml:space="preserve">
+    <value>My Performance</value>
+  </data>
+  <data name="Peer_Performance_Evalution" xml:space="preserve">
+    <value>Peer Evalution</value>
+  </data>
+  <data name="Personal_Performance_Evalution" xml:space="preserve">
+    <value>Personal  Evalution</value>
+  </data>
+  <data name="Complain_Request" xml:space="preserve">
+    <value>Complain Request</value>
+  </data>
+  <data name="Needs" xml:space="preserve">
+    <value>Needs</value>
+  </data>
+  <data name="Request" xml:space="preserve">
+    <value>Request</value>
+  </data>
+  <data name="Acting" xml:space="preserve">
+    <value>Acting</value>
+  </data>
+  <data name="Camp_PerDiem" xml:space="preserve">
+    <value>Camp Per Diem</value>
+  </data>
+  <data name="Daily_Laborer" xml:space="preserve">
+    <value>Daily Laborer</value>
+  </data>
+  <data name="Fleet_Requisition" xml:space="preserve">
+    <value>Fleet_Requisition</value>
+  </data>
+  <data name="Guarantor" xml:space="preserve">
+    <value>Guarantor</value>
+  </data>
+  <data name="Maintenance_Request" xml:space="preserve">
+    <value>Maintenance Request</value>
+  </data>
+  <data name="Open_Ticket" xml:space="preserve">
+    <value>Open Ticket</value>
+  </data>
+  <data name="Promotion_Eligible" xml:space="preserve">
+    <value>Promotion-Eligible</value>
+  </data>
+  <data name="Salary_Increement" xml:space="preserve">
+    <value>Salary Increement</value>
+  </data>
+  <data name="Swap" xml:space="preserve">
+    <value>Swap</value>
+  </data>
+  <data name="Employee_Card" xml:space="preserve">
+    <value>Employee Card</value>
+  </data>
+  <data name="Employee_Rewards" xml:space="preserve">
+    <value>Employee Rewards</value>
+  </data>
+  <data name="Probation_Eligible" xml:space="preserve">
+    <value>Probation-Eligible</value>
+  </data>
+  <data name="Annual_Increment" xml:space="preserve">
+    <value>Annual Increment</value>
+  </data>
+  <data name="Annual_Leave" xml:space="preserve">
+    <value>Annual Leave</value>
+  </data>
+  <data name="Application_Screening" xml:space="preserve">
+    <value>Application Screening</value>
+  </data>
+  <data name="Application_Screening_for_Women" xml:space="preserve">
+    <value>Application  Screening For women</value>
+  </data>
+  <data name="Assignment" xml:space="preserve">
+    <value>Assignment</value>
+  </data>
+  <data name="CC" xml:space="preserve">
+    <value>CC</value>
+  </data>
+  <data name="Company_Structure" xml:space="preserve">
+    <value>Company Structure</value>
+  </data>
+  <data name="Contract_Hirement" xml:space="preserve">
+    <value>Contract Hirement</value>
+  </data>
+  <data name="Corporate_Sector_Performance_Evalution" xml:space="preserve">
+    <value>Corporate &amp;&amp; Sector Evalution</value>
+  </data>
+  <data name="Education_Plan" xml:space="preserve">
+    <value>Education Plan</value>
+  </data>
+  <data name="Education_Setting" xml:space="preserve">
+    <value>Education Setting</value>
+  </data>
+  <data name="Education_Vaccancy" xml:space="preserve">
+    <value>Education Vaccancy</value>
+  </data>
+  <data name="Employee_Bonus_Summary" xml:space="preserve">
+    <value>Employee Bonus Summary</value>
+  </data>
+  <data name="Employee_Bonus_Summary_for_manager" xml:space="preserve">
+    <value>Employee Bonus Summary for manager</value>
+  </data>
+  <data name="Employee_Bonus_Summary_for_Sector" xml:space="preserve">
+    <value>Employee Bonus Summary for Sector</value>
+  </data>
+  <data name="Employee_Experience" xml:space="preserve">
+    <value>Employee Experience</value>
+  </data>
+  <data name="Employee_Performance_Detail" xml:space="preserve">
+    <value>Employee Performance Detail</value>
+  </data>
+  <data name="Employee_Performance_With_Bonus" xml:space="preserve">
+    <value>Employee Performance With Bonus</value>
+  </data>
+  <data name="Employee_Perfromance_Planning" xml:space="preserve">
+    <value>Employee Perfromance &amp; Planning</value>
+  </data>
+  <data name="Employee_Promotion_Summay" xml:space="preserve">
+    <value>Employee Promotion Summay</value>
+  </data>
+  <data name="Employee_Summary_By_BusinessUnit" xml:space="preserve">
+    <value>Employee Summary By BusinessUnit</value>
+  </data>
+  <data name="Employee_Summary_By_Status" xml:space="preserve">
+    <value>Employee Summary By Status</value>
+  </data>
+  <data name="Employee_termination_Summary" xml:space="preserve">
+    <value>Employee termination  Summary By Business Unit</value>
+  </data>
+  <data name="Exception_Evalution" xml:space="preserve">
+    <value>Exception Evalution</value>
+  </data>
+  <data name="External_Letter" xml:space="preserve">
+    <value>External Letter</value>
+  </data>
+  <data name="External_Transfer" xml:space="preserve">
+    <value>External Transfer</value>
+  </data>
+  <data name="Fuel" xml:space="preserve">
+    <value>Fuel </value>
+  </data>
+  <data name="Fuel_request" xml:space="preserve">
+    <value>Fuel request</value>
+  </data>
+  <data name="Fund_Transfer" xml:space="preserve">
+    <value>Fund Transfer</value>
+  </data>
+  <data name="General_Summary" xml:space="preserve">
+    <value>General Summary</value>
+  </data>
+  <data name="HRM" xml:space="preserve">
+    <value>HRM</value>
+  </data>
+  <data name="Internal_Audit" xml:space="preserve">
+    <value>Internal Audit</value>
+  </data>
+  <data name="Iso_Documents" xml:space="preserve">
+    <value>Iso Documents</value>
+  </data>
+  <data name="Labour_Schedule" xml:space="preserve">
+    <value>Labour Schedule</value>
+  </data>
+  <data name="Leave_Request" xml:space="preserve">
+    <value>Leave Request</value>
+  </data>
+  <data name="Letters_For_Employee" xml:space="preserve">
+    <value>Letters For Employee</value>
+  </data>
+  <data name="Letter_in_Affan_Oromo" xml:space="preserve">
+    <value>Letter in Affan_Oromo</value>
+  </data>
+  <data name="Letter_Sent_To_Employee" xml:space="preserve">
+    <value>Letter Sent To Employee</value>
+  </data>
+  <data name="Manager" xml:space="preserve">
+    <value>Manager</value>
+  </data>
+  <data name="Material" xml:space="preserve">
+    <value>Material</value>
+  </data>
+  <data name="New_Assignment_Letter" xml:space="preserve">
+    <value>New Assignment Letter</value>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="NotPlacedEmployees" xml:space="preserve">
+    <value>Not Placed Employees</value>
+  </data>
+  <data name="Not_Evaluated_Employee" xml:space="preserve">
+    <value>Not Evaluated Employee</value>
+  </data>
+  <data name="Payment_Request" xml:space="preserve">
+    <value>Payment Request</value>
+  </data>
+  <data name="Performance_Settings" xml:space="preserve">
+    <value>Performance Settings</value>
+  </data>
+  <data name="Performance_Summary_Generated" xml:space="preserve">
+    <value>Performance Summary (Generated)</value>
+  </data>
+  <data name="PPE_Purchase_Request" xml:space="preserve">
+    <value>PPE Purchase Request</value>
+  </data>
+  <data name="PPE_Return_Request" xml:space="preserve">
+    <value>PPE Return Request</value>
+  </data>
+  <data name="PPE_Store_Request" xml:space="preserve">
+    <value>PPE Store Request</value>
+  </data>
+  <data name="Promoted_Employees" xml:space="preserve">
+    <value>Promoted  Employees</value>
+  </data>
+  <data name="Rehirement_Letter" xml:space="preserve">
+    <value>Rehirement Letter</value>
+  </data>
+  <data name="Settlement" xml:space="preserve">
+    <value>Settlement</value>
+  </data>
+  <data name="Severance_with_Death_Prob" xml:space="preserve">
+    <value>Severance Payable with Death Prob.</value>
+  </data>
+  <data name="Stock_Purchase_Request" xml:space="preserve">
+    <value>Stock Purchase Request</value>
+  </data>
+  <data name="Stock_Return_Request" xml:space="preserve">
+    <value>Stock Return Request</value>
+  </data>
+  <data name="Stock_Store_Request" xml:space="preserve">
+    <value>Stock Store Request</value>
+  </data>
+  <data name="Temination_Letter_for_Manager" xml:space="preserve">
+    <value>Temination for Manager</value>
+  </data>
+  <data name="Training_Need_Request" xml:space="preserve">
+    <value>Training Need Request</value>
+  </data>
+  <data name="Training_Requests" xml:space="preserve">
+    <value>Training Requests</value>
+  </data>
+  <data name="Warning_Letter_for_" xml:space="preserve">
+    <value>Warning Letter for</value>
+  </data>
+  <data name="Water_Mark" xml:space="preserve">
+    <value>Water Mark</value>
+  </data>
+  <data name="For" xml:space="preserve">
+    <value>For</value>
+  </data>
+  <data name="Leave_Management" xml:space="preserve">
+    <value>Leave Management</value>
+  </data>
+  <data name="Planning" xml:space="preserve">
+    <value>Planning</value>
+  </data>
+  <data name="Plan_Management" xml:space="preserve">
+    <value>Plan Management</value>
+  </data>
+  <data name="Production" xml:space="preserve">
+    <value>Production</value>
+  </data>
+  <data name="Production_Requistions" xml:space="preserve">
+    <value>Production Requistions</value>
+  </data>
+  <data name="Production_Work_Order" xml:space="preserve">
+    <value>Production Work Order</value>
+  </data>
+  <data name="Actual" xml:space="preserve">
+    <value>Actual</value>
+  </data>
+  <data name="Attendance_Exception" xml:space="preserve">
+    <value>Attendance Exception</value>
+  </data>
+  <data name="Audit_Document_Personal_Requests" xml:space="preserve">
+    <value>Audit Document Personal Requests</value>
+  </data>
+  <data name="Audit_Document_Requests" xml:space="preserve">
+    <value>Audit Document Requests</value>
+  </data>
+  <data name="Clearance_Provider" xml:space="preserve">
+    <value>Clearance Provider</value>
+  </data>
+  <data name="Equipment_Accident_Notification" xml:space="preserve">
+    <value>Equipment Accident Notification</value>
+  </data>
+  <data name="Finance_Audit" xml:space="preserve">
+    <value>Finance Audit</value>
+  </data>
+  <data name="Fixed_Asset_Purchase_Request" xml:space="preserve">
+    <value>Fixed Asset Purchase Request</value>
+  </data>
+  <data name="General_Service" xml:space="preserve">
+    <value>General Service</value>
+  </data>
+  <data name="Global_Indicators" xml:space="preserve">
+    <value>Global Indicators</value>
+  </data>
+  <data name="Knowledge_Base" xml:space="preserve">
+    <value>Knowledge Base</value>
+  </data>
+  <data name="Medical_Expense_Refunds" xml:space="preserve">
+    <value>Medical Expense Refunds</value>
+  </data>
+  <data name="Objective" xml:space="preserve">
+    <value>Objective</value>
+  </data>
+  <data name="Performance_Audit" xml:space="preserve">
+    <value>Performance Audit</value>
+  </data>
+  <data name="Plan" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="Procurement_Need" xml:space="preserve">
+    <value>Procurement Need</value>
+  </data>
+  <data name="Project_Actual" xml:space="preserve">
+    <value>Project Actual</value>
+  </data>
+  <data name="Project_Plan" xml:space="preserve">
+    <value>Project Plan</value>
+  </data>
+  <data name="Risk_Mitigation_Plan" xml:space="preserve">
+    <value>Risk Mitigation Plan</value>
+  </data>
+  <data name="Service_Receive" xml:space="preserve">
+    <value>Service Receive</value>
+  </data>
+  <data name="Service_Request" xml:space="preserve">
+    <value>Service Request</value>
+  </data>
+  <data name="Stock_Store_Request_for_Sub_Con" xml:space="preserve">
+    <value>Stock Store Request for Sub Con</value>
+  </data>
+  <data name="Subject_Type" xml:space="preserve">
+    <value>Subject Type</value>
+  </data>
+  <data name="Budget" xml:space="preserve">
+    <value>Budget</value>
+  </data>
+  <data name="Budget_Balance" xml:space="preserve">
+    <value>Budget Balance</value>
+  </data>
+  <data name="Budget_Plan" xml:space="preserve">
+    <value>Budget Plan</value>
+  </data>
+  <data name="Chat" xml:space="preserve">
+    <value>Chat</value>
+  </data>
+  <data name="Department_Level_Criteria" xml:space="preserve">
+    <value>Department Level Criteria</value>
+  </data>
+  <data name="Employee_Accident_Request" xml:space="preserve">
+    <value>Employee Accident Request</value>
+  </data>
+  <data name="Employee_Evaluation" xml:space="preserve">
+    <value>Employee Evaluation</value>
+  </data>
+  <data name="Employee_Performance" xml:space="preserve">
+    <value>Employee Performance</value>
+  </data>
+  <data name="Employee_Transfer_Request" xml:space="preserve">
+    <value>Employee Transfer Request</value>
+  </data>
+  <data name="Evaluation_2nd_Level_Approval" xml:space="preserve">
+    <value>Evaluation 2nd Level Approval</value>
+  </data>
+  <data name="Evaluation_Approval" xml:space="preserve">
+    <value>Evaluation Approval</value>
+  </data>
+  <data name="Evaluators_Request" xml:space="preserve">
+    <value>Evaluators Request</value>
+  </data>
+  <data name="Evaluators_Response" xml:space="preserve">
+    <value>Evaluators Response</value>
+  </data>
+  <data name="Insuranced_Vehicle_Machineries" xml:space="preserve">
+    <value>Insuranced Vehicle &amp;&amp; Machineries</value>
+  </data>
+  <data name="NavigatorAttendance_LateCommingReport1" xml:space="preserve">
+    <value>Late Coming Report</value>
+  </data>
+  <data name="Performance_Summary" xml:space="preserve">
+    <value>Performance Summary</value>
+  </data>
+  <data name="Probation_Performance" xml:space="preserve">
+    <value>Probation Performance</value>
+  </data>
+  <data name="Probation_Performance_Setting" xml:space="preserve">
+    <value>Probation Performance Setting</value>
+  </data>
+  <data name="Updated" xml:space="preserve">
+    <value>Updated</value>
+  </data>
+  <data name="Enum_IdentificationType_Fayda_ID_Or_National_ID" xml:space="preserve">
+    <value>Fayda ID or National ID</value>
+  </data>
+  <data name="Enum_Template_Type_Experiance_Affan_Oromo" xml:space="preserve">
+    <value>Experiance Affan Oromo</value>
+  </data>
+  <data name="Enum_Template_Type_Promotion__Affan_Oromo" xml:space="preserve">
+    <value>Promotion Affan Oromo</value>
+  </data>
+  <data name="Enum_Template_Type_Recruitment_Letter_Affan_Oromo" xml:space="preserve">
+    <value>Recruitment Letter Affan Oromo</value>
+  </data>
+  <data name="Enum_Template_Type_Reemployement_Affan_Oromo" xml:space="preserve">
+    <value>Reemployement Affan Oromo</value>
+  </data>
+  <data name="Enum_Template_Type_Salary_Incremen_Affan_Oromo" xml:space="preserve">
+    <value>Salary Incremen Affan Oromo</value>
+  </data>
+  <data name="Enum_Template_Type_Termination_Acceptance_Affan_Oromo" xml:space="preserve">
+    <value>Termination Acceptance Affan Oromo</value>
+  </data>
+  <data name="Enum_Template_Type_Transfer_Affan_Oromo" xml:space="preserve">
+    <value>Transfer Affan Oromo</value>
+  </data>
+  <data name="Change_Request" xml:space="preserve">
+    <value>Change Request</value>
+  </data>
+  <data name="General_Leave_Setting" xml:space="preserve">
+    <value>General Leave Setting</value>
+  </data>
+  <data name="Enum_AssignmentType_SCALE_PROMOTION" xml:space="preserve">
+    <value>SCALE PROMOTION</value>
   </data>
 </root>

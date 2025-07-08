@@ -665,6 +665,14 @@
     <Compile Include="Migrations\202507071441288_InsuranceUpdates1.Designer.cs">
       <DependentUpon>202507071441288_InsuranceUpdates1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202507081202109_LeavePayableUpdates.cs" />
+    <Compile Include="Migrations\202507081202109_LeavePayableUpdates.Designer.cs">
+      <DependentUpon>202507081202109_LeavePayableUpdates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202507081249549_LeavePayableUpdates1.cs" />
+    <Compile Include="Migrations\202507081249549_LeavePayableUpdates1.Designer.cs">
+      <DependentUpon>202507081249549_LeavePayableUpdates1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1115,6 +1123,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202507071441288_InsuranceUpdates1.resx">
       <DependentUpon>202507071441288_InsuranceUpdates1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507081202109_LeavePayableUpdates.resx">
+      <DependentUpon>202507081202109_LeavePayableUpdates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507081249549_LeavePayableUpdates1.resx">
+      <DependentUpon>202507081249549_LeavePayableUpdates1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

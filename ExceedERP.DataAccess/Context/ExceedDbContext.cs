@@ -700,7 +700,16 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new QuarterEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeaveNewAwajStartYearEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeePeerToPeerAndInternalCustomerPerformanceSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePayableSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePayableEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePayableDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePayableWithDetailFiscalYearEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeaveTypeSettingEntityTypeConfiguration());
 
+            modelBuilder.Configurations.Add(new SeverancePayableSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SeverancePayableEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SeverancePayableDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new SeveranceWithProbabilityEntityTypeConfiguration());
             #region Payroll Process
             modelBuilder.Configurations.Add(new BonusSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PayrollProcessLongTermDeductionsEntityTypeConfiguration());
@@ -2681,8 +2690,13 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<LeavePayableSetting> LeavePayableSettings { get; set; }
         public System.Data.Entity.DbSet<LeavePayable> LeavePayables { get; set; }
         public System.Data.Entity.DbSet<LeavePayableDetail> LeavePayableDetails { get; set; }
+        public System.Data.Entity.DbSet<SeveranceWithProbability> SeveranceWithProbabilities { get; set; }
         public System.Data.Entity.DbSet<SeverancePayableDetail> SeverancePayableDetails { get; set; }
         public System.Data.Entity.DbSet<SeverancePayable> SeverancePayables { get; set; }
+        public System.Data.Entity.DbSet<SeverancePayableSetting> SeverancePayableSettings { get; set; }
+        public System.Data.Entity.DbSet<LeaveTypeSetting> LeaveTypeSettings { get; set; }
+
+
         #region Company
         public System.Data.Entity.DbSet<ClearanceProviderDetail> ClearanceProviderDetails { get; set; }
         public System.Data.Entity.DbSet<ClearanceRequest> ClearanceRequests { get; set; }

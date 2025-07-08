@@ -1,9 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -37,8 +39,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
         }
         private void PopulateViewData()
         {
-            var list = inputs.GetEmployees(User.Identity.Name);
-            ViewData["EmployeeList"] = list.Where(x => x.IsActive);
+            ViewData["EmployeeList"] = db.Person_Employee.Where(x => x.IsActive).Select(e => new
+            {
+                PersonId = e.EmployeeId,
+                FullNameWithOutCode = e.FirstName + " " + e.MiddleName + " " + e.LastName,
+            }).ToList();
         }
 
         public JsonResult GetPeriod()
@@ -248,7 +253,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
                     decimal eV1 = maximumEntitlement * probabilityOfTurnover;
                     decimal mortalityRate = (decimal)calculateValue((now - employee.DateOfBirth).TotalDays / 365) * 100;
                     decimal eV2 = maximumEntitlement *mortalityRate;
-
                     var severance = db.SeveranceWithProbabilities.FirstOrDefault(x => x.EmployeeId == employee.EmployeeId && x.GlFiscalYearId == yearId);
                     if(severance == null)
                     {
