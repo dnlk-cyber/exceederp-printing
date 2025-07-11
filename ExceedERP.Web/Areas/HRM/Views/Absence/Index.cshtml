@@ -6,7 +6,7 @@
 }
 <legend>@Resources.NavigatorAttendance_Absence</legend>
 @(Html.Kendo().Grid<Absence>()
-          .Name("Absencegrid")
+      .Name("Absencegrid")
       .Columns(columns =>
       {
           columns.Bound(c => c.EmployeeCode).Width(150);

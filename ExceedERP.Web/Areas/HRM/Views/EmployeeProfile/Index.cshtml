@@ -1496,7 +1496,6 @@
                     columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
                     //columns.Bound(c => c.MothersFullName).Width(100);
                     columns.ForeignKey(c => c.EmployeeTypeId, (IEnumerable)ViewData["employeeType"], "EmployeeTypeId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
-
                     columns.Bound(c => c.Gender).EditorTemplateName("Enum").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
                     columns.Bound(c => c.DateOfBirthAm).Width(100);//.Format("{0:yyyy-MM-dd}");
                     columns.Bound(c => c.HiredDateAmharic).Width(100);                                      //  columns.Bound(c => c.BirthPlace).Width(120);

@@ -14,6 +14,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
     public class SeverancePayableDetailVM
     {
         public string EmployeeFullName { get; set; }
+        public string Branch { get; set; }
+        public string WorkUnit { get; set; }
         public decimal Basicalary { get; set; }
         public string NomberOfYears { get; set; }
         public decimal GrossComposition { get; set; }
