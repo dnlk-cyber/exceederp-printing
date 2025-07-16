@@ -301,13 +301,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         public ActionResult LeaveReturnStatus_Create([DataSourceRequest]DataSourceRequest request, LeaveReturn leaveReturn)
         {
             var leaveRequest = db.LeaveRequest.FirstOrDefault(x => x.LeaveRequestId == leaveReturn.LeaveRequestId && x.IsOnlineApproved);
-            if (string.IsNullOrEmpty(leaveReturn.FromAm)
-                || string.IsNullOrEmpty(leaveReturn.ToAm))
-            {
-                ModelState.AddModelError("", " Please select from and to dates ");
-                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
-
-            }
             if (leaveRequest == null)
             {
                 ModelState.AddModelError("", " No Leave Request ");
@@ -320,8 +313,32 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
 
             }
-            leaveReturn.From = HrHelper.ParseEthiopicDate(leaveReturn.FromAm);
-            leaveReturn.To = HrHelper.ParseEthiopicDate(leaveReturn.ToAm);
+            bool datePreference =  true;
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(leaveReturn.FromAm)
+                || string.IsNullOrEmpty(leaveReturn.ToAm))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory");
+                    return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
+                }
+                else
+                {
+                    leaveReturn.From = HrHelper.ParseEthiopicDate(leaveReturn.FromAm);
+                    leaveReturn.To = HrHelper.ParseEthiopicDate(leaveReturn.ToAm);
+                }
+
+            }
+            else
+            {
+
+                leaveReturn.FromAm = XAPI.EthiopicDateTime.GetEthiopicDate(leaveReturn.From.Day, leaveReturn.From.Month, leaveReturn.From.Year);
+                leaveReturn.ToAm = XAPI.EthiopicDateTime.GetEthiopicDate(leaveReturn.To.Day, leaveReturn.To.Month, leaveReturn.To.Year);
+
+            }
+            
+           
+            
             leaveReturn.Amount = HrHelper.GetLeaveDays(
                     leaveReturn.From, leaveReturn.To, leaveReturn.GlFiscalYearId,
                     leaveRequest.Day, leaveRequest.Type, leaveRequest.EmployeeId);
@@ -351,14 +368,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeaveReturnStatus_Update([DataSourceRequest]DataSourceRequest request, LeaveReturn leaveReturn)
         {
-            var leaveRequest = db.LeaveRequest.FirstOrDefault(x=>x.LeaveRequestId==leaveReturn.LeaveRequestId&&x.IsOnlineApproved);
-            if (string.IsNullOrEmpty(leaveReturn.FromAm)
-                || string.IsNullOrEmpty(leaveReturn.ToAm))
-            {
-                ModelState.AddModelError("", " Please select from and to dates ");
-                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
 
-            }
+            var leaveRequest = db.LeaveRequest.FirstOrDefault(x=>x.LeaveRequestId==leaveReturn.LeaveRequestId&&x.IsOnlineApproved);
             if (leaveRequest == null)
             {
                 ModelState.AddModelError("", " No Leave Request ");
@@ -371,8 +382,30 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
 
             }
-            leaveReturn.From = HrHelper.ParseEthiopicDate(leaveReturn.FromAm);
-            leaveReturn.To = HrHelper.ParseEthiopicDate(leaveReturn.ToAm);
+            bool datePreference =  true;
+            if (datePreference)
+            {
+                if (string.IsNullOrEmpty(leaveReturn.FromAm)
+                || string.IsNullOrEmpty(leaveReturn.ToAm))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory");
+                    return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
+                }
+                else
+                {
+                    leaveReturn.From = HrHelper.ParseEthiopicDate(leaveReturn.FromAm);
+                    leaveReturn.To = HrHelper.ParseEthiopicDate(leaveReturn.ToAm);
+                }
+
+            }
+            else
+            {
+
+                leaveReturn.FromAm = XAPI.EthiopicDateTime.GetEthiopicDate(leaveReturn.From.Day, leaveReturn.From.Month, leaveReturn.From.Year);
+                leaveReturn.ToAm = XAPI.EthiopicDateTime.GetEthiopicDate(leaveReturn.To.Day, leaveReturn.To.Month, leaveReturn.To.Year);
+
+            }
+
             leaveReturn.Amount = HrHelper.GetLeaveDays(
                     leaveReturn.From, leaveReturn.To, leaveReturn.GlFiscalYearId,
                     leaveRequest.Day, leaveRequest.Type, leaveRequest.EmployeeId);
@@ -694,11 +727,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             decimal totalBalance = 0;
             if (balance.Any())
             {
-                //if (lt == LeaveType.ANNUAL.ToString())
-                //{
+               
                 totalBalance = balance.Sum(x => x.Balance);
-
-                //}
             }
             return totalBalance;
         }

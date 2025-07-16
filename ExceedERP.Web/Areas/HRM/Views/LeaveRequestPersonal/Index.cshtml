@@ -6,7 +6,15 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <legend>@Resources.NavigatorLeave_LeaveRequest</legend>
-
+<div class="row">
+    <p>
+        <span class="fa fa-circle" style="color:darkgrey;"></span>&nbsp;&nbsp;Final Approved &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:limegreen;"></span>&nbsp;&nbsp;Department Aproved &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:deepskyblue;"></span>&nbsp;&nbsp;Waiting for approval,&nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:Orange;"></span>&nbsp;&nbsp;Pending &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:LightGray;"></span>&nbsp;&nbsp;Rejected &nbsp;&nbsp;
+    </p>
+</div>
 @(Html.Kendo().Grid<LeaveRequest>()
                       .Name("LeaveRequestgrid")
                       .Columns(columns =>
@@ -690,22 +698,64 @@
 
     //}
 
+    //function onDataBound(e) {
+    //    var grid = this;
+    //    grid.tbody.find("tr[role='row']").each(function (e) {
+    //        var model = grid.dataItem(this);
+    //        if (model.IsApproved === true) {
+    //            //$(this).css("background-color", "lightgreen");
+    //            $(this).find(".k-grid-edit").hide();
+    //            $(this).find(".k-grid-delete").remove();
+    //            $(this).css("background-color", "#7FFFD4");
+    //        }
+    //        else if (model.Status === "DEPARTMENT_APPROVAL") {
+
+    //            row.find(".k-grid-edit").remove();
+    //            row.find(".k-grid-delete").remove();
+    //        }
+    //        else  {
+    //            //$(this).css("background-color", "darkgrey");
+    //            $(this).find(".k-grid-edit").show();
+    //            $(this).find(".k-grid-delete").show();
+
+
+    //        }
+    //    });
+    //}
     function onDataBound(e) {
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function (e) {
             var model = grid.dataItem(this);
             if (model.IsApproved === true) {
-                //$(this).css("background-color", "lightgreen");
-                $(this).find(".k-grid-edit").hide();
-                $(this).find(".k-grid-delete").remove();
-                $(this).css("background-color", "#7FFFD4");
-            }
-            else if (model.Status === "DEPARTMENT_APPROVAL") {
 
-                row.find(".k-grid-edit").remove();
-                row.find(".k-grid-delete").remove();
+                $(this).css("background-color", "darkgrey");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
             }
-            else  {
+            else if (model.Status === "DEPARTMENT_APPROVAL" && !model.IsApproved) {
+
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+            else if (model.IsPending === true) {
+
+                $(this).css("background-color", "Orange");
+                $(this).find(".k-grid-edit").show();
+                $(this).find(".k-grid-delete").show();
+            }
+            else if (model.IsRejected === true) {
+
+                $(this).css("background-color", "LightGray");
+                $(this).find(".k-grid-edit").show();
+                $(this).find(".k-grid-delete").show();
+            }
+            else if (model.IsWaiting === true) {
+
+                $(this).css("background-color", "lightblue");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+            else {
                 //$(this).css("background-color", "darkgrey");
                 $(this).find(".k-grid-edit").show();
                 $(this).find(".k-grid-delete").show();
@@ -714,6 +764,7 @@
             }
         });
     }
+
     function onRequestesStatusDataBound() {
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function (e) {

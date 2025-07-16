@@ -571,16 +571,32 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeaveReturnPersonal_Create([DataSourceRequest]DataSourceRequest request, LeaveReturn leaveReturn, int id)
         {
-            if (string.IsNullOrEmpty(leaveReturn.FromAm)
-                || string.IsNullOrEmpty(leaveReturn.ToAm))
+          
+
+            
+            bool datePreference =  true;
+            if (datePreference)
             {
-                ModelState.AddModelError("", " Please select from and To dates ");
-                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
+                if (string.IsNullOrEmpty(leaveReturn.FromAm)
+                || string.IsNullOrEmpty(leaveReturn.ToAm))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory");
+                    return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
+                }
+                else
+                {
+                    leaveReturn.From = HrHelper.ParseEthiopicDate(leaveReturn.FromAm);
+                    leaveReturn.To = HrHelper.ParseEthiopicDate(leaveReturn.ToAm);
+                }
 
             }
+            else
+            {
 
-            leaveReturn.From = HrHelper.ParseEthiopicDate(leaveReturn.FromAm);
-            leaveReturn.To = HrHelper.ParseEthiopicDate(leaveReturn.ToAm);
+                leaveReturn.FromAm = XAPI.EthiopicDateTime.GetEthiopicDate(leaveReturn.From.Day, leaveReturn.From.Month, leaveReturn.From.Year);
+                leaveReturn.ToAm = XAPI.EthiopicDateTime.GetEthiopicDate(leaveReturn.To.Day, leaveReturn.To.Month, leaveReturn.To.Year);
+
+            }
             var leaveRequest = db.LeaveRequest
              .Where(x => x.LeaveRequestId == id
              && x.Type == LeaveType.ANNUAL
@@ -684,16 +700,29 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
 
             }
-            if (string.IsNullOrEmpty(leaveReturn.FromAm) 
-                || string.IsNullOrEmpty(leaveReturn.ToAm))
+            bool datePreference = true;
+            if (datePreference)
             {
-                ModelState.AddModelError("", "Please Fill Both Date From and Date To  are Mandatory fields ");
-                return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
+                if (string.IsNullOrEmpty(leaveReturn.FromAm)
+                || string.IsNullOrEmpty(leaveReturn.ToAm))
+                {
+                    ModelState.AddModelError("", "Both From and To Date fields are mandatory");
+                    return Json(new[] { leaveReturn }.ToDataSourceResult(request, ModelState));
+                }
+                else
+                {
+                    leaveReturn.From = HrHelper.ParseEthiopicDate(leaveReturn.FromAm);
+                    leaveReturn.To = HrHelper.ParseEthiopicDate(leaveReturn.ToAm);
+                }
 
             }
-         
-            leaveReturn.From = HrHelper.ParseEthiopicDate(leaveReturn.FromAm);
-            leaveReturn.To = HrHelper.ParseEthiopicDate(leaveReturn.ToAm);
+            else
+            {
+
+                leaveReturn.FromAm = XAPI.EthiopicDateTime.GetEthiopicDate(leaveReturn.From.Day, leaveReturn.From.Month, leaveReturn.From.Year);
+                leaveReturn.ToAm = XAPI.EthiopicDateTime.GetEthiopicDate(leaveReturn.To.Day, leaveReturn.To.Month, leaveReturn.To.Year);
+
+            }
             var per = db.GLFiscalYears
                 .FirstOrDefault(x => x.DateFrom <= leaveReturn.From.Date
                 && x.DateTo >= leaveReturn.From.Date);

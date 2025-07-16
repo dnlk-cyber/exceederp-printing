@@ -196,11 +196,67 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             return RedirectToAction("Index");
         }
+        //public bool CheckStatusForBackColor(int leaveId)
+        //{
+        //    var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Leave").FirstOrDefault();
+        //    if (reques != null)
+        //    {
+        //        return true;
+        //    }
+        //    return false;
+        //}
+        //public bool ChangeInDepartmentForBackColor(int leaveId)
+        //{
+        //    var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && x.Status != RequestStatus.APPROVE && (x.Status == RequestStatus.DEPARTMENT_APPROVAL || x.Status == RequestStatus.PEND || x.Status == RequestStatus.REJECT) && x.ReferenceType == "Leave").FirstOrDefault();
+        //    if (reques != null)
+        //    {
+        //        return true;
+        //    }
+        //    return false;
+        //}
+        public string GetEmployeeCode(int id)
+        {
+            string code = "";
+            var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == id);
+            if (person != null)
+            {
+                code = person.EmployeeCode;
+            }
+            return code;
+        }
         public bool CheckStatusForBackColor(int leaveId)
         {
             var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Leave").FirstOrDefault();
             if (reques != null)
             {
+                return true;
+            }
+            return false;
+        }
+        public bool CheckPendStatusForBackColor(int leaveId)
+        {
+            var status = db.RequestesStatus.Where(x => x.RequestId == leaveId
+                                                    && x.ReferenceType == "Leave")
+                                                    .OrderByDescending(x => x.RequestStatusId)
+                                                    .FirstOrDefault();
+            if (status != null && status.Status == RequestStatus.PEND)
+            {
+
+
+                return true;
+            }
+            return false;
+        }
+        public bool CheckRejectStatusForBackColor(int leaveId)
+        {
+            var status = db.RequestesStatus.Where(x => x.RequestId == leaveId
+                                                    && x.ReferenceType == "Leave")
+                                                    .OrderByDescending(x => x.RequestStatusId)
+                                                    .FirstOrDefault();
+            if (status != null && status.Status == RequestStatus.REJECT)
+            {
+
+
                 return true;
             }
             return false;
@@ -213,16 +269,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 return true;
             }
             return false;
-        }
-        public string GetEmployeeCode(int id)
-        {
-            string code = "";
-            var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == id);
-            if (person != null)
-            {
-                code = person.EmployeeCode;
-            }
-            return code;
         }
         public ActionResult LeaveRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
@@ -265,6 +311,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 Status = leaveRequest.Status,
                 EmployeeCode = GetEmployeeCode(leaveRequest.EmployeeId),
                 IsApproved = CheckStatusForBackColor(leaveRequest.LeaveRequestId),
+                IsPending = CheckPendStatusForBackColor(leaveRequest.LeaveRequestId),
+                IsRejected = CheckRejectStatusForBackColor(leaveRequest.LeaveRequestId),
                 IsChangeInDepartment = ChangeInDepartmentForBackColor(leaveRequest.LeaveRequestId),
                 DepartmentSendForApprovalBy = leaveRequest.DepartmentSendForApprovalBy,
                 DepartmentSendForApprovalTime = leaveRequest.DepartmentSendForApprovalTime,
@@ -275,6 +323,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 OnlineApprovedBy = leaveRequest.OnlineApprovedBy,
                 OnlineApprovedTime = leaveRequest.OnlineApprovedTime,
                 IsOnlineApproved = leaveRequest.IsOnlineApproved,
+                IsVoid = leaveRequest.IsVoid,
+                VoidBy = leaveRequest.VoidBy,
+                VoidTime = leaveRequest.VoidTime,
+                CreatedBy = leaveRequest.CreatedBy,
+                DateCreated = leaveRequest.DateCreated,
+                ModifiedBy = leaveRequest.ModifiedBy,
+                LastModified = leaveRequest.LastModified
             });
 
             return Json(result);

@@ -5,6 +5,17 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <legend>@Resources.NavigatorLeave_LeaveRequests</legend>
+<div class="row">
+    <p>
+
+        <span class="fa fa-circle" style="color:darkgrey;"></span>&nbsp;&nbsp;Final Approved &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:limegreen;"></span>&nbsp;&nbsp;Department Aproved &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:deepskyblue;"></span>&nbsp;&nbsp;Waiting for approval,&nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:Orange;"></span>&nbsp;&nbsp;Pending &nbsp;&nbsp;
+        <span class="fa fa-circle" style="color:LightGray;"></span>&nbsp;&nbsp;Rejected &nbsp;&nbsp;
+
+    </p>
+</div>
 @(Html.Kendo().Grid<LeaveRequest>()
       .Name("LeaveRequestgrid")
       .Columns(columns =>
@@ -27,6 +38,12 @@
                "checked='checked'" +
                "# } #" +
                "/>").Width(120);
+          columns.Bound(c => c.IsVoid).ClientTemplate(
+                  "<input type='checkbox' disabled = 'true' value='#=IsVoid#' " +
+                  "# if (IsVoid) { #" +
+                  "checked='checked'" +
+                  "# } #" +
+                  "/>").Width(120);
           columns.Bound(c => c.LeaveBalance).Width(120);
           columns.Bound(c => c.LeaveDays).Width (130);
           columns.Bound(c => c.Reason).Width (150);
@@ -40,22 +57,22 @@
       .ToolBar(toolbar =>
       {
       toolbar.Template(@<text>
-                    <div class="toolbar">
+        <div class="toolbar">
                                            
                                             
                                           
-                            @(Html.Kendo().Button()
-                          .Name("btnCopy")
-                          .HtmlAttributes(new { type = "button", @class = "k-primary btn btn-primary btn-xs pull-left" })
-                          .Events(e => e.Click("RefreshBranchAndBussinessUnit"))
-                          .Content(Resources.HR_Button_Refresh_Branch + " & " + Resources.BussinessUnit))
+                @(Html.Kendo().Button()
+                .Name("btnCopy")
+                .HtmlAttributes(new { type = "button", @class = "k-primary btn btn-primary btn-xs pull-left" })
+                .Events(e => e.Click("RefreshBranchAndBussinessUnit"))
+                .Content(Resources.HR_Button_Refresh_Branch + " & " + Resources.BussinessUnit))
 
                                             
                                            
                                             
-                    </div>
+        </div>
 
-                </text>);
+       </text>);
 
       })
       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequests); window.Scrollable(false); }))
@@ -112,30 +129,33 @@
             @<text>
 
                 @(Html.Kendo().Grid<RequestesStatus>()
-                        .Name("RequestesStatusgrid#=LeaveRequestId#")
-                        .Columns(columns =>
-                        {
-                            columns.Bound(c => c.RequestId).Visible(false);
-                            columns.Bound(c => c.IsApproved).Visible(false);
-                            columns.Bound(c => c.DateReqStatAm).Width(150);
-                            columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutDepApprove").Width(200);
-                            columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                            columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                            columns.Bound(c => c.Remark).Width(200);
+                      .Name("RequestesStatusgrid#=LeaveRequestId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.RequestId).Visible(false);
+                          columns.Bound(c => c.IsApproved).Visible(false);
+                          columns.Bound(c => c.DateReqStatAm).Width(150);
+                          columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutDepApprove").Width(200);
+                          columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                          columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                          columns.Bound(c => c.Remark).Width(200);
 
-                            columns.Command(command =>
-                            {
-                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                command.Destroy().Text(Resources.ActionButton_Cancel);
-                            });
+                          columns.Command(command =>
+                          {
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              command.Destroy().Text(Resources.ActionButton_Cancel);
+                          });
 
 
-                        })
-                        .ToolBar(toolbar =>
-                        {
-                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
 
-                        })
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+
+
+                      })
                         .Editable(editable => editable.Mode(GridEditMode.InLine))
                         .Scrollable()
                         .Events(e =>
@@ -241,36 +261,37 @@
 </script>
 
 @(Html.Kendo().Window()
-                .Name("UploadDoc")
-                .Title(Resources.HR_ActionButton_Upload)
-                .Visible(false)
-                .Modal(true)
-                .Draggable(true)
-                .Width(400).Content(@<text><div class="form-group">
-                        <form action="@Url.Action("UploadDocument", "LeaveRequestStatus", new { })" method="post" , new { enctype="multipart/form-data" }>
-                            <input type="hidden" name="leaveRequestId" id="leaveRequestId">
-                            <div class="row">
+    .Name("UploadDoc")
+    .Title(Resources.HR_ActionButton_Upload)
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Width(400).Content(@<text><div class="form-group">
+            <form action="@Url.Action("UploadDocument", "LeaveRequestStatus", new { })" method="post" , new { enctype="multipart/form-data" }>
+                <input type="hidden" name="leaveRequestId" id="leaveRequestId">
+                <div class="row">
                                 <div class="col-md-10">
                                     @Html.TextBox("file", "", new { type = "file", required = "true" })
                                     <br />
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-10">
-                                    @Html.TextBox("txtValue", null, new { placeholder = Resources.Common_Attachment_FileName })
-                                    <br />
-                                </div>
-                            </div>
-                            <div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-7"></div>
-                                <input type="@Resources.Button_Submit" class="btn-primary k-button" value="@Resources.Button_Submit " />
-                            </div>
-                        </form>
-                        <div class="pull-right"></div>
+                            
+                </div>
+                <div class="row">
+                    <div class="col-md-10">
+                        @Html.TextBox("txtValue", null, new { placeholder = Resources.Common_Attachment_FileName })
+                        <br />
                     </div>
-                </text>)
+                </div>
+                <div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-7"></div>
+                    <input type="@Resources.Button_Submit" class="btn-primary k-button" value="@Resources.Button_Submit " />
+                </div>
+            </form>
+            <div class="pull-right"></div>
+        </div>
+    </text>)
 )
 
 <style type="text/css">
@@ -397,6 +418,48 @@
 </script>
 
 <script>
+    function onDataBound(e) {
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function (e) {
+            var model = grid.dataItem(this);
+            if (model.IsOnlineApproved) {
+
+                $(this).css("background-color", "darkgrey");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+            else if (model.Status === "DEPARTMENT_APPROVAL" || model.IsApproved) {
+                $(this).css("background-color", "limegreen");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+            else if (model.IsPending) {
+
+                $(this).css("background-color", "Orange");
+                $(this).find(".k-grid-edit").show();
+                $(this).find(".k-grid-delete").show();
+            }
+            else if (model.IsRejected) {
+
+                $(this).css("background-color", "LightGray");
+                $(this).find(".k-grid-edit").show();
+                $(this).find(".k-grid-delete").show();
+            }
+            else if (model.IsWaiting) {
+
+                $(this).css("background-color", "deepskyblue");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+            else {
+                // $(this).css("background-color", "darkgrey");
+                $(this).find(".k-grid-edit").show();
+                $(this).find(".k-grid-delete").show();
+
+
+            }
+        });
+    }
 
     function onDataBound(e) {
         var rows = e.sender.tbody.children();

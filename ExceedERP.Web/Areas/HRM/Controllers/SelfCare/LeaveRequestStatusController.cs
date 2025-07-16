@@ -84,9 +84,42 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
         public bool CheckStatusForBackColor(int leaveId)
         {
-            var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && x.Status == RequestStatus.APPROVE && x.ReferenceType == "Leave").FirstOrDefault();
-            if (reques != null)
+            var status = db.RequestesStatus.Where(x => x.RequestId == leaveId
+                                                    && x.ReferenceType == "Leave")
+                                                    .OrderByDescending(x => x.RequestStatusId)
+                                                    .FirstOrDefault();
+            if (status != null && status.Status == RequestStatus.DEPARTMENT_APPROVAL)
             {
+
+
+                return true;
+            }
+            return false;
+        }
+        public bool CheckPendStatusForBackColor(int leaveId)
+        {
+            var status = db.RequestesStatus.Where(x => x.RequestId == leaveId
+                                                    && x.ReferenceType == "Leave")
+                                                    .OrderByDescending(x => x.RequestStatusId)
+                                                    .FirstOrDefault();
+            if (status != null && status.Status == RequestStatus.PEND)
+            {
+
+
+                return true;
+            }
+            return false;
+        }
+        public bool CheckRejectStatusForBackColor(int leaveId)
+        {
+            var status = db.RequestesStatus.Where(x => x.RequestId == leaveId
+                                                    && x.ReferenceType == "Leave")
+                                                    .OrderByDescending(x => x.RequestStatusId)
+                                                    .FirstOrDefault();
+            if (status != null && status.Status == RequestStatus.REJECT)
+            {
+
+
                 return true;
             }
             return false;
@@ -136,14 +169,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 GlFiscalYearId = leaveRequest.GlFiscalYearId,
                 To = leaveRequest.To,
                 LeaveDays = leaveRequest.LeaveDays,
+                //LeaveBalance = GetTotalLeaveBalance(leaveRequest.EmployeeId),
+                LeaveBalance = leaveRequest.LeaveBalance,
                 Type = leaveRequest.Type,
                 Reason = leaveRequest.Reason,
                 Remark = leaveRequest.Remark,
                 RequestDate = leaveRequest.RequestDate,
                 FromAmharic = leaveRequest.FromAmharic,
                 ToAmharic = leaveRequest.ToAmharic,
-                LeaveBalance = leaveRequest.LeaveBalance,
+                //LeaveBalance = leaveRequest.LeaveBalance,
                 IsApproved = CheckStatusForBackColor(leaveRequest.LeaveRequestId),
+                IsPending = CheckPendStatusForBackColor(leaveRequest.LeaveRequestId),
+                IsRejected = CheckRejectStatusForBackColor(leaveRequest.LeaveRequestId),
                 EmployeeCode = GetEmployeeCode(leaveRequest.EmployeeId),
                 Day = leaveRequest.Day,
                 Status = leaveRequest.Status,
@@ -156,6 +193,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 OnlineApprovedBy = leaveRequest.OnlineApprovedBy,
                 OnlineApprovedTime = leaveRequest.OnlineApprovedTime,
                 IsOnlineApproved = leaveRequest.IsOnlineApproved,
+                IsVoid = leaveRequest.IsVoid,
+                VoidBy = leaveRequest.VoidBy,
+                VoidTime = leaveRequest.VoidTime,
             });
 
             return Json(result);

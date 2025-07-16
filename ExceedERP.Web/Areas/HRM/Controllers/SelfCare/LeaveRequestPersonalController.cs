@@ -12,9 +12,6 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.Common.Controllers;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
-using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.SelfCare;
@@ -296,15 +293,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             };
             return Json(formattedData1, JsonRequestBehavior.AllowGet);
         }
-        public bool CheckStatusForBackColor(int leaveId)
-        {
-            var reques = db.RequestesStatus.Where(x => x.RequestId == leaveId && (x.Status == RequestStatus.APPROVE||x.Status == RequestStatus.DEPARTMENT_APPROVAL) && x.ReferenceType == "Leave").FirstOrDefault();
-            if (reques != null)
-            {
-                return true;
-            }
-            return false;
-        }
+      
         public ActionResult RefreshPreviousLeaveData()
         {
             var leaveRequests = db.LeaveRequest.ToList();
@@ -378,6 +367,60 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
             return code;
         }
+        public bool CheckStatusForBackColor(int leaveId)
+        {
+            var reques = db.RequestesStatus
+                .Where(x => x.RequestId == leaveId
+                && x.Status == RequestStatus.APPROVE
+                && x.ReferenceType == "Leave").FirstOrDefault();
+            if (reques != null)
+            {
+                return true;
+            }
+            return false;
+        }
+        public bool CheckPendStatusForBackColor(int leaveId)
+        {
+            var status = db.RequestesStatus.Where(x => x.RequestId == leaveId
+                                                    && x.ReferenceType == "Leave")
+                                                    .OrderByDescending(x => x.RequestStatusId)
+                                                    .FirstOrDefault();
+            if (status != null && status.Status == RequestStatus.PEND)
+            {
+
+
+                return true;
+            }
+            return false;
+        }
+        public bool CheckRejectStatusForBackColor(int leaveId)
+        {
+            var status = db.RequestesStatus.Where(x => x.RequestId == leaveId
+                                                    && x.ReferenceType == "Leave")
+                                                    .OrderByDescending(x => x.RequestStatusId)
+                                                    .FirstOrDefault();
+            if (status != null && status.Status == RequestStatus.REJECT)
+            {
+
+
+                return true;
+            }
+            return false;
+        }
+        public bool CheckWaitStatusForBackColor(int leaveId)
+        {
+            var status = db.RequestesStatus.Where(x => x.RequestId == leaveId
+                                                    && x.ReferenceType == "Leave")
+                                                    .OrderByDescending(x => x.RequestStatusId)
+                                                    .FirstOrDefault();
+            if (status != null && status.Status == RequestStatus.WAITING_FOR_APPROVAL)
+            {
+
+
+                return true;
+            }
+            return false;
+        }
         public ActionResult LeaveRequestPersonal_Read([DataSourceRequest]DataSourceRequest request)
         {
             var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -390,26 +433,32 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             {
                 LeaveRequestId = leaveRequest.LeaveRequestId,
                 EmployeeId = leaveRequest.EmployeeId,
+                BranchId = leaveRequest.BranchId,
+                BusinessUnitId = leaveRequest.BusinessUnitId,
+                GlFiscalYearId = leaveRequest.GlFiscalYearId,
                 From = leaveRequest.From,
                 IsForOther = leaveRequest.IsForOther,
                 To = leaveRequest.To,
                 LeaveDays = leaveRequest.LeaveDays,
                 Type = leaveRequest.Type,
                 Reason = leaveRequest.Reason,
-                GlFiscalYearId = leaveRequest.GlFiscalYearId,
                 RequestDate = leaveRequest.RequestDate,
                 Remark = leaveRequest.Remark,
-                LeaveBalance = leaveRequest.LeaveBalance,
                 FromAmharic = leaveRequest.FromAmharic,
                 ToAmharic = leaveRequest.ToAmharic,
                 EmployeeCode = GetEmployeeCode(leaveRequest.EmployeeId),
                 Day = leaveRequest.Day,
+                LeaveBalance = leaveRequest.LeaveBalance,
                 MorningOrAfternoon = leaveRequest.MorningOrAfternoon,
                 IsApproved = CheckStatusForBackColor(leaveRequest.LeaveRequestId),
+                IsPending = CheckPendStatusForBackColor(leaveRequest.LeaveRequestId),
+                IsRejected = CheckRejectStatusForBackColor(leaveRequest.LeaveRequestId),
+                IsWaiting = CheckWaitStatusForBackColor(leaveRequest.LeaveRequestId),
                 Hours = leaveRequest.Hours,
                 RequesterId = leaveRequest.RequesterId,
                 LeaveActionTypes = leaveRequest.LeaveActionTypes,
                 Status = leaveRequest.Status,
+                IsSendForApproval = leaveRequest.IsSendForApproval,
                 DepartmentSendForApprovalBy = leaveRequest.DepartmentSendForApprovalBy,
                 DepartmentSendForApprovalTime = leaveRequest.DepartmentSendForApprovalTime,
                 IsDepartmentSendForApproval = leaveRequest.IsDepartmentSendForApproval,
@@ -419,6 +468,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 OnlineApprovedBy = leaveRequest.OnlineApprovedBy,
                 OnlineApprovedTime = leaveRequest.OnlineApprovedTime,
                 IsOnlineApproved = leaveRequest.IsOnlineApproved,
+                IsVoid = leaveRequest.IsVoid,
+                VoidBy = leaveRequest.VoidBy,
+                CreatedBy = leaveRequest.CreatedBy,
+                DateCreated = leaveRequest.DateCreated,
+                ModifiedBy = leaveRequest.ModifiedBy,
+                LastModified = leaveRequest.LastModified,
+                VoidTime = leaveRequest.VoidTime,
             });
 
             return Json(result);
