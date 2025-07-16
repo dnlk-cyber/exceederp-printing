@@ -350,6 +350,48 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 FullNameaEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish,
             }), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetCategory()
+        {
+            var itemCategory = db.FixedAssetCategories.AsQueryable();
+            return Json(itemCategory.Select(p => new
+            {
+                Name = p.CategoryCode + "-" + p.CategoryName,
+                FixedAssetCategoryID = p.FixedAssetCategoryID
+            }),
+                JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetSubCategory(string categoryCode, string text)
+        {
+            int id = int.Parse(categoryCode);
+            var category = db.FixedAssetCategories.Find(id);
+            var items = db.FixedAssetSubCategories.Where(i => i.CategoryCode == category.CategoryCode).AsQueryable();
+            if (!String.IsNullOrWhiteSpace(text))
+                items = items.Where(x => x.SubCategoryName.Contains(text));
+            return Json(items.Select(i => new
+            {
+                Name = i.SubCategoryCode + "-" + i.SubCategoryName,
+                FixedAssetSubCategoryID = i.FixedAssetSubCategoryID
+
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetFixedAssetForReturn(string subCategoryCode, string text)
+        {
+            int id = int.Parse(subCategoryCode);
+            var assetRegistrations = db.AssetRegistrations.Where(i => i.FixedAssetSubCategoryID == id).AsQueryable();
+
+            if (!string.IsNullOrEmpty(text))
+                assetRegistrations = assetRegistrations.Where(x => x.Tag.ToUpper().Contains(text.ToUpper())
+                                                                   || x.Name.ToUpper().Contains(text.ToUpper())).AsQueryable();
+
+
+            return Json(assetRegistrations.Select(i => new
+            {
+                Name = i.Tag + "-" + i.Name,
+                AssetRegistrationId = i.AssetRegistrationId
+
+            }), JsonRequestBehavior.AllowGet);
+        }
+
 
     }
 

@@ -66,6 +66,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 UnitofMeasurement = otherBenefit.UnitofMeasurement,
                 Quantity = otherBenefit.Quantity,
                 TimeInterval = otherBenefit.TimeInterval,
+                IsForAll = otherBenefit.IsForAll,
+                Gender = otherBenefit.Gender,
                 Remark = otherBenefit.Remark,
                 DateCreated = otherBenefit.DateCreated,
                 LastModified = otherBenefit.LastModified,
@@ -80,24 +82,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         public ActionResult OtherBenefits_Create([DataSourceRequest]DataSourceRequest request, OtherBenefit otherBenefit)
         {
             ModelState.Clear();
+            var exists = db.OtherBenefits.Where(x => x.LookupId == otherBenefit.LookupId && x.BenefitName == otherBenefit.BenefitName).ToList();
+            if (exists.Any())
+            {
+                ModelState.AddModelError("exists", "Dublication is not Allowed");
+            }
             if (ModelState.IsValid)
             {
-                var entity = new OtherBenefit
-                {
-                    LookupId = otherBenefit.LookupId,
-                    BenefitName = otherBenefit.BenefitName,
-                    UnitofMeasurement = otherBenefit.UnitofMeasurement,
-                    Quantity = otherBenefit.Quantity,
-                    TimeInterval = otherBenefit.TimeInterval,
-
-                    Remark = otherBenefit.Remark,
-                    DateCreated = DateTime.Now,
-                    LastModified = otherBenefit.LastModified,
-                    CreatedBy = User .Identity .Name ,
-                    ModifiedBy = otherBenefit.ModifiedBy
-
-                };
-
+                otherBenefit.LastModified = DateTime.Now;
+                otherBenefit.CreatedBy = otherBenefit.CreatedBy;
+                var entity = GetMappedObject(otherBenefit);
                 db.OtherBenefits.Add(entity);
                 db.SaveChanges();
                 otherBenefit.OtherBenefitId = entity.OtherBenefitId;
@@ -113,23 +107,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         public ActionResult OtherBenefits_Update([DataSourceRequest]DataSourceRequest request, OtherBenefit otherBenefit)
         {
             ModelState.Clear();
+            var exists = db.OtherBenefits.Where(x => x.LookupId == otherBenefit.LookupId && x.BenefitName == otherBenefit.BenefitName&&x.OtherBenefitId!= otherBenefit.OtherBenefitId).ToList();
+            if (exists.Any())
+            {
+                ModelState.AddModelError("exists", "Dublication is not Allowed");
+            }
             if (ModelState.IsValid)
             {
-                var entity = new OtherBenefit
-                {
-                    OtherBenefitId = otherBenefit.OtherBenefitId,
-                    LookupId = otherBenefit.LookupId,
-                    BenefitName = otherBenefit.BenefitName,
-                    UnitofMeasurement = otherBenefit.UnitofMeasurement,
-                    Quantity = otherBenefit.Quantity,
-                    TimeInterval = otherBenefit.TimeInterval,
-                    Remark = otherBenefit.Remark,
-                    DateCreated = otherBenefit.DateCreated,
-                    LastModified = DateTime .Now ,
-                    CreatedBy = otherBenefit.CreatedBy,
-                    ModifiedBy = User .Identity .Name 
-                };
-
+                otherBenefit.LastModified = DateTime.Now;
+                otherBenefit.CreatedBy = otherBenefit.CreatedBy;
+                var entity = GetMappedObject(otherBenefit);
                 db.OtherBenefits.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
@@ -148,20 +135,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             ModelState.Clear();
             if (ModelState.IsValid)
             {
-                var entity = new OtherBenefit
-                {
-                    OtherBenefitId = otherBenefit.OtherBenefitId,
-                    LookupId = otherBenefit.LookupId,
-                    BenefitName = otherBenefit.BenefitName,
-                    UnitofMeasurement = otherBenefit.UnitofMeasurement,
-                    Quantity = otherBenefit.Quantity,
-                    TimeInterval = otherBenefit.TimeInterval,
-                    Remark = otherBenefit.Remark,
-                    DateCreated = otherBenefit.DateCreated,
-                    LastModified = otherBenefit.LastModified,
-                    CreatedBy = otherBenefit.CreatedBy,
-                    ModifiedBy = otherBenefit.ModifiedBy
-                };
+                var entity = GetMappedObject(otherBenefit);
                 #region delete log
                 UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted other benefit information of employee " + otherBenefit.LookupId,Modules.Payroll);
                 #endregion
@@ -173,6 +147,32 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             return Json(new[] { otherBenefit }.ToDataSourceResult(request, ModelState));
         }
 
+        private OtherBenefit GetMappedObject(OtherBenefit otherBenefit)
+        {
+            var entity = new OtherBenefit
+            {
+                OtherBenefitId = otherBenefit.OtherBenefitId,
+                LookupId = otherBenefit.LookupId,
+                BenefitName = otherBenefit.BenefitName,
+                UnitofMeasurement = otherBenefit.UnitofMeasurement,
+                Quantity = otherBenefit.Quantity,
+                TimeInterval = otherBenefit.TimeInterval,
+                IsForAll = otherBenefit.IsForAll,
+                Gender = otherBenefit.Gender,
+                OrgBranchName = otherBenefit.OrgBranchName,
+                Remark = otherBenefit.Remark,
+                DateCreated = otherBenefit.DateCreated,
+                LastModified = otherBenefit.LastModified,
+                CreatedBy = otherBenefit.CreatedBy,
+                ModifiedBy = otherBenefit.ModifiedBy
+            };
+            return entity;
+        }
+        public bool CheckAnyRecord(int oBId)
+        {
+            return db.OtherBenefits.FirstOrDefault(x => x.OtherBenefitId == oBId).IsForAll;
+                
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

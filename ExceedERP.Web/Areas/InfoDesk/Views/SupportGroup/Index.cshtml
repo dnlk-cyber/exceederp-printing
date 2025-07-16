@@ -73,7 +73,7 @@
                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.InfoDesk.Support.SupportGroupDetail_HelpDesk>()                                                 .Name("Members_#=SupportGroup_HelpDeskId#")
                  .Columns(columns =>
                  {
-                     columns.ForeignKey(c => c.EmployeeId, (System.Collections.IEnumerable)ViewData["Empoloyees"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeesList").Width(100);
+                     columns.ForeignKey(c => c.EmployeeId, (System.Collections.IEnumerable)ViewData["Empoloyees"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeesList").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
                      columns.Bound(c => c.Remark).Width(100);
                      columns.Command(command => {
                          command.Edit();

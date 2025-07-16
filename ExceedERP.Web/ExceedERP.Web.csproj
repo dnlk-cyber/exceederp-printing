@@ -1683,7 +1683,6 @@
     <Compile Include="Areas\InfoDesk\Controllers\SupportGroupDetailController.cs" />
     <Compile Include="Areas\InfoDesk\Controllers\TestController.cs" />
     <Compile Include="Areas\InfoDesk\Controllers\TicketActivityDefinitionController.cs" />
-    <Compile Include="Areas\InfoDesk\Controllers\TicketTypeController.cs" />
     <Compile Include="Areas\InfoDesk\InfoDeskAreaRegistration.cs" />
     <Compile Include="Areas\InfoDesk\Models\AssignTicketViewModel.cs" />
     <Compile Include="Areas\InfoDesk\Models\BindingModel.cs" />

@@ -7,13 +7,13 @@
                       .Columns(columns =>
                       {
                           columns.Bound(c => c.CustomerTicket_HelpDeskId).Width(50).Title("#");
-                          columns.ForeignKey(c => c.SpecificTicketTypeId, (System.Collections.IEnumerable)ViewData["TicketTypes"], "TicketType_HelpDeskId", "Type").EditorTemplateName("SpecificTicket").Title("Ticket Type").Width(180);
-                          columns.ForeignKey(c => c.EmployeeId, (System.Collections.IEnumerable)ViewData["Employees"], "EmployeeId", "FullNameaEnglish").Title("Requester").Width(180);
+                          columns.ForeignKey(c => c.SpecificTicketTypeId, (System.Collections.IEnumerable)ViewData["TicketTypes"], "TicketType_HelpDeskId", "Type").EditorTemplateName("SpecificTicket").Title("Ticket Type").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
+                          columns.ForeignKey(c => c.EmployeeId, (System.Collections.IEnumerable)ViewData["Employees"], "EmployeeId", "FullNameaEnglish").Title("Requester").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
 
                           columns.Bound(c => c.Description).Width(180);
                           columns.Bound(c => c.Priority).HtmlAttributes(new { style = "background-color:#:PriorityColor#;" }).Width(100);
 
-                          columns.ForeignKey(c => c.SupportGroupId, (System.Collections.IEnumerable)ViewData["Group"], "SupportGroup_HelpDeskId", "Name").Title("Group").Width(180);
+                          columns.ForeignKey(c => c.SupportGroupId, (System.Collections.IEnumerable)ViewData["Group"], "SupportGroup_HelpDeskId", "Name").Title("Group").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
 
                           columns.Bound(c => c.Status)/*.HtmlAttributes(new { style = "background-color:#:StatusColor#;" })*/.Width(100);
                           columns.Bound(c => c.RequesterIPAddress).Width(120);

@@ -43,7 +43,7 @@
                                 .DataValueField("FixedAssetCategoryID")
                                 .Filter("contains")
                                 .ValuePrimitive(true)
-                                .DataSource(source => source.Read(read => read.Action("GetCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }))
+                                .DataSource(source => source.Read(read => read.Action("GetCategory", "InfoDeskDataProvider", new { area = "InfoDesk" }))
                                                             .ServerFiltering(false)))
                     @Html.ValidationMessageFor(model => model.FixedAssetCategoryId, "", new { @class = "text-danger" })
                 </div>
@@ -62,7 +62,7 @@
                                 .Filter("contains")
                                 .ValuePrimitive(true)
                                 .CascadeFrom("FixedAssetCategoryId")
-                                .DataSource(source => source.Read(read => read.Action("GetSubCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterSubCategory"))
+                                .DataSource(source => source.Read(read => read.Action("GetSubCategory", "InfoDeskDataProvider", new { area = "InfoDesk" }).Data("filterSubCategory"))
                                                             .ServerFiltering(true)))
                     @Html.ValidationMessageFor(model => model.FixedAssetSubCategoryId, "", new { @class = "text-danger" })
                 </div>
@@ -80,7 +80,7 @@
                                 .ValuePrimitive(true)
                                 .CascadeFrom("FixedAssetSubCategoryId")
                                 .Events(e => e.Change("onSelectFixedAssetId"))
-                                .DataSource(source => source.Read(read => read.Action("GetFixedAssetForReturn", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterAssetsForReturn"))
+                                .DataSource(source => source.Read(read => read.Action("GetFixedAssetForReturn", "InfoDeskDataProvider", new { area = "InfoDesk" }).Data("filterAssetsForReturn"))
                                                             .ServerFiltering(true)))
                     @Html.ValidationMessageFor(model => model.AssetRegistrationId, "", new { @class = "text-danger" })
                 </div>
@@ -108,7 +108,6 @@
 
         <!-- Row 4: Description -->
         <div class="row mb-4">
-            <div class="col-md-1"></div>
             <div class="col-md-9">
                 <div class="form-group">
                     <label class="k-label">@Html.LabelFor(model => model.Description)</label>

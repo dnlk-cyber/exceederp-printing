@@ -231,7 +231,7 @@ namespace ExceedERP.Core.Domain.Common
         [Display(Name = "Enum_RecruitmentSetting_INTERVIEW", ResourceType = typeof(Resources))]
         INTERVIEW,
     }
-    public enum RetireSetting
+    public enum RetireTypeSetting
     {
         Heads,
         Performers

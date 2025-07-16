@@ -7,7 +7,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
     {
         public int RetirementSettingId { get; set; }
         [Display(Name = "RetireSetting", ResourceType = typeof(Localization.Resources))]
-        public RetireSetting RetireSetting { get; set; }
+        public RetireTypeSetting RetireTypeSetting { get; set; }
         [Display(Name = "CurrentValue", ResourceType = typeof(Localization.Resources))]
         public double CurrentValue { get; set; }
     }

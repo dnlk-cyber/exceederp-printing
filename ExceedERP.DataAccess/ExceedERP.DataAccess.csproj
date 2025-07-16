@@ -673,6 +673,14 @@
     <Compile Include="Migrations\202507081249549_LeavePayableUpdates1.Designer.cs">
       <DependentUpon>202507081249549_LeavePayableUpdates1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202507161346406_OtherBenefit.cs" />
+    <Compile Include="Migrations\202507161346406_OtherBenefit.Designer.cs">
+      <DependentUpon>202507161346406_OtherBenefit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202507161423013_OtherBenefit1.cs" />
+    <Compile Include="Migrations\202507161423013_OtherBenefit1.Designer.cs">
+      <DependentUpon>202507161423013_OtherBenefit1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1129,6 +1137,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202507081249549_LeavePayableUpdates1.resx">
       <DependentUpon>202507081249549_LeavePayableUpdates1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507161346406_OtherBenefit.resx">
+      <DependentUpon>202507161346406_OtherBenefit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507161423013_OtherBenefit1.resx">
+      <DependentUpon>202507161423013_OtherBenefit1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

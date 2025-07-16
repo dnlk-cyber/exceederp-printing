@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Localization;
 
 namespace ExceedERP.Core.Domain.HRM.Allowance
 {
@@ -25,8 +26,20 @@ namespace ExceedERP.Core.Domain.HRM.Allowance
         [Display(Name = "HR_Allowance_OtherBenefit_TimeInterval", ResourceType = typeof(Localization.Resources))]
         [Required ]
         public string TimeInterval { get; set; }
+        [Display(Name = "Is For All")]
+        public bool IsForAll { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
+        public GenderBenefit Gender { get; set; }
+
+    }
+    public enum GenderBenefit
+    {
+        [Display(Name = "Enum_Male", ResourceType = typeof(Resources))]
+        MALE = 5,
+        [Display(Name = "Enum_Female", ResourceType = typeof(Resources))]
+        FEMALE = 6,
+        BOTH
 
     }
 }

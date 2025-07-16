@@ -11,10 +11,14 @@
           .Name("RetirementSettinggrid")
           .Columns(columns =>
           {
-              columns.Bound(c => c.RetireSetting).EditorTemplateName("Enum").Width(150);
+              columns.Bound(c => c.RetireTypeSetting).EditorTemplateName("Enum").Width(150);
               columns.Bound(c => c.CurrentValue).Width(150);
 
-              columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+              columns.Command(command =>
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }).Width(200);
           })
           .ToolBar(toolbar =>
           {
@@ -44,10 +48,10 @@
                   })
 
               .Model(model => model.Id(p => p.RetirementSettingId))
-              .Read(read => read.Action("RetirementSetting_Read", "RetirementSetting"))
-              .Create(create => create.Action("RetirementSetting_Create", "RetirementSetting"))
-              .Update(update => update.Action("RetirementSetting_Update", "RetirementSetting"))
-              .Destroy(destroy => destroy.Action("RetirementSetting_Destroy", "RetirementSetting"))
+              .Read(read => read.Action("RetirementSetting_Read", "RetirementSetting").Data("sendForgery"))
+              .Create(create => create.Action("RetirementSetting_Create", "RetirementSetting").Data("sendForgery"))
+              .Update(update => update.Action("RetirementSetting_Update", "RetirementSetting").Data("sendForgery"))
+              .Destroy(destroy => destroy.Action("RetirementSetting_Destroy", "RetirementSetting").Data("sendForgery"))
           )
 )
 <script>

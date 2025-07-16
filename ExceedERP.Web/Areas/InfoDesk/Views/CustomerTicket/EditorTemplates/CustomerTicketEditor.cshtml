@@ -3,105 +3,123 @@
 @model ExceedERP.Core.Domain.InfoDesk.Support.CustomerTicket_HelpDesk
 @using ExceedERP.Core.Domain.InfoDesk
 <form>
+    <div class="container-fluid p-3">
 
-    <div class="row">
-        <div class="col-sm-1">
-
-        </div>
-
-        <div class="col-md-3">
-
-            <div class="form-group">
-                <div class="k-label">
-                    @Html.Label("Ticket Type")
-                </div>
-                <div>
+        <!-- Row 1 -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="k-label">@Html.Label("Ticket Type")</label>
                     @(Html.Kendo().DropDownListFor(model => model.TicketType_HelpDeskId)
-
-
-                                                  .OptionLabel("Select Specific Ticket ...")
-                                                  .DataTextField("Type")
-                                                  .Filter("contains")
-                                                  .DataValueField("TicketType_HelpDeskId")
-                                                  .DataSource(dataSource =>
-                                                  {
-                                                      dataSource.Read(read => read.Action("GetSpecificTicket", "InfoDeskDataProvider").Data("sendForgery"));
-
-                                                  }).ValuePrimitive(true))
+                                .OptionLabel("Select Specific Ticket ...")
+                                .DataTextField("Type")
+                                .DataValueField("TicketType_HelpDeskId")
+                                .Filter("contains")
+                                .DataSource(source => source.Read(read => read.Action("GetSpecificTicket", "InfoDeskDataProvider").Data("sendForgery")))
+                                .ValuePrimitive(true))
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-3 employee">
-
-            <div class="form-group">
-                <div class="k-label">
-                    @Html.Label("Requester")
-                </div>
-                <div>
-                    @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
-                                               .Name("EmployeeId")
-                                               //.AutoBind(false)
-                                               .OptionLabel("Select Employee ...")
-                                               .DataTextField("FullNameaEnglish")
-                                               .Filter("contains")
-                                               .DataValueField("EmployeeId")
-                                               .DataSource(dataSource =>
-                                               {
-                                                   dataSource.Read(read => read.Action("GetAllEmployees", "HRMDataProvider", new { area = "HRM" }).Data("sendForgery"))
-                                                    .ServerFiltering(false);
-                                               }).ValuePrimitive(true))
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-
-            <div class="form-group">
-                <div class="k-label">
-                    @Html.LabelFor(model => model.SupportGroup_HelpDeskId)
-                </div>
-                <div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="k-label">@Html.LabelFor(model => model.SupportGroup_HelpDeskId)</label>
                     @(Html.Kendo().DropDownListFor(model => model.SupportGroup_HelpDeskId)
-                                                   .AutoBind(false)
-                                                   .OptionLabel("Select")
-                                                   .DataTextField("Name")
-                                                           .DataValueField("SupportGroup_HelpDeskId")
-                                                   .DataSource(dataSource =>
-                                                   {
-                                                       dataSource.Read(read => read.Action("GetSupportGroup", "InfoDeskDataProvider").Data("sendForgery"));
-
-                                                   }).ValuePrimitive(true))
+                                .AutoBind(false)
+                                .OptionLabel("Select")
+                                .DataTextField("Name")
+                                .DataValueField("SupportGroup_HelpDeskId")
+                                .DataSource(source => source.Read(read => read.Action("GetSupportGroup", "InfoDeskDataProvider").Data("sendForgery")))
+                                .ValuePrimitive(true))
                     @Html.ValidationMessageFor(model => model.SupportGroup_HelpDeskId)
                 </div>
             </div>
-        </div>
 
-      
-    </div>
-
-    <div class="row">
-        <div class="col-sm-1">
-        </div>
-        <div class="col-sm-9">
-
-            <div class="form-group">
-                <div class="k-label">
-                    @Html.LabelFor(model=>model.Description)
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="k-label">@Html.LabelFor(model => model.FixedAssetCategoryId)</label>
+                    @(Html.Kendo().DropDownListFor(model => model.FixedAssetCategoryId)
+                                .OptionLabel("Select category...")
+                                .DataTextField("Name")
+                                .DataValueField("FixedAssetCategoryID")
+                                .Filter("contains")
+                                .ValuePrimitive(true)
+                                .DataSource(source => source.Read(read => read.Action("GetCategory", "InfoDeskDataProvider", new { area = "InfoDesk" }))
+                                                            .ServerFiltering(false)))
+                    @Html.ValidationMessageFor(model => model.FixedAssetCategoryId, "", new { @class = "text-danger" })
                 </div>
-                <div>
-                    @Html.TextAreaFor(model=>model.Description, new { @class ="form-control rounded",style="color:red;height:100px;font-family:arial;"  })
+            </div>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="k-label">@Html.LabelFor(model => model.FixedAssetSubCategoryId)</label>
+                    @(Html.Kendo().DropDownListFor(model => model.FixedAssetSubCategoryId)
+                                .OptionLabel("Select Sub Category...")
+                                .DataTextField("Name")
+                                .DataValueField("FixedAssetSubCategoryID")
+                                .Filter("contains")
+                                .ValuePrimitive(true)
+                                .CascadeFrom("FixedAssetCategoryId")
+                                .DataSource(source => source.Read(read => read.Action("GetSubCategory", "InfoDeskDataProvider", new { area = "InfoDesk" }).Data("filterSubCategory"))
+                                                            .ServerFiltering(true)))
+                    @Html.ValidationMessageFor(model => model.FixedAssetSubCategoryId, "", new { @class = "text-danger" })
                 </div>
             </div>
 
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="k-label">@Html.LabelFor(model => model.AssetRegistrationId)</label>
+                    @(Html.Kendo().DropDownListFor(model => model.AssetRegistrationId)
+                                .AutoBind(false)
+                                .OptionLabel("Select Asset...")
+                                .DataTextField("Name")
+                                .DataValueField("AssetRegistrationId")
+                                .Filter("contains")
+                                .ValuePrimitive(true)
+                                .CascadeFrom("FixedAssetSubCategoryId")
+                                .Events(e => e.Change("onSelectFixedAssetId"))
+                                .DataSource(source => source.Read(read => read.Action("GetFixedAssetForReturn", "InfoDeskDataProvider", new { area = "InfoDesk" }).Data("filterAssetsForReturn"))
+                                                            .ServerFiltering(true)))
+                    @Html.ValidationMessageFor(model => model.AssetRegistrationId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="k-label">@Html.LabelFor(model => model.ItemName)</label>
+                    @(Html.Kendo().TextBoxFor(model => model.ItemName))
+                    @Html.ValidationMessageFor(model => model.ItemName)
+                </div>
+            </div>
         </div>
+
+        <!-- Row 3 -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="k-label">@Html.LabelFor(model => model.TagNo)</label>
+                    @(Html.Kendo().TextBoxFor(model => model.TagNo))
+                    @Html.ValidationMessageFor(model => model.TagNo)
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 4: Description -->
+        <div class="row mb-4">
+            <div class="col-md-9">
+                <div class="form-group">
+                    <label class="k-label">@Html.LabelFor(model => model.Description)</label>
+                    @Html.TextAreaFor(model => model.Description, new {
+                        @class = "form-control rounded p-2",
+                        style = "height:100px;font-family:Arial;color:red;"
+                    })
+                </div>
+            </div>
+        </div>
+
     </div>
 
+
 </form>
-<script>
-    if ($("#Source").val() == 1)
-        $(".employee").removeClass("hidden");
-   // start();
-    //  alert("hello");
-    //lert($("#Source").val());
-</script>

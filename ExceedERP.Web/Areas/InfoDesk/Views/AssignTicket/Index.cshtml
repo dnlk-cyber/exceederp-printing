@@ -14,8 +14,8 @@
     .Columns(columns =>
     {
         columns.Bound(c => c.CustomerTicket_HelpDeskId).Width(50).Title("#");
-        columns.ForeignKey(c => c.TicketType_HelpDeskId, (System.Collections.IEnumerable)ViewData["TicketTypes"], "TicketType_HelpDeskId", "Type").EditorTemplateName("SpecificTicket").Title("Ticket Type").Width(180);
-        columns.ForeignKey(c => c.EmployeeId, (System.Collections.IEnumerable)ViewData["Employees"], "EmployeeId", "FullNameaEnglish").Title("Requester").Width(180);
+        columns.ForeignKey(c => c.TicketType_HelpDeskId, (System.Collections.IEnumerable)ViewData["TicketTypes"], "TicketType_HelpDeskId", "Type").EditorTemplateName("SpecificTicket").Title("Ticket Type").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
+        columns.ForeignKey(c => c.EmployeeId, (System.Collections.IEnumerable)ViewData["Employees"], "EmployeeId", "FullNameaEnglish").Title("Requester").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
         columns.ForeignKey(c => c.BranchId, (IEnumerable<BranchVM>)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
         columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable<BussinesUnitVM>)ViewData["businessUnits"], "BusinessUnitId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
         columns.ForeignKey(c => c.OrgStructureId, (IEnumerable<OrgStructureVM>)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
@@ -23,7 +23,7 @@
         columns.Bound(c => c.OverDue).Width(120);
         columns.Bound(c => c.Description).Width(150);
         columns.Bound(c => c.TicketPriority).HtmlAttributes(new { style = "background-color:#:PriorityColor#;" }).Width(160);
-        columns.ForeignKey(c => c.SupportGroup_HelpDeskId, (System.Collections.IEnumerable)ViewData["Group"], "SupportGroup_HelpDeskId", "Name").Title("Group").Width(180);
+        columns.ForeignKey(c => c.SupportGroup_HelpDeskId, (System.Collections.IEnumerable)ViewData["Group"], "SupportGroup_HelpDeskId", "Name").Title("Group").Filterable(ftb => ftb.Multi(true).Search(true)).Width(180);
         columns.Bound(c => c.TicketStatus)/*.HtmlAttributes(new { style = "background-color:#:StatusColor#;" })*/.Width(160);
         columns.Bound(c => c.Rate).Width(120);
         columns.Bound(c => c.ClosedDate).Width(100).Title("Closed Date");
@@ -101,7 +101,7 @@
                    .Columns(columns =>
                    {
                        // columns.Bound(c => c.AssignTicket_HelpDeskId).Width(100);
-                       columns.ForeignKey(c => c.AssinedTo, (System.Collections.IEnumerable)ViewData["AssignTo"], "AssinedTo", "FullNameaEnglish").EditorTemplateName("EmployeesList").Width(160);
+                       columns.ForeignKey(c => c.AssinedTo, (System.Collections.IEnumerable)ViewData["AssignTo"], "AssinedTo", "FullNameaEnglish").EditorTemplateName("EmployeesList").Filterable(ftb => ftb.Multi(true).Search(true)).Width(160);
                       // columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList").Width(160);
                        columns.Bound(c => c.Handler).Width(140);
                        columns.Bound(c => c.Role).Width(140);
@@ -254,7 +254,7 @@
                  .Name("MaterialUsed_#=AssignTicket_HelpDeskId#")
                  .Columns(columns =>
                  {
-                     columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList").Width(120);
+                     columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
                      columns.Bound(c => c.Quantity).Width(120);
                      columns.Bound(c => c.Remark).Width(120);
                      columns.Command(command =>
