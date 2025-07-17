@@ -36,33 +36,24 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             //var items = db.InventoryItems.Select(s => new { Code = s.ItemCode, Name = s.Name }).ToList();
             //ViewData["Items"] = items;
 
-            ViewData["Customers"] = customers.Select(s => new{s.OrganizationCustomerID,TradeName = ValidateInput(s.TradeName)}).ToList();
+            ViewData["Customers"] = customers.Select(s => new{s.OrganizationCustomerID,TradeName = s.TradeName}).ToList();
 
             
-            ViewData["JobOrders"] = JobOrders.Select(j => new{j.JobId,JobNo = ValidateInput(j.JobNo)}).ToList();
+            ViewData["JobOrders"] = JobOrders.Select(j => new{j.JobId,JobNo = j.JobNo}).ToList();
 
             ViewData["JobCategories"] = JobCategory
-                              .Select(c => new {c.JobCategoryId,JobName = ValidateInput(c.JobName)}).ToList();
+                              .Select(c => new {c.JobCategoryId,JobName = c.JobName}).ToList();
 
-              var itemCategorys = db.ItemCategorys.Select(s => new { Code = s.ItemCategoryCode,Name = ValidateInput(s.Name)}).ToList();
+              var itemCategorys = db.ItemCategorys.Select(s => new { Code = s.ItemCategoryCode,Name = s.Name}).ToList();
 
                ViewData["ItemCategorys"] = itemCategorys;
 
-               var items = db.InventoryItems.Select(s => new { Code = s.ItemCode, Name = ValidateInput(s.Name) }).ToList();
+               var items = db.InventoryItems.Select(s => new { Code = s.ItemCode, Name = s.Name }).ToList();
                  ViewData["Items"] = items;
             return View();
         }
 
-        private string ValidateInput(string input)
-        {
-            return string.IsNullOrWhiteSpace(input)
-                ? string.Empty
-                : input.Replace("\n", "")
-                       .Replace("\r", "")
-                       .Replace("#", "")
-                       .Replace("+", " ")
-                       .Trim();
-        }
+        
     
     public JsonResult GetAllCostCenters()
         {
