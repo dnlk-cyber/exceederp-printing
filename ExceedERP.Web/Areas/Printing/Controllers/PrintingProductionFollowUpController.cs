@@ -86,145 +86,145 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
-        #region PrePressCheckAndApproval
-        public JsonResult PrePressCheck(int id)
-        {
-            Object response = null;
-            var followUp = db.PrintingProductionFollowUps.Find(id);
-            if (followUp != null)
-            {
-                followUp.IsPrePressChecked = true;
-                followUp.PrePressCheckedBy = User.Identity.Name;
-                followUp.PrePressCheckedTime = DateTime.Today;
-                db.Entry(followUp).State = EntityState.Modified;
-                db.SaveChanges();
-                response = new { Success = true, Message = "Successfully Checked" };
-            }
-            else
-            {
-                response = new { Success = false, Message = "Something's Wrong!" };
-            }
-            return Json(response);
-        }
+        //#region PrePressCheckAndApproval
+        //public JsonResult PrePressCheck(int id)
+        //{
+        //    Object response = null;
+        //    var followUp = db.PrintingProductionFollowUps.Find(id);
+        //    if (followUp != null)
+        //    {
+        //        followUp.IsPrePressChecked = true;
+        //        followUp.PrePressCheckedBy = User.Identity.Name;
+        //        followUp.PrePressCheckedTime = DateTime.Today;
+        //        db.Entry(followUp).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //        response = new { Success = true, Message = "Successfully Checked" };
+        //    }
+        //    else
+        //    {
+        //        response = new { Success = false, Message = "Something's Wrong!" };
+        //    }
+        //    return Json(response);
+        //}
 
-        public JsonResult PrePressApprove(int id) 
-        {
-            Object response = null;
-            var productionFollowUp = db.PrintingProductionFollowUps.Find(id);
-            if (productionFollowUp != null)
-            {
+        //public JsonResult PrePressApprove(int id) 
+        //{
+        //    Object response = null;
+        //    var productionFollowUp = db.PrintingProductionFollowUps.Find(id);
+        //    if (productionFollowUp != null)
+        //    {
 
-                productionFollowUp.IsPrePressApproved = true;
-                productionFollowUp.PrePressApprovedBy = User.Identity.Name;
-                productionFollowUp.PrePressApprovedTime = DateTime.Now;
+        //        productionFollowUp.IsPrePressApproved = true;
+        //        productionFollowUp.PrePressApprovedBy = User.Identity.Name;
+        //        productionFollowUp.PrePressApprovedTime = DateTime.Now;
 
-                db.Entry(productionFollowUp).State = EntityState.Modified;
-                db.SaveChanges();
+        //        db.Entry(productionFollowUp).State = EntityState.Modified;
+        //        db.SaveChanges();
                 
-                response = new { Success = true, Message = "Successfully Approved" };
+        //        response = new { Success = true, Message = "Successfully Approved" };
 
 
-            }
-            else
-            {
-                response = new { Success = false, Message = "Something's Wrong!" };
-            }
-            return Json(response);
-        }
-        #endregion
+        //    }
+        //    else
+        //    {
+        //        response = new { Success = false, Message = "Something's Wrong!" };
+        //    }
+        //    return Json(response);
+        //}
+        //#endregion
 
-        #region PressCheckAndApproval
-        public JsonResult PressCheck(int id)
-        {
-            Object response = null;
-            var followUp = db.PrintingProductionFollowUps.Find(id);
-            if (followUp != null)
-            {
-                followUp.IsPressChecked = true;
-                followUp.PressCheckedBy = User.Identity.Name;
-                followUp.PressCheckedTime = DateTime.Today;
-                db.Entry(followUp).State = EntityState.Modified;
-                db.SaveChanges();
-                response = new { Success = true, Message = "Successfully Checked" };
-            }
-            else
-            {
-                response = new { Success = false, Message = "Something's Wrong!" };
-            }
-            return Json(response);
-        }
+        //#region PressCheckAndApproval
+        //public JsonResult PressCheck(int id)
+        //{
+        //    Object response = null;
+        //    var followUp = db.PrintingProductionFollowUps.Find(id);
+        //    if (followUp != null)
+        //    {
+        //        followUp.IsPressChecked = true;
+        //        followUp.PressCheckedBy = User.Identity.Name;
+        //        followUp.PressCheckedTime = DateTime.Today;
+        //        db.Entry(followUp).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //        response = new { Success = true, Message = "Successfully Checked" };
+        //    }
+        //    else
+        //    {
+        //        response = new { Success = false, Message = "Something's Wrong!" };
+        //    }
+        //    return Json(response);
+        //}
 
-        public JsonResult PressApprove(int id)
-        {
-            Object response = null;
-            var productionFollowUp = db.PrintingProductionFollowUps.Find(id);
-            if (productionFollowUp != null)
-            {
+        //public JsonResult PressApprove(int id)
+        //{
+        //    Object response = null;
+        //    var productionFollowUp = db.PrintingProductionFollowUps.Find(id);
+        //    if (productionFollowUp != null)
+        //    {
 
-                productionFollowUp.IsPressApproved = true;
-                productionFollowUp.PressApprovedBy = User.Identity.Name;
-                productionFollowUp.PressApprovedTime = DateTime.Now;
+        //        productionFollowUp.IsPressApproved = true;
+        //        productionFollowUp.PressApprovedBy = User.Identity.Name;
+        //        productionFollowUp.PressApprovedTime = DateTime.Now;
 
-                db.Entry(productionFollowUp).State = EntityState.Modified;
-                db.SaveChanges();
+        //        db.Entry(productionFollowUp).State = EntityState.Modified;
+        //        db.SaveChanges();
 
-                response = new { Success = true, Message = "Successfully Approved" };
-
-
-            }
-            else
-            {
-                response = new { Success = false, Message = "Something's Wrong!" };
-            }
-            return Json(response);
-        }
-        #endregion
-
-        #region PostPressCheckAndApproval
-        public JsonResult PostPressCheck(int id)
-        {
-            Object response = null;
-            var followUp = db.PrintingProductionFollowUps.Find(id);
-            if (followUp != null)
-            {
-                followUp.IsPostPressChecked = true;
-                followUp.PostPressCheckedBy = User.Identity.Name;
-                followUp.PostPressCheckedTime = DateTime.Today;
-                db.Entry(followUp).State = EntityState.Modified;
-                db.SaveChanges();
-                response = new { Success = true, Message = "Successfully Checked" };
-            }
-            else
-            {
-                response = new { Success = false, Message = "Something's Wrong!" };
-            }
-            return Json(response);
-        }
-
-        public JsonResult PostPressApprove(int id)
-        {
-            Object response = null;
-            var productionFollowUp = db.PrintingProductionFollowUps.Find(id);
-            if (productionFollowUp != null)
-            {
-
-                productionFollowUp.IsPostPressApproved = true;
-                productionFollowUp.PostPressApprovedBy = User.Identity.Name;
-                productionFollowUp.PostPressApprovedTime = DateTime.Now;
-
-                db.Entry(productionFollowUp).State = EntityState.Modified;
-                db.SaveChanges();
-
-                response = new { Success = true, Message = "Successfully Approved" };
+        //        response = new { Success = true, Message = "Successfully Approved" };
 
 
-            }
-            else
-            {
-                response = new { Success = false, Message = "Something's Wrong!" };
-            }
-            return Json(response);
-        }
-        #endregion
+        //    }
+        //    else
+        //    {
+        //        response = new { Success = false, Message = "Something's Wrong!" };
+        //    }
+        //    return Json(response);
+        //}
+        //#endregion
+
+        //#region PostPressCheckAndApproval
+        //public JsonResult PostPressCheck(int id)
+        //{
+        //    Object response = null;
+        //    var followUp = db.PrintingProductionFollowUps.Find(id);
+        //    if (followUp != null)
+        //    {
+        //        followUp.IsPostPressChecked = true;
+        //        followUp.PostPressCheckedBy = User.Identity.Name;
+        //        followUp.PostPressCheckedTime = DateTime.Today;
+        //        db.Entry(followUp).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //        response = new { Success = true, Message = "Successfully Checked" };
+        //    }
+        //    else
+        //    {
+        //        response = new { Success = false, Message = "Something's Wrong!" };
+        //    }
+        //    return Json(response);
+        //}
+
+        //public JsonResult PostPressApprove(int id)
+        //{
+        //    Object response = null;
+        //    var productionFollowUp = db.PrintingProductionFollowUps.Find(id);
+        //    if (productionFollowUp != null)
+        //    {
+
+        //        productionFollowUp.IsPostPressApproved = true;
+        //        productionFollowUp.PostPressApprovedBy = User.Identity.Name;
+        //        productionFollowUp.PostPressApprovedTime = DateTime.Now;
+
+        //        db.Entry(productionFollowUp).State = EntityState.Modified;
+        //        db.SaveChanges();
+
+        //        response = new { Success = true, Message = "Successfully Approved" };
+
+
+        //    }
+        //    else
+        //    {
+        //        response = new { Success = false, Message = "Something's Wrong!" };
+        //    }
+        //    return Json(response);
+        //}
+        //#endregion
     }
 }

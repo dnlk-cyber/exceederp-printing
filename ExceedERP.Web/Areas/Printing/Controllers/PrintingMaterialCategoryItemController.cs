@@ -70,9 +70,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             if (item == null)
                 ModelState.AddModelError(string.Empty, "Inventory Item Not Found");
             var exsitingItems = db.PrintingMaterialCategoryItems
-                .Where(x => x.ItemCode == model.ItemCode && x.PrintingMaterialCategoryId == model.PrintingMaterialCategoryId);
-            //if (exsitingItems.Any())
-            //    ModelState.AddModelError("", "Item Exists");
+                .Where(x => x.ItemCode == model.ItemCode 
+                && x.PrintingMaterialCategoryId == model.PrintingMaterialCategoryId
+                && x.PrintingMaterialCategoryItemId != model.PrintingMaterialCategoryItemId);
+         
             if (ModelState.IsValid)
             {
                 

@@ -66,7 +66,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         public ActionResult Update([DataSourceRequest]DataSourceRequest request, PrintingMaterialCategory model)
         {
             var exsistingCategoryCode = db.PrintingMaterialCategories
-                .Where(x => x.InventoryCategoryCode == model.InventoryCategoryCode);
+                .Where(x => x.InventoryCategoryCode == model.InventoryCategoryCode
+                && x.PrintingMaterialCategoryId != model.PrintingMaterialCategoryId);
             if (exsistingCategoryCode.Any())
                 ModelState.AddModelError("", "Exsisting Category Code");
             if (ModelState.IsValid)

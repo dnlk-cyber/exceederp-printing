@@ -681,6 +681,10 @@
     <Compile Include="Migrations\202507161423013_OtherBenefit1.Designer.cs">
       <DependentUpon>202507161423013_OtherBenefit1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202507171607475_printingprod.cs" />
+    <Compile Include="Migrations\202507171607475_printingprod.Designer.cs">
+      <DependentUpon>202507171607475_printingprod.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1143,6 +1147,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202507161423013_OtherBenefit1.resx">
       <DependentUpon>202507161423013_OtherBenefit1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202507171607475_printingprod.resx">
+      <DependentUpon>202507171607475_printingprod.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

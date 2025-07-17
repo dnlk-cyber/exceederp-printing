@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace ExceedERP.Core.Domain.Printing.PrintingProduction
 {
     
-    public class PrintingProductionFollowUp : PrintingCommon 
+    public class PrintingProductionFollowUp : PrintingCommon
     {
         [Key]
         public int PrintingProductionFollowUpId { get; set; }
@@ -29,7 +29,7 @@ namespace ExceedERP.Core.Domain.Printing.PrintingProduction
         public string JobDescription { get; set; } // Eg. Grade 12 Physics Text Book
         
     }
-    public class PrintingProductionFollowUpTask : TrackUserSettingOperation 
+    public class PrintingProductionFollowUpTask : Operations
     {
         [Key]
         public int PrintingProductionFollowUpTaskId { get; set; }
@@ -58,10 +58,10 @@ namespace ExceedERP.Core.Domain.Printing.PrintingProduction
         [Display(Name ="Operated By")]  
         public int OperatorId { get; set; } // Eg. Abebe
         [DataType(DataType.DateTime)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yy HH:mm}", ApplyFormatInEditMode = true)]
+        //[DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]
         public DateTime ProductionStartTime { get; set; } // Eg. 5/13/2025 7:10 PM
         [DataType(DataType.DateTime)]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yy HH:mm}", ApplyFormatInEditMode = true)]  
+        //[DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}", ApplyFormatInEditMode = true)]  
         public DateTime ProductionEndTime { get; set; }  // Eg. 5/13/2025 10:00 PM
         public string UoM { get; set; } // Eg. Plate
       

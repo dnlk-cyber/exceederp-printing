@@ -57,10 +57,10 @@
                                                     @<text>
                                                         @labor()
                                                     </text>);*@
-                                                    item1.Add().Text("Store Requisition").Content(
+                                                    @*item1.Add().Text("Store Requisition").Content(
                                         @<text>
                                             @StoreRequisition()
-                                        </text>);
+                                        </text>);*@
                                                     item1.Add().Text("Documents").Content(
                                         @<text>
                                             @BoqDocs()
@@ -177,20 +177,20 @@
                                                                                                .Name("ProductionStoreRequisitionGrid_#=PrintingJobOrderProductionId#")
                                                                                                .Columns(columns =>
                                                                                                {
-                                                                                   // columns.Bound(c => c.StoreRequisitionID).Title("Request No.").Width(120).ClientTemplate("#=appendZeros(StoreRequisitionID)#");
-                                                                                   columns.Bound(c => c.Reference).Title("Reference").Width(120);
+                                                                                                   // columns.Bound(c => c.StoreRequisitionID).Title("Request No.").Width(120).ClientTemplate("#=appendZeros(StoreRequisitionID)#");
+                                                                                                   columns.Bound(c => c.Reference).Title("Reference").Width(120);
                                                                                                    columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(100).Title("Period").EditorTemplateName("InventoryPeriodSelector");
                                                                                                    columns.Bound(c => c.RequestDate).Width(110);
                                                                                                    columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("Store").Width(160).EditorTemplateName("StoreSelector");
                                                                                                    columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  \\#: IsTransfer? checked='checked': checked='' \\# />").Width(100);//value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" +
-                                                                                   columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoreSelector");
+                                                                                                   columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoreSelector");
                                                                                                    columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
                                                                                                    columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
                                                                                                    columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
                                                                                                    columns.Bound(c => c.IsForOther).Width(90).Title("Is for Other?").ClientTemplate(
                                                                                                    "<input type='checkbox' disabled = 'true' \\#: IsForOther? checked='checked': checked='' \\#/>");
-                                                                                   //value='#= IsForOther #' " +"# if (IsForOther) { #" +"checked='checked'" +"# } #" +//"
-                                                                                   columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
+                                                                                                   //value='#= IsForOther #' " +"# if (IsForOther) { #" +"checked='checked'" +"# } #" +//"
+                                                                                                   columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
                                                                                                    columns.Bound(c => c.PlateNo).Width(100);
                                                                                                    columns.Bound(c => c.Remark).Width(120);
                                                                                                    columns.Bound(c => c.Status).Width(100);
@@ -236,7 +236,6 @@
                                                                                                .Groupable()
                                                                                                .Events(ev => ev.DetailExpand("detailExpand"))
                                                                                                //.Events(ev => ev.Edit("onMasterEdit"))
-
                                                                                                .Scrollable(h => h.Height(500))
                                                                                                .Events(x => x.DataBound("onDataBoundMaster"))
                                                                                                .DataSource(dataSource => dataSource

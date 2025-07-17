@@ -2039,6 +2039,7 @@
     <Compile Include="Areas\Planning\Controllers\WeeklyActualsController.cs" />
     <Compile Include="Areas\Planning\Controllers\WeeklyPlansController.cs" />
     <Compile Include="Areas\Planning\PlanningAreaRegistration.cs" />
+    <Compile Include="Areas\Printing\Controllers\CheckAndApprovalController.cs" />
     <Compile Include="Areas\Printing\Controllers\Estimation\EstimationFormController.cs" />
     <Compile Include="Areas\Printing\Controllers\Estimation\LaborCostController.cs" />
     <Compile Include="Areas\Printing\Controllers\Estimation\MaterialCostController.cs" />
@@ -9227,6 +9228,7 @@
     <Folder Include="Areas\Manufacturing\Views\Views\PrintingEstimationDataProvider\" />
     <Folder Include="Areas\Planning\Models\" />
     <Folder Include="Areas\Planning\Views\Shared\" />
+    <Folder Include="Areas\Printing\Views\CheckAndApproval\" />
     <Folder Include="Areas\Printing\Views\HalfYearlyProductionPlans\" />
     <Folder Include="Areas\Printing\Views\IdleTime\EditorTemplates\" />
     <Folder Include="Areas\Printing\Views\JobCostingDataProvider\" />
