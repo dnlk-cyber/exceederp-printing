@@ -12,10 +12,7 @@ using ExceedERP.Web.Controllers;
 using System;
 using ExceedERP.Core.Domain;
 using ExceedERP.Web.Helpers;
-using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.HRM.HRMPlan;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Core.Domain.HRM.LeaveManagment;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.Severance;
 

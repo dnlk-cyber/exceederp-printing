@@ -203,9 +203,10 @@
                     <li id="selfservice090" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_PaySlip, "PaySlipByEmployee", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
-                    @*<li id="selfservice476" class="actionlinlk">
-                    @Html.ActionLink("Open Ticket", "Index", "CustomerTicketSelfCare", new { area = "InfoDesk" }, null)<b class="arrow"></b>
-                </li>*@
+
+                    <li id="selfservice476" class="actionlinlk">
+                           @Html.ActionLink("Open Ticket", "Index", "CustomerTicketSelfCare", new { area = "InfoDesk" }, null)<b class="arrow"></b>
+                    </li>
 
                     <li id="selfservice76fleet1" class="actionlinlk">
                         @Html.ActionLink("Fleet Requisition", "Index", "EquipmentDemandSelfCare", new { area = "FleetManagement" }, null)<b class="arrow"></b>

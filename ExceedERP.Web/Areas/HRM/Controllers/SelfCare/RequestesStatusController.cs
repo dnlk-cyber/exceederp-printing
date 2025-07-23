@@ -797,6 +797,41 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     //    db.SaveChanges();
                     //}
                 }
+                //if (requestesStatus.ReferenceType == "Leave")
+                //{
+                //    var leaveRequest = db.LeaveRequest.Find(id);
+                //    if (leaveRequest == null)
+                //    {
+                //        ModelState.AddModelError("", "No reave request exist.");
+                //        return Json(new[] { requestesStatus }.ToDataSourceResult(request, ModelState));
+                //    }
+
+                //    leaveRequest.Status = requestesStatus.Status.ToString();
+                //    leaveRequest.LastModified = DateTime.Now;
+                //    db.Entry(leaveRequest).State = EntityState.Modified;
+
+                //    switch (requestesStatus.Status)
+                //    {
+                //        case RequestStatus.DEPARTMENT_APPROVAL:
+                //            leaveRequest.DepartmentOnlineApprovedBy = User.Identity.Name;
+                //            leaveRequest.DepartmentOnlineApprovedTime = DateTime.Now;
+                //            leaveRequest.IsDepartmentOnlineApproved = true;
+                //            break;
+
+                //        case RequestStatus.WAITING_FOR_APPROVAL:
+                //            leaveRequest.DepartmentSendForApprovalBy = User.Identity.Name;
+                //            leaveRequest.DepartmentSendForApprovalTime = DateTime.Now;
+                //            leaveRequest.IsDepartmentSendForApproval = true;
+                //            break;
+
+                //        case RequestStatus.APPROVE:
+                //            ApproveLeaveRequest(leaveRequest);
+                //            break;
+                //    }
+
+                //    db.SaveChanges();
+                //}
+
                 if (requestesStatus.ReferenceType == "Leave")
                 {
                     var leaveRequest = db.LeaveRequest.Find(requestesStatus.RequestId);
@@ -1814,287 +1849,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 #endregion
 
                 #region Update Balance
-                //if (referenceType2 == "Leave" && requestesStatus.Status == RequestStatus.APPROVE)
-                //{
-                //    var leaveRequest = db.LeaveRequest.FirstOrDefault(x => x.LeaveRequestId == requestesStatus.RequestId);
-
-                //    if (leaveRequest != null)
-                //    {
-                //        var leaveEntitlements = db.LeavesEntitle.Where(x => x.EmployeeId == leaveRequest.EmployeeId && !x.IsExpired);
-                //        var totalBalance = leaveEntitlements.Sum(x => x.Balance);
-
-                //        if (leaveRequest.LeaveDays > totalBalance && leaveRequest.Type == LeaveType.ANNUAL)
-                //        {
-                //            ModelState.AddModelError("", "You Requested more than your balance.");
-                //        }
-                //        else
-                //        {
-                //            ApproveLeaveRequest(leaveRequest, leaveEntitlements);
-                //        }
-                //    }
-                //}
-                #region Previus Code 
-                //if (referenceType2 == "Leave" 
-                //    && requestesStatus.Status == RequestStatus.APPROVE)
-                //{
-                //    var leaves = db.LeaveRequest
-                //        .FirstOrDefault(x => x.LeaveRequestId == requestesStatus.RequestId);
-
-                //    //if (leaves != null && leaves.Type == LeaveType.ANNUAL)
-                //    //{
-                //    //    var leaveEntitle = db.LeavesEntitle
-                //    //        .Where(x => x.EmployeeId == leaves.EmployeeId
-                //    //                && !x.IsExpired);
-                //    //    var totalBalace = leaveEntitle.Sum(x => x.Balance);
-                //    //    if (leaves.LeaveDays > totalBalace
-                //    //        && leaves.Type == LeaveType.ANNUAL)
-                //    //    {
-                //    //        ModelState.AddModelError("", "you requested more than your balance");
-                //    //        //var messages = "you requested morethan your balance";
-                //    //        //return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-                //    //    }
-                //    //    else
-                //    //    {
-                //    //        #region Leave Final Approve Notification 
-                //    //        var userRole = UserInformationHelper.GetUsersInRole(HrmConstants.HRLeaveApprover).FirstOrDefault();
-
-                //    //        var hrEmployeeId = UserInformationHelper
-                //    //                  .GetEmployeeId(userRole?.UserName);
-
-                //    //        var requesterEmpId =
-                //    //            db.LeaveRequest
-                //    //            .FirstOrDefault(x => x.LeaveRequestId == requestesStatus.RequestId);
-
-
-                //    //        if (requesterEmpId != null)
-                //    //        {
-                //    //            NotifModels notif = new NotifModels
-                //    //            {
-                //    //                UserId = UserInformationHelper.GetEmployeeUserId(requesterEmpId.EmployeeId),
-                //    //                Title = "Leave Request",
-                //    //                Message = "Your Leave Request are Approved"
-                //    //            };
-
-                //    //            Notify.NotifyUser(notif);
-                //    //        }
-                //    //        #endregion
-
-
-                //    //        leaves.OnlineApprovedBy = User.Identity.Name;
-                //    //        leaves.OnlineApprovedTime = DateTime.Now;
-                //    //        leaves.IsOnlineApproved = true;
-
-                //    //        db.Entry(leaves).State = EntityState.Modified;
-
-                //    //        //int count = 0;
-                //    //        //double weekDays = 0;
-                //    //        //var holidayList = db.Holidays.Where(x => x.GlFiscalYearId == leaves.GlFiscalYearId).ToList();
-                //    //        //if (holidayList.Any())
-                //    //        //{
-                //    //        //    foreach (var h in holidayList)
-                //    //        //    {
-                //    //        //        if (h.Date >= leaves.From && h.Date <= leaves.To)
-                //    //        //        {
-                //    //        //            count++;
-                //    //        //        }
-                //    //        //    }
-                //    //        //}
-                //    //        //weekDays = GetWeekDays(leaves.From, leaves.To);
-
-                //    //        var entityy = new Core.Domain.HRM.LeaveManagment.Leave
-                //    //        {
-                //    //            EmployeeId = leaves.EmployeeId,
-                //    //            LeaveType = leaves.Type,
-                //    //            Amount = leaves.LeaveDays,
-                //    //            GlFiscalYearId = leaves.GlFiscalYearId,
-                //    //            From = leaves.From,
-                //    //            To = leaves.To,
-                //    //            FromAmharic = leaves.FromAmharic,
-                //    //            ToAmharic = leaves.ToAmharic,
-                //    //            OrgName = null,
-                //    //            Before = null,
-                //    //            After = null,
-                //    //            Remark = leaves.Remark,
-                //    //            DateCreated = DateTime.Now,
-                //    //            LastModified = null,
-                //    //            CreatedBy = User.Identity.Name,
-                //    //            EmployeeCode = leaves.Employee.EmployeeCode,
-                //    //            ModifiedBy = null,
-                //    //            OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                //    //            RequestId = leaves.LeaveRequestId,
-                //    //        };
-                //    //        if (entityy.LeaveType == LeaveType.ANNUAL)
-                //    //        {
-
-                //    //            //entityy.Amount = entityy.To.Subtract(entityy.From).Days + 1 - count;
-                //    //            //entityy.Amount = entityy.Amount - Convert.ToDecimal(weekDays);
-                //    //            //if (leaves.Day == LeaveDay.Half_Day)
-                //    //            //{
-                //    //            //    decimal checkWeekEnd = entityy.To.Subtract(entityy.From).Days + 1 - count;
-                //    //            //    double amt = GetHalf(entityy.From, entityy.To);
-                //    //            //    double notHalf = GetNotHalf(entityy.From, entityy.To);
-                //    //            //    bool isHalf = IsHalf(entityy.From, entityy.To);
-                //    //            //    if (isHalf)
-                //    //            //    {
-                //    //            //        entityy.Amount = (checkWeekEnd - Convert.ToDecimal(notHalf)) / 2;
-                //    //            //    }
-                //    //            //    else
-                //    //            //    {
-                //    //            //        entityy.Amount = entityy.Amount / 2;
-                //    //            //    }
-
-                //    //            //}
-
-                //    //            //decimal days = entityy.Amount * 8;
-                //    //            //decimal leaveDays = entityy.Amount * entityy.Hours;
-                //    //            //entityy.Amount = (days - leaveDays) / 8;
-
-                //    //            //====================================================================
-                //    //            #region Update Balance
-
-                //    //            var totalSum = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == entityy.EmployeeId).ToList();
-
-                //    //            var totalEntitle = totalSum.Sum(x => x.Balance);
-                //    //            if (totalEntitle < leaves.LeaveDays)
-                //    //            {
-                //    //                ModelState.AddModelError("", "your request amount is greater than your balance");
-                //    //                return Json(new[] { requestesStatus }.ToDataSourceResult(request, ModelState));
-                //    //            }
-                //    //            else
-                //    //            {
-
-                //    //                db.Leaves.Add(entityy);
-                //    //                //db.SaveChanges();
-
-                //    //                decimal dateAsked = leaves.LeaveDays;
-                //    //                decimal dateLeft = 0;
-                //    //                int index = 0;
-                //    //                do
-                //    //                {
-                //    //                    List<LeaveModel> leaveList = new List<LeaveModel>();
-
-                //    //                    var yearLists = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == entityy.EmployeeId).ToList();
-
-
-                //    //                    foreach (var year in yearLists)
-                //    //                    {
-
-                //    //                        var leavel = new LeaveModel();
-                //    //                        var gl = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == year.GlFiscalYearId);
-                //    //                        if (gl != null)
-                //    //                        {
-                //    //                            leavel.Year = gl.DateTo;
-                //    //                        }
-
-                //    //                        leaveList.Add(leavel);
-                //    //                    }
-                //    //                    var smallestDate = leaveList.Min(x => x.Year);
-                //    //                    if (smallestDate != null)
-                //    //                    {
-                //    //                        var fiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.DateTo == smallestDate);
-                //    //                        if (fiscalYear != null)
-                //    //                        {
-                //    //                            var entiteledEmp = db.LeavesEntitle.FirstOrDefault
-                //    //                                (x => x.EmployeeId == leaves.EmployeeId
-                //    //                                && x.GlFiscalYearId == fiscalYear.GlFiscalYearId
-                //    //                                && !x.IsExpired);
-                //    //                            if (entiteledEmp != null)
-                //    //                            {
-                //    //                                if (entiteledEmp.Balance < dateAsked)
-                //    //                                {
-                //    //                                    dateLeft = dateAsked - entiteledEmp.Balance;
-                //    //                                    var leaveUsageTrack = new LeaveUsageTrackingForVoid();
-                //    //                                    leaveUsageTrack.EmployeeId = leaves.EmployeeId;
-                //    //                                    leaveUsageTrack.GlFisicalYearId = entiteledEmp.GlFiscalYearId;
-                //    //                                    leaveUsageTrack.Index = index;
-                //    //                                    leaveUsageTrack.Amount = entiteledEmp.Balance;
-                //    //                                    leaveUsageTrack.LeaveRequestId = leaves.LeaveRequestId;
-                //    //                                    leaveUsageTrack.IsActive = true;
-                //    //                                    db.LeaveUsageTrackingForVoids.Add(leaveUsageTrack);
-                //    //                                    entiteledEmp.Balance = 0;
-                //    //                                    entiteledEmp.IsExpired = true;
-                //    //                                    db.Entry(entiteledEmp).State = EntityState.Modified;
-                //    //                                    db.SaveChanges();
-                //    //                                    dateAsked = dateLeft;
-
-                //    //                                }
-                //    //                                else
-                //    //                                {
-                //    //                                    dateLeft = entiteledEmp.Balance - dateAsked;
-                //    //                                    if (dateLeft >= 0)
-                //    //                                    {
-                //    //                                        entiteledEmp.Balance = dateLeft;
-
-                //    //                                        if (dateLeft == 0)
-                //    //                                        {
-                //    //                                            //if (fiscalYear.Status == Core.Domain.Finance.GL.FiscalYearStatus.Close)
-                //    //                                            //{
-                //    //                                            entiteledEmp.IsExpired = true;
-                //    //                                            //}
-                //    //                                        }
-
-                //    //                                        db.Entry(entiteledEmp).State = EntityState.Modified;
-                //    //                                        db.SaveChanges();
-
-                //    //                                        var leaveUsageTrack = new LeaveUsageTrackingForVoid();
-
-                //    //                                        leaveUsageTrack.EmployeeId = entityy.EmployeeId;
-                //    //                                        leaveUsageTrack.GlFisicalYearId = entityy.GlFiscalYearId;
-                //    //                                        leaveUsageTrack.Index = index;
-                //    //                                        leaveUsageTrack.Amount = dateAsked;
-                //    //                                        leaveUsageTrack.LeaveRequestId = leaves.LeaveRequestId;
-                //    //                                        leaveUsageTrack.IsActive = true;
-                //    //                                        db.LeaveUsageTrackingForVoids.Add(leaveUsageTrack);
-                //    //                                        db.SaveChanges();
-                //    //                                        dateLeft = 0;
-                //    //                                    }
-                //    //                                }
-                //    //                            }
-                //    //                        }
-                //    //                    }
-
-                //    //                    index++;
-
-                //    //                } while (dateLeft > 0);
-
-                //    //                #endregion
-
-                //    //                #region  update balance column in leave request
-
-                //    //                var entitl = db.LeavesEntitle.Where(x => x.EmployeeId == entityy.EmployeeId && !x.IsExpired).ToList();
-                //    //                if (entitl.Any())
-                //    //                {
-                //    //                    decimal ttlB = entitl.Sum(x => x.Balance);
-
-                //    //                    var reqeust = db.LeaveRequest.Find(requestesStatus.RequestId);
-                //    //                    if (reqeust != null)
-                //    //                    {
-                //    //                        reqeust.LeaveBalance = ttlB;
-
-                //    //                        db.Entry(reqeust).State = EntityState.Modified;
-                //    //                        db.SaveChanges();
-                //    //                    }
-
-                //    //                }
-                //    //                #endregion
-                //    //                #region Add Datas to Leave Taken
-
-                //    //                #endregion
-
-
-                //    //            }
-                //    //        }
-                //    //        else
-                //    //        {
-                //    //            db.Leaves.Add(entityy);
-                //    //            db.SaveChanges();
-                //    //        }
-                //    //    }
-                //    //}
-
-
-                //}
-                #endregion
+                
                 if (referenceType2 == "LeaveReturn"
                     && requestesStatus.Status == RequestStatus.APPROVE)
                 {
@@ -5613,6 +5368,87 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         //}
 
         #endregion
+        private void ApproveLeaveRequest(LeaveRequest leaveRequest)
+        {
+            leaveRequest.OnlineApprovedBy = User.Identity.Name;
+            leaveRequest.OnlineApprovedTime = DateTime.Now;
+            leaveRequest.IsOnlineApproved = true;
+            leaveRequest.Status = RequestStatus.APPROVE.ToString();
+
+            if (leaveRequest.Type == LeaveType.ANNUAL)
+                DeductEntitlement(leaveRequest);
+
+            NotifyLeaveApproval(leaveRequest);
+
+            db.Leaves.Add(new Core.Domain.HRM.LeaveManagment.Leave
+            {
+                EmployeeId = leaveRequest.EmployeeId,
+                LeaveType = leaveRequest.Type,
+                Amount = leaveRequest.LeaveDays,
+                GlFiscalYearId = leaveRequest.GlFiscalYearId,
+                From = leaveRequest.From,
+                To = leaveRequest.To,
+                FromAmharic = leaveRequest.FromAmharic,
+                ToAmharic = leaveRequest.ToAmharic,
+                Remark = leaveRequest.Remark,
+                CreatedBy = User.Identity.Name,
+                DateCreated = DateTime.Now,
+                EmployeeCode = leaveRequest.Employee.EmployeeCode,
+                OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                RequestId = leaveRequest.LeaveRequestId
+            });
+
+            db.Entry(leaveRequest).State = EntityState.Modified;
+            db.SaveChanges();
+            HandlePlacementToEmployeeCard(leaveRequest.EmployeeId, leaveRequest.LeaveRequestId, "Leave");
+        }
+        private void DeductEntitlement(LeaveRequest leaveRequest)
+        {
+            decimal leaveToDeduct = leaveRequest.LeaveDays;
+            int index = 0;
+
+            var entitlements = db.LeavesEntitle
+                                 .Where(e => e.EmployeeId == leaveRequest.EmployeeId && !e.IsExpired)
+                                 .OrderBy(e => db.GLFiscalYears.FirstOrDefault(f => f.GlFiscalYearId == e.GlFiscalYearId).DateTo)
+                                 .ToList();
+
+            foreach (var ent in entitlements)
+            {
+                if (leaveToDeduct <= 0) break;
+
+                decimal used = Math.Min(leaveToDeduct, ent.Balance);
+                ent.Balance -= used;
+                ent.IsExpired = ent.Balance == 0;
+
+                db.LeaveUsageTrackingForVoids.Add(new LeaveUsageTrackingForVoid
+                {
+                    EmployeeId = leaveRequest.EmployeeId,
+                    GlFisicalYearId = ent.GlFiscalYearId,
+                    Index = index++,
+                    Amount = used,
+                    LeaveRequestId = leaveRequest.LeaveRequestId,
+                    IsActive = true
+                });
+
+                db.Entry(ent).State = EntityState.Modified;
+                leaveToDeduct -= used;
+                db.SaveChanges(); // optional: batch this outside the loop for performance
+            }
+
+            if (leaveToDeduct > 0)
+                throw new InvalidOperationException("Insufficient leave balance across entitlements.");
+        }
+        private void NotifyLeaveApproval(LeaveRequest leaveRequest)
+        {
+            var notif = new NotifModels
+            {
+                UserId = UserInformationHelper.GetEmployeeUserId(leaveRequest.EmployeeId),
+                Title = "Leave Request",
+                Message = "Your Leave Request has been approved."
+            };
+            Notify.NotifyUser(notif);
+        }
+
         private void GetStatusType()
         {
             var ststus = Enum.GetValues(typeof(RequestStatus))

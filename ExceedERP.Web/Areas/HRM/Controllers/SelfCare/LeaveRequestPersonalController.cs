@@ -512,7 +512,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             var fiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom <= leaveRequest.From && x.DateTo >= leaveRequest.From);
             if (fiscalYear == null)
             {
-                return new JavaScriptResult { Script = "alert('Check your Period if it is defined');" };
+                ModelState.AddModelError("", "Check your Period if it is defined");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
 
             leaveRequest.LeaveDays = GetLeaveDays(leaveRequest.From, leaveRequest.To, fiscalYear.GlFiscalYearId, leaveRequest.Day, leaveRequest.Type);
@@ -529,17 +530,30 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             #region Validations
 
-            entitleBal = db.LeavesEntitle.Where(x => x.EmployeeId == leaveRequest.EmployeeId && !x.IsExpired).Sum(x => x.Balance);
+            // Get total leave balance for the employee (non-expired entitlements)
+            entitleBal = db.LeavesEntitle
+                .Where(x => x.EmployeeId == leaveRequest.EmployeeId && !x.IsExpired)
+                .Sum(x => x.Balance);
 
-            if (leaveRequest.LeaveDays > entitleBal && leaveRequest.Type == LeaveType.ANNUAL)
+            // Validate if requested days exceed balance for ANNUAL leave
+            if (leaveRequest.Type == LeaveType.ANNUAL && leaveRequest.LeaveDays > entitleBal)
             {
-                ModelState.AddModelError("", "You requested more than your balance");
+                ModelState.AddModelError("", "You have requested more leave days than your available balance.");
                 return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
 
-            if (db.LeaveRequest.Any(x => x.EmployeeId == leaveRequest.EmployeeId && ((x.From <= leaveRequest.From && x.To >= leaveRequest.From) || (x.From <= leaveRequest.To && x.To >= leaveRequest.To))))
+            // Check if the requested date range overlaps with any existing leave
+            bool hasOverlap = db.LeaveRequest.Any(x =>
+                x.EmployeeId == leaveRequest.EmployeeId &&
+                (
+                    (x.From <= leaveRequest.From && x.To >= leaveRequest.From) ||
+                    (x.From <= leaveRequest.To && x.To >= leaveRequest.To)
+                )
+            );
+
+            if (hasOverlap)
             {
-                ModelState.AddModelError("", "Your request overlaps with another request");
+                ModelState.AddModelError("", "The requested leave period overlaps with an existing leave.");
                 return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
 
@@ -652,46 +666,64 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
 
-            var existingLeave = db.Leaves.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
+            var existingLeave = db.LeaveRequest
+                                .FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId &&
+                                                     !x.IsVoid &&
+                                                     x.GlFiscalYearId == fiscalYear.GlFiscalYearId &&
+                                                     x.To >= leaveRequest.From && // overlap condition
+                                                     x.From <= leaveRequest.To);   // overlap condition
+
             if (existingLeave != null)
             {
-                if ((leaveRequest.From >= existingLeave.From && leaveRequest.From <= existingLeave.To) || (leaveRequest.To >= existingLeave.From && leaveRequest.To <= existingLeave.To))
-                {
-                    ModelState.AddModelError("", "Selected date range overlaps with other leave taken date. Please select another date range");
-                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
-                }
+                ModelState.AddModelError("", "Selected date range overlaps with an existing leave. Please select a different range.");
+                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
 
-            var entitleCurrentYear = db.LeavesEntitle.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
-            if (entitleCurrentYear != null && leaveRequest.Type == LeaveType.ANNUAL)
+
+            if (leaveRequest.Type == LeaveType.ANNUAL)
             {
-                var totalEntitle = entitleBal;
-                var exactDeserve = GetEmployeeDeserveLeaveDays(fiscalYear.DateFrom, leaveRequest.To, entitleCurrentYear.Amount, entitleCurrentYear.Balance, totalEntitle);
-                var currentYearDeserve = GetCurrentYearDeserve(fiscalYear.DateFrom, leaveRequest.To, entitleCurrentYear.Amount);
+                var entitleCurrentYear = db.LeavesEntitle
+                    .FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
+
+                if (entitleCurrentYear == null)
+                {
+                    ModelState.AddModelError("", "You have no entitlement for this budget year.");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
+                }
+
+                var exactDeserve = GetEmployeeDeserveLeaveDays(
+                    fiscalYear.DateFrom,
+                    leaveRequest.To,
+                    entitleCurrentYear.Amount,
+                    entitleCurrentYear.Balance,
+                    entitleBal);
 
                 if (exactDeserve == 0 || leaveRequest.LeaveDays > exactDeserve)
                 {
-                    ModelState.AddModelError("", "You can't take this amount of leave in this period");
+                    ModelState.AddModelError("", "You can't take this amount of leave in this period.");
                     return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
 
-                var leaveRequests = db.LeaveRequest.Where(x => x.EmployeeId == leaveRequest.EmployeeId && x.GlFiscalYearId == fiscalYear.GlFiscalYearId && x.Type == LeaveType.ANNUAL && !x.IsOnlineApproved);
-                if (leaveRequests.Any())
+                // Pending requests check (not yet approved)
+                var pendingLeaveRequests = db.LeaveRequest
+                    .Where(x => x.EmployeeId == leaveRequest.EmployeeId &&
+                                x.GlFiscalYearId == fiscalYear.GlFiscalYearId &&
+                                x.Type == LeaveType.ANNUAL &&
+                                !x.IsOnlineApproved&&
+                                !x.IsVoid);
+
+                var pendingLeaveDays = pendingLeaveRequests.Sum(x => x.LeaveDays);
+                var totalRequested = pendingLeaveDays + leaveRequest.LeaveDays;
+
+                if (totalRequested > exactDeserve)
                 {
-                    var leaveRequestedDays = leaveRequests.Sum(x => x.LeaveDays);
-                    var totalNeeded = leaveRequestedDays + leaveRequest.LeaveDays;
-                    if (totalNeeded > exactDeserve)
-                    {
-                        ModelState.AddModelError("", "You have other waiting requests so the sum of days exceeds your deserved amount");
-                        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
-                    }
+                    ModelState.AddModelError("",
+                        $"You have {pendingLeaveDays} days in other pending requests and {leaveRequest.LeaveDays} days in the current request, totaling {totalRequested} days. " +
+                        $"This exceeds your deserved amount of {exactDeserve} days.");
+                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
                 }
             }
-            else if (leaveRequest.Type == LeaveType.ANNUAL)
-            {
-                ModelState.AddModelError("", "You have no entitlement for this budget year");
-                return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
-            }
+
             var placement = db.Placements.Where(x => x.EmployeeId == leaveRequest.EmployeeId && x.isCurrent == true).FirstOrDefault();
 
             if (placement != null)

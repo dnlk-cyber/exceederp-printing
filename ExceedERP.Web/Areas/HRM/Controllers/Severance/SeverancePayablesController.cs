@@ -18,7 +18,7 @@ using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Severance
 {
-    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRAdmin, HrmConstants.HRAttendanceUser)]
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRAdmin)]
     public class SeverancePayablesController : BaseController
     {
         ExceedDbContext db = new ExceedDbContext();

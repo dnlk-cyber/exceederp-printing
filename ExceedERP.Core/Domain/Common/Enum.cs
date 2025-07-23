@@ -178,6 +178,7 @@ namespace ExceedERP.Core.Domain.Common
         Employee_Termination_Summary_By_Business_Unit,
         Training_Action_Plan,
         Training_Need_Report,
+        Employee_Master_Report
     }
     public enum ProcurementModuleReportType
     {
