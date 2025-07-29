@@ -250,8 +250,8 @@
                                                       .Name("PurchaseRequisitionItem_#=PurchaseRequisitionID#")
                                                       .Columns(columns =>
                                                       {
-                                                                  columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category");
-                                                                  columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items");
+                                                                  columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category").Width(120);
+                                                                  columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items").Width(120);
 
                                                                   columns.Bound(c => c.Name).Width(120);
                                                                   columns.Bound(c => c.PartNo).Width(120);
