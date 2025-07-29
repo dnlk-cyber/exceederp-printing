@@ -102,7 +102,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.Settings
 
 			return Json(new[] { Planner }.ToDataSourceResult(request));
 		}
-          [AllowAnonymous]
+          
 		  public ActionResult PlannerDDBind()
 		{
 

@@ -6,7 +6,7 @@
                               .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetAllMechaniCrew", "MaintenanceDataProvider", new { area = "Maintenance" }).Data("filterEmployees"))
+                              dataSource.Read(read => read.Action("GetAllMechaniCrew", "MaintenanceDataProvider", new { area = "Maintenance" }).Data("sendForgery").Data("filterEmployees"))
                                             .ServerFiltering(true);
                           })
 

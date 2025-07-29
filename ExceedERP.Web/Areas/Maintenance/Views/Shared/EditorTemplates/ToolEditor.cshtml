@@ -7,6 +7,6 @@
         .DataValueField("ToolsName")
         .OptionLabel("Select Tool")
         .Filter(FilterType.Contains)
-        .DataSource(d => d.Read(r => r.Action("MaintenanceToolDDBind", "MaintenanceTool")).ServerFiltering(false)))
+        .DataSource(d => d.Read(r => r.Action("MaintenanceToolDDBind", "MaintenanceTool").Data("sendForgery")).ServerFiltering(false)))
 
 

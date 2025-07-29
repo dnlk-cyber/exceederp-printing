@@ -43,6 +43,7 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox11 = new Telerik.Reporting.TextBox();
             this.textBox3 = new Telerik.Reporting.TextBox();
             this.textBox5 = new Telerik.Reporting.TextBox();
+            this.headerSubReport1 = new ExceedERP.Reporting.SharedDesigners.HeaderSubReport();
             this.TypeDS = new Telerik.Reporting.ObjectDataSource();
             this.subTypeDS = new Telerik.Reporting.ObjectDataSource();
             this.EquipmentNameDS = new Telerik.Reporting.ObjectDataSource();
@@ -76,7 +77,6 @@ namespace ExceedERP.Reporting.Fleet.View
             this.headerComp = new Telerik.Reporting.ObjectDataSource();
             this.reportHeaderSection1 = new Telerik.Reporting.ReportHeaderSection();
             this.subReport1 = new Telerik.Reporting.SubReport();
-            this.headerSubReport1 = new ExceedERP.Reporting.SharedDesigners.HeaderSubReport();
             ((System.ComponentModel.ISupportInitialize)(this.headerSubReport1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -107,6 +107,10 @@ namespace ExceedERP.Reporting.Fleet.View
             this.textBox5.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.2166674137115479D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox5.StyleName = "Civic.TableHeader";
             this.textBox5.Value = "Working Cost";
+            // 
+            // headerSubReport1
+            // 
+            this.headerSubReport1.Name = "HeaderSubReport";
             // 
             // TypeDS
             // 
@@ -446,10 +450,6 @@ namespace ExceedERP.Reporting.Fleet.View
             instanceReportSource1.ReportDocument = this.headerSubReport1;
             this.subReport1.ReportSource = instanceReportSource1;
             this.subReport1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2D), Telerik.Reporting.Drawing.Unit.Inch(0.29999998211860657D));
-            // 
-            // headerSubReport1
-            // 
-            this.headerSubReport1.Name = "HeaderSubReport";
             // 
             // TimeSheetSummary
             // 

@@ -1,0 +1,1772 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using ExceedERP.Core.Domain.Maintenance;
+@using ExceedERP.Helpers.Common;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Scripts/Exceed/dist/css/style.css" rel="stylesheet" />
+<script src="~/Scripts/Exceed/exceed.js"></script>
+<style>
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+        .switch input {
+            display: none;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 34px;
+    }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+</style>
+
+<script>
+
+    function filterServiceCrew() {
+        return {
+            Id: masterId
+        };
+    }
+    function filterMaintenanceCenter() {
+        return {
+            Type: $("#Type").val()
+        };
+    }
+    function filterCause() {
+        return {
+            Id: Referance
+        };
+    }
+    function filterSerivce() {
+        return {
+            Id: masterId
+        };
+    }
+
+    function SelectInventoryStore(e, JobOrderDetailID) {
+        popup = window.open('/FleetManagement/ServiceCenter/InventoryStoreSelector?Id=' + JobOrderDetailID, 'PoP_Up', 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=324,height=268');
+        popup.focus();
+        return false;
+    }
+
+</script>
+<legend>Canibalization Approval<legend>
+@(Html.Kendo().Grid<ServiceCenterJob>()
+                .Name("grid")
+                .Columns(columns =>
+                {
+                    columns.Bound(e => e.Num).Width(80);
+                    columns.ForeignKey(e => e.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Title("Customer").Width(150);
+                    columns.Bound(e => e.LicensePlate).Width(100);
+                    columns.Bound(e => e.EquipmentName).Width(100).Title("Equipment Name");
+                    columns.Bound(e => e.IsRework).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsRework? checked='checked': checked='' #/>");
+                    columns.Bound(e => e.IsInsured).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsInsured? checked='checked': checked='' #/>");
+                    columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").Width(140);
+                    columns.ForeignKey(e => e.ServiceCenterId, (IEnumerable)ViewData["ServiceCenter"], "Id", "Name").Width(150);
+                    columns.Bound(e => e.Status).Width(200); ;
+                    columns.Bound(e => e.IsSentToExternal).Width(200); ;
+                })
+                .Editable(editable =>
+                {
+                    editable.Mode(GridEditMode.PopUp).TemplateName("JobOrderEditor");
+                    editable.DisplayDeleteConfirmation("Are You Sure To Send For Approval");
+                })
+                .HtmlAttributes(new { style = "height: 600px;" })
+                .Pageable(pageable => pageable
+                .Input(true)
+                .Numeric(false)
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+                .Scrollable()
+                .Sortable()
+                .Filterable()
+                .Scrollable(h => h.Height(600))
+                .ClientDetailTemplateId("template")
+                .Events(ev => ev.DetailExpand("MasterOnExpand"))
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .ServerOperation(true).Sort(x => x.Add(s => s.Num).Descending())
+                .PageSize(10)
+                .Model(model =>
+                {
+                    model.Id(p => p.ServiceCenterJobId);
+                    model.Field(p => p.ServiceCenterJobId).Editable(false);
+                    model.Field(p => p.JobOrderID).Editable(false);
+                }
+                ).Events(ev => ev
+                                    .Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+
+
+                //.Create(update => update.Action("JobOrder_Create", "JobOrder").Data("sendForgery"))
+                .Read(read => read.Action("WorkShopsForFleet_Read", "WorkShop").Data("sendForgery"))
+              //  .Update(update => update.Action("JobOrder_Update", "ServiceCenter").Data("sendForgery"))
+              //  .Destroy(update => update.Action("JobOrder_Refer", "ServiceCenter").Data("sendForgery"))
+
+                )
+                .Events(events => events.DataBound("dataBound"))
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                        .Name("tabStripMain_#=ServiceCenterJobId#")
+                                        .SelectedIndex(0)
+                                        .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                        .Items(items =>
+                                        {
+
+                                        items.Add().Text(" Canibalization ").Content(@<text>
+ @(Html.Kendo().Grid<Canibalization>()
+.Name("CanibalizationGrid_#=ServiceCenterJobId#")
+.Columns(columns =>
+{
+                        columns.Group(g => g.Title("Requesting Machine").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" })
+                        .Columns(detail =>
+                        {
+                        //detail.Bound(evp => evp.BAC).Width(100).Format("{0:N2}");
+                        detail.Bound(c => c.RequestingMachinModel).Title("Model");
+                        detail.Bound(c => c.RequestingMachinePlateNumber).Title("Plate Number");
+                        detail.Bound(c => c.RequestingMachineEngineModel).Title("Engine Model");
+                        detail.Bound(c => c.RequestingMachineEngineNumber).Title("Engine Number");
+                        })
+                        );
+columns.Group(g => g.Title("Providing Machine").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" })
+.Columns(detail =>
+{
+                                            detail.Bound(c => c.ProvidingMachinModel).Title("Machine Model");
+                                            detail.ForeignKey(c => c.ProvidingMachinePlateNumber, (IEnumerable)ViewData["CanibalizePlates"], "PlateNumber", "Name").EditorTemplateName("PlateNumberSelector").Title("Plate Number");
+                                            detail.Bound(c => c.ProvidingMachineEngineModel).Title("Engine Model");
+                                            detail.Bound(c => c.ProvidingMachineEngineNumber).Title("Engine Number");
+                                        })
+);
+                                            columns.Bound(c => c.Remark);
+                                            columns.Bound(c => c.Status);
+                                           
+
+                                        }).Filterable()
+
+
+
+//.Events(ev => ev.Edit("onMasterEdit"))
+
+.Editable(editable => editable.Mode(GridEditMode.InLine))
+.HtmlAttributes(new { style = "height: 400px;" })
+
+.Scrollable()
+
+.Filterable()
+.Selectable(selectable =>
+{
+                                            selectable.Mode(GridSelectionMode.Single);
+                                            selectable.Type(GridSelectionType.Row);
+                                        })
+.Sortable(sortable =>
+{
+                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                        })
+.Events(ev => ev.DataBound("CanibalizationDB"))
+// .Events(ev => ev.DetailExpand("detailExpand"))
+.Scrollable(h => h.Height(400))
+// .Events(x => x.DataBound("onDataBoundMaster"))
+.DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Sort(sort => sort.Add("CanibalizationId").Descending())
+                    .Events(ev => ev
+                    .Error("error_handler(\"CanibalizationGrid_#=ServiceCenterJobId#\")")
+                    .RequestStart("onRequestStart(\"CanibalizationGrid_#=ServiceCenterJobId#\")")
+                    .RequestEnd("onRequestEnd(\"CanibalizationGrid_#=ServiceCenterJobId#\")"))
+
+                    .Model(model =>
+                    {
+                        model.Id(p => p.CanibalizationId);
+                        model.Field(p => p.RequestingMachinePlateNumber).Editable(false);
+                        model.Field(p => p.RequestingMachineEngineNumber).Editable(false);
+                        model.Field(p => p.RequestingMachineEngineModel).Editable(false);
+                        model.Field(p => p.RequestingMachinModel).Editable(false);
+                        model.Field(p => p.ProvidingMachineEngineNumber).Editable(false);
+                        model.Field(p => p.ProvidingMachineEngineModel).Editable(false);
+                        model.Field(p => p.ProvidingMachinModel).Editable(false);
+                        model.Field(p => p.Status).Editable(false);
+                    }
+                    )
+                    .Read(read => read.Action("Canibalization_Read", "Canibalization", new { Id = "#=ServiceCenterJobId#" }).Data("sendForgery"))
+                   // .Create(create => create.Action("Canibalization_Create", "Canibalization", new { Id = "#=ServiceCenterJobId#" }).Data("sendForgery"))
+                    //.Update(update => update.Action("Canibalization_Update", "Canibalization").Data("sendForgery"))
+                   // .Destroy(destroy => destroy.Action("Canibalization_Destroy", "Canibalization").Data("sendForgery"))
+).Resizable(resize => resize.Columns(true))
+.ClientDetailTemplateId("PartsToBeCanabilized")
+.ToClientTemplate())
+</text>
+);
+      
+                                            })
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    .ToClientTemplate())
+</script>
+<script id="PartsToBeCanabilized" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                        .Name("tabstripCanibalization_#=CanibalizationId#")
+                                        .SelectedIndex(0)
+                                            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                        .Items(items =>
+                                        {
+                                            items.Add().Text("Detail")
+                                    .Content(@<text>
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                            </div>
+                                            <div class="col-md-6" style="margin-top:20px;">
+                                                <div class="form-group">
+                                                    Created By:<span>#=CreatedBy#</span>
+                                                </div>
+                                                <div class="form-group">
+                                                    DateCreated:<span>#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #</span>
+                                                </div>
+                                                <div class="form-group">
+                                                    Approved By:<span>#=OnlineApprovedBy#</span>
+                                                </div>
+                                                <div class="form-group">
+                                                    Approved Date:<span>#=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy')#</span>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                            </div>
+                                            <div class="col-md-6" style="margin-top:20px;">
+                                                <div class="form-group">
+                                                    Second ApprovedBy:<span>#=SecondOnlineApprovedBy#</span>
+                                                </div>
+                                                <div class="form-group">
+                                                    Second Approved Time:<span>#=kendo.toString(kendo.parseDate(SecondOnlineApprovedTime), 'dd/MM/yyyy') #</span>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                        # if(!IsOnlineApproved&&!IsSendForApproval)
+                                        {#
+                                        <a onclick='return CanibalizationSendForApproval("#=CanibalizationId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                        <br />
+                                        # } #
+                                        # if(!IsSecondOnlineApproved&&!IsSecondSendForApproval&&IsOnlineApproved)
+                                        {#
+                                        <a onclick='return CanibalizationDepSendForApproval("#=CanibalizationId#")' href=' \#' title="Send for Department Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                        <br />
+                                        # } #
+                                        @*# if (!IsDepartmentOnlineApproved&&IsOnlineApproved)
+                                            {#
+                                            <dl class="h6">
+                                                <dt>
+                                                    Next Approver
+                                                </dt>
+                                                <dd>
+                                                    #= ForwardedTo # <snap id="user_name_display"></snap>
+                                                    <a onclick='displayUserName("#=ForwardedTo#")' href=' \#' title="Show Name">Show Name<i class="fa fa-user fa-1x"></i></a> |
+                                                    <a onclick='SelectNextApprover(this,"#=CanibalizationId#","Maintenance_Caniblization")' href=' \#' title="Change next approver">Change next approver<i class="fa fa-undo fa-1x"></i></a>
+                                                    <snap id="new_user_name_display"></snap>
+                                                </dd>
+                                            </dl>
+                                            # } #*@
+
+                                    </text>);
+                                                    items.Add().Text("CanibalizedParts")
+.Content(
+    @<text>
+        @CanibalizedParts()
+    </text>);
+                                            items.Add().Text("Canibalization Approval").Content(
+                    @<text>
+                        @CanablizationApproval()
+                    </text>);
+                                    }
+                                            ).ToClientTemplate()
+    )
+
+
+</script>
+
+
+@helper CanablizationApproval()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.CanibalizationApproval>()
+                                .Name("Canibalizationgrid_#=CanibalizationId#")
+                                .Columns(columns => // No parameters needed here
+                                {
+                                    columns.Bound(c => c.CanibalizationApprovalId).Title("Approval ID");
+                                    columns.Bound(c => c.Status).Title("Status");
+                                    columns.Bound(c => c.Remark).Title("Remark");
+                                    columns.Bound(c => c.CreatedBy).Title("Created By");
+                                    columns.Bound(c => c.DateCreated).Title("Date Created");
+                                    columns.Command(command =>
+                        {
+                            command.Custom("cmd-approve-request").HtmlAttributes(new { @class = "kendoPrimary" })
+                .Text("&nbsp;Approve").Click("approveJobRequest").IconClass("fa fa-check");
+                            command.Custom("cmd-reject-request").HtmlAttributes(new { @class = "kendoDanger" })
+                .Text("&nbsp;Reject").Click("rejectJobRequest").IconClass("fa fa-close");
+            //command.Custom().Text("Approve");
+        }).Width(250);
+                                }).Events(ev =>
+                                {
+                                    ev.DataBound("approveonDataBound");
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .PageSize(20)
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.CanibalizationApprovalId);
+                                    model.Field(p => p.CreatedBy).Editable(false);
+                                    model.Field(p => p.DateCreated).Editable(false);
+                                }).Events(ev => ev
+                                .Error("error_handler(\"Canibalizationgrid_#=CanibalizationId#\")")
+                                .RequestStart("onRequestStart(\"Canibalizationgrid_#=CanibalizationId#\")")
+                                .RequestEnd("onRequestEnd(\"Canibalizationgrid_#=CanibalizationId#\")"))
+                                .Create(create => create.Action("Admin_Approve", "Canibalization", new { Id = "#=CanibalizationId#" }).Data("sendForgery"))
+                                .Read(read => read.Action("Admin_Read", "Canibalization", new { Id = "#=CanibalizationId#" }).Data("sendForgery"))
+                                .Update(update => update.Action("Admin_Approve", "Canibalization", new { Id = "#=CanibalizationId#" }).Data("sendForgery"))
+                                )
+                                .ToClientTemplate())
+}
+@helper CanibalizedParts()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.CanibalizedParts>()
+                                .Name("CanibalizedP_#=CanibalizationId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(e => e.VehiclePartId, (IEnumerable)ViewData["VehicleParts"], "VehiclePartId", "Name").EditorTemplateName("VehiclePartSelector").Title("Vehicle Part").Width(150);
+                                    columns.Bound(c => c.Quantity);
+                                    columns.Bound(c => c.Unit);
+                                    columns.Bound(c => c.Description);
+                                    columns.Command(command =>
+                        {
+                            command.Edit();
+                            command.Destroy();
+                        });
+
+                                })
+                                .ToolBar(commands => commands.Create())
+                                .Events(ev => ev.DataBound("CanibalizedPartsDB"))
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .PageSize(5)
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.CanibalizedPartsId);
+
+                                })
+                                .Events(ev => ev
+                                .Error("error_handler(\"CanibalizedP_#=CanibalizationId#\")")
+                                .RequestStart("onRequestStart(\"CanibalizedP_#=CanibalizationId#\")")
+                                .RequestEnd("onRequestEnd(\"CanibalizedP_#=CanibalizationId#\")"))
+
+                                .Create(update => update.Action("Create", "CanabilizedPart", new { Id = "#=CanibalizationId#" }).Data("sendForgery"))
+                                .Read(read => read.Action("Read", "CanabilizedPart", new { Id = "#=CanibalizationId#" }).Data("sendForgery"))
+                                .Update(update => update.Action("Update", "CanabilizedPart").Data("sendForgery"))
+                                .Destroy(delete => delete.Action("Destroy", "CanabilizedPart").Data("sendForgery"))
+
+
+                                )
+                                .ToClientTemplate())
+}
+
+
+<script id="ComponentDetailItemTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                .Name("tabStripExComponentDetail_#=ExternalComponentId#")
+                                .SelectedIndex(0)
+                                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                .Items(items =>
+                                {
+                                    items.Add().Text(" Spare Part ").Content(@<text>
+                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.ExternalMaterial>()
+                                                                                                                                    .Name("ExComponentServiceSparegrid_#=ExternalComponentId#")
+                                                                                                                                    .Columns(columns =>
+                                                                                                                                    {
+                                                                                                                                                columns.Bound(o => o.MaterialName).Title("SparePart Name").Width(120);
+                                                                                                                                                columns.Bound(o => o.Quantity).EditorTemplateName("NumEditor").Width(100);
+                                                                                                                                                columns.Bound(o => o.UnitPrice).EditorTemplateName("NumEditor").Width(100);
+                                                                                                                                                columns.Bound(o => o.ApprovalStatuses).EditorTemplateName("ApprovalStatusBind").Width(100);
+                                                                                                                                                columns.Bound(o => o.Remark).Width(100);
+                                                                                                                                                columns.Bound(o => o.CreatedBy).Width(100);
+                                                                                                                                                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                                                                                                                                                                                                                                                       })
+                                                                                                                                    .Editable(editable =>
+                                                                                                                                    {
+                                                                                                                                                editable.Mode(GridEditMode.InLine);
+                                                                                                                                                editable.DisplayDeleteConfirmation("Are You Sure To Remove Spare Part");
+                                                                                                                                            })
+                                                                                                                                    .DataSource(dataSource => dataSource
+                                                                                                                                    .Ajax()
+                                                                                                                                    .PageSize(20)
+                                                                                                                                    .Model(model =>
+                                                                                                                                    {
+                                                                                                                                                model.Id(p => p.ExternalMaterialID);
+                                                                                                                                                model.Field(p => p.ApprovalStatuses).Editable(false);
+                                                                                                                                                model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                                                model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                                            }).Events(ev => ev
+.Error("error_handler(\"ExComponentServiceSparegrid_#=ExternalComponentId#\")")
+.RequestStart("onRequestStart(\"ExComponentServiceSparegrid_#=ExternalComponentId#\")")
+.RequestEnd("onRequestEnd(\"ExComponentServiceSparegrid_#=ExternalComponentId#\")"))
+                                                                                                                                    //.Create(update => update.Action("ExternalServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentId#" }).Data("sendForgery"))
+                                                                                                                                    .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentId#" }).Data("sendForgery"))
+                                                                                                                                    //.Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare").Data("sendForgery"))
+                                                                                                                                    //.Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentId#" }).Data("sendForgery"))
+
+                                                                                                                                    )
+                                                                                                                                    .Pageable(p => p.Refresh(true))
+                                                                                                                                    .ToClientTemplate())
+
+                                    </text>
+                                                                                                    );
+
+
+                                        }).ToClientTemplate()
+
+    )
+</script>
+<script id="ComponentItemTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                .Name("tabStripComponentDetail_#=ExternalComponentId#")
+                                .SelectedIndex(0)
+                                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                .Items(items =>
+                                {
+                                    items.Add().Text(" Service ").Content(@<text>
+
+
+                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.ExternalComponentDetail>()
+                                                .Name("ComponentDetailgrid_#=ExternalComponentId#")
+                                                .Columns(columns =>
+                                                {
+                                                            columns.Bound(o => o.Name).Width(120);
+                                                            columns.Bound(o => o.Remark).Width(100);
+                                                            columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(100);
+                                                            columns.Bound(o => o.CreatedBy).Width(100);
+                                                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                                                            columns.Command(command =>
+{
+command.Edit();
+
+}).Width(250);
+                                                        })
+                                                .ToolBar(t => t.Create())
+                                                .Editable(editable =>
+                                                {
+                                                            editable.Mode(GridEditMode.InLine);
+                                                            editable.DisplayDeleteConfirmation("Are You Sure To Remove ");
+                                                        }).ClientDetailTemplateId("ComponentDetailItemTemplate")
+                                                .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .PageSize(20)
+                                                .Model(model =>
+                                                {
+                                                            model.Id(p => p.ExternalComponentDetailId);
+                                                            model.Field(p => p.ApprovalStatus).Editable(false);
+                                                            model.Field(p => p.CreatedBy).Editable(false);
+                                                            model.Field(p => p.DateCreated).Editable(false);
+                                                        }).Events(ev => ev
+.Error("error_handler(\"ComponentDetailgrid_#=ExternalComponentId#\")")
+.RequestStart("onRequestStart(\"ComponentDetailgrid_#=ExternalComponentId#\")")
+.RequestEnd("onRequestEnd(\"ComponentDetailgrid_#=ExternalComponentId#\")"))
+                                                                                                                                    .Create(create => create.Action("ExternalComponentDetail_Create", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }).Data("sendForgery"))
+                                                                                                                                                        .Read(read => read.Action("ExternalComponentDetail_Read", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }).Data("sendForgery"))
+                                                                                                                                    .Update(update => update.Action("ExternalComponentDetail_Update", "ExternalComponentDetail").Data("sendForgery"))
+                                                                                                                                    )
+                                                                                                                                    .Pageable(p => p.Refresh(true))
+                                                                                                                                    .ToClientTemplate())
+
+                                    </text>
+                                                                                                );
+
+                                        }).ToClientTemplate()
+
+    )
+</script>
+
+
+<script>
+function filterCategories() {
+var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+var filterInput = dropdownlist.filterInput;
+
+return {
+categoryId: $("#ItemCategoryCode").val(),
+filterText: filterInput.val()
+};
+}
+function SelectItemCategoryCode() {
+return {
+categoryId: $("#ItemCategoryCode").data("kendoDropDownList").value(),
+};
+}
+function filterSubCategory() {
+var dropdownlist = $("#SubCategoryCode").data("kendoDropDownList");
+var filterInput = dropdownlist.filterInput;
+return {
+jobOrderId: masterId,
+filterText: filterInput.val()
+
+};
+}
+function filterSubCategories() {
+var dropdownlist = $("#ServiceGroup").data("kendoDropDownList");
+var filterInput = dropdownlist.filterInput;
+var Code = $("#SubCategoryCode").val();
+return {
+subCategoryCode: Code,
+jobOrderId: masterId,
+filterText: filterInput.val()
+
+
+};
+
+}
+function filterServices() {
+var dropdownlist = $("#JobOrderDetailId").data("kendoDropDownList");
+var filterInput = dropdownlist.filterInput;
+var categoryCode = $("#SubCategoryCode").val();
+var serviceGroup = $("#ServiceGroup").val();
+return {
+subCategoryCode: categoryCode,
+serviceGroup: serviceGroup,
+jobOrderId: masterId,
+filterText: filterInput.val()
+
+
+};
+
+}
+
+function filterJobService() {
+return {
+jobOrderId: masterId
+};
+}
+var masterId;
+var fleetPlate;
+var IsApproved;
+var IsSecondSendForApproval;
+var IsOnlineTransfered;
+
+function OnExpand(e) {
+var masterRow = e.masterRow;
+
+var masterGrid = $("#grid").data("kendoGrid");
+
+var dataItem = masterGrid.dataItem(masterRow);
+masterId = dataItem.ServiceCenterJobId;
+fleetPlate = dataItem.VoidBy;
+IsApproved = dataItem.IsSecondOnlineApproved;
+IsSecondSendForApproval = dataItem.IsSecondSendForApproval;
+IsOnlineTransfered = dataItem.IsOnlineTransferred;
+}
+
+function onChange() {
+var unitPrice = $("#UnitPrice").val();
+var quantity = $("#Quantity").val();
+$("#TotalPrice").prop("readonly", true);
+$("#TotalPrice").val(unitPrice * quantity).trigger("change");
+// $("#TotalPrice").prop('readonly', true);
+
+}
+function ServiceDataBound() {
+this.expandRow(this.tbody.find("tr.k-master-row").first());
+var grid = this;
+
+grid.tbody.find("tr[role='row']").each(function () {
+var dataItem = grid.dataItem(this);
+
+if (IsOnlineTransfered||IsSubmitted) {
+$(this).find(".k-grid-edit").remove();
+$(this).find(".k-grid-delete").remove();
+}
+});
+}
+
+function submitWorkShop(jobId) {
+$.ajax({
+type: "POST",
+url: '@Url.Action("SubmitWorkShop", "WorkShop", new { area = "Maintenance" })',
+data: { Id: jobId },
+success: function(result) {
+alert(result.Message);
+if (result.Status == "Success") {
+location.reload(true);
+}
+},
+error: function(result) {
+alert(result);
+}
+});
+}
+</script>
+
+
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+
+<script type="text/javascript">
+var AssignCrewsGridName;
+
+var Id;
+var ValueOfStatus;
+function dataBound() {
+//this.expandRow(this.tbody.find("tr.k-master-row").first());
+var grid = this;
+
+grid.tbody.find("tr[role='row']").each(function () {
+var dataItem = grid.dataItem(this);
+if (dataItem.Status == "Closed") {
+ValueOfStatus = "Closed";
+$(this).addClass("k-state-FleetApproved");
+}
+if (dataItem.IsSubmittedToServiceCenter) {
+SubmittedToServiceCenter == true;
+}
+$(this).find(".progress").kendoProgressBar({
+value: dataItem.Progress
+});
+if (dataItem.IsSecondSendForApproval == true || dataItem.IsOnlineTransferred == true) {
+$(this).find(".k-grid-edit").remove();
+$(this).find(".k-grid-delete").remove();
+}
+if (dataItem.IsSecondSendForApproval != true || dataItem.IsOnlineTransferred == true) {
+
+}
+});
+}
+//function approveonDataBound(e) {
+//    var grid = this;
+
+//    grid.tbody.find("tr[role='row']").each(function () {
+//        var dataItem = grid.dataItem(this);
+//        if (IsSubmitted) {
+//            console.log(true);
+//            $(this).find(".k-grid-edit").remove();
+//            $(this).find(".k-grid-delete").remove();
+
+
+//        }
+function AssignCrews(e) {
+var items = {};
+
+var count = 0;
+var gridCrew = $(AssignCrewsGridName).data("kendoGrid");
+
+$(AssignCrewsGridName).find("input:checked").each(function () {
+
+var item = gridCrew.dataItem($(this).closest('tr'));
+items['model.ServiceCrews[' + count + '].ServiceCrewId'] = item.ServiceCrewID;
+items['model.ServiceCrews[' + count + '].IsActive'] = item.IsActive;
+count++;
+});
+
+
+buttonName = "#AssignCrewbtn_" + Id;
+var button = $(buttonName).data("kendoButton");
+button.enable(false);
+$.ajax({
+type: "POST",
+data: items,
+url: '@Url.Action("AssignServiceCrew", "ServiceCrew")',
+success: function (result) {
+
+}
+});
+
+
+}
+
+function AssignCrewsDatabound(e) {
+
+var rows = e.sender.tbody.children();
+
+for (var j = 0; j < rows.length; j++) {
+var row = $(rows[j]);
+var dataItem = e.sender.dataItem(row);
+
+if (dataItem.IsActive) {
+row.addClass("k-state-selected");
+
+}
+
+
+}
+}
+function WorkSheetDataBound() {
+var grid = this;
+
+grid.tbody.find("tr[role='row']").each(function () {
+var dataItem = grid.dataItem(this);
+
+if (IsOnlineTransfered || IsSubmitted) {
+$(this).find(".k-grid-edit").remove();
+$(this).find(".k-grid-delete").remove();
+}
+
+});
+}
+function detailGridsDataBound() {
+var grid = this;
+
+grid.tbody.find("tr[role='row']").each(function () {
+var dataItem = grid.dataItem(this);
+
+if (IsOnlineTransfered == true) {
+$(this).find(".k-grid-edit").remove();
+$(this).find(".k-grid-delete").remove();
+}
+
+});
+}
+var JobOrderDetailId;
+function onDetailServiceApproveExpandUser(e) {
+
+var masterRow = e.masterRow;
+
+var masterGrid = $("#JobOrderApprovalgrid_" + masterId).data("kendoGrid");
+
+var masterDataItem = masterGrid.dataItem(masterRow);
+
+Id = masterDataItem.JobOrderDetailID;
+AssignCrewsGridName = "#ServiceCrewAssigngrid_" + Id;
+var CrewAssigngrid = $(AssignCrewsGridName).data("kendoGrid");
+
+CrewAssigngrid.table.on("click", ".checkbox", selectRow);
+
+if (IsOnlineTransfered == true) {
+$(CrewAssigngrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", CrewAssigngrid).hide();
+
+}
+
+}
+
+var checkedIds = [];
+var items = {};
+var buttonName;
+function selectRow() {
+buttonName = "#AssignCrewbtn_" + Id;
+var button = $(buttonName).data("kendoButton");
+button.enable(true);
+var checked = this.checked,
+row = $(this).closest("tr"),
+grid = $(AssignCrewsGridName).data("kendoGrid"),
+dataItem = grid.dataItem(row);
+//  dataItem.IsActive = true;
+checkedIds.push(dataItem.ServiceCrewID);
+if (checked) {
+
+row.addClass("k-state-selected");
+} else {
+
+row.removeClass("k-state-selected");
+}
+}
+function onDetailServiceExpandUser(e) {
+var masterRow = e.masterRow;
+
+var masterGrid = $("#JobOrderDetailgrid_" + masterId).data("kendoGrid");
+
+var masterDataItem = masterGrid.dataItem(masterRow);
+
+
+Id = masterDataItem.JobOrderDetailID;
+var ServiceToolgrid = "#ServiceToolgrid_" + Id;
+var ServiceSparegrid = "#ServiceSparegrid_" + Id;
+var Oilgrid = "#Oilgrid_" + Id;
+var Tyregrid = "#Tyregrid_" + Id;
+var OtherMaterialgrid_ = "#OtherMaterialgrid_" + Id;
+var ServiceCrewgrid = "#ServiceCrewgrid_" + Id;
+var SalvageStoregrid = "#SalvageStoregrid_" + Id;
+var Batterygrid = "#Batterygrid_" + Id;
+var AssignCrewsGridName = "#ServiceCrewAssigngrid_" + Id;
+
+
+$.ajax({
+url: '@Url.Action("GetJobStatus", "ServiceCenter")',
+
+data: { Id: masterId },
+type: 'POST',
+cache: false,
+success: function (r) {
+
+
+if (r != "Pending") {
+$(ServiceToolgrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", ServiceToolgrid).hide();
+$(".k-grid-edit", ServiceToolgrid).hide();
+$(".k-grid-delete", ServiceToolgrid).hide();
+
+$(ServiceSparegrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", ServiceSparegrid).hide();
+$(".k-grid-edit", ServiceSparegrid).hide();
+$(".k-grid-delete", ServiceSparegrid).hide();
+
+$(Batterygrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", Batterygrid).hide();
+$(".k-grid-edit", Batterygrid).hide();
+$(".k-grid-delete", Batterygrid).hide();
+
+$(Oilgrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", Oilgrid).hide();
+$(".k-grid-edit", Oilgrid).hide();
+$(".k-grid-delete", Oilgrid).hide();
+
+
+$(Tyregrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", Tyregrid).hide();
+$(".k-grid-edit", Tyregrid).hide();
+$(".k-grid-delete", Tyregrid).hide();
+
+
+$(SalvageStoregrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", SalvageStoregrid).hide();
+$(".k-grid-edit", SalvageStoregrid).hide();
+$(".k-grid-delete", SalvageStoregrid).hide();
+
+$(OtherMaterialgrid_).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", OtherMaterialgrid_).hide();
+$(".k-grid-edit", OtherMaterialgrid_).hide();
+$(".k-grid-delete", OtherMaterialgrid_).hide();
+
+$(ServiceCrewgrid).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", ServiceCrewgrid).hide();
+
+
+}
+
+
+
+}
+
+});
+
+}
+var Referance;
+var IsPm;
+var FleetId;
+var IsAssigned;
+var SubmittedToServiceCenter = false;
+var IsSubmitted;
+function MasterOnExpand(e) {
+var masterRow = e.masterRow;
+
+var masterGrid = $("#grid").data("kendoGrid");
+
+var masterDataItem = masterGrid.dataItem(masterRow);
+Referance = masterDataItem.Referance;
+IsPm = masterDataItem.IsPM;
+masterId = masterDataItem.ServiceCenterJobId;
+FleetId = masterDataItem.EquipmentInformationId;
+fleetPlate = masterDataItem.VoidBy;
+IsApproved = masterDataItem.IsSecondOnlineApproved;
+IsSecondSendForApproval = masterDataItem.IsSecondSendForApproval;
+IsOnlineTransfered = masterDataItem.IsOnlineTransferred;
+IsSubmitted = masterDataItem.IsSubmittedToServiceCenter;
+IsAssigned = masterDataItem.IsSentToWorkShop;
+
+var linegridName = "#JobOrderDetailgrid_" + masterId;
+var firstValidationgridName = "#gridd_" + masterId;
+var SecondValidationgridName = "#JobOrderAdmingrid_" + masterId;
+
+var category = "";
+var lineitem = "";
+var Approvedlineitem = "";
+var index = 0;
+$("#ProgressIssue").show();
+$("#ProgressIssues").show();
+
+
+category = "";
+var Accessorieslineitem = "";
+Approvedlineitem = "";
+index = 0;
+
+var linegridName = "#JobOrderDetailgrid_" + masterId;
+var firstValidationgridName = "#gridd_" + masterId;
+var SecondValidationgridName = "#JobOrderAdmingrid_" + masterId;
+var ThirdValidationgridName = "#Followupsgrid_" + masterId;
+var FourthValidationgridName = "#WorkLogrid_" + masterId;
+var FifthValidationgridName = "#Componentgrid_" + masterId;
+var materialGridName = "#ServiceSpareAndMaterialgrid_" + masterId;
+var spareGridName = "#SparePartStoreRequisitionGrid_" + masterId;
+if (IsSubmitted) {
+$(".k-grid-top", FourthValidationgridName).hide();
+$(".k-grid-top", spareGridName).hide();
+
+}
+
+if (IsApproved == true) {
+$(linegridName).find(".k-toolbar").hide(); //hide toolbar
+$(".k-grid-top", linegridName).hide();
+$(".k-grid-edit", linegridName).hide();
+$(".k-grid-delete", linegridName).hide();
+
+
+$(".k-grid-top", firstValidationgridName).hide();
+$(".k-grid-edit", firstValidationgridName).hide();
+$(".k-grid-delete", firstValidationgridName).hide();
+
+$(".k-grid-top", ThirdValidationgridName).hide();
+$(".k-grid-edit", ThirdValidationgridName).hide();
+$(".k-grid-delete", ThirdValidationgridName).hide();
+
+$(".k-grid-top", FourthValidationgridName).hide();
+$(".k-grid-edit", FourthValidationgridName).hide();
+$(".k-grid-delete", FourthValidationgridName).hide();
+
+
+$(".k-grid-top", FifthValidationgridName).hide();
+$(".k-grid-edit", FifthValidationgridName).hide();
+$(".k-grid-delete", FifthValidationgridName).hide();
+
+$(".k-grid-top", materialGridName).hide();
+$(".k-grid-edit", materialGridName).hide();
+$(".k-grid-delete", materialGridName).hide();
+
+$(".k-grid-top", spareGridName).hide();
+$(".k-grid-edit", spareGridName).hide();
+$(".k-grid-delete", spareGridName).hide();
+}
+
+
+}
+
+
+
+</script>
+
+
+
+
+
+
+                                                            }).ToClientTemplate())
+    @*============================================================ Store Requisition Property Validation ===============================================================================*@
+
+
+
+
+
+</script>
+<script>
+function refresh()
+{
+var masterGrid = $("#SparePartStoreRequisitionValidation_" + codeid).data("kendoGrid");
+masterGrid.dataSource.read();
+}
+function isTransfer(obj) {
+if ($(obj).is(":checked")) {
+$("#tostoreDiv").show();
+$('#IsForOther').attr('checked', false);
+$("#forbranchDiv").hide();
+$("#IsForOther").prop("disabled", true);
+
+} else {
+$("#tostoreDiv").hide();
+$("#IsForOther").prop("disabled", false);
+
+}
+
+}
+
+function isForOther(obj) {
+
+if ($(obj).is(":checked")) {
+$("#forbranchDiv").show();
+
+} else {
+$("#forbranchDiv").hide();
+}
+
+}
+
+function voidRecord(id) {
+var recordStatus = "";
+var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+if (conf === true) {
+$.ajax({
+type: "POST",
+url: '@Url.Action("Void", "SparePartStoreRequisition", new { area = "Inventory" })',
+data: { id: id },
+success: function (result) {
+// toastr.warnning(result.Message);
+alert(result.Message);
+recordStatus = result.Status;
+location.reload(true);
+}, //end succ
+error: function (result) {
+alert(result);
+}
+});
+}
+}
+
+function sendForApproval(id) {
+var recordStatus = "";
+
+$.ajax({
+type: "POST",
+url: '@Url.Action("SendForApproval", "SparePartStoreRequisition")',
+data: { id: id },
+success: function(result) {
+// toastr.warnning(result.Message);
+alert(result.Message);
+recordStatus = result.Status;
+location.reload(true);
+}, //end succ
+error: function(result) {
+alert(result);
+}
+});
+}
+
+
+function onSelectedPeriod() {
+var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+var min = "";
+var max = "";
+if (periodId) {
+$.ajax({
+type: "POST",
+url: '@Url.Action("GetPeriodDateRangeById", "MaintenanceDataProvider")',
+data: { id: periodId },
+success: function (result) {
+min = result.Min;
+max = result.Max;
+//update
+var datepicker = $("#RequestDate").data("kendoDatePicker");
+datepicker.setOptions({
+format: "yyyy-MM-dd",
+min:min,
+max:max,
+value: new Date(),
+change: onDOBChange
+});
+}, //end succ
+error: function (result) {
+alert(result);
+}
+
+});
+}
+
+}
+
+
+function test() {
+var recordStatus = "";
+$.ajax({
+type: "POST",
+url: '@Url.Action("GetStatus", "SparePartStoreRequisition")',
+data: { id: codeid },
+success: function (result) {
+toastr.error(result.Message);
+recordStatus = result.Status;
+
+}, //end succ
+error: function (result) {
+alert(result);
+}
+});
+
+
+
+}
+
+
+
+
+var storeCode;
+var codeid;
+var isapproved;
+
+function onItemEdit(e) {
+var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+var masterGrid = $("#grid").data("kendoGrid");
+var masterGrid = $("#SparePartStoreRequisitionGrid_" + masterId).data("kendoGrid");
+var masterDataItem = masterGrid.dataItem(masterRow);
+storeCode = masterDataItem.StoreCode;
+codeid = masterDataItem.StoreRequisitionID;
+
+if (e.model.isNew() === true) {
+$("#ApprovedQuantity").attr("readonly", true);
+}
+//edit
+if (e.model.isNew() !== true) {
+
+//$("#RequestedQuantity").attr("readonly", true);
+//$("#ItemCategoryCode").attr("readonly", true);
+}
+
+
+
+}
+
+
+
+function getItems() {
+
+return {
+StoreCode: storeCode
+}
+
+}
+var masterDataItem;
+var masterRow;
+var masterGrid;
+function detailExpand(e) {
+
+masterRow = e.masterRow;
+var masterGrid = $("#SparePartStoreRequisitionGrid_" + masterId).data("kendoGrid");
+masterDataItem = masterGrid.dataItem(masterRow);
+// codeid = masterDataItem.StoreRequisitionID;
+// isapproved = masterDataItem.IsOnlineApproved;
+
+var lineGrid = $("#SparePartStoreRequisitionItem_" + codeid).data("kendoGrid");
+//if (isapproved) {
+//    $(".k-grid-top", lineGrid).hide();
+
+//}
+
+
+}
+//function onCanbanizationEdit(e) {
+//    var platNumber = $("#PlateNumber").data("kendoDropDownList").value();
+//   // console.log(platNumber);
+//    var standaredHourData = $("#ProvidingMachinePlateNumber").val(platNumber);
+
+//   // alert(platNumber);
+//    standaredHourData.trigger("change");
+//    platNumber.trigger("change");
+
+//}
+function onDataBoundMaster() {
+this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+//approved
+var grid = $("#SparePartStoreRequisitionGrid_" + masterId).data("kendoGrid");
+var gridData = grid.dataSource.view();
+
+for (var i = 0; i < gridData.length; i++) {
+var currentUid = gridData[i].uid;
+if (gridData[i].IsOnlineApproved) {
+var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+var editButton = $(currenRow).find(".k-grid-edit");
+var deleteButton = $(currenRow).find(".k-grid-delete");
+editButton.hide();
+deleteButton.hide();
+}
+}
+}
+
+function onDataBoundLines(e) {
+
+var detailGrid = "#"+e.sender.element[0].id;// "#SparePartStoreRequisitionItem_" + codeid;
+if (isapproved) {
+
+$(".k-grid-add", detailGrid).hide();
+$(".k-grid-delete", detailGrid).hide();
+$(".k-grid-edit", detailGrid).hide();
+}
+}
+function filterStoresByBranch() {
+return {
+id: $("#BranchId").data("kendoDropDownList").value(),
+text: $("#StoreCode").data("kendoDropDownList").filterInput.val()
+};
+}
+function filterPeriodsByStore() {
+return {
+store: $("#StoreCode").val()
+};
+}
+var i = 0;
+function onDataBoundFisrtValidation(e) {
+i++;
+var detailGrid = "#" + e.sender.element[0].id;// "#SparePartStoreRequisitionValidation_" + codeid;
+
+if (isapproved) {
+
+// $(".k-grid-add", detailGrid).hide();
+$(".k-grid-delete", detailGrid).hide();
+$(".k-grid-edit", detailGrid).hide();
+}
+var masterGrid = $("#SparePartStoreRequisitionValidation_" + codeid).data("kendoGrid");
+
+}
+function onDataBoundSecondValidation(e) {
+var detailGrid = "#" + e.sender.element[0].id;// "#SparePartStoreRequisitionPropertyValidation_" + codeid;
+
+if (isapproved) {
+
+$(".k-grid-add", detailGrid).hide();
+$(".k-grid-delete", detailGrid).hide();
+$(".k-grid-edit", detailGrid).hide();
+}
+}
+
+function OnIndexCall(elem) {
+
+var a = codeid;
+$(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+}
+
+
+
+
+function onClick(e) {
+
+var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+var masterGrid = $("#grid").data("kendoGrid");
+var masterDataItem = masterGrid.dataItem(masterRow);
+var code = masterDataItem.StoreRequisitionID;
+var tabstrip = $("#tabStrip_4").data("kendoTabstrip");
+$.ajax({
+url: "SparePartStoreRequisition/SparePartStoreRequisitions_Approval",
+
+data: { id: code }
+});
+}
+function onUploadSuccess(e) {
+
+}
+
+function checkFileType(e) {
+var files = e.files;
+
+$.each(files, function () {
+
+if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
+
+} else {
+alert("Only .xls, .xlsx, .xlsm files can be uploaded!");
+e.preventDefault();
+}
+
+});
+}
+
+
+function checkboxClicked(e) {
+
+var isChecked = e.checked;
+var grid = $("#grid").data("kendoGrid");
+if (isChecked) {
+
+grid.showColumn("ToStoreCode");
+} else {
+grid.hideColumn("ToStoreCode");
+}
+
+};
+.Events(ev => ev.Edit("onMasterEdit"))
+function onMasterEdit(e) {
+
+var grid = $("#grid").data("kendoGrid");
+grid.hideColumn("ToStoreCode");
+
+$.ajax({
+type: "POST",
+url: '@Url.Action("JobOrderReferenceNumber", "FleetManagementDataProvider", new { area = "FleetManagement" })',
+data: { id: masterId },
+success: function (result) {
+console.log(result);
+
+$('#Reference').val(result.ReferenceNo).trigger("change");
+},
+error: function (result) {
+console.log(result);
+}
+})
+}
+
+function onChangeService() {
+var jobOrderDetailId = $("#JobOrderDetailId").val();
+//console.log(jobOrderDetailId);
+$.ajax({
+type: 'GET',
+url: '@Url.Action("GetServiceDetail", "MaintenanceDataProvider")',
+data: {
+id: jobOrderDetailId
+
+},
+async: false,
+success: function (result) {
+data = result;
+console.log(data.AutomotiveStandaredHour);
+var standaredHourData = $("#StandaredHours").val(data.AutomotiveStandaredHour);
+standaredHourData.trigger("change");
+}
+});
+}
+
+
+</script>
+<script>
+
+function approveJobRequest(e) {
+e.preventDefault(); // Prevent default button behavior
+
+var childGrid = $(e.currentTarget).closest(".k-grid").data("kendoGrid"); // Get the child grid instance
+var row = $(e.currentTarget).closest("tr"); // Find the closest row
+var dataItem = childGrid.dataItem(row); // Get data from the row
+if (!dataItem || !dataItem.CanibalizationId) {
+alert("Could not find the CanibalizationId in the child grid.");
+return;
+}
+var canibalizationId = dataItem.CanibalizationId; // Extract ID from child row
+$.ajax({
+type: "POST",
+url: '@Url.Action("ApproveJobRequest", "Canibalization", new { area = "Maintenance" })',
+data: { id: canibalizationId }, // Send the correct ID
+success: function (result) {
+console.log(result.Message);
+location.reload(true);
+},
+error: function (result) {
+alert(result);
+}
+});
+}
+function rejectJobRequest(e) {
+var grid = this,
+dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+$.ajax({
+type: "POST",
+url: '@Url.Action("RejectJobRequest", "Canibalization", new { area = "Maintenance" })',
+data: { id: masterId },
+success: function (result) {
+console.log(result.Message);
+//alert(result.Message);
+location.reload(true);
+},
+error: function (result) {
+alert(result);
+}
+});
+}
+function CanibalizationSendForApproval(id) {
+$.ajax({
+type: "POST",
+url: '@Url.Action("SendForApproval", "Canibalization")',
+data: { id: id },
+success: function (result) {
+// toastr.warnning(result.Message);
+alert(result.Message);
+recordStatus = result.Status;
+location.reload(true);
+}, //end succ
+error: function (result) {
+alert(result);
+}
+});
+}
+function CanibalizationDepSendForApproval(id) {
+$.ajax({
+type: "POST",
+url: '@Url.Action("SendForDepartmentApproval", "CanibalizationDepartment")',
+data: { id: id },
+success: function (result) {
+// toastr.warnning(result.Message);
+alert(result.Message);
+recordStatus = result.Status;
+location.reload(true);
+}, //end succ
+error: function (result) {
+alert(result);
+}
+});
+}
+
+function approveonDataBound(e) {
+var grid = this;
+
+grid.tbody.find("tr[role='row']").each(function () {
+var dataItem = grid.dataItem(this);
+if (IsApproved == true) {
+$(this).find(".k-grid-edit").remove();
+$(this).find(".k-grid-delete").remove();
+}
+if (dataItem.Status == 0) {
+console.log(dataItem.Status);
+$(this).find(".k-grid-cmd-approve-request").hide();
+$(this).find(".k-grid-cmd-reject-request").hide();
+}
+else if (dataItem.Status == 1) {
+$(this).find(".k-grid-cmd-approve-request").hide();
+$(this).find(".k-grid-cmd-reject-request").hide();
+}
+else {
+$(this).find(".k-grid-cmd-approve-request").show();
+$(this).find(".k-grid-cmd-reject-request").show();
+}
+
+
+
+});
+}
+var RemarkChecker = 0;
+var OtherChecker = 0;
+function workShopDataBound() {
+//var grid = this;
+//grid.tbody["role='row'"].each(function () {
+//    dataItem = grid.dataItem;
+//    if (dataItem.status != null) {
+
+//    }
+
+//});
+}
+
+</script>
+<script>
+    function ExternaldataBound() {
+        //  this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+
+            var dataItem = grid.dataItem(this);
+            if (dataItem.Status == "Rejected") {
+
+                $(this).css("background-color", "#F75D59");
+
+
+            }
+            if (dataItem.Status == "Closed") {
+
+                $(this).addClass("k-state-FleetApproved");
+            }
+
+            if (dataItem.Progress < 30) {
+                $(this).find(".progress" + dataItem.Num).kendoProgressBar({
+                    value: dataItem.Progress, text: dataItem.Progress + " %", css: {
+                        "background-color": "#EE9F05",
+                        "border-color": "#EE9F05"
+                    }
+                });
+            }
+            if (dataItem.Progress > 30 && dataItem.Progress < 70) {
+                $(this).find(".progress" + dataItem.Num).kendoProgressBar({
+                    value: dataItem.Progress, text: dataItem.Progress + " %", css: {
+                        "background-color": "#428bca",
+                        "border-color": "#428bca"
+                    }
+                });
+            }
+            if (dataItem.Progress > 70) {
+
+                $(this).find(".progress" + dataItem.Num + dataItem.Num).kendoProgressBar({
+                    value: dataItem.Progress, text: dataItem.Progress + " %", css: {
+                        "background-color": "#8EBC00",
+                        "border-color": "#8EBC00"
+                    }
+                });
+            }
+
+            $(this).find(".k-grid-edit").hide();
+            //$(this).find(".k-grid-delete").hide();
+            $(this).find(".k-grid-cmd-reject-request").hide();
+            $(this).find(".k-grid-cmd-open-request").hide();
+            $(this).find(".k-grid-cmd-rework-request").hide();
+            $(this).find(".k-grid-cmd-deliver-request").hide();
+            if (dataItem.IsOnlineTransferred == true) {
+                if (dataItem.Status == "Rejected") {
+
+                    // $(this).find(".k-grid-edit").show();
+                    //$(this).find(".k-grid-delete").show();
+                    $(this).find(".k-grid-cmd-open-request").show();
+
+                }
+                else if (dataItem.Status == "Closed") {
+
+                    $(this).find(".k-grid-cmd-rework-request").show();
+                    $(this).find(".k-grid-cmd-deliver-request").show();
+
+                }
+                else if (dataItem.Status == "Delivered") {
+                    $(this).find(".k-grid-cmd-rework-request").show();
+
+                }
+
+                else {
+                    $(this).find(".k-grid-delete").show(); //////////--------///////////
+                    $(this).find(".k-grid-cmd-reject-request").show();
+
+                }
+            }
+
+            else if (dataItem.Status == "Closed") {
+                $(this).find(".k-grid-cmd-rework-request").show();
+                $(this).find(".k-grid-cmd-deliver-request").show();
+            }
+            else if (dataItem.Status == "Delivered") {
+                $(this).find(".k-grid-cmd-rework-request").show();
+            }
+
+            if (dataItem.IsSubmittedToServiceCenter && !dataItem.IsSecondOnlineApproved) {
+                $(this).find(".k-grid-cmd-reject-request").show();
+                $(this).find(".k-grid-delete").show(); ////////////////----------------///////////
+
+            }
+            else {
+                $(this).find(".k-grid-cmd-reject-request").hide();
+                $(this).find(".k-grid-delete").hide();
+
+            }
+
+
+        });
+    }
+function onSelectedPeriod() {
+var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+var min = "";
+var max = "";
+if (periodId) {
+$.ajax({
+type: "POST",
+url: '@Url.Action("GetPeriodDateRangeById", "DataProvider", new {area = "Inventory"})',
+data: { id: periodId },
+success: function (result) {
+min = result.Min;
+max = result.Max;
+//update
+var datepicker = $("#ReturnDate").data("kendoDatePicker");
+datepicker.setOptions({
+format: "yyyy-MM-dd",
+min:min,
+max:max,
+value: new Date(),
+change: onDOBChange
+});
+}, //end succ
+error: function (result) {
+alert(result);
+}
+
+});
+}
+
+}
+
+function isForOther(obj) {
+
+if ($(obj).is(":checked")) {
+$("#forbranchDiv").show();
+
+} else {
+$("#forbranchDiv").hide();
+}
+
+}
+
+function bidSuccess() {
+
+}
+
+
+var storeCode;
+var codeid;
+
+function onEdit(e) {
+var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+var masterGrid = $("#grid").data("kendoGrid");
+
+var masterDataItem = masterGrid.dataItem(masterRow);
+storeCode = masterDataItem.StoreCode;
+//    codeid = masterDataItem.GoodSellingAndLendingID;
+}
+
+
+//}
+var CanabilizedParts;
+var CanibalizationIdd;
+function CanibalizationDB(e) {
+var grid = this;
+if (ValueOfStatus == "Closed") {
+// grid.element.find(".k-grid-add").hide();
+}
+grid.tbody.find("tr[role='row']").each(function () {
+var dataItem = grid.dataItem(this);
+CanibalizationIdd = dataItem.canibalizationId;
+
+if (dataItem.IsSendForApproval === true) {
+$(this).find(".k-grid-top").remove();
+$(this).find(".k-grid-edit").remove();
+$(this).find(".k-grid-delete").remove();
+}
+if (dataItem.IsSendForApproval === true) {
+CanabilizedParts="RemoveAdd";
+$(this).find(".k-grid-edit").remove();
+$(this).find(".k-grid-delete").remove();
+}
+});
+}
+function CanibalizedPartsDB(e) {
+var grid = this;
+if (CanabilizedParts === "RemoveAdd") {
+var addButton = grid.element.find(".k-grid-add");
+if (addButton.length > 0) {
+addButton.hide();
+} else {
+console.warn("Add button not found!");
+}
+}
+
+grid.tbody.find("tr[role='row']").each(function () {
+if (CanabilizedParts === "RemoveAdd") {
+$(this).find(".k-grid-top").remove();
+$(this).find(".k-grid-edit").remove();
+$(this).find(".k-grid-delete").remove();
+}
+});
+}
+function OnIndexCall(elem) {
+
+var a = codeid;
+$(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+}
+var popup;
+var aCode;
+
+
+function SelectItemCode() {
+
+// codeid = masterDataItem.GoodSellingAndLendingID;
+popup = window.open('/Inventory/DataProvider/ItemFiltering', 'WindowPopup', 'top=100, left=400, width=400, height=320,resizable=no,');
+popup.focus();
+return false;
+}
+
+function setLang(ItemCode) {
+aCode = ItemCode;
+$("#ItemCode").val(aCode).trigger("change");
+}
+function approveCanibalizationRequest(e) {
+e.preventDefault(); // Prevent default button behavior
+var childGrid = $(e.currentTarget).closest(".k-grid").data("kendoGrid"); // Get the child grid instance
+var row = $(e.currentTarget).closest("tr"); // Find the closest row
+var dataItem = childGrid.dataItem(row); // Get data from the row
+if (!dataItem || !dataItem.CanibalizationId) {
+alert("Could not find the CanibalizationId in the child grid.");
+return;
+}
+var CanibalizationIdd = dataItem.CanibalizationId; // Extr
+$.ajax({
+type: "POST",
+url: '@Url.Action("ApproveRequest", "CanibalizationDepartment", new { area = "Maintenance" })',
+data: { id: CanibalizationIdd },
+success: function (result) {
+// console.log(result.Message);
+alert(result.Message);
+// location.reload(true);
+},
+error: function (result) {
+alert(result);
+}
+});
+}
+function rejectCanibalizationRequest(e) {
+e.preventDefault(); // Prevent default button behavior
+var childGrid = $(e.currentTarget).closest(".k-grid").data("kendoGrid"); // Get the child grid instance
+var row = $(e.currentTarget).closest("tr"); // Find the closest row
+var dataItem = childGrid.dataItem(row); // Get data from the row
+if (!dataItem || !dataItem.CanibalizationId) {
+alert("Could not find the CanibalizationId in the child grid.");
+return;
+}
+var CanibalizationIdd = dataItem.CanibalizationId; // Extr
+$.ajax({
+type: "POST",
+url: '@Url.Action("RejectRequest", "CanibalizationDepartment", new { area = "Maintenance" })',
+data: { id: CanibalizationIdd },
+success: function (result) {
+console.log(result.Message);
+//alert(result.Message);
+location.reload(true);
+},
+error: function (result) {
+alert(result);
+}
+});
+}
+
+function getItems() {
+return {
+storeCode: storeCode
+}
+    }
+
+
+    function filterMechanics() {
+        return {
+            jobOrderId: masterId
+        };
+    }
+</script>

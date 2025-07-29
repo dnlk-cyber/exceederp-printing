@@ -1,0 +1,9 @@
+﻿
+    @(Html.Kendo().DropDownListFor(model => model)
+                //.Name("VehilcePart")
+                  .DataTextField("Name")
+                  .DataValueField("VehiclePartId")
+                  .OptionLabel(" Select ")
+                  .Filter(FilterType.Contains)
+                  .DataSource(d => d.Read(r => r.Action("GetVehiclePart", "MaintenanceDataProvider").Data("sendForgery")).ServerFiltering(false)))
+    @*.DataSource(d => d.Read(r => r.Action("ServiceDDBind", "InspectionRegistration").Data("sendForgery").Data("filterSerivce")).ServerFiltering(false)))*@

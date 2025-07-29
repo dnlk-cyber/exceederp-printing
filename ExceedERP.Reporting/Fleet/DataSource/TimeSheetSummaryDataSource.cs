@@ -60,7 +60,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                     var TimeSheetsViewModel = new TimeSheetViewModel();
 
 
-                    TimeSheetsViewModel.CustomerName = Branch.Name;
+                    TimeSheetsViewModel.CustomerName = Branch.Name??"";
 
                     TimeSheetsViewModel.TotalIdealCost = IdealCosttime;
                     TimeSheetsViewModel.TotalIdleTime = c.Sum(x => x.IdleTime) + c.Sum(x => x.BreakDownTime) + c.Sum(x => x.DownTime);

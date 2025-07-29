@@ -1,0 +1,467 @@
+﻿
+@using System.Collections
+@using ExceedERP.Core.Domain.Maintenance;
+@using ExceedERP.Helpers.Common;
+@*@{
+bool userCanEdit;
+
+if (HttpContext.Current.User.IsInRole(MaintenanceRoles.MaintenanceRequestVoider))
+{
+userCanEdit = true;
+
+}
+else
+{
+userCanEdit = false;
+}
+}*@
+
+<legend> Maintenance Request</legend>
+@(Html.Kendo().Grid<JobRequest>()
+.Name("grid")
+.Columns(columns =>
+{
+    columns.Bound(e => e.Num).Title("#").Width(80);
+    columns.Bound(e => e.IsPM).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: IsPM? checked='checked': checked='' #/>");
+    columns.Bound(e => e.HasInsurance).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' #: HasInsurance? checked='checked': checked='' #/>");
+    columns.Bound(e => e.Source).Width(90);
+    columns.Bound(e => e.LicensePlate).Width(120);
+    columns.Bound(e => e.EquipmentName).Width(120);
+    columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Id", "Name").Width(130);
+    columns.ForeignKey(e => e.CustomerId, (IEnumerable)ViewData["Customer"], "OrganizationCustomerID", "TradeName").Width(200);
+    //columns.Bound(e => e.CreateJobOrder).Width(200);
+    columns.ForeignKey(e => e.RequesterId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(200);
+    if (GlobalHelper.IsMultipleBusinessUnit())
+    {
+        columns.ForeignKey(c => c.BusinessUnitId, (IEnumerable)ViewData["BusinessUnits"], "BusinessUnitId", "Name").Width(180).EditorTemplateName("BusinessUnitSelector");
+    }
+    columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(180).EditorTemplateName("AllBranchSelector");
+    columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["Structure"], "OrgStructureId", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
+
+    columns.Bound(e => e.DateCreated).Title("Date Created").Format("{0:yyyy-MM-dd}").Width(100);
+    columns.Bound(e => e.OnlineApprovedTime).Title("Date Approved").Format("{0:yyyy-MM-dd}").Width(100);
+    columns.Bound(e => e.Status).Width(100);
+    columns.Bound(e => e.JobOrderStatus).Width(100);
+    columns.Bound(e => e.EstmatedCostAmount).Width(100);
+    columns.Bound(e => e.CreateJobOrder).Width(100);
+    columns.Bound(e => e.LicensePlate).Visible(false);
+    columns.Command(command =>
+    {
+        //command.Edit();
+        // command.Destroy();
+        //if (userCanEdit)
+        //{
+        //    command.Custom("cmd-void-request").Text("&nbsp;Void").Click("voidJobRequest").IconClass("fa fa-remove");
+        //}
+    }).Width(200);
+
+})
+//.ToolBar(commands =>
+//{
+//    commands.Create(); //commands.Excel();
+//                       //commands.Pdf();
+//})
+//            .Editable(editable =>
+//{
+//    editable.Window(w => w.Title("Customer Request"));
+//    editable.Mode(GridEditMode.PopUp).TemplateName("CommonJobRequestEditorTemplate");
+//    editable.DisplayDeleteConfirmation("Are You Sure to Delete Job Request? ");
+//})
+.HtmlAttributes(new { style = "height: 520px;" })
+
+.Pageable(pageable => pageable
+.Input(true)
+.Numeric(false)
+.Refresh(true)
+.PageSizes(true)
+.ButtonCount(5))
+.Scrollable()
+.Sortable()
+.Filterable()
+.Scrollable(h => h.Height(500))
+.ClientDetailTemplateId("template")
+.Events(ev =>
+{
+    ev.DetailExpand("onDetailExpandUser");
+   // ev.Edit("onJobRequestEdit");
+    ev.DataBound("dataBound");
+})
+.DataSource(dataSource => dataSource
+.Ajax()
+//.ServerOperation(false)
+.Sort(x => x.Add(s => s.Num).Descending())
+//.Group(g=>g.Add(c=>c.Source))
+.PageSize(5)
+.Model(model =>
+{
+    model.Id(p => p.JobRequestId);
+    model.Field(p => p.JobRequestId).Editable(false);
+    model.Field(p => p.RequestNumber).Editable(false);
+    model.Field(p => p.BranchId).Editable(false);
+    model.Field(p => p.BusinessUnitId).Editable(false);
+    model.Field(p => p.OrgStructureId).Editable(false);
+    model.Field(p => p.EstmatedCostAmount).Editable(false);
+})
+.Events(ev => ev
+.Error("error_handler(\"grid\")")
+.RequestStart("onRequestStart(\"grid\")")
+.RequestEnd("onRequestEnd(\"grid\")"))
+// .Create(update => update.Action("JobRequest_Create", "JobRequest").Data("sendForgery"))
+.Read(read => read.Action("JobRequest_Read", "JobRequestDepartment").Data("sendForgery"))
+// .Update(update => update.Action("JobRequest_Update", "JobRequest").Data("sendForgery"))
+//.Destroy(d => d.Action("JobRequest_Destroy", "JobRequest").Data("sendForgery"))
+)
+//.Events(events => events.DataBound("dataBound"))
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                .Name("tabStrip_#=JobRequestId#")
+                .SelectedIndex(0)
+                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+
+                .Items(items =>
+                {
+                    items.Add().Text("Detail").Content(@<text>
+
+                        # if(CreateJobOrder)
+                        {#
+
+                        <a href='@Url.Action("Create_JobOrder", "JobRequest")/?Id=#=JobRequestId#' title="Create Job Order"><i class="fa fa-share-square fa-2x"></i></a>
+                        # }#
+
+
+
+                    </text>
+                                           );
+                            items.Add().Text(" Causes  ").Content(@<text>
+                                @*<a href='@Url.Action("JobRequest", "PrintJob")/?Id=#=JobRequestId#' title="Print Job Request"><i class="fa fa-print fa-2x"></i></a>
+                                    # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                    {#
+                                    <a onclick='return sendForApproval("#=JobRequestId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                    # }#*@
+                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.JobCauses>()
+                                                                                                .Name("JobCauses_#=JobRequestId#")
+                                                                                                .Columns(columns =>
+                                                                                                {
+                                                                                                                    columns.Bound(o => o.Name).Width(120);
+                                                                                                                    columns.Bound(o => o.Description).EditorTemplateName("JobReasonDescEditor").Width(180);
+                                                                                                                    columns.Command(command =>
+                                                                                                {
+                                                                                                                    //command.Edit();
+                                                                                                                    // command.Destroy();
+                                                                                                                }).Width(200);
+                                                                                                                }).Events(ev =>
+                                                                                        {
+                                                                                                                        ev.DataBound("lineonDataBound");
+                                                                                                                    })
+                                                                                                // .ToolBar(T => T.Create())
+                                                                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                .DataSource(dataSource => dataSource
+                                                                                                    .Ajax()
+                                                                                                    .PageSize(20)
+                                                                                                    .Model(model => model.Id(p => p.JobCausesId)).Events(ev => ev
+                                                                                                        .Error("error_handler(\"JobCauses_#=JobRequestId#\")")
+                                                                                                        .RequestStart("onRequestStart(\"JobCauses_#=JobRequestId#\")")
+                                                                                                        .RequestEnd("onRequestEnd(\"JobCauses_#=JobRequestId#\")"))
+                                                                                                    // .Create(create => create.Action("JobCauses_Create", "JobCauses", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
+                                                                                                    .Read(read => read.Action("JobCauses_Read", "JobCauses", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
+                                                                                                //  .Update(update => update.Action("JobCauses_Update", "JobCauses").Data("sendForgery"))
+                                                                                                //.Destroy(d => d.Action("JobCauses_Destroy", "JobCauses").Data("sendForgery"))
+                                                                                                )
+                                                                                                .ToClientTemplate())
+                            </text>
+);
+
+
+                                    items.Add().Text("Department Approval").Content(@<text>
+                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.AdministrativeJobDepartmentApproval>()
+                                                                        .Name("JobOrderAdmingrid_#=JobRequestId#")
+                                                                        .Columns(columns =>
+                                                                        {
+                                                                                                    columns.Bound(o => o.Status).EditorTemplateName("ApprovalStatusBind").Width(126);
+                                                                                                    columns.Bound(o => o.Remark).Width(160);
+                                                                                                    columns.Bound(o => o.CreatedBy).Width(120);
+                                                                                                    columns.Bound(o => o.DateCreated).Format("{0:d}").Width(120);
+                                                                                                    columns.Command(command =>
+                                                                            {
+                                                                                                            command.Custom("cmd-approve-request").HtmlAttributes(new { @class = "kendoPrimary" })
+                                                                                    .Text("&nbsp;Approve").Click("approveJobRequest").IconClass("fa fa-check");
+                                                                                                            command.Custom("cmd-reject-request").HtmlAttributes(new { @class = "kendoDanger" })
+                                                                                    .Text("&nbsp;Reject").Click("rejectJobRequest").IconClass("fa fa-close");
+                                                                                                // command.Custom().Text("Approve");
+                                                                                            }).Width(250);
+                                                                                                }).Events(ev =>
+                                                                                    {
+                                                                                                                    ev.DataBound("approveonDataBound");
+                                                                                                                })
+                                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                        .DataSource(dataSource => dataSource
+                                                                        .Ajax()
+                                                                        .PageSize(20)
+                                                                        .Model(model =>
+                                                                        {
+                                                                                                    model.Id(p => p.AdministrativeJobDepartmentApprovalID);
+                                                                                                    model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                    model.Field(p => p.DateCreated).Editable(false);
+                                                                                                }).Events(ev => ev
+                                                                                    .Error("error_handler(\"JobOrderAdmingrid_#=JobRequestId#\")")
+                                                                                    .RequestStart("onRequestStart(\"JobOrderAdmingrid_#=JobRequestId#\")")
+                                                                                    .RequestEnd("onRequestEnd(\"JobOrderAdmingrid_#=JobRequestId#\")"))
+                                                                        .Create(create => create.Action("Admin_Approve", "JobRequestDepartment", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
+                                                                        .Read(read => read.Action("Admin_Read", "JobRequestDepartment", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
+                                                                        // .Update(update => update.Action("Admin_Approve", "JobRequestDepartment", new { Id = "#=JobRequestId#" }).Data("sendForgery"))
+                                                                        )
+                                                                        .ToClientTemplate())
+                                    </text>
+);
+                                        })
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                        .ToClientTemplate())
+</script>
+
+
+
+
+
+<script>
+var Status;
+var iii = false;
+
+function approveJobRequest(e) {
+var grid = this,
+dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+if (iii) {
+return 0;
+}
+iii = true;
+
+$.ajax({
+type: "POST",
+url: '@Url.Action("ApproveJobRequest", "JobRequestDepartment", new { area = "Maintenance" })',
+data: { id: masterId },
+    success: function (result) {
+        alert(result);
+    location.reload(true);
+},
+error: function (result) {
+alert(result);
+}
+});
+}
+function rejectJobRequest(e) {
+var grid = this,
+dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+$.ajax({
+type: "POST",
+url: '@Url.Action("RejectJobRequest", "JobRequestDepartment", new { area = "Maintenance" })',
+data: { id: masterId },
+success: function (result) {
+console.log(result.Message);
+//alert(result.Message);
+location.reload(true);
+},
+error: function (result) {
+alert(result);
+}
+});
+}
+function dataBound() {
+//this.expandRow(this.tbody.find("tr.k-master-row").first());
+var grid = this;
+
+
+grid.tbody.find("tr[role='row']").each(function () {
+var masterDataItem = grid.dataItem(this);
+
+   // isapproved = masterDataItem.IsSecondOnlineApproved;
+isSendForApproval = masterDataItem.IsSendForApproval;
+
+issecondapproved = masterDataItem.IsSecondOnlineApproved;
+Status = masterDataItem.Status;
+if (masterDataItem.IsOnlineApproved == true) {
+$(this).addClass("k-state-FleetApproved");
+}
+if (masterDataItem.IsSendForApproval == true) {
+$(this).find(".k-grid-edit").remove();
+$(this).find(".k-grid-delete").remove();
+}
+if (masterDataItem.Status == "Approve") {
+$(this).find(".k-grid-cmd-void-request").show();
+
+}
+else {
+$(this).find(".k-grid-cmd-void-request").hide();
+
+}
+});
+
+
+}
+
+
+</script>
+
+
+<script type="text/javascript">
+
+function sendForApproval(id) {
+var recordStatus = "";
+
+$.ajax({
+type: "POST",
+url: '@Url.Action("SendForOnlineApproval", "JobRequest", new { area = "Maintenance" })',
+data: { id: id },
+success: function(result) {
+alert(result);
+location.reload(true);
+},
+error: function(result) {
+alert(result);
+}
+});
+}
+
+</script>
+
+
+<script type="text/javascript">
+var IsApproved;
+var IsSendForApproval;
+var HeaderStat;
+function filterPlateNos() {
+return {
+CustomerId: $("#CustomerId").val()
+};
+}
+function voidJobRequest()
+{
+$.ajax({
+type: "POST",
+url: '@Url.Action("VoidJobRequest", "JobRequest", new { area = "Maintenance" })',
+data: { id: masterId },
+success: function(result) {
+alert(result);
+location.reload(true);
+},
+error: function(result) {
+alert(result);
+}
+});
+}
+var expandedRow;
+function onDetailExpandUser(e) {
+                        var masterRow = e.masterRow;
+                        var masterGrid = $("#grid").data("kendoGrid");
+    var masterDataItem = masterGrid.dataItem(masterRow);
+    IsDepartmentApproved = masterDataItem.IsSecondOnlineApproved;
+    IsApproved = masterDataItem.IsSecondOnlineApproved;
+                        IsSendForApproval = masterDataItem.IsSendForApproval;
+                        masterId = masterDataItem.JobRequestId;
+
+                        var linegridName = "#JobCauses_" + masterId;
+                        var firstValidationgridName = "#JobServicegrid_" + masterId;
+                       var SecondValidationgridName = "#JobOrderAdmingrid_" + masterId;
+
+                        if (masterDataItem.IsSendForApproval == true) {
+
+                        $(".k-grid-top", linegridName).hide();
+                        $(".k-grid-edit", linegridName).hide();
+                        $(".k-grid-delete", linegridName).hide();
+
+                        $(".k-grid-top", firstValidationgridName).hide();
+                        $(".k-grid-edit", firstValidationgridName).hide();
+                        $(".k-grid-delete", firstValidationgridName).hide();
+    }
+    if (masterDataItem.IsSecondOnlineApproved == true) {
+
+
+                        $(".k-grid-top", SecondValidationgridName).hide();
+                        $(".k-grid-edit", SecondValidationgridName).hide();
+                        $(".k-grid-delete", SecondValidationgridName).hide();
+                        }
+
+                        // Only one open at a time
+                        if (expandedRow != null && expandedRow[0] != e.masterRow[0]) {
+                        masterGrid.collapseRow(expandedRow);
+                        }
+                        expandedRow = e.masterRow;
+
+}
+function approveonDataBound(e) {
+var grid = this;
+
+grid.tbody.find("tr[role='row']").each(function () {
+var dataItem = grid.dataItem(this);
+if ( IsDepartmentApproved == true) {
+$(this).find(".k-grid-edit").remove();
+$(this).find(".k-grid-delete").remove();
+}
+if (dataItem.Status == 0) {
+console.log(dataItem.Status );
+$(this).find(".k-grid-cmd-approve-request").hide();
+$(this).find(".k-grid-cmd-reject-request").hide();
+}
+else if (dataItem.Status == 1) {
+$(this).find(".k-grid-cmd-approve-request").hide();
+$(this).find(".k-grid-cmd-reject-request").hide();
+}
+else {
+$(this).find(".k-grid-cmd-approve-request").show();
+$(this).find(".k-grid-cmd-reject-request").show();
+}
+
+
+
+});
+}
+   
+function lineonDataBound(e) {
+var grid = this;
+
+grid.tbody.find("tr[role='row']").each(function () {
+var dataItem = grid.dataItem(this);
+if (IsSendForApproval == true) {
+$(this).find(".k-grid-edit").remove();
+$(this).find(".k-grid-delete").remove();
+}
+});
+}
+
+
+</script>
+
+
+
+<style type="text/css">
+div.k-edit-form-container {
+width: 600px;
+}
+/*fa-remove {
+color: red;
+background: darkred;
+}*/
+.kendoDanger {
+background-color: darkred;
+width: 100px;
+color: white;
+}
+
+.kendoDanger:hover {
+background-color: red;
+color: white;
+}
+
+.kendoPrimary {
+width: 100px;
+background-color: forestgreen;
+color: white;
+}
+
+.kendoPrimary:hover {
+background-color: green;
+color: white;
+}
+
+.red {
+background-color: darkred;
+}
+</style> 

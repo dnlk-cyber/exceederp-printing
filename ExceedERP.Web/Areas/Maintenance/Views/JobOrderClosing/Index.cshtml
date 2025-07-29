@@ -89,7 +89,7 @@
                                 columns.Bound(e => e.SecondOnlineApprovedTime).Title("Date Closed").Format("{0:yyyy-MM-dd}").Width(100); columns.Bound(e => e.Status).Width(100);
                                 columns.Bound(e => e.Status).Width(100).Filterable(ftb => ftb.Multi(true).Search(true));
                                 columns.Bound(e => e.Referance).Width(100).Filterable(ftb => ftb.Multi(true).Search(true)
-                                    .DataSource(ds => ds.Read(r => r.Action("Unique", "JobOrder").Data("{ field: 'Referance' }"))));
+                                    .DataSource(ds => ds.Read(r => r.Action("Unique", "JobOrder").Data("sendForgery").Data("{ field: 'Referance' }"))));
                                 columns.Bound(e => e.Description).Width(100);
 
                                 columns.Command(command =>
@@ -144,10 +144,10 @@
                                             .Error("error_handler(\"grid\")")
                                             .RequestStart("onRequestStart(\"grid\")")
                                             .RequestEnd("onRequestEnd(\"grid\")"))
-                                            //.Create(update => update.Action("JobOrder_Create", "JobOrder"))
-                                            .Read(read => read.Action("JobOrderClosing_Read", "JobOrder"))
-                                            //.Update(update => update.Action("JobOrder_Update", "JobOrder"))
-                                            .Destroy(update => update.Action("JobOrder_Destroy", "JobOrder"))
+                                            //.Create(update => update.Action("JobOrder_Create", "JobOrder").Data("sendForgery"))
+                                            .Read(read => read.Action("JobOrderClosing_Read", "JobOrder").Data("sendForgery"))
+                                            //.Update(update => update.Action("JobOrder_Update", "JobOrder").Data("sendForgery"))
+                                            .Destroy(update => update.Action("JobOrder_Destroy", "JobOrder").Data("sendForgery"))
 
                                 )
                            .Events(events => events.DataBound("dataBound"))
@@ -273,9 +273,9 @@
                                                                                                                                                                                                                                                                             .Error("error_handler(\"JobServicegrid_#=JobOrderID#\")")
                                                                                                                                                                                                                                                                             .RequestStart("onRequestStart(\"JobServicegrid_#=JobOrderID#\")")
                                                                                                                                                                                                                                                                             .RequestEnd("onRequestEnd(\"JobServicegrid_#=JobOrderID#\")"))
-                                                                                                                                                                                                                .Create(create => create.Action("JobOrderDetail_Create", "JobOrderDetail", new { jobDetailOrderID = "#=JobOrderID#" }))
-                                                                                                                                                                                                                .Read(read => read.Action("OrderService", "JobOrderDetail", new { jobOrderID = "#=JobOrderID#" }))
-                                                                                                                                                                                                                .Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail"))
+                                                                                                                                                                                                                .Create(create => create.Action("JobOrderDetail_Create", "JobOrderDetail", new { jobDetailOrderID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                                                                                                                                .Read(read => read.Action("OrderService", "JobOrderDetail", new { jobOrderID = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                                                                                                                                .Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail").Data("sendForgery"))
 
                                                                                                                                                                                                             )
 
@@ -308,7 +308,7 @@
                                                                                                                                                                                                                 .Error("error_handler(\"JobCauses_#=JobOrderID#\")")
                                                                                                                                                                                                                 .RequestStart("onRequestStart(\"JobCauses_#=JobOrderID#\")")
                                                                                                                                                                                                                 .RequestEnd("onRequestEnd(\"JobCauses_#=JobOrderID#\")"))
-                                                                                                                                                                                                                .Read(read => read.Action("JobCausesOrder_Read", "JobCauses", new { Id = "#=Referance#" }))
+                                                                                                                                                                                                                .Read(read => read.Action("JobCausesOrder_Read", "JobCauses", new { Id = "#=Referance#" }).Data("sendForgery"))
 
 
                                                                                                                                                                                                                 )
@@ -341,7 +341,7 @@
                                                                                                                                                                                     })
                                                                                                                                                                                                                             .DataSource(dataSource => dataSource
                                                                                                                                                                                                                             .Ajax()
-                                                                                                                                                                                                                            .ServerOperation(false)
+                                                                                                                                                                                                                           
                                                                                                                                                                                                                             .PageSize(6)
                                                                                                                                                                                                                             .Model(model =>
                                                                                                                                                                                                                             {
@@ -354,9 +354,9 @@
                                                                                                                                                                                                                             .Error("error_handler(\"Technicalgrid_#=JobOrderID#\")")
                                                                                                                                                                                                                             .RequestStart("onRequestStart(\"Technicalgrid_#=JobOrderID#\")")
                                                                                                                                                                                                                             .RequestEnd("onRequestEnd(\"Technicalgrid_#=JobOrderID#\")"))
-                                                                                                                                                                                                                            .Create(update => update.Action("Technical_Approval", "TechnicalJobApproval"))
-                                                                                                                                                                                                                            .Read(read => read.Action("TechnicalApproval_Read", "TechnicalJobApproval", new { Id = "#=JobOrderID#" }))
-                                                                                                                                                                                                                            .Update(update => update.Action("Technical_Approval", "TechnicalJobApproval"))
+                                                                                                                                                                                                                            .Create(update => update.Action("Technical_Approval", "TechnicalJobApproval").Data("sendForgery"))
+                                                                                                                                                                                                                            .Read(read => read.Action("TechnicalApproval_Read", "TechnicalJobApproval", new { Id = "#=JobOrderID#" }).Data("sendForgery"))
+                                                                                                                                                                                                                            .Update(update => update.Action("Technical_Approval", "TechnicalJobApproval").Data("sendForgery"))
 
                                                                                                                                                                                                                         )
 

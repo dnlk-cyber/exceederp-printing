@@ -4,7 +4,7 @@
               .DataValueField("RequestedEquipmentId") 
                      .DataSource(dataSource =>
                       {
-                          dataSource.Read(read => read.Action("AssignmentDDBind", "AssignedEquipment").Data("filterRequest"))
+                          dataSource.Read(read => read.Action("AssignmentDDBind", "AssignedEquipment").Data("sendForgery").Data("filterRequest"))
                                     .ServerFiltering(false);
                       }).OptionLabel("Select ").Filter(FilterType.Contains).ValuePrimitive(true))
                 

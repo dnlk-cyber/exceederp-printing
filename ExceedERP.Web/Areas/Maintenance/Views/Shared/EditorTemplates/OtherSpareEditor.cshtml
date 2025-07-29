@@ -3,6 +3,6 @@
     @(Html.Kendo().DropDownListFor(model => model.ServiceName).Name("ServiceName")
                                                 .DataTextField("Name")
                                                                                     .DataValueField("Value").OptionLabel("Select").Filter(FilterType.Contains)
-                                                                                    .DataSource(d => d.Read(r => r.Action("OtherDDBind", "SparePart")).ServerFiltering(false)))
+                                                                                    .DataSource(d => d.Read(r => r.Action("OtherDDBind", "SparePart").Data("sendForgery")).ServerFiltering(false)))
 
  

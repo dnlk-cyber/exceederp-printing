@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
@@ -12,19 +13,34 @@ namespace ExceedERP.Reporting.Maintenance.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<MachinaryAndVehicleMaintenanceReportViewModel> GetReport(string fiscalYearId, string periodId)
+        public List<MachinaryAndVehicleMaintenanceReportViewModel> GetReport(string fiscalYearId,
+            string maintenanceCenter, string equipmentCategoryId, DateTime From, DateTime To)
         {
             List<MachinaryAndVehicleMaintenanceReportViewModel> list = new List<MachinaryAndVehicleMaintenanceReportViewModel>();
-            if(int.TryParse(fiscalYearId, out int glFiscalYearId))
+            var Datefrom = From;
+            var Dateto = To;
+            if (int.TryParse(fiscalYearId, out int glFiscalYearId))
             {
                 var maintenancePlans = db.MaintenancePlans.Where(x => x.GlFiscalYearId == glFiscalYearId).ToList();
-                var planDetails = db.MaintenancePlanDetails.ToList();
-                if(int.TryParse(periodId, out int glPeriodId))
+                if(Guid.TryParse(maintenanceCenter, out Guid maintenanceCenterId))
                 {
-                    planDetails = planDetails.Where(x => x.GlPeriodId == glPeriodId).ToList();
+                    maintenancePlans = maintenancePlans.Where(x => x.MaintenanceCenterId == maintenanceCenterId).ToList();
                 }
+                if (Guid.TryParse(equipmentCategoryId, out Guid categoryId))
+                {
+                    maintenancePlans = maintenancePlans.Where(x => x.EquipmentCategoryId == categoryId).ToList();
+
+                }
+                      var planDetailList = db.MaintenancePlanDetails
+                        .Where(filteredPlan => db.GLPeriods
+                        .Any(gl => gl.GLPeriodId == filteredPlan.GlPeriodId
+                        && gl.DateFrom >= Datefrom
+                        && gl.DateFrom <= Dateto))
+                        .ToList();
+
+
                 var joinedPlan = from plan in maintenancePlans
-                                 join detail in planDetails
+                                 join detail in planDetailList
                                  on plan.MaintenancePlanId equals detail.MaintenancePlanId
                                  select new
                                  {
@@ -36,7 +52,6 @@ namespace ExceedERP.Reporting.Maintenance.DataSource
                                      detail.CMCost,
                                      detail.PMQuantity,
                                      detail.PMCost,
-                                     
                                  };
                 var groupedPlans = joinedPlan.GroupBy(g => new { g.EquipmentTypeId, g.GlPeriodId })
                     .Select(s => new
@@ -52,8 +67,8 @@ namespace ExceedERP.Reporting.Maintenance.DataSource
                 foreach (var groupedPlan in groupedPlans)
                 {
                     var equipmentType = db.EquipmentType.Find(groupedPlan.EquipmentTypeId);
-                    var month = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == groupedPlan.GlPeriodId)?.Name;
-                    if(equipmentType != null && month != null)
+                    //var month = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == groupedPlan.GlPeriodId)?.Name;
+                    if(equipmentType != null)
                     {
                         decimal cmCost = GetCMActualCost(groupedPlan.EquipmentTypeId, groupedPlan.GlPeriodId);
                         decimal pmCost = GetPMActualCost(groupedPlan.EquipmentTypeId, groupedPlan.GlPeriodId);
@@ -78,6 +93,83 @@ namespace ExceedERP.Reporting.Maintenance.DataSource
 
             return list;
         }
+        //public List<MachinaryAndVehicleMaintenanceReportViewModel> GetReport(string fiscalYearId, string periodId,
+        //    string maintenanceCenter, string equipmentCategoryId)
+        //{
+        //    List<MachinaryAndVehicleMaintenanceReportViewModel> list = new List<MachinaryAndVehicleMaintenanceReportViewModel>();
+        //    if(int.TryParse(fiscalYearId, out int glFiscalYearId))
+        //    {
+        //        var maintenancePlans = db.MaintenancePlans.Where(x => x.GlFiscalYearId == glFiscalYearId).ToList();
+        //        if(Guid.TryParse(maintenanceCenter, out Guid maintenanceCenterId))
+        //        {
+        //            maintenancePlans = maintenancePlans.Where(x => x.MaintenanceCenterId == maintenanceCenterId).ToList();
+        //        }
+        //        if(Guid.TryParse(equipmentCategoryId, out Guid categoryId))
+        //        {
+        //            maintenancePlans = maintenancePlans.Where(x => x.EquipmentCategoryId == categoryId).ToList();
+
+        //        }
+               
+        //        var planDetails = db.MaintenancePlanDetails.ToList();
+        //        if(int.TryParse(periodId, out int glPeriodId))
+        //        {
+        //            planDetails = planDetails.Where(x => x.GlPeriodId == glPeriodId).ToList();
+        //        }
+        //        var joinedPlan = from plan in maintenancePlans
+        //                         join detail in planDetails
+        //                         on plan.MaintenancePlanId equals detail.MaintenancePlanId
+        //                         select new
+        //                         {
+        //                             plan.GlFiscalYearId,
+        //                             plan.TotalQuantity,
+        //                             plan.EquipmentTypeId,
+        //                             detail.GlPeriodId,
+        //                             detail.CMQuantity,
+        //                             detail.CMCost,
+        //                             detail.PMQuantity,
+        //                             detail.PMCost,
+                                     
+        //                         };
+        //        var groupedPlans = joinedPlan.GroupBy(g => new { g.EquipmentTypeId, g.GlPeriodId })
+        //            .Select(s => new
+        //            {
+        //                s.Key.EquipmentTypeId,
+        //                s.Key.GlPeriodId,
+        //                CMCost = s.Sum(x => (decimal?)x.CMCost) ?? 0,
+        //                PMCost = s.Sum(x => (decimal?)x.PMCost) ?? 0,
+        //                CMQuantity = s.Sum(x => (decimal?)x.CMQuantity) ?? 0,
+        //                PMQuantity = s.Sum(x => (decimal?)x.PMQuantity) ?? 0
+
+        //            }).ToList();
+        //        foreach (var groupedPlan in groupedPlans)
+        //        {
+        //            var equipmentType = db.EquipmentType.Find(groupedPlan.EquipmentTypeId);
+        //            var month = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == groupedPlan.GlPeriodId)?.Name;
+        //            if(equipmentType != null && month != null)
+        //            {
+        //                decimal cmCost = GetCMActualCost(groupedPlan.EquipmentTypeId, groupedPlan.GlPeriodId);
+        //                decimal pmCost = GetPMActualCost(groupedPlan.EquipmentTypeId, groupedPlan.GlPeriodId);
+        //                decimal totalCost = cmCost + pmCost;
+        //                list.Add(new MachinaryAndVehicleMaintenanceReportViewModel
+        //                {
+        //                    EquipmentTypeName = equipmentType.EquipmentTypeName,
+        //                    CMAnnualPlanQuantity = groupedPlan.CMQuantity,
+        //                    PMAnnualPlanQuantity = groupedPlan.PMQuantity,
+        //                    CMPlanCost = groupedPlan.CMCost,
+        //                    PMPlanCost = groupedPlan.PMCost,
+        //                    PMActualCount = GetExcutionCount(groupedPlan.EquipmentTypeId, true, groupedPlan.GlPeriodId),
+        //                    CMActualCount = GetExcutionCount(groupedPlan.EquipmentTypeId, false, groupedPlan.GlPeriodId),
+        //                    CMActualCost = cmCost,
+        //                    PMActualCost = pmCost,
+                            
+        //                });
+                       
+        //            }
+        //        }
+        //    }
+
+        //    return list;
+        //}
 
         private int GetExcutionCount(Guid equipmentTypeId, bool isPM, int glPeriodId)
         {

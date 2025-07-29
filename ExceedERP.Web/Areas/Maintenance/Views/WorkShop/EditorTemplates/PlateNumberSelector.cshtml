@@ -1,0 +1,18 @@
+﻿
+@(Html.Kendo().DropDownListFor(model => model)
+                      //.Name("PlateNumber")
+                      .DataTextField("Name")
+                      .DataValueField("PlateNumber")
+                      .OptionLabel(" Select ")
+                      .Filter(FilterType.Contains)
+                        //.Events(e=>e.Change("onCanbanizationEdit"))
+                       // .Filter("contains")
+                      .DataSource(d =>
+                      {
+                          d.Read(r => r.Action("GetPlateNumbers", "MaintenanceDataProvider").Data("sendForgery"))
+                          .ServerFiltering(false);
+                      }
+                      )
+
+)
+@Html.ValidationMessageFor(m => m)

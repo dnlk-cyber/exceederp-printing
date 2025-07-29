@@ -1137,7 +1137,7 @@ namespace ExceedERP.Reporting.Fleet.View
             tableGroup37.Name = "group19";
             this.table1.RowGroups.Add(tableGroup36);
             this.table1.RowGroups.Add(tableGroup37);
-            this.table1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(9.6858539581298828D), Telerik.Reporting.Drawing.Unit.Inch(1.1944441795349121D));
+            this.table1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(9.6858549118042D), Telerik.Reporting.Drawing.Unit.Inch(1.1944441795349121D));
             this.table1.StyleName = "Normal.TableNormal";
             // 
             // textBox21
@@ -1777,9 +1777,9 @@ namespace ExceedERP.Reporting.Fleet.View
             // 
             // table3
             // 
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1770832538604736D)));
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1770832538604736D)));
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1770832538604736D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1770831346511841D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1770831346511841D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1770831346511841D)));
             this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.2395833283662796D)));
             this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
             this.table3.Body.SetCellContent(0, 0, this.textBox19);
@@ -1861,7 +1861,7 @@ namespace ExceedERP.Reporting.Fleet.View
             // 
             // table5
             // 
-            this.table5.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.6583331823348999D)));
+            this.table5.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.65833330154418945D)));
             this.table5.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.916667103767395D)));
             this.table5.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.24062219262123108D)));
             this.table5.Body.SetCellContent(0, 0, this.textBox70);
@@ -1914,8 +1914,8 @@ namespace ExceedERP.Reporting.Fleet.View
             // 
             // table4
             // 
-            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.691666841506958D)));
-            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(2.1499998569488525D)));
+            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.69166690111160278D)));
+            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(2.1500000953674316D)));
             this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.24062219262123108D)));
             this.table4.Body.SetCellContent(0, 0, this.textBox60);
             this.table4.Body.SetCellContent(0, 1, this.textBox61);
@@ -1969,7 +1969,7 @@ namespace ExceedERP.Reporting.Fleet.View
             // table6
             // 
             this.table6.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.675000011920929D)));
-            this.table6.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.5833334922790527D)));
+            this.table6.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.5833332538604736D)));
             this.table6.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.24062219262123108D)));
             this.table6.Body.SetCellContent(0, 0, this.textBox78);
             this.table6.Body.SetCellContent(0, 1, this.textBox79);
@@ -2021,8 +2021,8 @@ namespace ExceedERP.Reporting.Fleet.View
             // 
             // table7
             // 
-            this.table7.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.67499995231628418D)));
-            this.table7.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.7250001430511475D)));
+            this.table7.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.6749998927116394D)));
+            this.table7.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.7250000238418579D)));
             this.table7.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.24062219262123108D)));
             this.table7.Body.SetCellContent(0, 0, this.textBox99);
             this.table7.Body.SetCellContent(0, 1, this.textBox100);
@@ -2258,9 +2258,6 @@ namespace ExceedERP.Reporting.Fleet.View
         private Telerik.Reporting.TextBox textBox24;
         private Telerik.Reporting.TextBox textBox25;
         private Telerik.Reporting.TextBox textBox26;
-        private Telerik.Reporting.TextBox textBox27;
-        private Telerik.Reporting.TextBox textBox28;
-        private Telerik.Reporting.TextBox textBox29;
         private Telerik.Reporting.TextBox textBox39;
         private Telerik.Reporting.TextBox textBox40;
         private Telerik.Reporting.TextBox textBox1;
@@ -2269,8 +2266,6 @@ namespace ExceedERP.Reporting.Fleet.View
         private Telerik.Reporting.TextBox textBox4;
         private Telerik.Reporting.TextBox textBox5;
         private Telerik.Reporting.TextBox textBox6;
-        private Telerik.Reporting.TextBox textBox7;
-        private Telerik.Reporting.TextBox textBox8;
         private Telerik.Reporting.ObjectDataSource WagonDrillTimesheetobjectDataSource;
         private Telerik.Reporting.TextBox textBox42;
         private Telerik.Reporting.PageFooterSection pageFooterSection1;
@@ -2311,9 +2306,6 @@ namespace ExceedERP.Reporting.Fleet.View
         private Telerik.Reporting.TextBox textBox93;
         private Telerik.Reporting.TextBox textBox94;
         private Telerik.Reporting.TextBox textBox95;
-        private Telerik.Reporting.TextBox textBox96;
-        private Telerik.Reporting.TextBox textBox97;
-        private Telerik.Reporting.TextBox textBox98;
         private Telerik.Reporting.TextBox textBox109;
         private Telerik.Reporting.TextBox textBox110;
         private Telerik.Reporting.TextBox textBox112;
@@ -2332,7 +2324,6 @@ namespace ExceedERP.Reporting.Fleet.View
         private SharedDesigners.HeaderSubReportLandScape headerSubReportLandScape1;
         private Telerik.Reporting.ObjectDataSource subCategoryOds;
         private Telerik.Reporting.ObjectDataSource categoryOds;
-        private Telerik.Reporting.TextBox textBox53;
         private Telerik.Reporting.ObjectDataSource projectPrarmeterOds;
         private Telerik.Reporting.TextBox textBox32;
         private Telerik.Reporting.TextBox textBox33;
@@ -2403,5 +2394,14 @@ namespace ExceedERP.Reporting.Fleet.View
         private Telerik.Reporting.TextBox textBox123;
         private Telerik.Reporting.TextBox textBox124;
         private Telerik.Reporting.ObjectDataSource OwnRentalobjectDataSource;
+        private Telerik.Reporting.TextBox textBox27;
+        private Telerik.Reporting.TextBox textBox28;
+        private Telerik.Reporting.TextBox textBox29;
+        private Telerik.Reporting.TextBox textBox96;
+        private Telerik.Reporting.TextBox textBox97;
+        private Telerik.Reporting.TextBox textBox98;
+        private Telerik.Reporting.TextBox textBox7;
+        private Telerik.Reporting.TextBox textBox8;
+        private Telerik.Reporting.TextBox textBox53;
     }
 }

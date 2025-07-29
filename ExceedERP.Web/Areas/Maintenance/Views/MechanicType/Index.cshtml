@@ -23,9 +23,9 @@
     .DataSource(dataSource => dataSource
         .Ajax()
         .Model(model => model.Id(p => p.MechanicTypeClassId))
-        .Read(read => read.Action("MechanicType_Read", "MechanicType"))
-        .Create(create => create.Action("MechanicType_Create", "MechanicType"))
-        .Update(update => update.Action("MechanicType_Update", "MechanicType"))
-        .Destroy(destroy => destroy.Action("MechanicType_Delete", "MechanicType"))
+        .Read(read => read.Action("MechanicType_Read", "MechanicType").Data("sendForgery"))
+        .Create(create => create.Action("MechanicType_Create", "MechanicType").Data("sendForgery"))
+        .Update(update => update.Action("MechanicType_Update", "MechanicType").Data("sendForgery"))
+        .Destroy(destroy => destroy.Action("MechanicType_Delete", "MechanicType").Data("sendForgery"))
     )
 )

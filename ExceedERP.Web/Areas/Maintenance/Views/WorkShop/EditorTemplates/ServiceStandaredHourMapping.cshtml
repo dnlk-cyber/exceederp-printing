@@ -2,4 +2,4 @@
     @(Html.Kendo().TextBoxFor(model => model)
         .HtmlAttributes(new { style = "color:red;" })
     .Enable(false))
-    @*.DataSource(d => d.Read(r => r.Action("ServiceDDBind", "InspectionRegistration").Data("filterSerivce")).ServerFiltering(false)))*@
+    @*.DataSource(d => d.Read(r => r.Action("ServiceDDBind", "InspectionRegistration").Data("sendForgery").Data("filterSerivce")).ServerFiltering(false)))*@

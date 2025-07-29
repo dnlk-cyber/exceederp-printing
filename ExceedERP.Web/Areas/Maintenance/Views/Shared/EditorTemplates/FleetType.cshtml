@@ -1,4 +1,4 @@
 ﻿@(Html.Kendo().DropDownListFor(model => model)
                                           .DataTextField("EquipmentCategoryName")
                                                       .DataValueField("EquipmentIdentityID").OptionLabel("Select").HtmlAttributes(new { style = "width:100%" }).Filter(FilterType.Contains)
-                                          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory")).ServerFiltering(false)))
+                                          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory").Data("sendForgery")).ServerFiltering(false)))

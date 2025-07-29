@@ -3,6 +3,6 @@
     .DataTextField("Name")
     .DataValueField("Name")
     .OptionLabel(" Select  ")
-    .DataSource(d => d.Read(r => r.Action("ApprovalDDBind", "MaintenanceDataProvider")))
+    .DataSource(d => d.Read(r => r.Action("ApprovalDDBind", "MaintenanceDataProvider").Data("sendForgery")))
     .ValuePrimitive(true))
 

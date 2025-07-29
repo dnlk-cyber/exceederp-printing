@@ -263,6 +263,15 @@
             </div>
         </div>
     </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            @Html.LabelFor(model => model.IdleRate, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.IdleRate).HtmlAttributes(new { style = "width:100%" }).Enable(false)
+
+            </div>
+        </div>
+    </div>
 
 
 
@@ -294,6 +303,11 @@
         </div>
     </div>
 
+   
+</div>
+<div class="row">
+
+
     <div class="col-sm-2">
         <div class="form-group">
             @Html.LabelFor(model => model.NoOfTripe, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
@@ -303,11 +317,6 @@
             </div>
         </div>
     </div>
-</div>
-<div class="row">
-
-
-
     <div class="col-sm-2">
         <div class="form-group">
             @Html.LabelFor(model => model.AsphaltRate, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
@@ -337,6 +346,13 @@
         </div>
     </div>
 
+   
+
+
+
+</div>
+
+<div class="row">
     <div class="col-sm-2">
         <div class="form-group">
             @Html.LabelFor(model => model.FuelRate, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
@@ -346,12 +362,6 @@
             </div>
         </div>
     </div>
-
-
-
-</div>
-
-<div class="row">
     <div class="col-sm-2">
         <div class="form-group">
             @Html.LabelFor(model => model.MaintenanceCost, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
@@ -380,6 +390,11 @@
             </div>
         </div>
     </div>
+   
+</div>
+
+<div class="row">
+
     <div class="col-sm-2">
         <div class="form-group">
             @Html.LabelFor(model => model.TireCost, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
@@ -389,11 +404,6 @@
             </div>
         </div>
     </div>
-</div>
-
-<div class="row">
-
-
     <div class="col-sm-2">
         <div class="form-group">
             @Html.LabelFor(model => model.LoadedType, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
@@ -419,64 +429,65 @@
             @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.BranchId)
-                                                                                              .ValuePrimitive(true)
-                                                                                              .OptionLabel("Select Branch...")
-                                                                                              .DataTextField("Name")
-                                                                                              .DataValueField("Id")
-                                                                                              .Filter("contains")
+                                                                                                      .ValuePrimitive(true)
+                                                                                                      .OptionLabel("Select Branch...")
+                                                                                                      .DataTextField("Name")
+                                                                                                      .DataValueField("Id")
+                                                                                                      .Filter("contains")
 
-                                                                                              .DataSource(dataSource =>
-                                                                                              {
-                                                                                                  dataSource.Read(read => read.Action("GetBranches", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
-                                                                                                  .ServerFiltering(false);
-                                                                                              }).Enable(false)
+                                                                                                      .DataSource(dataSource =>
+                                                                                                      {
+                                                                                                          dataSource.Read(read => read.Action("GetBranches", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                                                                                          .ServerFiltering(false);
+                                                                                                      }).Enable(false)
                 )
             </div>
         </div>
     </div>
+
+
+
+</div>
+
+<div class="row">
 
     <div class="col-sm-2">
         <div class="form-group">
             @Html.LabelFor(model => model.BusinessUnitId, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.BusinessUnitId)
-                                                                                              .ValuePrimitive(true)
-                                                                                              .OptionLabel("Select Business Unit...")
-                                                                                              .DataTextField("Name")
-                                                                                              .DataValueField("Id")
-                                                                                              .Filter("contains")
-                                                                                              .AutoBind(true)
-                                                                                              .Enable(false)
-                                                                                              .DataSource(dataSource =>
-                                                                                              {
-                                                                                                  dataSource.Read(read => read.Action("GetBusinessUnits", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
-                                                                                                  .ServerFiltering(false);
-                                                                                              }).Enable(false)
+                                                                                                              .ValuePrimitive(true)
+                                                                                                              .OptionLabel("Select Business Unit...")
+                                                                                                              .DataTextField("Name")
+                                                                                                              .DataValueField("Id")
+                                                                                                              .Filter("contains")
+                                                                                                              .AutoBind(true)
+                                                                                                              .Enable(false)
+                                                                                                              .DataSource(dataSource =>
+                                                                                                              {
+                                                                                                                  dataSource.Read(read => read.Action("GetBusinessUnits", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery"))
+                                                                                                                  .ServerFiltering(false);
+                                                                                                              }).Enable(false)
                 )
             </div>
         </div>
     </div>
-
-
-</div>
-
-<div class="row">
     <div class="col-sm-2">
         <div class="form-group">
             @Html.LabelFor(model => model.OperatorId, htmlAttributes: new { @class = "control-label col-md-8", style = "width:100%" })
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.OperatorId)
-                                                    .ValuePrimitive(true)
-                                                    .OptionLabel("Select Operator...")
-                                                    .DataTextField("Text")
-                                                    .DataValueField("Value")
-                                                    .Filter("contains")
-                                                    .AutoBind(true)
-                                                    .DataSource(dataSource =>
-                                                    {
-                                                        dataSource.Read(read => read.Action("Operators", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery").Data("filterOperator"))
-                                                        .ServerFiltering(true);
-                                                    }).Enable(false)
+                                                            .ValuePrimitive(true)
+                                                            .OptionLabel("Select Operator...")
+                                                            .DataTextField("Text")
+                                                            .DataValueField("Value")
+                                                            .Filter("contains")
+                                                            .AutoBind(true)
+                                                            .DataSource(dataSource =>
+                                                            {
+                                                                dataSource.Read(read => read.Action("Operators", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery").Data("filterOperator"))
+                                                                .ServerFiltering(true);
+                                                            }).Enable(false)
                 )
             </div>
         </div>

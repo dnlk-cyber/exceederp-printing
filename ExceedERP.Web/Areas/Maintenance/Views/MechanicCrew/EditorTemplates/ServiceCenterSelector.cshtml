@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().DropDownListFor(model=>model)
+    .OptionLabel("Select Center")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .CascadeFrom("MaintenanceCenterId")
+            .Filter("contains")
+                .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read.Action("GetAllServicesForMechanic", "MaintenanceDataProvider", new { area = "Maintenance" }).Data("FilterServices"))
+                        .ServerFiltering(true);
+        })
+
+)

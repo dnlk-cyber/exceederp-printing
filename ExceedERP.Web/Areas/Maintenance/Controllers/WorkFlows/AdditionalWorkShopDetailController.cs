@@ -26,6 +26,18 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
             return Json(additionalInfo.ToDataSourceResult(request));
         }
 
+        public ActionResult ReadJobOrder([DataSourceRequest] DataSourceRequest request, int num)
+        {
+            var serviceCenter = db.ServiceCenterJob.FirstOrDefault(x => x.Num == num);
+            if (serviceCenter == null)
+            {
+                return Json(new { Error = "Job Order not found" });
+            }
+
+            var additionalInfo = db.AdditionalWorkShopDetails.Where(x => x.ServiceCenterJobId == serviceCenter.ServiceCenterJobId);
+            return Json(additionalInfo.ToDataSourceResult(request));
+        }
+
         public ActionResult Create([DataSourceRequest] DataSourceRequest request, AdditionalWorkShopDetail model, Guid Id)
         {
             ModelState.Remove("ServiceCenterJobId");

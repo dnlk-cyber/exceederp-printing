@@ -44,7 +44,7 @@
             .Scrollable(h => h.Height(500))
             .DataSource(dataSource => dataSource
             .Ajax()
-            .ServerOperation(false)
+           
             .Model(model =>
             {
                 model.Id(p => p.MaintenanceCenterID);
@@ -55,10 +55,10 @@
                 .Error("error_handler(\"grid\")")
                 .RequestStart("onRequestStart(\"grid\")")
                 .RequestEnd("onRequestEnd(\"grid\")"))
-            .Create(update => update.Action("MaintenanceCenter_Create", "MaintenanceCenter"))
-            .Read(read => read.Action("MaintenanceCenter_Read", "MaintenanceCenter"))
-            .Update(update => update.Action("MaintenanceCenter_Update", "MaintenanceCenter"))
-            .Destroy(update => update.Action("MaintenanceCenter_Destroy", "MaintenanceCenter"))
+            .Create(update => update.Action("MaintenanceCenter_Create", "MaintenanceCenter").Data("sendForgery"))
+            .Read(read => read.Action("MaintenanceCenter_Read", "MaintenanceCenter").Data("sendForgery"))
+            .Update(update => update.Action("MaintenanceCenter_Update", "MaintenanceCenter").Data("sendForgery"))
+            .Destroy(update => update.Action("MaintenanceCenter_Destroy", "MaintenanceCenter").Data("sendForgery"))
       ).ClientDetailTemplateId("ServiceCenter")
 )
 
@@ -98,16 +98,16 @@
                      {
                          columns.Bound(c => c.Name);
                          columns.Bound(c => c.Description);
-
+                         columns.Bound(c => c.Weight);
                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
                      })
                      .ToolBar(toolbar =>
                      {
                          toolbar.Create();
-                         
+
                      })
                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                     
+
                      .DataSource(dataSource => dataSource
                          .Ajax()
                          .Events(ev => ev
@@ -116,10 +116,10 @@
                          .RequestEnd("onRequestEnd(\"grid\")"))
 
                          .Model(model => model.Id(p => p.ServiceCenterId))
-                         .Read(read => read.Action("Read", "ServiceCenterSetting", new { Id = "#=MaintenanceCenterID#" }))
-                         .Create(create => create.Action("Create", "ServiceCenterSetting", new { Id = "#=MaintenanceCenterID#" }))
-                         .Update(update => update.Action("Update", "ServiceCenterSetting"))
-                         .Destroy(destroy => destroy.Action("Delete", "ServiceCenterSetting"))
+                         .Read(read => read.Action("Read", "ServiceCenterSetting", new { Id = "#=MaintenanceCenterID#" }).Data("sendForgery"))
+                         .Create(create => create.Action("Create", "ServiceCenterSetting", new { Id = "#=MaintenanceCenterID#" }).Data("sendForgery"))
+                         .Update(update => update.Action("Update", "ServiceCenterSetting").Data("sendForgery"))
+                         .Destroy(destroy => destroy.Action("Delete", "ServiceCenterSetting").Data("sendForgery"))
                      ).ToClientTemplate()
     )
 }

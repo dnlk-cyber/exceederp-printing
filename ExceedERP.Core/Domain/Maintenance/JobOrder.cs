@@ -146,8 +146,8 @@ namespace ExceedERP.Core.Domain.Maintenance
     {
        
 
-        public string JobOrderId { get; set; }
-
+        public Guid JobOrderId { get; set; }
+        public Guid FleetId { get; set; }
         [DisplayName(" Is Rework?")]
         public bool IsRework { get; set; }
         
@@ -160,6 +160,7 @@ namespace ExceedERP.Core.Domain.Maintenance
         public string ProjectName { get; set; }
         public string PercentCompleted { get; set; }
         public decimal Odometer { get; set; }
+        public int Num { get; set; }
         public string Site { get; set; }
         public string FailureReason { get; set; }
         public string AdvanceMeasure { get; set; }
@@ -192,5 +193,9 @@ namespace ExceedERP.Core.Domain.Maintenance
         [Display(Name ="Org Structure")]
         public string OrgStructure { get; set; }
         public string Description { get; set; } 
+        public string SeriveGroup { get; set; }
+        public string RequisitionDate { get; set; }
+        public DateTime? DateIn { get; set; }
+        public DateTime? DateOut { get; set; }
     }
 }

@@ -24,7 +24,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetOrgnizationalCustomers", "MaintenanceDataProvider"))
+                              dataSource.Read(read => read.Action("GetOrgnizationalCustomers", "MaintenanceDataProvider").Data("sendForgery"))
                               .ServerFiltering(false);
                           }))
                 </div>
@@ -45,7 +45,7 @@
                                 .Filter("contains")
                                 .DataSource(dataSource =>
                                 {
-                                    dataSource.Read(read => read.Action("GetEmployes", "MaintenanceDataProvider"))
+                                    dataSource.Read(read => read.Action("GetEmployes", "MaintenanceDataProvider").Data("sendForgery"))
                                             .ServerFiltering(false);
                                 }))
                 </div>
@@ -74,7 +74,7 @@
                                 .Filter("contains")
                                 .DataSource(dataSource =>
                                 {
-                                  dataSource.Read(read => read.Action("GetCustomerPlateNos", "MaintenanceDataProvider").Data("filterPlateNos"))
+                                  dataSource.Read(read => read.Action("GetCustomerPlateNos", "MaintenanceDataProvider").Data("sendForgery").Data("filterPlateNos"))
                                   .ServerFiltering(true);
                                  })
                                  .AutoBind(false)

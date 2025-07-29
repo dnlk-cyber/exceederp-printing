@@ -23,7 +23,7 @@
                                   .DataValueField("StoreCode").HtmlAttributes(new { @required = "required" })
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("InventoryStoreDDBind", "FleetDataProvider")
+                              dataSource.Read(read => read.Action("InventoryStoreDDBind", "FleetDataProvider").Data("sendForgery")
                                   )
                                   .ServerFiltering(false);
                           })

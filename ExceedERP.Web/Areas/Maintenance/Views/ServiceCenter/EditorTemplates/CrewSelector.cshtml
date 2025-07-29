@@ -8,6 +8,6 @@
             .Filter("contains")
             .DataSource(dataSource =>
             {
-                dataSource.Read(read => read.Action("GetEmployes", "MaintenanceDataProvider"))
+                dataSource.Read(read => read.Action("GetEmployes", "MaintenanceDataProvider").Data("sendForgery"))
                         .ServerFiltering(false);
             }))

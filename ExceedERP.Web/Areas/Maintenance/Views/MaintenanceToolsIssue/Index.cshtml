@@ -41,7 +41,7 @@
         .DataSource(dataSource => dataSource
         .Ajax()
         .PageSize(20)
-        .ServerOperation(false)
+       
         .Model(model =>
         {
             model.Id(p => p.MaintenanceToolIssueAndReturnId);
@@ -51,10 +51,10 @@
                     .Error("error_handler(\"grid\")")
                     .RequestStart("onRequestStart(\"grid\")")
                     .RequestEnd("onRequestEnd(\"grid\")"))
-        .Read(read => read.Action("Tools_Read", "MaintenanceToolIssueAndReturn"))
-        .Create(create => create.Action("Tool_Create", "MaintenanceToolIssueAndReturn"))
-        .Update(update => update.Action("Tool_Update", "MaintenanceToolIssueAndReturn"))
-        .Destroy(update => update.Action("Tool_Destroy", "MaintenanceToolIssueAndReturn"))
+        .Read(read => read.Action("Tools_Read", "MaintenanceToolIssueAndReturn").Data("sendForgery"))
+        .Create(create => create.Action("Tool_Create", "MaintenanceToolIssueAndReturn").Data("sendForgery"))
+        .Update(update => update.Action("Tool_Update", "MaintenanceToolIssueAndReturn").Data("sendForgery"))
+        .Destroy(update => update.Action("Tool_Destroy", "MaintenanceToolIssueAndReturn").Data("sendForgery"))
         )
 )
 

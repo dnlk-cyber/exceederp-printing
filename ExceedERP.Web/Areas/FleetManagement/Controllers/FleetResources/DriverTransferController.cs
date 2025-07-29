@@ -56,7 +56,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             }).ToList();
             ViewData["Operators"] = db.Operator.ToList().Select(s => new {
                 Id = s.OperatorID,
-                Name = s.FullName
+                Name = s.EmployeeId+"_"+s.FullName
             });
             return View();
         }

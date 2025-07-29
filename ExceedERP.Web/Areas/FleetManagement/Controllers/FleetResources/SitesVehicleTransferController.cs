@@ -59,12 +59,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             ViewData["Operator"] = db.Operator.Select(s => new
             {
                 Value = s.OperatorID,
-                Text = s.FullName
+                Text = s.EmployeeCode+" "+s.FullName
             }).ToList();
             ViewData["OperatorTwo"] = db.Operator.Select(s => new
             {
                 Value = s.OperatorID,
-                Text = s.FullName
+                Text = s.EmployeeCode + " " + s.FullName
             }).ToList();
 
 

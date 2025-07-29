@@ -21,6 +21,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
     [AuthorizeRoles(FleetManagementRoles.ResourceRequestor, FleetManagementRoles.ResourceRequestApprover)] 
     public class EquipmentDemandController : Controller
     {
+        private readonly CacheData CacheData = new CacheData();
         IVehicleDemandService _VehicleDemandService;
         ExceedDbContext db = new ExceedDbContext();
 
@@ -54,8 +55,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 Id = s.OperatorID,
                 Name = s.FullName + "-" + s.MobilePhone
             });
-            ViewData["FromBranches"] = db.Branch.ToList().Select(s => new {
-                Id = s.BranchId,
+            ViewData["FromBranches"] = CacheData.GetBranchCaches().Select(s => new
+            {
+                Id = s.Id,
                 Name = s.Name
             });
             ViewData["FromStructure"] = db.MainCompanyStructures.ToList().Select(s => new {

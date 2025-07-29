@@ -1,5 +1,6 @@
-﻿@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" , @required="required" })
+﻿@(Html.Kendo().DropDownListFor(model => model)
+              .HtmlAttributes(new { @class = "form-control" , @required="required" })
               .DataTextField("Name")
               .DataValueField("Name").OptionLabel(" Select  ")
-              .DataSource(d => d.Read(r => r.Action("ApprovalDDBind", "Accessories"))).ValuePrimitive(true))
+              .DataSource(d => d.Read(r => r.Action("ApprovalDDBind", "Accessories").Data("sendForgery"))).ValuePrimitive(true))
 

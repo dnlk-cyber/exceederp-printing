@@ -4,4 +4,4 @@
           .DataValueField("Code")
           .Filter(FilterType.Contains)
           .OptionLabel("Select")
-          .DataSource(d => d.Read(r => r.Action("GetMechanicCrew", "MaintenanceDataProvider")).ServerFiltering(false)))
+          .DataSource(d => d.Read(r => r.Action("GetMechanicCrew", "MaintenanceDataProvider").Data("sendForgery")).ServerFiltering(false)))

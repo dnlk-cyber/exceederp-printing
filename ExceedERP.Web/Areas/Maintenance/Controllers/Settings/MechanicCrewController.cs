@@ -37,7 +37,15 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                     Code = i.EmployeeId
                 }).AsQueryable();
             ViewData["personEmployees"] = selectedEmployee;
-
+            ViewData["ServiceCenters"] = db.ServiceCenters.Select(x => new {
+                Value = x.ServiceCenterId,
+                Text=x.Name
+            });
+            ViewData["MaintenanceCenter"] = db.MaintenanceCenter.Where(x => x.IsExternal == false).Select(x => new
+            {
+                Value=x.MaintenanceCenterID,
+                Text=x.Name
+            });
             ViewData["MechanicType"] = db.MechanicTypeClasses.Select(s => new
             {
                 Value = s.MechanicTypeClassId,
@@ -68,7 +76,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             //    }
             //}
 
-            List<MechanicCrew> Mechanics = _MechanicCrewService.GetAll().Where(f => f.EmployeeId == MechanicCrew.EmployeeId).ToList();
+            List<MechanicCrew> Mechanics = _MechanicCrewService.GetAll().Where(f => f.EmployeeId == MechanicCrew.EmployeeId&&f.ServiceCenterId==MechanicCrew.ServiceCenterId).ToList();
             if (Mechanics.Any())
             {
                 ModelState.Clear();
@@ -85,7 +93,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                     var placement = db.Placements.Where(q => q.EmployeeId == MechanicCrew.EmployeeId).First();
                     MechanicCrew.MechanicCrewID = Guid.NewGuid();
                     //MechanicCrew.FullName = Employee.FirstName + " " + Employee.MiddleName + " " + Employee.LastName;
-
+                    MechanicCrew.MaintenanceCenterId = MechanicCrew.MaintenanceCenterId;
                     MechanicCrew.EmployeeId = MechanicCrew.EmployeeId;
                     MechanicCrew.HourlyWage = placement.Salary/240;
                     MechanicCrew.CreatedBy = User.Identity.Name;
@@ -111,21 +119,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             if (MechanicCrew != null)
             {
-                //var Employee = db.Person_Employee.Where(x => x.EmployeeId == MechanicCrew.EmployeeId).FirstOrDefault();
-
-                //Placement Placements = db.Placements.Where(x => x.EmployeeId == MechanicCrew.EmployeeId).FirstOrDefault();
-                //if (Placements != null)
-                //{
-                //    Person_Employee Person_Employee = db.Person_Employee.Where(x => x.EmployeeId == Placements.ImmediateSupervisor).FirstOrDefault();
-                //    if (Person_Employee != null)
-                //    {
-                //        MechanicCrew.SupervisorName = Person_Employee.FirstName + " " + Person_Employee.MiddleName + " " + Person_Employee.LastName;
-                //    }
-                //}
-
-                //if (Employee != null)
-                //{
-                    //MechanicCrew.FullName = Employee.FirstName + " " + Employee.MiddleName + " " + Employee.LastName;
+               
                     MechanicCrew.ModifiedBy = User.Identity.Name;
                     MechanicCrew.LastModified = DateTime.Now;
 
@@ -151,7 +145,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             return Json(new[] { MechanicCrew }.ToDataSourceResult(request));
         }
-        [AllowAnonymous]
+        
         public ActionResult MechanicCrewDDBind(Guid? jobOrderId)
         {
             var mechanicCrews = db.MechanicCrew.Select(s => new 
@@ -164,6 +158,29 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 var mechanicIds = db.ServiceCrew.Where(q => q.ServiceID == jobOrderId).Select(s => s.MechanicCrewID);
                 mechanicCrews = mechanicCrews.Where(q => mechanicIds.Contains(q.MechanicCrewID)).ToList();            }
             return Json(mechanicCrews, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult TogleCrew(string Id)
+        {
+            var FetchCrew = db.MechanicCrew.FirstOrDefault(x => x.MechanicCrewID.ToString() == Id);
+            if(FetchCrew.IsActive==true)
+            {
+                FetchCrew.IsActive = false;
+                FetchCrew.Status = "InActive";
+            }
+            else
+            {
+                FetchCrew.IsActive =true;
+                FetchCrew.Status = "Active";
+            }
+            db.Entry(FetchCrew).State = System.Data.Entity.EntityState.Modified;
+            db.SaveChanges();
+            var FormattedData = new
+            {
+                Message = "Status Changed",
+                Status = "OK"
+            };
+           return Json(FormattedData, JsonRequestBehavior.AllowGet);
+
         }
         public JsonResult RefreshMechanic()
         {

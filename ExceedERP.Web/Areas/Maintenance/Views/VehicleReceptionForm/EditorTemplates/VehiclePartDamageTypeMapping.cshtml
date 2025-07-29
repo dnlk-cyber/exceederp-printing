@@ -6,6 +6,6 @@
                                                                     .Filter("contains")
                                                                     .DataSource(dataSource =>
                                                                     {
-                                                                        dataSource.Read(read => read.Action("GetVehiclePartDamageTypes", "VehiclePartDamageType"))
+                                                                        dataSource.Read(read => read.Action("GetVehiclePartDamageTypes", "VehiclePartDamageType").Data("sendForgery"))
                                                                         .ServerFiltering(false);
                                                                     }))

@@ -7,7 +7,7 @@
                       .DataValueField("StoreCode")
                   .DataSource(dataSource =>
                   {
-                      dataSource.Read(read => read.Action("GetStore", "DataProvider"))
+                      dataSource.Read(read => read.Action("GetStore", "DataProvider").Data("sendForgery"))
                                 .ServerFiltering(true);
                   })
 )

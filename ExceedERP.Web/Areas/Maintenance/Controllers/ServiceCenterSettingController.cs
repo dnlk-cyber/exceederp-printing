@@ -26,7 +26,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 Name = sCenter.Name,
                 Description = sCenter.Description,
                 MaintenanceCenterId = sCenter.MaintenanceCenterId,
-                ServiceCenterId = sCenter.ServiceCenterId
+                ServiceCenterId = sCenter.ServiceCenterId,
+                Weight=sCenter.Weight,
                
             });
 

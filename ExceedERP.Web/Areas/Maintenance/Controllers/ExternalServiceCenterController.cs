@@ -6,6 +6,7 @@ using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Fleet;
 using ExceedERP.Web.Areas.Maintenance.Models;
 using ExceedERP.Web.Helpers;
@@ -24,6 +25,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
    // [AuthorizeRoles(MaintenanceRoles.ServiceUser)]
     public class ExternalServiceCenterController : Controller
     {
+        private readonly CacheData CacheData = new CacheData();
         public async Task<ActionResult> Index()
         {
             ViewData["EquipmentsList"] = db.EquipmentInformation.Select(e => new { e.EquipmentInformationId, e.LicensePlate, e.DeviceNumber }).ToList();
@@ -61,7 +63,13 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 Name = s.Description
             }).ToList();
 
-            ViewData["Branches"] = branches;
+            ViewData["Branches"] = CacheData.GetBranchCaches().Select(
+         i => new
+         {
+             Name = i.Name,
+             Id = i.Id
+         }).AsQueryable();
+
 
             var selecteditems = items.Select(
                 i => new

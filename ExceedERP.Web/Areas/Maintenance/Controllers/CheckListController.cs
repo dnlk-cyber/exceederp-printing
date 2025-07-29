@@ -159,7 +159,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             return Json(new[] { CheckList }.ToDataSourceResult(request));
         }
-        [AllowAnonymous]
+        
         public ActionResult GetCheckList()
         {
             List<CheckListViewModel> list = new List<CheckListViewModel>();

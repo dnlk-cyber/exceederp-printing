@@ -22,6 +22,8 @@
                         columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["operator"], "Value", "Text").Title("Operator").Width(100);
                         columns.Bound(c => c.FuelConsumption).Title("Fuel Consumption").Width(100);
                         columns.Bound(c => c.FuelRate).Title("Fuel Rate").Width(100);
+                        columns.Bound(c => c.IdleHour).Title("Idle Houre").Width(100);
+                        columns.Bound(c => c.IdealRentalRate).Title("Idle Rental Rate").Width(100);
                         columns.Bound(c => c.MaintenanceCost).Title("Maintenance Cost").Width(100);
                         columns.Bound(c => c.Salary).Title("Salary").Width(100);
                         columns.Bound(c => c.Perdium).Title("Perdium").Width(100);

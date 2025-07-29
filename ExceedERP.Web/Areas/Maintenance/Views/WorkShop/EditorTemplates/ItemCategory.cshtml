@@ -7,7 +7,7 @@
        .Filter(FilterType.Contains)
         .DataSource(dataSource =>
         {
-            dataSource.Read(read => read.Action("GetSparePartMaterialCategory", "MaintenanceDataProvider"));
+            dataSource.Read(read => read.Action("GetSparePartMaterialCategory", "MaintenanceDataProvider").Data("sendForgery"));
             //.ServerFiltering(true);
         })
         .MinLength(2)

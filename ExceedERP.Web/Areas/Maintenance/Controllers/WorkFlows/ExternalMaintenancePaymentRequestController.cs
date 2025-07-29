@@ -1,6 +1,9 @@
-﻿using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
+﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Finance.AP.PaymentRequest;
+using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -18,6 +21,16 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
         // GET: Maintenance/ExternalMaintenancePaymentRequest
         public ActionResult Index()
         {
+            ViewData["MaintenanceCenters"] = db.MaintenanceCenter.Select(x => new
+            {
+                Value = x.MaintenanceCenterID,
+                Text = x.Name
+            });
+            ViewData["ServiceCenterJobs"] = db.ServiceCenterJob.Select(x => new
+            {
+                Value = x.ServiceCenterJobId,
+                Text = x.Num
+            }).ToList();
             ViewData["Name"] = db.EquipmentName.Select(s => new
             {
                 Value = s.EquipmentNameID,
@@ -49,8 +62,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
 
             ViewData["ServiceCenter"] = db.ServiceCenters.Select(s => new
             {
-                Value = s.Name,
-                Text = s.ServiceCenterId
+                Value = s.ServiceCenterId,
+                Text = s.Name
             }).ToList();
             ViewData["BusinessUnit"] = db.BusinessUnits.Select(s => new
             {
@@ -72,19 +85,47 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
 
             return Json(model.ToDataSourceResult(request, ModelState));
         }
-
-        public ActionResult Create([DataSourceRequest] DataSourceRequest request, ExternalMaintenancePaymentRequest model)
+         public ActionResult Read_Details([DataSourceRequest] DataSourceRequest request, int id)
         {
+            var model = db.ExternalMaintenancePaymentRequestDetails.Where(x => x.ExternalPaymentRequestJobId == id);
+
+            return Json(model.ToDataSourceResult(request, ModelState));
+        }
+
+        public ActionResult Create([DataSourceRequest] DataSourceRequest request, ExternalMaintenancePaymentRequest MaintenanceRequests)
+        {
+            var fetchMaintenanceCenter = db.MaintenanceCenter.FirstOrDefault(x => x.MaintenanceCenterID == MaintenanceRequests.MaintenanceCenterId);
+            if(fetchMaintenanceCenter!=null)
+            {
+                MaintenanceRequests.BranchId = fetchMaintenanceCenter.BranchId;
+                MaintenanceRequests.BusinessUnitId = fetchMaintenanceCenter.BusinessUnitId;
+            }
+            int AllCounts = 0;
+            var fetchAllPaymentRequests = db.ExternalMaintenancePaymentRequests.ToList() ;
+            if (fetchAllPaymentRequests.Any())
+            {
+                AllCounts = fetchAllPaymentRequests.Count();
+            }
+            MaintenanceRequests.JobNum = AllCounts + 1;
             if (ModelState.IsValid)
             {
-
-                model.CreatedBy = User.Identity.Name;
-                model.DateCreated = DateTime.Today;
-                db.ExternalMaintenancePaymentRequests.Add(model);
+                var MRequest = new ExternalMaintenancePaymentRequest
+                {
+                    TotalAmount = 0,
+                    AmountDue = 0,
+                    ForwardedTo = User.Identity.Name,
+                    ForwardedFrom=User.Identity.Name,
+                    MaintenanceCenterId = MaintenanceRequests.MaintenanceCenterId,
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Now,
+                    JobNum = MaintenanceRequests.JobNum,
+                    //Description = MaintenanceRequest.Description,
+                };
+                db.ExternalMaintenancePaymentRequests.Add(MRequest);
                 db.SaveChanges();
-                
             }
-            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
+
+            return Json(new[] { MaintenanceRequests }.ToDataSourceResult(request, ModelState));
         }
         public ActionResult Update([DataSourceRequest] DataSourceRequest request, ExternalMaintenancePaymentRequest model)
         {
@@ -116,57 +157,128 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
             return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
+        //public JsonResult SendForApproval(int id)
+        //{
+        //    var entity = db.ExternalMaintenancePaymentRequests.FirstOrDefault(x => x.ExternalMaintenancePaymenntrequestId == id);
+        //    if (entity != null)
+        //    {
+        //        entity.IsSendForApproval = true;
+        //        entity.IsOnlineTransferredBy = User.Identity.Name;
+        //        entity.OnlineTransferredTime = DateTime.Today;
+        //        db.Entry(entity).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //        var returnMessage = new
+        //        {
+        //            Message = "Successfully Sent!",
+
+        //        };
+        //        return Json(returnMessage.Message, JsonRequestBehavior.AllowGet);
+
+        //    }
+        //    var jsonData = new
+        //    {
+        //        Message = "Error Sending!",
+
+        //    };
+        //    return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
+        //}
+
+        //public JsonResult Approve(int id)
+        //{
+        //    object response = null;
+        //    var entity = db.ExternalMaintenancePaymentRequests.Find(id);
+        //    if (entity != null)
+        //    {
+               
+        //        entity.IsOnlineApproved = true;
+        //        entity.OnlineApprovedBy = User.Identity.Name;
+        //        entity.OnlineApprovedTime = DateTime.Today;
+
+
+        //        db.ExternalMaintenancePaymentRequests.Attach(entity);
+        //        db.Entry(entity).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //        GenerateExternalPaymentRequest(entity.JobNum);
+        //        response = new { Success = true, Message = "Successfully Approved" };
+        //    }
+        //    else
+        //    {
+        //        response = new { Success = false, Message = "Something is wrong!" };
+        //    }
+        //    return Json(response);
+        //}
         public JsonResult SendForApproval(int id)
         {
-            var entity = db.ExternalMaintenancePaymentRequests.FirstOrDefault(x => x.ExternalMaintenancePaymenntrequestId == id);
-            if (entity != null)
-            {
-                entity.IsSendForApproval = true;
-                entity.IsOnlineTransferredBy = User.Identity.Name;
-                entity.OnlineTransferredTime = DateTime.Today;
+            var record = db.ExternalMaintenancePaymentRequests.Find(id);          
 
-                db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
-                var returnMessage = new
+            if (record.TotalAmount <= 0)
+            {
+                var formattedData = new
                 {
-                    Message = "Successfully Sent!",
-
+                    Message = "Net payable should be more than 0.",
+                    Status = "NOT_OK"
                 };
-                return Json(returnMessage.Message, JsonRequestBehavior.AllowGet);
-
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
-            var jsonData = new
+
+            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved)
             {
-                Message = "Error Sending!",
-
-            };
-            return Json(jsonData.Message, JsonRequestBehavior.AllowGet);
-        }
-
-        public JsonResult Approve(int id)
-        {
-            object response = null;
-            var entity = db.ExternalMaintenancePaymentRequests.Find(id);
-            if (entity != null)
-            {
-               
-                entity.IsOnlineApproved = true;
-                entity.OnlineApprovedBy = User.Identity.Name;
-                entity.OnlineApprovedTime = DateTime.Today;
-
-
-                db.ExternalMaintenancePaymentRequests.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
+                record.Status = Enum.GetName(typeof(OperationStatuses), 4);
+                record.IsSendForApproval = true;
+                record.SendForApprovalBy = User.Identity.Name;
+                record.SendForApprovalTime = DateTime.Now;
+                db.ExternalMaintenancePaymentRequests.Attach(record);
+                db.Entry(record).State = EntityState.Modified;
                 db.SaveChanges();
-                GenerateExternalPaymentRequest(entity.JobNum);
-                response = new { Success = true, Message = "Successfully Approved" };
+                #region approval workflow
+                bool isNewRecord = true;
+                var validations = db.ExternalMaintenancePaymentRequestValidations.Where(x => x.Status == ApprovalStatuses.Approve).AsQueryable();
+                if (validations.Any())
+                    isNewRecord = false;
+                decimal docamount = record.TotalAmount;
+                int docid = record.ExternalMaintenancePaymenntrequestId;
+                int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
+                DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "", record.ForwardedTo, Core.Domain.Common.DocumentApproval.ApprovalDocumentType.ExternalMaintenanceRequestPayment, isNewRecord, step);
+                #endregion
+                var formattedData = new
+                {
+                     Message = "Successfully Sent.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
-            else
+            else if (record == null)
             {
-                response = new { Success = false, Message = "Something is wrong!" };
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
-            return Json(response);
+
+            else if (record.IsSendForApproval)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already sent for approval you cannot send again.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            else if (record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already approved.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            return null;
         }
+
 
         #region ExternalMaintenancePaymentRequest
         public void GenerateExternalPaymentRequest(int num)
@@ -199,12 +311,16 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                             OrgStuructureId = placement.OrgStructureId,
                             EmployeeId = jobOrder.RequesterId,
                             Paid = false,
-                            FromBranchId = jobOrder.BranchId,
+                           FromBranchId = jobOrder.BranchId,
+                           // BranchId = jobOrder.BranchId,
                             FromBusinessUnitId = jobOrder.BusinessUnitId,
+                            //BusinessUnitId = jobOrder.BusinessUnitId,
                             CreatedAtBranchId = jobOrder.BranchId,
                             CreatedAtBusinessUnitId = jobOrder.BusinessUnitId,
                             CreatedAtOrgStructureId = placement.OrgStructureId,
+                           // OrgStuructureId = placement.OrgStructureId,
                             CreatedBy = User.Identity.Name,
+                            
                             DateCreated = DateTime.Now.Date,
                             ModifiedBy = User.Identity.Name,
                             LastModified = DateTime.Now.Date,

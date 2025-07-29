@@ -8,6 +8,6 @@
                                           
                                           .DataSource(dataSource =>
                                           {
-                                              dataSource.Read(read => read.Action("GetBusinessUnit", "MaintenanceDataProvider"))
+                                              dataSource.Read(read => read.Action("GetBusinessUnit", "MaintenanceDataProvider").Data("sendForgery"))
                                               .ServerFiltering(false);
                                           }))

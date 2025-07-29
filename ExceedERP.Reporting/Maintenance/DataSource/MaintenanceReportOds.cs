@@ -1,10 +1,10 @@
-﻿using ExceedERP.Core.Domain.Maintenance;
-using ExceedERP.DataAccess.Context;
+﻿using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Fleet.ViewModel;
 using ExceedERP.Reporting.Maintenance.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using ExceedERP.Core.Domain.Maintenance;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;

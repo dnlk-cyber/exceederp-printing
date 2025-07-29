@@ -29,7 +29,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Models
         [DisplayName("Project Name")]
         public string ProjectName { get; set; }
         public string PercentCompleted { get; set; }
-      
+        public string KMReading { get; set; }
+        public string GPSInfo { get; set; }
         [DisplayName("Date Issued  ")]
         public Nullable<DateTime> DateIssued { get; set; }
         [DisplayName("Date Completed   ")]
@@ -41,6 +42,8 @@ namespace ExceedERP.Web.Areas.Maintenance.Models
         [DisplayName(" Reason For Job ")]
         [DataType(DataType.MultilineText)]
         public string InspectorComments { get; set; }
+        public bool IsFromWorkShop { get; set; }
+        public bool IsApproved { get; set; }
         public ApprovalStatuses Status { get; set; }
         public string Remark { get; set; }
     }

@@ -51,6 +51,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                 StoreRequisitionID = storeRequisitionItem.StoreRequisitionID,
                 ItemCategoryCode = storeRequisitionItem.ItemCategoryCode,
                 ItemCode = storeRequisitionItem.ItemCode,
+                CurrentAPrice = storeRequisitionItem.CurrentAPrice,
                 PartNo = storeRequisitionItem.PartNo,
                 ChasisNo = storeRequisitionItem.ChasisNo,
                 SerialNo = storeRequisitionItem.SerialNo,
@@ -62,15 +63,19 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                 IsApproved = storeRequisitionItem.IsApproved,
                 ItemSpecification = storeRequisitionItem.ItemSpecification,
                 Unit= ExceedERP.Helpers.Inventory.InventoryHelper.GetItemUom(storeRequisitionItem.ItemCode),
-               // CurrentBalance = 0,
-                CurrentAPrice = storeRequisitionItem.CurrentAPrice,
-                CurrentBalance = IsSRReviewed(storeRequisitionItem.StoreRequisitionID) ? storeRequisitionItem.CurrentBalance : ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, GetStore(storeRequisitionItem.StoreRequisitionID)),
+                CurrentBalance = storeRequisitionItem.CurrentBalance,
+               // CurrentAPrice = storeRequisitionItem.CurrentAPrice,
+               // CurrentBalance = IsSRReviewed(storeRequisitionItem.StoreRequisitionID) ? storeRequisitionItem.CurrentBalance : ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, GetStore(storeRequisitionItem.StoreRequisitionID)),
             });
 
             return Json(result);
         }
 
-
+        private decimal GetUnitPrice(string ItemCategoryCode, string ItemCode)
+        {
+            var GetAveragePrice = db.InventoryItems.FirstOrDefault(x => x.ItemCategoryCode == ItemCategoryCode && x.ItemCode == ItemCode).AvgPrice;
+            return GetAveragePrice;
+        }
        // [AuthorizeRoles(InventoryConstants.PropertyRequistion)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SparePartStoreRequisitionItems_Create([DataSourceRequest]DataSourceRequest request, StoreRequisitionItem storeRequisitionItem , int id)
@@ -109,11 +114,12 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                     PurchaseQuantity = 0,//assuming all will be given
                     IsApproved = storeRequisitionItem.IsApproved,
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
+
+                    CurrentAPrice = GetUnitPrice(storeRequisitionItem.ItemCategoryCode,storeRequisitionItem.ItemCode),
                     CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, sr.StoreCode),
 
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Now,
-                    CurrentAPrice = storeRequisitionItem.CurrentAPrice,
 
                 };
 
@@ -176,7 +182,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                     CreatedBy = storeRequisitionItem.CreatedBy,
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Now,
-                    CurrentAPrice = storeRequisitionItem.CurrentAPrice,
+                    CurrentAPrice = GetUnitPrice(storeRequisitionItem.ItemCategoryCode, storeRequisitionItem.ItemCode),
                     CurrentBalance = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreItemBalance(storeRequisitionItem.ItemCode, sr.StoreCode),
                 };
 
@@ -216,7 +222,6 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.WorkFlows
                     ItemSpecification = storeRequisitionItem.ItemSpecification,
                     CurrentAPrice = storeRequisitionItem.CurrentAPrice
                 };
-
                 db.StoreRequisitionItems.Attach(entity);
                 db.StoreRequisitionItems.Remove(entity);
                 db.SaveChanges();

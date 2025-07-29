@@ -1,6 +1,7 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,6 +20,8 @@ namespace ExceedERP.Core.Domain.Maintenance
         public string RequestingMachinePlateNumber { get; set; }
         public string RequestingMachineEngineModel { get; set; }
         public string RequestingMachineEngineNumber { get; set; }
+        [NotMapped]
+        public bool IsECWC { get; set; }
 
     }
 

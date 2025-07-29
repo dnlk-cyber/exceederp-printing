@@ -89,12 +89,17 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             if (!Guid.TryParse(fleetId, out Guid FId)) return result;
 
             var query = db.WagonDrillTimesheets.Where(x => x.CostSheetApproved && x.FleetsID == FId);
+           // var query = db.WagonDrillTimesheets.AsQueryable();
+            var fromDate = from?.Date ?? DateTime.MinValue;
+            var toDate = to?.Date ?? DateTime.MaxValue;
+            var toDateExclusive = toDate.AddDays(1); // Avoid using AddDays() in query
 
-            if (from.HasValue)
-                query = query.Where(x => x.Date >= from.Value.Date);
+            query = query.Where(x => x.Date >= fromDate && x.Date < toDateExclusive);
+            //if (from.HasValue)
+            //    query = query.Where(x => DbFunctions.TruncateTime(x.Date) >= from.Value.Date);
 
-            if (to.HasValue)
-                query = query.Where(x => x.Date <= to.Value.Date);
+            //if (to.HasValue)
+            //    query = query.Where(x => DbFunctions.TruncateTime(x.Date) <= to.Value.Date);
 
             if (int.TryParse(businessUnitId, out int buId))
                 query = query.Where(x => x.BusinessUnitId == buId);

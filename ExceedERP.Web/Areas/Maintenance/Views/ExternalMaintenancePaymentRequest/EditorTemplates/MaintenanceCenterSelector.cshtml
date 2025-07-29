@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+              .OptionLabel("Select Maintenance Center")
+              .DataTextField("Text")
+              .DataValueField("Value")
+              .Filter("contains")
+              .ValuePrimitive(true)
+              .DataSource(datasource =>
+              {
+                  datasource.Read(read => read.Action("SelectExteranalMaintenanceCenters", "MaintenanceDataProvider", new { area = "Maintenance" }).Data("sendForgery"))
+                  .ServerFiltering(true);
+              })
+)
+@Html.ValidationMessageFor(m => m)

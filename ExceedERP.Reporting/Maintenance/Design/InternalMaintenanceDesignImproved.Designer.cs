@@ -24,6 +24,8 @@ namespace ExceedERP.Reporting.Maintenance.Design
             Telerik.Reporting.ReportParameter reportParameter3 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter4 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.ReportParameter reportParameter5 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter6 = new Telerik.Reporting.ReportParameter();
+            Telerik.Reporting.ReportParameter reportParameter7 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.Drawing.StyleRule styleRule1 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule2 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule3 = new Telerik.Reporting.Drawing.StyleRule();
@@ -39,6 +41,7 @@ namespace ExceedERP.Reporting.Maintenance.Design
             this.textBox5 = new Telerik.Reporting.TextBox();
             this.headerSubReport1 = new ExceedERP.Reporting.SharedDesigners.HeaderSubReport();
             this.PateNumODSPara = new Telerik.Reporting.ObjectDataSource();
+            this.maintenanceCenterOds = new Telerik.Reporting.ObjectDataSource();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.table1 = new Telerik.Reporting.Table();
             this.textBox6 = new Telerik.Reporting.TextBox();
@@ -60,6 +63,7 @@ namespace ExceedERP.Reporting.Maintenance.Design
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
             this.reportHeaderSection1 = new Telerik.Reporting.ReportHeaderSection();
             this.subReport1 = new Telerik.Reporting.SubReport();
+            this.equipCatOds = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this.headerSubReport1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -142,6 +146,12 @@ namespace ExceedERP.Reporting.Maintenance.Design
             this.PateNumODSPara.DataMember = "GetPlateNo";
             this.PateNumODSPara.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetParameters);
             this.PateNumODSPara.Name = "PateNumODSPara";
+            // 
+            // maintenanceCenterOds
+            // 
+            this.maintenanceCenterOds.DataMember = "GetMaintenanceCenter";
+            this.maintenanceCenterOds.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetParameters);
+            this.maintenanceCenterOds.Name = "maintenanceCenterOds";
             // 
             // detailSection1
             // 
@@ -354,7 +364,8 @@ namespace ExceedERP.Reporting.Maintenance.Design
             this.objectDataSource1.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("fleetId", typeof(string), "= Parameters.PlateNumber.Value"),
             new Telerik.Reporting.ObjectDataSourceParameter("from", typeof(System.Nullable<System.DateTime>), "= Parameters.from.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("to", typeof(System.Nullable<System.DateTime>), "= Parameters.to.Value")});
+            new Telerik.Reporting.ObjectDataSourceParameter("to", typeof(System.Nullable<System.DateTime>), "= Parameters.to.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("maintenanceCenter", typeof(string), "= Parameters.center.Value")});
             // 
             // textBox12
             // 
@@ -388,6 +399,12 @@ namespace ExceedERP.Reporting.Maintenance.Design
             this.subReport1.ReportSource = instanceReportSource1;
             this.subReport1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.1999999284744263D), Telerik.Reporting.Drawing.Unit.Inch(0.29999998211860657D));
             // 
+            // equipCatOds
+            // 
+            this.equipCatOds.DataMember = "GetEquipmentCategory";
+            this.equipCatOds.DataSource = typeof(ExceedERP.Reporting.Fleet.DataSource.FleetParameters);
+            this.equipCatOds.Name = "equipCatOds";
+            // 
             // InternalMaintenanceDesignImproved
             // 
             this.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
@@ -398,26 +415,40 @@ namespace ExceedERP.Reporting.Maintenance.Design
             this.PageSettings.Margins = new Telerik.Reporting.Drawing.MarginsU(Telerik.Reporting.Drawing.Unit.Inch(1D), Telerik.Reporting.Drawing.Unit.Inch(1D), Telerik.Reporting.Drawing.Unit.Inch(1D), Telerik.Reporting.Drawing.Unit.Inch(1D));
             this.PageSettings.PaperKind = System.Drawing.Printing.PaperKind.Letter;
             reportParameter1.AllowNull = true;
-            reportParameter1.Name = "from";
-            reportParameter1.Type = Telerik.Reporting.ReportParameterType.DateTime;
+            reportParameter1.AvailableValues.DataSource = this.PateNumODSPara;
+            reportParameter1.AvailableValues.DisplayMember = "= Fields.Text";
+            reportParameter1.AvailableValues.ValueMember = "= Fields.Value";
+            reportParameter1.Name = "PlateNumber";
             reportParameter1.Visible = true;
             reportParameter2.AllowNull = true;
-            reportParameter2.Name = "to";
-            reportParameter2.Type = Telerik.Reporting.ReportParameterType.DateTime;
+            reportParameter2.AvailableValues.DataSource = this.maintenanceCenterOds;
+            reportParameter2.AvailableValues.DisplayMember = "=Fields.Text";
+            reportParameter2.AvailableValues.ValueMember = "=Fields.Value";
+            reportParameter2.Name = "center";
             reportParameter2.Visible = true;
-            reportParameter3.Name = "FormTitle";
-            reportParameter4.Name = "FormNumber";
-            reportParameter5.AllowNull = true;
-            reportParameter5.AvailableValues.DataSource = this.PateNumODSPara;
-            reportParameter5.AvailableValues.DisplayMember = "= Fields.Text";
-            reportParameter5.AvailableValues.ValueMember = "= Fields.Value";
-            reportParameter5.Name = "PlateNumber";
-            reportParameter5.Visible = true;
+            reportParameter3.AllowNull = true;
+            reportParameter3.Name = "from";
+            reportParameter3.Type = Telerik.Reporting.ReportParameterType.DateTime;
+            reportParameter3.Visible = true;
+            reportParameter4.AllowNull = true;
+            reportParameter4.Name = "to";
+            reportParameter4.Type = Telerik.Reporting.ReportParameterType.DateTime;
+            reportParameter4.Visible = true;
+            reportParameter5.Name = "FormTitle";
+            reportParameter6.Name = "FormNumber";
+            reportParameter7.AllowNull = true;
+            reportParameter7.AvailableValues.DataSource = this.equipCatOds;
+            reportParameter7.AvailableValues.DisplayMember = "= Fields.Text";
+            reportParameter7.AvailableValues.ValueMember = "= Fields.Value";
+            reportParameter7.Name = "category";
+            reportParameter7.Visible = true;
             this.ReportParameters.Add(reportParameter1);
             this.ReportParameters.Add(reportParameter2);
             this.ReportParameters.Add(reportParameter3);
             this.ReportParameters.Add(reportParameter4);
             this.ReportParameters.Add(reportParameter5);
+            this.ReportParameters.Add(reportParameter6);
+            this.ReportParameters.Add(reportParameter7);
             styleRule1.Selectors.AddRange(new Telerik.Reporting.Drawing.ISelector[] {
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.TextItemBase)),
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.HtmlTextBox))});
@@ -494,5 +525,7 @@ namespace ExceedERP.Reporting.Maintenance.Design
         private Telerik.Reporting.TextBox textBox22;
         private Telerik.Reporting.TextBox textBox17;
         private Telerik.Reporting.TextBox textBox20;
+        private Telerik.Reporting.ObjectDataSource maintenanceCenterOds;
+        private Telerik.Reporting.ObjectDataSource equipCatOds;
     }
 }

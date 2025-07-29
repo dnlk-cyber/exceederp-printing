@@ -32,7 +32,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers.VehicleReception
             DataSourceResult result = vehiclepart.ToDataSourceResult(request, vehiclePart => new {
                 VehiclePartId = vehiclePart.VehiclePartId,
                 Code = vehiclePart.Code,
-                VehicleCategory = vehiclePart.VehicleCategoryId,
+                VehicleCategoryId = vehiclePart.VehicleCategoryId,
                 Name = vehiclePart.Name,
                 Remark = vehiclePart.Remark,
                 Description = vehiclePart.Description,

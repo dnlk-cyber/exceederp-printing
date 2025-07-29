@@ -66,6 +66,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             List<IssueItem> IssuesFuelItem = new List<IssueItem>();
             IFleetService _FleetService = new FleetService();
             var FleetList = _FleetService.GetAll().ToList().Where(x => x.OrgBranchName == UserInformationHelper.GetUserDefaultBranch(User.Identity.Name)).ToList();
+            //var FleetList = db.Fleets.ToList();
 
             string dateFrom = string.Empty;
             string dateTo = string.Empty;
@@ -74,8 +75,6 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             if (request.Filters.Any())
 
             {
-
-
                 foreach (var f in request.Filters)
                 {
 
@@ -92,7 +91,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     {
                         plateAssetNo = param.Value.ToString();
                     }
-             
+
                     if (firstparam != null && firstparam.Member == "To")
                     {
                         dateTo = firstparam.Value.ToString();
@@ -160,6 +159,12 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             }).ToDataSourceResult(request));
         }
+        //public ActionResult Fuel_Read([DataSourceRequest] DataSourceRequest request)
+        //{
+        //    IQueryable<Fuel> fuelData = db.Fuel;
+        //    DataSourceResult Result = fuelData.ToDataSourceResult(request);
+        //    return Json(Result, JsonRequestBehavior.AllowGet);
+        //}
 
         private decimal GetReqQty(string plateNo)
         {
@@ -170,7 +175,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
 
                 var fleet = db.Fleets.FirstOrDefault(x => x.PlateNumber == plateNo);
-                if(fleet != null)
+                if (fleet != null)
                 {
                     var vehicleDemandIds = db.AssignedEquipment
                         .Where(x => x.FleetId == fleet.FleetsID)
@@ -203,7 +208,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     }
                     return requestedQty;
                 }
-               
+
             }
             return requestedQty;
         }

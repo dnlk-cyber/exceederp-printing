@@ -5,6 +5,6 @@
               .DataValueField("Id")
               .OptionLabel("Select")
               .Filter(FilterType.Contains)
-                      .DataSource(d => d.Read(r => r.Action("getServiceCenterInServiceCenter", "MaintenanceDataProvider")
+                      .DataSource(d => d.Read(r => r.Action("getServiceCenterInServiceCenter", "MaintenanceDataProvider").Data("sendForgery")
                       .Data("getServiceCenterId"))
                       .ServerFiltering(true)))

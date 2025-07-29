@@ -1,4 +1,4 @@
 ﻿@(Html.Kendo().DropDownListFor(model => model)
                                               .DataTextField("Name").Filter(FilterType.Contains)
                                           .DataValueField("Value").OptionLabel("Select ").HtmlAttributes(new { style = "width:100%" })
-                                                  .DataSource(d => d.Read(r => r.Action("GetBranch", "FleetDataProvider")).ServerFiltering(true)))
+                                                  .DataSource(d => d.Read(r => r.Action("GetBranch", "FleetDataProvider").Data("sendForgery")).ServerFiltering(true)))

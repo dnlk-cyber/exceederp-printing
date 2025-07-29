@@ -68,6 +68,9 @@ namespace ExceedERP.Core.Domain.FleetManagement.FleetTimeSheet
         [Required]
         [DisplayName("Idle Hour")]
         public decimal IdleHour { get; set; }
+    
+        [DisplayName("Idle Rate")]
+        public decimal IdleRate { get; set; }
         [Required]
         [DisplayName("Reason For Idle")]
         public string ReasonForIdle { get; set; }

@@ -25,7 +25,6 @@ using ExceedERP.Core.Domain.FixedAsset.Registrations;
 using ExceedERP.Core.Domain.Maintenance;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.ApplicationServices.FleetManagement.FleetMaintenance;
-
 namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 {
 
@@ -33,6 +32,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
     public class EquipmentRegistrationController : Controller
     {
 
+        private readonly CacheData CacheData = new CacheData();
         private readonly IFleetService _FleetsService;
         private readonly IAccessoriesService _AccessoriesService;
         private readonly IFleetHistoryService _FleetHistoryService;
@@ -441,6 +441,42 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 Value = "",
             };
             EquipmentStatuss.Add(EquipmentStatus);
+            EquipmentStatus = new FleetBindingHelper.HelperObject
+            {
+                Name = "Down ",
+                Value = "",
+            }; EquipmentStatuss.Add(EquipmentStatus);
+            EquipmentStatus = new FleetBindingHelper.HelperObject
+            {
+                Name = "Under repair ",
+                Value = "",
+            }; EquipmentStatuss.Add(EquipmentStatus);
+            EquipmentStatus = new FleetBindingHelper.HelperObject
+            {
+                Name = "Heavy repair ",
+                Value = "",
+            }; EquipmentStatuss.Add(EquipmentStatus);
+            EquipmentStatus = new FleetBindingHelper.HelperObject
+            {
+                Name = "Idle ",
+                Value = "",
+            }; EquipmentStatuss.Add(EquipmentStatus);
+            EquipmentStatus = new FleetBindingHelper.HelperObject
+            {
+                Name = "Recommeoded for disposal ",
+                Value = "",
+            }; EquipmentStatuss.Add(EquipmentStatus);
+            EquipmentStatus = new FleetBindingHelper.HelperObject
+            {
+                Name = "Under insurance ",
+                Value = "",
+            }; EquipmentStatuss.Add(EquipmentStatus);
+            EquipmentStatus = new FleetBindingHelper.HelperObject
+            {
+                Name = "Approved for disposal ",
+                Value = "",
+            };
+            EquipmentStatuss.Add(EquipmentStatus);
             /*    EquipmentStatus = new BindingHelper.HelperObject
                 {
                     Name = " Under Maintenace",
@@ -467,9 +503,9 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 Name = s.Name
             }).ToList();
 
-            var branch = db.Branch.Select(s => new
+            var branch = CacheData.GetBranchCaches().Select(s => new
             {
-                Id = s.BranchId,
+                Id = s.Id,
                 Name = s.Name
             });
             ViewData["Operator"] = db.Operator.Select(s => new
@@ -484,6 +520,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             ViewData["VehicleParts"] = db.VehiclePart.ToList();
             ViewData["VehiclePartDamageType"] = db.VehiclePartDamageType.ToList();
             ViewData["Branch"] = branch;
+
             return View();
         }
 
@@ -1032,7 +1069,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                     fleets.EngineModel = Asset?.MotorNo.DefaultValue();
                     fleets.Manufacturer = Asset?.Manufacturer.DefaultValue();
                     fleets.ManufacturerYear = Asset?.ManufacturDate.ToString();
-                   // fleets.Location = Asset?.Location.DefaultValue();
+                    fleets.Remark = fleets.Remark;
                     fleets.Location = fleets.Location;
                     fleets.Capacity = Asset?.LoadCapacity.DefaultValue();
                     fleets.PlateNumber = Asset?.PlateNo.DefaultValue();

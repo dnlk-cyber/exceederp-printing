@@ -1140,6 +1140,7 @@
     <Compile Include="Domain\Maintenance\ExternalMaintenancePaymentRequest.cs" />
     <Compile Include="Domain\Maintenance\ExternalMaterial.cs" />
     <Compile Include="Domain\Maintenance\ExternalPaymentRequestJob.cs" />
+    <Compile Include="Domain\Maintenance\ExternalServiceCenterDetail.cs" />
     <Compile Include="Domain\Maintenance\ExternalServiceCenterPayment.cs" />
     <Compile Include="Domain\Maintenance\FailureReason.cs" />
     <Compile Include="Domain\Maintenance\FollowUp.cs" />

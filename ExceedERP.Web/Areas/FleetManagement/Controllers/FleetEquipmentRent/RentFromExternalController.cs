@@ -279,6 +279,24 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             else if (model.IsExpired)
             {
                 var rentFromExternal = db.RentFromExternal.FirstOrDefault(x => x.RentFromExternalID == model.RentFromExternalID);
+                rentFromExternal.StartDate = model.StartDate;
+                rentFromExternal.EndDate = model.EndDate;
+                rentFromExternal.ProcurementSupplierID = model.ProcurementSupplierID;
+                rentFromExternal.ProjectLocation = model.ProjectLocation;
+                rentFromExternal.CompanyAddress = model.CompanyAddress;
+                rentFromExternal.RentalRateIncludingVAT = model.RentalRateIncludingVAT;
+                rentFromExternal.FuelCoveredBy = model.FuelCoveredBy;
+                rentFromExternal.AdvancePayment = model.AdvancePayment;
+                rentFromExternal.WorkingCapacity = model.WorkingCapacity;
+                rentFromExternal.HP_CC = model.HP_CC;
+                rentFromExternal.Hour = model.Hour;
+                rentFromExternal.OperatorId = model.OperatorId;
+                rentFromExternal.LastModified = DateTime.Now;
+                rentFromExternal.ModifiedBy = User.Identity.Name;
+                rentFromExternal.OrgBranchName= UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+                db.RentFromExternal.Attach(rentFromExternal);
+                db.Entry(rentFromExternal).State = System.Data.Entity.EntityState.Modified;
+                db.SaveChanges();
                 var entity = new RentFromExternal
                 {
                     RentFromExternalID = Guid.NewGuid(),

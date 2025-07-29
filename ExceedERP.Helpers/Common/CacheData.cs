@@ -1,4 +1,6 @@
-﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common.ViewModel;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Finance;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -18,7 +20,7 @@ namespace ExceedERP.Helpers.Common
 
         public List<GlSegmentSetupCache> GetSegmentSetupCaches()
         {
-            var segmentSequence = MemoryCache.Default[CacheHelper.GlSegmentSetups] as List<GlSegmentSetupCache>;
+            var segmentSequence = MemoryCache.Default[CacheKeys.GlSegmentSetups] as List<GlSegmentSetupCache>;
             if (segmentSequence == null)
             {
                 segmentSequence = _db.GlSegmentSetups
@@ -32,7 +34,7 @@ namespace ExceedERP.Helpers.Common
                                     })
                                     .AsNoTracking()
                                     .ToList();
-                MemoryCache.Default.Add(CacheHelper.GlSegmentSetups, segmentSequence, ObjectCache.InfiniteAbsoluteExpiration);
+                MemoryCache.Default.Add(CacheKeys.GlSegmentSetups, segmentSequence, ObjectCache.InfiniteAbsoluteExpiration);
             }
 
             return segmentSequence;
@@ -40,7 +42,7 @@ namespace ExceedERP.Helpers.Common
 
         public List<GLChartOfAccountAccountCache> GetOfAccountAccountCaches()
         {
-            var accounts = MemoryCache.Default[CacheHelper.GLChartOfAccountAccounts] as List<GLChartOfAccountAccountCache>;
+            var accounts = MemoryCache.Default[CacheKeys.GLChartOfAccountAccounts] as List<GLChartOfAccountAccountCache>;
             if (accounts == null)
             {
                 accounts = _db.GLChartOfAccountAccounts
@@ -52,7 +54,7 @@ namespace ExceedERP.Helpers.Common
                         Description = x.Description
                     })
                     .ToList();
-                MemoryCache.Default.Add(CacheHelper.GLChartOfAccountAccounts, accounts, ObjectCache.InfiniteAbsoluteExpiration);
+                MemoryCache.Default.Add(CacheKeys.GLChartOfAccountAccounts, accounts, ObjectCache.InfiniteAbsoluteExpiration);
             }
 
             return accounts;
@@ -60,7 +62,7 @@ namespace ExceedERP.Helpers.Common
 
         public List<GlChartOfAccountSegmentCache> GetChartOfAccountSegmentCaches()
         {
-            var segments = MemoryCache.Default[CacheHelper.GlChartOfAccountSegments] as List<GlChartOfAccountSegmentCache>;
+            var segments = MemoryCache.Default[CacheKeys.GlChartOfAccountSegments] as List<GlChartOfAccountSegmentCache>;
             if (segments == null)
             {
                 segments = _db.GlChartOfAccountSegments
@@ -73,13 +75,65 @@ namespace ExceedERP.Helpers.Common
                         Description = x.Description
                     })
                     .ToList();
-                MemoryCache.Default.Add(CacheHelper.GlChartOfAccountSegments, segments, ObjectCache.InfiniteAbsoluteExpiration);
+                MemoryCache.Default.Add(CacheKeys.GlChartOfAccountSegments, segments, ObjectCache.InfiniteAbsoluteExpiration);
             }
 
             return segments;
         }
 
+        public List<ForeginKeySelectorVm> GetBranchCaches()
+        {
+            var branches = MemoryCache.Default[CacheKeys.Branchs] as List<ForeginKeySelectorVm>;
+            if (branches == null)
+            {
+                branches = _db.Branch
+                    .Select(x => new ForeginKeySelectorVm
+                    {
+                        Id = x.BranchId,
+                        Name = x.Name
+                    })
+                    .ToList();
+                MemoryCache.Default.Add(CacheKeys.Branchs, branches, ObjectCache.InfiniteAbsoluteExpiration);
+            }
 
+            return branches;
+        }
+
+        public List<ForeginKeySelectorVm> GetBusinessUnitCaches()
+        {
+            var businessUnits = MemoryCache.Default[CacheKeys.BusinessUnits] as List<ForeginKeySelectorVm>;
+            if (businessUnits == null)
+            {
+                businessUnits = _db.BusinessUnits
+                    .Select(x => new ForeginKeySelectorVm
+                    {
+                        Id = x.BusinessUnitId,
+                        Name = x.Name
+                    })
+                    .ToList();
+                MemoryCache.Default.Add(CacheKeys.BusinessUnits, businessUnits, ObjectCache.InfiniteAbsoluteExpiration);
+            }
+
+            return businessUnits;
+        }
+
+        public List<ForeginKeySelectorVm> GetWorkUnitCaches()
+        {
+            var workUnits = MemoryCache.Default[CacheKeys.WorkUnits] as List<ForeginKeySelectorVm>;
+            if (workUnits == null)
+            {
+                workUnits = _db.MainCompanyStructures
+                    .Select(x => new ForeginKeySelectorVm
+                    {
+                        Id = x.OrgStructureId,
+                        Name = x.Name
+                    })
+                    .ToList();
+                MemoryCache.Default.Add(CacheKeys.WorkUnits, workUnits, ObjectCache.InfiniteAbsoluteExpiration);
+            }
+
+            return workUnits;
+        }
     }
 
 

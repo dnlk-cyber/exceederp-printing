@@ -140,7 +140,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                         Operator.EmployeeCode = Employee.EmployeeCode;
                         Operator.OperatorID = Guid.NewGuid();
                         Operator.EmployeeId = Employee.EmployeeId;
-                        Operator.FullName = Employee.FirstName + " " + Employee.MiddleName+" "+Employee.LastName;
+                        Operator.FullName = Employee.EmployeeCode + " "+Employee.FirstName + " " + Employee.MiddleName+" "+Employee.LastName;
                         Operator.HireDate = DateTime.Now;
                         Operator.CreatedBy = User.Identity.Name;
                         Operator.DateCreated = DateTime.Now;
@@ -185,7 +185,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 var Employee = db.Person_Employee.Where(x => x.EmployeeId == Operator.EmployeeId).FirstOrDefault();
                 if (Employee != null)
                 {
-                    Operator.FullName = Employee.FirstName + " " + Employee.MiddleName + " " + Employee.LastName;
+                    Operator.FullName = Employee.EmployeeId+" "+Employee.FirstName + " " + Employee.MiddleName + " " + Employee.LastName;
              
                     Operator.ModifiedBy = User.Identity.Name;
                     Operator.LastModified = DateTime.Now;
@@ -226,7 +226,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         {
             var fleets = _OperatorService.GetAll().Select(s => new Operator
             {
-                FullName = s.FullName,
+                FullName = s.EmployeeId+"_"+s.FullName,
                 OperatorID = s.OperatorID
             });
             return Json(fleets, JsonRequestBehavior.AllowGet);

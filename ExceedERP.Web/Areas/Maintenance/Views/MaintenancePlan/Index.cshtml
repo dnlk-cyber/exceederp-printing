@@ -4,18 +4,16 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Annual Plan</h2>
+<legend>Annual Plan</legend>
 
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.Maintenance.MaintenancePlan>()
                                                 .Name("grid")
                                                 .Columns(columns =>
                                                 {
-
+                                                    columns.ForeignKey(e => e.MaintenanceCenterId, (IEnumerable)ViewData["MaintenanceCenter"], "Value", "Text").Width(120).Title("Maintenance Center");
                                                     columns.ForeignKey(c => c.EquipmentCategoryId, (IEnumerable)ViewData["Category"], "Value", "Text").Width(120);
                                                     columns.ForeignKey(c => c.EquipmentTypeId, (IEnumerable)ViewData["Type"], "Value", "Text").Width(120);
-                                                    
                                                     columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["GlFiscalYear"], "Value", "Text").Width(120);
-
                                                     columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
                                                 })
                                                 .ToolBar(commands => commands.Create())
@@ -34,10 +32,10 @@
                                                                 .RequestStart("onRequestStart(\"grid\")")
                                                                 .RequestEnd("onRequestEnd(\"grid\")"))
                                                     .Model(model => model.Id(p => p.MaintenancePlanId))
-                                                    .Read(read => read.Action("Read", "MaintenancePlan"))
-                                                    .Create(create => create.Action("Create", "MaintenancePlan"))
-                                                    .Update(update => update.Action("Update", "MaintenancePlan"))
-                                                    .Destroy(delete => delete.Action("Delete", "MaintenancePlan"))
+                                                    .Read(read => read.Action("Read", "MaintenancePlan").Data("sendForgery"))
+                                                    .Create(create => create.Action("Create", "MaintenancePlan").Data("sendForgery"))
+                                                    .Update(update => update.Action("Update", "MaintenancePlan").Data("sendForgery"))
+                                                    .Destroy(delete => delete.Action("Delete", "MaintenancePlan").Data("sendForgery"))
 
                                                 ).ClientDetailTemplateId("tabs")
 )
@@ -63,11 +61,16 @@
                                                         .Columns(columns =>
                                                         {
                                                             columns.ForeignKey(c => c.GlPeriodId, (IEnumerable)ViewData["GlPeriod"], "Value", "Text").Width(120);
-
+                                                            columns.Bound(c => c.PMMaterialCost).Width(100);
+                                                            columns.Bound(c => c.PMLaborCost).Width(100);
+                                                            columns.Bound(c => c.CMMaterialCost).Width(100);
+                                                            columns.Bound(c => c.CMLaborCost).Width(100);
                                                             columns.Bound(c => c.CMQuantity).Width(100);
                                                             columns.Bound(c => c.CMCost).Width(100);
                                                             columns.Bound(c => c.PMQuantity).Width(100);
                                                             columns.Bound(c => c.PMCost).Width(100);
+
+
 
                                                             columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
                                                         })
@@ -86,10 +89,10 @@
                                                                 .RequestStart("onRequestStart(\"grid_#=MaintenancePlanId#\")")
                                                                 .RequestEnd("onRequestEnd(\"grid_#=MaintenancePlanId#\")"))
                                                             .Model(model => model.Id(p => p.MaintenancePlanDetailId))
-                                                            .Read(read => read.Action("Read", "MaintenancePlanDetail", new { id = "#=MaintenancePlanId#" }))
-                                                            //.Create(create => create.Action("Create", "MaintenancePlanDetail", new { id = "#=MaintenancePlanId#" }))
-                                                            .Update(update => update.Action("Update", "MaintenancePlanDetail"))
-                                                            .Destroy(delete => delete.Action("Delete", "MaintenancePlanDetail"))
+                                                            .Read(read => read.Action("Read", "MaintenancePlanDetail", new { id = "#=MaintenancePlanId#" }).Data("sendForgery"))
+                                                            //.Create(create => create.Action("Create", "MaintenancePlanDetail", new { id = "#=MaintenancePlanId#" }).Data("sendForgery"))
+                                                            .Update(update => update.Action("Update", "MaintenancePlanDetail").Data("sendForgery"))
+                                                            .Destroy(delete => delete.Action("Delete", "MaintenancePlanDetail").Data("sendForgery"))
 
                                                         ).ToClientTemplate()
     )

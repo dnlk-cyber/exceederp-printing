@@ -1,10 +1,16 @@
 ﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Reporting.SharedDataSources;
+using ExceedERP.Reporting.SharedDataSources.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using ExceedERP.Helpers;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using System.Drawing;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.Maintenance;
 
 namespace ExceedERP.Reporting.Maintenance.DataSource
 {
@@ -12,66 +18,350 @@ namespace ExceedERP.Reporting.Maintenance.DataSource
     public class JobOrderPrintOds
     {
         private readonly ExceedDbContext db = new ExceedDbContext();
+      //  ApplicationDbContext context = new ApplicationDbContext();
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<FormanDto> GetFormans(string id)
+        {
+
+            List<FormanDto> list = new List<FormanDto>();
+            if (Guid.TryParse(id, out Guid jobOrderId))
+            {
+                //var fetchExternalJobService = db.ServiceCenterJob.FirstOrDefault(x => x.ServiceCenterJobId.ToString() == id);
+                var jobOrder = db.JobOrder.FirstOrDefault(x => x.JobOrderID.ToString() == id);
+                if (jobOrder != null)
+                {
+                    var FetchJobServices = db.ServiceCenterJob.Where(x => x.JobOrderID.ToString() == id).ToList();
+                   foreach(var jobService in FetchJobServices)
+                    {
+                        var Forman = new FormanDto();
+                        Forman.FormanName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(jobService.SecondOnlineApprovedBy));
+                        Forman.FormanDate = jobService.SecondOnlineApprovedTime?.ToString("yyyy-MM-dd")??"";
+
+                        list.Add(Forman);
+                    }
+
+                }
+
+            }
+
+            return list;
+        }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
+        //public JobOrderVm GetJobOrderPrint(string id)
+        //{
+
+        //    JobOrderVm jobOrderVm = new JobOrderVm();
+        //    var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
+        //    Image LogoFileName = null;
+        //    string AmharicName = "";
+        //    string Name = "";
+        //    if (organization != null)
+        //    {
+        //        Name = organization.TradeName;
+        //        AmharicName = organization.AmharicName;
+        //        var logo =
+        //                           db.Attachments.FirstOrDefault(a => a.Reference == organization.MainCompanyId.ToString() &&
+        //                                   a.ReferenceType == ExceedERP.Core.Domain.Common.AttachmentType.LOGO);
+        //        if (logo != null)
+        //        {
+        //            LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
+        //        }
+        //    }
+
+        //    jobOrderVm.LogoFileName = LogoFileName;
+        //    jobOrderVm.Name = Name;
+        //    jobOrderVm.AmharicName = AmharicName;
+        //    if (Guid.TryParse(id, out Guid jobOrderId))
+        //    {
+        //        var fetchExternalJobService = db.ServiceCenterJob.FirstOrDefault(x => x.ServiceCenterJobId.ToString() == id);
+        //        var jobOrder = db.JobOrder.FirstOrDefault(x => x.JobOrderID == fetchExternalJobService.JobOrderID);
+        //        if (jobOrder != null)
+        //        {
+        //            var jobRequest = db.JobRequest.FirstOrDefault(x => x.Num == jobOrder.Referance);
+        //            var jobDetail = db.JobOrderServiceCenterDetails.Where(x => x.ServiceCenterJobId == fetchExternalJobService.ServiceCenterJobId).ToList();
+        //            Person_Employee employee = new Person_Employee();
+        //            if(jobRequest!=null&&jobRequest.RequesterId!=0)
+        //            {  employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == jobRequest.RequesterId);
+        //            }
+
+        //            jobOrderVm.JobNum = jobOrder.Num;
+        //            // jobOrderVm. = jobOrder.;
+        //            jobOrderVm.PlateNumber = jobOrder.LicensePlate;
+        //            jobOrderVm.EquipmentName = jobOrder.EquipmentName;//
+        //            jobOrderVm.CustomerName = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == jobOrder.CustomerId)?.TradeName ?? "";
+        //            jobOrderVm.Requester = employee?.FirstNameEnglish + "-" + employee?.MiddleNameEnglish;
+        //            if(jobRequest!=null)
+        //            {
+        //                jobOrderVm.Branch = db.Branch.FirstOrDefault(x => x.BranchId.ToString() == jobRequest.FromBranchId)?.Name ?? "";
+        //            }
+        //            jobOrderVm.FromBranchName = "";                    
+        //            if (jobRequest!=null&&jobRequest.FromBranchId!=null)
+        //            {
+        //                var getBranch = db.Branch.FirstOrDefault(x => x.BranchId.ToString() == jobRequest.FromBranchId);
+        //                jobOrderVm.FromBranchName =getBranch.Name;
+        //            }
+        //            jobOrderVm.BusinessUnit = "";
+        //            jobOrderVm.MaintenanceCenter = db.MaintenanceCenter.FirstOrDefault(x => x.MaintenanceCenterID == jobOrder.MaintenanceCenterId)?.Name ?? "";
+        //            jobOrderVm.DateCreated =null;
+        //            if (jobOrder.DateCreated!=null)
+        //            {
+        //                jobOrderVm.DateCreated = jobOrder.DateCreated;
+        //            }
+        //            //jobOrderVm.DateClosed = jobOrder.DateCreated;
+        //            jobOrderVm.childClassVms = new List<childClassVM>();
+        //            if (jobDetail.Any())
+        //            {
+        //                foreach (var childVM in jobDetail)
+        //                {
+        //                    var chclass = new childClassVM();
+        //                    chclass.VehicleCategory = db.ItemCategorys.FirstOrDefault(x => x.ItemCategoryCode == childVM.SubCategoryCode)?.Name;
+        //                    chclass.Cause = db.JobCauses.FirstOrDefault(x => x.JobCausesId == childVM.JobCausesId)?.Name;
+        //                    chclass.ServiceGroup = nameof(childVM.ServiceGroup);
+        //                    chclass.Description = db.JobOrderDetail.FirstOrDefault(x=>x.RepairTypeID==childVM.RepairTypeID&&x.JobOrderID==jobOrder.JobOrderID)?.DescriptionOfJobs??"";
+        //                    chclass.MaintenanceCenter = db.MaintenanceCenter.FirstOrDefault(x => x.MaintenanceCenterID == jobOrder.MaintenanceCenterId)?.Name ?? "";
+        //                    chclass.ServiceName = db.RepairType.FirstOrDefault(x => x.RepairTypeID == childVM.RepairTypeID)?.Name??"";
+        //                    chclass.ServiceCenter = db.ServiceCenters.FirstOrDefault(x => x.ServiceCenterId == childVM.ServiceCenterId)?.Name;
+        //                    jobOrderVm.childClassVms.Add(chclass);
+        //                }
+        //            }
+        //            if (jobRequest != null)
+        //            {
+        //                jobOrderVm.KMReading = jobRequest.KMReading;
+        //                jobOrderVm.GPSInfo = jobRequest.GPSInfo;
+        //            }
+        //            jobOrderVm.MaintenanceRequestApproval = "";
+        //            if (jobRequest != null && jobRequest.OnlineApprovedBy != null)
+        //            {
+        //                jobOrderVm.MaintenanceRequestApproval = jobRequest.OnlineApprovedBy;
+        //                jobOrderVm.RequestedBy = employee?.FirstNameEnglish + "-" + employee?.MiddleNameEnglish;
+        //                jobOrderVm.CreatedBySignature = SignatureHelper.GetUserSignature(jobRequest.OnlineApprovedBy);
+        //            }
+        //            //jobOrderVm.RequestedBy = employee?.FirstNameEnglish + "-" + employee?.MiddleNameEnglish;
+        //            //jobOrderVm.CreatedBySignature = SignatureHelper.GetUserSignature(jobRequest.OnlineApprovedBy);
+        //            jobOrderVm.ApproveDate = null;
+        //            if (jobOrder != null)
+        //            {
+        //                jobOrderVm.TechnicalApproval = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(jobOrder.OnlineApprovedBy));
+        //                jobOrderVm.ApprovedBySignature = SignatureHelper.GetUserSignature(jobOrder.OnlineApprovedBy);
+
+        //            }
+
+
+        //            if (jobOrder.SecondOnlineApprovedTime!=null)
+        //            {
+        //                jobOrderVm.ApproveDate = jobOrder.OnlineApprovedTime;
+        //            }
+        //            jobOrderVm.CheckedDate = null;
+        //            if (jobRequest != null)
+        //            {
+        //                jobOrderVm.CheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(jobRequest.OnlineApprovedBy));
+        //                jobOrderVm.CheckedBySignature = SignatureHelper.GetUserSignature(jobRequest.OnlineApprovedBy);
+        //            }
+        //            if (jobRequest.OnlineApprovedTime != null)
+        //            {
+        //                jobOrderVm.CheckedDate = jobOrder.OnlineApprovedTime;
+        //            }
+        //            jobOrderVm.RequestDate = null;
+        //            if(jobRequest != null && jobRequest.DateCreated!=null)
+        //            {
+        //                jobOrderVm.RequestDate = jobRequest.DateCreated;
+        //            }
+        //            if (jobRequest != null&&jobRequest.OnlineApprovedBy!=null)
+        //            {
+        //                jobOrderVm.InspectorName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(jobRequest.OnlineApprovedBy));
+        //                jobOrderVm.ApprovedBySignature = SignatureHelper.GetUserSignature(jobRequest.OnlineApprovedBy);
+        //                jobOrderVm.InspectorDate = jobRequest.OnlineApprovedTime?.ToString("yyyy-MM-dd") ?? "";
+        //            }
+
+        //            if (fetchExternalJobService != null)
+        //            {
+        //                jobOrderVm.AuthorizerName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(fetchExternalJobService.SecondOnlineApprovedBy));
+        //                jobOrderVm.AuthorizedBySignature = SignatureHelper.GetUserSignature(fetchExternalJobService.SecondOnlineApprovedBy);
+        //            }
+        //            if (fetchExternalJobService.SecondOnlineApprovedTime != null)
+        //            {
+        //                jobOrderVm.AuthorizerDate = fetchExternalJobService.SecondOnlineApprovedTime?.ToString("yyyy-MM-dd") ?? "";
+        //            }
+
+
+        //        }
+
+        //    }
+        //    return jobOrderVm;
+        //}
         public JobOrderVm GetJobOrderPrint(string id)
         {
-            JobOrderVm jobOrderVm = new JobOrderVm();
-            if(Guid.TryParse(id, out Guid jobOrderId))
+            var jobOrderVm = new JobOrderVm();
+            var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
+
+            jobOrderVm.Name = organization?.TradeName ?? "";
+            jobOrderVm.AmharicName = organization?.AmharicName ?? "";
+            jobOrderVm.LogoFileName = organization != null
+                ? db.Attachments
+                    .Where(a => a.Reference == organization.MainCompanyId.ToString()
+                             && a.ReferenceType == ExceedERP.Core.Domain.Common.AttachmentType.LOGO)
+                    .Select(a => OrganizationObjectDataSource.ByteArrayToImage(a.BinaryFile))
+                    .FirstOrDefault()
+                : null;
+
+            if (Guid.TryParse(id, out Guid jobOrderId))
             {
-                var jobOrder = db.JobOrder.FirstOrDefault(x => x.JobOrderID == jobOrderId);
-                if(jobOrder != null)
+              
+                    var jobOrder = db.JobOrder.FirstOrDefault(x => x.JobOrderID.ToString()==id);
+                
+
+                //var fetchExternalJobService = db.ServiceCenterJob.FirstOrDefault(x => x.ServiceCenterJobId.ToString() == id);
+               
+                if (jobOrder != null)
                 {
                     var jobRequest = db.JobRequest.FirstOrDefault(x => x.Num == jobOrder.Referance);
-                    var jobDetail = db.JobOrderDetail.FirstOrDefault(x => x.JobOrderID == jobOrder.JobOrderID);
+                    var jobDetail = db.JobOrderDetail
+                                        .Where(x => x.JobOrderID.ToString()==id)
+                                        .ToList();
 
-                    var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == jobRequest.RequesterId);
-                   return new JobOrderVm
+                    var employee = (jobRequest?.RequesterId ?? 0) != 0
+                        ? db.Person_Employee.FirstOrDefault(x => x.EmployeeId == jobRequest.RequesterId)
+                        : null;
+
+                    jobOrderVm.JobNum = jobOrder.Num;
+                    jobOrderVm.PlateNumber = jobOrder.LicensePlate;
+                    jobOrderVm.EquipmentName = jobOrder.EquipmentName ?? "";
+                    jobOrderVm.CustomerName = db.OrganizationCustomers
+                                                .FirstOrDefault(x => x.OrganizationCustomerID == jobOrder.CustomerId)
+                                                ?.TradeName ?? "";
+                    jobOrderVm.Requester = $"{employee?.FirstNameEnglish}-{employee?.MiddleNameEnglish}".Trim('-');
+
+                    jobOrderVm.Branch = jobRequest != null
+                        ? db.Branch.FirstOrDefault(x => x.BranchId.ToString() == jobRequest.FromBranchId)?.Name ?? ""
+                        : "";
+
+                    jobOrderVm.FromBranchName = jobRequest?.FromBranchId != null
+                        ? db.Branch.FirstOrDefault(x => x.BranchId.ToString() == jobRequest.FromBranchId)?.Name ?? ""
+                        : "";
+
+                    jobOrderVm.MaintenanceCenter = db.MaintenanceCenter
+                                                    .FirstOrDefault(x => x.MaintenanceCenterID == jobOrder.MaintenanceCenterId)
+                                                    ?.Name ?? "";
+
+                    jobOrderVm.DateCreated = jobOrder.DateCreated;
+
+                    // Child details
+                    jobOrderVm.childClassVms = jobDetail.Select(childVM => new childClassVM
                     {
-                        JobNum = jobOrder.Num,
-                        
-                        PlateNumber = jobOrder.LicensePlate,
-                        EquipmentName = jobOrder.EquipmentName,
-                        CustomerName = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == jobOrder.CustomerId)?.TradeName ?? "",
-                        Requester = employee?.FirstNameEnglish + "-" + employee?.MiddleNameEnglish,
-                        Branch = db.Branch.FirstOrDefault(x => x.BranchId == jobOrder.BranchId)?.Name ?? "",
-                        BusinessUnit = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == jobOrder.OrgStructureId).Name,
-                        MaintenanceCenter = db.MaintenanceCenter.FirstOrDefault(x => x.MaintenanceCenterID == jobOrder.MaintenanceCenterId)?.Name ?? "",
-                        DateCreated = jobOrder.DateCreated,
-                        DateClosed = jobOrder.DateCreated,
+                        VehicleCategory = db.ItemCategorys.FirstOrDefault(x => x.ItemCategoryCode == childVM.SubCategoryCode)?.Name,
+                        Cause = db.JobCauses.FirstOrDefault(x => x.JobCausesId == childVM.JobCausesId)?.Name,
+                        ServiceGroup = nameof(childVM.ServiceGroup),
+                        Description = db.JobOrderDetail
+                                         .FirstOrDefault(x => x.RepairTypeID == childVM.RepairTypeID
+                                                           && x.JobOrderID == jobOrder.JobOrderID)?.DescriptionOfJobs ?? "",
+                        MaintenanceCenter = db.MaintenanceCenter
+                                                .FirstOrDefault(x => x.MaintenanceCenterID == jobOrder.MaintenanceCenterId)
+                                                ?.Name ?? "",
+                        ServiceName = db.RepairType.FirstOrDefault(x => x.RepairTypeID == childVM.RepairTypeID)?.Name ?? "",
+                        ServiceCenter = db.ServiceCenters.FirstOrDefault(x => x.ServiceCenterId == childVM.ServiceCenterId)?.Name
+                    }).ToList();
 
-                        VehicleCategory = db.ItemCategorys.FirstOrDefault(x => x.ItemCategoryCode == jobDetail.SubCategoryCode)?.Name,
-                        Cause = db.JobCauses.FirstOrDefault(x => x.JobCausesId == jobDetail.JobCausesId)?.Name,
-                        ServiceGroup = nameof(jobDetail.ServiceGroup),
-                        ServiceName = db.RepairType.FirstOrDefault(x => x.RepairTypeID == jobDetail.RepairTypeID)?.Name,
-                        ServiceCenter = db.ServiceCenters.FirstOrDefault(x => x.ServiceCenterId == jobDetail.ServiceCenterId)?.Name,
-                        
-                    };
+                    if (jobRequest != null)
+                    {
+                        jobOrderVm.KMReading = jobRequest.KMReading;
+                        jobOrderVm.GPSInfo = jobRequest.GPSInfo;
+                        jobOrderVm.RequestDate = jobRequest.DateCreated;
+
+                        if (!string.IsNullOrEmpty(jobRequest.OnlineApprovedBy))
+                        {
+                            jobOrderVm.MaintenanceRequestApproval = jobRequest.OnlineApprovedBy;
+                            jobOrderVm.RequestedBy = $"{employee?.FirstNameEnglish}-{employee?.MiddleNameEnglish}".Trim('-');
+                            jobOrderVm.CreatedBySignature = SignatureHelper.GetUserSignature(jobRequest.OnlineApprovedBy);
+                            jobOrderVm.CheckedBy = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(jobRequest.OnlineApprovedBy));
+                            jobOrderVm.CheckedBySignature = SignatureHelper.GetUserSignature(jobRequest.OnlineApprovedBy);
+                            jobOrderVm.CheckedDate = jobOrder.OnlineApprovedTime;
+                            jobOrderVm.InspectorName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(jobRequest.OnlineApprovedBy));
+
+                            jobOrderVm.ApprovedBySignature = SignatureHelper.GetUserSignature(jobRequest.OnlineApprovedBy);
+                            jobOrderVm.InspectorDate = jobRequest.OnlineApprovedTime?.ToString("yyyy-MM-dd") ?? "";
+                        }
+                    }
+
+                    jobOrderVm.TechnicalApproval = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(jobOrder.OnlineApprovedBy));
+                    jobOrderVm.ApprovedBySignature = SignatureHelper.GetUserSignature(jobOrder.OnlineApprovedBy);
+
+                    if (jobOrder.SecondOnlineApprovedTime != null)
+                    {
+                        jobOrderVm.ApproveDate = jobOrder.OnlineApprovedTime;
+                    }
+
+                    if (jobOrder != null)
+                    {
+                        jobOrderVm.AuthorizerName = EmployeeHelper.GetEmployeeEnglishName(UserHelper.GetUserEmployeeId(jobOrder.SecondOnlineApprovedBy));
+                        jobOrderVm.AuthorizedBySignature = SignatureHelper.GetUserSignature(jobOrder.SecondOnlineApprovedBy);
+
+                        if (jobOrder.SecondOnlineApprovedTime != null)
+                        {
+                            jobOrderVm.AuthorizerDate = jobOrder.SecondOnlineApprovedTime?.ToString("yyyy-MM-dd") ?? "";
+                        }
+                    }
                 }
             }
+
             return jobOrderVm;
         }
     }
-
-    public class JobOrderVm
-    {
-        public string PlateNumber { get; set; }
-        public string EquipmentName { get; set; }
-        public int JobNum { get; set; }
-        public string CustomerName { get; set; }
-        public string Requester { get; set; }
-
-        public string BusinessUnit { get; set; }
-        public string Branch { get; set; }
-        public string WorkUnit { get; set; }
-        public string MaintenanceCenter { get; set; }
-        public DateTime? DateCreated { get; set; }
-        public DateTime? DateClosed { get; set; }
-        public string VehicleCategory { get; set; }
-        public string Cause { get; set; }
-        public string ServiceGroup { get; set; }
-        public string ServiceName { get; set; }
-        public string ServiceCenter { get; set; }
-
-    }
+   
+    //public class childClassVM
+    //    {
+    //        public string VehicleCategory { get; set; }
+    //        public string Cause { get; set; }
+    //        public string ServiceGroup { get; set; }
+    //        public string ServiceName { get; set; }
+    //        public string ServiceCenter { get; set; }
+    //        public string MechanicName { get; set; }
+    //    }
+        public class JobOrderVm:Organization
+        {
+            public string PlateNumber { get; set; }
+            public string EquipmentName { get; set; }
+            public int JobNum { get; set; }
+            public string CustomerName { get; set; }
+            public string Requester { get; set; }
+            public string KMReading { get; set; }
+            public string GPSInfo { get; set; }
+            public string DescriptionOfJobs { get; set; }
+            public string BusinessUnit { get; set; }
+            public string Branch { get; set; }
+            public string FromBranchName { get; set; }
+            public string WorkUnit { get; set; }
+            public string MaintenanceCenter { get; set; }
+            public DateTime? DateCreated { get; set; }
+            public DateTime? DateClosed { get; set; }
+            public string VehicleCategory { get; set; }
+            public string Cause { get; set; }
+            public string ServiceGroup { get; set; }
+            public string ServiceName { get; set; }
+            public string ServiceCenter { get; set; }
+            public string RequestedBy { get; set; }
+            public string TechnicalApproval { get; set; }
+            public string MaintenanceRequestApproval { get; set; }
+            public DateTime? RequestDate { get; set; }
+            public DateTime? ApproveDate { get; set; }
+            public string CheckedBy { get; set; }
+            public DateTime? CheckedDate { get; set; }
+           
+            public string InspectorName { get; set; }
+            public string InspectorDate { get; set; }
+            public string AuthorizerName { get; set; }
+            public string AuthorizerDate { get; set; }
+           
+            public IList<childClassVM> childClassVms { get; set; }
+            public Image ApprovedBySignature { get; set; }
+            public Image CreatedBySignature { get; set; }
+            public Image CheckedBySignature { get; set; }
+            public Image AuthorizedBySignature { get; set; }
 }
+    public class FormanDto
+    {
+        public string FormanName { get; set; }
+        public string FormanDate { get; set; }
+    }
+    }
+

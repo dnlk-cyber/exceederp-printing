@@ -191,6 +191,25 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                         Request.OnlineApprovedTime = DateTime.Now;
 
                         Notify.NotifyUser(new NotifModels { DeadLine = DateTime.Now, Message = "Request with No " + Request.Num + " Approved ", Title = " Approved Job Request ", URL = Url.Action("Index", "JobRequest", new { area = "FleetManagment" }) });
+                        List<UserVM> list = new List<UserVM>();
+                        //MaintenanceRoles.MaintenanceOrderUser MaintenanceRoles.MaintenanceRequestor, MaintenanceRoles.MaintenanceRequestApprover, MaintenanceRoles.MaintenanceServiceApprover
+                        list = UserInformationHelper.GetUsersInRole(MaintenanceRoles.MaintenanceOrderUser);
+                        foreach(var user in list)
+                        {
+                            NotifModels jobRequesterNotif = new NotifModels
+                            {
+                                UserId = user.UserId,
+                                Title = "New maintenance Order",
+                                Message = "There is new maintenance order",
+                                DeadLine = DateTime.Now,
+                               // URL=
+
+                            };
+
+
+                            Notify.NotifyUser(jobRequesterNotif);
+                        }
+                       
 
                     }
                     if (model.Status == ApprovalStatuses.Reject)
@@ -338,6 +357,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             //JobRequest.EquipmentName = fleet.PlateNumber + " - " + fleet.UnitNum;
             JobRequest.EquipmentType = EquipmentType;
             //JobRequest.Model = fleet.Model;
+            JobRequest.FromBranchId = JobRequest.FromBranchId;
             JobRequest.IsPM = JobRequest.IsPM;
             JobRequest.Remark = JobRequest.Remark;
             JobRequest.EquipmentInformationId = JobRequest.EquipmentInformationId;

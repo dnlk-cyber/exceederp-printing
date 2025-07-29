@@ -32,6 +32,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 ExternalServiceCenterPaymentId = model.ExternalServiceCenterPaymentId,
                 Quantity = model.Quantity,
                 SubTotal = model.SubTotal,
+                Invoice=model.Invoice,
                 Tax = model.Tax,
                 Total = model.Total,
                 UnitPrice = model.UnitPrice,
@@ -50,7 +51,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             if (ModelState.IsValid)
             {
                 model.SubTotal = model.UnitPrice * model.Quantity;
-                model.Total = model.SubTotal + model.SubTotal * tax.Rate;
+                model.Total = model.SubTotal + model.SubTotal * tax.Rate/100;
                 
                 db.ExternalServiceCenterPayments.Add(model);
                 db.SaveChanges();
@@ -67,7 +68,6 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             {
                 model.SubTotal = model.UnitPrice * model.Quantity;
                 model.Total = model.SubTotal + model.SubTotal * tax.Rate;
-
                 db.ExternalServiceCenterPayments.Attach(model);
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();

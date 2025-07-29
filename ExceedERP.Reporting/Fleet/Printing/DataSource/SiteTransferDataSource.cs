@@ -16,7 +16,6 @@ using System.IO;
 using System.Web;
 using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 using static ExceedERP.Core.Domain.Global.GlobalEnum;
-using ExceedERP.Core.Domain.FleetManagement;
 
 namespace ExceedERP.Reporting.Fleet.Printing.DataSource
 {
@@ -113,9 +112,9 @@ namespace ExceedERP.Reporting.Fleet.Printing.DataSource
                         SiteTransferViewModel.AmpereNew = true;
                     if (SiteTransfer.BatteryStatus == BatteryStatus.Old)
                         SiteTransferViewModel.AmpereOld = true;
-                    if (SiteTransfer.TransferMode == TransferMode.Loaded)
+                    if (SiteTransfer.TransferMode == Core.Domain.FleetManagement.TransferMode.Loaded)
                         SiteTransferViewModel.ByAnotherVehicle = true;
-                    if (SiteTransfer.TransferMode == TransferMode.ByItSelf)
+                    if (SiteTransfer.TransferMode == Core.Domain.FleetManagement.TransferMode.ByItSelf)
                         SiteTransferViewModel.ByItSelf = true;
 
 

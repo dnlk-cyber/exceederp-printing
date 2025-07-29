@@ -44,6 +44,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             {
                 RepairTypeID = o.RepairTypeID,
                 Name = o.Name,
+                Weight = o.Weight,
                 Code = o.Code,
                 CategoryCode = o.CategoryCode,
                 ServiceGroup = o.ServiceGroup,
@@ -139,7 +140,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
 
             return this.Json(new[] { RepairType }.ToDataSourceResult(request));
         }
-        [AllowAnonymous]
+        
         public ActionResult RepairTypeDDBind()
         {
 

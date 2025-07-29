@@ -23,7 +23,9 @@ namespace ExceedERP.Core.Domain.Maintenance
         [DisplayName("Mecanic")]
         public Guid MecanicId { get; set; }
         public int Date { get; set; }
-
+        [DataType(DataType.Date)]
+        public DateTime? RecordedDate { get; set; }
+        public string RepiarTypeId { get; set; }
         [DisplayName("  Morning From")]
         //[Required]
         [DataType(DataType.Time)]

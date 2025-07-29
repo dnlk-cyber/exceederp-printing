@@ -201,10 +201,24 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
         {
 
             _ServiceJobOrderDetailService = new ServiceJobOrderDetailService();
-            var service = db.ServiceCenterJob.Where(x => x.ServiceCenterJobId.ToString() == jobOrderID).FirstOrDefault();
-            var order = db.JobOrder.Where(x => x.JobOrderID == service.JobOrderID).FirstOrDefault();
-            var Request = db.JobRequest.Where(x => x.Num == order.Referance).FirstOrDefault();
 
+            var service = db.ServiceCenterJob.FirstOrDefault(x => x.ServiceCenterJobId.ToString() == jobOrderID);
+            if (service == null)
+            {
+                return Json(new { error = "ServiceCenterJob not found for the given Job Order ID" });
+            }
+
+            var order = db.JobOrder.FirstOrDefault(x => x.JobOrderID == service.JobOrderID);
+            if (order == null)
+            {
+                return Json(new { error = "JobOrder not found for the given ServiceCenterJob" });
+            }
+
+            var requestData = db.JobRequest.FirstOrDefault(x => x.Num == order.Referance);
+            if (requestData == null)
+            {
+                return Json(new { error = "JobRequest not found for the given reference" });
+            }
             var serviceOrderDetails = _ServiceJobOrderDetailService.GetAll().Where(jobOrderDetail => jobOrderDetail.ServiceCenterJobId == service.ServiceCenterJobId).ToList();
 
 
@@ -495,7 +509,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
             return Json(new[] { JobOrderDetail }.ToDataSourceResult(request));
         }
 
-        [AllowAnonymous]
+        
         public ActionResult JobDetailDDBind(string Id)
         {
             var Service = _ServiceJobOrderDetailService.GetAll().Where(x => x.ServiceCenterJobId.ToString() == Id).Select(s => new Service

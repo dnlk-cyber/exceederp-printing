@@ -106,10 +106,10 @@
                             .RequestStart("onRequestStart(\"SalesQuoteVoucher\")")
                             .RequestEnd("onRequestEnd(\"SalesQuoteVoucher\")"))
 
-                .Read(read => read.Action("Vouchers_Read", "MntSalesQuote"))
-                .Create(create => create.Action("Vouchers_Create", "MntSalesQuote"))
-                .Update(update => update.Action("Vouchers_Update", "MntSalesQuote"))
-                .Destroy(distroy => distroy.Action("Vouchers_Delete", "MntSalesQuote"))
+                .Read(read => read.Action("Vouchers_Read", "MntSalesQuote").Data("sendForgery"))
+                .Create(create => create.Action("Vouchers_Create", "MntSalesQuote").Data("sendForgery"))
+                .Update(update => update.Action("Vouchers_Update", "MntSalesQuote").Data("sendForgery"))
+                .Destroy(distroy => distroy.Action("Vouchers_Delete", "MntSalesQuote").Data("sendForgery"))
           ).ClientDetailTemplateId("template")
 )
 
@@ -262,7 +262,7 @@
                 
                 .DataSource(dataSource => dataSource
                     .Ajax()
-                    .ServerOperation(false)
+                   
                     .Model(model =>
                     {
                         model.Id(p => p.LineItemID);
@@ -275,10 +275,10 @@
                         .RequestStart("onRequestStart(\"LineItems_#=SalesQuoteVoucherID#\")")
                         .RequestEnd("onRequestEnd(\"LineItems_#=SalesQuoteVoucherID#\")")
                         )
-                    .Read(read => read.Action("LineItems_Read", "LineItem", new { area = "CRM",voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionID = "0" }))
-                    .Create(create => create.Action("LineItems_Create", "LineItem", new {area = "CRM", voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionIDCreate = "0" }))
-                    .Update(update => update.Action("LineItems_Update", "LineItem", new {area = "CRM", voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionID = "0" }))
-                    .Destroy(destroy => destroy.Action("LineItems_Destroy", "LineItem")))
+                    .Read(read => read.Action("LineItems_Read", "LineItem", new { area = "CRM",voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionID = "0" }).Data("sendForgery"))
+                    .Create(create => create.Action("LineItems_Create", "LineItem", new {area = "CRM", voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionIDCreate = "0" }).Data("sendForgery"))
+                    .Update(update => update.Action("LineItems_Update", "LineItem", new {area = "CRM", voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionID = "0" }).Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("LineItems_Destroy", "LineItem").Data("sendForgery")))
                 .ToClientTemplate()
 
         )
@@ -320,7 +320,7 @@
             //.Events(e => e.Edit("AddCostItemInit"))
             .DataSource(dataSource => dataSource
                 .Ajax()
-                .ServerOperation(false)
+               
                 .Model(model =>
                 {
                     model.Id(p => p.LineItemID);
@@ -333,7 +333,7 @@
                     .RequestStart("onRequestStart(\"LineItems_#=SalesQuoteVoucherID#\")")
                     .RequestEnd("onRequestEnd(\"LineItems_#=SalesQuoteVoucherID#\")")
                     )
-                .Read(read => read.Action("LineItems_Read", "LineItem", new {area = "CRM", voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionID = "0" }))
+                .Read(read => read.Action("LineItems_Read", "LineItem", new {area = "CRM", voucherID = "#=SalesQuoteVoucherID#", voucherDefinitionID = "0" }).Data("sendForgery"))
                 )
             .ToClientTemplate()
         )
@@ -377,7 +377,7 @@
 
                     .DataSource(dataSource => dataSource
                         .Ajax()
-                        .ServerOperation(false)
+                       
                         .Model(model =>
                         {
                             model.Id(p => p.ServiceLineItemId);
@@ -394,10 +394,10 @@
                             .RequestStart("onRequestStart(\"services_#=SalesQuoteVoucherID#\")")
                             .RequestEnd("onRequestEnd(\"services_#=SalesQuoteVoucherID#\")")
                             )
-                        .Read(read => read.Action("ServiceLineItems_Read", "ServiceLineItem", new {area = "CRM", voucherID = "#=SalesQuoteVoucherID#", voucherType = CRMVoucherType.SalesQuote }))
-                        .Create(create => create.Action("ServiceLineItems_Create", "ServiceLineItem", new {area="CRM", voucherID = "#=SalesQuoteVoucherID#", voucherType = CRMVoucherType.SalesQuote }))
-                        .Update(update => update.Action("ServiceLineItems_Update", "ServiceLineItem", new {area="CRM", voucherID = "#=SalesQuoteVoucherID#", voucherType = CRMVoucherType.SalesQuote }))
-                        .Destroy(destroy => destroy.Action("ServiceLineItems_Destroy", "ServiceLineItem",new { area="CRM"} ))
+                        .Read(read => read.Action("ServiceLineItems_Read", "ServiceLineItem", new {area = "CRM", voucherID = "#=SalesQuoteVoucherID#", voucherType = CRMVoucherType.SalesQuote }).Data("sendForgery"))
+                        .Create(create => create.Action("ServiceLineItems_Create", "ServiceLineItem", new {area="CRM", voucherID = "#=SalesQuoteVoucherID#", voucherType = CRMVoucherType.SalesQuote }).Data("sendForgery"))
+                        .Update(update => update.Action("ServiceLineItems_Update", "ServiceLineItem", new {area="CRM", voucherID = "#=SalesQuoteVoucherID#", voucherType = CRMVoucherType.SalesQuote }).Data("sendForgery"))
+                        .Destroy(destroy => destroy.Action("ServiceLineItems_Destroy", "ServiceLineItem",new { area="CRM"} ).Data("sendForgery"))
                         )
                     .ToClientTemplate()
 
@@ -432,7 +432,7 @@
 
             .DataSource(dataSource => dataSource
                 .Ajax()
-                .ServerOperation(false)
+               
                 .Model(model =>
                 {
                     model.Id(p => p.ServiceLineItemId);
@@ -442,7 +442,7 @@
                     .RequestStart("onRequestStart(\"services_#=SalesQuoteVoucherID#\")")
                     .RequestEnd("onRequestEnd(\"services_#=SalesQuoteVoucherID#\")")
                     )
-                .Read(read => read.Action("ServiceLineItems_Read", "ServiceLineItem", new {area="CRM", voucherID = "#=SalesQuoteVoucherID#", voucherType = CRMVoucherType.SalesQuote }))
+                .Read(read => read.Action("ServiceLineItems_Read", "ServiceLineItem", new {area="CRM", voucherID = "#=SalesQuoteVoucherID#", voucherType = CRMVoucherType.SalesQuote }).Data("sendForgery"))
                 )
             .ToClientTemplate()
         )
@@ -491,10 +491,10 @@
                         .RequestEnd("onRequestEnd(\"commission_#=SalesQuoteVoucherID#\")")
                         )
 
-                    .Read(read => read.Action("LineItems_Read", "CommissionLineItem", new {area="CRM", voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }))
-                    .Create(create => create.Action("LineItem_Create", "CommissionLineItem", new {area="CRM", voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }))
-                    .Update(update => update.Action("LineItem_Update", "CommissionLineItem"))
-                    .Destroy(destroy => destroy.Action("LineItem_Destroy", "CommissionLineItem"))
+                    .Read(read => read.Action("LineItems_Read", "CommissionLineItem", new {area="CRM", voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }).Data("sendForgery"))
+                    .Create(create => create.Action("LineItem_Create", "CommissionLineItem", new {area="CRM", voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }).Data("sendForgery"))
+                    .Update(update => update.Action("LineItem_Update", "CommissionLineItem").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("LineItem_Destroy", "CommissionLineItem").Data("sendForgery"))
                     ).ToClientTemplate()
                 )
     }
@@ -530,7 +530,7 @@
                         .RequestEnd("onRequestEnd(\"commission_#=SalesQuoteVoucherID#\")")
                         )
 
-                    .Read(read => read.Action("LineItems_Read", "CommissionLineItem", new {area="CRM", voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }))
+                    .Read(read => read.Action("LineItems_Read", "CommissionLineItem", new {area="CRM", voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }).Data("sendForgery"))
 
                     ).ToClientTemplate()
                 )
@@ -580,10 +580,10 @@
                         m.Field(f => f.TotalAmount).Editable(false);
                     })
 
-                    .Read(read => read.Action("LineItems_Read", "AdditionalCostLog", new {area="CRM", voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }))
-                    .Create(create => create.Action("LineItem_Create", "AdditionalCostLog", new {area="CRM", voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }))
-                    .Update(update => update.Action("LineItem_Update", "AdditionalCostLog", new { area = "CRM"}))
-                    .Destroy(destroy => destroy.Action("LineItem_Destroy", "AdditionalCostLog"))
+                    .Read(read => read.Action("LineItems_Read", "AdditionalCostLog", new {area="CRM", voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }).Data("sendForgery"))
+                    .Create(create => create.Action("LineItem_Create", "AdditionalCostLog", new {area="CRM", voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }).Data("sendForgery"))
+                    .Update(update => update.Action("LineItem_Update", "AdditionalCostLog", new { area = "CRM"}).Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("LineItem_Destroy", "AdditionalCostLog").Data("sendForgery"))
                     ).ToClientTemplate()
                 )
     }
@@ -618,7 +618,7 @@
                 m.Field(f => f.TaxAmount).Editable(false);
                 m.Field(f => f.TotalAmount).Editable(false);
             })
-        .Read(read => read.Action("LineItems_Read", "AdditionalCostLog", new {area="CRM", voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }))
+        .Read(read => read.Action("LineItems_Read", "AdditionalCostLog", new {area="CRM", voucher = "#=SalesQuoteVoucherID#", type = VoucherType.SalesQuote }).Data("sendForgery"))
         ).ToClientTemplate()
         )
     }
@@ -679,10 +679,10 @@
 
             })
 
-            .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherFirstValidation", new { id = "#=SalesQuoteVoucherID#" }))
-            .Create(create => create.Action("Validation_Create", "SalesQuoteVoucherFirstValidation", new { id = "#=SalesQuoteVoucherID#" }))
-            .Update(update => update.Action("Validation_Update", "SalesQuoteVoucherFirstValidation"))
-            .Destroy(destroy => destroy.Action("Validation_Destroy", "SalesQuoteVoucherFirstValidation"))
+            .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherFirstValidation", new { id = "#=SalesQuoteVoucherID#" }).Data("sendForgery"))
+            .Create(create => create.Action("Validation_Create", "SalesQuoteVoucherFirstValidation", new { id = "#=SalesQuoteVoucherID#" }).Data("sendForgery"))
+            .Update(update => update.Action("Validation_Update", "SalesQuoteVoucherFirstValidation").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("Validation_Destroy", "SalesQuoteVoucherFirstValidation").Data("sendForgery"))
             )
             .ToClientTemplate()
             )
@@ -729,7 +729,7 @@
                 {
                     model.Id(f => f.SalesQuoteVoucherFirstValidationId);
                 })
-                .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherFirstValidation", new { id = "#=SalesQuoteVoucherID#" }))
+                .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherFirstValidation", new { id = "#=SalesQuoteVoucherID#" }).Data("sendForgery"))
                 ).ToClientTemplate()
             )
     }
@@ -790,10 +790,10 @@
 
             })
 
-            .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherSecondValidation", new {area="CRM", id = "#=SalesQuoteVoucherID#" }))
-            .Create(create => create.Action("Validation_Create", "SalesQuoteVoucherSecondValidation", new {area ="CRM", id = "#=SalesQuoteVoucherID#" }))
-            .Update(update => update.Action("Validation_Update", "SalesQuoteVoucherSecondValidation"))
-            .Destroy(destroy => destroy.Action("Validation_Destroy", "SalesQuoteVoucherSecondValidation"))
+            .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherSecondValidation", new {area="CRM", id = "#=SalesQuoteVoucherID#" }).Data("sendForgery"))
+            .Create(create => create.Action("Validation_Create", "SalesQuoteVoucherSecondValidation", new {area ="CRM", id = "#=SalesQuoteVoucherID#" }).Data("sendForgery"))
+            .Update(update => update.Action("Validation_Update", "SalesQuoteVoucherSecondValidation").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("Validation_Destroy", "SalesQuoteVoucherSecondValidation").Data("sendForgery"))
             )
             .ToClientTemplate()
             )
@@ -840,7 +840,7 @@
                 {
                     model.Id(f => f.SalesQuoteVoucherSecondValidationId);
                 })
-                .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherSecondValidation", new {area ="CRM", id = "#=SalesQuoteVoucherID#" }))
+                .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherSecondValidation", new {area ="CRM", id = "#=SalesQuoteVoucherID#" }).Data("sendForgery"))
                 ).ToClientTemplate()
             )
     }
@@ -901,10 +901,10 @@
 
                     })
 
-            .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherValidation", new { id = "#=SalesQuoteVoucherID#" }))
-            .Create(create => create.Action("Validation_Create", "SalesQuoteVoucherValidation", new { id = "#=SalesQuoteVoucherID#" }))
-            .Update(update => update.Action("Validation_Update", "SalesQuoteVoucherValidation"))
-            .Destroy(destroy => destroy.Action("Validation_Destroy", "SalesQuoteVoucherValidation"))
+            .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherValidation", new { id = "#=SalesQuoteVoucherID#" }).Data("sendForgery"))
+            .Create(create => create.Action("Validation_Create", "SalesQuoteVoucherValidation", new { id = "#=SalesQuoteVoucherID#" }).Data("sendForgery"))
+            .Update(update => update.Action("Validation_Update", "SalesQuoteVoucherValidation").Data("sendForgery"))
+            .Destroy(destroy => destroy.Action("Validation_Destroy", "SalesQuoteVoucherValidation").Data("sendForgery"))
             )
             .ToClientTemplate()
             )
@@ -951,7 +951,7 @@
                 {
                     model.Id(f => f.SalesQuoteVoucherValidationId);
                 })
-                .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherValidation", new { id = "#=SalesQuoteVoucherID#" }))
+                .Read(read => read.Action("Validations_Read", "SalesQuoteVoucherValidation", new { id = "#=SalesQuoteVoucherID#" }).Data("sendForgery"))
                 ).ToClientTemplate()
             )
     }

@@ -31,12 +31,12 @@
         .Events(ev => ev.Error("error_handler(\"grid\")")
         .RequestStart("onRequestStart(\"grid\")")
         .RequestEnd("onRequestEnd(\"grid\")"))
-        .ServerOperation(false)
+       
         .Model(model => model.Id(p => p.VehiclePartId))
-        .Read(read => read.Action("VehiclePart_Read", "VehiclePart"))
-        .Create(create => create.Action("VehiclePart_Create", "VehiclePart"))
-        .Update(update => update.Action("VehiclePart_Update", "VehiclePart"))
-        .Destroy(destroy => destroy.Action("VehiclePart_Destroy", "VehiclePart"))
+        .Read(read => read.Action("VehiclePart_Read", "VehiclePart").Data("sendForgery"))
+        .Create(create => create.Action("VehiclePart_Create", "VehiclePart").Data("sendForgery"))
+        .Update(update => update.Action("VehiclePart_Update", "VehiclePart").Data("sendForgery"))
+        .Destroy(destroy => destroy.Action("VehiclePart_Destroy", "VehiclePart").Data("sendForgery"))
         .Sort(sort =>
         {
             sort.Add(m => m.LastModified).Ascending();

@@ -294,7 +294,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers.Setting
             }
             if (record != null && !record.IsDepartmentOnlineApproved && !record.IsDepartmentSendForApproval)
             {
-                record.Status = Enum.GetName(typeof(OperationStatuses), 16);
+                record.Status = Enum.GetName(typeof(Core.Domain.Common.OperationStatuses), 16);
                 record.IsDepartmentSendForApproval = true;
                 record.DepartmentSendForApprovalBy = User.Identity.Name;
                 record.DepartmentSendForApprovalTime = DateTime.Now;

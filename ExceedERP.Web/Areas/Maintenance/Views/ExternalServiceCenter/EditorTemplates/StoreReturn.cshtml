@@ -35,7 +35,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetStoreByKeeper", "MaintenanceDataProvider"))
+                              dataSource.Read(read => read.Action("GetStoreByKeeper", "MaintenanceDataProvider").Data("sendForgery"))
                                   .ServerFiltering(false);
                           })
                           )
@@ -55,7 +55,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetWorkUnitCostCenters", "MaintenanceDataProvider"))
+                              dataSource.Read(read => read.Action("GetWorkUnitCostCenters", "MaintenanceDataProvider").Data("sendForgery"))
                                   .ServerFiltering(false);
                           })
                           )
@@ -82,7 +82,7 @@
                                   })
                                   .DataSource(dataSource =>
                                   {
-                                      dataSource.Read(read => read.Action("GetOpenInventoryPeriodsByStore", "MaintenanceDataProvider").Data("filterPeriodsByStore"))
+                                      dataSource.Read(read => read.Action("GetOpenInventoryPeriodsByStore", "MaintenanceDataProvider").Data("sendForgery").Data("filterPeriodsByStore"))
                                           .ServerFiltering(true);
                                   })
                     )
@@ -135,7 +135,7 @@
                                         .Filter("contains")
                                         .DataSource(dataSource =>
                                         {
-                                            dataSource.Read(read => read.Action("GetAllBranches", "MaintenanceDataProvider", new { area = "Maintenance" }))
+                                            dataSource.Read(read => read.Action("GetAllBranches", "MaintenanceDataProvider", new { area = "Maintenance" }).Data("sendForgery"))
                                                 .ServerFiltering(false);
                                         })
                     )

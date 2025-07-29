@@ -41,7 +41,7 @@
                                 .Scrollable(h => h.Height(500))
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
+       
              .Model(model =>
               {
                   model.Id(p => p.MaintenanceToolID);
@@ -50,10 +50,10 @@
                                             .Error("error_handler(\"grid\")")
                                             .RequestStart("onRequestStart(\"grid\")")
                                             .RequestEnd("onRequestEnd(\"grid\")"))
-                .Create(update => update.Action("MaintenanceTool_Create", "MaintenanceTool"))
-                .Read(read => read.Action("MaintenanceTool_Read", "MaintenanceTool"))
-                .Update(update => update.Action("MaintenanceTool_Update", "MaintenanceTool"))
-                .Destroy(update => update.Action("MaintenanceTool_Destroy", "MaintenanceTool"))
+                .Create(update => update.Action("MaintenanceTool_Create", "MaintenanceTool").Data("sendForgery"))
+                .Read(read => read.Action("MaintenanceTool_Read", "MaintenanceTool").Data("sendForgery"))
+                .Update(update => update.Action("MaintenanceTool_Update", "MaintenanceTool").Data("sendForgery"))
+                .Destroy(update => update.Action("MaintenanceTool_Destroy", "MaintenanceTool").Data("sendForgery"))
   )
 )
 

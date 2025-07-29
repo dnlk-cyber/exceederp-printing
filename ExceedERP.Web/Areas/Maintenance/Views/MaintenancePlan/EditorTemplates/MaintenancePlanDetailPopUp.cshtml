@@ -5,16 +5,16 @@
             <label>Month</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.GlPeriodId)
-                                          .OptionLabel("Select Period")
-                                          .AutoBind(true)
-                                          .DataValueField("Value")
-                                          .DataTextField("Text")
-                                          
-                                          .DataSource(dataSource =>
-                                          {
-                                              dataSource.Read(read => read.Action("GetGlPeriodForPlanAndEvaluation", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("getFiscalYear"))
-                                              .ServerFiltering(true);
-                                          })
+                                                  .OptionLabel("Select Period")
+                                                  .AutoBind(true)
+                                                  .DataValueField("Value")
+                                                  .DataTextField("Text")
+
+                                                  .DataSource(dataSource =>
+                                                  {
+                                                      dataSource.Read(read => read.Action("GetGlPeriodForPlanAndEvaluation", "FleetManagementDataProvider", new { area = "FleetManagement" }).Data("sendForgery").Data("getFiscalYear"))
+                                                      .ServerFiltering(true);
+                                                  }).Enable(false)
                 )
             </div>
         </div>
@@ -28,15 +28,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
-        <div class="form-group">
-            <label>CM Cost</label>
-            <div>
-                @Html.Kendo().NumericTextBoxFor(model => model.CMCost).HtmlAttributes(new { style = "width:100%" })
 
-            </div>
-        </div>
-    </div>
     <div class="col-sm-2">
         <div class="form-group">
             <label>PM Quantity</label>
@@ -47,18 +39,47 @@
         </div>
     </div>
 
-
-</div>
-
-<div class="row">
     <div class="col-sm-2">
         <div class="form-group">
-            <label>PM Cost</label>
+            <label>PM Material Cost</label>
             <div>
-                @Html.Kendo().NumericTextBoxFor(model => model.PMCost).HtmlAttributes(new { style = "width:100%" })
+                @Html.Kendo().NumericTextBoxFor(model => model.PMMaterialCost).HtmlAttributes(new { style = "width:100%" })
 
             </div>
         </div>
-    </div>    
+    </div>
 </div>
+
+<div class="row">
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>PM Labor Cost</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.PMLaborCost).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>CM Material Cost</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.CMMaterialCost).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="form-group">
+            <label>CM Labor Cost</label>
+            <div>
+                @Html.Kendo().NumericTextBoxFor(model => model.CMLaborCost).HtmlAttributes(new { style = "width:100%" })
+
+            </div>
+        </div>
+    </div>
+</div>
+
 

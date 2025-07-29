@@ -42,7 +42,6 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             var Assets = db.AssetRegistrations.ToList();
             var Branches = db.Branch.ToList();
 
-
             if (!string.IsNullOrEmpty(category))
             {
                 if (!string.IsNullOrEmpty(Type))
@@ -105,7 +104,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
                 }
           
                 decimal EXPENSE = 0;
-            decimal INCOME = 0;
+                decimal INCOME = 0;
 
 
             decimal Workingcost = 0;
@@ -119,9 +118,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             {
 
                 List<TimeSheet> InternalTimeSheet = db.TimeSheet.Where(x => x.DateCreated >= StartingDate && x.DateCreated <= EndingDate && x.IsExternal == false && x.FleetsID == fleet.FleetsID).ToList();
-
-
-
+                
                 foreach (var Work in InternalTimeSheet)
                 {
                     TimeSpan MorningDuration = DateTime.Parse(Work.WorkingHoursMorningto.ToString()) - DateTime.Parse(Work.WorkingHoursMorningFrom.ToString());
@@ -129,23 +126,12 @@ namespace ExceedERP.Reporting.Fleet.DataSource
 
 
                     Workingcost = Workingcost + ((MorningDuration.Hours + AfterNoonDuration.Hours) * decimal.Parse(Work.RentalRate.ToString()));
-
                     IdealCost = IdealCost + decimal.Parse((Work.IdleTime * Work.IdealRentalRate).ToString());
-
-
                 }
-
-
-
-
 
                 IssueFuels = FleetReportHelper.GetInventoryIssueItem(x => x.Issue.DateCreated >= StartingDate && x.Issue.DateCreated <= EndingDate && x.Issue.IsFuel == true && x.Issue.PlateNo == fleet.PlateNumber);
 
-
-
-
-
-            }
+ }
 
 
             var EquipmentUtilizationViewModelExternal = new HeadOfficeSummaryViewModel();

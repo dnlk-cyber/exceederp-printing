@@ -1,4 +1,4 @@
 ﻿@(Html.Kendo().DropDownListFor(model => model)
                                               .DataTextField("ManufacturerYear")
                                                       .DataValueField("ManufacturerYear").OptionLabel("Select").HtmlAttributes(new { style = "width:100%" }).Filter(FilterType.Contains)
-                                              .DataSource(d => d.Read(r => r.Action("ManufacturedYearDDBind", "FleetDataProvider")).ServerFiltering(false)))
+                                              .DataSource(d => d.Read(r => r.Action("ManufacturedYearDDBind", "FleetDataProvider").Data("sendForgery")).ServerFiltering(false)))

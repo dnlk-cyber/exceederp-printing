@@ -6,7 +6,7 @@
                           .Filter("contains")
                                 .DataSource(dataSource =>
                                 {
-                                    dataSource.Read(read => read.Action("GetItemCategoryExcludingFuel", "DataProvider", new { area = "Inventory" }))
+                                    dataSource.Read(read => read.Action("GetItemCategoryExcludingFuel", "DataProvider", new { area = "Inventory" }).Data("sendForgery"))
                                     .ServerFiltering(false);
                                 })
 )

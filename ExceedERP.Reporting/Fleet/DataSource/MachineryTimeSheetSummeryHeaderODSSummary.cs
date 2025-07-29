@@ -131,7 +131,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             if (!string.IsNullOrWhiteSpace(categoryId))
             {
                 Guid.TryParse(categoryId, out Guid id);
-                var fleetFiltered = db.Fleets.Where(x => x.EquipmentIdentityID == id).Select(x => x.FleetsID).ToHashSet();
+                var fleetFiltered = db.Fleets.Where(x => x.EquipmentIdentityID == id).Select(x => x.FleetsID).ToList();
                 machineryTimeSheets = machineryTimeSheets.Where(x => fleetFiltered.Contains(x.FleetsID)).ToList();
             }
 
@@ -139,7 +139,7 @@ namespace ExceedERP.Reporting.Fleet.DataSource
             if (!string.IsNullOrWhiteSpace(subCategoryId))
             {
                 Guid.TryParse(subCategoryId, out Guid id);
-                var fleetFiltered = db.Fleets.Where(x => x.EquipmentTypeID == id).Select(x => x.FleetsID).ToHashSet();
+                var fleetFiltered = db.Fleets.Where(x => x.EquipmentTypeID == id).Select(x => x.FleetsID).ToList();
                 machineryTimeSheets = machineryTimeSheets.Where(x => fleetFiltered.Contains(x.FleetsID)).ToList();
             }
 

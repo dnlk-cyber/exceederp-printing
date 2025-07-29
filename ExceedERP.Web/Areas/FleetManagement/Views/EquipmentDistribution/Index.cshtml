@@ -160,8 +160,7 @@
                     .Name("RequestEquipmentgrid_#=RequestID#")
                     .Columns(columns =>
                     {
-
-                       //columns.ForeignKey(e => e.EquipmentIdentityID, (System.Collections.IEnumerable)ViewData["EquipmentCategories"], "Id", "Name").EditorTemplateName("EquipmentCategoryEditor").Title("Equipment Category").Width(140);
+                        columns.ForeignKey(e => e.EquipmentIdentityID, (System.Collections.IEnumerable)ViewData["EquipmentCategories"], "Id", "Name").EditorTemplateName("EquipmentCategoryEditor").Title("Equipment Category").Width(140);
                         columns.ForeignKey(e => e.EquipmentTypeID, (System.Collections.IEnumerable)ViewData["EquipmentTypes"], "Id", "Name").EditorTemplateName("EquipmentTypeEditor").Title("Equipment Type").Width(140);
                         columns.ForeignKey(e => e.EquipmentNameId, (System.Collections.IEnumerable)ViewData["EquipmentName"], "Id", "Name").EditorTemplateName("EquipmentNameEditorTemplate").Title("Equipment Name").Width(140);
                         columns.Bound(o => o.Quantity).EditorTemplateName("Integer").Width(80);

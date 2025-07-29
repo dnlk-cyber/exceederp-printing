@@ -7,7 +7,7 @@
         //    .BindTo((IEnumerable)ViewData["Items"])
         .DataSource(dataSource =>
         {
-            dataSource.Read(read => read.Action("GetAllCategory", "MaintenanceDataProvider"));
+            dataSource.Read(read => read.Action("GetAllCategory", "MaintenanceDataProvider").Data("sendForgery"));
             //.ServerFiltering(true);
         })
         .Filter("contains")

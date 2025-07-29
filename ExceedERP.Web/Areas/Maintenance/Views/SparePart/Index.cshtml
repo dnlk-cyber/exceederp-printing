@@ -39,7 +39,7 @@
                                 .Scrollable(h => h.Height(500))
     .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
+       
         .Group(g=>g.Add(p=>p.Category))
         .Model(model =>
               {
@@ -49,10 +49,10 @@
                                                             .Error("error_handler(\"grid\")")
                                                             .RequestStart("onRequestStart(\"grid\")")
                                                             .RequestEnd("onRequestEnd(\"grid\")")) 
-                .Create(update => update.Action("SparePart_Create", "SparePart"))
-                .Read(read => read.Action("SparePart_Read", "SparePart"))
-                .Update(update => update.Action("SparePart_Update", "SparePart"))
-                .Destroy(update => update.Action("SparePart_Destroy", "SparePart"))
+                .Create(update => update.Action("SparePart_Create", "SparePart").Data("sendForgery"))
+                .Read(read => read.Action("SparePart_Read", "SparePart").Data("sendForgery"))
+                .Update(update => update.Action("SparePart_Update", "SparePart").Data("sendForgery"))
+                .Destroy(update => update.Action("SparePart_Destroy", "SparePart").Data("sendForgery"))
   )
 )
 

@@ -5,7 +5,6 @@ using System;
 using ExceedERP.Web.Helpers;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using Kendo.Mvc.Extensions;
@@ -13,14 +12,15 @@ using ExceedERP.Core.Domain.FleetManagement;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Areas.FleetManagement.Models;
 using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.Helpers.Fleet;
-using ExceedERP.Reporting.SharedDataSources;
+//using ExceedERP.Reporting.SharedDataSources;
 using System.Drawing;
 using ExceedERP.Core.Domain.Maintenance;
+//using ExceedERP.Reporting.SharedDataSources;
+
 
 namespace ExceedERP.Web.Areas.Maintenance.Controllers
 {
-   [AuthorizeRoles(MaintenanceRoles.ServiceUser)]
+    [AuthorizeRoles(MaintenanceRoles.ServiceUser)]
     public class StoreRequestionController : Controller
     {
         //
@@ -70,7 +70,7 @@ namespace ExceedERP.Web.Areas.Maintenance.Controllers
                 if (logo != null)
                 {
                     ViewBag.Image = logo.BinaryFile;
-                    LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
+                   // LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
                 }
 
 

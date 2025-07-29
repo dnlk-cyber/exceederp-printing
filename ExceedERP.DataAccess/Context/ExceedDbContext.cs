@@ -933,6 +933,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestDepartmentValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestBudgetValidationEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestFinanceValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalPaymentRequestLineEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalInspectionValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.RentalInspectionCriteriaEntityTypeConfiguration());
@@ -1047,8 +1048,23 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.VehicleReturnApprovalEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new FleetManagementEntityConfiguration.VehicleReturnEntityTypeConfiguration());
             #endregion
-
             #region Maintenance
+            modelBuilder.Configurations.Add(new ExternalMaintenancePaymentRequestDepValidationEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new ExternalMaintenancePaymentRequestValidationEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new ExternalPaymentRequestJobEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new InternalJobToExternalValidationEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new InternalJobToExternalEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new VehicleReceptionApprovalEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new ServiceGroupSettingEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new AdministrativeJobDepartmentApprovalEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new PmSettingEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new PmSchedulerEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new SOPDocumentEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new CanibalizationEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new CanibalizedPartsEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new CanibalizationDepartmentApprovalEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new CanibalizationApprovalEntityTypeConfiguration()); // 
+            modelBuilder.Configurations.Add(new CloseWorkShopWithRemarkEntityTypeConfiguration()); // 
             modelBuilder.Configurations.Add(new MaintenanceCompanyDocumentTypeEntityTypeConfiguration()); // 
             modelBuilder.Configurations.Add(new MaintenanceCompanyDocumentEntityTypeConfiguration()); // 
             modelBuilder.Configurations.Add(new ExternalMaintenancePaymentRequestEntityTypeConfiguration()); // 
@@ -1087,6 +1103,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new JobOrderDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobOrderEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ServiceCenterJobEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExternalServiceCenterDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new JobOrderServiceCenterDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExternalCrewEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExternalMaterialEntityTypeConfiguration());
@@ -3158,6 +3175,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<RentalPaymentRequestValidation> RentalPaymentRequestValidations { get; set; }
         public DbSet<RentalPaymentRequestDepartmentValidation> RentalPaymentRequestDepartmentValidations { get; set; }
         public DbSet<RentalPaymentRequestBudgetValidation> RentalPaymentRequestBudgetValidations { get; set; }
+        // public DbSet<RentalPaymentRequestFinanceValidation> RentalPaymentRequestFinanceValidations { get; set; }
 
 
 
@@ -3313,6 +3331,9 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<BoloRegistrationDocument> BoloRegistrationDocuments { get; set; }
         #endregion
         #region Maintenance
+        public DbSet<ExternalMaintenancePaymentRequestDepValidation> ExternalMaintenancePaymentRequestDepValidations { get; set; }
+        public DbSet<ExternalMaintenancePaymentRequestValidation> ExternalMaintenancePaymentRequestValidations { get; set; }
+        public DbSet<ExternalPaymentRequestJob> ExternalPaymentRequestJobs { get; set; }
         public DbSet<MaintenanceCompanyDocumentType> MaintenanceCompanyDocumentTypes { get; set; }
         public DbSet<MaintenanceCompanyDocument> MaintenanceCompanyDocuments { get; set; }
         public DbSet<ExternalMaintenancePaymentRequest> ExternalMaintenancePaymentRequests { get; set; }
@@ -3328,6 +3349,11 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<PMScheduleDetail> PMScheduleDetails { get; set; }
         public DbSet<ServiceCrewWorkLog> ServiceCrewWorkLogs { get; set; }
         public DbSet<JobRequest> JobRequest { get; set; }
+        public DbSet<RequestToInspection> RequestToInspections { get; set; }
+        public DbSet<Canibalization> Canibalizations { get; set; }
+        public DbSet<CanibalizationDepartmentApproval> CanibalizationDepartmentApproval { get; set; }
+        public DbSet<CanibalizedParts> CanibalizedParts { get; set; }
+        public DbSet<CanibalizationApproval> CanibalizationApprovals { get; set; }
         public DbSet<LogisticPlan> LogisticPlans { get; set; }
         public DbSet<LogisticPlanDetail> LogisticPlanDetails { get; set; }
         public DbSet<MaintenaceInspectionLog> MaintenaceInspectionLog { get; set; }
@@ -3339,14 +3365,23 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<VehiclePartDamageType> VehiclePartDamageType { get; set; }
         public DbSet<VehiclePart> VehiclePart { get; set; }
         public DbSet<VehiclePartManagement> VehiclePartManagement { get; set; }
+        public DbSet<PmSetting> PmSettings { get; set; }
+        public DbSet<SOPDocument> SOPDocuments { get; set; }
+        public DbSet<PmScheduler> PmSchedulers { get; set; }
         public DbSet<VehicleReceptionForm> VehicleReceptionForm { get; set; }
+        public DbSet<VehicleReceptionApproval> VehicleReceptionApprovals { get; set; }
         public DbSet<JobOrder> JobOrder { get; set; }
+        public DbSet<CloseWorkShopWithRemark> CloseWorkShopWithRemarks { get; set; }
+        public DbSet<ExternalServiceCenterDetail> ExternalServiceCenterDetail { get; set; }
         public DbSet<ServiceCenterJob> ServiceCenterJob { get; set; }
+        public DbSet<InternalJobToExternal> InternalJobToExternal { get; set; }
+        public DbSet<InternalJobToExternalValidation> InternalJobToExternalValidation { get; set; }
         public DbSet<JobOrderServiceCenterDetail> JobOrderServiceCenterDetails { get; set; }
         public DbSet<MechanicOnHand> MechanicOnHand { get; set; }
         public DbSet<MaintenanceType> MaintenanceType { get; set; }
         public DbSet<JobCauses> JobCauses { get; set; }
         public DbSet<JobStoreRequisition> JobStoreRequisition { get; set; }
+        //public DbSet<StoreRequisition> StoreRequisitions { get; set; }
         public DbSet<JobOrderDetail> JobOrderDetail { get; set; }
         public DbSet<ExternalMaterial> ExternalMaterial { get; set; }
         public DbSet<WorkUnitSection> WorkUnitSection { get; set; }
@@ -3364,11 +3399,13 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ServiceCrew> ServiceCrew { get; set; }
         public DbSet<ServiceSpare> ServiceSpare { get; set; }
         public DbSet<RepairType> RepairType { get; set; }
+        public DbSet<ServiceGroupSetting> ServiceGroupSettings { get; set; }
         public DbSet<MaintenanceCenter> MaintenanceCenter { get; set; }
 
         public DbSet<OutsourceMaintenanceApproval> OutsourceMaintenanceApproval { get; set; }
         public DbSet<OtherCompanyMaintenaceApproval> OtherCompanyMaintenaceApproval { get; set; }
         public DbSet<AdministrativeJobApproval> AdministrativeJobApproval { get; set; }
+        public DbSet<AdministrativeJobDepartmentApproval> AdministrativeJobDepartmentApproval { get; set; }
         public DbSet<TechnicalJobApproval> TechnicalJobApproval { get; set; }
         public DbSet<FollowUp> FollowUp { get; set; }
         public DbSet<MaintenanceToolIssueAndReturn> MaintenanceToolIssueAndReturn { get; set; }
@@ -3377,7 +3414,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<MaintenanceInterval> MaintenanceIntervals { get; set; }
 
         #endregion
-      
+
         #region CMS
         public DbSet<ExceedERP.Core.Domain.CMS.CMSProgram> CMSPrograms { get; set; }
         public DbSet<ExceedERP.Core.Domain.CMS.CMSCourse> CMSCourses { get; set; }

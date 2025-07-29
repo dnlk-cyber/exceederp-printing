@@ -162,7 +162,7 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
 
             return Json(new[] { CheckList }.ToDataSourceResult(request));
         }
-        [AllowAnonymous]
+        
         public ActionResult GetCheckList()
         {
             List<CheckListViewModel> list = new List<CheckListViewModel>();
