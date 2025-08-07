@@ -472,8 +472,8 @@
         function approveEstimation(e) {
             if (confirm("Are you sure to approve this estimation form?")) {
              var grid = this,
-            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
-            $.ajax({
+             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+                $.ajax({
                type: "POST",
                 url: '@Url.Action("ApproveEstimationForm", "PrintingCostEstimation", new { Area = "Printing" })',
                 data: { id: dataItem.PrintingCostEstimationId },

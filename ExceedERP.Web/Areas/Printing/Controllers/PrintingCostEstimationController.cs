@@ -321,6 +321,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 estimationForm.IsOnlineApproved = true;
                 estimationForm.OnlineApprovedBy = User.Identity.Name;
                 estimationForm.OnlineApprovedTime = DateTime.Today;
+
                 // Generates Estimation Summary
                 CreateEstimationSummary(estimationForm);
                 db.Entry(estimationForm).State = EntityState.Modified;
