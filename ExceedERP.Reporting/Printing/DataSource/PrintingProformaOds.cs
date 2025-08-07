@@ -25,7 +25,7 @@ namespace ExceedERP.Reporting.Printing.DataSource
                 var customer = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == proformaHead.CustomerId);
                 return new PrintingProformaViewModel
                 {
-                    CustomerName = customer.TradeName,
+                    CustomerName = customer?.TradeName ?? string.Empty,
                     DeliveryPeriod = proformaHead.DeliveryPeriod,
                     ProformaNumber = proformaHead.PrintingProformaInvoiceId,
                     Remark = proformaHead.Remark,
@@ -39,7 +39,7 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     ModeOfPayment = proformaHead.ModeOfPayment,
                     PaymentType = proformaHead.PaymentType.ToString(),
                     TransportCost = proformaHead.TransporCost,
-                    VAT = glTax.TaxName,
+                    VAT = glTax?.TaxName ?? string.Empty,
                     TotalTransportCost = proformaHead.TransportCostTotal
                     
                 };
@@ -61,12 +61,20 @@ namespace ExceedERP.Reporting.Printing.DataSource
             foreach (var item in proformaItems)
             {
                 var estimation = db.PrintingCostEstimations.Find(item.PrintingCostEstimationId);
-                var text = db.PrintingEstimationMaterialCosts.FirstOrDefault(x => x.PrintingCostEstimationId == item.PrintingCostEstimationId && x.EstimationMaterialType == EstimationMaterialType.TextPaper);
-                var cover = db.PrintingEstimationMaterialCosts.FirstOrDefault(x => x.PrintingCostEstimationId == item.PrintingCostEstimationId && x.EstimationMaterialType == EstimationMaterialType.CoverPaper);
-                var materialItemText = db.PrintingMaterialCategoryItems.FirstOrDefault(x => x.PrintingMaterialCategoryItemId == text.PrintingMaterialCategoryItemId);
-                var materialItemCover = db.PrintingMaterialCategoryItems.FirstOrDefault(x => x.PrintingMaterialCategoryItemId == cover.PrintingMaterialCategoryItemId);
-                var paperSize = db.PrintingPaperSizes.Find(item.TextPaperSizeId);
-                var glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == item.GLTaxRateID);
+                var text = db.PrintingEstimationMaterialCosts
+                    .FirstOrDefault(x => x.PrintingCostEstimationId == item.PrintingCostEstimationId &&
+                    x.EstimationMaterialType == EstimationMaterialType.TextPaper);
+                var cover = db.PrintingEstimationMaterialCosts
+                    .FirstOrDefault(x => x.PrintingCostEstimationId == item.PrintingCostEstimationId &&
+                    x.EstimationMaterialType == EstimationMaterialType.CoverPaper);
+                var materialItemText = db.PrintingMaterialCategoryItems
+                    .FirstOrDefault(x => x.PrintingMaterialCategoryItemId == text.PrintingMaterialCategoryItemId);
+                var materialItemCover = db.PrintingMaterialCategoryItems
+                    .FirstOrDefault(x => x.PrintingMaterialCategoryItemId == cover.PrintingMaterialCategoryItemId);
+                var paperSize = db.PrintingPaperSizes
+                    .Find(item.TextPaperSizeId);
+                var glTaxRate = db.GLTaxRates
+                    .FirstOrDefault(x => x.GLTaxRateID == item.GLTaxRateID);
 
                 list.Add(new PrintingProformaItemsViewModel
                 {
@@ -78,11 +86,11 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     SellingPrice = item.GrandTotalIncludingVAT,
                     TotalPrice = item.TotalPrice,
                     UnitPrice = item.UnitPrice,
-                    VAT = glTaxRate?.TaxName ?? "",
-                    BindingType = item.BindingStyle.ToString(),
-                    PaperSize = paperSize?.PrintPaperSize.ToString() ?? "",
-                    CoverPaperType = materialItemCover?.ItemName ?? "",
-                    TextPaperType = materialItemText?.ItemName ?? "",
+                    VAT = glTaxRate?.TaxName ?? string.Empty,
+                    BindingType = item?.BindingStyle.ToString() ?? string.Empty,
+                    PaperSize = paperSize?.PrintPaperSize.ToString() ?? string.Empty,
+                    CoverPaperType = materialItemCover?.ItemName ?? string.Empty,
+                    TextPaperType = materialItemText?.ItemName ?? string.Empty,
                     ColorText = estimation?.TextNoOfColors ?? 0,
                     ColorCover = estimation?.CoverNoOfColor ?? 0
                 });

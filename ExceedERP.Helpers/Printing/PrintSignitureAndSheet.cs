@@ -38,7 +38,7 @@ namespace ExceedERP.Helpers.Printing
                 x.PaperSizeId == estimation.CoverPaperSizeId); // cover paper
             if (machineDetail == null)
                 return 0;
-            return (estimation.ProductQuantity * estimation.CoverNoOfColor) /
+            return (estimation.ProductQuantity * (int)estimation.CoverNoOfColor) /
                 (machineDetail.SectionUp * machineType.NumberOfColors);           
         }
         public static decimal PrintSheetText(PrintingCostEstimation estimation)
@@ -52,7 +52,7 @@ namespace ExceedERP.Helpers.Printing
                 x.PaperSizeId == estimation.TextPaperSizeId); // text paper
             if (machineDetail == null)
                 return 0;
-            return (estimation.ProductQuantity * estimation.CoverNoOfColor) /
+            return (estimation.ProductQuantity * (int)estimation.CoverNoOfColor) /
                 (machineDetail.SectionUp * machineType.NumberOfColors);
         }
     }

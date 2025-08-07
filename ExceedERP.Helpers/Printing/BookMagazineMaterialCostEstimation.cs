@@ -88,7 +88,7 @@ namespace ExceedERP.Helpers.Printing
             {
                 return -1;
             }            
-            var plateQuantity = (estimation.CoverNoOfColor) * Math.Ceiling(estimation.ProductQuantity / (machine.OutputRate * machineDetail.SectionUp)); // Rounds to the next whole number
+            var plateQuantity = ((int)estimation.CoverNoOfColor) * Math.Ceiling(estimation.ProductQuantity / (machine.OutputRate * machineDetail.SectionUp)); // Rounds to the next whole number
             return Math.Ceiling(plateQuantity * (1 + model.WastageInPercentage));
         }
 
@@ -193,7 +193,7 @@ namespace ExceedERP.Helpers.Printing
                 constant = 9000;
             else
                 constant = 8000;
-            var inkQuantity = (double)(materialCost.Quantity / constant) * estimation.CoverNoOfColor;
+            var inkQuantity = (double)(materialCost.Quantity / constant) * (int)estimation.CoverNoOfColor;
             return inkQuantity * (1 + model.WastageInPercentage);
         }
        

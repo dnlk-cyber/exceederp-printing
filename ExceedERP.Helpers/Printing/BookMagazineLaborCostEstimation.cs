@@ -217,7 +217,7 @@ namespace ExceedERP.Helpers.Printing
                     PrintingProcessId = printingProcess.PrintingProcessId,
 
                 };
-                entity.Quantity = (estimation.ProductQuantity * estimation.CoverNoOfColor) /
+                entity.Quantity = (estimation.ProductQuantity * (int)estimation.CoverNoOfColor) /
                     (machineDetail.SectionUp * machineType.NumberOfColors);
                 entity.TotalCost = entity.Quantity * entity.LaborRate;
                 db.PrintingEstimationLaborCosts.Add(entity);

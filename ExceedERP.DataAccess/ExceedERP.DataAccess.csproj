@@ -689,6 +689,10 @@
     <Compile Include="Migrations\202507291115233_FleetAndMaintenanceUpdates.Designer.cs">
       <DependentUpon>202507291115233_FleetAndMaintenanceUpdates.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202508071411407_costestimationnullable.cs" />
+    <Compile Include="Migrations\202508071411407_costestimationnullable.Designer.cs">
+      <DependentUpon>202508071411407_costestimationnullable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1157,6 +1161,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202507291115233_FleetAndMaintenanceUpdates.resx">
       <DependentUpon>202507291115233_FleetAndMaintenanceUpdates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508071411407_costestimationnullable.resx">
+      <DependentUpon>202508071411407_costestimationnullable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

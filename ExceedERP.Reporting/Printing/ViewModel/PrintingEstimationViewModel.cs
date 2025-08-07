@@ -15,7 +15,7 @@ namespace ExceedERP.Reporting.Printing.ViewModel
         public string BindingStyle { get; set; }
         public int Quantity { get; set; }
         public int TextNoOfColors { get; set; }
-        public int CoverNoOfColors { get; set; }
+        public int? CoverNoOfColors { get; set; }
         public int NoOfPages { get; set; }
         public string JobDescription { get; set; }
         public string TextPaperSize { get; set; }

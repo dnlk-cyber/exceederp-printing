@@ -56,7 +56,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Quantity = printingEstimation.ProductQuantity,
                     NumberOfPages = printingEstimation.Pages,
                     BindingStyle = printingEstimation.BindingStyle,
-                    CoverPaperSizeId = printingEstimation.CoverPaperSizeId,
+                    CoverPaperSizeId = (int)printingEstimation.CoverPaperSizeId,
                     TextPaperSizeId = printingEstimation.TextPaperSizeId,
                     TotalPrice = overAllCost.SellingPrice,
                     PrintJobType = printingEstimation.PrintJobType,
@@ -112,7 +112,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Quantity = printingEstimation.ProductQuantity,
                     NumberOfPages = printingEstimation.Pages,
                     TextPaperSizeId = printingEstimation.TextPaperSizeId,
-                    CoverPaperSizeId = printingEstimation.CoverPaperSizeId,
+                    CoverPaperSizeId = (int)printingEstimation.CoverPaperSizeId,
                     BindingStyle = printingEstimation.BindingStyle,
                     TotalPrice = overAllCost.SellingPrice,
                     
