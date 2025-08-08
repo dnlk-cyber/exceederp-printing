@@ -4,7 +4,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>Clearance Request</legend>
+<legend> @Resources.HR_EmployeeDetail_Clearance_Clearance  @Request</legend>
 @(Html.Kendo().Grid<ClearanceRequest>()
       .Name("ClearanceRequestgrid")
       .Columns(columns =>
@@ -29,7 +29,8 @@
               }
           }).Width(300);
       })
-      .ToolBar(toolbar => {
+      .ToolBar(toolbar => 
+      {
           if (HttpContext.Current.User.IsInRole("HR_Company_User"))
           {
               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
