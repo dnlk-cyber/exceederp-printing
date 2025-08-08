@@ -9186,6 +9186,10 @@
     <Content Include="Views\Dashboard\RealEstate.cshtml" />
     <Content Include="Views\Dashboard\ScoreCardDashboard.cshtml" />
     <Content Include="Views\Barcode\Index.cshtml" />
+    <Content Include="Views\Dashboard\CpmDashboard.cshtml" />
+    <Content Include="Views\Dashboard\LabDashboard.cshtml" />
+    <Content Include="Views\Dashboard\RemDashboard.cshtml" />
+    <Content Include="Views\Dashboard\ShareHolderDashboard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Bid Cancellation\" />

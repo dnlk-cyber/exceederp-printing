@@ -1,0 +1,278 @@
+﻿@using ExceedERP.Web.Controllers
+
+@{
+    ViewBag.Title = "ShareHolderDashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/dashboard.css" rel="stylesheet" />
+<div class="row">
+    <div class="col-md-4">
+        <div class="box box-solid card-box">
+            <div class="box-header with-border">
+                <h4 class="box-title">Shareholders Application Overview</h4>
+            </div>
+
+            <div class="box-body" style="height: 400px;">
+                <canvas id="Shareholders" style="height: 100% !important; width: 100% !important;"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="box box-solid card-box">
+            <div class="box-header with-border">
+                <h4 class="box-title">Shareholder Application vs First Payments </h4>
+            </div>
+
+            <div class="box-body" style="height: 400px;">
+                <canvas id="paymentStatus" style="height: 100% !important; width: 100% !important;"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- Chart 3: Project Category by Business Unit -->
+    <div class="col-md-4">
+        <div class="box box-solid card-box">
+            <div class="box-header with-border">
+                <h4 class="box-title">Application Status</h4>
+            </div>
+            <div class="box-body" style="height: 400px;">
+                <canvas id="ApplicantStatusChart" style="height: 100% !important; width: 100% !important;"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="~/Scripts/Chart.bundle.js"></script>
+<script src="~/Scripts/Chart.PieceLabel.js"></script>
+<script src="~/Scripts/chart.umd.js"></script>
+
+<script>
+    const vibrantColors = [
+        'rgba(255, 99, 132)',   // Red
+        'rgba(54, 162, 235)',   // Blue
+        'rgba(255, 206, 86)',   // Yellow
+        'rgba(75, 192, 192)',   // Green
+        'rgba(153, 102, 255)',  // Purple
+        'rgba(255, 159, 64)',   // Orange
+        'rgba(255, 99, 71)',    // Tomato
+        'rgba(124, 252, 0)',    // Lawn Green
+        'rgba(0, 255, 255)',    // Cyan
+        'rgba(255, 20, 147)',   // Deep Pink
+        'rgba(138, 43, 226)',   // Blue Violet
+        'rgba(244, 164, 96)',   // Sandy Brown
+        'rgba(0, 128, 128)',    // Teal
+        'rgba(220, 20, 60)',    // Crimson
+        'rgba(255, 140, 0)',    // Dark Orange
+        'rgba(75, 0, 130)',     // Indigo
+        'rgba(60, 179, 113)',   // Medium Sea Green
+        'rgba(0, 191, 255)',    // Deep Sky Blue
+        'rgba(218, 112, 214)',  // Orchid
+        'rgba(210, 105, 30)'    // Chocolate
+    ];
+    const vibrantBorderColors = [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)',
+        'rgba(255, 99, 71, 1)',
+        'rgba(124, 252, 0, 1)',
+        'rgba(0, 255, 255, 1)',
+        'rgba(255, 20, 147, 1)',
+        'rgba(138, 43, 226, 1)',
+        'rgba(244, 164, 96, 1)',
+        'rgba(0, 128, 128, 1)',
+        'rgba(220, 20, 60, 1)',
+        'rgba(255, 140, 0, 1)',
+        'rgba(75, 0, 130, 1)',
+        'rgba(60, 179, 113, 1)',
+        'rgba(0, 191, 255, 1)',
+        'rgba(218, 112, 214, 1)',
+        'rgba(210, 105, 30, 1)'
+    ];
+    window.chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)',
+        fuchsia: 'rgb(255, 0, 255)'
+    };
+    ShareHolderInfo();
+    SharePaymentInfo();
+    LoadApplicantStatusChart();
+    
+    function ShareHolderInfo() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("TotalShareHolders", "Dashboard", new {area = ""})',
+            success: function (result) {
+            //render
+            var ctx = document.getElementById("Shareholders").getContext('2d');
+            ctx.height = 500;
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        //label: 'Share Applicants',
+                        data: result.Data,
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
+                        borderWidth: 0.2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        //text: ['Share Applicants']
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['white', 'white', 'white', 'white', 'white'],
+                        precision: 2
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: 8,
+                        fullWidth: true,
+                        padding: 6,
+                        labels: {
+                            boxWidth:15
+                        }
+                    }
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+   function SharePaymentInfo() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("PaiedandUnpayed", "Dashboard", new { area = "" })',
+        success: function (result) {
+            var ctx = document.getElementById("paymentStatus").getContext('2d');
+            ctx.height = 500;
+
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: result.Labels, // ["Total Applied", "Total Paid"]
+                    datasets: [{
+                        label: 'Applications vs Payments',
+                        data: result.Data,     // [120, 85]
+                        backgroundColor: ['#FFA726', '#66BB6A'],
+                        borderColor: ['#FB8C00', '#388E3C'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        //text: 'Shareholder Applications vs Payments'
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                precision: 0
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Number of Applicants'
+                            }
+                        }]
+                    },
+                    legend: {
+                        display: false
+                    }
+                }
+            });
+        },
+        error: function () {
+            alert("Error loading chart data.");
+        }
+    });
+}
+    function LoadApplicantStatusChart() {
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("AplicantStatus", "Dashboard", new { area = "" })',
+        success: function (result) {
+            var ctx = document.getElementById("ApplicantStatusChart").getContext('2d');
+
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        data: result.Data,
+                        
+                        backgroundColor: vibrantColors,
+                        borderColor: vibrantBorderColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutoutPercentage: 60, // makes it a donut
+                    title: {
+                        display: true,
+                        //text: 'Shareholder Applicant Status'
+                    },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 15
+                        }
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: function (tooltipItem, data) {
+                                var label = data.labels[tooltipItem.index];
+                                var value = data.datasets[0].data[tooltipItem.index];
+                                return `${label}: ${value}`;
+                            }
+                        }
+                    }
+                }
+            });
+        },
+        error: function () {
+            alert("Error loading applicant status chart.");
+        }
+    });
+}
+
+
+    function getRandomColor() {
+        return `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`;
+    }
+
+    $(document).on('click', '.panel-heading span.clickable', function (e) {
+        var $this = $(this);
+        if (!$this.hasClass('panel-collapsed')) {
+            $this.parents('.panel').find('.panel-body').slideUp();
+            $this.addClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+        } else {
+            $this.parents('.panel').find('.panel-body').slideDown();
+            $this.removeClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+        }
+    })
+ </script>

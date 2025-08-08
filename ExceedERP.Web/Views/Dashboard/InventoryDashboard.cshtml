@@ -18,6 +18,8 @@
                 @(Html.Kendo().DropDownList()
                               .Name("StoreCode")
                               .ValuePrimitive(true)
+                              .AutoBind(false)
+                              .HtmlAttributes(new { style = "width:450px" })
                               .OptionLabel("All Stores")
                               .DataTextField("Name")
                               .DataValueField("StoreCode")
