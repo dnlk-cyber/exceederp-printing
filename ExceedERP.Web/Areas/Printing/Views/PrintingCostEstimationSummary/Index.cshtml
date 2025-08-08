@@ -339,21 +339,20 @@
     }
 
     function rejectEstimation(e) {
-            if (confirm("Are you sure to reject this checked estimation form?")) {
-             var grid = this,
+        if (confirm("Are you sure to reject this checked estimation form?")) {
+            var grid = this,
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
-        $.ajax({
-           type: "POST",
-            url: '@Url.Action("RejectEstimationSummary", "PrintingCostEstimationSummary", new { Area = "Printing" })',
-            data: { id: dataItem.PrintingEstimationSummaryId },
-            success: function (result) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("RejectEstimationSummary", "PrintingCostEstimationSummary", new { Area = "Printing" })',
+                data: { id: dataItem.PrintingEstimationSummaryId },
+                success: function (result) {
                 if (result.Success) {
                     toastr.success(result.Message);
                     $("#grid").data("kendoGrid").dataSource.read();
                 }
                 else {
                     toastr.error(result.Message);
-
                 }
            },
            error: function(result) {

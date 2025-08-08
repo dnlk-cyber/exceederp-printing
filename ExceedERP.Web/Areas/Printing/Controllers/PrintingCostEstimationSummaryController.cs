@@ -156,9 +156,12 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
             summary.IsOnlineApproved = false;
             summary.IsSendForApproval = false;
-
-            //summary.OnlineApprovedBy = User.Identity.Name;
-            //summary.OnlineApprovedTime = DateTime.Today;
+            var details = db.PrintingEstimationDetails.Where(x => x.PrintingEstimationSummaryId == summary.PrintingEstimationSummaryId).ToList();
+            foreach (var item in details)
+            {
+                ReverseEstimation(item.PrintingCostEstimationId);
+            }
+            
             summary.Status = "Rejected";
             db.Entry(summary).State = EntityState.Modified;
             db.SaveChanges();
@@ -167,6 +170,14 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             return Json(response);
 
         }
-
+        private void ReverseEstimation(int id)
+        {
+            var estimationForm = db.PrintingCostEstimations.FirstOrDefault(x => x.PrintingCostEstimationId == id);
+            estimationForm.IsOnlineTransferred = false;
+            estimationForm.IsOnlineApproved = false;
+            
+            db.Entry(estimationForm).State = EntityState.Modified;
+            db.SaveChanges();
+        }
     }
 }

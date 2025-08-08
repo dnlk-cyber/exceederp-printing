@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -324,6 +321,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 estimationForm.IsOnlineApproved = true;
                 estimationForm.OnlineApprovedBy = User.Identity.Name;
                 estimationForm.OnlineApprovedTime = DateTime.Today;
+
                 // Generates Estimation Summary
                 CreateEstimationSummary(estimationForm);
                 db.Entry(estimationForm).State = EntityState.Modified;
