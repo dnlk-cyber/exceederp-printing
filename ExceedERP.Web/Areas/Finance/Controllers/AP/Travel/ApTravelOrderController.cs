@@ -127,7 +127,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 				IsOnlineTransferredBy = apTravelOrder.IsOnlineTransferredBy,
 				OnlineTransferredTime = apTravelOrder.OnlineTransferredTime,
 				Status = apTravelOrder.Status,
-				IsOnlineApproved = apTravelOrder.IsOnlineApproved,
+                Remark = apTravelOrder.Remark,
+                IsOnlineApproved = apTravelOrder.IsOnlineApproved,
 				OnlineApprovedBy = apTravelOrder.OnlineApprovedBy,
 				OnlineApprovedTime = apTravelOrder.OnlineApprovedTime,
 				IsVoid = apTravelOrder.IsVoid,
@@ -212,8 +213,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 					
 
 					Status = apTravelOrder.Status,
+                    Remark = apTravelOrder.Remark,
 
-					ForwardedFrom = User.Identity.Name,
+                    ForwardedFrom = User.Identity.Name,
 					ForwardedTo = User.Identity.Name,
 					IsFinalApproval = apTravelOrder.IsFinalApproval,
 					CurrentApprovalStep = apTravelOrder.CurrentApprovalStep,
@@ -313,7 +315,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
 					IsOnlineTransferredBy = apTravelOrder.IsOnlineTransferredBy,
 					OnlineTransferredTime = apTravelOrder.OnlineTransferredTime,
 					Status = apTravelOrder.Status,
-					IsOnlineApproved = apTravelOrder.IsOnlineApproved,
+                    Remark = apTravelOrder.Remark,
+
+                    IsOnlineApproved = apTravelOrder.IsOnlineApproved,
 					OnlineApprovedBy = apTravelOrder.OnlineApprovedBy,
 					OnlineApprovedTime = apTravelOrder.OnlineApprovedTime,
 					IsVoid = apTravelOrder.IsVoid,
