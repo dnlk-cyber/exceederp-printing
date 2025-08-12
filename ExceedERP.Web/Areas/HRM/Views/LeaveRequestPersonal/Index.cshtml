@@ -104,53 +104,55 @@
                     items.Add().Text(Resources.HR_RequestStatus).Content(
                 @<text>
                     @(Html.Kendo().Grid<RequestesStatus>()
-                            .Name("RequestesStatusgrid_#=LeaveRequestId#")
-                            .Columns(columns =>
+                        .Name("RequestesStatusgrid_#=LeaveRequestId#")
+                        .Columns(columns =>
+                        {
+
+                            columns.Bound(c => c.DateReqStatAm).Width(120);
+                            columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutApprove").Width(200);
+                            columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                            columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                            columns.Bound(c => c.Remark).Width(100);
+                            columns.Command(command =>
                             {
+                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                command.Destroy().Text(Resources.ActionButton_Cancel);
 
-                                columns.Bound(c => c.DateReqStatAm).Width(120);
-                                columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutApprove").Width(200);
-                                columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                columns.Bound(c => c.Remark).Width(100);
-                                columns.Command(command =>
-                                {
-                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                            }).Width(400);
 
-                                }).Width(400);
+
+
+                        })
+                        .ToolBar(toolbar =>
+                        {
+                            // toolbar.Custom().Action("SendForApproval", "LeaveRequestPersonal").Text(Resources.HR_Send_For_Approval);
+                            //toolbar.Custom().Action("LeaveRequestLetter", "PrintableLetter", new { id = "#=LeaveRequestId#"}).Text("Print");
+
+
+                        })
+
+
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable()
+                        .Events(ev => ev.DataBound("onRequestesStatusDataBound"))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"RequestesStatusgrid_#=LeaveRequestId#\")");
+                                events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=LeaveRequestId#\")");
+                                events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=LeaveRequestId#\")");
+
+                            })
+                            .Model(model =>
+                            {
+                                model.Id(p => p.RequestStatusId);
+                                model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                model.Field(p => p.ApproverId).Editable(false);
+                                model.Field(p => p.ApproverDepartment).Editable(false);
 
 
                             })
-                            .ToolBar(toolbar =>
-                            {
-                                // toolbar.Custom().Action("SendForApproval", "LeaveRequestPersonal").Text(Resources.HR_Send_For_Approval);
-                                //toolbar.Custom().Action("LeaveRequestLetter", "PrintableLetter", new { id = "#=LeaveRequestId#"}).Text("Print");
-
-
-                            })
-
-
-                            .Editable(editable => editable.Mode(GridEditMode.InLine))
-                            .Scrollable()
-                            .Events(ev => ev.DataBound("onRequestesStatusDataBound"))
-                            .DataSource(dataSource => dataSource
-                                .Ajax()
-                                .Events(events =>
-                                {
-                                    events.Error("error_handler(\"RequestesStatusgrid_#=LeaveRequestId#\")");
-                                    events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=LeaveRequestId#\")");
-                                    events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=LeaveRequestId#\")");
-
-                                })
-                                .Model(model =>
-                                {
-                                    model.Id(p => p.RequestStatusId);
-                                    model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
-                                    model.Field(p => p.ApproverId).Editable(false);
-                                    model.Field(p => p.ApproverDepartment).Editable(false);
-
-                                })
                                 .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveRequestId#", referenceType = "Leave" }))
                                 .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveRequestId#", referenceType2 = "Leave" }))
                                 .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
