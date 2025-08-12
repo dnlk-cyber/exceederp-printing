@@ -18,7 +18,8 @@ namespace ExceedERP.Helpers.Common
         public static Image GetUserSignature(string userName)
         {
             byte[] byteArrayIn = null;
-            if (GlobalHelper.IsElectronicSignatureEnabled())
+
+            if (GlobalHelper.IsElectronicSignatureEnabled()&& !string.IsNullOrEmpty(userName))
             {
                 byteArrayIn = UserHelper.GetUserSignature(userName);
 
