@@ -630,36 +630,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 ModelState.AddModelError("", "Leave Days must be greater than 0!!");
                 return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
-            var entitleCurrentYear = db.LeavesEntitle.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId 
+            var entitleCurrentYear = db.LeavesEntitle.FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId
                                                 && x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
-            if (entitleCurrentYear != null && leaveRequest.Type == LeaveType.ANNUAL)
-            {
-                var totalEntitle = totalBalance;
-                var exactDeserve = GetEmployeeDeserveLeaveDays(fiscalYear.DateFrom, leaveRequest.To, entitleCurrentYear.Amount, entitleCurrentYear.Balance, totalEntitle);
-                var currentYearDeserve = GetCurrentYearDeserve(fiscalYear.DateFrom, leaveRequest.To, entitleCurrentYear.Amount);
-               
-                if (exactDeserve == 0 || leaveRequest.LeaveDays > Math.Abs(exactDeserve))
-                {
-                    ModelState.AddModelError("", $"You can't take this amount ({leaveRequest.LeaveDays}) of leave in this period at most {exactDeserve}");
-                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
-                }
-
-                var leaveRequests = db.LeaveRequest.Where(x => x.EmployeeId == leaveRequest.EmployeeId 
-                                                                && x.GlFiscalYearId == fiscalYear.GlFiscalYearId 
-                                                                && x.Type == LeaveType.ANNUAL
-                                                                && !x.IsOnlineApproved&&!x.IsVoid);
-                if (leaveRequests.Any())
-                {
-                    var leaveRequestedDays = leaveRequests.Sum(x => x.LeaveDays);
-                    var totalNeeded = leaveRequestedDays + leaveRequest.LeaveDays;
-                    if (totalNeeded > Math.Abs(exactDeserve))
-                    {
-                        ModelState.AddModelError("", $"You have other waiting requests {totalNeeded} so the sum of days exceeds your deserved amount {exactDeserve}");
-                        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
-                    }
-                }
-            }
-            else if (leaveRequest.Type == LeaveType.ANNUAL)
+            
+            if (entitleCurrentYear == null && leaveRequest.Type == LeaveType.ANNUAL)
             {
                 ModelState.AddModelError("", "You have no entitlement for this budget year");
                 return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
@@ -813,11 +787,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 ModelState.AddModelError("", "From Date field should be less or equal to To date field!!");
                 return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
             }
-            //if (leaveRequest.From < DateTime.Now.Date)
-            //{
-            //    ModelState.AddModelError("", "From date must not be a past date!!");
-            //    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
-            //}
+            
 
             var fiscalYear = db.GLFiscalYears
                 .FirstOrDefault(x => x.DateFrom <= leaveRequest.From 
@@ -1026,32 +996,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             var entitleCurrentYear = db.LeavesEntitle
                                 .FirstOrDefault(x => x.EmployeeId == leaveRequest.EmployeeId 
                                                   && x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
-            if (entitleCurrentYear != null && leaveRequest.Type == LeaveType.ANNUAL)
-            {
-                var exactDeserve = GetEmployeeDeserveLeaveDays(fiscalYear.DateFrom, leaveRequest.To, entitleCurrentYear.Amount, entitleCurrentYear.Balance, totalBalance);
-                var currentYearDeserve = GetCurrentYearDeserve(fiscalYear.DateFrom, leaveRequest.To, entitleCurrentYear.Amount);
-
-
-                if (exactDeserve == 0 || leaveRequest.LeaveDays > exactDeserve)
-                {
-                    ModelState.AddModelError("", $"You can't take this amount of leave {leaveRequest.LeaveDays} in this period your exact desrv is {exactDeserve}");
-                    return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
-                }
-
-                var leaveRequests = db.LeaveRequest.Where(x => x.EmployeeId == leaveRequest.EmployeeId 
-                && x.GlFiscalYearId == fiscalYear.GlFiscalYearId && x.Type == LeaveType.ANNUAL && !x.IsOnlineApproved);
-                if (leaveRequests.Any())
-                {
-                    var leaveRequestedDays = leaveRequests.Sum(x => x.LeaveDays);
-                    var totalNeeded = leaveRequestedDays + leaveRequest.LeaveDays;
-                    if (totalNeeded > exactDeserve)
-                    {
-                        ModelState.AddModelError("", $"You have other waiting requests so the sum of days is: {totalNeeded} exceeds your deserved amount:{exactDeserve}");
-                        return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
-                    }
-                }
-            }
-            else if (leaveRequest.Type == LeaveType.ANNUAL)
+           
+            if (entitleCurrentYear == null&&leaveRequest.Type == LeaveType.ANNUAL)
             {
                 ModelState.AddModelError("", "You have no entitlement for this budget year");
                 return Json(new[] { leaveRequest }.ToDataSourceResult(request, ModelState));
@@ -1367,7 +1313,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
             return days;
         }
-        public string GetLeaveDaysToPulate(string empId, string from, string to, string half, int hour)
+        public decimal GetLeaveDaysToPulate(string empId, string from, string to, string half, int hour)
         {
 
 
@@ -1417,12 +1363,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 {
                     
 
-                    var entitleCurrentYear = balance.FirstOrDefault(x => x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
-                    if (entitleCurrentYear != null)
-                    {
-                        exactDeserve = GetEmployeeDeserveLeaveDays(fiscalYear.DateFrom, t, entitleCurrentYear.Amount, entitleCurrentYear.Balance, totalBalance);
+                    //var entitleCurrentYear = balance.FirstOrDefault(x => x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
+                    //if (entitleCurrentYear != null)
+                    //{
+                    //    exactDeserve = GetEmployeeDeserveLeaveDays(fiscalYear.DateFrom, t, entitleCurrentYear.Amount, entitleCurrentYear.Balance, totalBalance);
 
-                    }
+                    //}
 
                 }
 
@@ -1451,7 +1397,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 days = (totalhours - somehours) / 8;
             }
             //return days;
-            return $"{days}-{exactDeserve}";
+            return days;
         }
         public decimal GetBalance()
         {
@@ -1692,7 +1638,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         //    }
         //    return isHalf;
         //}
-        public string GetTotalLeaveAmount( int empId, string from, string to)
+        public decimal GetTotalLeaveAmount( int empId, string from, string to)
         {
             if(empId ==0)
             {
@@ -1731,17 +1677,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     toDate = fiscalYear.DateTo;
                 }
 
-                var entitleCurrentYear = balance.FirstOrDefault(x => x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
-                if (entitleCurrentYear != null)
-                {
-                    exactDeserve = GetEmployeeDeserveLeaveDays(fiscalYear.DateFrom, toDate, entitleCurrentYear.Amount, entitleCurrentYear.Balance, totalBalance);
+                //var entitleCurrentYear = balance.FirstOrDefault(x => x.GlFiscalYearId == fiscalYear.GlFiscalYearId);
+                //if (entitleCurrentYear != null)
+                //{
+                //    exactDeserve = GetEmployeeDeserveLeaveDays(fiscalYear.DateFrom, toDate, entitleCurrentYear.Amount, entitleCurrentYear.Balance, totalBalance);
 
-                }
+                //}
 
             }
 
-            return $"{totalBalance}-{exactDeserve}";
-            // return totalBalance;
+            //return $"{totalBalance}-{exactDeserve}";
+            return totalBalance;
         }
         public string GetDservedExactLeaveAmount( int empId,string from,string to)
         {

@@ -63,21 +63,33 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             var ststuses = ststus.Select(s => new { Text = s.ToString(), Value = s.ToString() });
             ViewData["RequestStatus"] = ststuses;
         }
+
         public string CheckStatus(int masterId)
         {
-            var reques = db.RequestesStatus.Where(x => x.RequestId == masterId && x.ReferenceType == "Leave").FirstOrDefault();
-            if (reques != null)
+            var requestStatus = db.RequestesStatus.Where(x => x.RequestId == masterId && x.ReferenceType == "Leave").OrderByDescending(x => x.RequestStatusId).FirstOrDefault();
+            if (requestStatus != null)
             {
-                var checkApprove = db.RequestesStatus.Where(x => x.RequestId == masterId && x.ReferenceType == "Leave" && x.Status == RequestStatus.APPROVE).FirstOrDefault();
-                if (checkApprove != null)
+                if (requestStatus.Status == RequestStatus.APPROVE)
                 {
                     return "approved";
                 }
-                var deptApproval = db.RequestesStatus.Where(x => x.RequestId == masterId && x.ReferenceType == "Leave" && x.Status == RequestStatus.DEPARTMENT_APPROVAL).FirstOrDefault();
-                if (deptApproval != null)
+                else if (requestStatus.Status == RequestStatus.DEPARTMENT_APPROVAL)
                 {
                     return "Dapproved";
                 }
+                else if (requestStatus.Status == RequestStatus.WAITING_FOR_APPROVAL)
+                {
+                    return "waiting";
+                }
+                else if (requestStatus.Status == RequestStatus.PEND)
+                {
+                    return "pend";
+                }
+                else if (requestStatus.Status == RequestStatus.REJECT)
+                {
+                    return "reject";
+                }
+
                 return "false";
             }
             return "false";
@@ -134,31 +146,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
             return code;
         }
+
         public ActionResult LeaveRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
-           
-            // var leaverequest = db.LeaveRequest.ToList();
-            //List<LeaveRequest> leaves = new List<LeaveRequest>();
-            //foreach (var m in leaverequest)
-            //{
-            //    db = new ExceedDbContext();
-            //    var status = db.RequestesStatus.FirstOrDefault(x => x.Status == RequestStatus.DEPARTMENT_APPROVAL && x.RequestId == m.LeaveRequestId && x.ReferenceType == "Leave");
-            //    if (status != null)
-            //    {
-            //        leaves.Add(m);
-            //    }
-
-            //}
-
             var leaveRequestIds = db.RequestesStatus.Where(x => x.Status == RequestStatus.DEPARTMENT_APPROVAL && x.ReferenceType == "Leave").Select(x => x.RequestId);
             var leaveRequests = db.LeaveRequest.Where(x=> leaveRequestIds.Contains(x.LeaveRequestId)).ToList();
-
             var branches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-
             var placements = db.Placements.Where(x => branches.Contains(x.BranchId.ToString())).Select(x => x.EmployeeId).ToList();
-
             leaveRequests = leaveRequests.Where(x => placements.Contains(x.EmployeeId)).OrderByDescending(x=>x.RequestDate).ToList();
-
             DataSourceResult result = leaveRequests.ToDataSourceResult(request, leaveRequest => new
             {
                 LeaveRequestId = leaveRequest.LeaveRequestId,

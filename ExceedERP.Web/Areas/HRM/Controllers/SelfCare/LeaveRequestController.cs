@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 ﻿using System.Data.Entity;
 ﻿using System.Linq;
-using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain;
@@ -11,15 +10,12 @@ using ExceedERP.Core.Domain.Common;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.HRM;
 ﻿using ExceedERP.DataAccess.Context;
-﻿using ExceedERP.Web.Areas.Common.Controllers;
-﻿using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Common.HRM;
- using ExceedERP.Web.Hubs;
 using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.Global;
 using System.IO;
@@ -31,11 +27,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
     {
         private ExceedDbContext db = new ExceedDbContext();
         static ApplicationDbContext dbApplication = new ApplicationDbContext();
-
-        public static DateTime To { get; set; }
-        public static string ToAmharic { get; set; }
-        public static DateTime From { get; set; }
-        public static string FromAmharic { get; set; }
+       
         HRMInputs inputs = new HRMInputs();
         public static int EmployeeId { get; set; }
         public static bool IsForOther { get; set; }
@@ -43,11 +35,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public static List<string> reportsToEmployee = new List<string>();
         public ActionResult Index()
         {
-
             GetStatusType();
             GetPeriod();
             PopulateViewData();
-
             return View();
         }
         private void PopulateViewData()
@@ -67,23 +57,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             ViewData["branches"] = branches;
             var businessUnits = db.BusinessUnits;
             ViewData["businessUnits"] = businessUnits;
-        }
-        public void SetDate(string name, string value)
-        {
-            if (name == "FromAmharic")
-            {
-                FromAmharic = value;
-                var splitDate = FromAmharic.Split('/');
-                From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            else if (name == "ToAmharic")
-            {
-                ToAmharic = value;
-                var splitDate = ToAmharic.Split('/');
-                To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-
-
         }
         public int SetEmployee(string x)
         {
@@ -1370,12 +1343,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             {
 
 
-                FromAmharic = from;
-                var splitDatefrom = FromAmharic.Split('/');
+                var splitDatefrom = from.Split('/');
                 DateTime f = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDatefrom[0]), Convert.ToInt32(splitDatefrom[1]), Convert.ToInt32(splitDatefrom[2]));
 
-                ToAmharic = to;
-                var splitDateto = ToAmharic.Split('/');
+                var splitDateto = to.Split('/');
                 DateTime t = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateto[0]), Convert.ToInt32(splitDateto[1]), Convert.ToInt32(splitDateto[2]));
                 var count = 0;
                 double weekDays = 0;

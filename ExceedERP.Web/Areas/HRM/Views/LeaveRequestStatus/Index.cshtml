@@ -461,29 +461,6 @@
         });
     }
 
-    function onDataBound(e) {
-        var rows = e.sender.tbody.children();
-
-        for (var j = 0; j < rows.length; j++) {
-            var row = $(rows[j]);
-            var dataItem = e.sender.dataItem(row);
-            if (dataItem.IsApproved === true) {
-
-                row.css("background-color", "darkgrey");
-                row.find(".k-grid-edit").remove();
-                row.find(".k-grid-delete").remove();
-            }
-            else {
-
-                row.css("background-color", "lightgreen");
-                row.find(".k-grid-edit").show();
-                row.find(".k-grid-delete").show();
-            }
-
-
-        }
-
-    }
     
     function RefreshBranchAndBussinessUnit(e) {
         if (confirm("are you sure to refresh ")) {
