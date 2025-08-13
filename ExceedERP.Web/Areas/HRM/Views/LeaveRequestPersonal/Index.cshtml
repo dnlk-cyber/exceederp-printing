@@ -760,7 +760,8 @@
                 $(this).find(".k-grid-edit").remove();
                 $(this).find(".k-grid-delete").remove();
             }
-            else {
+            else
+            {
                 //$(this).css("background-color", "darkgrey");
                 $(this).find(".k-grid-edit").show();
                 $(this).find(".k-grid-delete").show();
@@ -770,16 +771,19 @@
         });
     }
 
-    function onRequestesStatusDataBound() {
+    function onRequestesStatusDataBound()
+    {
         var grid = this;
-        grid.tbody.find("tr[role='row']").each(function (e) {
+        grid.tbody.find("tr[role='row']").each(function (e)
+        {
             var model = grid.dataItem(this);
             if (model.Status == 0 || model.Status == 1 || model.Status == 2 || model.Status == 3 || model.Status == 4) {
                 $(this).css("background-color", "#darkgrey");
                 $(this).find(".k-grid-edit").remove();
                 $(this).find(".k-grid-delete").remove();
             }
-            else {
+            else
+            {
 
                 row.css("background-color", "lightgreen");
             }
@@ -846,19 +850,17 @@
 <script>
 
 
-    function sendForApproval(id) {
-        var recordStatus = "";
-
+    function sendForApproval(id)
+    {
         $.ajax({
             type: "POST",
             url: '@Url.Action("SendForApproval", "LeaveRequestPersonal", new { area = "HRM" })',
             data: { id: id },
             success: function(result) {
-                // toastr.warnning(result.Message);
                 alert(result.Message);
                 recordStatus = result.Status;
                 location.reload(true);
-            }, //end succ
+            }, 
             error: function(result) {
                 alert(result);
             }

@@ -514,98 +514,98 @@
 
 <script>
 
-    //function onDataBound(e) {
-    //    var grid = this;
-    //    grid.tbody.find("tr[role='row']").each(function (e) {
-    //        var model = grid.dataItem(this);
-    //        if (model.IsOnlineApproved) {
-
-    //            $(this).css("background-color", "darkgrey");
-    //            $(this).find(".k-grid-edit").remove();
-    //            $(this).find(".k-grid-delete").remove();
-    //        }
-    //        else if (model.Status === "DEPARTMENT_APPROVAL" || model.IsApproved) {
-    //            $(this).css("background-color", "limegreen");
-    //            $(this).find(".k-grid-edit").remove();
-    //            $(this).find(".k-grid-delete").remove();
-    //        }
-    //        else if (model.IsPending) {
-
-    //            $(this).css("background-color", "Orange");
-    //            $(this).find(".k-grid-edit").show();
-    //            $(this).find(".k-grid-delete").show();
-    //        }
-    //        else if (model.IsRejected) {
-
-    //            $(this).css("background-color", "LightGray");
-    //            $(this).find(".k-grid-edit").show();
-    //            $(this).find(".k-grid-delete").show();
-    //        }
-    //        else if (model.IsWaiting) {
-
-    //            $(this).css("background-color", "deepskyblue");
-    //            $(this).find(".k-grid-edit").remove();
-    //            $(this).find(".k-grid-delete").remove();
-    //        }
-    //        else {
-    //            // $(this).css("background-color", "darkgrey");
-    //            $(this).find(".k-grid-edit").show();
-    //            $(this).find(".k-grid-delete").show();
-
-
-    //        }
-    //    });
-    //}
-
     function onDataBound(e) {
-        var rows = e.sender.tbody.children();
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function (e) {
+            var model = grid.dataItem(this);
+            if (model.IsOnlineApproved) {
 
-        for (var j = 0; j < rows.length; j++) {
-            var row = $(rows[j]);
-            var dataItem = e.sender.dataItem(row);
-            if (dataItem.IsApproved === true) {
-
-                row.css("background-color", "darkgrey");
-                row.find(".k-grid-edit").remove();
-                row.find(".k-grid-delete").remove();
-
+                $(this).css("background-color", "darkgrey");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
             }
-            else if (dataItem.IsPending === true) {
-
-                row.css("background-color", "Orange");
-                row.find(".k-grid-edit").show();
-                row.find(".k-grid-delete").show();
+            else if (model.Status === "DEPARTMENT_APPROVAL" || model.IsApproved) {
+                $(this).css("background-color", "limegreen");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
             }
-            else if (dataItem.IsRejected === true) {
+            else if (model.IsPending) {
 
-                row.css("background-color", "LightGray");
-                row.find(".k-grid-edit").show();
-                row.find(".k-grid-delete").show();
+                $(this).css("background-color", "Orange");
+                $(this).find(".k-grid-edit").show();
+                $(this).find(".k-grid-delete").show();
             }
-            else if (dataItem.IsChangeInDepartment === true) {
+            else if (model.IsRejected) {
 
-                row.css("background-color", "lightblue");
-                row.find(".k-grid-edit").remove();
-                row.find(".k-grid-delete").remove();
+                $(this).css("background-color", "LightGray");
+                $(this).find(".k-grid-edit").show();
+                $(this).find(".k-grid-delete").show();
             }
-            else if (dataItem.Status === "DEPARTMENT_APPROVAL") {
+            else if (model.IsWaiting) {
 
-                row.find(".k-grid-edit").remove();
-                row.find(".k-grid-delete").remove();
-                row.css("background-color", "deepskyblue");
-
+                $(this).css("background-color", "deepskyblue");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
             }
             else {
+                $(this).find(".k-grid-edit").show();
+                $(this).find(".k-grid-delete").show();
 
-                row.css("background-color", "lightgreen");
-                row.find(".k-grid-delete").remove();
 
             }
-
-
-        }
-
+        });
     }
+
+
+    //function onDataBound(e) {
+    //    var rows = e.sender.tbody.children();
+
+    //    for (var j = 0; j < rows.length; j++) {
+    //        var row = $(rows[j]);
+    //        var dataItem = e.sender.dataItem(row);
+    //        if (dataItem.IsApproved === true) {
+
+    //            row.css("background-color", "darkgrey");
+    //            row.find(".k-grid-edit").remove();
+    //            row.find(".k-grid-delete").remove();
+
+    //        }
+    //        else if (dataItem.IsPending === true) {
+
+    //            row.css("background-color", "Orange");
+    //            row.find(".k-grid-edit").show();
+    //            row.find(".k-grid-delete").show();
+    //        }
+    //        else if (dataItem.IsRejected === true) {
+
+    //            row.css("background-color", "LightGray");
+    //            row.find(".k-grid-edit").show();
+    //            row.find(".k-grid-delete").show();
+    //        }
+    //        else if (dataItem.IsChangeInDepartment === true) {
+
+    //            row.css("background-color", "lightblue");
+    //            row.find(".k-grid-edit").remove();
+    //            row.find(".k-grid-delete").remove();
+    //        }
+    //        else if (dataItem.Status === "DEPARTMENT_APPROVAL") {
+
+    //            row.find(".k-grid-edit").remove();
+    //            row.find(".k-grid-delete").remove();
+    //            row.css("background-color", "deepskyblue");
+
+    //        }
+    //        else {
+
+    //            row.css("background-color", "lightgreen");
+    //            row.find(".k-grid-delete").remove();
+
+    //        }
+
+
+    //    }
+
+    //}
     //function onDataBound(e) {
     //    var grid = this;
     //    grid.tbody.find("tr[role='row']").each(function (e) {
