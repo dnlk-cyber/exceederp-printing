@@ -24,6 +24,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
     public class LeaveEntitleController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
+
         HRMInputs inputs = new HRMInputs();
         public ActionResult Index()
         {
@@ -33,8 +34,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         private void PopulateViewData()
         {
             var periodList = db.GLFiscalYears.ToList();
-            ViewData["PeriodList"] = periodList;// != null ? periodList.ToList() : new List<GlFiscalYear>();
-            //ViewData["EmployeeList"] = inputs.GetEmployees(User.Identity.Name);
+            ViewData["PeriodList"] = periodList;
 
             ViewData["EmployeeList"] = db.Person_Employee.ToList();
 
