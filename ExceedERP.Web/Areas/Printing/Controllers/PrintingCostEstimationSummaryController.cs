@@ -154,12 +154,14 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             Object response = null;
             var summary = db.PrintingEstimationSummaries.Find(id);
 
+            summary.IsRejected = true;
             summary.IsOnlineApproved = false;
             summary.IsSendForApproval = false;
             var details = db.PrintingEstimationDetails.Where(x => x.PrintingEstimationSummaryId == summary.PrintingEstimationSummaryId).ToList();
             foreach (var item in details)
             {
                 ReverseEstimation(item.PrintingCostEstimationId);
+                DeleteSummaryDetail(item);
             }
             
             summary.Status = "Rejected";
@@ -178,6 +180,22 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             
             db.Entry(estimationForm).State = EntityState.Modified;
             db.SaveChanges();
+        }
+        private void DeleteSummaryDetail(PrintingEstimationDetail model)
+        {
+            DeleteMargin(model.PrintingEstimationDetailId);
+            db.PrintingEstimationDetails.Remove(model);
+            db.SaveChanges();
+        }
+        private void DeleteMargin(int id)
+        {
+            var margin = db.PrintingEstimationMargins.FirstOrDefault(x => x.PrintingEstimationDetailId == id);
+            if(margin != null)
+            {
+                db.PrintingEstimationMargins.Remove(margin);
+                db.SaveChanges();
+            }
+            
         }
     }
 }

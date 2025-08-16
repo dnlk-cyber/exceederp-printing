@@ -6,11 +6,12 @@
                                       .Columns(columns =>
                                       {
                                           columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(110).Title("Customer");
+                                          columns.Bound(c => c.Status).Width(120);
                                           columns.Command(command =>
                                           {
                                               command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
                                               command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
-                                              columns.Bound(c => c.Status).Width(120);
+
                                               command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
                                           }).Width(200);
                                       })
@@ -214,7 +215,7 @@
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-            if (dataItem.IsOnlineApproved) {
+            if (dataItem.IsOnlineApproved || dataItem.IsRejected) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-approve").hide();

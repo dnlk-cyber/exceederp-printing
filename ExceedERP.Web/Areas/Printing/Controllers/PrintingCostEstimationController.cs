@@ -25,7 +25,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 Value = s.OrganizationCustomerID,
                 Text = s.TradeName
             }).ToList();
-            
+
             ViewData["PaperSizeText"] = db.PrintingPaperSizes.Select(s => new
             {
                 Value = s.PrintingPaperSizeId,
@@ -83,7 +83,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     PrintJobType = model.PrintJobType,
                     TextPaperSizeId = model.TextPaperSizeId,
                     CustomerId = model.CustomerId,
-                    
+
                     ProductQuantity = model.ProductQuantity,
                     Width = model.Width,
                     Length = model.Length,
@@ -91,7 +91,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     CoverNoOfColor = model.CoverNoOfColor,
                     CoverRequired = model.CoverRequired,
                     OnlyOneSideCover = model.OnlyOneSideCover,
-                    
+
                     DateCreated = DateTime.Today,
                     LastModified = model.LastModified,
                     CreatedBy = User.Identity.Name,
@@ -131,7 +131,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     PrintingCostEstimationId = model.PrintingCostEstimationId,
                     TextPaperSizeId = model.TextPaperSizeId,
                     CustomerId = model.CustomerId,
-                    
+
                     ProductQuantity = model.ProductQuantity,
                     Width = model.Width,
                     Length = model.Length,
@@ -139,7 +139,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     CoverNoOfColor = model.CoverNoOfColor,
                     CoverRequired = model.CoverRequired,
                     OnlyOneSideCover = model.OnlyOneSideCover,
-                   
+
                     DateCreated = model.DateCreated,
                     LastModified = model.LastModified,
                     CreatedBy = model.CreatedBy,
@@ -179,7 +179,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     PrintingCostEstimationId = model.PrintingCostEstimationId,
                     TextPaperSizeId = model.TextPaperSizeId,
                     CustomerId = model.CustomerId,
-                    
+
                     ProductQuantity = model.ProductQuantity,
                     Width = model.Width,
                     Length = model.Length,
@@ -187,7 +187,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     CoverNoOfColor = model.CoverNoOfColor,
                     CoverRequired = model.CoverRequired,
                     OnlyOneSideCover = model.OnlyOneSideCover,
-                    
+
                     DateCreated = model.DateCreated,
                     LastModified = model.LastModified,
                     CreatedBy = model.CreatedBy,
@@ -338,6 +338,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
         private void CreateEstimationSummary(PrintingCostEstimation model)
         {
             var OverAllCost = db.PrintingOverAllCosts.FirstOrDefault(x => x.PrintingCostEstimationId == model.PrintingCostEstimationId);
+
             var estimationSummary = db.PrintingEstimationSummaries.FirstOrDefault(x => x.CustomerId == model.CustomerId && !x.IsOnlineApproved);
             if (estimationSummary == null)
             {
@@ -374,6 +375,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }
             else
             {
+                estimationSummary.IsRejected = false;
+                estimationSummary.IsSendForApproval = false;
+                estimationSummary.IsOnlineApproved = false;
+                db.Entry(estimationSummary).State = EntityState.Modified;
                 PrintingEstimationDetail estimationDetail = new PrintingEstimationDetail
                 {
                     PrintJobType = model.PrintJobType,
@@ -393,6 +398,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
                 db.PrintingEstimationDetails.Add(estimationDetail);
                 db.SaveChanges();
+
             }
         }
         #endregion

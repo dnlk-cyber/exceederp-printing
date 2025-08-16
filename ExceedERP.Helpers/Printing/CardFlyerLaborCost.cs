@@ -56,23 +56,26 @@ namespace ExceedERP.Helpers.Printing
             var materialCost = db.PrintingEstimationMaterialCosts
                 .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId &&
                 x.EstimationMaterialType == EstimationMaterialType.TextPlate);
-
-            var entity = new PrintingEstimationLaborCost
+            if (materialCost != null)
             {
-                DateCreated = DateTime.Today,
-                LabourActivity = printingProcess.LabourActivity,
-                PressCategory = printingProcess.PressCategory,
-                PrintingCostEstimationId = estimation.PrintingCostEstimationId,
-                LaborRate = printingProcess.LaborRate,
-                UOM = printingProcess.UOM,
-                PrintingProcessId = printingProcess.PrintingProcessId,
-                Quantity = materialCost.Quantity
 
-            };
-            entity.TotalCost = entity.Quantity * entity.LaborRate;
-            db.PrintingEstimationLaborCosts.Add(entity);
-            db.SaveChanges();
 
+                var entity = new PrintingEstimationLaborCost
+                {
+                    DateCreated = DateTime.Today,
+                    LabourActivity = printingProcess.LabourActivity,
+                    PressCategory = printingProcess.PressCategory,
+                    PrintingCostEstimationId = estimation.PrintingCostEstimationId,
+                    LaborRate = printingProcess.LaborRate,
+                    UOM = printingProcess.UOM,
+                    PrintingProcessId = printingProcess.PrintingProcessId,
+                    Quantity = materialCost.Quantity
+
+                };
+                entity.TotalCost = entity.Quantity * entity.LaborRate;
+                db.PrintingEstimationLaborCosts.Add(entity);
+                db.SaveChanges();
+            }
         }
 
         public static void ProofingCost(PrintingCostEstimation estimation, PrintingProcess printingProcess)
@@ -103,23 +106,24 @@ namespace ExceedERP.Helpers.Printing
             var materialCost = db.PrintingEstimationMaterialCosts
                 .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId &&
                 x.EstimationMaterialType == EstimationMaterialType.TextPlate);
-
-            var entity = new PrintingEstimationLaborCost
+            if (materialCost != null)
             {
-                DateCreated = DateTime.Today,
-                LabourActivity = printingProcess.LabourActivity,
-                PressCategory = printingProcess.PressCategory,
-                PrintingCostEstimationId = estimation.PrintingCostEstimationId,
-                LaborRate = printingProcess.LaborRate,
-                UOM = printingProcess.UOM,
-                PrintingProcessId = printingProcess.PrintingProcessId,
-                Quantity = materialCost.Quantity
+                var entity = new PrintingEstimationLaborCost
+                {
+                    DateCreated = DateTime.Today,
+                    LabourActivity = printingProcess.LabourActivity,
+                    PressCategory = printingProcess.PressCategory,
+                    PrintingCostEstimationId = estimation.PrintingCostEstimationId,
+                    LaborRate = printingProcess.LaborRate,
+                    UOM = printingProcess.UOM,
+                    PrintingProcessId = printingProcess.PrintingProcessId,
+                    Quantity = materialCost.Quantity
 
-            };
-            entity.TotalCost = entity.Quantity * entity.LaborRate;
-            db.PrintingEstimationLaborCosts.Add(entity);
-            db.SaveChanges();
-
+                };
+                entity.TotalCost = entity.Quantity * entity.LaborRate;
+                db.PrintingEstimationLaborCosts.Add(entity);
+                db.SaveChanges();
+            }
         }
 
         public static void TextPrintCost(PrintingCostEstimation estimation, PrintingProcess printingProcess)
@@ -160,26 +164,28 @@ namespace ExceedERP.Helpers.Printing
             var materialCost = db.PrintingEstimationMaterialCosts
                .FirstOrDefault(x => x.PrintingCostEstimationId == estimation.PrintingCostEstimationId &&
                x.EstimationMaterialType == EstimationMaterialType.TextPaper); // text paper
-            var materialItem = db.PrintingMaterialCategoryItems
-                .FirstOrDefault(x => x.PrintingMaterialCategoryItemId == materialCost.PrintingMaterialCategoryItemId);
-            if (materialItem.PaperType == PaperType.SheetFed)
-            {
-                var entity = new PrintingEstimationLaborCost
+            if (materialCost != null)
+            {               
+                var materialItem = db.PrintingMaterialCategoryItems
+                    .FirstOrDefault(x => x.PrintingMaterialCategoryItemId == materialCost.PrintingMaterialCategoryItemId);
+                if (materialItem.PaperType == PaperType.SheetFed)
                 {
-                    DateCreated = DateTime.Today,
-                    LabourActivity = printingProcess.LabourActivity,
-                    PressCategory = printingProcess.PressCategory,
-                    PrintingCostEstimationId = estimation.PrintingCostEstimationId,
-                    LaborRate = printingProcess.LaborRate,
-                    UOM = printingProcess.UOM,
-                    PrintingProcessId = printingProcess.PrintingProcessId,
-                    Quantity = materialCost.Quantity,
-                };
-                entity.TotalCost = entity.Quantity * entity.LaborRate;
-                db.PrintingEstimationLaborCosts.Add(entity);
-                db.SaveChanges();
+                    var entity = new PrintingEstimationLaborCost
+                    {
+                        DateCreated = DateTime.Today,
+                        LabourActivity = printingProcess.LabourActivity,
+                        PressCategory = printingProcess.PressCategory,
+                        PrintingCostEstimationId = estimation.PrintingCostEstimationId,
+                        LaborRate = printingProcess.LaborRate,
+                        UOM = printingProcess.UOM,
+                        PrintingProcessId = printingProcess.PrintingProcessId,
+                        Quantity = materialCost.Quantity,
+                    };
+                    entity.TotalCost = entity.Quantity * entity.LaborRate;
+                    db.PrintingEstimationLaborCosts.Add(entity);
+                    db.SaveChanges();
+                }
             }
-
         }
         public static void TrimmingCost(PrintingCostEstimation estimation, PrintingProcess printingProcess)
         {

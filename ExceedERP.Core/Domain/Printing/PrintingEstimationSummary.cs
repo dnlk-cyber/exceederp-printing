@@ -10,6 +10,7 @@ namespace ExceedERP.Core.Domain.Printing
         public int CustomerId { get; set; }
         public bool IsClosed { get; set; }
         public bool IsCalculated { get; set; }
+        public bool IsRejected { get; set; }
     }
     public class PrintingEstimationDetail
     {
