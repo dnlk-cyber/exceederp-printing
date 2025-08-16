@@ -693,6 +693,10 @@
     <Compile Include="Migrations\202508071411407_costestimationnullable.Designer.cs">
       <DependentUpon>202508071411407_costestimationnullable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202508160735262_printingaddrejected.cs" />
+    <Compile Include="Migrations\202508160735262_printingaddrejected.Designer.cs">
+      <DependentUpon>202508160735262_printingaddrejected.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1164,6 +1168,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202508071411407_costestimationnullable.resx">
       <DependentUpon>202508071411407_costestimationnullable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508160735262_printingaddrejected.resx">
+      <DependentUpon>202508160735262_printingaddrejected.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
