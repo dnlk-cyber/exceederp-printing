@@ -1,0 +1,184 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Proforma
+@using System.Collections
+<legend>Proforma Team (Self Care) </legend>
+@(Html.Kendo().Grid<ProformaTeam>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description).Width(300).EditorTemplateName("DescriptionEditor");
+          columns.Bound(o => o.ProformaPurchaseID).Width(110).Title("Proforma No.").ClientTemplate(
+                              "# if (ProformaPurchaseID) { #" +
+                              @Html.ActionLink("#=ProformaPurchaseID#", "ProformaResultEn", "ProcurementPrint", new { area = "Procurement", Id = "#=ProformaPurchaseID#" }, new { @class = "detail-link", @target = "_blank" }).ToHtmlString()
+                              + "# } #"
+                              );
+
+          columns.Command(command => { /*command.Edit(); command.Destroy();*/ command.Custom("Sign").Click("signDocument"); }).Width(180);
+      })
+      //.Events(events => events.DataBound("onDataBound"))
+      .ToolBar(toolbar => {
+          // toolbar.Create();
+          // toolbar.Excel();
+          // toolbar.Pdf();
+      })
+     .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .Scrollable()
+   .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+            .Input(true)
+            .Numeric(false)
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+
+      .ClientDetailTemplateId("teamDetail")
+.DataSource(dataSource => dataSource
+    .Ajax()
+    .Events(ev => ev
+     .Error("error_handler(\"grid\")")
+     .RequestStart("onRequestStart(\"grid\")")
+     .RequestEnd("onRequestEnd(\"grid\")"))
+    .Model(model =>
+    {
+        model.Id(p => p.ProformaTeamId);
+
+    })
+    .Read(read => read.Action("ProformaTeams_Read", "ProformaTeamSelfCare", new { id = "#= ProformaPurchaseID #" }).Data("sendForgery"))
+    .Create(create => create.Action("ProformaTeams_Create", "ProformaTeamSelfCare", new { id = "#= ProformaPurchaseID #" }).Data("sendForgery"))
+    .Update(update => update.Action("ProformaTeams_Update", "ProformaTeamSelfCare").Data("sendForgery"))
+    .Destroy(destroy => destroy.Action("ProformaTeams_Destroy", "ProformaTeamSelfCare").Data("sendForgery"))
+))
+
+
+<script id="teamDetail" type="text/Kendo-tmpl">
+
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=ProformaTeamId#").SelectedIndex(0).Items(itemn =>
+                                                                              {
+                                                                                  itemn.Add().Text("Members").Content(
+
+                                                @<text>
+
+                                                    @(Html.Kendo().Grid<ProformaTeamMember>()
+                                                                                          .Name("ProformaTeamMember#=ProformaTeamId#")
+                                                                                          .Columns(columns =>
+                                                                                          {
+                                                                                              columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(150).EditorTemplateName("AllEmployeeSelector");
+                                                                                              columns.Bound(c => c.Title).Width(180);
+                                                                                              columns.Bound(c => c.Signed).Title("Signed ?").Width(130).ClientTemplate(
+                                                                                                        "<input type='checkbox' disabled = 'true' value='\\#= Signed\\#' " +
+                                                                                                        "\\# if (Signed) { \\#" +
+                                                                                                        "checked='checked'" +
+                                                                                                        "\\# } \\#" +
+                                                                                                        "/>"
+                                                                                                        );
+                                                                                              columns.Command(command =>
+                                                                                              {
+                                                                                                  //command.Edit();
+                                                                                                 // command.Destroy();
+                                                                                              }).Width(500);
+                                                                                          })
+                                                                                          .ToolBar(toolbar =>
+                                                                                          {
+                                                                                              //toolbar.Create();
+                                                                                          })
+                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                          .Scrollable()
+                                                                                          //.Events(x => x.DataBound("onDataBoundProformaLines"))
+                                                                                          .DataSource(dataSource => dataSource
+                                                                                              .Ajax()
+                                                                                              .Events(ev => ev
+                                                                                                  .Error("error_handler(\"ProformaTeamMember#=ProformaTeamId#\")")
+                                                                                                  .RequestStart("onRequestStart(\"ProformaTeamMember#=ProformaTeamId#\")")
+                                                                                                  .RequestEnd("onRequestEnd(\"ProformaTeamMember#=ProformaTeamId#\")"))
+                                                                                              .Model(model =>
+                                                                                              {
+                                                                                                  model.Id(p => p.ProformaTeamMemberId);
+                                                                                                  model.Field(p => p.SignedBy).Editable(false);
+                                                                                                  model.Field(p => p.Signed).Editable(false);
+                                                                                                  model.Field(p => p.SginTime).Editable(false);
+                                                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                  model.Field(p => p.LastModified).Editable(false);
+                                                                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                                                              })
+                                                                                              .Read(read => read.Action("ProformaTeamMembers_Read", "ProformaTeamMemberSelfCare", new { id = "#=ProformaTeamId#" }).Data("sendForgery"))
+                                                                                              .Create(create => create.Action("ProformaTeamMembers_Create", "ProformaTeamMemberSelfCare", new { id = "#=ProformaTeamId#" }).Data("sendForgery"))
+                                                                                              .Update(update => update.Action("ProformaTeamMembers_Update", "ProformaTeamMemberSelfCare", new { id = "#=ProformaTeamId#" }).Data("sendForgery"))
+                                                                                              .Destroy(destroy => destroy.Action("ProformaTeamMembers_Destroy", "ProformaTeamMemberSelfCare", new { id = "#=ProformaTeamId#" }).Data("sendForgery"))
+                                                                                          ).ToClientTemplate())
+
+
+                                                </text>);
+                                                 itemn.Add().Text("Remarks").Content(
+
+                                        @<text>
+
+                                            @(Html.Kendo().Grid<ProformaTeamDecision>()
+                                                                                  .Name("ProformaTeamDecision#=ProformaTeamId#")
+                                                                                  .Columns(columns =>
+                                                                                  {
+                                                                                      columns.Bound(c => c.Description).Width(180);
+                                                                                      columns.Command(command =>
+                                                                                      {
+                                                                                          command.Edit();
+                                                                                          command.Destroy();
+                                                                                      }).Width(500);
+                                                                                  })
+                                                                                  .ToolBar(toolbar =>
+                                                                                  {
+                                                                                     // toolbar.Create();
+                                                                                  })
+                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                  .Scrollable()
+                                                                                  //.Events(x => x.DataBound("onDataBoundProformaLines"))
+                                                                                  .DataSource(dataSource => dataSource
+                                                                                      .Ajax()
+                                                                                      .Events(ev => ev
+                                                                                          .Error("error_handler(\"ProformaTeamDecision#=ProformaTeamId#\")")
+                                                                                          .RequestStart("onRequestStart(\"ProformaTeamDecision#=ProformaTeamId#\")")
+                                                                                          .RequestEnd("onRequestEnd(\"ProformaTeamDecision#=ProformaTeamId#\")"))
+                                                                                      .Model(model =>
+                                                                                      {
+                                                                                          model.Id(p => p.ProformaTeamDecisionId);
+                                                                                      })
+                                                                                      .Read(read => read.Action("ProformaTeamDecisions_Read", "ProformaTeamDecisionSelfCare", new { id = "#=ProformaTeamId#" }).Data("sendForgery"))
+                                                                                      .Create(create => create.Action("ProformaTeamDecisions_Create", "ProformaTeamDecisionSelfCare", new { id = "#=ProformaTeamId#" }).Data("sendForgery"))
+                                                                                      .Update(update => update.Action("ProformaTeamDecisions_Update", "ProformaTeamDecisionSelfCare", new { id = "#=ProformaTeamId#" }).Data("sendForgery"))
+                                                                                      .Destroy(destroy => destroy.Action("ProformaTeamDecisions_Destroy", "ProformaTeamDecisionSelfCare", new { id = "#=ProformaTeamId#" }).Data("sendForgery"))
+                                                                                  ).ToClientTemplate())
+
+
+                                        </text>);
+
+
+                                                                              }).ToClientTemplate())
+</script>
+
+
+<script>
+    function signDocument(e) {
+       var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+         $.ajax({
+            type: "POST",
+             data: dataItem.ItemCode,
+             url: '@Url.Action("Sign", "ProformaTeamSelfCare")/' + dataItem.ProformaTeamId,
+            success: function (result) {
+                alert(result.Message);
+               // console.log(result);
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+        $('#grid').data('kendoGrid').dataSource.read();
+        $('#grid').data('kendoGrid').refresh();
+       // location.reload();
+
+    }
+</script>

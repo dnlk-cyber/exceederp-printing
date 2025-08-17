@@ -2286,6 +2286,9 @@
     <Compile Include="Areas\Procurement\Controllers\SelfCare\ProcurementNeedItemSelfServiceController.cs" />
     <Compile Include="Areas\Procurement\Controllers\SelfCare\ProcurementNeedSelfServiceController.cs" />
     <Compile Include="Areas\Procurement\Controllers\SelfCare\ProcurementNeedValidationSelfServiceController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\SelfCare\Proforma\ProformaTeamDecisionSelfCareController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\SelfCare\Proforma\ProformaTeamMemberSelfCareController.cs" />
+    <Compile Include="Areas\Procurement\Controllers\SelfCare\Proforma\ProformaTeamSelfCareController.cs" />
     <Compile Include="Areas\Procurement\Controllers\SelfCare\PurchaseRequisitionAttachmentSelfCareController.cs" />
     <Compile Include="Areas\Procurement\Controllers\SelfCare\ServiceRequest\ServiceRequisitionDepartmentValidationController.cs" />
     <Compile Include="Areas\Procurement\Controllers\SelfCare\ServiceRequest\ServiceRequisitionItemSelfCareController.cs" />
@@ -7332,6 +7335,8 @@
     <Content Include="Areas\Maintenance\Views\WorkShop\EditorTemplates\Stores.cshtml" />
     <Content Include="Areas\Maintenance\Views\WorkShop\EditorTemplates\VehiclePartSelector.cshtml" />
     <Content Include="Areas\Maintenance\Views\WorkShop\IndexForFleet.cshtml" />
+    <Content Include="Areas\Procurement\Views\ProformaTeamSelfCare\EditorTemplates\BankGuarantee.cshtml" />
+    <Content Include="Areas\Procurement\Views\ProformaTeamSelfCare\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
