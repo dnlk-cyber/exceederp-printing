@@ -697,6 +697,10 @@
     <Compile Include="Migrations\202508160735262_printingaddrejected.Designer.cs">
       <DependentUpon>202508160735262_printingaddrejected.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202508171419513_proformateamsign.cs" />
+    <Compile Include="Migrations\202508171419513_proformateamsign.Designer.cs">
+      <DependentUpon>202508171419513_proformateamsign.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1171,6 +1175,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202508160735262_printingaddrejected.resx">
       <DependentUpon>202508160735262_printingaddrejected.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508171419513_proformateamsign.resx">
+      <DependentUpon>202508171419513_proformateamsign.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
