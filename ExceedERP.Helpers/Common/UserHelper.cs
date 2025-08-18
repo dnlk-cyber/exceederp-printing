@@ -341,7 +341,7 @@ namespace ExceedERP.Helpers.Common
             string userid = "";
         //   string signatures = null;
             byte[] img = null;
-            int bufferSize = 6164;
+            int bufferSize = 81392;
             // The BLOB byte[] buffer to be filled by GetBytes.  
             byte[] signatures = new byte[bufferSize];
             // The bytes returned from GetBytes.  
