@@ -7,13 +7,14 @@
                                   columns.Bound(c => c.JobNo).Width(100);
                                   columns.Bound(c => c.JobTypeName).Width(120);
                                   columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
-                                  columns.Bound(c => c.Quantity).Width(100);
+                                  columns.Bound(c => c.Quantity).Width(100).Format("{0:n4}");
 
                                   columns.Command(command =>
                                   {
                                       command.Edit().Text(" ");
                                       command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
                                       command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                                      command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("handleReject");
                                       command.Destroy().Text(" ");
 
                                   }).Width(180);
@@ -299,6 +300,29 @@
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("ApproveBOQ", "FurnitureBillOfQuantity", new { Area = "Manufacturing" })',
+                data: { id: dataItem.FurnitureBillOfQuantityId},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
+    function handleReject(e) {
+        if (confirm("Are you sure you want to approve?")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("RejectBOQ", "FurnitureBillOfQuantity", new { Area = "Manufacturing" })',
                 data: { id: dataItem.FurnitureBillOfQuantityId},
                 success: function (result) {
                     if (result.Success) {

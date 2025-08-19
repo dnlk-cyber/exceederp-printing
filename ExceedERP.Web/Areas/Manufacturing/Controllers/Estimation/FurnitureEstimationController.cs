@@ -54,7 +54,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                }).ToList();
             ViewData["Categorys"] = categories;
             var myCustomers = db.OrganizationCustomers.Select(
-                s => new {
+                s => new
+                {
                     Code = s.OrganizationCustomerID,
                     Name = s.TradeName
                 }).ToList();
@@ -92,13 +93,13 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 
         public ActionResult EstimationForms_Read([DataSourceRequest]DataSourceRequest request)
         {
-            
+
             IQueryable<FurnitureEstimationForm> estimationforms = db.FurnitureEstimationForms;
-            
+
             DataSourceResult result = estimationforms.ToDataSourceResult(request, model => new FurnitureEstimationForm
             {
                 FurnitureEstimationId = model.FurnitureEstimationId,
-                CustomerId = model.CustomerId,               
+                CustomerId = model.CustomerId,
                 JobTypeId = model.JobTypeId,
                 Quantity = model.Quantity,
                 IsOnlineTransferred = model.IsOnlineTransferred,
@@ -122,7 +123,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 SendForApprovalTime = model.SendForApprovalTime,
                 Status = model.Status,
                 VoidBy = model.VoidBy,
-                VoidTime = model.VoidTime,  
+                VoidTime = model.VoidTime,
                 IsMarginAssigned = model.IsMarginAssigned,
                 JobCreated = model.JobCreated
             });
@@ -161,11 +162,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
         private void Delete(int id)
         {
             var estimation = db.FurnitureEstimationForms.Find(id);
-            if(estimation != null)
+            if (estimation != null)
             {
                 var labor = db.FurnitureLaborCosts.Where(x => x.EstimationFormId == estimation.FurnitureEstimationId).ToList();
                 var material = db.FurnitureMaterialCosts.Where(x => x.FurnitureEstimationId == estimation.FurnitureEstimationId).ToList();
-                if(labor.Any() && material.Any())
+                if (labor.Any() && material.Any())
                 {
                     db.FurnitureLaborCosts.RemoveRange(labor);
                     db.FurnitureMaterialCosts.RemoveRange(material);
@@ -250,6 +251,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             {
                 estimation.IsOnlineTransferred = true;
                 estimation.IsOnlineTransferredBy = User.Identity.Name;
+                estimation.Status = "Checked";
                 estimation.OnlineTransferredTime = DateTime.Today;
 
                 db.Entry(estimation).State = EntityState.Modified;
@@ -266,28 +268,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 
         }
 
-        public JsonResult RejectEstimation(int id)
-        {
-            var estimation = db.EstimationForms.Find(id);
-            object response = null;
-
-            if (estimation != null)
-            {
-                estimation.IsChecked = false;
-                db.EstimationForms.Attach(estimation);
-                db.Entry(estimation).State = EntityState.Modified;
-                db.SaveChanges();
-                response = new { Success = true, Message = "Estimation has been rejected Successfully!" };
-
-            }
-            else
-            {
-                response = new { Success = false, Message = "Estimation not found!" };
-            }
-
-            return Json(response);
-
-        }
+        
         public JsonResult ApproveEstimationForm(int id)
         {
             Object response = null;
@@ -298,6 +279,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 estimationForm.IsOnlineApproved = true;
                 estimationForm.OnlineApprovedBy = User.Identity.Name;
                 estimationForm.OnlineApprovedTime = DateTime.Today;
+                estimationForm.Status = "Approved";
                 // Generates Estimation Summary
                 CreateEstimationSummary(estimationForm);
                 db.Entry(estimationForm).State = EntityState.Modified;
@@ -311,11 +293,28 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             }
             return Json(response);
         }
+        public JsonResult RejectEstimationForm(int id)
+        {
+            Object response = null;
+            var estimationForm = db.FurnitureEstimationForms.Find(id);
+
+            estimationForm.IsOnlineApproved = false;
+            estimationForm.IsOnlineTransferred = false;
+            estimationForm.Status = "Rejected";
+            estimationForm.OnlineApprovedBy = User.Identity.Name;
+            estimationForm.OnlineApprovedTime = DateTime.Today;
+            
+            db.Entry(estimationForm).State = EntityState.Modified;
+            db.SaveChanges();
+            response = new { Success = true, Message = "Successfully Approved!" };
+
+            return Json(response);
+        }
         private void CreateEstimationSummary(FurnitureEstimationForm furnitureEstimationForm)
         {
             var OverAllCost = db.FurnitureOverallCosts.FirstOrDefault(x => x.FurnitureEstimationId == furnitureEstimationForm.FurnitureEstimationId);
             var estimationSummary = db.EstimationSummaries.FirstOrDefault(x => x.CustomerId == furnitureEstimationForm.CustomerId && !x.IsCalculated);
-            if(estimationSummary == null)
+            if (estimationSummary == null)
             {
                 EstimationSummary summary = new EstimationSummary
                 {
@@ -363,7 +362,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 db.EstimationDetails.Add(estimationDetail);
                 db.SaveChanges();
             }
-            
+
         }
         public JsonResult ApproveEstimation(int id)
         {
@@ -371,7 +370,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             object response = null;
             if (estimation != null)
             {
-                if(estimation.IsChecked)
+                if (estimation.IsChecked)
                 {
                     estimation.IsApproved = true;
                     estimation.ApprovedBy = User.Identity.Name;
@@ -400,12 +399,12 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                         var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);
                         if (tax != null)
                         {
-                             beforeTax = estimation.Quantity * oc.EstimatedNetPrice;
-                             withTax = beforeTax + (beforeTax * Convert.ToDecimal(tax.CalculatedRate));
-                             vat = withTax - beforeTax;
+                            beforeTax = estimation.Quantity * oc.EstimatedNetPrice;
+                            withTax = beforeTax + (beforeTax * Convert.ToDecimal(tax.CalculatedRate));
+                            vat = withTax - beforeTax;
                         }
                     }
-                            var proformaItem = new FurniturePFProformaItems();
+                    var proformaItem = new FurniturePFProformaItems();
                     proformaItem.FurniturePFProformaItemsId = proformaItem.FurniturePFProformaItemsId;
                     proformaItem.FurnitureProformaId = proforma.FurnitureProformaId;
                     proformaItem.FurnitureProformaId = proforma.FurnitureProformaId;
@@ -414,13 +413,13 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                     proformaItem.UnitPrice = (decimal)oc?.EstimatedNetPrice;
                     proformaItem.BeforeTax = beforeTax;
                     proformaItem.TotalPrice = withTax;
-                    proformaItem.Size = estimation.Size ;
+                    proformaItem.Size = estimation.Size;
                     proformaItem.Tax = vat;
-                    
+
                     db.FurniturePFProformaItems.Add(proformaItem);
                     db.SaveChanges();
                     response = new { Success = true, Message = "Estimation has been checked Successfully!" };
-                }    
+                }
                 else
                 {
                     response = new { Success = false, Message = "Estimation not found!" };

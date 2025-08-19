@@ -377,6 +377,26 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             }
             return Json(response);
         }
+        public JsonResult RejectBOQ(int id)
+        {
+            object response = null;
+            var billOfQuantity = db.FurnitureBillOfQuantities.Find(id);
+            if (billOfQuantity != null)
+            {               
+                billOfQuantity.IsOnlineApproved = false;
+                billOfQuantity.IsSendForApproval = false;
+                billOfQuantity.Status = "Rejected";
+                db.FurnitureBillOfQuantities.Attach(billOfQuantity);
+                db.Entry(billOfQuantity).State = EntityState.Modified;
+                db.SaveChanges();                
+                response = new { Success = true, Message = "Successfully Rejected" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something is wrong!" };
+            }
+            return Json(response);
+        }
 
         private void GenerateEstimation(FurnitureBillOfQuantity billOfQuantity)
         {
