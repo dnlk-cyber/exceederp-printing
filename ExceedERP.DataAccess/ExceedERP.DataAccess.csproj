@@ -701,6 +701,10 @@
     <Compile Include="Migrations\202508171419513_proformateamsign.Designer.cs">
       <DependentUpon>202508171419513_proformateamsign.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202508201123063_estimationsummary.cs" />
+    <Compile Include="Migrations\202508201123063_estimationsummary.Designer.cs">
+      <DependentUpon>202508201123063_estimationsummary.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1178,6 +1182,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202508171419513_proformateamsign.resx">
       <DependentUpon>202508171419513_proformateamsign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508201123063_estimationsummary.resx">
+      <DependentUpon>202508201123063_estimationsummary.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

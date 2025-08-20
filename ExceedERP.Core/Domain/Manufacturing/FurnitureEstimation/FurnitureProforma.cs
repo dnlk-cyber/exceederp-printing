@@ -67,6 +67,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
     {
         Cash,
         Credit,
-        Advance
+        Advance,
+        Negotiation 
     }
 }

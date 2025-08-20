@@ -16,7 +16,7 @@ namespace ExceedERP.Reporting.Furniture.ViewModel
         public decimal TransportCost { get; set; }
         public decimal SellingPrice { get; set; }
     }
-    public class FurnitureProformaViewModel
+    public class FurnitureProformaViewModel : FurnitureCommonViewModel
     {
         public string CustomerName { get; set; }
         public int ProformaNo { get; set; }

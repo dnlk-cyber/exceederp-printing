@@ -41,6 +41,7 @@ namespace ExceedERP.Core.Domain.Manufacturing.FurnitureEstimation
         public decimal AdministrativeCost { get; set; }
         [Display(Name = "Total Cost")]
         public decimal GrandTotalCost { get; set; }
+        public decimal ProfitMargin { get; set; }
         //Fk
         public int EstimationSummaryId { get; set; }
         

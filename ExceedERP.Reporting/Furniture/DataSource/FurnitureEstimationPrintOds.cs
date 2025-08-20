@@ -29,7 +29,13 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                     Date = estimation.DateCreated,
                     EstimationNo = estimation.FurnitureEstimationId,
                     JobType = jobType?.JobTypeName ?? "",
-                    Quantity = estimation.Quantity
+                    Quantity = estimation.Quantity,
+                    ApprovedBy = estimation.OnlineApprovedBy,
+                    ApprovedDate = estimation.OnlineApprovedTime,
+                    CheckedBy = estimation.IsOnlineTransferredBy,
+                    CheckedDate = estimation.OnlineTransferredTime,
+                    CreatedBy = estimation.CreatedBy,
+                    DateCreated = estimation.DateCreated,
                 };
             }
             return vm;

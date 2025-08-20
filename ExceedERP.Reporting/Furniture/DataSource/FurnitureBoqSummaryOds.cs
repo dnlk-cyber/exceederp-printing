@@ -27,7 +27,13 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                     CustomerName = customer?.TradeName ?? "",
                     JobType = jobType?.JobTypeName ?? "",
                     JobCode = boq.JobNo,
-                    Quantity = boq.Quantity
+                    Quantity = boq.Quantity,
+                    ApprovedBy = boq.OnlineApprovedBy,
+                    ApprovedDate = boq.OnlineApprovedTime,
+                    CheckedBy = boq.SendForApprovalBy,
+                    CheckedDate = boq.SendForApprovalTime,
+                    CreatedBy = boq.CreatedBy,
+                    DateCreated = boq.DateCreated,
                 };
 
             }

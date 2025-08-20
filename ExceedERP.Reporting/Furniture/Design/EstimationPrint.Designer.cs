@@ -44,6 +44,15 @@ namespace ExceedERP.Reporting.Furniture.Design
             Telerik.Reporting.TableGroup tableGroup33 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.TableGroup tableGroup34 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.TableGroup tableGroup35 = new Telerik.Reporting.TableGroup();
+            Telerik.Reporting.TableGroup tableGroup36 = new Telerik.Reporting.TableGroup();
+            Telerik.Reporting.TableGroup tableGroup37 = new Telerik.Reporting.TableGroup();
+            Telerik.Reporting.TableGroup tableGroup38 = new Telerik.Reporting.TableGroup();
+            Telerik.Reporting.TableGroup tableGroup39 = new Telerik.Reporting.TableGroup();
+            Telerik.Reporting.TableGroup tableGroup40 = new Telerik.Reporting.TableGroup();
+            Telerik.Reporting.TableGroup tableGroup41 = new Telerik.Reporting.TableGroup();
+            Telerik.Reporting.TableGroup tableGroup42 = new Telerik.Reporting.TableGroup();
+            Telerik.Reporting.TableGroup tableGroup43 = new Telerik.Reporting.TableGroup();
+            Telerik.Reporting.TableGroup tableGroup44 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.ReportParameter reportParameter1 = new Telerik.Reporting.ReportParameter();
             Telerik.Reporting.Drawing.StyleRule styleRule1 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.StyleRule styleRule2 = new Telerik.Reporting.Drawing.StyleRule();
@@ -69,6 +78,12 @@ namespace ExceedERP.Reporting.Furniture.Design
             this.textBox47 = new Telerik.Reporting.TextBox();
             this.textBox54 = new Telerik.Reporting.TextBox();
             this.textBox55 = new Telerik.Reporting.TextBox();
+            this.textBox86 = new Telerik.Reporting.TextBox();
+            this.textBox87 = new Telerik.Reporting.TextBox();
+            this.textBox74 = new Telerik.Reporting.TextBox();
+            this.textBox75 = new Telerik.Reporting.TextBox();
+            this.textBox68 = new Telerik.Reporting.TextBox();
+            this.textBox70 = new Telerik.Reporting.TextBox();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.table1 = new Telerik.Reporting.Table();
             this.textBox6 = new Telerik.Reporting.TextBox();
@@ -119,6 +134,15 @@ namespace ExceedERP.Reporting.Furniture.Design
             this.textBox53 = new Telerik.Reporting.TextBox();
             this.textBox56 = new Telerik.Reporting.TextBox();
             this.textBox57 = new Telerik.Reporting.TextBox();
+            this.table6 = new Telerik.Reporting.Table();
+            this.textBox69 = new Telerik.Reporting.TextBox();
+            this.textBox71 = new Telerik.Reporting.TextBox();
+            this.table7 = new Telerik.Reporting.Table();
+            this.textBox72 = new Telerik.Reporting.TextBox();
+            this.textBox73 = new Telerik.Reporting.TextBox();
+            this.table8 = new Telerik.Reporting.Table();
+            this.textBox84 = new Telerik.Reporting.TextBox();
+            this.textBox85 = new Telerik.Reporting.TextBox();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.pbOrgLogo = new Telerik.Reporting.PictureBox();
             this.txtOrgName = new Telerik.Reporting.TextBox();
@@ -127,6 +151,7 @@ namespace ExceedERP.Reporting.Furniture.Design
             this.textBox12 = new Telerik.Reporting.TextBox();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
             this.sharedods = new Telerik.Reporting.ObjectDataSource();
+            this.objectDataSource1 = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // textBox1
@@ -260,33 +285,75 @@ namespace ExceedERP.Reporting.Furniture.Design
             // textBox59
             // 
             this.textBox59.Name = "textBox59";
-            this.textBox59.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.78472220897674561D), Telerik.Reporting.Drawing.Unit.Inch(0.19999998807907105D));
+            this.textBox59.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6263889074325562D), Telerik.Reporting.Drawing.Unit.Inch(0.19999977946281433D));
             this.textBox59.StyleName = "";
             // 
             // textBox47
             // 
             this.textBox47.Name = "textBox47";
-            this.textBox47.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.78472220897674561D), Telerik.Reporting.Drawing.Unit.Inch(0.1597222238779068D));
+            this.textBox47.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6263889074325562D), Telerik.Reporting.Drawing.Unit.Inch(0.15972204506397247D));
             this.textBox47.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox47.Value = "= Fields.CustomerName";
             // 
             // textBox54
             // 
             this.textBox54.Name = "textBox54";
-            this.textBox54.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.013888955116272D), Telerik.Reporting.Drawing.Unit.Inch(0.1597222238779068D));
+            this.textBox54.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.0710428953170776D), Telerik.Reporting.Drawing.Unit.Inch(0.1597222238779068D));
             this.textBox54.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox54.Value = "Estimation No:";
             // 
             // textBox55
             // 
             this.textBox55.Name = "textBox55";
-            this.textBox55.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.78472220897674561D), Telerik.Reporting.Drawing.Unit.Inch(0.1597222238779068D));
+            this.textBox55.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.4039572477340698D), Telerik.Reporting.Drawing.Unit.Inch(0.15972203016281128D));
             this.textBox55.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox55.Value = "= Fields.EstimationNo";
             // 
+            // textBox86
+            // 
+            this.textBox86.Name = "textBox86";
+            this.textBox86.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.54954016208648682D), Telerik.Reporting.Drawing.Unit.Inch(0.25573533773422241D));
+            this.textBox86.Style.Font.Underline = true;
+            this.textBox86.Value = "Created By:";
+            // 
+            // textBox87
+            // 
+            this.textBox87.Name = "textBox87";
+            this.textBox87.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.5504597425460815D), Telerik.Reporting.Drawing.Unit.Inch(0.25573533773422241D));
+            this.textBox87.Style.Font.Underline = true;
+            this.textBox87.Value = "= Fields.CreatedBy";
+            // 
+            // textBox74
+            // 
+            this.textBox74.Name = "textBox74";
+            this.textBox74.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.72329437732696533D), Telerik.Reporting.Drawing.Unit.Inch(0.25573539733886719D));
+            this.textBox74.Style.Font.Underline = true;
+            this.textBox74.Value = "Approved By:";
+            // 
+            // textBox75
+            // 
+            this.textBox75.Name = "textBox75";
+            this.textBox75.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.3766658306121826D), Telerik.Reporting.Drawing.Unit.Inch(0.25573539733886719D));
+            this.textBox75.Style.Font.Underline = true;
+            this.textBox75.Value = "= Fields.ApprovedBy";
+            // 
+            // textBox68
+            // 
+            this.textBox68.Name = "textBox68";
+            this.textBox68.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.64367735385894775D), Telerik.Reporting.Drawing.Unit.Inch(0.25573539733886719D));
+            this.textBox68.Style.Font.Underline = true;
+            this.textBox68.Value = "Checked By:";
+            // 
+            // textBox70
+            // 
+            this.textBox70.Name = "textBox70";
+            this.textBox70.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.4563226699829102D), Telerik.Reporting.Drawing.Unit.Inch(0.25573539733886719D));
+            this.textBox70.Style.Font.Underline = true;
+            this.textBox70.Value = "= Fields.CheckedBy";
+            // 
             // detailSection1
             // 
-            this.detailSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(3.3999605178833008D);
+            this.detailSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(5.0000004768371582D);
             this.detailSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.table1,
             this.table2,
@@ -295,18 +362,21 @@ namespace ExceedERP.Reporting.Furniture.Design
             this.textBox27,
             this.textBox28,
             this.table4,
-            this.table5});
+            this.table5,
+            this.table6,
+            this.table7,
+            this.table8});
             this.detailSection1.Name = "detailSection1";
             // 
             // table1
             // 
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.71999996900558472D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.71999996900558472D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.71999996900558472D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.71999996900558472D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.71999996900558472D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.71999990940093994D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.71999990940093994D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.71999990940093994D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.71999990940093994D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.71999990940093994D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999998807907105D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999998807907105D)));
             this.table1.Body.SetCellContent(0, 0, this.textBox6);
             this.table1.Body.SetCellContent(0, 1, this.textBox7);
             this.table1.Body.SetCellContent(0, 2, this.textBox8);
@@ -417,12 +487,12 @@ namespace ExceedERP.Reporting.Furniture.Design
             // 
             // table2
             // 
-            this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.74094045162200928D)));
-            this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.67844045162200928D)));
+            this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.74094033241271973D)));
+            this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.6784403920173645D)));
             this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.61594057083129883D)));
-            this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.86456078290939331D)));
+            this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.86456084251403809D)));
             this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D)));
-            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999995827674866D)));
+            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999992847442627D)));
             this.table2.Body.SetCellContent(0, 0, this.textBox13);
             this.table2.Body.SetCellContent(0, 1, this.textBox15);
             this.table2.Body.SetCellContent(0, 2, this.textBox17);
@@ -522,15 +592,15 @@ namespace ExceedERP.Reporting.Furniture.Design
             // 
             // table3
             // 
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0833331346511841D)));
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.48611113429069519D)));
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.78472226858139038D)));
-            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D)));
-            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D)));
-            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.159722238779068D)));
-            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D)));
-            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D)));
-            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0833330154418945D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.48611116409301758D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.78472220897674561D)));
+            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
+            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
+            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.1597222238779068D)));
+            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
+            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
+            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
             this.table3.Body.SetCellContent(2, 0, this.textBox21);
             this.table3.Body.SetCellContent(2, 1, this.textBox23);
             this.table3.Body.SetCellContent(2, 2, this.textBox25);
@@ -779,9 +849,9 @@ namespace ExceedERP.Reporting.Furniture.Design
             // 
             // table4
             // 
-            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.78472220897674561D)));
-            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.78472220897674561D)));
-            this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.159722238779068D)));
+            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.78472143411636353D)));
+            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.6263889074325562D)));
+            this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.15972192585468292D)));
             this.table4.Body.SetCellContent(0, 0, this.textBox46);
             this.table4.Body.SetCellContent(0, 1, this.textBox50);
             tableGroup27.Name = "group13";
@@ -809,7 +879,7 @@ namespace ExceedERP.Reporting.Furniture.Design
             tableGroup30.Groupings.Add(new Telerik.Reporting.Grouping(null));
             tableGroup30.Name = "detailTableGroup2";
             this.table4.RowGroups.Add(tableGroup30);
-            this.table4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.5694444179534912D), Telerik.Reporting.Drawing.Unit.Inch(0.519444465637207D));
+            this.table4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.4111104011535645D), Telerik.Reporting.Drawing.Unit.Inch(0.51944386959075928D));
             // 
             // textBox46
             // 
@@ -821,7 +891,7 @@ namespace ExceedERP.Reporting.Furniture.Design
             // textBox50
             // 
             this.textBox50.Name = "textBox50";
-            this.textBox50.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.78472220897674561D), Telerik.Reporting.Drawing.Unit.Inch(0.1597222238779068D));
+            this.textBox50.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.6263889074325562D), Telerik.Reporting.Drawing.Unit.Inch(0.15972205996513367D));
             this.textBox50.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox50.Value = "= Fields.Quantity";
             // 
@@ -835,10 +905,10 @@ namespace ExceedERP.Reporting.Furniture.Design
             // 
             // table5
             // 
-            this.table5.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0138890743255615D)));
-            this.table5.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.7847219705581665D)));
-            this.table5.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.159722238779068D)));
-            this.table5.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
+            this.table5.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.071041464805603D)));
+            this.table5.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.4039572477340698D)));
+            this.table5.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.15972195565700531D)));
+            this.table5.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999971985816956D)));
             this.table5.Body.SetCellContent(0, 0, this.textBox51);
             this.table5.Body.SetCellContent(0, 1, this.textBox53);
             this.table5.Body.SetCellContent(1, 0, this.textBox56);
@@ -857,7 +927,7 @@ namespace ExceedERP.Reporting.Furniture.Design
             this.textBox57,
             this.textBox54,
             this.textBox55});
-            this.table5.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.6999998092651367D), Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D));
+            this.table5.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4D), Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D));
             this.table5.Name = "table5";
             tableGroup34.Name = "group11";
             tableGroup35.Name = "group12";
@@ -866,26 +936,28 @@ namespace ExceedERP.Reporting.Furniture.Design
             tableGroup33.Groupings.Add(new Telerik.Reporting.Grouping(null));
             tableGroup33.Name = "detailTableGroup2";
             this.table5.RowGroups.Add(tableGroup33);
-            this.table5.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.7986109256744385D), Telerik.Reporting.Drawing.Unit.Inch(0.519444465637207D));
+            this.table5.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.474998950958252D), Telerik.Reporting.Drawing.Unit.Inch(0.51944386959075928D));
             // 
             // textBox51
             // 
+            this.textBox51.Format = "{0:d}";
             this.textBox51.Name = "textBox51";
-            this.textBox51.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.013888955116272D), Telerik.Reporting.Drawing.Unit.Inch(0.159722238779068D));
+            this.textBox51.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.0710428953170776D), Telerik.Reporting.Drawing.Unit.Inch(0.1597222238779068D));
             this.textBox51.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox51.Value = "Date:";
             // 
             // textBox53
             // 
+            this.textBox53.Format = "{0:d}";
             this.textBox53.Name = "textBox53";
-            this.textBox53.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.78472220897674561D), Telerik.Reporting.Drawing.Unit.Inch(0.1597222238779068D));
+            this.textBox53.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.4039572477340698D), Telerik.Reporting.Drawing.Unit.Inch(0.15972203016281128D));
             this.textBox53.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
-            this.textBox53.Value = "= Fields.Date";
+            this.textBox53.Value = "= Fields.DateCreated";
             // 
             // textBox56
             // 
             this.textBox56.Name = "textBox56";
-            this.textBox56.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.013888955116272D), Telerik.Reporting.Drawing.Unit.Inch(0.19999998807907105D));
+            this.textBox56.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.0710428953170776D), Telerik.Reporting.Drawing.Unit.Inch(0.19999998807907105D));
             this.textBox56.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox56.StyleName = "";
             this.textBox56.Value = "Type of Job:";
@@ -893,10 +965,133 @@ namespace ExceedERP.Reporting.Furniture.Design
             // textBox57
             // 
             this.textBox57.Name = "textBox57";
-            this.textBox57.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.78472220897674561D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox57.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.4039572477340698D), Telerik.Reporting.Drawing.Unit.Inch(0.19999982416629791D));
             this.textBox57.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox57.StyleName = "";
             this.textBox57.Value = "= Fields.JobType";
+            // 
+            // table6
+            // 
+            this.table6.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.64367711544036865D)));
+            this.table6.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.4563225507736206D)));
+            this.table6.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.21426458656787872D)));
+            this.table6.Body.SetCellContent(0, 0, this.textBox69);
+            this.table6.Body.SetCellContent(0, 1, this.textBox71);
+            tableGroup36.Name = "tableGroup5";
+            tableGroup36.ReportItem = this.textBox68;
+            tableGroup37.Name = "tableGroup6";
+            tableGroup37.ReportItem = this.textBox70;
+            this.table6.ColumnGroups.Add(tableGroup36);
+            this.table6.ColumnGroups.Add(tableGroup37);
+            this.table6.DataSource = this.headerOds;
+            this.table6.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
+            this.textBox69,
+            this.textBox71,
+            this.textBox68,
+            this.textBox70});
+            this.table6.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.2000198364257812D), Telerik.Reporting.Drawing.Unit.Inch(4.3000001907348633D));
+            this.table6.Name = "table6";
+            tableGroup38.Groupings.Add(new Telerik.Reporting.Grouping(null));
+            tableGroup38.Name = "detailTableGroup2";
+            this.table6.RowGroups.Add(tableGroup38);
+            this.table6.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999999046325684D), Telerik.Reporting.Drawing.Unit.Inch(0.4699999988079071D));
+            // 
+            // textBox69
+            // 
+            this.textBox69.Name = "textBox69";
+            this.textBox69.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.64367735385894775D), Telerik.Reporting.Drawing.Unit.Inch(0.21426457166671753D));
+            this.textBox69.Style.Font.Underline = true;
+            this.textBox69.Value = "Date:";
+            // 
+            // textBox71
+            // 
+            this.textBox71.Format = "{0:g}";
+            this.textBox71.Name = "textBox71";
+            this.textBox71.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.4563226699829102D), Telerik.Reporting.Drawing.Unit.Inch(0.21426457166671753D));
+            this.textBox71.Style.Font.Underline = true;
+            this.textBox71.Value = "= Fields.ApprovedDate";
+            // 
+            // table7
+            // 
+            this.table7.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.72329449653625488D)));
+            this.table7.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.376665472984314D)));
+            this.table7.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.21426458656787872D)));
+            this.table7.Body.SetCellContent(0, 0, this.textBox72);
+            this.table7.Body.SetCellContent(0, 1, this.textBox73);
+            tableGroup39.Name = "tableGroup5";
+            tableGroup39.ReportItem = this.textBox74;
+            tableGroup40.Name = "tableGroup6";
+            tableGroup40.ReportItem = this.textBox75;
+            this.table7.ColumnGroups.Add(tableGroup39);
+            this.table7.ColumnGroups.Add(tableGroup40);
+            this.table7.DataSource = this.headerOds;
+            this.table7.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
+            this.textBox72,
+            this.textBox73,
+            this.textBox74,
+            this.textBox75});
+            this.table7.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.40001916885376D), Telerik.Reporting.Drawing.Unit.Inch(4.3000001907348633D));
+            this.table7.Name = "table7";
+            tableGroup41.Groupings.Add(new Telerik.Reporting.Grouping(null));
+            tableGroup41.Name = "detailTableGroup2";
+            this.table7.RowGroups.Add(tableGroup41);
+            this.table7.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999603271484375D), Telerik.Reporting.Drawing.Unit.Inch(0.4699999988079071D));
+            // 
+            // textBox72
+            // 
+            this.textBox72.Name = "textBox72";
+            this.textBox72.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.72329437732696533D), Telerik.Reporting.Drawing.Unit.Inch(0.21426458656787872D));
+            this.textBox72.Style.Font.Underline = true;
+            this.textBox72.Value = "Date:";
+            // 
+            // textBox73
+            // 
+            this.textBox73.Format = "{0:g}";
+            this.textBox73.Name = "textBox73";
+            this.textBox73.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.3766658306121826D), Telerik.Reporting.Drawing.Unit.Inch(0.21426458656787872D));
+            this.textBox73.Style.Font.Underline = true;
+            this.textBox73.Value = "= Fields.ApprovedDate";
+            // 
+            // table8
+            // 
+            this.table8.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.54954004287719727D)));
+            this.table8.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.550459623336792D)));
+            this.table8.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.21426461637020111D)));
+            this.table8.Body.SetCellContent(0, 0, this.textBox84);
+            this.table8.Body.SetCellContent(0, 1, this.textBox85);
+            tableGroup42.Name = "tableGroup5";
+            tableGroup42.ReportItem = this.textBox86;
+            tableGroup43.Name = "tableGroup6";
+            tableGroup43.ReportItem = this.textBox87;
+            this.table8.ColumnGroups.Add(tableGroup42);
+            this.table8.ColumnGroups.Add(tableGroup43);
+            this.table8.DataSource = this.headerOds;
+            this.table8.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
+            this.textBox84,
+            this.textBox85,
+            this.textBox86,
+            this.textBox87});
+            this.table8.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.0090737962163985E-05D), Telerik.Reporting.Drawing.Unit.Inch(4.3000001907348633D));
+            this.table8.Name = "table8";
+            tableGroup44.Groupings.Add(new Telerik.Reporting.Grouping(null));
+            tableGroup44.Name = "detailTableGroup2";
+            this.table8.RowGroups.Add(tableGroup44);
+            this.table8.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999999046325684D), Telerik.Reporting.Drawing.Unit.Inch(0.4699999988079071D));
+            // 
+            // textBox84
+            // 
+            this.textBox84.Name = "textBox84";
+            this.textBox84.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.54954016208648682D), Telerik.Reporting.Drawing.Unit.Inch(0.21426466107368469D));
+            this.textBox84.Style.Font.Underline = true;
+            this.textBox84.Value = "Date:";
+            // 
+            // textBox85
+            // 
+            this.textBox85.Format = "{0:g}";
+            this.textBox85.Name = "textBox85";
+            this.textBox85.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.5504597425460815D), Telerik.Reporting.Drawing.Unit.Inch(0.21426466107368469D));
+            this.textBox85.Style.Font.Underline = true;
+            this.textBox85.Value = "= Fields.DateCreated.Date.Date";
             // 
             // pageHeaderSection1
             // 
@@ -979,6 +1174,14 @@ namespace ExceedERP.Reporting.Furniture.Design
             this.sharedods.DataMember = "GetOrganization";
             this.sharedods.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.OrganizationObjectDataSource);
             this.sharedods.Name = "sharedods";
+            // 
+            // objectDataSource1
+            // 
+            this.objectDataSource1.DataMember = "ProformaHeader";
+            this.objectDataSource1.DataSource = typeof(ExceedERP.Reporting.Furniture.DataSource.FurnitureProformaPrintOds);
+            this.objectDataSource1.Name = "objectDataSource1";
+            this.objectDataSource1.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(int), "= Parameters.id.Value")});
             // 
             // EstimationPrint
             // 
@@ -1116,5 +1319,21 @@ namespace ExceedERP.Reporting.Furniture.Design
         private Telerik.Reporting.TextBox txtOrgName;
         private Telerik.Reporting.TextBox textBox61;
         private Telerik.Reporting.TextBox textBox60;
+        private Telerik.Reporting.Table table6;
+        private Telerik.Reporting.TextBox textBox69;
+        private Telerik.Reporting.TextBox textBox71;
+        private Telerik.Reporting.TextBox textBox68;
+        private Telerik.Reporting.TextBox textBox70;
+        private Telerik.Reporting.ObjectDataSource objectDataSource1;
+        private Telerik.Reporting.Table table7;
+        private Telerik.Reporting.TextBox textBox72;
+        private Telerik.Reporting.TextBox textBox73;
+        private Telerik.Reporting.TextBox textBox74;
+        private Telerik.Reporting.TextBox textBox75;
+        private Telerik.Reporting.Table table8;
+        private Telerik.Reporting.TextBox textBox84;
+        private Telerik.Reporting.TextBox textBox85;
+        private Telerik.Reporting.TextBox textBox86;
+        private Telerik.Reporting.TextBox textBox87;
     }
 }

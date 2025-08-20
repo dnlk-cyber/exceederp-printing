@@ -29,7 +29,13 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                     DeliveryDate = proforma.DeliveryDate,
                     ModeOfPayment = proforma.ModeOfPayment,
                     PriceValidityPeriod = proforma.PriceValidityPeriod,
-                    ProformaNo = proforma.FurnitureProformaInvoiceId,                    
+                    ProformaNo = proforma.FurnitureProformaInvoiceId,
+                    ApprovedBy = proforma.OnlineApprovedBy,
+                    ApprovedDate = proforma.OnlineApprovedTime,
+                    CheckedBy = proforma.SendForApprovalBy,
+                    CheckedDate = proforma.SendForApprovalTime,
+                    CreatedBy = proforma.CreatedBy,
+                    DateCreated = proforma.DateCreated,
                 };
             }
             return vm;
@@ -49,13 +55,13 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                     var glTaxRate = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == item.GLTaxRateID);
                     list.Add(new FurnitureProformaItemViewModel
                     {
-                        JobType = jobType.JobTypeName,
+                        JobType = jobType?.JobTypeName ?? "",
                         Quantity = item.Quantity,
                         SellingPrice= item.TotalPrice,
                         TransportCost = item.TransportCost,
                         UnitPriceBeforeVAT = item.UnitPriceBeforeVAT,
                         UOM = item.UnitOfMeasurment,
-                        VAT = glTaxRate.CalculatedRate
+                        VAT = glTaxRate?.CalculatedRate ?? 0
                     });
 
                 }

@@ -11,10 +11,12 @@ namespace ExceedERP.Reporting.Furniture.ViewModel
     {
         public string JobNo { get; set; }
         public string CustomerName { get; set; }
-        public string JobType { get; set; }
+        public string JobType { get; set; } 
         public decimal Quantity { get; set; }
         public decimal TotalPrice { get; set; }
         public decimal Transport { get; set; }
         public TypeOfPayment PaymentType { get; set; }
     }
+
+    
 }
