@@ -7337,6 +7337,7 @@
     <Content Include="Areas\Maintenance\Views\WorkShop\IndexForFleet.cshtml" />
     <Content Include="Areas\Procurement\Views\ProformaTeamSelfCare\EditorTemplates\BankGuarantee.cshtml" />
     <Content Include="Areas\Procurement\Views\ProformaTeamSelfCare\Index.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurniturePrint\EstimationSummary.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

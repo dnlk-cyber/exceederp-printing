@@ -40,7 +40,7 @@
                                     .Items(itemn =>
                                     {
                                         itemn.Add().Text("Detail").Content(@<text>
-                                            <a href='@Url.Action("Proforma", "FurniturePrint")/?id=#=EstimationSummaryId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                                            <a href='@Url.Action("EstimationSummary", "FurniturePrint")/?id=#=EstimationSummaryId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
                                             @Detail()</text>);
                                                 itemn.Add().Text("Cost Summary")
                                     .Content(
@@ -222,7 +222,7 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-            url: '@Url.Action("RejectEstimation", "EstimationForm", new { Area = "Printing" })',
+            url: '@Url.Action("RejectEstimationSummary", "EstimationForm", new { Area = "Printing" })',
             data: { id: dataItem.EstimationFormId },
             success: function (result) {
                 if (result.Success) {

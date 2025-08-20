@@ -13,7 +13,6 @@ using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Manufacturing.ProductionFollowUp;
 using ExceedERP.Web.Areas.Manufacturing.Models;
-using ExceedERP.Web.Areas.Manufacturing.Controllers.ProductionFollowUp.ViewModel;
 
 namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
 {

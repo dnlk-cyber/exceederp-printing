@@ -190,7 +190,10 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                     JobTypeId = standardob.FurnitureStandardJobTypeId,
                     CustomerId = customerId,
                     Quantity = quantity,
-                    Description = description
+                    Description = description,
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Now,
+                    Status = "Created"
                 };
                 db.FurnitureEstimationForms.Add(estimation);
                 db.SaveChanges();
@@ -252,7 +255,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                 estimation.IsOnlineTransferred = true;
                 estimation.IsOnlineTransferredBy = User.Identity.Name;
                 estimation.Status = "Checked";
-                estimation.OnlineTransferredTime = DateTime.Today;
+                estimation.OnlineTransferredTime = DateTime.Now;
 
                 db.Entry(estimation).State = EntityState.Modified;
                 db.SaveChanges();
@@ -301,14 +304,27 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             estimationForm.IsOnlineApproved = false;
             estimationForm.IsOnlineTransferred = false;
             estimationForm.Status = "Rejected";
-            estimationForm.OnlineApprovedBy = User.Identity.Name;
-            estimationForm.OnlineApprovedTime = DateTime.Today;
             
+            // reverse BOQ if necessary
+            //ReverseBOQ(estimationForm.FurnitureBillOfQuantityId);
             db.Entry(estimationForm).State = EntityState.Modified;
             db.SaveChanges();
-            response = new { Success = true, Message = "Successfully Approved!" };
+            response = new { Success = true, Message = "Successfully Rejected!" };
 
             return Json(response);
+        }
+
+        private void ReverseBOQ(int id)
+        {
+            var fBOQ = db.FurnitureBillOfQuantities.FirstOrDefault(x => x.FurnitureBillOfQuantityId == id);
+            if(fBOQ != null)
+            {
+                fBOQ.IsOnlineApproved = false;
+                fBOQ.IsSendForApproval = false;
+                fBOQ.Status = "Rejected";
+                db.Entry(fBOQ).State = EntityState.Modified;
+                db.SaveChanges();
+            }
         }
         private void CreateEstimationSummary(FurnitureEstimationForm furnitureEstimationForm)
         {

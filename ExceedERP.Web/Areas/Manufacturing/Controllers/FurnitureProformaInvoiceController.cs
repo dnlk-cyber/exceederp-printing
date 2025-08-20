@@ -177,6 +177,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             if (proforma != null)
             {
                 proforma.IsSendForApproval = true;
+                proforma.Status = "Checked";
                 proforma.SendForApprovalBy = User.Identity.Name;
                 proforma.SendForApprovalTime = DateTime.Today;
                 db.Entry(proforma).State = EntityState.Modified;
@@ -199,6 +200,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 if (proformaItems.Any())
                 {
                     proformaInvoice.IsOnlineApproved = true;
+                    proformaInvoice.Status = "Approved";
                     proformaInvoice.OnlineApprovedBy = User.Identity.Name;
                     proformaInvoice.OnlineApprovedTime = DateTime.Now;
 
@@ -207,6 +209,37 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
                     
                     response = new { Success = true, Message = "Proforma Successfully Approved" };
+
+                }
+                else
+                {
+                    response = new { Success = false, Message = "Something's Wrong!, Proforma Item Not Found!" };
+                }
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something's Wrong!, Proforma Not Found!" };
+            }
+            return Json(response);
+        }
+        public JsonResult RejectProforma(int id)
+        {
+            Object response = null;
+            var proformaInvoice = db.FurnitureProformaInvoices.Find(id);
+            if (proformaInvoice != null)
+            {
+                var proformaItems = db.FurnitureProformaInvoiceItems.Where(x => x.FurnitureProformaInvoiceId == proformaInvoice.FurnitureProformaInvoiceId).ToList();
+                if (proformaItems.Any())
+                {
+                    proformaInvoice.IsOnlineApproved = false;
+                    proformaInvoice.IsSendForApproval = false;
+                    proformaInvoice.Status = "Rejected";
+                   
+                    db.Entry(proformaInvoice).State = EntityState.Modified;
+                    db.SaveChanges();
+
+
+                    response = new { Success = true, Message = "Proforma Successfully Rejected" };
 
                 }
                 else

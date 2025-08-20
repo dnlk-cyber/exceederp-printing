@@ -12,11 +12,13 @@
         columns.Bound(c => c.ModeOfPayment).Width(100);
         //columns.Bound(c => c.AdvancePaymentInPercent).Title("Advance Payment(%)").Width(100);
         columns.Bound(c => c.Remark).Width(90);
+        columns.Bound(c => c.Status).Width(100);
         columns.Command(command =>
         {
             command.Edit().Text(" ");
             command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
             command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+            command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("handleReject");
             command.Destroy().Text(" ");
 
         }).Width(200);
@@ -29,7 +31,7 @@
     .Filterable()
     .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
     .Scrollable(s => s.Height(400))
-    
+
     .DataSource(dataSource => dataSource
         .Ajax()
         .Sort(sort => sort.Add(e => e.FurnitureProformaInvoiceId).Descending())
@@ -166,7 +168,7 @@
         masterDataItem = masterGrid.dataItem(masterRow);
         codeid = masterDataItem.FurnitureProformaInvoiceId;
         isApproved = masterDataItem.IsOnlineApproved;
-        isChecked = masterDataItem.IsOnlineTransferred;
+        isChecked = masterDataItem.IsSendForApproval;
         if (isChecked || isApproved) {
             $(".k-grid-add", "#grid_" + codeid).hide();
             
@@ -223,7 +225,29 @@
             });
         }
     }
-
+    function handleReject(e) {
+        if (confirm("Are you sure you want to approve?")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("RejectProforma", "FurnitureProformaInvoice", new { Area = "Manufacturing" })',
+                data: { id: dataItem.FurnitureProformaInvoiceId},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
     function onChildDataBound(e) {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
         var grid = this;
@@ -231,6 +255,7 @@
             var dataItem = grid.dataItem(this);
             if (isChecked == true || isApproved) {
                 $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-delete").hide();
                 $(this).find(".k-grid-delete").hide();
             }
 

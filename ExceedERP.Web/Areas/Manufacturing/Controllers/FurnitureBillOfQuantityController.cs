@@ -410,6 +410,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     CustomerId = billOfQuantity.CustomerId,
                     Quantity = billOfQuantity.Quantity,
                     FurnitureBillOfQuantityId = billOfQuantity.FurnitureBillOfQuantityId,
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Now,
 
                 };
                 db.FurnitureEstimationForms.Add(estimation);

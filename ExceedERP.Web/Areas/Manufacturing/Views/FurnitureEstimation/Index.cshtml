@@ -11,6 +11,7 @@
                                 columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Width(110).Title("Customer");
                                 columns.Bound(c => c.Quantity).Width(100);
                                 columns.Bound(c => c.Description).Width(80);
+                                columns.Bound(c => c.Status).Width(100);
 
                                 columns.Command(command =>
                                 {
@@ -308,7 +309,7 @@
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-delete").hide();
                 $(this).find(".k-grid-approve").show();
-
+                $(this).find(".k-grid-reject").show();
             }
             else {
                 $(this).find(".k-grid-approve").hide();
