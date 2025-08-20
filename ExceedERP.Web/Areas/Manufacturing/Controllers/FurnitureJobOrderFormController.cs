@@ -230,7 +230,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     jobOrder.IsSendForApproval = true;
                     jobOrder.SendForApprovalBy = User.Identity.Name;
                     jobOrder.SendForApprovalTime = DateTime.Today;
-
+                    jobOrder.Status = "Checked";
                     db.FurnitureJobOrderForms.Attach(jobOrder);
                     db.Entry(jobOrder).State = EntityState.Modified;
                     db.SaveChanges();
@@ -270,13 +270,36 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 jobOrder.IsOnlineApproved = true;
                 jobOrder.OnlineApprovedBy = User.Identity.Name;
                 jobOrder.OnlineApprovedTime = DateTime.Today;
-                
+                jobOrder.Status = "Approved";
                 db.FurnitureJobOrderForms.Attach(jobOrder);
                 db.Entry(jobOrder).State = EntityState.Modified;
                 db.SaveChanges();
                 //--Generate Productions--//
                 GenerateProduction(jobOrder);
                 response = new { Success = true, Message = "Successfully Approved and Created Production!" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "Something is wrong!" };
+            }
+            return Json(response);
+        }
+
+        public JsonResult RejectJobOrder(int id)
+        {
+            object response = null;
+            var jobOrder = db.FurnitureJobOrderForms.Find(id);
+            if (jobOrder != null)
+            {
+                jobOrder.IsOnlineApproved = false;
+                jobOrder.IsSendForApproval = false;
+                jobOrder.Status = "Rejected";
+               
+                db.FurnitureJobOrderForms.Attach(jobOrder);
+                db.Entry(jobOrder).State = EntityState.Modified;
+                db.SaveChanges();
+               
+                response = new { Success = true, Message = "Successfully Rejected!" };
             }
             else
             {

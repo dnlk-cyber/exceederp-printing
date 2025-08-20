@@ -41,7 +41,6 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                 ModifiedBy = furnitureProformaInvoiceItem.ModifiedBy,
                 FurnitureProformaInvoiceId = furnitureProformaInvoiceItem.FurnitureProformaInvoiceId,
                 TotalPrice = furnitureProformaInvoiceItem.TotalPrice,
-                TransportCost = furnitureProformaInvoiceItem.TransportCost,
                 FurnitureEstimationId = furnitureProformaInvoiceItem.FurnitureEstimationId,
                 IsActive = furnitureProformaInvoiceItem.IsActive,
                 GLTaxRateID = furnitureProformaInvoiceItem.GLTaxRateID
@@ -82,7 +81,6 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     CreatedBy = User.Identity.Name,                    
                     FurnitureProformaInvoiceId = proformaId,
                     FurnitureEstimationId = model.FurnitureEstimationId,
-                    TransportCost = model.TransportCost,
                     GLTaxRateID = model.GLTaxRateID
                 };
                 entity.TotalPrice = entity.UnitPriceWithVAT * entity.Quantity;
@@ -126,7 +124,6 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     CreatedBy = User.Identity.Name,
                     FurnitureProformaInvoiceId = model.FurnitureProformaInvoiceId,
                     FurnitureEstimationId = model.FurnitureEstimationId,
-                    TransportCost = model.TransportCost,
                     GLTaxRateID = model.GLTaxRateID
 
                 };
@@ -159,7 +156,6 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     CreatedBy = furnitureProformaInvoiceItem.CreatedBy,
                     ModifiedBy = furnitureProformaInvoiceItem.ModifiedBy,
                     FurnitureProformaInvoiceId = furnitureProformaInvoiceItem.FurnitureProformaInvoiceId,
-                    TransportCost = furnitureProformaInvoiceItem.TransportCost
                 };
 
                 db.FurnitureProformaInvoiceItems.Attach(entity);

@@ -10,7 +10,9 @@
         columns.Bound(c => c.DeliveryPeriod).Width(120);
         columns.Bound(c => c.PriceValidityPeriod).Width(120);
         columns.Bound(c => c.ModeOfPayment).Width(100);
-        //columns.Bound(c => c.AdvancePaymentInPercent).Title("Advance Payment(%)").Width(100);
+        columns.Bound(c => c.TransporCost).Width(100).Title("Transport");
+        columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Value", "Text").Width(100).Title("VAT");
+        columns.Bound(c => c.TransportCostTotal).Width(100).Title("Transport With VAT");
         columns.Bound(c => c.Remark).Width(90);
         columns.Bound(c => c.Status).Width(100);
         columns.Command(command =>
@@ -49,17 +51,19 @@
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                .Name("tab_#=FurnitureProformaInvoiceId#")
-                .Items(item1 =>
-                {
-                    item1.Add().Text("Proforma Item")
-                    .Content(
-                    @<text>
-                        <a href='@Url.Action("Proforma", "FurniturePrint")/?id=#=FurnitureProformaInvoiceId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                                        .Name("tab_#=FurnitureProformaInvoiceId#")
+                                        .Items(item1 =>
+                                        {
+                                            item1.Add().Text("Proforma Item")
+                                            .Content(
+                                            @<text>
+                                                # if (IsSendForApproval) { #
+                                                <a href='@Url.Action("Proforma", "FurniturePrint")/?id=#=FurnitureProformaInvoiceId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                                                # } #
 
-                        @ProformaItem();
-                    </text>);
-                        }).ToClientTemplate())
+                                                @ProformaItem();
+                                            </text>);
+                                                }).ToClientTemplate())
 </script>
 
 
@@ -79,7 +83,6 @@
                   columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Value", "Text").Title("Tax Type").Width(120);
 
                   columns.Bound(c => c.UnitPriceWithVAT).Width(100);
-                  columns.Bound(c => c.TransportCost).Width(100);
                   columns.Bound(c => c.TotalPrice).Title("Selling Price").Width(100);
                   columns.Bound(c => c.Remark).Width(100);
 

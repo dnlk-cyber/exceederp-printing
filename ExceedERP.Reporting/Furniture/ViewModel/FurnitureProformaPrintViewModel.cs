@@ -23,5 +23,14 @@ namespace ExceedERP.Reporting.Furniture.ViewModel
         public DateTime DeliveryDate { get; set; }
         public int PriceValidityPeriod { get; set; }
         public string ModeOfPayment { get; set; }
+        public decimal TransportCost { get; set; }
+        public string VAT { get; set; }
+        public decimal VATAmount { get; set; }
+
+        public decimal TransportCostWithVAT { get; set; }
+    }
+    public class FurnitureTotalViewModel
+    {
+        public decimal Total { get; set; }
     }
 }

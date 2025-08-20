@@ -41,102 +41,80 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
         public ActionResult FurnitureProformaInvoices_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<FurnitureProformaInvoice> furnitureproformainvoices = db.FurnitureProformaInvoices;
-            DataSourceResult result = furnitureproformainvoices.ToDataSourceResult(request, furnitureProformaInvoice => new FurnitureProformaInvoice
-            {
-                FurnitureProformaInvoiceId = furnitureProformaInvoice.FurnitureProformaInvoiceId,
-
-                CustomerId = furnitureProformaInvoice.CustomerId,
-                DeliveryPeriod = furnitureProformaInvoice.DeliveryPeriod,
-                DeliveryDate = furnitureProformaInvoice.DeliveryDate,
-                PriceValidityPeriod = furnitureProformaInvoice.PriceValidityPeriod,
-                ModeOfPayment = furnitureProformaInvoice.ModeOfPayment,
-                Remark = furnitureProformaInvoice.Remark,
-                Status = furnitureProformaInvoice.Status,
-                IsVoid = furnitureProformaInvoice.IsVoid,
-                VoidBy = furnitureProformaInvoice.VoidBy,
-                VoidTime = furnitureProformaInvoice.VoidTime,
-                IsOnlineApproved = furnitureProformaInvoice.IsOnlineApproved,
-                OnlineApprovedBy = furnitureProformaInvoice.OnlineApprovedBy,
-                OnlineApprovedTime = furnitureProformaInvoice.OnlineApprovedTime,
-                IsOnlineTransferred = furnitureProformaInvoice.IsOnlineTransferred,
-                IsOnlineTransferredBy = furnitureProformaInvoice.IsOnlineTransferredBy,
-                OnlineTransferredTime = furnitureProformaInvoice.OnlineTransferredTime,
-                IsSendForApproval = furnitureProformaInvoice.IsSendForApproval,
-                OrgBranchName = furnitureProformaInvoice.OrgBranchName,
-                SendForApprovalBy = furnitureProformaInvoice.SendForApprovalBy,
-                SendForApprovalTime = furnitureProformaInvoice.SendForApprovalTime,
-                DateCreated = furnitureProformaInvoice.DateCreated,
-                LastModified = furnitureProformaInvoice.LastModified,
-                CreatedBy = furnitureProformaInvoice.CreatedBy,
-                ModifiedBy = furnitureProformaInvoice.ModifiedBy,
-                PaymentType = furnitureProformaInvoice.PaymentType,
-                HaveEstimation = furnitureProformaInvoice.HaveEstimation,
-                IsExistingCustomer = furnitureProformaInvoice.IsExistingCustomer,
-                AdvancePaymentInPercent = furnitureProformaInvoice.AdvancePaymentInPercent,                
-            });
-
-            return Json(result);
+            return Json(furnitureproformainvoices.ToDataSourceResult(request));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult FurnitureProformaInvoices_Create([DataSourceRequest]DataSourceRequest request, FurnitureProformaInvoice furnitureProformaInvoice)
+        public ActionResult FurnitureProformaInvoices_Create([DataSourceRequest]DataSourceRequest request, FurnitureProformaInvoice model)
         {
             if (ModelState.IsValid)
             {
+                var glTax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GLTaxRateID);
+
                 var entity = new FurnitureProformaInvoice
                 {
 
-                    CustomerId = furnitureProformaInvoice.CustomerId,
-                    DeliveryPeriod = furnitureProformaInvoice.DeliveryPeriod,
-                    DeliveryDate = furnitureProformaInvoice.DeliveryDate,
-                    PriceValidityPeriod = furnitureProformaInvoice.PriceValidityPeriod,
-                    ModeOfPayment = furnitureProformaInvoice.ModeOfPayment,
-                    Remark = furnitureProformaInvoice.Remark,
-                    AdvancePaymentInPercent = furnitureProformaInvoice.AdvancePaymentInPercent,
+                    CustomerId = model.CustomerId,
+                    DeliveryPeriod = model.DeliveryPeriod,
+                    DeliveryDate = model.DeliveryDate,
+                    PriceValidityPeriod = model.PriceValidityPeriod,
+                    ModeOfPayment = model.ModeOfPayment,
+                    Remark = model.Remark,
+                    AdvancePaymentInPercent = model.AdvancePaymentInPercent,
                     DateCreated = DateTime.Today,
                     CreatedBy = User.Identity.Name,
+                    GLTaxRateID = model.GLTaxRateID,
+                    TransporCost = model.TransporCost,
+                   
                 };
-
+                entity.TransportCostTotal = model.TransporCost * (1 + glTax?.CalculatedRate ?? 0);
                 db.FurnitureProformaInvoices.Add(entity);
                 db.SaveChanges();
-                furnitureProformaInvoice.FurnitureProformaInvoiceId = entity.FurnitureProformaInvoiceId;
+                model.FurnitureProformaInvoiceId = entity.FurnitureProformaInvoiceId;
 
             }
 
-            return Json(new[] { furnitureProformaInvoice }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         //private void GeneratePerformaItem()
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult FurnitureProformaInvoices_Update([DataSourceRequest]DataSourceRequest request, FurnitureProformaInvoice furnitureProformaInvoice)
+        public ActionResult FurnitureProformaInvoices_Update([DataSourceRequest]DataSourceRequest request, FurnitureProformaInvoice model)
         {
             if (ModelState.IsValid)
             {
+                var glTax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == model.GLTaxRateID);
+
                 var entity = new FurnitureProformaInvoice
                 {
-                    FurnitureProformaInvoiceId = furnitureProformaInvoice.FurnitureProformaInvoiceId,
+                    FurnitureProformaInvoiceId = model.FurnitureProformaInvoiceId,
 
-                    CustomerId = furnitureProformaInvoice.CustomerId,
-                    DeliveryPeriod = furnitureProformaInvoice.DeliveryPeriod,
-                    DeliveryDate = furnitureProformaInvoice.DeliveryDate,
-                    PriceValidityPeriod = furnitureProformaInvoice.PriceValidityPeriod,
-                    ModeOfPayment = furnitureProformaInvoice.ModeOfPayment,
-                    Remark = furnitureProformaInvoice.Remark,
+                    CustomerId = model.CustomerId,
+                    DeliveryPeriod = model.DeliveryPeriod,
+                    DeliveryDate = model.DeliveryDate,
+                    PriceValidityPeriod = model.PriceValidityPeriod,
+                    ModeOfPayment = model.ModeOfPayment,
+                    Remark = model.Remark,
 
-                    DateCreated = furnitureProformaInvoice.DateCreated,
+                    DateCreated = model.DateCreated,
                     LastModified = DateTime.Today,
-                    CreatedBy = furnitureProformaInvoice.CreatedBy,
+                    CreatedBy = model.CreatedBy,
                     ModifiedBy = User.Identity.Name,
-                    AdvancePaymentInPercent = furnitureProformaInvoice.AdvancePaymentInPercent,
+                    AdvancePaymentInPercent = model.AdvancePaymentInPercent,
+                    GLTaxRateID = model.GLTaxRateID,
+                    TransporCost = model.TransporCost,
+                    TransportCostTotal = model.TransportCostTotal
                 };
+
+                entity.TransportCostTotal = model.TransporCost * (1 + glTax?.CalculatedRate ?? 0);
 
                 db.FurnitureProformaInvoices.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
             }
 
-            return Json(new[] { furnitureProformaInvoice }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { model }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]

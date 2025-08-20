@@ -33,5 +33,10 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             ViewBag.Id = id;
             return View();
         }
+        public ActionResult FurnitureJobOrder(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
     }
 }

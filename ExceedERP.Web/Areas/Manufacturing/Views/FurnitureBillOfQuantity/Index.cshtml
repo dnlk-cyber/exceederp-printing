@@ -45,22 +45,27 @@
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                                                        .Name("grid_#=FurnitureBillOfQuantityId#")
-                                                                        .Items(item1 =>
-                                                                        {
-                                                                            item1.Add().Text("Material").Content(@<text>
-                                                                                <a href='@Url.Action("FurnitureBoqPrint", "FurniturePrint")/?id=#=FurnitureBillOfQuantityId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                .Name("grid_#=FurnitureBillOfQuantityId#")
+                .Items(item1 =>
+                {
+                    item1.Add().Text("Material").Content(@<text>
+                        #if(IsSendForApproval){#
+                        <a href='@Url.Action("FurnitureBoqPrint", "FurniturePrint")/?id=#=FurnitureBillOfQuantityId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
 
-                                                                                @Material()
-                                                                            </text>);
-                                                                                    item1.Add().Text("Labor").Content(@<text>
-                                                                                        @Labor()
-                                                                                    </text>);
-                                                                                            item1.Add().Text("Job Design").Content(@<text>
-                                                                                                <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=FurnitureBillOfQuantityId#)" />
-                                                                                                @BoqDocs()
-                                                                                            </text>);
-                                                                                                }).ToClientTemplate())
+                        #}#
+
+                        @Material()
+                    </text>);
+                            item1.Add().Text("Labor").Content(@<text>
+                                @Labor()
+                            </text>);
+                                    item1.Add().Text("Job Design").Content(@<text>
+                                        #if(true){#
+                                        <input type="button" class="btn btn-primary fa fa-plus" value="Add File" onclick="UploadCompanyDoc(#=FurnitureBillOfQuantityId#)" />
+                                        #}#
+                                        @BoqDocs()
+                                    </text>);
+                                        }).ToClientTemplate())
 </script>
 
 @helper Material()
