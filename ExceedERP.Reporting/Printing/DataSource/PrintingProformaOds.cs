@@ -40,8 +40,9 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     PaymentType = proformaHead.PaymentType.ToString(),
                     TransportCost = proformaHead.TransporCost,
                     VAT = glTax?.TaxName ?? string.Empty,
-                    TotalTransportCost = proformaHead.TransportCostTotal
-                    
+                    TotalTransportCost = proformaHead.TransportCostTotal,
+                    VATAmount =proformaHead.TransporCost * glTax?.CalculatedRate ?? 0,
+
                 };
 
             }
@@ -97,7 +98,23 @@ namespace ExceedERP.Reporting.Printing.DataSource
             }
             return list;
         }
-
-
+        
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public PrintTotalViewModel GetTotal(int id)
+        {
+            var proformaHead = db.PrintingProformaInvoices.Find(id);
+            if (proformaHead != null)
+            {
+                var proformaItems = db.PrintingProformaInvoiceItems
+                    .Where(x => x.PrintingProformaInvoiceId == proformaHead.PrintingProformaInvoiceId)
+                    .ToList();
+                var total = proformaItems.Sum(s => s.TotalPrice) + proformaHead.TransportCostTotal;
+                return new PrintTotalViewModel
+                {
+                    Total = total
+                };
+            }
+            return new PrintTotalViewModel();
+        }
     }
 }

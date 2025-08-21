@@ -173,6 +173,25 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }
             return Json(response);
         }
+       
+        public JsonResult RejectProforma(int id)
+        {
+            Object response = null;
+            var proforma = db.PrintingProformaInvoices.Find(id);
+
+           
+            proforma.IsOnlineApproved = false;
+            proforma.IsSendForApproval = false;
+            
+
+            proforma.Status = "Rejected";
+            db.Entry(proforma).State = EntityState.Modified;
+            db.SaveChanges();
+            response = new { Success = true, Message = "Successfully Rejected!" };
+
+            return Json(response);
+
+        }
         #endregion
     }
 }

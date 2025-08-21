@@ -170,7 +170,6 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             response = new { Success = true, Message = "Successfully Rejected!" };
 
             return Json(response);
-
         }
         private void ReverseEstimation(int id)
         {

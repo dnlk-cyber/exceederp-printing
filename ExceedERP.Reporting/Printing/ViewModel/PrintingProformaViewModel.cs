@@ -19,6 +19,7 @@ namespace ExceedERP.Reporting.Printing.ViewModel
         public decimal TransportCost { get; set; }
         public decimal TotalTransportCost { get; set; }
         public string VAT { get; set; }
+        public decimal VATAmount { get; set; }
 
     }
     public class PrintingProformaItemsViewModel
@@ -42,6 +43,10 @@ namespace ExceedERP.Reporting.Printing.ViewModel
         public string CoverPaperType { get; set; }
         public int ColorText { get; set; }
         public int ColorCover { get; set; }
+    }
+    public class PrintTotalViewModel
+    {
+        public decimal Total { get; set; }
     }
     
 }

@@ -14,11 +14,13 @@
                     columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["Taxes"], "Value", "Text").Width(100).Title("VAT");
                     columns.Bound(c => c.TransportCostTotal).Width(100).Title("Transport With VAT");
                     columns.Bound(c => c.Remark).Width(90);
+                    columns.Bound(c => c.Status).Width(90);
                     columns.Command(command =>
                     {
                         command.Edit().Text(" ");
                         command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
                         command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                        command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("handleReject");
                         command.Destroy().Text(" ");
                     }).Width(200);
                 })
@@ -232,6 +234,29 @@
         }
     }
 
+    function handleReject(e) {
+        if (confirm("Are you sure you want to approve?")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("RejectProforma", "PrintingProformaInvoice", new { Area = "Printing" })',
+                data: { id: dataItem.PrintingProformaInvoiceId},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
 </script>
 
 <style>

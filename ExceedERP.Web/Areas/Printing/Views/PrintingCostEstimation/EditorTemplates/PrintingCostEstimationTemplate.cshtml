@@ -34,6 +34,7 @@
                                                         .OptionLabel("Job Type")
                                                         .DataTextField("Text")
                                                         .DataValueField("Value")
+                                                        .Events(e => e.Change("onJobTypeChange"))
                                                         .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.PrintJobType)))
                                                         .HtmlAttributes(new { style = "width:100%" }))
                 </div>

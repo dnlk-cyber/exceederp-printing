@@ -53,31 +53,34 @@
 
 <script id="cost_estimation" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                                                .Name("tabstrip_grid_#=PrintingCostEstimationId#")
-                                                                
-                                                                .Items(itemn =>
-                                                                {
-                                                                    itemn.Add().Text("Estimation Material List").Content(
-                                            @<text>
-                                                <a href='@Url.Action("EstimationPrint", "PrintingReport")/?id=#=PrintingCostEstimationId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                                                                                .Name("tabstrip_grid_#=PrintingCostEstimationId#")
 
-                                                @MaterialCost()
-                                            </text>);
-                                                                            itemn.Add().Text("Labor Cost").Content(
-            @<text>
-                @*<span class="labor-cost"><a onclick='return calculateLaborCost("#=PrintingCostEstimationId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a></span>*@
-                <button type="button"
-                        class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="top"
-                        title="Calculate labor cost for this estimation"
-                        onclick='return calculateLaborCost("#=PrintingCostEstimationId#")'>
-                    <i class="fa fa-calculator"></i> Generate Labor Cost
-                </button>
+                                                                                .Items(itemn =>
+                                                                                {
+                                                                                    itemn.Add().Text("Estimation Material List").Content(
+                                                            @<text>
+                                                                #if(IsOnlineTransferred){#
+                                                                <a href='@Url.Action("EstimationPrint", "PrintingReport")/?id=#=PrintingCostEstimationId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
 
-                @LaborCost()
-            </text>);
-                                                                itemn.Add().Text("Over All Cost").Content(
+                                                                #}#
+
+                                                                @MaterialCost()
+                                                            </text>);
+                                                                                            itemn.Add().Text("Labor Cost").Content(
+    @<text>
+        @*<span class="labor-cost"><a onclick='return calculateLaborCost("#=PrintingCostEstimationId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a></span>*@
+        <button type="button"
+                class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
+                data-bs-toggle="tooltip"
+                data-bs-placement="top"
+                title="Calculate labor cost for this estimation"
+                onclick='return calculateLaborCost("#=PrintingCostEstimationId#")'>
+            <i class="fa fa-calculator"></i> Generate Labor Cost
+        </button>
+
+        @LaborCost()
+    </text>);
+                                                                                itemn.Add().Text("Over All Cost").Content(
 @<text>
     <button type="button"
             class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1"
@@ -89,7 +92,7 @@
     </button>
     @OverAllCost()
 </text>);
-                                                            }).ToClientTemplate())
+                                                                                }).ToClientTemplate())
 </script>
 
 @helper MaterialCost()
@@ -244,20 +247,39 @@
     }
 
     function onPageCountChange() {
-        var textbox = $("#Pages").data("kendoNumericTextBox");
-        var value = textbox.value();
+        var jobType = $("#PrintJobType").data("kendoDropDownList");
+        var selectedValue = jobType.value();
+        var isBookSelected = (selectedValue === "1" || selectedValue === "2");
 
-        if (value == null) return;
-
-        var rounded = roundUpToNextMultipleOf4(value);
-
-        // Only update if needed to avoid loops or flickers
-        if (rounded !== value) {
-            textbox.value(rounded);
-            textbox.trigger("change"); // Re-trigger change if needed elsewhere
+        // Only run the rounding logic if "Book" is selected.
+        if (isBookSelected) {
+            var textbox = $("#Pages").data("kendoNumericTextBox");
+            var value = textbox.value();
+            if (value != null) {
+                var rounded = roundUpToNextMultipleOf4(value);
+                if (rounded !== value) {
+                    textbox.value(rounded);
+                }
+            }
         }
     }
+    function onJobTypeChange() {
+        var jobType = $("#PrintJobType").data("kendoDropDownList");
+        var selectedValue = jobType.value();
+        var isBookSelected = (selectedValue === "1" || selectedValue === "2");
 
+        // If the newly selected value is "Book", we check and round the pages field.
+        if (isBookSelected) {
+            var pageCountTextBox = $("#Pages").data("kendoNumericTextBox");
+            var value = pageCountTextBox.value();
+            if (value != null) {
+                var rounded = roundUpToNextMultipleOf4(value);
+                if (rounded !== value) {
+                    pageCountTextBox.value(rounded);
+                }
+            }
+        }
+    }
 
     function onEdit(e) {
         var input = e.container.find("input[name='WastageInPercentage']");
