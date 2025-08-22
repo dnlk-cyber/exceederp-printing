@@ -252,10 +252,10 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             }
             if (estimation != null)
             {
-                estimation.IsOnlineTransferred = true;
-                estimation.IsOnlineTransferredBy = User.Identity.Name;
+                estimation.IsSendForApproval = true;
+                estimation.SendForApprovalBy = User.Identity.Name;
                 estimation.Status = "Checked";
-                estimation.OnlineTransferredTime = DateTime.Now;
+                estimation.SendForApprovalTime = DateTime.Now;
 
                 db.Entry(estimation).State = EntityState.Modified;
                 db.SaveChanges();
@@ -302,11 +302,11 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
             var estimationForm = db.FurnitureEstimationForms.Find(id);
 
             estimationForm.IsOnlineApproved = false;
-            estimationForm.IsOnlineTransferred = false;
+            estimationForm.IsSendForApproval = false;
             estimationForm.Status = "Rejected";
             
-            // reverse BOQ if necessary
-            //ReverseBOQ(estimationForm.FurnitureBillOfQuantityId);
+            // reverse BOQ 
+            ReverseBOQ(estimationForm.FurnitureBillOfQuantityId);
             db.Entry(estimationForm).State = EntityState.Modified;
             db.SaveChanges();
             response = new { Success = true, Message = "Successfully Rejected!" };

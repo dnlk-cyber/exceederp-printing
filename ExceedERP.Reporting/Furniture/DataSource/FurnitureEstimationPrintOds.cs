@@ -32,8 +32,8 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                     Quantity = estimation.Quantity,
                     ApprovedBy = estimation.OnlineApprovedBy,
                     ApprovedDate = estimation.OnlineApprovedTime,
-                    CheckedBy = estimation.IsOnlineTransferredBy,
-                    CheckedDate = estimation.OnlineTransferredTime,
+                    CheckedBy = estimation.SendForApprovalBy,
+                    CheckedDate = estimation.SendForApprovalTime,
                     CreatedBy = estimation.CreatedBy,
                     DateCreated = estimation.DateCreated,
                 };

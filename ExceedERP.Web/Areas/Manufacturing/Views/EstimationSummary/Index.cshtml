@@ -7,12 +7,13 @@
               .Columns(columns =>
               {
                   columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Width(110).Title("Customer");
-                  columns.Bound(c => c.Status);
+                  columns.Bound(c => c.Status).Width(100);
                   columns.Command(command =>
                   {
-                      command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");                     
-                      command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
-                  }).Width(200);
+                      command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "Check" }).Click("checkEstimationSummary");
+                      command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimationSummary");
+                      command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimationSummary");
+                  }).Width(150);
               })
               .Editable(editable => editable.Mode(GridEditMode.InLine))
               .Events(ev => ev.DetailExpand("detailExpand")
@@ -36,21 +37,27 @@
 
 <script id="cost_estimation" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                    .Name("tab_grid_#=EstimationSummaryId#")
-                                    .Items(itemn =>
-                                    {
-                                        itemn.Add().Text("Detail").Content(@<text>
-                                            <a href='@Url.Action("EstimationSummary", "FurniturePrint")/?id=#=EstimationSummaryId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
-                                            @Detail()</text>);
-                                                itemn.Add().Text("Cost Summary")
-                                    .Content(
-                                        @<text>
-                                            <span class="cal">
-                                                <a onclick='return calculateOverallCost("#=EstimationSummaryId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a>
-                                            </span>
-                                            @CostSummary()
-                                        </text>);
-                                }).ToClientTemplate()
+                                                                    .Name("tab_grid_#=EstimationSummaryId#")
+                                                                    .Items(itemn =>
+                                                                    {
+                                                                        itemn.Add().Text("Detail").Content(@<text>
+                                                                            #if(IsSendForApproval){#
+                                                                            <a href='@Url.Action("EstimationSummary", "FurniturePrint")/?id=#=EstimationSummaryId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+
+                                                                            #}#
+                                                                            @Detail()</text>);
+                                                                                itemn.Add().Text("Cost Summary")
+                    .Content(
+                        @<text>
+                            #if(!IsSendForApproval){#
+                            <span class="cal">
+                                <a onclick='return calculateOverallCost("#=EstimationSummaryId#")' href=' \#' title="Calculate overallcost"><i class="fa fa-plus-square fa-2x"></i></a>
+                            </span>
+                            #}#
+
+                            @CostSummary()
+                        </text>);
+                                                                }).ToClientTemplate()
     )
 </script>
 
@@ -127,10 +134,19 @@
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-            $(this).find(".k-grid-reject").hide();
-            if (dataItem.IsOnlineApproved || dataItem.IsMarginApproved == false) {                
+           
+            if (dataItem.IsOnlineApproved) {
                 $(this).find(".k-grid-approve").hide();
                 $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-check").hide();
+            } else if (dataItem.IsSendForApproval) {
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").show();
+                $(this).find(".k-grid-reject").show();
+            } else {
+                $(this).find(".k-grid-check").show();
+                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-approve").hide();
             }
            
         });
@@ -148,13 +164,8 @@
         masterDataItem = masterGrid.dataItem(masterRow);
         masterId = masterDataItem.EstimationSummaryId;
         isApproved = masterDataItem.IsOnlineApproved;
+        isChecked = masterDataItem.IsSendForApproval;
        
-        if (isApproved) {
-            
-            $(".cal").hide();
-        }
-
-
     }
     function onChildDataBound(e) {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
@@ -167,6 +178,10 @@
                 $(this).find(".k-grid-delete").hide();
                 $(this).find(".k-grid-approvemargin").hide();
 
+            } else if (isChecked) {
+                $(this).find(".k-grid-approvemargin").show();
+            } else {
+                $(this).find(".k-grid-approvemargin").hide();
             }
 
         });
@@ -192,14 +207,14 @@
         });
     }
 
-    function approveEstimation(e) {
-            if (confirm("Are you sure to approve this estimation form?")) {
+    function checkEstimationSummary(e) {
+            if (confirm("Are you sure to send for approval?")) {
             var grid = this,
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
             $.ajax({
                type: "POST",
-                url: '@Url.Action("ApproveEstimationSummary", "EstimationSummary", new { Area = "Manufacturing" })',
-                data: { id: dataItem.FurnitureEstimationId },
+                url: '@Url.Action("CheckEstimationSummary", "EstimationSummary", new { Area = "Manufacturing" })',
+                data: { id: dataItem.EstimationSummaryId },
                 success: function (result) {
                     if (result.Success) {
                         toastr.success(result.Message);
@@ -216,14 +231,38 @@
       }
     }
 
-    function rejectEstimation(e) {
+    function approveEstimationSummary(e) {
+            if (confirm("Are you sure to approve this estimation form?")) {
+            var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+               type: "POST",
+                url: '@Url.Action("ApproveEstimationSummary", "EstimationSummary", new { Area = "Manufacturing" })',
+                data: { id: dataItem.EstimationSummaryId },
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message);
+                    }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+      }
+    }
+
+    function rejectEstimationSummary(e) {
             if (confirm("Are you sure to reject this checked estimation form?")) {
              var grid = this,
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
             url: '@Url.Action("RejectEstimationSummary", "EstimationForm", new { Area = "Printing" })',
-            data: { id: dataItem.EstimationFormId },
+            data: { id: dataItem.EstimationSummaryId },
             success: function (result) {
                 if (result.Success) {
                     toastr.success(result.Message);
@@ -266,7 +305,7 @@
       }
     }
 
-    function approveEstimation(e) {
+    @*function approveEstimation(e) {
             if (confirm("Are you sure to approve this estimation form?")) {
             var grid = this,
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
@@ -314,5 +353,5 @@
            }
        });
         }
-        }
+        }*@
 </script>

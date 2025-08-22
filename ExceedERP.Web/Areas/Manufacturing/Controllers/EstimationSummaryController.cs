@@ -105,13 +105,39 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
             return Json(result);
         }
-        public JsonResult ApproveEstimationSummary(int id)
+        public JsonResult CheckEstimationSummary(int id)
         {
             Object response = null;
-            var summary = db.EstimationSummaries.Find(id);
+            var summary = db.EstimationSummaries.FirstOrDefault(x => x.EstimationSummaryId == id);
             var overAllCost = db.EstimationCostSummaries.Where(x => x.EstimationSummaryId == summary.EstimationSummaryId).ToList();
             if (overAllCost.Any())
             {
+                summary.IsSendForApproval = true;
+                summary.SendForApprovalBy = User.Identity.Name;
+                summary.SendForApprovalTime = DateTime.Today;
+                summary.Status = "pending approval";
+                db.Entry(summary).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Successfully sent!" };
+            }
+            else
+            {
+                response = new { Success = false, Message = "Margin not set" };
+
+            }
+            return Json(response);
+        }
+        public JsonResult ApproveEstimationSummary(int id)
+        {
+            Object response = null;
+            var summary = db.EstimationSummaries.FirstOrDefault(x => x.EstimationSummaryId == id);
+            var overAllCost = db.EstimationCostSummaries.Where(x => x.EstimationSummaryId == summary.EstimationSummaryId).ToList();
+            if (overAllCost.Any())
+            {
+                if(!overAllCost.Exists(x => x.IsApprovedMargin))
+                {
+                    response = new { Success = false, Message = "Approve margin first!" };
+                }
                 summary.IsOnlineApproved = true;
                 summary.OnlineApprovedBy = User.Identity.Name;
                 summary.OnlineApprovedTime = DateTime.Today;
@@ -156,8 +182,8 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             if (overAllCost.Any())
             {
                 summary.IsOnlineApproved = false;
-                summary.OnlineApprovedBy = User.Identity.Name;
-                summary.OnlineApprovedTime = DateTime.Today;
+                summary.IsSendForApproval = false;
+                
                 summary.Status = "Rejected";
                 db.Entry(summary).State = EntityState.Modified;
                 db.SaveChanges();

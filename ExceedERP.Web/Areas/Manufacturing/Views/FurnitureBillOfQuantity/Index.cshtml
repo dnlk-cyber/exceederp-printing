@@ -8,7 +8,7 @@
                                   columns.Bound(c => c.JobTypeName).Width(120);
                                   columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Width(120);
                                   columns.Bound(c => c.Quantity).Width(100).Format("{0:n4}");
-
+                                  columns.Bound(c => c.Status).Width(100);
                                   columns.Command(command =>
                                   {
                                       command.Edit().Text(" ");
