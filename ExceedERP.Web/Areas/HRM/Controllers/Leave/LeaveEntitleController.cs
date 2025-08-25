@@ -1933,9 +1933,47 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             return employeeIdLists;
         }
-        public void ExpireEntitle(string period)
+        //public void ExpireEntitle(string period)
+        //{
+        //    var leaveEntitles = db.LeavesEntitle.Where(x => x.GlFiscalYearId.ToString() == period).ToList();
+        //    foreach (var leave in leaveEntitles)
+        //    {
+        //        leave.IsExpired = true;
+        //        leave.ExpiredBy = User.Identity.Name;
+        //        leave.ExpiredDate = DateTime.Today;
+
+        //        db.Entry(leave).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //    }
+        //}
+        //public void ReverseExpireEntitle(string period)
+        //{
+        //    var leaveEntitles = db.LeavesEntitle.Where(x => x.GlFiscalYearId.ToString() == period).ToList();
+        //    foreach (var leave in leaveEntitles)
+        //    {
+        //        leave.IsExpired = false;
+        //        leave.ReversedBy = User.Identity.Name;
+        //        leave.ReversedDate = DateTime.Today;
+
+        //        db.Entry(leave).State = EntityState.Modified;
+        //        db.SaveChanges();
+        //    }
+        //}
+        [HttpPost]
+        public JsonResult ExpireEntitle(string period, int? employeeId)
         {
-            var leaveEntitles = db.LeavesEntitle.Where(x => x.GlFiscalYearId.ToString() == period).ToList();
+            if (string.IsNullOrWhiteSpace(period))
+                return Json(new { Message = "Select valid Fiscal year or Period." });
+            int.TryParse(period, out int fiscalYearId);
+            var leaveEntitles = db.LeavesEntitle
+                .Where(x => x.GlFiscalYearId == fiscalYearId && (!employeeId.HasValue || x.EmployeeId == employeeId))
+                .ToList();
+
+            if (!leaveEntitles.Any())
+                return Json(new { Message = "No matching entitlements found." });
+            if (leaveEntitles.All(x => x.IsExpired))
+                return Json(new { Message = "Already Expired." });
+
             foreach (var leave in leaveEntitles)
             {
                 leave.IsExpired = true;
@@ -1943,12 +1981,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 leave.ExpiredDate = DateTime.Today;
 
                 db.Entry(leave).State = EntityState.Modified;
-                db.SaveChanges();
             }
+
+            db.SaveChanges();
+
+            return Json(new { Message = "Entitlements successfully expired." });
         }
-        public void ReverseExpireEntitle(string period)
+
+        [HttpPost]
+        public JsonResult ReverseExpireEntitle(string period, int? employeeId)
         {
-            var leaveEntitles = db.LeavesEntitle.Where(x => x.GlFiscalYearId.ToString() == period).ToList();
+            if (string.IsNullOrWhiteSpace(period))
+                return Json(new { Message = "Select valid Fiscal year or Period." });
+            int.TryParse(period, out int fiscalYearId);
+            var leaveEntitles = db.LeavesEntitle
+                .Where(x => x.GlFiscalYearId == fiscalYearId && (!employeeId.HasValue || x.EmployeeId == employeeId))
+                .ToList();
+
+            if (!leaveEntitles.Any())
+                return Json(new { Message = "No matching entitlements found." });
+            if (leaveEntitles.All(x => !x.IsExpired))
+                return Json(new { Message = "Already Active." });
             foreach (var leave in leaveEntitles)
             {
                 leave.IsExpired = false;
@@ -1956,8 +2009,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 leave.ReversedDate = DateTime.Today;
 
                 db.Entry(leave).State = EntityState.Modified;
-                db.SaveChanges();
             }
+
+            db.SaveChanges();
+
+            return Json(new { Message = "Entitlements successfully reversed." });
         }
         [HttpPost]
         public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
