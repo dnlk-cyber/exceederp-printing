@@ -533,7 +533,7 @@ namespace ExceedERP.Reporting.Furniture.Design
             // 
             this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.1083319187164307D)));
             this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.5736086368560791D)));
-            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.15972211956977844D)));
+            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.15972210466861725D)));
             this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
             this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
             this.table3.Body.SetCellContent(0, 0, this.textBox26);
@@ -643,7 +643,7 @@ namespace ExceedERP.Reporting.Furniture.Design
             // table6
             // 
             this.table6.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.64367693662643433D)));
-            this.table6.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.4563226699829102D)));
+            this.table6.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.4563227891921997D)));
             this.table6.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.21426458656787872D)));
             this.table6.Body.SetCellContent(0, 0, this.textBox69);
             this.table6.Body.SetCellContent(0, 1, this.textBox71);
@@ -786,6 +786,7 @@ namespace ExceedERP.Reporting.Furniture.Design
             // 
             // FurnitureJobOrderDesign
             // 
+            this.DataSource = this.sharedods;
             this.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.pageHeaderSection1,
             this.detail,

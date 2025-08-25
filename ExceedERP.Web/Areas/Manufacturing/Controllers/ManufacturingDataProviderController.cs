@@ -257,7 +257,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             {
                 Value = s.PrintingProformaInvoiceId,
                 Text = s.PrintingProformaInvoiceId + "-" + db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == s.CustomerId)?.TradeName
-            }).ToList();
+            }).ToList().OrderByDescending(d => d.Value);
             return Json(result, JsonRequestBehavior.AllowGet);
         }
     }
