@@ -105,10 +105,10 @@ namespace ExceedERP.Reporting.Printing.DataSource
             var proformaHead = db.PrintingProformaInvoices.Find(id);
             if (proformaHead != null)
             {
-                var proformaItems = db.PrintingProformaInvoiceItems
+                var total = db.PrintingProformaInvoiceItems
                     .Where(x => x.PrintingProformaInvoiceId == proformaHead.PrintingProformaInvoiceId)
-                    .ToList();
-                var total = proformaItems.Sum(s => s.TotalPrice) + proformaHead.TransportCostTotal;
+                    .Sum(s => s.GrandTotalIncludingVAT) + proformaHead.TransportCostTotal;
+                
                 return new PrintTotalViewModel
                 {
                     Total = total

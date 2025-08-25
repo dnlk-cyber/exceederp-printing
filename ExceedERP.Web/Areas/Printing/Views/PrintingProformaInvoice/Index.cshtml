@@ -163,7 +163,7 @@
         masterDataItem = masterGrid.dataItem(masterRow);
         codeid = masterDataItem.PrintingProformaInvoiceId;
         isApproved = masterDataItem.IsOnlineApproved;
-        isChecked = masterDataItem.IsOnlineTransferred;
+        isChecked = masterDataItem.IsSendForApproval;
         if (isChecked || isApproved) {
             $(".k-grid-add", "#grid_" + codeid).hide();
 
@@ -176,7 +176,7 @@
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-            if (isChecked == true || isApproved) {
+            if (isChecked || isApproved) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-delete").hide();
             }

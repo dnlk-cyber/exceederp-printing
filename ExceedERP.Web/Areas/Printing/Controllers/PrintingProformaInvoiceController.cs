@@ -131,6 +131,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 proforma.IsSendForApproval = true;
                 proforma.SendForApprovalBy = User.Identity.Name;
                 proforma.SendForApprovalTime = DateTime.Today;
+                proforma.Status = "Checked";
                 db.Entry(proforma).State = EntityState.Modified;
                 db.SaveChanges();
                 response = new { Success = true, Message = "Successfully Checked" };
@@ -154,7 +155,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     proformaInvoice.IsOnlineApproved = true;
                     proformaInvoice.OnlineApprovedBy = User.Identity.Name;
                     proformaInvoice.OnlineApprovedTime = DateTime.Now;
-
+                    proformaInvoice.Status = "Approved";
                     db.Entry(proformaInvoice).State = EntityState.Modified;
                     db.SaveChanges();
 

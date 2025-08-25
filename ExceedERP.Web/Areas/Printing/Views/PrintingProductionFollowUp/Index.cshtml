@@ -160,7 +160,7 @@
                                         model.Id(p => p.PrintingProductionFollowUpTaskId);
 
                                     })
-                                    .Read(read => read.Action("Read", "PrintingProductionFollowUpTask", new { id = "#=PrintingProductionFollowUpId#" }))
+                                    .Read(read => read.Action("Read_PrePress", "PrintingProductionFollowUpTask", new { id = "#=PrintingProductionFollowUpId#" }))
                                     .Create(create => create.Action("Create", "PrintingProductionFollowUpTask", new { id = "#=PrintingProductionFollowUpId#" }))
                                     .Update(update => update.Action("Update", "PrintingProductionFollowUpTask"))
                                     .Destroy(delete => delete.Action("Delete", "PrintingProductionFollowUpTask"))

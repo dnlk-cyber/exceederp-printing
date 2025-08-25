@@ -1,4 +1,5 @@
-﻿using ExceedERP.Core.Domain.Printing.PrintingProduction;
+﻿using ExceedERP.Core.Domain.Printing;
+using ExceedERP.Core.Domain.Printing.PrintingProduction;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -18,9 +19,22 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             return View();
         }
 
-        public ActionResult Read([DataSourceRequest]DataSourceRequest request, int id) 
+        public ActionResult Read_PrePress([DataSourceRequest]DataSourceRequest request, int id) 
         {
-            var entity = db.PrintingProductionFollowUpTasks.Where(x => x.PrintingProductionFollowUpId == id);
+            var entity = db.PrintingProductionFollowUpTasks
+                .Where(x => x.PrintingProductionFollowUpId == id && x.PressCategory == PressCategory.PrePress);
+            return Json(entity.ToDataSourceResult(request));
+        }
+        public ActionResult Read_Press([DataSourceRequest]DataSourceRequest request, int id)
+        {
+            var entity = db.PrintingProductionFollowUpTasks
+                .Where(x => x.PrintingProductionFollowUpId == id && x.PressCategory == PressCategory.Press);
+            return Json(entity.ToDataSourceResult(request));
+        }
+        public ActionResult Read_PostPress([DataSourceRequest]DataSourceRequest request, int id)
+        {
+            var entity = db.PrintingProductionFollowUpTasks
+                .Where(x => x.PrintingProductionFollowUpId == id && x.PressCategory == PressCategory.PostPress);
             return Json(entity.ToDataSourceResult(request));
         }
         public ActionResult Create([DataSourceRequest]DataSourceRequest request, PrintingProductionFollowUpTask model, int id)

@@ -7,6 +7,14 @@ using System.Data.Entity.ModelConfiguration;
 
 namespace ExceedERP.DataAccess.Context
 {
+    public class PrintingSummaryCommentEntityTypeCOnfiguration : EntityTypeConfiguration<PrintingSummaryComment>
+    {
+        public PrintingSummaryCommentEntityTypeCOnfiguration()
+        {
+            this.ToTable("PrintingSummaryComment", "Printing");
+            this.HasKey<int>(p => p.PrintingSummaryCommentId);
+        }
+    }
     public class PrintingProductionFollowUpEntityTypeConfiguration : EntityTypeConfiguration<PrintingProductionFollowUp>
     {
         public PrintingProductionFollowUpEntityTypeConfiguration()

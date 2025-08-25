@@ -8,7 +8,7 @@
                           columns.Bound(c => c.PrintingCostEstimationId).Title("Est. No");
                           columns.Bound(c => c.PrintJobType).Title("Job Type");
                           columns.ForeignKey(c => c.TextPaperSizeId, (IEnumerable)ViewData["PaperSizeText"], "Value", "Text").Title("Paper Size");
-                          columns.ForeignKey(c => c.CoverPaperSizeId, (IEnumerable)ViewData["PaperSizeCover"], "Value", "Text").Title("Paper Size");
+                          //columns.ForeignKey(c => c.CoverPaperSizeId, (IEnumerable)ViewData["PaperSizeCover"], "Value", "Text").Title("Paper Size");
                           columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text");
                           columns.ForeignKey(c => c.TextMachineTypeId, (IEnumerable)ViewData["PrintingMachineType"], "Value", "Text");
                           columns.ForeignKey(c => c.CoverMachineTypeId, (IEnumerable)ViewData["PrintingMachineType"], "Value", "Text");
@@ -16,7 +16,7 @@
                           columns.Bound(c => c.CoverNoOfColor);
                           columns.Bound(c => c.ProductQuantity);
                           columns.Bound(c => c.Pages).Title("Pages");
-                          columns.Bound(c => c.Pack).Title("Pack");
+                          //columns.Bound(c => c.Pack).Title("Pack");
                           columns.Command(command =>
                           {
                               command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
@@ -24,7 +24,7 @@
                               command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
                               //command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
                               command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
-                          }).Width(180);
+                          }).Width(200);
                       })
                       .ToolBar(toolbar =>
                       {
@@ -323,6 +323,9 @@
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-delete").hide();
+            } else {
+
+                $(this).find(".k-grid-approve").hide();
             }
 
         });

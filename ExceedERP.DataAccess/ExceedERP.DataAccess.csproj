@@ -709,6 +709,10 @@
     <Compile Include="Migrations\202508201850575_furnitureproforma1.Designer.cs">
       <DependentUpon>202508201850575_furnitureproforma1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202508251347253_printingsummary.cs" />
+    <Compile Include="Migrations\202508251347253_printingsummary.Designer.cs">
+      <DependentUpon>202508251347253_printingsummary.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1192,6 +1196,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202508201850575_furnitureproforma1.resx">
       <DependentUpon>202508201850575_furnitureproforma1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508251347253_printingsummary.resx">
+      <DependentUpon>202508251347253_printingsummary.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

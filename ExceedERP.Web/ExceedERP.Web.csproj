@@ -2098,6 +2098,7 @@
     <Compile Include="Areas\Printing\Controllers\PrintingProformaInvoiceController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingProformaItemController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingReportController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingSummaryCommentController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintItemCategoryController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintLaborRateController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintMachinePaperListController.cs" />
@@ -7339,6 +7340,9 @@
     <Content Include="Areas\Procurement\Views\ProformaTeamSelfCare\Index.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurniturePrint\EstimationSummary.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurniturePrint\FurnitureJobOrder.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingCostEstimationSummary\EditorTemplates\summarycommentTemplate.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\IndexPostPress.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\IndexPress.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
@@ -9350,6 +9354,7 @@
     <Folder Include="Areas\Printing\Views\PrintingMaterialCostProduction\" />
     <Folder Include="Areas\Printing\Views\PrintingProductionDesgin\" />
     <Folder Include="Areas\Printing\Views\PrintingProformaItem\" />
+    <Folder Include="Areas\Printing\Views\PrintingSummaryComment\" />
     <Folder Include="Areas\Printing\Views\ProductionDataProvider\" />
     <Folder Include="Areas\Printing\Views\ProductionFollowUpViews\AutoJobOrder\EditorTemplates\" />
     <Folder Include="Areas\Printing\Views\ProductionFollowUpViews\ChangeOfOrders\" />

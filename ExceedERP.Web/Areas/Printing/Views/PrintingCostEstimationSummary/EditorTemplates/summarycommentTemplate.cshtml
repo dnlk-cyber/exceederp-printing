@@ -1,0 +1,28 @@
+﻿@model ExceedERP.Core.Domain.Printing.PrintingSummaryComment
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Comment</label>
+            <div>
+                @(Html.TextAreaFor(model => model.Comment, new { @class = "k-textarea", style = "width:100%", rows = 5 }))
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .row .col-sm-12 {
+        width: 300px;
+    }
+
+    .row {
+        margin: auto;
+    }
+</style>
