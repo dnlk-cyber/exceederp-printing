@@ -354,7 +354,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                     GrandTotalCost = OverAllCost.GrandTotalCost,
                     Quantity = furnitureEstimationForm.Quantity,
                     EstimationSummaryId = summary.EstimationSummaryId,
-                    //FurnitureEstimationId = furnitureEstimationForm.FurnitureEstimationId,                    
+                    FurnitureEstimationId = furnitureEstimationForm.FurnitureEstimationId,                    
                 };
 
                 db.EstimationDetails.Add(estimationDetailNew);
@@ -373,7 +373,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers.Estimation
                     GrandTotalCost = OverAllCost.GrandTotalCost,
                     Quantity = furnitureEstimationForm.Quantity,
                     EstimationSummaryId = estimationSummary.EstimationSummaryId,
-                    //FurnitureEstimationId = furnitureEstimationForm.FurnitureEstimationId
+                    FurnitureEstimationId = furnitureEstimationForm.FurnitureEstimationId
                 };
 
                 db.EstimationDetails.Add(estimationDetail);

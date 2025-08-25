@@ -172,7 +172,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                     .ToList();
                 foreach (var item in details)
                 {
-                    //ReverseEstimation(item.FurnitureEstimationId);
+                    ReverseEstimation(item.FurnitureEstimationId);
                     DeleteSummaryDetail(item);
                 }
                 summary.IsOnlineApproved = false;
