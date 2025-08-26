@@ -1,6 +1,7 @@
 ﻿
 using ExceedERP.Core.Domain.Printing;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Printing.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -42,6 +43,9 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     VAT = glTax?.TaxName ?? string.Empty,
                     TotalTransportCost = proformaHead.TransportCostTotal,
                     VATAmount =proformaHead.TransporCost * glTax?.CalculatedRate ?? 0,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(proformaHead.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(proformaHead.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(proformaHead.SendForApprovalBy)
 
                 };
 

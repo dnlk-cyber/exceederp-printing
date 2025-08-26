@@ -1,6 +1,7 @@
 ﻿
 using ExceedERP.Core.Domain.Printing;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Printing.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -46,7 +47,10 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     CheckedBy = estimation.IsOnlineTransferredBy,
                     CheckedDate = estimation.OnlineTransferredTime,
                     DateCreated = estimation.DateCreated,
-                    CreatedBy = estimation.CreatedBy
+                    CreatedBy = estimation.CreatedBy,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(estimation.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(estimation.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(estimation.SendForApprovalBy)
                 };
             }
             return new PrintingEstimationViewModel();
