@@ -31,11 +31,11 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 Value = s.PrintingPaperSizeId,
                 Text = s.PaperSizeName
             }).ToList();
-            ViewData["PaperSizeCover"] = db.PrintingPaperSizes.Select(s => new
-            {
-                Value = s.PrintingPaperSizeId,
-                Text = s.PaperSizeName
-            }).ToList();
+            //ViewData["PaperSizeCover"] = db.PrintingPaperSizes.Select(s => new
+            //{
+            //    Value = s.PrintingPaperSizeId,
+            //    Text = s.PaperSizeName
+            //}).ToList();
             ViewData["BindingStyle"] = db.PrintingBindingStyles.Select(s => new
             {
                 Value = s.PrintingBindingStyleId,
@@ -375,10 +375,14 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }
             else
             {
-                estimationSummary.IsRejected = false;
-                estimationSummary.IsSendForApproval = false;
-                estimationSummary.IsOnlineApproved = false;
-                db.Entry(estimationSummary).State = EntityState.Modified;
+                if(estimationSummary.Status == "Rejected" || estimationSummary.IsVoid)
+                {
+                    estimationSummary.IsSendForApproval = false;
+                    estimationSummary.IsVoid = false;
+                    estimationSummary.Status = "Pending";
+                    db.Entry(estimationSummary).State = EntityState.Modified;
+                }
+                
                 PrintingEstimationDetail estimationDetail = new PrintingEstimationDetail
                 {
                     PrintJobType = model.PrintJobType,

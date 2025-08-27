@@ -74,8 +74,7 @@
                   columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "Value", "Text").Width(120);
                   columns.Bound(c => c.UnitOfMeasurment);
                   columns.Bound(c => c.Quantity);
-                  columns.Bound(c => c.UnitPriceBeforeVAT);
-                  
+                  columns.Bound(c => c.UnitPriceBeforeVAT);                 
                   columns.Bound(c => c.UnitPriceWithVAT);
                   columns.Bound(c => c.Remark);
                   

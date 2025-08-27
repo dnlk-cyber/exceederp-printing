@@ -8,8 +8,10 @@
               {
                   columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name").Width(110).Title("Customer");
                   columns.Bound(c => c.Status).Width(100);
+                  columns.Bound(c => c.Remark).Width(100);
                   columns.Command(command =>
                   {
+                      command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
                       command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "Check" }).Click("checkEstimationSummary");
                       command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimationSummary");
                       command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimationSummary");
@@ -27,8 +29,14 @@
                   .Events(ev => ev.Error("error_handler(\"grid\")")
                     .RequestStart("onRequestStart(\"grid\")")
                     .RequestEnd("onRequestEnd(\"grid\")"))
-                  .Model(model => model.Id(p => p.EstimationSummaryId))
+                  .Model(model => {
+                      model.Id(p => p.EstimationSummaryId);
+                      model.Field(p => p.CustomerId).Editable(false);
+                      model.Field(p => p.Status).Editable(false);
+
+                      })
                   .Read(read => read.Action("EstimationSummaries_Read", "EstimationSummary"))
+                  .Update(read => read.Action("EstimationSummaries_Update", "EstimationSummary"))
                   .Sort(sort => sort.Add(e => e.EstimationSummaryId).Descending())
               ).ClientDetailTemplateId("cost_estimation")
 
@@ -139,10 +147,16 @@
                 $(this).find(".k-grid-approve").hide();
                 $(this).find(".k-grid-reject").hide();
                 $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-edit").hide();
             } else if (dataItem.IsSendForApproval) {
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-approve").show();
                 $(this).find(".k-grid-reject").show();
+            } else if (dataItem.Status == 'Rejected') {
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
             } else {
                 $(this).find(".k-grid-check").show();
                 $(this).find(".k-grid-reject").hide();
@@ -257,11 +271,11 @@
 
     function rejectEstimationSummary(e) {
             if (confirm("Are you sure to reject this checked estimation form?")) {
-             var grid = this,
+            var grid = this,
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
-        $.ajax({
-           type: "POST",
-            url: '@Url.Action("RejectEstimationSummary", "EstimationForm", new { Area = "Printing" })',
+            $.ajax({
+            type: "POST",
+            url: '@Url.Action("RejectEstimationSummary", "EstimationSummary", new { Area = "Manufacturing" })',
             data: { id: dataItem.EstimationSummaryId },
             success: function (result) {
                 if (result.Success) {
@@ -305,53 +319,4 @@
       }
     }
 
-    @*function approveEstimation(e) {
-            if (confirm("Are you sure to approve this estimation form?")) {
-            var grid = this,
-            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
-            $.ajax({
-               type: "POST",
-                url: '@Url.Action("ApproveEstimationSummary", "EstimationSummary", new { Area = "Manufacturing" })',
-                data: { id: dataItem.EstimationSummaryId },
-                success: function (result) {
-                    if (result.Success) {
-                        toastr.success(result.Message);
-                        $("#grid").data("kendoGrid").dataSource.read();
-                    }
-                    else {
-                        toastr.error(result.Message);
-
-                    }
-           },
-           error: function(result) {
-               alert(result);
-           }
-       });
-        }
-    }
-
-    function rejectEstimation(e) {
-            if (confirm("Are you sure to reject this checked estimation form?")) {
-             var grid = this,
-            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
-        $.ajax({
-           type: "POST",
-            url: '@Url.Action("RejectEstimationSummary", "EstimationSummary", new { Area = "Printing" })',
-            data: { id: dataItem.EstimationSummaryId },
-            success: function (result) {
-                if (result.Success) {
-                    toastr.success(result.Message);
-                    $("#grid").data("kendoGrid").dataSource.read();
-                }
-                else {
-                    toastr.error(result.Message);
-
-                }
-           },
-           error: function(result) {
-               alert(result);
-           }
-       });
-        }
-        }*@
 </script>

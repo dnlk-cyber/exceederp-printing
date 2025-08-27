@@ -18,6 +18,23 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
         public ActionResult Index()
         {
+            ViewDataMethod();
+            return View();
+        }
+
+        public ActionResult IndexPress()
+        {
+            ViewDataMethod();
+            return View();
+        }
+        public ActionResult IndexPostPress()
+        {
+            ViewDataMethod();
+            return View();
+        }
+
+        private void ViewDataMethod()
+        {
             ViewData["Machine"] = db.PrintingMachineTypes.Select(s => new
             {
                 Text = s.MachineTypeName,
@@ -66,14 +83,13 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             }).ToList();
 
 
-            return View();
         }
-
         public ActionResult PrintingJobOrderProduction_Read([DataSourceRequest]DataSourceRequest request)
         {
             var entity = db.PrintingProductionFollowUps;
             return Json(entity.ToDataSourceResult(request));
         }
+
 
         public ActionResult PrintingOrderProduction_Update([DataSourceRequest]DataSourceRequest request, PrintingProductionFollowUp model)
         {

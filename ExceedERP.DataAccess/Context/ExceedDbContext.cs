@@ -1655,6 +1655,7 @@ namespace ExceedERP.DataAccess.Context
 
 
             #region printing 
+            modelBuilder.Configurations.Add(new PrintingSummaryCommentEntityTypeCOnfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionAllottedRawMaterialEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingDailyFollowUpDelayReasonEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionDailyFollowUpDetailEntityTypeConfiguration());
@@ -2462,6 +2463,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Printing
+        public DbSet<PrintingSummaryComment> PrintingSummaryComments { get; set; }
         public DbSet<PrintingMachineDetail> PrintingMachineDetails { get; set; }
         public DbSet<PrintingJobOrderJobDesign> PrintingJobOrderJobDesigns { get; set; }
         public DbSet<PrintingJobOrderProductionJobDesign> PrintingJobOrderProductionJobDesigns { get; set; }

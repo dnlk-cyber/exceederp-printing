@@ -73,4 +73,15 @@ namespace ExceedERP.Core.Domain.Printing
         public int PrintingEstimationSummaryId { get; set; } 
 
     }
+
+    public class PrintingSummaryComment : TrackUserSettingOperation
+    {
+        public int PrintingSummaryCommentId { get; set; }
+        
+        public string Comment { get; set; }
+
+        //fk
+        public int PrintingEstimationSummaryId { get; set; }
+
+    }
 }
