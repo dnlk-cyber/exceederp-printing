@@ -1655,9 +1655,18 @@ namespace ExceedERP.DataAccess.Context
 
 
             #region printing 
+            //modelBuilder.Configurations.Add(new PrintingProductionAllottedRawMaterialEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingTaskIssueEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new PrintingProductionDailyFollowUpDetailEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new PrintingProductionFollowUpTaskEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new PrintingProductionFollowUpEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingSummaryCommentEntityTypeCOnfiguration());
+            modelBuilder.Configurations.Add(new PressDailyFollowUpWastageEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingDailyFollowUpLogBookEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new PrintingDailyFollowUpMachineMaintenanceEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new PrintingSummaryCommentEntityTypeCOnfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionAllottedRawMaterialEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new PrintingDailyFollowUpDelayReasonEntityTypeConfiguration());
+           // modelBuilder.Configurations.Add(new PrintingDailyFollowUpDelayReasonEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionDailyFollowUpDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionFollowUpTaskEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PrintingProductionFollowUpEntityTypeConfiguration());
@@ -1728,7 +1737,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProformaEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.GraphicEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobStatusEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobStatusEntityTypeConfiguration());
             //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.SettingsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobOrderMaterialEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.PrintingProductionFinishedGoodsStoreReceiveEntityTypeConfiguration());
@@ -2463,6 +2472,11 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Printing
+        public DbSet<PrintingTaskIssue> PrintingTaskIssues { get; set; }
+        public DbSet<PrintingProductionAllottedRawMaterial> PrintingProductionAllottedRawMaterials { get; set; }
+        public DbSet<PrintingDailyFollowUpLogBook> PrintingDailyFollowUpLogBooks { get; set; }
+        public DbSet<PressDailyFollowUpWastage> PressDailyFollowUpWastages { get; set; }
+        public DbSet<PrintingDailyFollowUpMachineMaintenance> PrintingDailyFollowUpMachineMaintenances { get; set; }
         public DbSet<PrintingSummaryComment> PrintingSummaryComments { get; set; }
         public DbSet<PrintingMachineDetail> PrintingMachineDetails { get; set; }
         public DbSet<PrintingJobOrderJobDesign> PrintingJobOrderJobDesigns { get; set; }
@@ -2586,8 +2600,8 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<PrintingProductionFollowUp> PrintingProductionFollowUps { get; set; }
         public DbSet<PrintingProductionFollowUpTask> PrintingProductionFollowUpTasks { get; set; }
         public DbSet<PrintingProductionDailyFollowUpDetail> PrintingProductionDailyFollowUpDetails { get; set; }
-        public DbSet<PrintingDailyFollowUpDelayReason> PrintingDailyFollowUpDelayReasons { get; set; }
-        public DbSet<PrintingProductionAllottedRawMaterial> PrintingProductionAllottedRawMaterials { get; set; }
+        //public DbSet<PrintingDailyFollowUpDelayReason> PrintingDailyFollowUpDelayReasons { get; set; }
+        //public DbSet<PrintingProductionAllottedRawMaterial> PrintingProductionAllottedRawMaterials { get; set; }
         #endregion
         #region Production Follow UP
         public DbSet<FurniturStandardJobDesign> FurniturStandardJobDesigns { get; set; }

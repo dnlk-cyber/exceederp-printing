@@ -1,0 +1,67 @@
+﻿@model ExceedERP.Core.Domain.Printing.PrintingProduction.PrintingTaskIssue
+
+
+
+
+<div class="row">
+
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Issue Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.IssueType)
+                                               .Name("LabourActivity")
+                                               .DataTextField("Text")
+                                               .DataValueField("Value")
+                                               .AutoBind(true)
+                                               .OptionLabel("Select Labour Activity")
+                                               .HtmlAttributes(new { style = "width:100%" })
+                                               .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.PrintingProduction.IssueType)))
+
+                )
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Reason</label>
+            <div>
+               @(Html.Kendo().DateTimePickerFor(model => model.ReportedTime).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Reason</label>
+            <div>
+                @(Html.Kendo().DateTimePickerFor(model => model.ResolvedTime).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Description</label>
+            <div>
+                @(Html.TextAreaFor(model => model.Resolution, new { @class = "k-textarea", style = "width:100%", rows = 5 }))
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Description</label>
+            <div>
+                @(Html.TextAreaFor(model => model.Description, new { @class = "k-textarea", style = "width:100%", rows = 5 }))
+
+            </div>
+        </div>
+    </div>
+</div>

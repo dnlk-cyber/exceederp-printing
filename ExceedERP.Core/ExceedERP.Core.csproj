@@ -1310,6 +1310,7 @@
     <Compile Include="Domain\Printing\PrintingOverAllCost.cs" />
     <Compile Include="Domain\Printing\PrintingPaperSize.cs" />
     <Compile Include="Domain\Printing\PrintingProcess.cs" />
+    <Compile Include="Domain\Printing\PrintingProduction\JobFollowupClaudi.cs" />
     <Compile Include="Domain\Printing\PrintingProduction\PrintingCommon.cs" />
     <Compile Include="Domain\Printing\PrintingProduction\PrintingProductionFollowUp.cs" />
     <Compile Include="Domain\Printing\PrintingProductProcess.cs" />

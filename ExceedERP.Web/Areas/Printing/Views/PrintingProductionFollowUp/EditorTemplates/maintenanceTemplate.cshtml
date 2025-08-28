@@ -1,0 +1,79 @@
+﻿@model ExceedERP.Core.Domain.Printing.PrintingProduction.PrintingDailyFollowUpMachineMaintenance
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Reason</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.Reason).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Technician</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.TechnicianId)
+                                           .ValuePrimitive(true)
+                                           .OptionLabel("Select Technician...")
+                                           .DataTextField("Text")
+                                           .DataValueField("Value")
+                                           .Filter("contains")
+                                           .DataSource(dataSource =>
+                                           {
+                                               dataSource.Read(read => read.Action("GetEmployees", "PrintDataProvider", new { Area = "Printing" }).Data("filterEmployee")
+                                               )
+                                               .ServerFiltering(true);
+                                           }).HtmlAttributes(new { style = "width:100%" })
+
+                )
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Date Machine Broke</label>
+            <div>
+                @(Html.Kendo().DateTimePickerFor(model => model.IssueReportedTime).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Date Notified</label>
+            <div>
+                @(Html.Kendo().DateTimePickerFor(model => model.MaintenanceStartTime).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Maintenance Time(H)</label>
+            <div>
+                @(Html.Kendo().NumericTextBoxFor(model => model.MaintenanceEndTime).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Remark</label>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.Remark).HtmlAttributes(new { style = "width:100%" }))
+
+            </div>
+        </div>
+    </div>
+</div>
