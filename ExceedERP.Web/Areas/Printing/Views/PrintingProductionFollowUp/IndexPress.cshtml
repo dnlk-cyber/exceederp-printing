@@ -233,7 +233,7 @@
                                                         .Name("tab3_#=PrintingProductionDailyFollowUpDetailId#")
                                                         .Items(item1 =>
                                                         {
-                                                            item1.Add().Text("Delay Reasons").Content(@<text>@DelayReason()</text>);
+                                                            item1.Add().Text("Task Issue").Content(@<text>@DelayReason()</text>);
                                                                     item1.Add().Text("Log Book").Content(@<text>@PressLogBook()</text>);
                                                                             item1.Add().Text("Wastage").Content(@<text>@wastage()</text>);
                                                                                     item1.Add().Text("Machine Maintenance").Content(@<text>@Maintenance()</text>);
@@ -250,8 +250,8 @@
 
                                                                     columns.Bound(c => c.IssueType);
                                                                     columns.Bound(c => c.Description);
-                                                                    columns.Bound(c => c.ReportedTime);
-                                                                    columns.Bound(c => c.ResolvedTime);
+                                                                    columns.Bound(c => c.ReportedTime).Format("{0:MM/dd/yyyy hh:mm tt}");
+                                                                    columns.Bound(c => c.ResolvedTime).Format("{0:MM/dd/yyyy hh:mm tt}");
                                                                     columns.Bound(c => c.Resolution);
                                                                     columns.Command(command =>
                                                                     {
