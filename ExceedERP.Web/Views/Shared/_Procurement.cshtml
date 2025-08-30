@@ -127,9 +127,12 @@
                             <li id="prc0042332" class="actionlinlk">
                                 @Html.ActionLink("Payment", "Index", "PurchasePayment", new { area = "Procurement" }, null)<b class="arrow"></b>
                             </li>
+                            <li id="prc00423562" class="actionlinlk">
+                                @Html.ActionLink("Settlement", "Index", "PaymentSettlementRequest", new { area = "Procurement" }, null)<b class="arrow"></b>
+                            </li>
                             @*<li id="prc004" class="actionlinlk">@Html.ActionLink("CPO Management", "Index", "CPOManagement", new { area = "Procurement" }, null)<b class="arrow"></b></li>
-                               <li id="prc005" class="actionlinlk">@Html.ActionLink("LC Management", "Index", "LCManagement", new { area = "Procurement" }, null)<b class="arrow"></b></li>
-                             <li id="prc006" class="actionlinlk">@Html.ActionLink("Bank Guarantee Management", "Index", "BankGuarantee", new { area = "Procurement" }, null)<b class="arrow"></b></li>*@
+          <li id="prc005" class="actionlinlk">@Html.ActionLink("LC Management", "Index", "LCManagement", new { area = "Procurement" }, null)<b class="arrow"></b></li>
+        <li id="prc006" class="actionlinlk">@Html.ActionLink("Bank Guarantee Management", "Index", "BankGuarantee", new { area = "Procurement" }, null)<b class="arrow"></b></li>*@
                             @if (HttpContext.Current.User.IsInRole("Procurement_Contract_User")
                                  || HttpContext.Current.User.IsInRole("Procurement_Contract_Approver"))
                             {
