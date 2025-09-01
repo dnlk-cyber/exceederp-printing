@@ -112,7 +112,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 proformapurchases = proformapurchases.Where(x => x.ProcurementOfficer == empid && empid != 0 || x.ForwardedTo == User.Identity.Name);
             }
 
-            
+
 
             DataSourceResult result = proformapurchases.ToDataSourceResult(request, proformaPurchase => new
             {
@@ -161,7 +161,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProformaPurchases_Create([DataSourceRequest]DataSourceRequest request, ProformaPurchase proformaPurchase)
         {
-           
+
 
             #region validation
 
@@ -210,7 +210,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
 
             if (ModelState.IsValid)
             {
-               
+
                 var entity = new ProformaPurchase
                 {
                     PurchaseRequisitionAssignmentId = proformaPurchase.PurchaseRequisitionAssignmentId,
@@ -250,7 +250,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 _db.ProformaPurchases.Add(entity);
                 _db.SaveChanges();
                 proformaPurchase.ProformaPurchaseID = entity.ProformaPurchaseID;
-               
+
                 PurchaseRequistionItems(entity.PurchaseRequisitionAssignmentId, entity.ProformaPurchaseID);
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "proforma", "Success", User.Identity.Name, $"created proforma {entity.ProformaPurchaseID} ", Modules.Procurement);
@@ -313,7 +313,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
 
             if (ModelState.IsValid)
             {
-               
+
                 var entity = new ProformaPurchase
                 {
                     PurchaseRequisitionAssignmentId = proformaPurchase.PurchaseRequisitionAssignmentId,
@@ -405,7 +405,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
         }
 
         [AuthorizeRoles(ProcurementRoles.ProcurementTenderUser)]
-        private void PurchaseRequistionItems(int  assignmentid, int id)
+        private void PurchaseRequistionItems(int assignmentid, int id)
         {
             var assignment = _db.PurchaseRequisitionAssignments.Find(assignmentid);
             if (assignment != null)
@@ -421,8 +421,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                         ItemName = item.ItemName,
                         PartNo = item.PartNo,
                         UoM = item.UoM,
-                        Name=item.Name,
-                        ModelNo = item.ModelNo,                        
+                        Name = item.Name,
+                        ModelNo = item.ModelNo,
                         ItemSpecification = item.ItemSpecification,
                         ItemType = item.ItemType,
                         Quantity = item.Quantity
@@ -436,7 +436,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                     ProformaPurchaseID = id,
                     PurchaseRequisitionID = assignment.PurchaseRequisitionID,
                     StoreRequisitionID = assignment.PurchaseRequisition.StoreRequisitionID,
-                    PurchaseRequisitionAssignmentId=assignmentid
+                    PurchaseRequisitionAssignmentId = assignmentid
                 };
                 _db.ProformaPurchaseRequisitions.Add(purchaseRequisition);
             }
@@ -452,7 +452,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 #region validate price and tax of winning supplier
 
                 var winningSuppliers = _db.WinningSuppliers.Where(x => x.ProformaPurchaseID == record.ProformaPurchaseID).ToList();
-                if(!winningSuppliers.Any())
+                if (!winningSuppliers.Any())
                 {
                     var formattedData2 = new
                     {
@@ -461,7 +461,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                     };
                     return Json(formattedData2, JsonRequestBehavior.AllowGet);
                 }
-                foreach (var item in winningSuppliers.SelectMany(x=>x.WinningItems))
+                foreach (var item in winningSuppliers.SelectMany(x => x.WinningItems))
                 {
                     if (item.UPrice <= 0 || item.GLTaxRateID == 0 || String.IsNullOrWhiteSpace(item.WinningSupplier.SupplierName))
                     {
@@ -489,8 +489,8 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 if (validations.Any())
                     isNewRecord = false;
 
-                var awardIds=_db.WinningSuppliers.Where(x=>x.AwardGiven).Where(x=>x.ProformaPurchaseID==id).Select(x=>x.WinningSupplierID).ToList();
-                var awardItems=_db.WinningSupplierItems.Where(x=>awardIds.Contains(x.WinningSupplierID)).ToList();
+                var awardIds = _db.WinningSuppliers.Where(x => x.AwardGiven).Where(x => x.ProformaPurchaseID == id).Select(x => x.WinningSupplierID).ToList();
+                var awardItems = _db.WinningSupplierItems.Where(x => awardIds.Contains(x.WinningSupplierID)).ToList();
                 decimal docamount = awardItems.Sum(x => x.TPrice);
                 int docid = record.ProformaPurchaseID;
                 int step = record.CurrentApprovalStep != null ? (int)record.CurrentApprovalStep : 0;
@@ -606,7 +606,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
             return null;
         }
 
-        
+
 
         [AuthorizeRoles(ProcurementRoles.ProcurementVoid)]
         public JsonResult Void(int id)
@@ -1310,7 +1310,7 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.Proforma
                 if (isThereOutofStock)
                 {
                     // result.Financial = 0;
-                    result.Financial = itemResult.Average(x => x.Financial);
+                    result.Financial = itemResult.Select(x => x.Financial).DefaultIfEmpty(0).Average();
                 }
 
                 result.Total = result.Financial + result.Technical;
