@@ -29,7 +29,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             ViewData["PaperSizeText"] = db.PrintingPaperSizes.Select(s => new
             {
                 Value = s.PrintingPaperSizeId,
-                Text = s.PaperSizeName
+                Text = s.PrintPaperSize
             }).ToList();
             //ViewData["PaperSizeCover"] = db.PrintingPaperSizes.Select(s => new
             //{
