@@ -36,7 +36,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                    ReportedTime = model.ReportedTime,
                    Resolution = model.Resolution,
                    ResolvedTime = model.ResolvedTime,
-                   TimeSpentInMinute = model.TimeSpentInMinute
+                   TimeSpentInMinute = model.TimeSpentInMinute,
+                   
                 };
                 db.PrintingTaskIssues.Add(entity);               
                 db.SaveChanges();

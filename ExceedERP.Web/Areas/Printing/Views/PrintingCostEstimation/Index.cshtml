@@ -16,13 +16,14 @@
                           columns.Bound(c => c.CoverNoOfColor);
                           columns.Bound(c => c.ProductQuantity);
                           columns.Bound(c => c.Pages).Title("Pages");
+                          columns.Bound(c => c.Status).Title("Status");
                           //columns.Bound(c => c.Pack).Title("Pack");
                           columns.Command(command =>
                           {
                               command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { title = "Edit" });
                               command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "Check" }).Click("checkEstimation");
                               command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "Approve" }).Click("approveEstimation");
-                              //command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
+                              command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("rejectEstimation");
                               command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { title = "Delete" });
                           }).Width(200);
                       })
@@ -311,7 +312,7 @@
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-            $(this).find(".k-grid-reject").hide();
+            
             if (dataItem.IsOnlineApproved) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-check").hide();
@@ -319,13 +320,18 @@
                 $(this).find(".k-grid-reject").hide();
                 $(this).find(".k-grid-delete").hide();
             }
-            else if (dataItem.IsOnlineTransferred && dataItem.IsOnlineApproved == false) {
+            else if (dataItem.IsOnlineTransferred == true && dataItem.IsOnlineApproved == false) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-delete").hide();
+                //$(this).find(".k-grid-approve").show();
+                //$(this).find(".k-grid-reject").show();
             } else {
-
+                $(this).find(".k-grid-delete").show();
+                $(this).find(".k-grid-edit").show();
+                $(this).find(".k-grid-check").show();
                 $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
             }
 
         });
@@ -501,6 +507,30 @@
                 $.ajax({
                type: "POST",
                 url: '@Url.Action("ApproveEstimationForm", "PrintingCostEstimation", new { Area = "Printing" })',
+                data: { id: dataItem.PrintingCostEstimationId },
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message);
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message);
+
+                    }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+        }
+    }
+    function rejectEstimation(e) {
+            if (confirm("Are you sure to reject this estimation form?")) {
+             var grid = this,
+             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+                $.ajax({
+               type: "POST",
+                url: '@Url.Action("RejectEstimation", "PrintingCostEstimation", new { Area = "Printing" })',
                 data: { id: dataItem.PrintingCostEstimationId },
                 success: function (result) {
                     if (result.Success) {

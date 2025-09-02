@@ -296,7 +296,9 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
 
             if (estimation != null)
             {
+                estimation.IsOnlineTransferred = false;
                 estimation.Status = "Rejected";
+                
                 db.PrintingCostEstimations.Attach(estimation);
                 db.Entry(estimation).State = EntityState.Modified;
                 db.SaveChanges();

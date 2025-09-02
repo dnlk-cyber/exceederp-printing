@@ -7351,6 +7351,7 @@
     <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\EditorTemplates\followupwastageTemplate.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\EditorTemplates\logbookTemplate.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\EditorTemplates\maintenanceTemplate.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingProductionFollowUp.7z" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
