@@ -3896,6 +3896,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<StoreReturn> StoreReturns { get; set; }
         public DbSet<StoreReturnItems> StoreReturnItemss { get; set; }
         public DbSet<StoreReturnValidation> StoreReturnValidations { get; set; }
+        public DbSet<StoreReturnDepartmentValidation> StoreReturnDepartmentValidations { get; set; }
         public DbSet<StoreReturnDistribution> StoreReturnDistributions { get; set; }
         public DbSet<StoreReturnAttachment> StoreReturnAttachments { get; set; }
         public DbSet<PropertyCount> PropertyCounts { get; set; }

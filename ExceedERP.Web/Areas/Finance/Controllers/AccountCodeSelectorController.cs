@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Runtime.Caching;
 using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.ViewModel;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.DataAccess.Context;
@@ -24,7 +25,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             List<SelectorVm> list = new List<SelectorVm>();
 
             // Use cached GlSegmentSetups
-            var segmentSequence = MemoryCache.Default[CacheHelper.GlSegmentSetups] as List<GlSegmentSetupCache>;
+            var segmentSequence = MemoryCache.Default[CacheKeys.GlSegmentSetups] as List<GlSegmentSetupCache>;
             if (segmentSequence == null)
             {
                 segmentSequence = _db.GlSegmentSetups
@@ -37,7 +38,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                                         Name = x.Name,
                                     })
                                     .ToList();
-                MemoryCache.Default.Add(CacheHelper.GlSegmentSetups, segmentSequence, ObjectCache.InfiniteAbsoluteExpiration);
+                MemoryCache.Default.Add(CacheKeys.GlSegmentSetups, segmentSequence, ObjectCache.InfiniteAbsoluteExpiration);
             }
 
             if (segmentSequence.Any())
@@ -49,7 +50,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                     if (segment.SegmentType == DynamicSegmentTypes.NaturalAccount)
                     {
                         // Use cached GLChartOfAccountAccounts
-                        var accounts = MemoryCache.Default[CacheHelper.GLChartOfAccountAccounts] as List<GLChartOfAccountAccountCache>;
+                        var accounts = MemoryCache.Default[CacheKeys.GLChartOfAccountAccounts] as List<GLChartOfAccountAccountCache>;
                         if (accounts == null)
                         {
                             accounts = _db.GLChartOfAccountAccounts
@@ -61,7 +62,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                                     Description = x.Description
                                 })
                                 .ToList();
-                            MemoryCache.Default.Add(CacheHelper.GLChartOfAccountAccounts, accounts, ObjectCache.InfiniteAbsoluteExpiration);
+                            MemoryCache.Default.Add(CacheKeys.GLChartOfAccountAccounts, accounts, ObjectCache.InfiniteAbsoluteExpiration);
                         }
 
                         foreach (var acc in accounts)
@@ -93,7 +94,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                     else
                     {
                         // Use cached GlChartOfAccountSegments
-                        var segments = MemoryCache.Default[CacheHelper.GlChartOfAccountSegments] as List<GlChartOfAccountSegmentCache>;
+                        var segments = MemoryCache.Default[CacheKeys.GlChartOfAccountSegments] as List<GlChartOfAccountSegmentCache>;
                         if (segments == null)
                         {
                             segments = _db.GlChartOfAccountSegments
@@ -106,7 +107,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                                     Description = x.Description
                                 })
                                 .ToList();
-                            MemoryCache.Default.Add(CacheHelper.GlChartOfAccountSegments, segments, ObjectCache.InfiniteAbsoluteExpiration);
+                            MemoryCache.Default.Add(CacheKeys.GlChartOfAccountSegments, segments, ObjectCache.InfiniteAbsoluteExpiration);
                         }
 
                         var filteredSegments = segments.Where(x => x.GLSegmentSetupId == segment.GLSegmentSetupId).ToList();
@@ -317,7 +318,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                 ViewBag.SegNum = segmentNum;
 
                 // Use cached GlSegmentSetups if available
-                var segmentSequence = MemoryCache.Default[CacheHelper.GlSegmentSetups] as List<GlSegmentSetupCache>;
+                var segmentSequence = MemoryCache.Default[CacheKeys.GlSegmentSetups] as List<GlSegmentSetupCache>;
                 if (segmentSequence == null)
                 {
                     segmentSequence = _db.GlSegmentSetups
@@ -330,7 +331,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                                             Name = x.Name,
                                         })
                                         .ToList();
-                    MemoryCache.Default.Add(CacheHelper.GlSegmentSetups, segmentSequence, ObjectCache.InfiniteAbsoluteExpiration);
+                    MemoryCache.Default.Add(CacheKeys.GlSegmentSetups, segmentSequence, ObjectCache.InfiniteAbsoluteExpiration);
                 }
 
                 if (segmentSequence.Any())

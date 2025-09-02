@@ -115,7 +115,6 @@
     <Compile Include="CMS\CMSGenericHelper.cs" />
     <Compile Include="Common\BarcodeGenerator.cs" />
     <Compile Include="Common\CacheData.cs" />
-    <Compile Include="Common\CacheKeys.cs" />
     <Compile Include="Common\DocApprovalHelper.cs" />
     <Compile Include="Common\EmployeeHelper.cs" />
     <Compile Include="Common\EnumExtension.cs">

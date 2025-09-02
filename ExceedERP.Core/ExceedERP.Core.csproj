@@ -232,6 +232,7 @@
     <Compile Include="Domain\CMS\TraineeModels\TraineeProgram.cs" />
     <Compile Include="Domain\CMS\TraineeModels\WelderPerformanceQualification.cs" />
     <Compile Include="Domain\Common\Approval.cs" />
+    <Compile Include="Domain\Common\CacheKeys.cs" />
     <Compile Include="Domain\Common\DocumentApproval\ApprovalDelegation.cs" />
     <Compile Include="Domain\Common\DocumentApproval\ApprovalGroup.cs" />
     <Compile Include="Domain\Common\DocumentApproval\ApprovalGroupRule.cs" />

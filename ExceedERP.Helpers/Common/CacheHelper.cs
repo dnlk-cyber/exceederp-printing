@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ExceedERP.Core.Domain.Common;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Caching;
 
@@ -6,9 +7,7 @@ namespace ExceedERP.Helpers.Common
 {
     public class CacheHelper
     {
-        public const string GlSegmentSetups = "GlSegmentSetups";
-        public const string GlChartOfAccountSegments = "GlChartOfAccountSegments";
-        public const string GLChartOfAccountAccounts = "GLChartOfAccountAccounts";
+       
 
         public static void ResetCache()
         {
@@ -22,29 +21,97 @@ namespace ExceedERP.Helpers.Common
 
         public static void InvalidateGlSegmentSetupsCache()
         {
-            if (MemoryCache.Default.Contains(GlSegmentSetups))
+            if (MemoryCache.Default.Contains(CacheKeys.GlSegmentSetups))
             {
-                MemoryCache.Default.Remove(GlSegmentSetups);
+                MemoryCache.Default.Remove(CacheKeys.GlSegmentSetups);
             }
         }
 
 
         public static void InvalidateSegmentsCache()
         {
-            if (MemoryCache.Default.Contains(GlChartOfAccountSegments))
+            if (MemoryCache.Default.Contains(CacheKeys.GlChartOfAccountSegments))
             {
-                MemoryCache.Default.Remove(GlChartOfAccountSegments);
+                MemoryCache.Default.Remove(CacheKeys.GlChartOfAccountSegments);
             }
         }
 
 
         public static void InvalidateNaturalAccountCache()
         {
-            if (MemoryCache.Default.Contains(GLChartOfAccountAccounts))
+            if (MemoryCache.Default.Contains(CacheKeys.GLChartOfAccountAccounts))
             {
-                MemoryCache.Default.Remove(GLChartOfAccountAccounts);
+                MemoryCache.Default.Remove(CacheKeys.GLChartOfAccountAccounts);
             }
         }
+
+        public static void InvalidateCache(string cacheKey)
+        {
+            if (MemoryCache.Default.Contains(cacheKey))
+            {
+                MemoryCache.Default.Remove(cacheKey);
+            }
+        }
+
+        #region  HRM
+        public static void InvalidateBusinessUnitsCache()
+        {
+            if (MemoryCache.Default.Contains(CacheKeys.BusinessUnits))
+            {
+                MemoryCache.Default.Remove(CacheKeys.BusinessUnits);
+            }
+        }
+        public static void InvalidateBranchsCache()
+        {
+            if (MemoryCache.Default.Contains(CacheKeys.Branchs))
+            {
+                MemoryCache.Default.Remove(CacheKeys.Branchs);
+            }
+        }
+        public static void InvalidateEmployeeCache()
+        {
+            if (MemoryCache.Default.Contains(CacheKeys.Employees))
+            {
+                MemoryCache.Default.Remove(CacheKeys.Employees);
+            }
+        }
+        public static void InvalidateWorkUnitsCache()
+        {
+            if (MemoryCache.Default.Contains(CacheKeys.WorkUnits))
+            {
+                MemoryCache.Default.Remove(CacheKeys.WorkUnits);
+            }
+        }
+        public static void InvalidateIsMultipleBusinessUnitCache()
+        {
+            if (MemoryCache.Default.Contains(CacheKeys.IsMultipleBusinessUnit))
+            {
+                MemoryCache.Default.Remove(CacheKeys.IsMultipleBusinessUnit);
+            }
+        }
+        public static void InvalidateJobTitlesCache()
+        {
+            if (MemoryCache.Default.Contains(CacheKeys.JobTitles))
+            {
+                MemoryCache.Default.Remove(CacheKeys.JobTitles);
+            }
+        }
+        public static void InvalidateRankCache()
+        {
+            if (MemoryCache.Default.Contains(CacheKeys.Ranks))
+            {
+                MemoryCache.Default.Remove(CacheKeys.Ranks);
+            }
+        }
+        public static void InvalidateStepCache()
+        {
+            if (MemoryCache.Default.Contains(CacheKeys.Steps))
+            {
+                MemoryCache.Default.Remove(CacheKeys.Steps);
+            }
+        }
+
+        #endregion
 
 
 

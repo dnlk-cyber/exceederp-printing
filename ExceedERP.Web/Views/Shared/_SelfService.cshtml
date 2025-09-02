@@ -112,6 +112,10 @@
                                 @Html.ActionLink("Stock Purchase Request", "Index", "PurchaseRequisitionSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
                             </li>
 
+                            <li id="selfstockreturn0109s" class="actionlinlk">
+                                @Html.ActionLink("Stock Return", "Index", "StoreReturnSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
+                            </li>
+
                             <li id="selfservice0109fisr" class="actionlinlk">
                                 @Html.ActionLink("PPE Store Request", "Index", "FixedAssetRequisitionSelfCare", new { area = "FixedAsset" }, null)<b class="arrow"></b>
                             </li>
@@ -296,8 +300,8 @@
 
                                 <ul class="submenu">
                                     @*<li id="selfservice091" class="actionlinlk">
-                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_RecruitmentRequest + "Updated", "Index", "EmployeeTransferRequests", new { area = "HRM" }, null)<b class="arrow"></b>
-                    </li>*@
+            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_RecruitmentRequest + "Updated", "Index", "EmployeeTransferRequests", new { area = "HRM" }, null)<b class="arrow"></b>
+        </li>*@
                                     <li id="selfservice0911" class="actionlinlk">
                                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_RecruitmentRequest, "Index", "RecruitmentRequest", new { area = "HRM" }, null)<b class="arrow"></b>
                                     </li>
@@ -327,9 +331,13 @@
                                     <li id="selfservice0109strds" class="actionlinlk">
                                         @Html.ActionLink("Fuel Request", "Index", "FuelRequisitionSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
                                     </li>
+
+                                    <li id="selfstockreturn0109s" class="actionlinlk">
+                                        @Html.ActionLink("Stock Return", "Index", "StoreReturnSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
+                                    </li>
                                     @*<li id="selfservice741093str" class="actionlinlk">
-                        @Html.ActionLink("Stock Store Request for Sub Con", "Index", "StoreRequisitionSubSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
-                    </li>*@
+            @Html.ActionLink("Stock Store Request for Sub Con", "Index", "StoreRequisitionSubSelfCare", new { area = "Inventory" }, null)<b class="arrow"></b>
+        </li>*@
                                     <li id="selfservice0109fisrd" class="actionlinlk">
                                         @Html.ActionLink("PPE Store Request", "Index", "FixedAssetRequisitionSelfCare", new { area = "FixedAsset" }, null)<b class="arrow"></b>
                                     </li>

@@ -1748,6 +1748,10 @@
     <Compile Include="Areas\Inventory\Controllers\SelfCare\FuelRequisitionItemSelfCareController.cs" />
     <Compile Include="Areas\Inventory\Controllers\SelfCare\FuelRequisitionSelfCareController.cs" />
     <Compile Include="Areas\Inventory\Controllers\SelfCare\FuelRequisitionSelfCareValidationController.cs" />
+    <Compile Include="Areas\Inventory\Controllers\SelfCare\Return\StoreReturnAttachmentSelfCareController.cs" />
+    <Compile Include="Areas\Inventory\Controllers\SelfCare\Return\StoreReturnDepartmentValidationController.cs" />
+    <Compile Include="Areas\Inventory\Controllers\SelfCare\Return\StoreReturnItemSelfCareController.cs" />
+    <Compile Include="Areas\Inventory\Controllers\SelfCare\Return\StoreReturnSelfCareController.cs" />
     <Compile Include="Areas\Inventory\Controllers\SelfCare\StoreRequisitionAttachmentController.cs" />
     <Compile Include="Areas\Inventory\Controllers\SelfCare\StoreRequisitionItemSelfCareController.cs" />
     <Compile Include="Areas\Inventory\Controllers\SelfCare\StoreRequisitionSelfCareController.cs" />
@@ -7352,6 +7356,11 @@
     <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\EditorTemplates\logbookTemplate.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingProductionFollowUp\EditorTemplates\maintenanceTemplate.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingProductionFollowUp.7z" />
+    <Content Include="Areas\Inventory\Views\StoreReturnSelfCare\EditorTemplates\filterItem.cshtml" />
+    <Content Include="Areas\Inventory\Views\StoreReturnSelfCare\EditorTemplates\StoreReturn.cshtml" />
+    <Content Include="Areas\Inventory\Views\StoreReturnSelfCare\EditorTemplates\Stores.cshtml" />
+    <Content Include="Areas\Inventory\Views\StoreReturnSelfCare\EditorTemplates\ValidationStatus.cshtml" />
+    <Content Include="Areas\Inventory\Views\StoreReturnSelfCare\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

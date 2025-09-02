@@ -41,7 +41,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetStoreByKeeper", "DataProvider", new {area = "Inventory"}))
+                              dataSource.Read(read => read.Action("GetStoreByKeeper", "DataProvider", new {area = "Inventory"}).Data("sendForgery"))
                                   .ServerFiltering(false);
                           })
                           )
@@ -61,7 +61,7 @@
                           .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetWorkUnitCostCenters", "DataProvider", new { area = "Inventory" }))
+                              dataSource.Read(read => read.Action("GetWorkUnitCostCenters", "DataProvider", new { area = "Inventory" }).Data("sendForgery"))
                                   .ServerFiltering(false);
                           })
                           )
@@ -88,7 +88,7 @@
                                   })
                                   .DataSource(dataSource =>
                                   {
-                                      dataSource.Read(read => read.Action("GetOpenInventoryPeriodsByStore", "DataProvider", new { area = "Inventory" }).Data("filterPeriodsByStore"))
+                                      dataSource.Read(read => read.Action("GetOpenInventoryPeriodsByStore", "DataProvider", new { area = "Inventory" }).Data("sendForgery").Data("filterPeriodsByStore"))
                                           .ServerFiltering(true);
                                   })
                     )
@@ -141,7 +141,7 @@
                                 .Filter("contains")
                                 .DataSource(dataSource =>
                                 {
-                                    dataSource.Read(read => read.Action("GetAllBranches", "GlobalDataProvider", new { area = "Common" }))
+                                    dataSource.Read(read => read.Action("GetAllBranches", "GlobalDataProvider", new { area = "Common" }).Data("sendForgery"))
                                         .ServerFiltering(false);
                                 })
                     )
