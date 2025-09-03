@@ -189,13 +189,13 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             var estimation = db.FurnitureEstimationForms.Where(x => x.IsOnlineApproved).AsQueryable();
             if (!string.IsNullOrEmpty(text))
             {
-                estimation = estimation.Where(x => x.FurnitureEstimationId == int.Parse(text)).AsQueryable();
+                estimation = estimation.Where(x => x.FurnitureEstimationId.ToString().Contains(text));
             }
             var result = estimation.Select(s => new
             {
                 Value = s.FurnitureEstimationId,
                 Text = s.FurnitureEstimationId + "/" + db.FurnitureStandardJobTypes.FirstOrDefault(x => x.FurnitureStandardJobTypeId == s.JobTypeId).JobTypeName
-            }).ToList();
+            }).ToList().OrderByDescending(x => x.Value);
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -206,12 +206,12 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             var employees = db.Person_Employee.AsQueryable();
             if (!string.IsNullOrWhiteSpace(text))
             {
-                employees = employees.Where(x => x.FirstName.Contains(text) || x.MiddleName.Contains(text) || x.LastName.Contains(text)).AsQueryable();
+                employees = employees.Where(x => x.FirstNameEnglish.Contains(text) || x.MiddleNameEnglish.Contains(text) || x.LastNameEnglish.Contains(text)).AsQueryable();
             }
             var result = employees.Select(s => new
             {
                 Value = s.EmployeeId,
-                Text = s.FirstName + "-" + s.MiddleName + "-" + s.LastName
+                Text = s.FirstNameEnglish + "-" + s.MiddleNameEnglish + "-" + s.LastNameEnglish
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }

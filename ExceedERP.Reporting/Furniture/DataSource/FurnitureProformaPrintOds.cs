@@ -1,4 +1,5 @@
 ﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Furniture.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,9 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                     CheckedDate = proforma.SendForApprovalTime,
                     CreatedBy = proforma.CreatedBy,
                     DateCreated = proforma.DateCreated,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(proforma.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(proforma.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(proforma.SendForApprovalBy)
                 };
             }
             return vm;

@@ -16,7 +16,6 @@
                                       command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
                                       command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject", title = "Reject" }).Click("handleReject");
                                       command.Destroy().Text(" ");
-
                                   }).Width(180);
                               })
                               .ToolBar(toolbar =>

@@ -1,4 +1,5 @@
 ﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Furniture.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -38,6 +39,9 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                     CheckedDate = jobOrder.SendForApprovalTime,
                     CreatedBy = jobOrder.CreatedBy,
                     DateCreated = jobOrder.DateCreated,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(jobOrder.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(jobOrder.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(jobOrder.SendForApprovalBy)
                 };
             }
             return vm;
