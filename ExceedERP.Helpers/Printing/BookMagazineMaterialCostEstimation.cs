@@ -133,7 +133,7 @@ namespace ExceedERP.Helpers.Printing
                     return -1;
                 }
 
-                var plateQuantity = ((int)estimation.CoverNoOfColor) * Math.Ceiling(estimation.ProductQuantity / (machine.OutputRate * machineDetail.SectionUp));
+                var plateQuantity = ((int)estimation.CoverNoOfColor) * Math.Ceiling(estimation.ProductQuantity / machine.OutputRate);
                 return Math.Ceiling(plateQuantity * (1 + model.WastageInPercentage));
             }
         }
