@@ -9,13 +9,13 @@
             <label>Press Category</label>
             <div>
                 @(Html.Kendo().DropDownListFor(model => model.PressCategory)
-                                         .Name("PressCategory") // explicitly set the name for JavaScript access
-                                         .DataTextField("Text")
-                                         .DataValueField("Value")
-                                         .OptionLabel("Select Press Category")
-                                         .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.PressCategory)))
-                                         .HtmlAttributes(new { style = "width:100%" })
-                                         .Events(e => e.Change("onPressCategoryChange")) // attach change event
+                    .Name("PressCategory") // explicitly set the name for JavaScript access
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .OptionLabel("Select Press Category")
+                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Printing.PressCategory)))
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .Events(e => e.Change("onPressCategoryChange")) // attach change event
                 )
             </div>
         </div>

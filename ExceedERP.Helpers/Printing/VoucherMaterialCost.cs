@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Printing;
+using ExceedERP.Core.Domain.Printing;
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
@@ -36,7 +36,7 @@ namespace ExceedERP.Helpers.Printing
                     return -1;
                 }
 
-                var paperQty = Math.Ceiling((double)(estimation.ProductQuantity * estimation.Pages * estimation.Copy) / (paperSize.NoOfPagesToA1Ratio * 2));
+                var paperQty = Math.Ceiling((double)(estimation.ProductQuantity * estimation.Pages * estimation.Copy) / paperSize.NoOfPagesToA1Ratio);
                 if (categoryItem.PaperType == PaperType.SheetFed)
                 {
                     return Math.Ceiling(paperQty * (1 + model.WastageInPercentage));
