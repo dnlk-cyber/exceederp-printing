@@ -1,0 +1,87 @@
+﻿
+@model ExceedERP.Core.Domain.Manufacturing.Production.FurnitureJobAssignment
+
+
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Operator</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                    .ValuePrimitive(true)
+                    .OptionLabel("Select employee...")
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .Filter("contains")
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetEmployees", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterOperator")
+                        )
+                        .ServerFiltering(true);
+                    }).HtmlAttributes(new { style = "width:100%" })
+
+                )
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Workshop Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.Type)
+                    .DataTextField("Text")
+                    .DataValueField("Value")
+                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Manufacturing.Setting.WorkShop))
+                    )
+                .HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Task Type</label>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.TaskCategoryId)
+                                    .ValuePrimitive(true)
+                                    .OptionLabel("Select task category...")
+                                    .DataTextField("Text")
+                                    .DataValueField("Value")
+                                    .Filter("contains")
+                                    .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetTaskCategory", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterTaskCategory")
+                                        )
+                                        .ServerFiltering(true);
+                                    }).CascadeFrom("Type")
+                                    .HtmlAttributes(new { style = "width:100%" })
+
+                )
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>Start Date</label>
+            <div>
+                @(Html.Kendo().DateTimePickerFor(model => model.TaskAssignedDate).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label>End Date</label>
+            <div>
+                @(Html.Kendo().DateTimePickerFor(model => model.TaskEndDate).HtmlAttributes(new { style = "width:100%" }))
+            </div>
+        </div>
+    </div>
+</div>

@@ -109,8 +109,13 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                                 return Json(new[] { model }.ToDataSourceResult(request, ModelState));
                         }
                     }
-                    else if (costEstimation.PrintJobType == PrintJobType.Brochure || costEstimation.PrintJobType == PrintJobType.Card || costEstimation.PrintJobType == PrintJobType.Flyer ||
-                        costEstimation.PrintJobType == PrintJobType.Format || costEstimation.PrintJobType == PrintJobType.Poster || costEstimation.PrintJobType == PrintJobType.Sticker)
+                    else if (costEstimation.PrintJobType == PrintJobType.Brochure || 
+                        costEstimation.PrintJobType == PrintJobType.Card ||
+                        costEstimation.PrintJobType == PrintJobType.Flyer || 
+                        costEstimation.PrintJobType == PrintJobType.Format ||
+                        costEstimation.PrintJobType == PrintJobType.Poster || 
+                        costEstimation.PrintJobType == PrintJobType.Sticker ||
+                        costEstimation.PrintJobType == PrintJobType.Calendar)
                     {
                         switch (model.EstimationMaterialType)
                         {

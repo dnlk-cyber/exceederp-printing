@@ -199,8 +199,7 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-       
-
+        
         public JsonResult GetEmployees(string text)
         {
             var employees = db.Person_Employee.AsQueryable();

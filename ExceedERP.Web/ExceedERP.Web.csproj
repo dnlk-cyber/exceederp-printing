@@ -7362,6 +7362,7 @@
     <Content Include="Areas\Inventory\Views\StoreReturnSelfCare\EditorTemplates\ValidationStatus.cshtml" />
     <Content Include="Areas\Inventory\Views\StoreReturnSelfCare\Index.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingCostEstimation.7z" />
+    <Content Include="Areas\Manufacturing\Views\FurnitureJobOrderProduction\EditorTemplates\JobAssignmentTemplate.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
