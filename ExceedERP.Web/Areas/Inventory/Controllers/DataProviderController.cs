@@ -201,6 +201,19 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
 
         }
 
+        public JsonResult GetStoreByUserBranchForSelfCare()
+        {
+            var mybraches = UserInformationHelper.GetUserBranchsAsInt(User.Identity.Name);
+            var store = db.InventoryStores.Where(x => mybraches.Contains(x.BranchId)).Where(x => x.Enable).AsQueryable();
+
+            return Json(store.Select(p => new
+            {
+                StoreCode = p.StoreCode,
+                Name = p.StoreCode + "-" + p.Name
+            }), JsonRequestBehavior.AllowGet);
+
+        }
+
         public JsonResult GetAllStoreByKeepers()
         {
             ApplicationDbContext app = new ApplicationDbContext();
