@@ -166,7 +166,9 @@
                             </li>
                         </ul>
                     </li>
-
+                    <li id="selfservice077" class="actionlinlk">
+                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeavePlan, "Index", "LeavePlan_Pesonal", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>
                     <li id="selfservice077" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorSelfCare_LeaveRequest, "Index", "LeaveRequestPersonal", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
@@ -216,7 +218,7 @@
                     </li>
 
                     <li id="selfservice476" class="actionlinlk">
-                           @Html.ActionLink("Open Ticket", "Index", "CustomerTicketSelfCare", new { area = "InfoDesk" }, null)<b class="arrow"></b>
+                        @Html.ActionLink("Open Ticket", "Index", "CustomerTicketSelfCare", new { area = "InfoDesk" }, null)<b class="arrow"></b>
                     </li>
 
                     <li id="selfservice76fleet1" class="actionlinlk">

@@ -68,4 +68,13 @@ namespace ExceedERP.Core.Domain.HRM.HRMPlan
         public virtual LeavePlan Plan { get; set; }
 
     }
+    public class LeavePlanFinalValidation : TrackUserOperation
+    {
+        public int LeavePlanFinalValidationId { get; set; }
+        public ApprovalStatuses Status { get; set; }
+        public string Remark { get; set; }
+        public int LeavePlanId { get; set; }
+        public virtual LeavePlan Plan { get; set; }
+
+    }
 }

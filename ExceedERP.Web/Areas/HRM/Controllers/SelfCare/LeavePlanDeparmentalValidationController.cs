@@ -8,6 +8,7 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.HRMPlan;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
@@ -15,7 +16,7 @@ using Kendo.Mvc.UI;
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
     [AuthorizeRoles(HrmConstants.HRDepartmentHead)]
-    public class LeavePlanDeparmentalValidationController : Controller
+    public class LeavePlanDeparmentalValidationController : BaseController
     {
         private ExceedDbContext _db = new ExceedDbContext();
        

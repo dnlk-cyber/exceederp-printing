@@ -594,6 +594,8 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new LeaveEntitleStartingDateEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MonthlyLeavePlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MonthlyLeavePlanDetailEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePlanValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeavePlanFinalValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeePerformanceActionsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ProbationPerformanceSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new SubjectTypeEntityTypeConfiguration());
@@ -2950,6 +2952,9 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<TrainingNeedRequest> TrainingNeedRequests { get; set; }
 
         public System.Data.Entity.DbSet<LeavePlan> LeavePlans { get; set; }
+        public System.Data.Entity.DbSet<LeavePlanValidation> LeavePlanValidation { get; set; }
+        public System.Data.Entity.DbSet<LeavePlanFinalValidation> LeavePlanFinalValidation { get; set; }
+
         public System.Data.Entity.DbSet<RecruitmentPlan> RecruitmentPlans { get; set; }
         public System.Data.Entity.DbSet<TrainingPlan> TrainingPlans { get; set; }
         public System.Data.Entity.DbSet<Vacancy> VaccancyPlans { get; set; }

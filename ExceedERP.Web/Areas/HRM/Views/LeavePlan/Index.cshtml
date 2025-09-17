@@ -3,6 +3,7 @@
 @using ExceedERP.Core.Localization
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    bool useEthiopian = ViewData["isEthiopicDate"] as bool? ?? true;
 }
 <legend>@Resources.NavigatorLeave_LeavePlan </legend>
 @(Html.Kendo().Grid<LeavePlan>()
@@ -10,11 +11,12 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.EmployeeCode).Width(120);
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("EmployeeEditor").Width(210);
-          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(120);
-
-          columns.Bound(c => c.FromAmharic).EditorTemplateName ("Calander").Width(150);
-          columns.Bound(c => c.ToAmharic).EditorTemplateName ("Calander").Width(150);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("EmployeeEditor").Filterable(ftb => ftb.Multi(true).Search(true)).Width(210);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Period"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+          columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(150);
+          columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(150);
+          columns.Bound(c => c.Day).Width (120);
           columns.Bound(c => c.LeaveAmount).Width (120);
           columns.Bound(c => c.Remark).Width (100);
           columns.Command(command =>
@@ -60,45 +62,47 @@
       {
           ev.DetailExpand("onDetailExpandUser");
           ev.DataBound("onDataBound");
+
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
-         .Scrollable(h => h.Height(500))
-         .Events(x =>
-         {
-             x.Edit("GetDate");
-             x.Save("GetDate");
+      .Scrollable(h => h.Height(500))
+      .Events(x =>
+      {
+          x.Edit("GetDate");
+          x.Save("GetDate");
 
-         })
-        .Groupable()
-        .Sortable(sortable =>
-        {
-            sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      //.Groupable()
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
 
-        })
-        .Filterable()
-        .Pageable(pageable => pageable
-                                .Input(true)
-                                .Numeric(false)
-                                .Refresh(true)
-                                .PageSizes(true)
-                                .ButtonCount(5))
+
+      })
+      .Filterable()
+      .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
           .DataSource(dataSource => dataSource
-                .Ajax()
+          .Ajax()
+          .Sort(srt => srt.Add(x => x.LeavePlanId).Descending())
+
                 .Events(events =>
                 {
                     events.Error("error_handler(\"LeavePlangrid\")");
                     events.RequestStart("onRequestStart(\"LeavePlangrid\")");
                     events.RequestEnd("onRequestEnd(\"LeavePlangrid\")");
                 })
-               .Model(model =>
-               {
-                   model.Id(p => p.LeavePlanId);
+               .Model(model => { model.Id(p => p.LeavePlanId);
                    model.Field(p => p.EmployeeCode).Editable (false);
                })
-          .Read(read => read.Action("LeavePlans_Read", "LeavePlan"))
-          .Create(create => create.Action("LeavePlans_Create", "LeavePlan"))
-          .Update(update => update.Action("LeavePlans_Update", "LeavePlan"))
-          .Destroy(destroy => destroy.Action("LeavePlans_Destroy", "LeavePlan"))
+          .Read(read => read.Action("LeavePlans_Read", "LeavePlan").Data("sendForgery"))
+          .Create(create => create.Action("LeavePlans_Create", "LeavePlan").Data("sendForgery"))
+          .Update(update => update.Action("LeavePlans_Update", "LeavePlan").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("LeavePlans_Destroy", "LeavePlan").Data("sendForgery"))
       ).ClientDetailTemplateId("leave_plan_template")
 )
 
@@ -144,20 +148,30 @@
                     .Ajax()
                     .Events(events =>
                     {
+
+
                         events.Error("error_handler(\"LeavePlanValidationgrid_#=LeavePlanId#\")");
                         events.RequestStart("onRequestStart(\"LeavePlanValidationgrid_#=LeavePlanId#\")");
                         events.RequestEnd("onRequestEnd(\"LeavePlanValidationgrid_#=LeavePlanId#\")");
+
+
+
+
                     })
+
+
                     .Model(model =>
                     {
                         model.Id(p => p.LeavePlanValidationId);
                         //model.Field(p => p.ApproverDepartment).Editable(false);
 
+
+
                     })
-                    .Read(read => read.Action("LeavePlanDeparmentalValidation_Read", "LeavePlanDeparmentalValidation", new { gId = "#=LeavePlanId#" }))
-                    .Create(create => create.Action("LeavePlanDeparmentalValidation_Create", "LeavePlanDeparmentalValidation", new { gId = "#=LeavePlanId#" }))
-                    .Update(update => update.Action("LeavePlanDeparmentalValidation_Update", "LeavePlanDeparmentalValidation"))
-                    .Destroy(destroy => destroy.Action("LeavePlanDeparmentalValidation_Destroy", "LeavePlanDeparmentalValidation"))
+                    .Read(read => read.Action("LeavePlanDeparmentalValidation_Read", "LeavePlanDeparmentalValidation", new { gId = "#=LeavePlanId#" }).Data("sendForgery"))
+                    .Create(create => create.Action("LeavePlanDeparmentalValidation_Create", "LeavePlanDeparmentalValidation", new { gId = "#=LeavePlanId#" }).Data("sendForgery"))
+                    .Update(update => update.Action("LeavePlanDeparmentalValidation_Update", "LeavePlanDeparmentalValidation").Data("sendForgery"))
+                    .Destroy(destroy => destroy.Action("LeavePlanDeparmentalValidation_Destroy", "LeavePlanDeparmentalValidation").Data("sendForgery"))
                 ).ToClientTemplate()
                 )
                     
@@ -329,5 +343,12 @@
 
 
         }
+    }
+</script>
+<script>
+    function filterPeriod() {
+        return {
+            GlFiscalYearId: $("#GlFiscalYearId").val()
+        };
     }
 </script>

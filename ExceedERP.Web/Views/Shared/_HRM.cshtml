@@ -141,12 +141,6 @@
                 <li id="hrm02600100" class="actionlinlk">
                     @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Employee_Commitment, "Index", "EmployeeCommitment", new { area = "HRM" }, null)<b class="arrow"></b>
                 </li>
-                <li id="hrm0260dfs01dsfd00" class="actionlinlk">
-                    @Html.ActionLink("Salary Calculator", "Index", "SalaryCalculator", new { area = "HRM" }, null)<b class="arrow"></b>
-                </li>
-                <li id="hrm02600100" class="actionlinlk">
-                    @Html.ActionLink("Salary Setting", "Index", "SalarySetting", new { area = "HRM" }, null)<b class="arrow"></b>
-                </li>
                 <li id="hrm02700100" class="actionlinlk">
                     @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Employee_ExperienceRequests, "Index", "ExpirianceRequestStatus", new { area = "HRM" }, null)<b class="arrow"></b>
                 </li>
@@ -419,9 +413,7 @@
                 }
                 @if (HttpContext.Current.User.IsInRole("HR_Leave_Admin") || HttpContext.Current.User.IsInRole("HR_Leave_User") || HttpContext.Current.User.IsInRole("HR_Admin"))
                 {
-                    <li id="hrm05100100" class="actionlinlk">
-                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeavePlan, "Index", "LeavePlan", new { area = "HRM" }, null)<b class="arrow"></b>
-                    </li>
+                   
                     <li id="hrm05200100" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeaveTaken, "Index", "Leave", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
@@ -429,16 +421,21 @@
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeaveEntitlement, "Index", "LeaveEntitle", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
                     @*<li id="hrm053" class="actionlinlk">
-                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeaveTransfer, "Index", "LeaveTransfer", new { area = "HRM" }, null)<b class="arrow"></b>
-                        </li>*@
+                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeaveTransfer, "Index", "LeaveTransfer", new { area = "HRM" }, null)<b class="arrow"></b>
+            </li>*@
                     <li id="hrm05400100" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeavePaidInCash, "Index", "LeavePaid", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
                 }
                 @if (HttpContext.Current.User.IsInRole("HR_Leave_Admin") || HttpContext.Current.User.IsInRole("HR_Leave_Approver") || HttpContext.Current.User.IsInRole("HR_Admin"))
                 {
-                    <li id="hrm05500100" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeaveRequests, "Index", "LeaveRequestStatus", new { area = "HRM" }, null)<b class="arrow"></b></li>
-                    @*<li id="hrm166" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeaveTransferStatus, "Index", "LeaveTransferStatus", new { area = "HRM" }, null)<b class="arrow"></b></li>*@
+                    <li id="hrm05100100" class="actionlinlk">
+                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeavePlan, "Index", "LeavePlanHR", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="hrm05500100" class="actionlinlk">
+                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorLeave_LeaveRequests, "Index", "LeaveRequestStatus", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>
+
                 }
                 <li id="selfservice0106rtruiui" class="actionlinlk">
                     @Html.ActionLink("Leave Voids", "Index", "LeaveReturnStatus", new { area = "HRM" }, null)<b class="arrow"></b>

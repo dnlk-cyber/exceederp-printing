@@ -1424,6 +1424,14 @@ namespace ExceedERP.DataAccess
             this.HasKey<int>(o => o.MonthlyLeavePlanDetailId);
         }
     }
+    public class LeavePlanFinalValidationEntityTypeConfiguration : EntityTypeConfiguration<LeavePlanFinalValidation>
+    {
+        public LeavePlanFinalValidationEntityTypeConfiguration()
+        {
+            this.ToTable("LeavePlanFinalValidation", "HRM");
+            this.HasKey<int>(o => o.LeavePlanFinalValidationId);
+        }
+    }
     public class EmployeePerformanceActionsEntityTypeConfiguration : EntityTypeConfiguration<EmployeePerformanceScore>
     {
         public EmployeePerformanceActionsEntityTypeConfiguration()

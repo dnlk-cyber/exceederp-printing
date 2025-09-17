@@ -1335,6 +1335,8 @@
     <Compile Include="Areas\HRM\Controllers\Leave\LeavePayableDetailsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeavePayablesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeavePayableSettingController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Leave\LeavePlanFinalValidationController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Leave\LeavePlanHRController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveReturnController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveReturnPersonalController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveReturnStatusController.cs" />
@@ -1576,6 +1578,7 @@
     <Compile Include="Areas\HRM\Controllers\SelfCare\EmployeeAccidentRequestController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\HRMIsoDocumentsController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\InternalApplicationController.cs" />
+    <Compile Include="Areas\HRM\Controllers\SelfCare\LeavePlanDeparmentalValidationController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\LeavePlan_PesonalController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\LeaveRequestPersonalController.cs" />
     <Compile Include="Areas\HRM\Controllers\SelfCare\ManPowerPlanningRequestController.cs" />
@@ -7363,6 +7366,18 @@
     <Content Include="Areas\Inventory\Views\StoreReturnSelfCare\Index.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingCostEstimation.7z" />
     <Content Include="Areas\Manufacturing\Views\FurnitureJobOrderProduction\EditorTemplates\JobAssignmentTemplate.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePlanHR\EditorTemplates\EmployeeEditor.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePlanHR\EditorTemplates\EmployeeList.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePlanHR\EditorTemplates\Employees.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePlanHR\EditorTemplates\GLPeriodSelector.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePlanHR\EditorTemplates\GLYearSelector.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePlanHR\EditorTemplates\LeavePlan.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePlanHR\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePlan\EditorTemplates\EmployeeList.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePlan\EditorTemplates\GLPeriodSelector.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePlan\EditorTemplates\GLYearSelector.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePlan_Pesonal\EditorTemplates\GLPeriodSelector.cshtml" />
+    <Content Include="Areas\HRM\Views\LeavePlan_Pesonal\EditorTemplates\GLYearSelector.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
