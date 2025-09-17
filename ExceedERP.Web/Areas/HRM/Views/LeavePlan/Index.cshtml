@@ -12,6 +12,7 @@
           columns.Bound(c => c.EmployeeCode).Width(120);
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("EmployeeEditor").Width(210);
           columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(120);
+
           columns.Bound(c => c.FromAmharic).EditorTemplateName ("Calander").Width(150);
           columns.Bound(c => c.ToAmharic).EditorTemplateName ("Calander").Width(150);
           columns.Bound(c => c.LeaveAmount).Width (120);
@@ -56,40 +57,42 @@
       .FileName(Resources.NavigatorLeave_LeavePlan + ".pdf")
       .ProxyURL(Url.Action("Pdf_Export_Save", "LeavePlan")))
       .Events(ev =>
-       {
-           ev.DetailExpand("onDetailExpandUser");
-           ev.DataBound("onDataBound");
-
-       })
+      {
+          ev.DetailExpand("onDetailExpandUser");
+          ev.DataBound("onDataBound");
+      })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
          .Scrollable(h => h.Height(500))
-             .Events(x =>
-             {
-                 x.Edit("GetDate");
-                 x.Save("GetDate");
-             })
-             .Groupable()
-             .Sortable(sortable =>
-             {
-                 sortable.SortMode(GridSortMode.SingleColumn);
+         .Events(x =>
+         {
+             x.Edit("GetDate");
+             x.Save("GetDate");
 
-             })
-             .Filterable()
-             .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(5))
+         })
+        .Groupable()
+        .Sortable(sortable =>
+        {
+            sortable.SortMode(GridSortMode.SingleColumn);
+
+        })
+        .Filterable()
+        .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
           .DataSource(dataSource => dataSource
-          .Ajax()
+                .Ajax()
                 .Events(events =>
                 {
                     events.Error("error_handler(\"LeavePlangrid\")");
                     events.RequestStart("onRequestStart(\"LeavePlangrid\")");
                     events.RequestEnd("onRequestEnd(\"LeavePlangrid\")");
                 })
-               .Model(model => { model.Id(p => p.LeavePlanId);
+               .Model(model =>
+               {
+                   model.Id(p => p.LeavePlanId);
                    model.Field(p => p.EmployeeCode).Editable (false);
                })
           .Read(read => read.Action("LeavePlans_Read", "LeavePlan"))
@@ -141,24 +144,14 @@
                     .Ajax()
                     .Events(events =>
                     {
-
-
                         events.Error("error_handler(\"LeavePlanValidationgrid_#=LeavePlanId#\")");
                         events.RequestStart("onRequestStart(\"LeavePlanValidationgrid_#=LeavePlanId#\")");
                         events.RequestEnd("onRequestEnd(\"LeavePlanValidationgrid_#=LeavePlanId#\")");
-
-
-
-
                     })
-
-
                     .Model(model =>
                     {
                         model.Id(p => p.LeavePlanValidationId);
                         //model.Field(p => p.ApproverDepartment).Editable(false);
-
-
 
                     })
                     .Read(read => read.Action("LeavePlanDeparmentalValidation_Read", "LeavePlanDeparmentalValidation", new { gId = "#=LeavePlanId#" }))

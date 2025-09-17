@@ -3,9 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
@@ -16,6 +14,7 @@ using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.HRMPlan;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
@@ -23,10 +22,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
     public class LeavePlan_PesonalController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        //public static DateTime To { get; set; }
-        //public static string ToAmharic { get; set; }
-        //public static DateTime From { get; set; }
-        //public static string FromAmharic { get; set; }
         HRMInputs inputs = new HRMInputs();
         public ActionResult Index()
         {
@@ -41,6 +36,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         {
             var list = inputs.GetEmployees(User.Identity.Name);
             ViewData["EmployeeList"] = list.Where(x => x.IsActive);
+            ViewData["Period"] = db.GLPeriods.AsQueryable();
+            ViewData["PeriodList"] = db.GLFiscalYears.AsQueryable();
         }
         public JsonResult GetPeriod()
         {
@@ -49,7 +46,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             return Json(periodList.Select(p => new { GlFiscalYearId = p.GlFiscalYearId, Name = p.Name }), JsonRequestBehavior.AllowGet);
         }
-    
+       
         public ActionResult LeavePlan_Pesonal_Read([DataSourceRequest]DataSourceRequest request)
         {
             var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -61,6 +58,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 GlFiscalYearId = leavePlan.GlFiscalYearId,
                 From = leavePlan.From,
                 To = leavePlan.To,
+                Day = leavePlan.Day,
                 LeaveAmount = leavePlan.LeaveAmount,
                 Status = leavePlan.Status,
                 Remark = leavePlan.Remark,
@@ -97,63 +95,47 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             });
 
             return Json(result);
-        }
-
-      
+        }     
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeavePlan_Pesonal_Create([DataSourceRequest] DataSourceRequest request, LeavePlan leavePlan)
         {
             // Clear any existing model state errors
             ModelState.Clear();
             leavePlan.EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            if(leavePlan.EmployeeId == 0)
+            #region validation
+
+            // Validation
+            bool hasFromTo =(!string.IsNullOrEmpty(leavePlan.FromAmharic) && !string.IsNullOrEmpty(leavePlan.ToAmharic));
+
+            if (!hasFromTo )
             {
-                ModelState.AddModelError("", "Map your  Employee Id and User first!!");
+                ModelState.AddModelError("", "Select (From and To Dates) !");
                 return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
             }
-            // Check if both FromAmharic and ToAmharic dates are provided
-            if (leavePlan.FromAmharic == null || leavePlan.ToAmharic == null)
+            // Convert if Ethiopian input provided
+            if (!string.IsNullOrEmpty(leavePlan.FromAmharic) && !string.IsNullOrEmpty(leavePlan.ToAmharic))
             {
-                ModelState.AddModelError("", "Both From and To Dates are required!!");
-                return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
+                leavePlan.From = HrHelper.ParseEthiopicDate(leavePlan.FromAmharic);
+                leavePlan.To = HrHelper.ParseEthiopicDate(leavePlan.ToAmharic);
             }
-
-            // Convert FromAmharic date to Gregorian
-            if (leavePlan.FromAmharic != null)
-            {
-                var splitDate = leavePlan.FromAmharic.Split('/');
-                leavePlan.From = XAPI.EthiopicDateTime.GetGregorianDate(
-                    Convert.ToInt32(splitDate[0]),
-                    Convert.ToInt32(splitDate[1]),
-                    Convert.ToInt32(splitDate[2]));
-            }
-
-            // Convert ToAmharic date to Gregorian
-            if (leavePlan.ToAmharic != null)
-            {
-                var splitDate = leavePlan.ToAmharic.Split('/');
-                leavePlan.To = XAPI.EthiopicDateTime.GetGregorianDate(
-                    Convert.ToInt32(splitDate[0]),
-                    Convert.ToInt32(splitDate[1]),
-                    Convert.ToInt32(splitDate[2]));
-            }
-
             // Check if the 'From' date is after the 'To' date
             if (leavePlan.From.Date > leavePlan.To.Date)
             {
-                ModelState.AddModelError("", "Please check the date range!!");
+                ModelState.AddModelError("", $"Please check the date range(from Date: {leavePlan.From.Date}  must be smaller than To Date:{leavePlan.To.Date} )!!");
                 return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
             }
-
-            // Calculate the total number of days in the leave period
-            double resultDate = GetWeekDays(leavePlan.From,leavePlan.To);
-
+            var period = db.GLPeriods.FirstOrDefault(x => x.DateFrom <= leavePlan.From && x.DateTo >= leavePlan.To);
+            if (period != null)
+            {
+                leavePlan.GLPeriodId = period.GLPeriodId;
+            }
+            #endregion
+            
             // Retrieve the fiscal year information
             var year = db.GLFiscalYears.Find(leavePlan.GlFiscalYearId);
             int selectedToYear = year.DateTo.Year;
             int selectedFromYear = year.DateFrom.Year;
             int currentYear = DateTime.Now.Year;
-
             // Check if the leave plan is for the current year
             if ((selectedFromYear < currentYear && selectedToYear < currentYear) ||
                 (selectedFromYear > currentYear && selectedToYear > currentYear))
@@ -161,6 +143,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 ModelState.AddModelError("", "You cannot plan for other years");
                 return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
             }
+            // Calculate the total number of days in the leave period
+            decimal resultDate = HrHelper.GetLeaveDays(leavePlan.From, leavePlan.To, year.GlFiscalYearId, leavePlan.Day, LeaveType.ANNUAL, leavePlan.EmployeeId);
 
             // Calculate the total leave balance for the employee
             var totalSum = db.LeavesEntitle
@@ -171,7 +155,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             // Check if the requested leave amount exceeds the employee's total balance
             if (leavePlan.LeaveAmount > totalBalance)
             {
-                ModelState.AddModelError("", "You cannot plan such an amount of leave!!");
+                ModelState.AddModelError("", $"You cannot plan more than {totalBalance} such an amount of leave!!");
                 return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
             }
 
@@ -184,10 +168,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             // Check if the requested leave amount exceeds the number of days in the period
             else if (leavePlan.LeaveAmount > (decimal)resultDate)
             {
-                ModelState.AddModelError("", "Leave date cannot be out of range");
+                ModelState.AddModelError("", $"The counted Days between  Planned Leave date cannot be out of range{resultDate} but you entered Amount {leavePlan.LeaveAmount }");
                 return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
             }
-
+            if(leavePlan.LeaveAmount == 0)
+            {
+                leavePlan.LeaveAmount = resultDate;
+            }
             // Set additional properties for the leave plan
             leavePlan.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
             leavePlan.EmployeeCode = inputs.GetEmployees()
@@ -219,123 +206,24 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             // Return the result as JSON
             return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
         }
-
-        //public ActionResult LeavePlan_Pesonal_Create([DataSourceRequest]DataSourceRequest request, LeavePlan leavePlan)
-        //{
-        //    ModelState.Clear();
-        //    if (leavePlan.FromAmharic == null || leavePlan.ToAmharic == null)
-        //    {
-        //        ModelState.AddModelError("", "Both From and to Dates are required!!");
-        //        return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
-        //    }
-        //    if (leavePlan.FromAmharic != null)
-        //    {
-        //        var splitDate = leavePlan.FromAmharic.Split('/');
-        //        leavePlan.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-        //    }
-        //    if (leavePlan.ToAmharic != null)
-        //    {
-        //        var splitDate = leavePlan.ToAmharic.Split('/');
-        //        leavePlan.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-        //    }
-        //    if (leavePlan.From.Date > leavePlan.To.Date)
-        //    {
-        //        ModelState.AddModelError("", "Please Check the date range!!");
-        //        return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
-
-        //    }
-
-        //    int resultDate = leavePlan.To.Subtract(leavePlan.From).Days;
-
-        //    var year = db.GLFiscalYears.Find(leavePlan.GlFiscalYearId);
-        //    int selectedToYear = year.DateTo.Year;
-        //    int selectedFromYear = year.DateFrom.Year;
-        //    int currentYear = DateTime.Now.Year;
-
-
-
-        //    if ((selectedFromYear < currentYear && selectedToYear < currentYear) || (selectedFromYear > currentYear && selectedToYear > currentYear))
-        //    {
-        //        ModelState.AddModelError("", "You can not Plan for other years");
-        //        return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
-
-        //    }
-        //    var totalSum = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == leavePlan.EmployeeId).ToList();
-        //    var totalBalance = totalSum.Sum(x => x.Balance);
-        //    if (leavePlan.LeaveAmount > totalBalance)
-        //    {
-
-        //        ModelState.AddModelError("", "You can not plan such amount of leave!!");
-        //        return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
-
-
-        //    }
-        //    else if (leavePlan.LeaveAmount > resultDate)
-        //    {
-        //        ModelState.AddModelError("", "Leave Date cannot be out of range");
-        //        return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
-
-        //    }
-        //    leavePlan.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-        //    leavePlan.EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == leavePlan.EmployeeId)?.EmployeeCode;
-        //    leavePlan.CreatedBy = User.Identity.Name;
-        //    leavePlan.DateCreated = DateTime.Now;
-        //    if (ModelState.IsValid)
-        //    {
-
-        //        var entity = GetMappedObject(leavePlan);
-        //            db.LeavePlans.Add(entity);
-        //            db.SaveChanges();
-        //            leavePlan.LeavePlanId = entity.LeavePlanId;
-
-        //            #region operation log
-        //            var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-        //            if (person != null)
-        //            {
-        //                var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-
-        //                    UserHelper.OperationLog(Request.UserHostAddress, "Leave Plan", "Success", User.Identity.Name, "Leave Plan for " + person.EmployeeCode + " is Created By  " + User.Identity.Name,Modules.HRM);
-
-        //            }
-        //            #endregion
-
-
-        //    }
-
-        //    return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
-        //}
-
-
+        
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeavePlan_Pesonal_Update([DataSourceRequest]DataSourceRequest request, LeavePlan leavePlan)
         {
             ModelState.Clear();
-            // Check if both FromAmharic and ToAmharic dates are provided
-            if (leavePlan.FromAmharic == null || leavePlan.ToAmharic == null)
+
+            #region validation
+           
+
+            if (string.IsNullOrEmpty(leavePlan.FromAmharic)&& string.IsNullOrEmpty(leavePlan.ToAmharic))
             {
-                ModelState.AddModelError("", "Both From and To Dates are required!!");
+                ModelState.AddModelError("", "Select (From and To Dates) ");
                 return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
             }
-
-            // Convert FromAmharic date to Gregorian
-            if (leavePlan.FromAmharic != null)
-            {
-                var splitDate = leavePlan.FromAmharic.Split('/');
-                leavePlan.From = XAPI.EthiopicDateTime.GetGregorianDate(
-                    Convert.ToInt32(splitDate[0]),
-                    Convert.ToInt32(splitDate[1]),
-                    Convert.ToInt32(splitDate[2]));
-            }
-
-            // Convert ToAmharic date to Gregorian
-            if (leavePlan.ToAmharic != null)
-            {
-                var splitDate = leavePlan.ToAmharic.Split('/');
-                leavePlan.To = XAPI.EthiopicDateTime.GetGregorianDate(
-                    Convert.ToInt32(splitDate[0]),
-                    Convert.ToInt32(splitDate[1]),
-                    Convert.ToInt32(splitDate[2]));
-            }
+            // Case 1: Both GLPeriod and From/To provided
+            leavePlan.From = HrHelper.ParseEthiopicDate(leavePlan.FromAmharic);
+            leavePlan.To = HrHelper.ParseEthiopicDate(leavePlan.ToAmharic);
+            #endregion
 
             // Check if the 'From' date is after the 'To' date
             if (leavePlan.From.Date > leavePlan.To.Date)
@@ -343,16 +231,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 ModelState.AddModelError("", "Please check the date range!!");
                 return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
             }
-
-            // Calculate the total number of days in the leave period
-            double resultDate = GetWeekDays(leavePlan.From, leavePlan.To);
-
+            
             // Retrieve the fiscal year information
             var year = db.GLFiscalYears.Find(leavePlan.GlFiscalYearId);
             int selectedToYear = year.DateTo.Year;
             int selectedFromYear = year.DateFrom.Year;
             int currentYear = DateTime.Now.Year;
-
             // Check if the leave plan is for the current year
             if ((selectedFromYear < currentYear && selectedToYear < currentYear) ||
                 (selectedFromYear > currentYear && selectedToYear > currentYear))
@@ -360,7 +244,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 ModelState.AddModelError("", "You cannot plan for other years");
                 return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
             }
-
+            // Calculate the total number of days in the leave period
+            decimal resultDate = HrHelper.GetLeaveDays(leavePlan.From, leavePlan.To, leavePlan.GlFiscalYearId, leavePlan.Day, LeaveType.ANNUAL, leavePlan.EmployeeId);
             // Calculate the total leave balance for the employee
             var totalSum = db.LeavesEntitle
                 .Where(x => !x.IsExpired && x.EmployeeId == leavePlan.EmployeeId)
@@ -370,7 +255,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             // Check if the requested leave amount exceeds the employee's total balance
             if (leavePlan.LeaveAmount > totalBalance)
             {
-                ModelState.AddModelError("", "You cannot plan such an amount of leave!!");
+                ModelState.AddModelError("", $"You cannot plan more than {totalBalance} such an amount of leave!!");
                 return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
             }
 
@@ -386,7 +271,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 ModelState.AddModelError("", "Leave date cannot be out of range");
                 return Json(new[] { leavePlan }.ToDataSourceResult(request, ModelState));
             }
-
+            if (leavePlan.LeaveAmount == 0)
+            {
+                leavePlan.LeaveAmount = resultDate;
+            }
             // Set additional properties for the leave plan
             leavePlan.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
             leavePlan.EmployeeCode = inputs.GetEmployees()
@@ -448,8 +336,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 LeavePlanId = leavePlan.LeavePlanId,
                 EmployeeId = leavePlan.EmployeeId,
                 GlFiscalYearId = leavePlan.GlFiscalYearId,
+                //GLPeriodId = leavePlan.GLPeriodId,
                 From = leavePlan.From,
                 To = leavePlan.To,
+                Day = leavePlan.Day,
                 LeaveAmount = leavePlan.LeaveAmount,
                 Status = leavePlan.Status,
                 Remark = leavePlan.Remark,

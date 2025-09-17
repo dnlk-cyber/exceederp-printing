@@ -54,7 +54,10 @@ namespace ExceedERP.Core.Domain.HRM.HRMPlan
         [Required]
         [Display(Name = "HR_HRMPlan_LeavePlan_LeaveAmount", ResourceType = typeof(Localization.Resources))]
         public decimal LeaveAmount { get; set; }
-          
+        public LeaveDay Day { get; set; }
+        [Display(Name = "Month")]
+        public int? GLPeriodId { get; set; }
+
     }
     public class LeavePlanValidation : TrackUserOperation
     {
