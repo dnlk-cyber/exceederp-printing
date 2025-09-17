@@ -35,7 +35,7 @@ namespace ExceedERP.Helpers.Printing
                     return -1;
                 }
 
-                var paperQty = Math.Ceiling((double)estimation.ProductQuantity * estimation.Pages / (paperSize.NoOfPagesToA1Ratio * 2));
+                var paperQty = Math.Ceiling((double)estimation.ProductQuantity / paperSize.NoOfPagesToA1Ratio);
                 if (categoryItem.PaperType == PaperType.SheetFed)
                 {
                     return Math.Ceiling(paperQty * (1 + model.WastageInPercentage));
@@ -113,7 +113,7 @@ namespace ExceedERP.Helpers.Printing
                     return -1;
                 }
 
-                var plateQuantity = (estimation.CoverNoOfColor) * Math.Ceiling(estimation.ProductQuantity / machine.OutputRate * machineDetail.SectionUp);
+                var plateQuantity = (estimation.TextNoOfColors) * Math.Ceiling(estimation.ProductQuantity/ machine.OutputRate);
                 return Math.Ceiling((double)plateQuantity * (1 + model.WastageInPercentage));
             }
         }

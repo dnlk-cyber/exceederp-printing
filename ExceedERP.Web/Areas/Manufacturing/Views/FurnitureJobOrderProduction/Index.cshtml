@@ -48,7 +48,7 @@
         .Items(item1 =>
         {
             item1.Add().Text("Bill Of Quantity").Content(@<text>@BillOfMaterial()</text>);
-            item1.Add().Text("Material Requisition").Content(@<text>@StoreRequisition()</text>);
+            @*item1.Add().Text("Material Requisition").Content(@<text>@StoreRequisition()</text>);*@
             item1.Add().Text("Bill Of Labor").Content(@<text>@Labor()</text>);
             item1.Add().Text("Job Assignment").Content(@<text>@JobAssignment()</text>);
             item1.Add().Text("Docs").Content(@<text>@BoqDocs()</text>);
@@ -56,7 +56,6 @@
 </script>
 @helper BillOfMaterial()
 {
-
     @(Html.Kendo().Grid<ExceedERP.Core.Domain.Manufacturing.Production.FurnitureProductionBillOfMaterial>()
                                                           .Name("Material_#=FurnitureJobOrderProductionId#")
                                                           .Columns(columns =>
@@ -69,7 +68,6 @@
                                                               columns.Bound(c => c.Remark);
 
                                                           })
-
                                                           .Editable(editable => editable.Mode(GridEditMode.InLine))
                                                           .Filterable()
                                                           .Scrollable()
@@ -78,7 +76,6 @@
 
                                                               .Model(model => model.Id(p => p.FurnitureProductionBillOfMaterialId))
                                                               .Read(read => read.Action("FurnitureProductionBillOfMaterials_Read", "FurnitureProductionBillOfMaterial", new { Id = "#=FurnitureJobOrderProductionId#" }))
-
                                                           ).ToClientTemplate()
     )
 }
@@ -130,7 +127,7 @@
                                               {
                                                   toolbar.Create();
                                               })
-                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("JobAssignmentTemplate"))
                                               .Filterable()
                                               .Events(ev => ev.DataBound("onChildDataBound"))
                                               .Scrollable()
@@ -515,7 +512,16 @@
 }
 
 <script type="text/javascript">
-
+    function filterOperator() {
+        return {          
+             text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterCategory() {
+        return {
+            taskType: $("#Type").val()
+        }
+    }
 
     function onChildDataBound(e) {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
@@ -827,8 +833,8 @@
         height: auto;
     }
 
-    .row .col-sm-2 {
-        width: 150px;
+    .row .col-sm-12 {
+        width: 300px;
     }
 
     .row {

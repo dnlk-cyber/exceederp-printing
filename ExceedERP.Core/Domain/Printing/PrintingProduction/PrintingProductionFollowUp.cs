@@ -73,16 +73,58 @@ namespace ExceedERP.Core.Domain.Printing.PrintingProduction
         public int PrintingProductionFollowUpTaskId { get; set; }
 
     }
-    public class PrintingDailyFollowUpDelayReason : TrackUserOperation
+    public enum IssueType
+    {
+        QualityIssue = 1,
+        MachineBreakdown = 2,
+        MaterialShortage = 3,
+        OperatorAbsence = 4,
+        Other = 5
+    }
+    public class PrintingTaskIssue : TrackUserOperation
     {
         [Key]
-        public int PrintingDailyFollowUpDelayReasonId { get; set; } 
-        public string Reason { get; set; }
+        public int PrintingTaskIssueId { get; set; }
+        public IssueType IssueType { get; set; } 
         public string Description { get; set; }
+        public DateTime ReportedTime { get; set; }
+        public DateTime? ResolvedTime { get; set; }
+        public string Resolution { get; set; }
+        public double TimeSpentInMinute { get; set; }
         //fk
         public int PrintingProductionDailyFollowUpDetailId { get; set; }
     }
 
+    public class PrintingDailyFollowUpLogBook : TrackUserOperation
+    {
+        public int PrintingDailyFollowUpLogBookId { get; set; }
+        public string ActivityType { get; set; }
+        public double TimeSpent { get; set; }
+        //fk
+        public int PrintingProductionDailyFollowUpDetailId { get; set; }
+    }
+
+    public class PressDailyFollowUpWastage : TrackUserOperation
+    {
+        public int PressDailyFollowUpWastageId { get; set; }
+        public string UOM { get; set; }
+        public decimal Amount { get; set; }
+        //fk
+        public int PrintingProductionDailyFollowUpDetailId { get; set; }
+    }
+    public class PrintingDailyFollowUpMachineMaintenance : TrackUserOperation
+    {
+        public int PrintingDailyFollowUpMachineMaintenanceId { get; set; }
+        public string Reason { get; set; }
+        public DateTime IssueReportedTime { get; set; }
+        public DateTime? MaintenanceStartTime { get; set; }
+        public DateTime? MaintenanceEndTime { get; set; }
+        public double MaintenanceTime { get; set; }
+        public int TechnicianId { get; set; }
+        public string Remark { get; set; }
+        //fk
+        public int PrintingProductionDailyFollowUpDetailId { get; set; }
+    }
     public class PrintingProductionAllottedRawMaterial : TrackUserOperation
     {
         [Key]
@@ -101,4 +143,6 @@ namespace ExceedERP.Core.Domain.Printing.PrintingProduction
 
     }
 
+    
+    
 }

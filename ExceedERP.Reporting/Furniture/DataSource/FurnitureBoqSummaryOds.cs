@@ -1,4 +1,5 @@
 ﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Furniture.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,9 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                     CheckedDate = boq.SendForApprovalTime,
                     CreatedBy = boq.CreatedBy,
                     DateCreated = boq.DateCreated,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(boq.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(boq.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(boq.SendForApprovalBy)
                 };
 
             }

@@ -232,6 +232,7 @@
     <Compile Include="Domain\CMS\TraineeModels\TraineeProgram.cs" />
     <Compile Include="Domain\CMS\TraineeModels\WelderPerformanceQualification.cs" />
     <Compile Include="Domain\Common\Approval.cs" />
+    <Compile Include="Domain\Common\CacheKeys.cs" />
     <Compile Include="Domain\Common\DocumentApproval\ApprovalDelegation.cs" />
     <Compile Include="Domain\Common\DocumentApproval\ApprovalGroup.cs" />
     <Compile Include="Domain\Common\DocumentApproval\ApprovalGroupRule.cs" />
@@ -1310,6 +1311,7 @@
     <Compile Include="Domain\Printing\PrintingOverAllCost.cs" />
     <Compile Include="Domain\Printing\PrintingPaperSize.cs" />
     <Compile Include="Domain\Printing\PrintingProcess.cs" />
+    <Compile Include="Domain\Printing\PrintingProduction\JobFollowupClaudi.cs" />
     <Compile Include="Domain\Printing\PrintingProduction\PrintingCommon.cs" />
     <Compile Include="Domain\Printing\PrintingProduction\PrintingProductionFollowUp.cs" />
     <Compile Include="Domain\Printing\PrintingProductProcess.cs" />

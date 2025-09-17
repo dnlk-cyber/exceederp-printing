@@ -1,0 +1,561 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Store Return (Self Care)</legend>
+
+@(Html.Kendo().Grid<StoreReturn>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.StoreReturnID).Title("Return No.").Width(130).Width(120).ClientTemplate("#=appendZeros(StoreReturnID)#");
+          columns.Bound(c => c.Reference).Width(120);
+          columns.Bound(c => c.Reason).Width(120);
+          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(120).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+          columns.Bound(c => c.ReturnDate).Width(130);
+          columns.Bound(c => c.ConfirmationLetter).Width(130);
+          columns.Bound(c => c.IsForOther).Width(130).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= IsForOther #' " +
+              "# if (IsForOther) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
+          columns.Bound(c => c.Remark).Width(120);
+          columns.Bound(c => c.Status).Width(80);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("StoreReturn").Window(w => w.Title("Store Return")))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Events(ev => ev.DetailExpand("detailExpandMasterDepartment"))
+      .Events(x => x.DataBound("onDataBoundMasterDepartment"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("StoreReturnID").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+
+          .Model(model =>
+          {
+              model.Id(p => p.StoreReturnID);
+              model.Field(p => p.BranchId).Editable(false);
+              model.Field(p => p.BusinessUnitId).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+              //model.Field(p => p.GLPeriodId).Editable(false);
+              model.Field(p => p.StoreReturnID).Editable(false);
+
+               model.Field(p => p.DepartmentOnlineApprovedBy).Editable(false);
+                model.Field(p => p.DepartmentOnlineApprovedTime).Editable(false);
+                model.Field(p => p.DepartmentSendForApprovalBy).Editable(false);
+                model.Field(p => p.DepartmentSendForApprovalTime).Editable(false);
+                model.Field(p => p.IsDepartmentOnlineApproved).Editable(false);
+                model.Field(p => p.IsDepartmentSendForApproval).Editable(false);
+          })
+          .Read(read => read.Action("StoreReturns_Read", "StoreReturnSelfCare").Data("sendForgery"))
+          .Create(create => create.Action("StoreReturns_Create", "StoreReturnSelfCare").Data("sendForgery"))
+          .Update(update => update.Action("StoreReturns_Update", "StoreReturnSelfCare").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("StoreReturns_Destroy", "StoreReturnSelfCare").Data("sendForgery"))
+      ).ClientDetailTemplateId("storereturntemplate"))
+
+
+<script id="storereturntemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().SelectedIndex(0).Name("tabStrip_#=StoreReturnID#").Items(items =>
+                              {
+                                  items.Add().Text("Detail").Content(
+                                    @<text>
+
+                                        # if (!IsOnlineApproved&&!IsSendForApproval)
+                                        {#
+
+                                        <a onclick='return sendForApproval("#=StoreReturnID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                        <br />
+                                        # } #
+
+                                        # if (IsOnlineApproved)
+                                        {#
+                                        <a href='@Url.Action("StoreReturnPrint", "InventoryPrint")/#=StoreReturnID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                        <br />
+                                        # } #
+
+                                        <div>
+                                            <hr>
+                                            <dl class="dl-horizontal">
+                                                <dt>
+                                                    Store Return Number
+                                                </dt>
+                                                <dd>
+                                                    #= StoreReturnID #
+                                                </dd>
+
+                                                <dt>
+                                                    Store
+                                                </dt>
+                                                <dd>
+                                                    #= StoreCode #
+                                                </dd>
+
+                                                <dt>
+                                                    Status
+                                                </dt>
+                                                <dd>
+                                                    #= Status #
+                                                </dd>
+
+                                                <dt>
+                                                    Reason
+                                                </dt>
+                                                <dd>
+                                                    #= Reason #
+                                                </dd>
+                                                <dt>
+                                                    Remark
+                                                </dt>
+                                                <dd>
+                                                    #= Remark #
+                                                </dd>
+                                                <dt>
+                                                    CreatedOn
+                                                </dt>
+                                                <dd>
+                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy hh:mm tt') #
+
+                                                </dd>
+                                                <dt>
+                                                    CreatedBy
+                                                </dt>
+                                                <dd>
+                                                    #= CreatedBy #
+                                                </dd>
+                                                <dt>
+                                                    Modified By
+                                                </dt>
+                                                <dd>
+                                                    #= ModifiedBy #s
+                                                </dd>
+                                                <dt>
+                                                    Modified Date
+                                                </dt>
+                                                <dd>
+                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy hh:mm tt') #
+                                                </dd>
+                                            </dl>
+
+                                        </div>
+
+                                        <hr>
+
+                                        @*# if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
+                                        {#
+                                        @if (HttpContext.Current.User.IsInRole("Property_Void"))
+                                                    {
+                                            <a onclick='return voidRecord("#=StoreReturnID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                                    }
+                                       
+                                        # } #*@
+
+                                    </text>);
+
+
+
+                                          items.Add().Text("Item").Content(
+                    @<text>
+
+                        @(Html.Kendo().Grid<StoreReturnItems>()
+                                                      .Name("StoreReturnItem_#=StoreReturnID#")
+                                                      .Columns(columns =>
+                                                      {
+                                                          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(200);
+                                                          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(200);
+                                                          columns.Bound(c => c.Quantity).Width(140);
+                                                          columns.Bound(c => c.NoPrice).Width(90).Title("No Price ?").ClientTemplate(
+                                                            "<input type='checkbox' disabled = 'true' value='\\#= NoPrice \\#' " +
+                                                            "\\# if (NoPrice) { \\#" +
+                                                            "checked='checked'" +
+                                                            "\\# } \\#" +
+                                                            "/>"
+                                                            );
+                                                          columns.Bound(c => c.UnitPrice).Width(140);
+                                                          columns.Bound(c => c.TotalPrice).Width(140);
+                                                          columns.Command(command =>
+                                                          {
+                                                              command.Edit();
+                                                              command.Destroy();
+                                                          }).Width(680);
+                                                      })
+                                                      .ToolBar(toolbar =>
+                                                      {
+                                                          toolbar.Create();
+                                                      })
+                                                      .Events(ev => ev.Edit("onEdit"))
+                                                     .Events(x => x.DataBound("onDataBoundLineDepartment"))
+                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                      .Scrollable()
+                                                      .DataSource(dataSource => dataSource
+                                                          .Ajax()
+                                                          .Events(ev => ev
+                                                              .Error("error_handler(\"StoreReturnItem_#=StoreReturnID#\")")
+                                                              .RequestStart("onRequestStart(\"StoreReturnItem_#=StoreReturnID#\")")
+                                                              .RequestEnd("onRequestEnd(\"StoreReturnItem_#=StoreReturnID#\")"))
+
+                                                           .Model(model =>
+                                                           {
+                                                               model.Id(p => p.StoreReturnItemsID);
+                                                               model.Field(p => p.StoreReturnItemsID).Editable(false);
+                                                               model.Field(p => p.TotalPrice).Editable(false);
+                                                               model.Field(p => p.StoreReturnID).Editable(false);
+                                                           })
+                                                          .Read(read => read.Action("StoreReturnItems_Read", "StoreReturnItemSelfCare", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                                                          .Create(create => create.Action("StoreReturnItems_Create", "StoreReturnItemSelfCare", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                                                          .Update(update => update.Action("StoreReturnItems_Update", "StoreReturnItemSelfCare").Data("sendForgery"))
+                                                          .Destroy(destroy => destroy.Action("StoreReturnItems_Destroy", "StoreReturnItemSelfCare").Data("sendForgery"))
+                                                      ).ToClientTemplate())
+
+                    </text>);
+
+                              items.Add().Text("Attachment").Content(@<text>
+
+                                @FilUploaderBid()
+
+                            </text>);
+
+
+                                    items.Add().Text("Validation").Content(
+                @<text>
+                    @(Html.Kendo().Grid<StoreReturnDepartmentValidation>()
+                                                  .Name("StoreReturnDepartmentValidation_#=StoreReturnID#")
+                                                  .Columns(columns =>
+                                                  {
+                                                              columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                              columns.Bound(c => c.Remark).Width(170);
+                                                              columns.Command(command =>
+                                      {
+                                                              command.Edit();
+                                                  //command.Destroy();
+                                              });
+                                                          })
+                                                  .ToolBar(toolbar =>
+                                                  {
+                                                              toolbar.Create();
+                                                          })
+                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                  .Scrollable()
+                                                  .Events(x => x.DataBound("onDataBoundValidationDepartment"))
+                                                  .DataSource(dataSource => dataSource
+                                                      .Ajax()
+                                                      .Events(ev => ev
+                                                          .Error("error_handler(\"StoreReturnDepartmentValidation_#=StoreReturnID#\")")
+                                                          .RequestStart("onRequestStart(\"StoreReturnDepartmentValidation_#=StoreReturnID#\")")
+                                                          .RequestEnd("onRequestEnd(\"StoreReturnDepartmentValidation_#=StoreReturnID#\")"))
+
+                                                      .Model(model => model.Id(p => p.StoreReturnDepartmentValidationID))
+                                                      .Read(read => read.Action("StoreReturnDepartmentValidations_Read", "StoreReturnDepartmentValidation", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                                                      .Create(create => create.Action("StoreReturnDepartmentValidations_Create", "StoreReturnDepartmentValidation", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                                                      .Update(update => update.Action("StoreReturnDepartmentValidations_Update", "StoreReturnDepartmentValidation").Data("sendForgery"))
+                                                      .Destroy(destroy => destroy.Action("StoreReturnDepartmentValidations_Destroy", "StoreReturnDepartmentValidation").Data("sendForgery"))
+                                                  ).ToClientTemplate())
+
+                </text>);
+                          }).ToClientTemplate())
+
+
+
+    @helper FilUploaderBid()
+    {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.StoreReturnAttachment>()
+                      .Name("StoreReturnAttachment_#=StoreReturnID#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.FileName).ClientTemplate("<a href='/StoreReturnAttachmentSelfCare/FileDwonload?id=\\#=StoreReturnAttachmentId \\#'>\\#=FileName \\#</a>").Width(200);
+                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(580);
+                      })
+                      .ToolBar(t => t.Template(
+                        @<text>
+                            @(Html.Kendo().Upload()
+                                          .Name("storeReturnAttachments")
+                                          .Async(a => a.Save("StoreReturnAttachments_Create", "StoreReturnAttachmentSelfCare", new { id = "#=StoreReturnID #" }))
+                                          .Events(e => e.Complete("bidSuccess"))
+                                          .ShowFileList(false)
+                                          .ToClientTemplate())
+                        </text>
+                                    ))
+
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .HtmlAttributes(new { style = "height: 350px;" })
+                                .Scrollable()
+                               .Events(x => x.DataBound("onDataBoundLineDepartment"))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(ev => ev
+                                        .Error("error_handler(\"StoreReturnAttachment_#=StoreReturnID#\")")
+                                        .RequestStart("onRequestStart(\"StoreReturnAttachment_#=StoreReturnID#\")")
+                                        .RequestEnd("onRequestEnd(\"StoreReturnAttachment_#=StoreReturnID#\")"))
+                                    .Model(model => model.Id(p => p.StoreReturnAttachmentId))
+                                    .Read(read => read.Action("StoreReturnAttachments_Read", "StoreReturnAttachment", new { id = "#= StoreReturnID #" }).Data("sendForgery"))
+                                    .Create(create => create.Action("StoreReturnAttachments_Create", "StoreReturnAttachment", new { id = "#=StoreReturnID #" }).Data("sendForgery"))
+                                    .Update(update => update.Action("TenderMinuteUploads_Update", "StoreReturnAttachment").Data("sendForgery"))
+                                    .Destroy(destroy => destroy.Action("StoreReturnAttachments_Destroy", "StoreReturnAttachment").Data("sendForgery"))
+                                ).ToClientTemplate())
+    }
+</script>
+
+<script>
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "StoreReturn", new { area = "Inventory" })',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendforDepartmentApproval", "StoreReturnSelfCare", new { area = "Inventory" })',
+            data: { id: id },
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+
+    function onSelectedPeriod() {
+        var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+        var min = "";
+        var max = "";
+        if (periodId) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPeriodDateRangeById", "DataProvider", new {area = "Inventory"})',
+            data: { id: periodId },
+            success: function (result) {
+                min = result.Min;
+                max = result.Max;
+                //update
+                var datepicker = $("#ReturnDate").data("kendoDatePicker");
+                datepicker.setOptions({
+                    format: "yyyy-MM-dd",
+                    min:min,
+                    max:max,
+                    value: new Date(),
+                    change: onDOBChange
+                });
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+                });
+                }
+
+    }
+
+    function isForOther(obj) {
+
+        if ($(obj).is(":checked")) {
+            $("#forbranchDiv").show();
+
+        } else {
+            $("#forbranchDiv").hide();
+        }
+
+    }
+
+    function bidSuccess() {
+
+    }
+
+
+    var storeCode;
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+
+    var isDeptapproved;
+    var isDeptSendForApproval;
+
+    function detailExpandMasterDepartment(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.StoreReturnID;
+        isDeptapproved = masterDataItem.IsDepartmentOnlineApproved;
+        isDeptSendForApproval = masterDataItem.IsDepartmentSendForApproval;
+    }
+    function onDataBoundMasterDepartment(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsDepartmentOnlineApproved || gridData[i].IsDepartmentSendForApproval) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsDepartmentSendForApproval && !dataItem.IsDepartmentOnlineApproved) {
+                row.css("background-color", "lightgreen");
+            }
+            if (!dataItem.IsDepartmentSendForApproval && !dataItem.IsDepartmentOnlineApproved) {
+                row.css("background-color", "lightskyblue");
+            }
+
+            if (dataItem.IsBudgetApproved) {
+                row.css("background-color", "gold");
+            }
+
+            if (dataItem.Paid) {
+                row.css("background-color", "honeydew");
+            }
+
+            if (dataItem.IsVoid) {
+                row.css("background-color", "slategray");
+                row.css("color", "black");
+            }
+        }
+
+
+    }
+    function onDataBoundLineDepartment(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isDeptapproved || isDeptSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+    function onDataBoundValidationDepartment(e) {
+
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isDeptapproved || !isDeptSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+
+
+        this.table.find(".k-grid-edit").hide();
+    }
+
+    function onEdit(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        storeCode = masterDataItem.StoreCode;
+        //    codeid = masterDataItem.GoodSellingAndLendingID;
+    }
+
+
+//}
+
+
+
+    function OnIndexCall(elem) {
+
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+    }
+    var popup;
+    var aCode;
+
+
+    function SelectItemCode() {
+
+        // codeid = masterDataItem.GoodSellingAndLendingID;
+        popup = window.open('/Inventory/DataProvider/ItemFiltering', 'WindowPopup', 'top=100, left=400, width=400, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    function setLang(ItemCode) {
+        aCode = ItemCode;
+        $("#ItemCode").val(aCode).trigger("change");
+    }
+
+    function getItems() {
+        return {
+            storeCode: storeCode
+        }
+    }
+</script>
+  
+ 

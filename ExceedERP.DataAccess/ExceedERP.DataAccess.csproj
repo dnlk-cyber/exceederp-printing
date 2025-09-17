@@ -717,6 +717,14 @@
     <Compile Include="Migrations\202508251424467_furnitureestsummary.Designer.cs">
       <DependentUpon>202508251424467_furnitureestsummary.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202508281252296_priningjobfollowup.cs" />
+    <Compile Include="Migrations\202508281252296_priningjobfollowup.Designer.cs">
+      <DependentUpon>202508281252296_priningjobfollowup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202509021103353_storereturnselfcare.cs" />
+    <Compile Include="Migrations\202509021103353_storereturnselfcare.Designer.cs">
+      <DependentUpon>202509021103353_storereturnselfcare.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1206,6 +1214,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202508251424467_furnitureestsummary.resx">
       <DependentUpon>202508251424467_furnitureestsummary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202508281252296_priningjobfollowup.resx">
+      <DependentUpon>202508281252296_priningjobfollowup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509021103353_storereturnselfcare.resx">
+      <DependentUpon>202509021103353_storereturnselfcare.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

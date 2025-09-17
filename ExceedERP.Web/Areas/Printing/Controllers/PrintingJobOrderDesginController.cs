@@ -38,7 +38,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             return Json(result);
         }
        
-        public JsonResult UploadCompanyFile(int furnitureBoqRequestId, HttpPostedFileBase[] CompanyFile, string Description)
+        public JsonResult UploadCompanyFileJobOrder(int furnitureBoqRequestId, HttpPostedFileBase[] CompanyFile, string Description)
         {
             for (int i = 0; i < CompanyFile.Count(); i++)
             {

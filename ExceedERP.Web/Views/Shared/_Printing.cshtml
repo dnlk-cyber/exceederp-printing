@@ -59,8 +59,10 @@
                         </a>
                         <b class="arrow"></b>
                         <ul class="submenu">
-                            <li id="printingProduction01" class="actionlinlk">@Html.ActionLink("Printing Production", "Index", "PrintingJobOrderProduction", new { area = "Printing" }, null)<b class="arrow"></b></li>
-                            <li id="printingProduction02" class="actionlinlk">@Html.ActionLink("Production Follow-Up", "Index", "PrintingProductionFollowUp", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                            <li id="printingProduction01" class="actionlinlk">@Html.ActionLink("Printing JobCard", "Index", "PrintingJobOrderProduction", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                            <li id="printingProduction02" class="actionlinlk">@Html.ActionLink("Pre-Press Follow-Up", "Index", "PrintingProductionFollowUp", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                            <li id="printingProduction03" class="actionlinlk">@Html.ActionLink("Press Follow-Up", "IndexPress", "PrintingProductionFollowUp", new { area = "Printing" }, null)<b class="arrow"></b></li>
+                            <li id="printingProduction04" class="actionlinlk">@Html.ActionLink("Post-Press Follow-Up", "IndexPostPress", "PrintingProductionFollowUp", new { area = "Printing" }, null)<b class="arrow"></b></li>
                         </ul>
                     </li>
                 }

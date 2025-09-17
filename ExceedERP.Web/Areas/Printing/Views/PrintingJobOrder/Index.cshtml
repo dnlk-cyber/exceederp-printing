@@ -336,7 +336,7 @@
     function UploadCompanyFile() {
 
             $.ajax({
-                url: '@Url.Action("UploadCompanyFile", "PrintingJobOrderDesgin")',
+                url: '@Url.Action("UploadCompanyFileJobOrder", "PrintingJobOrderDesgin", new { Area = "Printing" })',
                 //contentType: "application/json; charset=utf-8",
                 data: function () {
                     var data = new FormData();

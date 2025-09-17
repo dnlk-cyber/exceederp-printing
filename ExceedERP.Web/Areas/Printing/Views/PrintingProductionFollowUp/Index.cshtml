@@ -9,108 +9,104 @@
 <label>Production Follow-Up</label>
 
 @(Html.Kendo().Grid<PrintingProductionFollowUp>()
-                    .Name("grid")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(c => c.PrintingJobOrderItemId).Title("Job No.");
-                        columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Title("Customer");
-                        columns.Bound(c => c.PrintJobType).Title("Job Type");
-                        columns.Bound(c => c.JobDescription);
-                        columns.ForeignKey(c => c.TextPaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text").Title("Text Paper");
-                        columns.ForeignKey(c => c.CoverPaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text").Title("Cover Paper");
-                        columns.Bound(c => c.BindingStyle);
-                        columns.Bound(c => c.Pages);
-                        columns.Bound(c => c.TextNoOfColor);
-                        columns.Bound(c => c.CoverNoOfColor);
-                        columns.Bound(c => c.Quantity);
-                        columns.Bound(c => c.JobDescription);
-
-                        columns.Command(command =>
-                        {
-                            //command.Edit().Text(" ");
-                            command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
-                            command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
-
-                        }).Width(220);
-                    })
-
-                    .Editable(editable => editable.Mode(GridEditMode.PopUp)
-                    .TemplateName("PrintingJoborderProductionEditorTemplate"))
-                    .Filterable()
-                    .Pageable()
-                    .Scrollable(s => s.Height(400))
-                    //.Events(ev => ev.DetailExpand("MasterOnExpand")
-                    //.DataBound("dataBound"))
-                    .DataSource(dataSource => dataSource
-                        .Ajax()
-                        .Sort(sort => sort.Add(e => e.PrintingProductionFollowUpId).Descending())
-                        .Events(ev => ev.Error("error_handler(\"grid\")")
-                                .RequestStart("onRequestStart(\"grid\")")
-                                .RequestEnd("onRequestEnd(\"grid\")"))
-                        .Model(model => model.Id(p => p.PrintingProductionFollowUpId))
-                        .Read(read => read.Action("PrintingJobOrderProduction_Read", "PrintingProductionFollowUp"))
-                        .Update(update => update.Action("PrintingOrderProduction_Update", "PrintingProductionFollowUp"))
-                    ).ClientDetailTemplateId("tabstrip")
+                                .Name("grid")
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(c => c.PrintingJobOrderItemId).Title("Job No.");
+                                    columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Title("Customer");
+                                    columns.Bound(c => c.PrintJobType).Title("Job Type");
+                                    columns.Bound(c => c.JobDescription);
+                                    columns.ForeignKey(c => c.TextPaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text").Title("Text Paper");
+                                    columns.ForeignKey(c => c.CoverPaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text").Title("Cover Paper");
+                                    columns.Bound(c => c.BindingStyle);
+                                    columns.Bound(c => c.Pages);
+                                    columns.Bound(c => c.TextNoOfColor);
+                                    columns.Bound(c => c.CoverNoOfColor);
+                                    columns.Bound(c => c.Quantity);
+                                    columns.Bound(c => c.JobDescription);
+                                    columns.Command(command =>
+                                    {                                       
+                                        command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleFollowupCheck");
+                                        command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleFollowupApprove");
+                                    }).Width(220);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                .TemplateName("PrintingJoborderProductionEditorTemplate"))
+                                .Filterable()
+                                .Pageable()
+                                .Scrollable(s => s.Height(400))
+                                //.Events(ev => ev.DetailExpand("MasterOnExpand")
+                                //.DataBound("dataBound"))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Sort(sort => sort.Add(e => e.PrintingProductionFollowUpId).Descending())
+                                    .Events(ev => ev.Error("error_handler(\"grid\")")
+                                            .RequestStart("onRequestStart(\"grid\")")
+                                            .RequestEnd("onRequestEnd(\"grid\")"))
+                                    .Model(model => model.Id(p => p.PrintingProductionFollowUpId))
+                                    .Read(read => read.Action("PrintingJobOrderProduction_Read", "PrintingProductionFollowUp"))
+                                    .Update(update => update.Action("PrintingOrderProduction_Update", "PrintingProductionFollowUp"))
+                                ).ClientDetailTemplateId("tabstrip")
 )
 
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                        .Name("tab_#=PrintingProductionFollowUpId#")
-                        .Items(item1 =>
-                        {
-                            item1.Add().Text("Alloted Raw Materials").Content(
-                            @<text>
-                                @AllottedRawMaterial()
-                            </text>);
-                            item1.Add().Text("Daily Follow-Up").Content(
-                            @<text>
-                                @FollowUpTask()
-                            </text>);
-                            item1.Add().Text("").Content(
-                            @<text>
+                                                .Name("tab_#=PrintingProductionFollowUpId#")
+                                                .Items(item1 =>
+                                                {
+                                                    item1.Add().Text("Alloted Raw Materials").Content(
+                                                    @<text>
+                                                        @AllottedRawMaterial()
+                                                    </text>);
+                                                            item1.Add().Text("Follow-Up Task").Content(
+                                    @<text>
+                                        @FollowUpTask()
+                                    </text>);
+                                                item1.Add().Text("").Content(
+                        @<text>
 
-                            </text>);
-                            item1.Add().Text("").Content(
-                            @<text>
+                        </text>);
+                                                item1.Add().Text("").Content(
+            @<text>
 
-                            </text>);
-                            }).ToClientTemplate())
+            </text>);
+                                                    }).ToClientTemplate())
 </script>
 
 
 @helper AllottedRawMaterial()
 {
     @(Html.Kendo().Grid<PrintingProductionAllottedRawMaterial>()
-                                .Name("material_#=PrintingProductionFollowUpId#")
-                                .Columns(columns =>
-                                {
-                                    columns.Bound(c => c.EstimationMaterialType);
-                                    columns.ForeignKey(c => c.PrintingMaterialCategoryId, (IEnumerable)ViewData["PrintingMaterialCategory"], "Value", "Text");
-                                    columns.ForeignKey(c => c.PrintingMaterialCategoryItemId, (IEnumerable)ViewData["PItem"], "Value", "Text");
-                                    columns.Bound(c => c.UnitOfMeasurment);
-                                    columns.Bound(c => c.Quantity);
+                                                        .Name("material_#=PrintingProductionFollowUpId#")
+                                                        .Columns(columns =>
+                                                        {
+                                                            columns.Bound(c => c.EstimationMaterialType);
+                                                            columns.ForeignKey(c => c.PrintingMaterialCategoryId, (IEnumerable)ViewData["PrintingMaterialCategory"], "Value", "Text");
+                                                            columns.ForeignKey(c => c.PrintingMaterialCategoryItemId, (IEnumerable)ViewData["PItem"], "Value", "Text");
+                                                            columns.Bound(c => c.UnitOfMeasurment);
+                                                            columns.Bound(c => c.Quantity);
 
-                                })
-                                .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                .Filterable()
-                                .Scrollable()
-                                .Pageable()
-                                
-                                .DataSource(dataSource => dataSource
-                                    .Ajax()
-                                    .Events(ev => ev.Error("error_handler(\"material_#=PrintingProductionFollowUpId#\")")
-                                            .RequestStart("onRequestStart(\"material_#=PrintingProductionFollowUpId#\")")
-                                            .RequestEnd("onRequestEnd(\"material_#=PrintingProductionFollowUpId#\")"))
-                                    .Model(model =>
-                                    {
-                                        model.Id(p => p.PrintingProductionAllottedRawMaterialId);
+                                                        })
+                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                        .Filterable()
+                                                        .Scrollable()
+                                                        .Pageable()
 
-                                    })
-                                    .Read(read => read.Action("Read", "PrintingProductionAllottedRawMaterial", new { id = "#=PrintingProductionFollowUpId#" }))
-                                    .Update(update => update.Action("Update", "PrintingProductionAllottedRawMaterial"))
+                                                        .DataSource(dataSource => dataSource
+                                                            .Ajax()
+                                                            .Events(ev => ev.Error("error_handler(\"material_#=PrintingProductionFollowUpId#\")")
+                                                                    .RequestStart("onRequestStart(\"material_#=PrintingProductionFollowUpId#\")")
+                                                                    .RequestEnd("onRequestEnd(\"material_#=PrintingProductionFollowUpId#\")"))
+                                                            .Model(model =>
+                                                            {
+                                                                model.Id(p => p.PrintingProductionAllottedRawMaterialId);
 
-                                ).ToClientTemplate()
+                                                            })
+                                                            .Read(read => read.Action("Read", "PrintingProductionAllottedRawMaterial", new { id = "#=PrintingProductionFollowUpId#" }))
+                                                            .Update(update => update.Action("Update", "PrintingProductionAllottedRawMaterial"))
+
+                                                        ).ToClientTemplate()
     )
 }
 
@@ -118,118 +114,313 @@
 @helper FollowUpTask()
 {
     @(Html.Kendo().Grid<PrintingProductionFollowUpTask>()
-                                .Name("followup#=PrintingProductionFollowUpId#")
-                                .Columns(columns =>
-                                {
-                                    columns.Bound(c => c.PressCategory);
-                                    columns.Bound(c => c.LabourActivity);
-                                    columns.ForeignKey(c => c.MachineTypeId, (IEnumerable)ViewData["Machine"], "Value", "Text");
+        .Name("followup#=PrintingProductionFollowUpId#")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.PressCategory);
+            columns.Bound(c => c.LabourActivity);
+            columns.ForeignKey(c => c.MachineTypeId, (IEnumerable)ViewData["Machine"], "Value", "Text");
+            columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text");
+            columns.Bound(c => c.UoM);
+            columns.Bound(c => c.PlannedOutput);
+            columns.Bound(c => c.EstimatedHours);
+            columns.Command(command =>
+            {
+                command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { @class = "edit", title = "edit" });
+                command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleTaskCheck");
+                command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleTaskApprove");
+                command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { @class = "delete", title = "delete" });
+            }).Width(180);
+        })
+        .ToolBar(toolbar =>
+        {
+            toolbar.Create();
+        })
+        .Editable(editable => editable.Mode(GridEditMode.PopUp)
+        .TemplateName("FollowUpTaskTemplate"))
+        .Filterable()
+        .Pageable()
+        .Events(e => e.DataBound("detailDataBound"))
+        .Scrollable(s => s.Height(400))
+        .ClientDetailTemplateId("tabstrip2")
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Events(ev => ev.Error("error_handler(\"followup#=PrintingProductionFollowUpId#\")")
+                    .RequestStart("onRequestStart(\"followup#=PrintingProductionFollowUpId#\")")
+                    .RequestEnd("onRequestEnd(\"followup#=PrintingProductionFollowUpId#\")"))
+            .Model(model =>
+            {
+                model.Id(p => p.PrintingProductionFollowUpTaskId);
 
-                                    columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text");
+            })
+            .Read(read => read.Action("Read_PrePress", "PrintingProductionFollowUpTask", new { id = "#=PrintingProductionFollowUpId#" }))
+            .Create(create => create.Action("Create", "PrintingProductionFollowUpTask", new { id = "#=PrintingProductionFollowUpId#" }))
+            .Update(update => update.Action("Update", "PrintingProductionFollowUpTask"))
+            .Destroy(delete => delete.Action("Delete", "PrintingProductionFollowUpTask"))
 
-                                    columns.Bound(c => c.UoM);
-
-                                    columns.Bound(c => c.PlannedOutput);
-                                    columns.Bound(c => c.EstimatedHours);
-                                    columns.Command(command =>
-                                    {
-                                        command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { @class = "edit", title = "edit" });
-                                        command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleFollowupTaskCheck");
-                                        command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleFollowupTaskApproval");
-                                        command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { @class = "delete", title = "delete" });
-                                    }).Width(180);
-                                })
-                                .ToolBar(toolbar =>
-                                {
-                                    toolbar.Create();
-                                })
-                                .Editable(editable => editable.Mode(GridEditMode.PopUp)
-                                .TemplateName("FollowUpTaskTemplate"))
-                                .Filterable()
-                                .Pageable()
-                                .Events(e => e.DataBound("detailDataBound"))
-                                .Scrollable(s => s.Height(400))
-                                .ClientDetailTemplateId("tabstrip2")
-                                .DataSource(dataSource => dataSource
-                                    .Ajax()
-                                    .Events(ev => ev.Error("error_handler(\"followup#=PrintingProductionFollowUpId#\")")
-                                            .RequestStart("onRequestStart(\"followup#=PrintingProductionFollowUpId#\")")
-                                            .RequestEnd("onRequestEnd(\"followup#=PrintingProductionFollowUpId#\")"))
-                                    .Model(model =>
-                                    {
-                                        model.Id(p => p.PrintingProductionFollowUpTaskId);
-
-                                    })
-                                    .Read(read => read.Action("Read_PrePress", "PrintingProductionFollowUpTask", new { id = "#=PrintingProductionFollowUpId#" }))
-                                    .Create(create => create.Action("Create", "PrintingProductionFollowUpTask", new { id = "#=PrintingProductionFollowUpId#" }))
-                                    .Update(update => update.Action("Update", "PrintingProductionFollowUpTask"))
-                                    .Destroy(delete => delete.Action("Delete", "PrintingProductionFollowUpTask"))
-
-                                ).ToClientTemplate()
+        ).ToClientTemplate()
     )
 }
 <script id="tabstrip2" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                .Name("tab2_#=PrintingProductionFollowUpTaskId#")
-                .Items(item1 =>
-                {
-                    item1.Add().Text("Follow Up Detail").Content(
-                    @<text>
-                        @DailyFollowUp()
-                    </text>);
-                            @*item1.Add().Text("").Content(
-                            @<text>
+                                .Name("tab2_#=PrintingProductionFollowUpTaskId#")
+                                .Items(item1 =>
+                                {
+                                    item1.Add().Text("Daily Follow-Up Detail").Content(
+                                    @<text>
+                                        @DailyFollowUp()
+                                    </text>);
 
-                            </text>);*@
-
-                                }).ToClientTemplate())
+                                        }).ToClientTemplate())
 </script>
 @helper DailyFollowUp()
 {
     @(Html.Kendo().Grid<PrintingProductionDailyFollowUpDetail>()
-                                .Name("dailyfollowup#=PrintingProductionFollowUpTaskId#")
-                                .Columns(columns =>
-                                {
+                                                        .Name("dailyfollowup#=PrintingProductionFollowUpTaskId#")
+                                                        .Columns(columns =>
+                                                        {
 
-                                    columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text");
-                                    columns.Bound(c => c.ProductionStartTime).Format("{0:MM/dd/yyyy hh:mm tt}").Width(150);
-                                    columns.Bound(c => c.ProductionEndTime).Format("{0:MM/dd/yyyy hh:mm tt}").Width(150);
-                                    columns.Bound(c => c.UoM);
+                                                            columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text");
+                                                            columns.Bound(c => c.ProductionStartTime).Format("{0:MM/dd/yyyy hh:mm tt}").Width(150);
+                                                            columns.Bound(c => c.ProductionEndTime).Format("{0:MM/dd/yyyy hh:mm tt}").Width(150);
+                                                            columns.Bound(c => c.UoM);
 
-                                    columns.Bound(c => c.ActualOutput);
-                                    columns.Bound(c => c.TimeSpentHours);
-                                    columns.Command(command =>
-                                    {
-                                        command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { @class = "edit", title = "edit" });
-                                        
-                                        command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { @class = "delete", title = "delete" });
-                                    }).Width(180);
-                                })
-                                 .ToolBar(toolbar =>
-                                 {
-                                     toolbar.Create();
-                                 })
-                                .Editable(editable => editable.Mode(GridEditMode.PopUp)
-                                .TemplateName("FollowUpDetailTemplate"))
-                                .Filterable()
-                                .Scrollable()
-                                .Pageable()
-                                .DataSource(dataSource => dataSource
-                                    .Ajax()
-                                    .Events(ev => ev.Error("error_handler(\"dailyfollowup#=PrintingProductionFollowUpTaskId#\")")
-                                            .RequestStart("onRequestStart(\"dailyfollowup#=PrintingProductionFollowUpTaskId#\")")
-                                            .RequestEnd("onRequestEnd(\"dailyfollowup#=PrintingProductionFollowUpTaskId#\")"))
-                                    .Model(model =>
-                                    {
-                                        model.Id(p => p.PrintingProductionDailyFollowUpDetailId);
+                                                            columns.Bound(c => c.ActualOutput);
+                                                            columns.Bound(c => c.TimeSpentHours).Title("Time spent (M)");
+                                                            columns.Command(command =>
+                                                            {
+                                                                command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { @class = "edit", title = "edit" });
 
-                                    })
-                                    .Read(read => read.Action("Read", "PrintingProductionDailyFollowUpDetail", new { id = "#=PrintingProductionFollowUpTaskId#" }))
-                                    .Create(create => create.Action("Create", "PrintingProductionDailyFollowUpDetail", new { id = "#=PrintingProductionFollowUpTaskId#" }))
-                                    .Update(update => update.Action("Update", "PrintingProductionDailyFollowUpDetail"))
-                                    .Destroy(delete => delete.Action("Delete", "PrintingProductionDailyFollowUpDetail"))
+                                                                command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { @class = "delete", title = "delete" });
+                                                            }).Width(180);
+                                                        })
+                                                         .ToolBar(toolbar =>
+                                                         {
+                                                             toolbar.Create();
+                                                         })
+                                                        .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                                        .TemplateName("FollowUpDetailTemplate"))
+                                                        .Filterable()
+                                                        .Scrollable()
+                                                        .Pageable()
+                                                        .ClientDetailTemplateId("tabstrip3")
+                                                        .DataSource(dataSource => dataSource
+                                                            .Ajax()
+                                                            .Events(ev => ev.Error("error_handler(\"dailyfollowup#=PrintingProductionFollowUpTaskId#\")")
+                                                                    .RequestStart("onRequestStart(\"dailyfollowup#=PrintingProductionFollowUpTaskId#\")")
+                                                                    .RequestEnd("onRequestEnd(\"dailyfollowup#=PrintingProductionFollowUpTaskId#\")"))
+                                                            .Model(model =>
+                                                            {
+                                                                model.Id(p => p.PrintingProductionDailyFollowUpDetailId);
 
-                                ).ToClientTemplate()
+                                                            })
+                                                            .Read(read => read.Action("Read", "PrintingProductionDailyFollowUpDetail", new { id = "#=PrintingProductionFollowUpTaskId#" }))
+                                                            .Create(create => create.Action("Create", "PrintingProductionDailyFollowUpDetail", new { id = "#=PrintingProductionFollowUpTaskId#" }))
+                                                            .Update(update => update.Action("Update", "PrintingProductionDailyFollowUpDetail"))
+                                                            .Destroy(delete => delete.Action("Delete", "PrintingProductionDailyFollowUpDetail"))
+
+                                                        ).ToClientTemplate()
+    )
+}
+
+<script id="tabstrip3" type="text/x-kendo-template">
+    @(Html.Kendo().TabStrip()
+                                                .Name("tab3_#=PrintingProductionDailyFollowUpDetailId#")
+                                                .Items(item1 =>
+                                                {
+                                                    item1.Add().Text("Task Issue").Content(@<text>@DelayReason()</text>);
+                                                    item1.Add().Text("Log Book").Content(@<text>@PressLogBook()</text>);
+                                                    item1.Add().Text("Wastage").Content(@<text>@wastage()</text>);
+                                                    item1.Add().Text("Machine Maintenance").Content(@<text>@Maintenance()</text>);
+
+                                                                        }).ToClientTemplate())
+</script>
+
+@helper DelayReason()
+{
+    @(Html.Kendo().Grid<PrintingTaskIssue>()
+                                                        .Name("delay_#=PrintingProductionDailyFollowUpDetailId#")
+                                                        .Columns(columns =>
+                                                        {
+
+                                                            columns.Bound(c => c.IssueType);
+                                                            columns.Bound(c => c.Description);
+                                                            columns.Bound(c => c.ReportedTime).Format("{0:MM/dd/yyyy hh:mm tt}");
+                                                            columns.Bound(c => c.ResolvedTime).Format("{0:MM/dd/yyyy hh:mm tt}");
+                                                            columns.Bound(c => c.Resolution);
+                                                            columns.Command(command =>
+                                                            {
+                                                                command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { @class = "edit", title = "edit" });
+
+                                                                command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { @class = "delete", title = "delete" });
+                                                            }).Width(180);
+                                                        })
+                                                         .ToolBar(toolbar =>
+                                                         {
+                                                             toolbar.Create();
+                                                         })
+                                                        .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                                        .TemplateName("DelayTemplate"))
+                                                        .Filterable()
+                                                        .Scrollable()
+                                                        .Pageable()
+                                                        .DataSource(dataSource => dataSource
+                                                            .Ajax()
+                                                            .Events(ev => ev.Error("error_handler(\"delay_#=PrintingProductionDailyFollowUpDetailId#\")")
+                                                                    .RequestStart("onRequestStart(\"delay_#=PrintingProductionDailyFollowUpDetailId#\")")
+                                                                    .RequestEnd("onRequestEnd(\"delay_#=PrintingProductionDailyFollowUpDetailId#\")"))
+                                                            .Model(model =>
+                                                            {
+                                                                model.Id(p => p.PrintingTaskIssueId);
+
+                                                            })
+                                                            .Read(read => read.Action("Read", "PrintingFollowUpDelayReason", new { detailId = "#=PrintingProductionDailyFollowUpDetailId#" }))
+                                                            .Create(create => create.Action("Create", "PrintingFollowUpDelayReason", new { detailId = "#=PrintingProductionDailyFollowUpDetailId#" }))
+                                                            .Update(update => update.Action("Update", "PrintingFollowUpDelayReason"))
+                                                            .Destroy(delete => delete.Action("Delete", "PrintingFollowUpDelayReason"))
+
+                                                        ).ToClientTemplate()
+    )
+}
+
+@helper PressLogBook()
+{
+    @(Html.Kendo().Grid<PrintingDailyFollowUpLogBook>()
+                                                        .Name("logbook_#=PrintingProductionDailyFollowUpDetailId#")
+                                                        .Columns(columns =>
+                                                        {
+
+                                                            columns.Bound(c => c.ActivityType);
+                                                            columns.Bound(c => c.TimeSpent);
+                                                            columns.Bound(c => c.DateCreated);
+                                                            columns.Bound(c => c.CreatedBy);
+                                                            columns.Command(command =>
+                                                            {
+                                                                command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { @class = "edit", title = "edit" });
+
+                                                                command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { @class = "delete", title = "delete" });
+                                                            }).Width(180);
+                                                        })
+                                                         .ToolBar(toolbar =>
+                                                         {
+                                                             toolbar.Create();
+                                                         })
+                                                        .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                                        .TemplateName("logbookTemplate"))
+                                                        .Filterable()
+                                                        .Scrollable()
+                                                        .Pageable()
+                                                        .DataSource(dataSource => dataSource
+                                                            .Ajax()
+                                                            .Events(ev => ev.Error("error_handler(\"logbook_#=PrintingProductionDailyFollowUpDetailId#\")")
+                                                                    .RequestStart("onRequestStart(\"logbook_#=PrintingProductionDailyFollowUpDetailId#\")")
+                                                                    .RequestEnd("onRequestEnd(\"logbook_#=PrintingProductionDailyFollowUpDetailId#\")"))
+                                                            .Model(model =>
+                                                            {
+                                                                model.Id(p => p.PrintingDailyFollowUpLogBookId);
+
+                                                            })
+                                                            .Read(read => read.Action("Read", "PrintingDailyFollowUpLogBook", new { detailId = "#=PrintingProductionDailyFollowUpDetailId#" }))
+                                                            .Create(create => create.Action("Create", "PrintingDailyFollowUpLogBook", new { detailId = "#=PrintingProductionDailyFollowUpDetailId#" }))
+                                                            .Update(update => update.Action("Update", "PrintingDailyFollowUpLogBook"))
+                                                            .Destroy(delete => delete.Action("Delete", "PrintingDailyFollowUpLogBook"))
+
+                                                        ).ToClientTemplate()
+    )
+}
+
+@helper wastage()
+{
+    @(Html.Kendo().Grid<PressDailyFollowUpWastage>()
+                                                        .Name("wastage_#=PrintingProductionDailyFollowUpDetailId#")
+                                                        .Columns(columns =>
+                                                        {
+
+                                                            columns.Bound(c => c.Amount);
+                                                            columns.Bound(c => c.UOM);
+                                                            columns.Bound(c => c.DateCreated);
+                                                            columns.Bound(c => c.CreatedBy);
+                                                            columns.Command(command =>
+                                                            {
+                                                                command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { @class = "edit", title = "edit" });
+
+                                                                command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { @class = "delete", title = "delete" });
+                                                            }).Width(180);
+                                                        })
+                                                         .ToolBar(toolbar =>
+                                                         {
+                                                             toolbar.Create();
+                                                         })
+                                                        .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                                        .TemplateName("followupwastageTemplate"))
+                                                        .Filterable()
+                                                        .Scrollable()
+                                                        .Pageable()
+                                                        .DataSource(dataSource => dataSource
+                                                            .Ajax()
+                                                            .Events(ev => ev.Error("error_handler(\"logbook_#=PrintingProductionDailyFollowUpDetailId#\")")
+                                                                    .RequestStart("onRequestStart(\"logbook_#=PrintingProductionDailyFollowUpDetailId#\")")
+                                                                    .RequestEnd("onRequestEnd(\"logbook_#=PrintingProductionDailyFollowUpDetailId#\")"))
+                                                            .Model(model =>
+                                                            {
+                                                                model.Id(p => p.PressDailyFollowUpWastageId);
+
+                                                            })
+                                                            .Read(read => read.Action("Read", "PressDailyFollowUpWastage", new { detailId = "#=PrintingProductionDailyFollowUpDetailId#" }))
+                                                            .Create(create => create.Action("Create", "PressDailyFollowUpWastage", new { detailId = "#=PrintingProductionDailyFollowUpDetailId#" }))
+                                                            .Update(update => update.Action("Update", "PressDailyFollowUpWastage"))
+                                                            .Destroy(delete => delete.Action("Delete", "PressDailyFollowUpWastage"))
+
+                                                        ).ToClientTemplate()
+    )
+}
+
+@helper Maintenance()
+{
+    @(Html.Kendo().Grid<PrintingDailyFollowUpMachineMaintenance>()
+                                                        .Name("maintenance_#=PrintingProductionDailyFollowUpDetailId#")
+                                                        .Columns(columns =>
+                                                        {
+
+                                                            columns.Bound(c => c.Reason);
+                                                            columns.Bound(c => c.IssueReportedTime).Format("{0:MM/dd/yyyy hh:mm tt}");
+                                                            columns.Bound(c => c.MaintenanceStartTime).Format("{0:MM/dd/yyyy hh:mm tt}");
+                                                            columns.Bound(c => c.MaintenanceEndTime).Format("{0:MM/dd/yyyy hh:mm tt}");
+                                                            columns.ForeignKey(c => c.TechnicianId, (IEnumerable)ViewData["Operator"], "Value", "Text");
+                                                            columns.Bound(c => c.DateCreated);
+                                                            columns.Bound(c => c.CreatedBy);
+                                                            columns.Command(command =>
+                                                            {
+                                                                command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { @class = "edit", title = "edit" });
+
+                                                                command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { @class = "delete", title = "delete" });
+                                                            }).Width(180);
+                                                        })
+                                                         .ToolBar(toolbar =>
+                                                         {
+                                                             toolbar.Create();
+                                                         })
+                                                        .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                                        .TemplateName("maintenanceTemplate"))
+                                                        .Filterable()
+                                                        .Scrollable()
+                                                        .Pageable()
+                                                        .DataSource(dataSource => dataSource
+                                                            .Ajax()
+                                                            .Events(ev => ev.Error("error_handler(\"maintenance_#=PrintingProductionDailyFollowUpDetailId#\")")
+                                                                    .RequestStart("onRequestStart(\"maintenance_#=PrintingProductionDailyFollowUpDetailId#\")")
+                                                                    .RequestEnd("onRequestEnd(\"maintenance_#=PrintingProductionDailyFollowUpDetailId#\")"))
+                                                            .Model(model =>
+                                                            {
+                                                                model.Id(p => p.PrintingProductionDailyFollowUpDetailId);
+
+                                                            })
+                                                            .Read(read => read.Action("Read", "PrintingDailyFollowUpMachineMaintenance", new { detailId = "#=PrintingProductionDailyFollowUpDetailId#" }))
+                                                            .Create(create => create.Action("Create", "PrintingDailyFollowUpMachineMaintenance", new { detailId = "#=PrintingProductionDailyFollowUpDetailId#" }))
+                                                            .Update(update => update.Action("Update", "PrintingDailyFollowUpMachineMaintenance"))
+                                                            .Destroy(delete => delete.Action("Delete", "PrintingDailyFollowUpMachineMaintenance"))
+
+                                                        ).ToClientTemplate()
     )
 }
 
@@ -237,6 +428,11 @@
     function filterTextMachine() {
         return {
             text: $("#MachineTypeId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterUOM() {
+        return {
+            text: $("#UOM").data("kendoDropDownList").filterInput.val()
         }
     }
     function filterUoM() {
@@ -247,6 +443,12 @@
     function filterOperator() {
         return {
             text: $("#OperatorId").data("kendoDropDownList").filterInput.val()
+        }
+    }
+
+    function filterEmployee() {
+        return {
+            text: $("#TechnicianId").data("kendoDropDownList").filterInput.val()
         }
     }
     function onPressCategoryChange(e) {
@@ -283,14 +485,14 @@
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
             $(this).find(".k-grid-reject").hide();
-            if (dataItem.IsOnlineApproved) {
+            if (dataItem.IsPrePressChecked) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-approve").hide();
                 $(this).find(".k-grid-reject").hide();
                 $(this).find(".k-grid-delete").hide();
             }
-            else if (dataItem.IsSendForApproval) {
+            else if (dataItem.IsPrePressApproved) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-delete").hide();
@@ -323,50 +525,66 @@
 
 
     }
-    var taskId = 0;
+    
     function detailDataBound(e) {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-            taskId = dataItem.PrintingProductionFollowUpTaskId;
-            if (isChecked == true || isApproved) {
+            if (dataItem.IsOnlineApproved) {
                 $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
                 $(this).find(".k-grid-delete").hide();
+            }
+            else if (dataItem.IsSendForApproval) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-reject").show();
+
+                $(this).find(".k-grid-approve").show();
+            }
+            else {
+                $(this).find(".k-grid-approve").hide();
             }
         });
 
     }
-    const handleFollowupTaskCheck = (e) => {
-        if (confirm("Are you sure you've checked this form?")) {
-             
-            var id = taskId;
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("CheckFollowupTask", "CheckAndApproval", new { Area = "Printing" })',
-                data: { id: id},
-                success: function (result) {
-                    if (result.Success) {
-                        toastr.success(result.Message);
-                        $("#grid").data("kendoGrid").dataSource.read();
-                    }
-                    else {
-                        toastr.error(result.Message);
-                    }
-                },
-                error: function (result) {
-                    alert(result)
+    
+    function handleTaskCheck(e) {
+        if (confirm("Are you sure this estimation form is to be checked?")) {
+             var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+            url: '@Url.Action("CheckFollowupTask", "CheckAndApproval", new { Area = "Printing" })',
+            data: { id: dataItem.PrintingProductionFollowUpTaskId },
+            success: function (result) {
+                if (result.Success) {
+                    toastr.success(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read();
                 }
-            });
-        }
+                else {
+                    toastr.error(result.Message);
+
+                }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+      }
     }
-    function handleFollowupTaskApproval(e) {
+    function handleTaskApprove(e) {
         if (confirm("Are you sure you want to approve?")) {
-          
-            var id = taskId;
+            var grid = this;
+            var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            var id = dataItem.PrintingProductionFollowUpTaskId;
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("ApproveProforma", "CheckAndApproval", new { Area = "Printing" })',
+                url: '@Url.Action("ApproveFollowupTask", "CheckAndApproval", new { Area = "Printing" })',
                 data: { id: id},
                 success: function (result) {
                     if (result.Success) {
@@ -383,7 +601,7 @@
             });
         }
     }
-    function handleChecked(e) {
+    function handleFollowupCheck(e) {
 
         if (confirm("Are you sure you this form is checked?")) {
             var grid = this;
@@ -391,7 +609,7 @@
             var id = dataItem.PrintingProductionFollowUpId;
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("CheckFollowup", "CheckAndApproval", new { Area = "Printing" })',
+                url: '@Url.Action("CheckPrePress", "CheckAndApproval", new { Area = "Printing" })',
                 data: { id: id},
                 success: function (result) {
                     if (result.Success) {
@@ -409,13 +627,13 @@
         }
     }
 
-      function handleApprove(e) {
+      function handleFollowupApprove(e) {
         if (confirm("Are you sure you want to approve?")) {
             var grid = this;
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("ApproveFollowup", "CheckAndApproval", new { Area = "Printing" })',
+                url: '@Url.Action("ApprovePrePress", "CheckAndApproval", new { Area = "Printing" })',
                 data: { id: dataItem.PrintingProductionFollowUpId},
                 success: function (result) {
                     if (result.Success) {
@@ -433,7 +651,7 @@
         }
     }
 
-    
+
 
 </script>
 

@@ -13,9 +13,9 @@
           columns.Bound(c => c.StoreReturnID).Title("Return No.").Width(130).Width(120).ClientTemplate("#=appendZeros(StoreReturnID)#");
           columns.Bound(c => c.Reference).Width(120);
           columns.Bound(c => c.Reason).Width(120);
-          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
+          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper").Filterable(ftb => ftb.Multi(true).Search(true));
-          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(120).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(120).Title("Period").EditorTemplateName("InventoryPeriodSelector").Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.ReturnDate).Width(130);
           columns.Bound(c => c.ConfirmationLetter).Width(130);
           columns.Bound(c => c.IsForOther).Width(130).ClientTemplate(
@@ -25,7 +25,7 @@
               "# } #" +
               "/>"
               );
-          columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120);
+          columns.ForeignKey(p => p.ForBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.Remark).Width(120);
           columns.Bound(c => c.Status).Width(80);
           columns.Command(command =>
@@ -77,11 +77,18 @@
               model.Field(p => p.Status).Editable(false);
               //model.Field(p => p.GLPeriodId).Editable(false);
               model.Field(p => p.StoreReturnID).Editable(false);
+
+               model.Field(p => p.DepartmentOnlineApprovedBy).Editable(false);
+                model.Field(p => p.DepartmentOnlineApprovedTime).Editable(false);
+                model.Field(p => p.DepartmentSendForApprovalBy).Editable(false);
+                model.Field(p => p.DepartmentSendForApprovalTime).Editable(false);
+                model.Field(p => p.IsDepartmentOnlineApproved).Editable(false);
+                model.Field(p => p.IsDepartmentSendForApproval).Editable(false);
           })
-          .Read(read => read.Action("StoreReturns_Read", "StoreReturn"))
-          .Create(create => create.Action("StoreReturns_Create", "StoreReturn"))
-          .Update(update => update.Action("StoreReturns_Update", "StoreReturn"))
-          .Destroy(destroy => destroy.Action("StoreReturns_Destroy", "StoreReturn"))
+          .Read(read => read.Action("StoreReturns_Read", "StoreReturn").Data("sendForgery"))
+          .Create(create => create.Action("StoreReturns_Create", "StoreReturn").Data("sendForgery"))
+          .Update(update => update.Action("StoreReturns_Update", "StoreReturn").Data("sendForgery"))
+          .Destroy(destroy => destroy.Action("StoreReturns_Destroy", "StoreReturn").Data("sendForgery"))
       ).ClientDetailTemplateId("storereturntemplate"))
 
 
@@ -191,21 +198,28 @@
                                                       .Name("StoreReturnItem_#=StoreReturnID#")
                                                       .Columns(columns =>
                                                       {
-                                                                  columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(200);
-                                                                  columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(200);
-                                                                  columns.Bound(c => c.Quantity).Width(140);
-                                                                  columns.Bound(c => c.UnitPrice).Width(140);
-                                                                  columns.Bound(c => c.TotalPrice).Width(140);
-                                                                  columns.Command(command =>
-                                          {
-                                                                  command.Edit();
-                                                                  command.Destroy();
-                                                              }).Width(680);
-                                                              })
+                                                          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(200);
+                                                          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(200);
+                                                          columns.Bound(c => c.Quantity).Width(140);
+                                                          columns.Bound(c => c.NoPrice).Width(90).Title("No Price ?").ClientTemplate(
+                                                          "<input type='checkbox' disabled = 'true' value='\\#= NoPrice \\#' " +
+                                                          "\\# if (NoPrice) { \\#" +
+                                                          "checked='checked'" +
+                                                          "\\# } \\#" +
+                                                          "/>"
+                                                          );
+                                                          columns.Bound(c => c.UnitPrice).Width(140);
+                                                          columns.Bound(c => c.TotalPrice).Width(140);
+                                                          columns.Command(command =>
+                                                          {
+                                                              command.Edit();
+                                                              command.Destroy();
+                                                          }).Width(680);
+                                                      })
                                                       .ToolBar(toolbar =>
                                                       {
-                                                                  toolbar.Create();
-                                                              })
+                                                          toolbar.Create();
+                                                      })
                                                       .Events(ev => ev.Edit("onEdit"))
                                                       .Events(x => x.DataBound("onDataBoundLines"))
                                                       .Editable(editable => editable.Mode(GridEditMode.InLine))
@@ -218,16 +232,16 @@
                                                               .RequestEnd("onRequestEnd(\"StoreReturnItem_#=StoreReturnID#\")"))
 
                                                            .Model(model =>
-                                                     {
-                                                         model.Id(p => p.StoreReturnItemsID);
-                                                         model.Field(p => p.StoreReturnItemsID).Editable(false);
-                                                         model.Field(p => p.TotalPrice).Editable(false);
-                                                         model.Field(p => p.StoreReturnID).Editable(false);
-                                                     })
-                                                          .Read(read => read.Action("StoreReturnItems_Read", "StoreReturnItem", new { id = "#=StoreReturnID#" }))
-                                                          .Create(create => create.Action("StoreReturnItems_Create", "StoreReturnItem", new { id = "#=StoreReturnID#" }))
-                                                          .Update(update => update.Action("StoreReturnItems_Update", "StoreReturnItem"))
-                                                          .Destroy(destroy => destroy.Action("StoreReturnItems_Destroy", "StoreReturnItem"))
+                                                           {
+                                                               model.Id(p => p.StoreReturnItemsID);
+                                                               model.Field(p => p.StoreReturnItemsID).Editable(false);
+                                                               model.Field(p => p.TotalPrice).Editable(false);
+                                                               model.Field(p => p.StoreReturnID).Editable(false);
+                                                           })
+                                                          .Read(read => read.Action("StoreReturnItems_Read", "StoreReturnItem", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                                                          .Create(create => create.Action("StoreReturnItems_Create", "StoreReturnItem", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                                                          .Update(update => update.Action("StoreReturnItems_Update", "StoreReturnItem").Data("sendForgery"))
+                                                          .Destroy(destroy => destroy.Action("StoreReturnItems_Destroy", "StoreReturnItem").Data("sendForgery"))
                                                       ).ToClientTemplate())
 
                     </text>);
@@ -268,10 +282,10 @@
                                                           .RequestEnd("onRequestEnd(\"StoreReturnValidation_#=StoreReturnID#\")"))
 
                                                       .Model(model => model.Id(p => p.StoreReturnValidationID))
-                                                      .Read(read => read.Action("StoreReturnValidations_Read", "StoreReturnValidation", new { id = "#=StoreReturnID#" }))
-                                                      .Create(create => create.Action("StoreReturnValidations_Create", "StoreReturnValidation", new { id = "#=StoreReturnID#" }))
-                                                      .Update(update => update.Action("StoreReturnValidations_Update", "StoreReturnValidation"))
-                                                      .Destroy(destroy => destroy.Action("StoreReturnValidations_Destroy", "StoreReturnValidation"))
+                                                      .Read(read => read.Action("StoreReturnValidations_Read", "StoreReturnValidation", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                                                      .Create(create => create.Action("StoreReturnValidations_Create", "StoreReturnValidation", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                                                      .Update(update => update.Action("StoreReturnValidations_Update", "StoreReturnValidation").Data("sendForgery"))
+                                                      .Destroy(destroy => destroy.Action("StoreReturnValidations_Destroy", "StoreReturnValidation").Data("sendForgery"))
                                                   ).ToClientTemplate())
 
                 </text>);
@@ -292,8 +306,8 @@
                                    .Filterable()
                                   .DataSource(dataSource => dataSource
                                       .Ajax()
-                                      .Read(read => read.Action("StoreReturnDistributions_Read", "StoreReturnDistribution", new { id = "#=StoreReturnID#" }))
-                                      .Update(read => read.Action("StoreReturnDistributions_Update", "StoreReturnDistribution"))
+                                      .Read(read => read.Action("StoreReturnDistributions_Read", "StoreReturnDistribution", new { id = "#=StoreReturnID#" }).Data("sendForgery"))
+                                      .Update(read => read.Action("StoreReturnDistributions_Update", "StoreReturnDistribution").Data("sendForgery"))
                                   ).ToClientTemplate())
 
 
@@ -328,10 +342,10 @@
                                         .RequestStart("onRequestStart(\"StoreReturnAttachment_#=StoreReturnID#\")")
                                         .RequestEnd("onRequestEnd(\"StoreReturnAttachment_#=StoreReturnID#\")"))
                                     .Model(model => model.Id(p => p.StoreReturnAttachmentId))
-                                    .Read(read => read.Action("StoreReturnAttachments_Read", "StoreReturnAttachment", new { id = "#= StoreReturnID #" }))
-                                    .Create(create => create.Action("StoreReturnAttachments_Create", "StoreReturnAttachment", new { id = "#=StoreReturnID #" }))
-                                    .Update(update => update.Action("TenderMinuteUploads_Update", "StoreReturnAttachment"))
-                                    .Destroy(destroy => destroy.Action("StoreReturnAttachments_Destroy", "StoreReturnAttachment"))
+                                    .Read(read => read.Action("StoreReturnAttachments_Read", "StoreReturnAttachment", new { id = "#= StoreReturnID #" }).Data("sendForgery"))
+                                    .Create(create => create.Action("StoreReturnAttachments_Create", "StoreReturnAttachment", new { id = "#=StoreReturnID #" }).Data("sendForgery"))
+                                    .Update(update => update.Action("TenderMinuteUploads_Update", "StoreReturnAttachment").Data("sendForgery"))
+                                    .Destroy(destroy => destroy.Action("StoreReturnAttachments_Destroy", "StoreReturnAttachment").Data("sendForgery"))
                                 ).ToClientTemplate())
     }
 </script>

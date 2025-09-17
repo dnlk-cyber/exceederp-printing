@@ -36,7 +36,7 @@ namespace ExceedERP.Helpers.Printing
                     return -1;
                 }
 
-                var paperQty = Math.Ceiling((double)(estimation.ProductQuantity * estimation.Pages * estimation.Copy) / (paperSize.NoOfPagesToA1Ratio * 2));
+                var paperQty = Math.Ceiling((double)(estimation.ProductQuantity * estimation.Pages * estimation.Copy) / paperSize.NoOfPagesToA1Ratio);
                 if (categoryItem.PaperType == PaperType.SheetFed)
                 {
                     return Math.Ceiling(paperQty * (1 + model.WastageInPercentage));
@@ -98,7 +98,7 @@ namespace ExceedERP.Helpers.Printing
                     return -1;
                 }
 
-                var plateQuantity = Math.Ceiling((double)((estimation.Pages * estimation.TextNoOfColors) / machineDetail.SectionUp)) * Math.Ceiling(estimation.ProductQuantity / machine.OutputRate);
+                var plateQuantity = Math.Ceiling((double)(estimation.TextNoOfColors * estimation.TextPrintSide) * Math.Ceiling(estimation.ProductQuantity / machine.OutputRate));
                 return Math.Ceiling(plateQuantity * (1 + model.WastageInPercentage));
             }
             
@@ -128,8 +128,7 @@ namespace ExceedERP.Helpers.Printing
                     System.Diagnostics.Debug.WriteLine($"Machine detail not found for MachineTypeId: {machine.PrintingMachineTypeId}, PaperSizeId: {estimation.CoverPaperSizeId}");
                     return -1;
                 }
-
-                var plateQuantity = (estimation.CoverNoOfColor) * Math.Ceiling(estimation.ProductQuantity / machine.OutputRate * machineDetail.SectionUp);
+                var plateQuantity = Math.Ceiling((double)(estimation.CoverNoOfColor * estimation.CoverPrintSide) * Math.Ceiling(estimation.ProductQuantity / machine.OutputRate));
                 return Math.Ceiling((double)plateQuantity * (1 + model.WastageInPercentage));
             }
             

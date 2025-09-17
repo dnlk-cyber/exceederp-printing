@@ -24,6 +24,7 @@ namespace ExceedERP.Reporting.Printing.DataSource
 
                 return new PrintSummaryHeadVM
                 {
+                    CreatedBy = printSumary.CreatedBy,
                     CustomerName = customer?.TradeName ?? "",
                     DateCreated = printSumary.DateCreated,
                     ApprovedBy = printSumary.OnlineApprovedBy,

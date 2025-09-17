@@ -231,7 +231,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                     Pages = production.TotalTextNoPages,
                     TextPaperSizeId = production.TextPaperSizeId,
                     Quantity = production.Quantity,
-                    OperationStatus = OperationStatus.NotStarted,
+                    PrintingOperationStatus = PrintingOperationStatus.Created,
                     CoverNoOfColor = production.CoverNoOfColor,
                     CoverPaperSizeId = production.CoverPaperSizeId,
                     TextNoOfColor = production.TextNoOfColors,
