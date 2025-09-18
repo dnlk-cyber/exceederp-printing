@@ -4,7 +4,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>Clearance Request Personal</legend>
+<legend>@Resources.HR_EmployeeDetail_Clearance_Clearance @Resources.Request @Resources.SelfCare_Personal_Self_Service</legend>
 @(Html.Kendo().Grid<ClearanceRequest>()
       .Name("grid")
       .Columns(columns =>
