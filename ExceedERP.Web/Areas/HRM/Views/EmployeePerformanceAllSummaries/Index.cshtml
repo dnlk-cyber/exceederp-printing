@@ -408,9 +408,9 @@
                 $(this).find(".k-grid-cmd-approve-request").hide();
                 $(this).find(".k-grid-cmd-reject").hide();
             }
-            else {
+            else if (model.IsHRRejected) {
                 $(this).find(".k-grid-cmd-approve-request").show();
-                $(this).find(".k-grid-cmd-reject").show();
+                $(this).find(".k-grid-cmd-reject").remove();
 
             }
 

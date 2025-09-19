@@ -6,7 +6,7 @@
 }
 <legend>@Resources.Navigator_Company_MaintainBranch</legend>
 @(Html.Kendo().Grid<Branch>()
-              .Name("Branchgrid")
+          .Name("Branchgrid")
           .Columns(columns =>
           {
               columns.Bound(c => c.Code).Width(120);
@@ -15,38 +15,43 @@
               columns.Bound(c => c.BranchTypes).EditorTemplateName("Enum").Width(150);
               columns.Bound(c => c.Abbreviation).Width(150);
               columns.ForeignKey(c => c.ParentBranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").EditorTemplateName("PayrollListOfEmployee").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
-  //  columns.ForeignKey(c => c.LookupId, (System.Collections.IEnumerable)ViewData["types"], "LookupId", "Description").EditorTemplateName("Types").Width(150);
-  //  columns.Bound(c => c.Remark);
-  //columns.Command(command =>
-  //{
-  //  //  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-  //     command.Destroy().Text(Resources.ActionButton_Cancel);//
-  //    //command.Custom(Resources.ActionButton_CopyTemp).Click("CopyMapping");
-  //}).Width(220);
-})
+              //  columns.ForeignKey(c => c.LookupId, (System.Collections.IEnumerable)ViewData["types"], "LookupId", "Description").EditorTemplateName("Types").Width(150);
+              //  columns.Bound(c => c.Remark);
+              //columns.Command(command =>
+              //{
+              //  //  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              //     command.Destroy().Text(Resources.ActionButton_Cancel);//
+              //    //command.Custom(Resources.ActionButton_CopyTemp).Click("CopyMapping");
+              //}).Width(220);
+
+          })
           .ToolBar(toolbar =>
           {
               toolbar.Excel().Text(Resources.ActionButton_ExportExcel);
           })
+          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Branch").Window(window => { window.Title(Resources.Navigator_Company_MaintainBranch); window.Scrollable(false); }))
+          .Selectable(selectable =>
+          {
+              selectable.Mode(GridSelectionMode.Single);
+              selectable.Type(GridSelectionType.Row);
 
-    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Branch").Window(window => { window.Title(Resources.Navigator_Company_MaintainBranch); window.Scrollable(false); }))
-                  .Selectable(selectable =>
-                  {
-                      selectable.Mode(GridSelectionMode.Single);
-                      selectable.Type(GridSelectionType.Row);
-                  })
-                         .Scrollable(h => h.Height(500))
-                                      .Sortable(sortable =>
-                                      {
-                                          sortable.SortMode(GridSortMode.SingleColumn);
-                                      })
-                          .Filterable()
-                             .Pageable(pageable => pageable
-                                                        .Input(true)
-                                                        .Numeric(false)
-                                                        .Refresh(true)
-                                                        .PageSizes(true)
-                                                        .ButtonCount(5))
+          })
+
+          .Scrollable(h => h.Height(500))
+
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+
+
+          })
+          .Filterable()
+            .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
               .DataSource(dataSource => dataSource
                   .Ajax()
                        .Events(events =>

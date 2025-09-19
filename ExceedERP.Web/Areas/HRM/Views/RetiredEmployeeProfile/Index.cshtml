@@ -7,7 +7,9 @@
 
 
 @{
+
     Layout = "~/Views/Shared/_Layout.cshtml";
+
    // var culture = System.Threading.Thread.CurrentThread.CurrentCulture.ToString();
 }
 
@@ -97,23 +99,23 @@
         </text>);
 
 
-         
+
       })
           .Excel(excel => excel
                     .FileName(Resources.Navigator_Employee_EmployeeProfile+".xlsx")
                 .Filterable(true)
                     //.DataURI()
                     .AllPages(true)
-                   // .ProxyURL(Url.Action("Excel_Export_Save", "EmployeeProfile"))
+            // .ProxyURL(Url.Action("Excel_Export_Save", "EmployeeProfile"))
             )
                  .Pdf(pdf => pdf
                 .AllPages()
-               
-                .Landscape() 
-                
-             
+
+                .Landscape()
+
+
                     .FileName(Resources.Navigator_Employee_EmployeeProfile+".pdf")
-                  //  .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeeProfile"))
+            //  .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeeProfile"))
             )
                                       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PersonEmployee").Window(window => { window.Title(Resources.Navigator_Employee_EmployeeProfile); window.Scrollable(false); }))
       .Scrollable(h => h.Height(500))
@@ -122,15 +124,15 @@
                   {
                       sortable.SortMode(GridSortMode.SingleColumn);
                   })
-                  
+
          .Filterable()
-        
+
 
 
           .Events(e => {
               e.Save("GetDate");
-          e.DataBound("onDataBound");
-          e.Edit("GetDate");
+              e.DataBound("onDataBound");
+              e.Edit("GetDate");
           })
          .Pageable(pageable => pageable
                                     .Input(true)
@@ -140,18 +142,19 @@
                                     .ButtonCount(5)
                                     .Enabled(true)
                                     )
-                                   
+
 
       .DataSource(dataSource => dataSource
           .Ajax()
           .ServerOperation( true)
-                           .Events(events =>
-                                                                                        {
-                                                                                            events.Error("error_handler(\"Person_Employeegrid\")");
-                                                                                            events.RequestStart("onRequestStart(\"Person_Employeegrid\")");
-                                                                                            events.RequestEnd("onRequestEnd(\"Person_Employeegrid\")");
-                                                                                        })
-               
+          .Events(events =>
+                           {
+                               events.Error("error_handler(\"Person_Employeegrid\")");
+                               events.RequestStart("onRequestStart(\"Person_Employeegrid\")");
+                               events.RequestEnd("onRequestEnd(\"Person_Employeegrid\")");
+
+                           })
+
           .Model(model => model.Id(p => p.EmployeeId))
                               .Read(read => read.Action("Person_Employee_Read", "RetiredEmployeeProfile"))
                               .Create(create => create.Action("Person_Employee_Create", "RetiredEmployeeProfile"))
@@ -163,22 +166,20 @@
 )
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                  .Name("tabstrip_#=EmployeeId#")
+          .Name("tabstrip_#=EmployeeId#")
           .SelectedIndex(0)
           .Items(items =>
           {
               items.Add().Text(Resources.Details).Content(
-                @<text>
-                        
-    @(Html.Kendo().PanelBar()
-                       .Name("panelbar_#=EmployeeId#")
-                      .ExpandMode(PanelBarExpandMode.Single)
-                      .Items(panelbar =>
-                      {
+              @<text>
+              @(Html.Kendo().PanelBar()
+                  .Name("panelbar_#=EmployeeId#")
+                  .ExpandMode(PanelBarExpandMode.Single)
+                  .Items(panelbar =>
+                  {
                           panelbar.Add().Text(Resources.Details)
                               .Expanded(true)
                               .Content(
-                                 
                                    "<div>" +
                         "<table class='table'>" +
                         "<tr>"   +
@@ -199,7 +200,7 @@
                               // "<li><label>FirstName:</label>#=FirstName #</li>" +
                               //"<li><label>"+Resources .Common_PersonEmployee_Nation+":</label>#=Nation #</li>" +
                                   "<li><label>" + Resources.Common_PersonEmployee_DateOfBirth + ":</label>#=DateOfBirthAm#</li>" +
-                                  "<li><label>" + Resources.Common_PersonEmployee_MothersFullName + ":                </label>#=MothersFullName #</li>" +
+                                  "<li><label>" + Resources.Common_PersonEmployee_MothersFullName + ":</label>#=MothersFullName #</li>" +
                                   "<li><label>" + Resources.Common_PersonEmployee_BirthPlace + ":</label>#=BirthPlace #</li>" +
                                   "<li><label>" + Resources.Common_PersonEmployee_HiredDate + ":</label>#=HiredDateAmharic#</li>" +
 
@@ -216,8 +217,7 @@
                       }).ToClientTemplate()
 
     )
-    </text>
-                  );
+    </text>);
              
 
               items.Add().Text(Resources.Navigator_Employee_Education).Content(
@@ -249,6 +249,7 @@
               {
                   command.Destroy().Text(Resources.ActionButton_Cancel);//
               }
+
           }).Width(200);
       })
       .ToolBar(toolbar =>
@@ -262,16 +263,16 @@
                           .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("Education").Window(window => { window.Title(Resources.Navigator_Employee_Education); window.Scrollable(false); }))
          .Scrollable(h => h.Height(500))
                          .Events(x => { x.Save("GetEducationDate");
-                         x.Edit("GetEducationDate");})
+                             x.Edit("GetEducationDate");})
       .DataSource(dataSource => dataSource
           .Ajax()
                    .Events(events =>
-                                                                                                {
-                                                                                                    events.Error("error_handler(\"Educationgrid_#=EmployeeId#\")");
-                                                                                                    events.RequestStart("onRequestStart(\"Educationgrid_#=EmployeeId#\")");
-                                                                                                    events.RequestEnd("onRequestEnd(\"Educationgrid_#=EmployeeId#\")");
-                                                                                                })
-                         
+                   {
+                       events.Error("error_handler(\"Educationgrid_#=EmployeeId#\")");
+                       events.RequestStart("onRequestStart(\"Educationgrid_#=EmployeeId#\")");
+                       events.RequestEnd("onRequestEnd(\"Educationgrid_#=EmployeeId#\")");
+                   })
+
           .Model(model => model.Id(p => p.EmpEduId))
                           .Read(read => read.Action("Education_Read", "Education", new { idEd = "#=EmployeeId#" }))
                           .Create(create => create.Action("Education_Create", "Education", new { idEdTwo = "#=EmployeeId#" }))
@@ -997,8 +998,8 @@ events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=EmployeeId#\")");
                       .Editable(editable => editable.Mode(GridEditMode.InLine))
                       .Scrollable()
                       .Selectable()
-                                       .Events(e => e.Save("GetContractDate"))
-                                                                                           .Events(e => e.Edit("GetContractDate"))
+                                       .Events(e => e.Save("GetContractDate"))      
+                                       .Events(e => e.Edit("GetContractDate"))
                       .DataSource(dataSource => dataSource
                           .Ajax()
                                   .Events(events =>
@@ -1025,8 +1026,8 @@ events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=EmployeeId#\")");
 
     @(Html.Kendo().Chart<ExceedERP.Web.Areas.HRM.Controllers.Profile.EmployeeChartModel>()
                           .Name("chart#=EmployeeId#")
-            //.Title(Resources.Navigator_Employee_Chart)
-            //.HtmlAttributes(new { @class = "small-chart" })
+                                          //.Title(Resources.Navigator_Employee_Chart)
+                                          //.HtmlAttributes(new { @class = "small-chart" })
                                           .Legend(legend => legend
                                                   .Visible(true)
 
@@ -1038,7 +1039,8 @@ events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=EmployeeId#\")");
                               //ds.Sort(sort => sort.Add(model => model.Category).Ascending());
                           }
                           )
-                                  .Series(series =>
+                                  
+                          .Series(series =>
                                   {
                                       series.Column(
                 model => model.Value,
@@ -1046,15 +1048,16 @@ events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=EmployeeId#\")");
                  model => model.Category
             )
             .Labels(labels => labels.Background("transparent").Visible(true));
+
                                   })
-            // .CategoryAxis(axis => axis
-            // .Categories(model => model.Category)
-            //.MajorGridLines(lines => lines.Visible(false))
-            //.Line(line => line.Visible(false))
-            //)
+        // .CategoryAxis(axis => axis
+        // .Categories(model => model.Category)
+        //.MajorGridLines(lines => lines.Visible(false))
+        //.Line(line => line.Visible(false))
+        //)
         .ValueAxis(axis => axis.Numeric()
                                   .Labels(labels => labels.Format("{0:N0}"))
-            // .MajorUnit(50)
+                              // .MajorUnit(50)
                               )
                               .Tooltip(tooltip => tooltip
                                   .Visible(true)

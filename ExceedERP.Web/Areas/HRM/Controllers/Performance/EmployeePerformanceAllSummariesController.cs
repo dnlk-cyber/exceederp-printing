@@ -629,6 +629,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 x.GlFiscalYearId == yearId &&
                 x.GlPeriodId == periodId &&
                 x.EmployeeId == employeeId &&
+               ( !x.IsSectorApplied|| !x.IsCorporateApplied) &&
                 x.IsApproved &&
                 x.IsImmediateSuppurvisorApproved &&
                 x.IsSecondLevelApproved).ToList();
@@ -640,6 +641,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             foreach (var performance in employeePerformances)
             {
+                performance.IsSecondLevelApproved = false;
+                performance.IsAveraged = false;
+                performance.IsImmediateSuppurvisorApproved = false;
+                performance.IsHRRejected = true;
+                performance.IsHRRejected = true;
                 performance.IsHRRejected = true;
                 performance.IsHRApproved = false;
                 performance.ReasonForHRRejection = reason;
