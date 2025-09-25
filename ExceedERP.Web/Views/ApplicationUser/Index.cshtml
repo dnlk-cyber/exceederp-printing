@@ -10,6 +10,9 @@
           columns.Bound(c => c.FirstName)/*.Filterable(ftb => ftb.Multi(true).Search(true))*/;
           columns.Bound(c => c.MiddleName)/*.Filterable(ftb => ftb.Multi(true).Search(true))*/;
           columns.Bound(c => c.LastName);
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullName").Title("ID No.").Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["WorkUnitList"], "Code", "Name").Title("Work Unit").Filterable(ftb => ftb.Multi(true).Search(true));
+
           //                                 columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullName").Title("ID No.").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
           // columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["WorkUnitList"], "Code", "Name").Title("Work Unit").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
           columns.Bound(c => c.PhoneNo);

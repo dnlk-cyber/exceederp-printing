@@ -26,6 +26,22 @@ namespace ExceedERP.Web.Controllers
             var employee = db1.Person_Employee;
             var structure = db1.MainCompanyStructures;
             //var selectedEmployee = employee.Select(
+            //  i => new
+            //  {
+            //      FullName = i.EmployeeCode + "_" + i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+            //      PersonId = i.EmployeeId
+            //  }).AsQueryable();
+            //ViewData["EmployeeList"] = selectedEmployee;
+
+            //var selectedstructure = structure.Select(
+            //    i => new
+            //    {
+            //        Name = i.Name,
+            //        Code = i.OrgStructureId
+            //    }).AsQueryable();
+            //ViewData["WorkUnitList"] = selectedstructure;
+
+            //var selectedEmployee = employee.Select(
             //    i => new
             //    {
             //        FullName = (i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish).Replace("/","-"),//.Replace("\\", " - "),
