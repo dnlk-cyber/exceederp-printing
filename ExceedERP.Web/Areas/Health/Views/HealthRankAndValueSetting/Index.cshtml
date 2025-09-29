@@ -180,8 +180,7 @@ tabstrip.Add()
                             .Update(update => update.Action("PaymentCoverageSettings_Update", "PaymentCoverageSettings"))
                             .Destroy(destroy => destroy.Action("PaymentCoverageSettings_Destroy", "PaymentCoverageSettings"))
                             )
-)
-)
+))
                     </text>);
    tabstrip.Add()
     .Text(" Health Benefit Settings")
@@ -299,6 +298,67 @@ tabstrip.Add()
                      )
                                 )
         </text>);
+            tabstrip.Add()
+            .Text("Health Approval Setting")
+            .Content(@<text>
+                @(Html.Kendo().Grid<HealthApprovalSetting>()
+                .Name("HealthApprovalSettinggrid")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.RequiresHrApprovalForPaymentRequest).ClientTemplate(
+                               "<input type='checkbox' disabled = 'true' value='#= RequiresHrApprovalForPaymentRequest#' " +
+                               "# if (RequiresHrApprovalForPaymentRequest) { #" +
+                               "checked='checked'" +
+                               "# } #" +
+                               "/>").Width(200);
+                    columns.Bound(c => c.Description).Width(180);
+                    columns.Command(command =>
+                    {
+
+                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                        command.Destroy().Text(Resources.ActionButton_Cancel);//
+
+                    });
+                })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Selectable(selectable =>
+                  {
+                      selectable.Mode(GridSelectionMode.Single);
+                      selectable.Type(GridSelectionType.Row);
+                  })
+                  .Scrollable(h => h.Height(500))
+                  .Sortable(sortable =>
+                  {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+                   .Filterable()
+                   .Pageable(pageable => pageable
+                   .Input(true)
+                   .Numeric(false)
+                   .Refresh(true)
+                   .PageSizes(true)
+                   .ButtonCount(5))
+                     .DataSource(dataSource => dataSource
+                         .Ajax()
+                             .Events(events =>
+                             {
+                                 events.Error("error_handler(\"HealthApprovalSettinggrid\")");
+                                 events.RequestStart("onRequestStart(\"HealthApprovalSettinggrid\")");
+                                 events.RequestEnd("onRequestEnd(\"HealthApprovalSettinggrid\")");
+                             })
+
+                        .Model(model => model.Id(p => p.HealthApprovalSettingId))
+                        .Read(read => read.Action("HealthApprovalSettings_Read", "HealthApprovalSettings"))
+                        .Create(create => create.Action("HealthApprovalSettings_Create", "HealthApprovalSettings"))
+                        .Update(update => update.Action("HealthApprovalSettings_Update", "HealthApprovalSettings"))
+                        .Destroy(destroy => destroy.Action("HealthApprovalSettings_Destroy", "HealthApprovalSettings"))
+                         )
+                                    )
+            </text>);
 })
 )
 

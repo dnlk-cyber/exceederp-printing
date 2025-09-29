@@ -64,6 +64,7 @@
         })
         .Events(ev => {
             ev.DetailExpand("onDetailExpandUser");
+            ev.DataBound("onMasterDataBound");
         })
         .Scrollable(h => h.Height(500))
         .Sortable(sortable =>
@@ -431,6 +432,32 @@
         $("#masterId").val(id);
         var wnd = $("#UploadDoc").data("kendoWindow");
         wnd.center().open();
+    }
+
+    function onMasterDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsOnlineApproved === true) {
+
+                row.css("background-color", "darkgrey");
+                row.find(".k-grid-edit").remove();
+                row.find(".k-grid-delete").remove();
+
+            }
+
+            else if (dataItem.IsSendForApproval) {
+
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").remove();
+            }
+
+
+
+        }
+
     }
 </script>
 

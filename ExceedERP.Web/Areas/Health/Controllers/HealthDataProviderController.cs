@@ -106,6 +106,7 @@ namespace ExceedERP.Web.Areas.Health.Controllers
                 .Select(p => new
                 {
                     PersonId = p.EmployeeId,
+                    EmployeeId = p.EmployeeId,
                     FullName = p.EmployeeCode + "-" + p.FirstName + " " + p.MiddleName + " " + p.LastName,
                     FullNameaEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish
                 })

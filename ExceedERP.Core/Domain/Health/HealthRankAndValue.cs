@@ -59,6 +59,15 @@ namespace ExceedERP.Core.Domain.Health
         public virtual HealthRankAndValue  RankAndValue { get; set; }
 
     }
+
+    public class HealthRankAndValueFinalValidation : VoucherValidation
+    {
+        [Key]
+        public int HealthRankAndValueFinalValidationId { get; set; }
+        public int HealthRankAndValueId { get; set; }
+        public virtual HealthRankAndValue  RankAndValue { get; set; }
+
+    }
     public class HealthAttachment
     {
         public int HealthAttachmentId { get; set; }

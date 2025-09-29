@@ -785,6 +785,7 @@
     <Compile Include="Domain\Global\GlobalUserAccessRecord.cs" />
     <Compile Include="Domain\Global\GobalEnums.cs" />
     <Compile Include="Domain\Health\Diagnosis.cs" />
+    <Compile Include="Domain\Health\HealthApprovalSetting.cs" />
     <Compile Include="Domain\Health\HealthBenefitSetting.cs" />
     <Compile Include="Domain\Health\HealthExpenseAndTaxSetting.cs" />
     <Compile Include="Domain\Health\HealthRankAndValue.cs" />

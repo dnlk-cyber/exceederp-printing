@@ -733,6 +733,14 @@
     <Compile Include="Migrations\202509171319476_LeavePlanUpdates1.Designer.cs">
       <DependentUpon>202509171319476_LeavePlanUpdates1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202509291223357_HealthRankAndValue.cs" />
+    <Compile Include="Migrations\202509291223357_HealthRankAndValue.Designer.cs">
+      <DependentUpon>202509291223357_HealthRankAndValue.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202509291413563_HealthRankAndValueandHealthAprovalSetting.cs" />
+    <Compile Include="Migrations\202509291413563_HealthRankAndValueandHealthAprovalSetting.Designer.cs">
+      <DependentUpon>202509291413563_HealthRankAndValueandHealthAprovalSetting.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1234,6 +1242,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202509171319476_LeavePlanUpdates1.resx">
       <DependentUpon>202509171319476_LeavePlanUpdates1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509291223357_HealthRankAndValue.resx">
+      <DependentUpon>202509291223357_HealthRankAndValue.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509291413563_HealthRankAndValueandHealthAprovalSetting.resx">
+      <DependentUpon>202509291413563_HealthRankAndValueandHealthAprovalSetting.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

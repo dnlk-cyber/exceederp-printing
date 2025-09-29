@@ -157,7 +157,7 @@ namespace ExceedERP.Web.Areas.Health.Controllers
                 db.SaveChanges();
             }
 
-            return View("Successfull");
+            return View("Success");
         }
         public ActionResult Upload_MultipleHealthFile(int masterId,  HttpPostedFileBase[] letter, string description)
         {
@@ -195,7 +195,7 @@ namespace ExceedERP.Web.Areas.Health.Controllers
                 }
             }
 
-            return View("Successfull");
+            return View("Success");
         }
         public ActionResult DownloadAttachment(int healthAttachmentId)
         {

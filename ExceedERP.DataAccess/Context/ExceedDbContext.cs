@@ -1955,7 +1955,9 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new PaymentCoverageSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new HealthRankAndValueEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new HealthRankAndValueValidationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new HealthRankAndValueFinalValidationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new HealthBenefitSettingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new HealthApprovalSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new HealthExpenseAndTaxSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new HealthAttachmentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ReferralFormEntityTypeConfiguration());
@@ -4443,10 +4445,12 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<MedicalAttachment> MedicalAttachments { get; set; }
         public System.Data.Entity.DbSet<HealthRankAndValue> HealthRankAndValues { get; set; }
         public System.Data.Entity.DbSet<HealthRankAndValueValidation> HealthRankAndValueValidation { get; set; }
+        public System.Data.Entity.DbSet<HealthRankAndValueFinalValidation> HealthRankAndValueFinalValidations { get; set; }
         public System.Data.Entity.DbSet<HealthRankAndValueSetting> HealthRankAndValueSettings { get; set; }
         public System.Data.Entity.DbSet<HealthResponsiblityLevelValueSetting> HealthResponsiblityLevelValueSettings { get; set; }
         public System.Data.Entity.DbSet<PaymentCoverageSetting> PaymentCoverageSettings { get; set; }
         public System.Data.Entity.DbSet<HealthBenefitSetting> HealthBenefitSettings { get; set; }
+        public System.Data.Entity.DbSet<HealthApprovalSetting> HealthApprovalSettings { get; set; }
         public System.Data.Entity.DbSet<HealthExpenseAndTaxSetting> HealthExpenseAndTaxSettings { get; set; }
         public System.Data.Entity.DbSet<HealthAttachment> HealthAttachments { get; set; }
         public System.Data.Entity.DbSet<ReferralForm> ReferralForm { get; set; }

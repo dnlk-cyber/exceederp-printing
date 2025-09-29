@@ -18,9 +18,8 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.Health.Controllers
 {
-    [AuthorizeRoles(HrmConstants.HRHealthAdmin,
-        HrmConstants.HRHealthApprover,
-        HrmConstants.HRHealthUser)]
+
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService,HrmConstants.HRDepartmentHead)]
     public class HealthRankAndValueDepartmentSelfcareController : BaseController
     {
         // GET: HRM/HealthRankAndValue
@@ -51,7 +50,7 @@ namespace ExceedERP.Web.Areas.Health.Controllers
                 return Json(new { Message = "Request not found.", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
             }
            
-            if ( healthRankAndValue.IsDepartmentSendForApproval)
+            if ( healthRankAndValue.IsDepartmentSendForApproval||healthRankAndValue.IsSendForApproval)
             {
                 return Json(new { Message = "The  Request is already sent for approval.", Status = "Not-Ok" }, JsonRequestBehavior.AllowGet);
             }
@@ -162,7 +161,7 @@ namespace ExceedERP.Web.Areas.Health.Controllers
         {
             var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             var employeesId = EmployeeHelper.GetSubordinates_FilteredByHead(employeeId);
-            var healthRankAndValues = db.HealthRankAndValues.Where(x=> employeesId.Contains(x.EmployeeId)).AsQueryable();
+            var healthRankAndValues = db.HealthRankAndValues.Where(x=> employeesId.Contains(x.EmployeeId)||x.EmployeeId==employeeId).AsQueryable();
             DataSourceResult result = healthRankAndValues.ToDataSourceResult(request, health => new
             {
 

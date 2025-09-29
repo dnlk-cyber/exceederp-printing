@@ -1247,7 +1247,9 @@
     <Compile Include="Areas\Health\Controllers\HealthAttachmentsController.cs" />
     <Compile Include="Areas\Health\Controllers\HealthDataProviderController.cs" />
     <Compile Include="Areas\Health\Controllers\HealthHomeController.cs" />
+    <Compile Include="Areas\Health\Controllers\HealthRankAndValueHRController.cs" />
     <Compile Include="Areas\Health\Controllers\HealthRankAndValueController.cs" />
+    <Compile Include="Areas\Health\Controllers\HealthRankAndValueFinalValidationsController.cs" />
     <Compile Include="Areas\Health\Controllers\HealthRankAndValueValidationController.cs" />
     <Compile Include="Areas\Health\Controllers\HealthReportController.cs" />
     <Compile Include="Areas\Health\Controllers\LaboratoryCatagoryPatientCardController.cs" />
@@ -1271,6 +1273,7 @@
     <Compile Include="Areas\Health\Controllers\SelfCare\MedicalRequestPersonalController.cs" />
     <Compile Include="Areas\Health\Controllers\SelfCare\MedicalRequestStatusController.cs" />
     <Compile Include="Areas\Health\Controllers\SelfCare\RequestesStatusController.cs" />
+    <Compile Include="Areas\Health\Controllers\Setting\HealthApprovalSettingsController.cs" />
     <Compile Include="Areas\Health\Controllers\Setting\HealthBenefitSettingsController.cs" />
     <Compile Include="Areas\Health\Controllers\Setting\HealthExpenseAndTaxSettingsController.cs" />
     <Compile Include="Areas\Health\Controllers\Setting\HealthRankAndValueSettingController.cs" />
@@ -7386,6 +7389,13 @@
     <Content Include="Areas\Health\Views\HealthRankAndValueDepartmentSelfcare\EditorTemplates\HealthRankAndValue.cshtml" />
     <Content Include="Areas\Health\Views\HealthRankAndValueDepartmentSelfcare\EditorTemplates\UploadDocument.cshtml" />
     <Content Include="Areas\Health\Views\HealthRankAndValueDepartmentSelfcare\Index.cshtml" />
+    <Content Include="Areas\Health\Views\HealthRankAndValueHR\EditorTemplates\Branch.cshtml" />
+    <Content Include="Areas\Health\Views\HealthRankAndValueHR\EditorTemplates\EmployeeList.cshtml" />
+    <Content Include="Areas\Health\Views\HealthRankAndValueHR\EditorTemplates\GLFPeriods.cshtml" />
+    <Content Include="Areas\Health\Views\HealthRankAndValueHR\EditorTemplates\GLYearSelector.cshtml" />
+    <Content Include="Areas\Health\Views\HealthRankAndValueHR\EditorTemplates\HealthRankAndValue.cshtml" />
+    <Content Include="Areas\Health\Views\HealthRankAndValueHR\EditorTemplates\UploadDocument.cshtml" />
+    <Content Include="Areas\Health\Views\HealthRankAndValueHR\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

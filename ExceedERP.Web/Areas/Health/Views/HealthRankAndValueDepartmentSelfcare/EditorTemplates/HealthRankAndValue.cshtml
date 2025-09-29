@@ -48,20 +48,19 @@
                 </div>
                 <div>
                     @( Html.Kendo().DropDownListFor(m => m.EmployeeId)
+                            .OptionLabel(Resources.Select)
+                            .DataTextField("FullNameaEnglish")
+                            .DataValueField("EmployeeId")
+                            .HtmlAttributes(new { style = "width:200px" })
+                            .Filter("contains")
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetEmployeesAskForOther", "HealthDataProvider", new { area = "Health" }).Data("sendForgery"))
+                                            .ServerFiltering(false);
 
-                                               .OptionLabel(Resources.Select)
-                                               .DataTextField("FullNameaEnglish")
-                                               .DataValueField("EmployeeId")
-                                               .HtmlAttributes(new { style = "width:200px" })
-                                               .Filter("contains")
-                                               .DataSource(dataSource =>
-                                               {
-                                                   dataSource.Read(read => read.Action("GetEmployeesAskForOther", "HealthDataProvider", new { area = "Health" }).Data("sendForgery"))
-                                                             .ServerFiltering(false);
 
-
-                                               })
-                                                     .ValuePrimitive(true)
+                            })           
+                            .ValuePrimitive(true)
                     )
 
 

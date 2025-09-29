@@ -49,7 +49,13 @@ namespace ExceedERP.Web.Areas.Health.Controllers
                 ModelState.AddModelError("exist", "it is approved once!");
             }
             health.HealthRankAndValueId = vId;
-            
+            var healthApprovalSetting = db.HealthApprovalSettings.FirstOrDefault();
+            if (healthApprovalSetting == null)
+            {
+                ModelState.AddModelError("exist", "Set the health approval Setting first!");
+                return Json(new[] { health }.ToDataSourceResult(request, ModelState));
+
+            }
             if (ModelState.IsValid)
             {
                 
@@ -57,7 +63,7 @@ namespace ExceedERP.Web.Areas.Health.Controllers
                 db.HealthRankAndValueValidation.Add(entity);
                 db.SaveChanges();
                 var healthHead = db.HealthRankAndValues.Find(vId);
-                if (healthHead != null && entity.Status == ApprovalStatuses.Approve)
+                if (healthHead != null && entity.Status == ApprovalStatuses.Approve&& !healthApprovalSetting.RequiresHrApprovalForPaymentRequest)
                 {
                     healthHead.IsSendForApproval = true;
                     healthHead.IsOnlineApproved = true;

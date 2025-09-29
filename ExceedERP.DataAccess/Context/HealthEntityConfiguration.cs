@@ -15,6 +15,15 @@ namespace ExceedERP.DataAccess
                 this.HasKey<int>(o => o.HealthRankAndValueValidationId);
             }
         }
+
+        public class HealthRankAndValueFinalValidationEntityTypeConfiguration : EntityTypeConfiguration<HealthRankAndValueFinalValidation>
+        {
+            public HealthRankAndValueFinalValidationEntityTypeConfiguration()
+            {
+                this.ToTable("HealthRankAndValueFinalValidation", "Health");
+                this.HasKey<int>(o => o.HealthRankAndValueFinalValidationId);
+            }
+        }
         public class HealthRankAndValueEntityTypeConfiguration : EntityTypeConfiguration<HealthRankAndValue>
         {
             public HealthRankAndValueEntityTypeConfiguration()
@@ -53,6 +62,14 @@ namespace ExceedERP.DataAccess
             {
                 this.ToTable("HealthBenefitSettings", "Health");
                 this.HasKey<int>(o => o.HealthBenefitSettingId);
+            }
+        }
+       public class HealthApprovalSettingEntityTypeConfiguration : EntityTypeConfiguration<HealthApprovalSetting>
+        {
+            public HealthApprovalSettingEntityTypeConfiguration()
+            {
+                this.ToTable("HealthApprovalSettings", "Health");
+                this.HasKey<int>(o => o.HealthApprovalSettingId);
             }
         }
         public class HealthExpenseAndTaxSettingEntityTypeConfiguration : EntityTypeConfiguration<HealthExpenseAndTaxSetting>

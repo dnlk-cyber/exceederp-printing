@@ -171,7 +171,7 @@ namespace ExceedERP.Web.Areas.Health.Controllers
         public ActionResult HealthRankAndValue_Read([DataSourceRequest] DataSourceRequest request)
         {
             var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var healthRankAndValues = db.HealthRankAndValues.AsQueryable();
+            var healthRankAndValues = db.HealthRankAndValues.Where(x=>x.IsDepartmentSendForApproval||x.IsSendForApproval).AsQueryable();
             DataSourceResult result = healthRankAndValues.ToDataSourceResult(request, health => new
             {
 
@@ -226,7 +226,7 @@ namespace ExceedERP.Web.Areas.Health.Controllers
                 DateCreated = health.DateCreated,
                 LastModified = health.LastModified,
                 CreatedBy = health.CreatedBy,
-                ModifiedBy = health.ModifiedBy,
+                ModifiedBy = health.ModifiedBy
 
             });
 
@@ -1392,6 +1392,7 @@ namespace ExceedERP.Web.Areas.Health.Controllers
                 healthValue.DateCreated = DateTime.Now;
                 healthValue.CreatedBy = User.Identity.Name;
                
+                healthValue.IsSendForApproval = true;
                 healthValue.IsDepartmentSendForApproval = true;
                 healthValue.DepartmentSendForApprovalTime = DateTime.Now;
                 healthValue.DepartmentSendForApprovalBy = User.Identity.Name;
