@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.Health
 {
-    public class HealthRankAndValue:Operations
+    public class HealthRankAndValue: DepartmentNewOperations
     {
         public int HealthRankAndValueId { get; set; }
         [Display(Name = "HR_EmployeeDetail_Placement_PersonEmployee", ResourceType = typeof(Localization.Resources))]

@@ -11,7 +11,7 @@ namespace ExceedERP.Core.Domain.Health
     {
         public int HealthBenefitSettingId { get; set; }
         public HealthBenefitType BenefitType { get; set; }
-        public decimal BenfitValue { get; set; }
+        public decimal? BenfitValue { get; set; }
         public string Description { get; set; }
     }
     public enum HealthBenefitType

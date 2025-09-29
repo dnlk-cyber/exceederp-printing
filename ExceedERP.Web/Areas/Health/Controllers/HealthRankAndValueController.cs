@@ -1,39 +1,82 @@
-﻿using ExceedERP.Core.Domain.Global;
+﻿using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Health;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.HR;
+using ExceedERP.Web.Controllers;
+using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Web;
 using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.Health.Controllers
 {
-    [Authorize]
-    public class HealthRankAndValueController : Controller
+    [AuthorizeRoles(HrmConstants.HRHealthAdmin,
+        HrmConstants.HRHealthApprover,
+        HrmConstants.HRHealthUser)]
+    public class HealthRankAndValueController : BaseController
     {
         // GET: HRM/HealthRankAndValue
         ExceedDbContext db = new ExceedDbContext();
+        private readonly CacheData CacheData = new CacheData();
         public ActionResult Index()
         {
             PopulateViewData();
             return View();
         }
-        public void PopulateViewData()
+        //public void PopulateViewData()
+        //{
+        //    ViewData["Employee"] = db.Person_Employee.ToList();
+        //    var branches = db.Branch.Select(x => new { x.BranchId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
+        //    ViewData["branches"] = branches;
+        //    var businessUnits = db.BusinessUnits.Select(x => new { x.BusinessUnitId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
+        //    ViewData["businessUnits"] = businessUnits;
+        //    ViewData["FiscalYear"] = db.GLFiscalYears.ToList();
+        //    ViewData["Period"] = db.GLPeriods.ToList();
+
+        //}
+        private void PopulateViewData()
         {
-            ViewData["Employee"] = db.Person_Employee.ToList();
-            var branches = db.Branch.Select(x => new { x.BranchId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
-            ViewData["branches"] = branches;
-            var businessUnits = db.BusinessUnits.Select(x => new { x.BusinessUnitId, Name = x.Name.Replace("\n", "").Replace("\r", "").Replace("#", "").Replace("+", " ") });
-            ViewData["businessUnits"] = businessUnits; ViewData["FiscalYear"] = db.GLFiscalYears.ToList();
-            ViewData["Period"] = db.GLPeriods.ToList();
+            
+            ViewData["FiscalYear"] = CacheData.GetFiscalYearCaches().Select(
+                             i => new
+                             {
+                                 Name = i.Name,
+                                 GlFiscalYearId = i.Id,
+                             }).AsQueryable();
+            ViewData["Employee"] = CacheData.GetEmployeeCaches().Select(
+          i => new
+          {
+              FullNameaEnglish = i.Name,
+              EmployeeCode = i.Code,
+              EmployeeId = i.Id,
+
+          }).AsQueryable();
+            ViewData["branches"] = CacheData.GetBranchCaches().Select(
+              i => new
+              {
+                  Name = i.Name,
+                  BranchId = i.Id,
+              }).AsQueryable(); ;
+
+            ViewData["businessUnits"] = CacheData.GetBusinessUnitCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+                   BusinessUnitId = i.Id,
+               }).AsQueryable();
+
+            ViewData["Period"] = db.GLPeriods.Select(x => new { x.GLPeriodId, x.Name }).AsQueryable();
 
         }
+
         public decimal AllowedAmount(int id)
         {
             decimal allowedAmount = 0;
@@ -59,16 +102,30 @@ namespace ExceedERP.Web.Areas.Health.Controllers
             return allowedAmount;
 
         }
-        public static bool IsNumeric(string input)
+        private static bool IsNumeric(string input)
         {
-            return Regex.IsMatch(input, @"^\d+$");
-        }
+            if (string.IsNullOrWhiteSpace(input))
+                return false;
 
-        public static bool IsAlphabetic(string input)
-        {
-            return Regex.IsMatch(input, @"^[a-zA-Z]+$");
+            return decimal.TryParse(input,
+                NumberStyles.Any,
+                CultureInfo.InvariantCulture,
+                out _);
         }
-        public string GetEmployeeCode(int id)
+        private static bool IsAlphabetic(string input)
+        {
+            //return Regex.IsMatch(input, @"^[a-zA-Z]+$");
+            // Return true for null, empty, or whitespace strings
+            if (string.IsNullOrWhiteSpace(input))
+                return true;
+
+            // Otherwise, check:
+            // 1. Contains at least one letter (a-zA-Z), OR
+            // 2. Contains no digits (\d) or decimal separators [.,]
+            return Regex.IsMatch(input, @"[a-zA-Z]") ||
+                   !Regex.IsMatch(input, @"[\d.,]");
+        }
+        private string GetEmployeeCode(int id)
         {
             string code = "";
             var person = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == id);
@@ -104,9 +161,17 @@ namespace ExceedERP.Web.Areas.Health.Controllers
             }
             return name;
         }
+        public string GetApproverName(string username)
+        {
+            var employeeId = UserInformationHelper.GetEmployeeId(username);
+            var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId ==employeeId );
+
+            return employee!=null?employee.FirstNameEnglish + " " + employee.MiddleNameEnglish + " " + employee.LastNameEnglish:username;
+        }
         public ActionResult HealthRankAndValue_Read([DataSourceRequest] DataSourceRequest request)
         {
-            var healthRankAndValues = db.HealthRankAndValues.ToList();
+            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var healthRankAndValues = db.HealthRankAndValues.AsQueryable();
             DataSourceResult result = healthRankAndValues.ToDataSourceResult(request, health => new
             {
 
@@ -127,6 +192,7 @@ namespace ExceedERP.Web.Areas.Health.Controllers
                 UsedAmount = health.UsedAmount,
                 BenefitType = health.BenefitType,
                 PaymentType = health.PaymentType,
+                //Organization = health.Organization,
                 IsOtherBenifit = health.IsOtherBenifit,
                 StaffContribution = health.StaffContribution,
                 RecoredDate = health.RecoredDate,
@@ -146,17 +212,22 @@ namespace ExceedERP.Web.Areas.Health.Controllers
                 IsSendForApproval = health.IsSendForApproval,
                 OrgBranchName = health.OrgBranchName,
                 SendForApprovalBy = health.SendForApprovalBy,
+                CurrentApprovalStep = health.CurrentApprovalStep,
+                DepartmentOnlineApprovedBy = health.DepartmentOnlineApprovedBy,
+                DepartmentSendForApprovalBy = health.DepartmentSendForApprovalBy,
+                DepartmentOnlineApprovedTime = health.DepartmentOnlineApprovedTime,
+                DepartmentSendForApprovalTime = health.DepartmentSendForApprovalTime,
+                IsDepartmentSendForApproval = health.IsDepartmentSendForApproval,
+                ForwardedFrom = health.ForwardedFrom,
+                ForwardedTo = health.ForwardedTo,
+                IsDepartmentOnlineApproved = health.IsDepartmentOnlineApproved,
+                IsFinalApproval = health.IsFinalApproval,
                 SendForApprovalTime = health.SendForApprovalTime,
                 DateCreated = health.DateCreated,
                 LastModified = health.LastModified,
                 CreatedBy = health.CreatedBy,
                 ModifiedBy = health.ModifiedBy,
-                //AllowedAmount = AllowedAmount(health.EmployeeId),//health.AllowedAmount,
-                //AllowedAmount = health.AllowedAmount,
-                //FiscalYearName = GetFiscalYearName(health.GlFiscalYearId),
-                EmployeeCode = GetEmployeeCode(health.EmployeeId),
-                //RemainingAmount = GetRemainingAmount(health.EmployeeId, health.RecoredDate, health.GlFiscalYearId, health.AllowedAmount, health.UsedAmount),
-               
+
             });
 
             return Json(result,JsonRequestBehavior.AllowGet);
@@ -1008,272 +1079,323 @@ namespace ExceedERP.Web.Areas.Health.Controllers
             {
                 healthValue.BenefitType = HealthBenefitType.NA;
             }
-
-            if (healthValue.DateAmh == null)
+            if (string.IsNullOrEmpty(healthValue.DateAmh))
             {
-                ModelState.AddModelError("", "Treatment date is required");
+                ModelState.AddModelError("", "Treatment Date is Required");
                 return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
 
             }
-
-            if (healthValue.RecoredDateAmh == null)
+            if (string.IsNullOrEmpty(healthValue.RecoredDateAmh))
             {
-                ModelState.AddModelError("", "Record date is required");
+                ModelState.AddModelError("", "Record Date is Required");
+                return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
+
             }
+            if (!string.IsNullOrEmpty(healthValue.DateAmh))
+            {
+                healthValue.Date = HrHelper.ParseEthiopicDate(healthValue.DateAmh);
+            }
+
+            if (!string.IsNullOrEmpty(healthValue.RecoredDateAmh))
+            {
+                healthValue.RecoredDate = HrHelper.ParseEthiopicDate(healthValue.RecoredDateAmh);
+            }
+            if (healthValue.RecoredDate.Date > DateTime.Now.Date)
+            {
+                ModelState.AddModelError(
+                        "RecordDate",
+                        "Record date cannot be in the future. Please select a date that is today or earlier."
+                    ); return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
+
+            }
+            if (healthValue.Date.Date > DateTime.Now.Date)
+            {
+                ModelState.AddModelError(
+                       "TreatedDate",
+                       "Treated date cannot be in the future. Please enter a valid date (today or earlier).");          
+                       return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
+
+            }
+           
             var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == healthValue.EmployeeId && x.isCurrent);
             if (placement == null)
             {
 
-                ModelState.AddModelError("", "The  employee is not placed or Terminated");
+                ModelState.AddModelError("", "No active placement found for this employee, The  Employee is either not Placed or Terminated");
                 return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
 
             }
             healthValue.BranchId = healthValue.BranchId == 0 ? placement.BranchId : healthValue.BranchId;
+
+            var healthandPayments = db.HealthRankAndValues.Where(x => x.EmployeeId == healthValue.EmployeeId
+                                                                     && x.GlFiscalYearId == healthValue.GlFiscalYearId
+                                                                     && x.BenefitType == healthValue.BenefitType)
+                                                            .OrderByDescending(x => x.RecoredDate)
+                                                            .ThenByDescending(x=>x.HealthRankAndValueId)
+                                                            .ToList();
+            var healthandPayment = db.HealthRankAndValues.Where(x => x.EmployeeId == healthValue.EmployeeId
+                                                                     && x.GlFiscalYearId == healthValue.GlFiscalYearId
+                                                                     && x.BenefitType == healthValue.BenefitType)
+                                                            .OrderByDescending(x => x.RecoredDate)
+                                                            .ThenByDescending(x=>x.HealthRankAndValueId)
+                                                            .FirstOrDefault();
+            var level1 = db.HealthResponsiblityLevelValueSettings.FirstOrDefault(x => x.Level == placement.ResponsibilityLevel);
+            if (level1 != null && IsNumeric(level1.CurrentValue))
+            {
+
+                if (healthValue.BenefitType != HealthBenefitType.Maternity
+                    && healthValue.BenefitType != HealthBenefitType.EyeGlass)
+                {
+                    
+                    var initialEyeGlassBenefit = Convert.ToDecimal(level1.CurrentValue);
+                    usedAmount = healthandPayments.Any() ? healthandPayments.Sum(x => x.UsedAmount) : 0;
+                    decimal remainingAmount = initialEyeGlassBenefit - usedAmount;
+
+                    if (remainingAmount <= 0)
+                    {
+                        ModelState.AddModelError("", "The Remaining Balance is Zero(0). You don't have a balance.");
+                        return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
+                    }
+                }
+            }
+
 
             if (!ModelState.IsValid)
             {
                 return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
             }
             
-            if (healthValue.DateAmh != null)
-            {
-                var splitDate = healthValue.DateAmh.Split('/');
-                healthValue.Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-
-            }
-
-            if (healthValue.RecoredDateAmh != null)
-            {
-                var splitDate = healthValue.RecoredDateAmh.Split('/');
-                healthValue.RecoredDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-
             switch (healthValue.BenefitType)
             {
                 case HealthBenefitType.EyeGlass:
-                    var eyGlassPayment = db.HealthBenefitSettings.FirstOrDefault(x => x.BenefitType == HealthBenefitType.EyeGlass);
+                    var eyGlassPayment = db.HealthBenefitSettings
+                        //.Where(x=>x.ResponsibilityLevel==placement.ResponsibilityLevel)
+                        .FirstOrDefault(x => x.BenefitType == HealthBenefitType.EyeGlass);
                     if (eyGlassPayment == null)
                     {
                         ModelState.AddModelError("403", "Set Eye-glass Benefit first");
                         return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
                     }
+                    var eyeGlassRequest = db.HealthRankAndValues
+                                                    .Where(x=>x.BenefitType== HealthBenefitType.EyeGlass
+                                                              &&x.EmployeeId==healthValue.EmployeeId)
+                                                        .OrderByDescending(x=>x.HealthRankAndValueId)
+                                                        .FirstOrDefault();
+                    if(eyeGlassRequest != null)
+                    {
+                        var fiscalYear = db.GLFiscalYears.Find(eyeGlassRequest.GlFiscalYearId);
+                        if (fiscalYear != null)
+                        {
+                            decimal yearsDifference = Math.Round((decimal)(DateTime.Now - fiscalYear.DateFrom).TotalDays / 365.25m, 2);
+                            if (yearsDifference <= 2.0m)
+                            {
+                                ModelState.AddModelError("403", $"You can't request  Eye-glass Benefit with in less than  two(2) years you asked before {yearsDifference} ");
+                                return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
 
-                    healthValue.AllowedAmount = eyGlassPayment.BenfitValue;
-                    healthValue.UsedAmount = Math.Min(eyGlassPayment.BenfitValue, healthValue.TotalPaid);
+                            }
+                        }
+                    }
+
+                 
+                       
+                        healthValue.AllowedAmount = eyGlassPayment.BenfitValue ?? 0;
+                        healthValue.UsedAmount = Math.Min(eyGlassPayment.BenfitValue ?? 0, healthValue.TotalPaid);
+                        var healthPayments = db.HealthRankAndValues.Where(x => x.EmployeeId == healthValue.EmployeeId
+                                               && x.RecoredDate < healthValue.RecoredDate
+                                               && x.GlFiscalYearId == healthValue.GlFiscalYearId
+                                               && x.BenefitType == HealthBenefitType.EyeGlass)
+                                               .OrderByDescending(x => x.HealthRankAndValueId);
+                         var initialEyeBenefit = eyGlassPayment?.BenfitValue ?? 0m;
+                         usedAmount = healthPayments.Any()?healthPayments.Sum(x => x.UsedAmount):0;
+                        decimal eyeGlassRemainingAmount = initialEyeBenefit - usedAmount;
+                        if (eyeGlassRemainingAmount <= 0)
+                        {
+                            ModelState.AddModelError("", "The Remaining Balance is zero. You don't have a balance.");
+                            return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
+                        }
+                        else
+                        {
+                            healthValue.UsedAmount = Math.Min(healthValue.TotalPaid, eyeGlassRemainingAmount);
+                            healthValue.RemainingAmount = eyeGlassRemainingAmount - healthValue.UsedAmount;
+
+                        }
+
+                   
                     break;
 
                 case HealthBenefitType.Maternity:
-                    var maternityPayment = db.HealthBenefitSettings.FirstOrDefault(x => x.BenefitType == HealthBenefitType.Maternity);
+                    var maternityPayment = db.HealthBenefitSettings
+                        //.Where(x => x.ResponsibilityLevel == placement.ResponsibilityLevel)
+                        .FirstOrDefault(x => x.BenefitType == HealthBenefitType.Maternity);
                     if (maternityPayment == null)
                     {
                         ModelState.AddModelError("403", "Set Maternity Benefit setting first");
                         return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
                     }
 
-                    var healthPayments = db.HealthRankAndValues.Where(x => x.EmployeeId == healthValue.EmployeeId 
-                                            && x.RecoredDate < healthValue.RecoredDate 
-                                            && x.GlFiscalYearId == healthValue.GlFiscalYearId 
-                                            && x.BenefitType == HealthBenefitType.Maternity)
-                                            .OrderByDescending(x => x.HealthRankAndValueId);
-                    decimal remainingMaternityAmount = maternityPayment.BenfitValue 
-                                                          - (healthPayments.Any()?healthPayments.Sum(x => x.UsedAmount):0);
+               
 
-                    if (remainingMaternityAmount > 0)
-                    {
-                        healthValue.UsedAmount = Math.Min(healthValue.TotalPaid, remainingMaternityAmount);
-                        healthValue.RemainingAmount = remainingMaternityAmount - healthValue.UsedAmount;
-                    }
-                    else
-                    {
-                        healthValue.UsedAmount = 0;
-                        healthValue.AllowedAmount = 0;
-                    }
+                        // Ensure maternityPayment is already initialized before this block
+
+                        var healthTotalPayments = db.HealthRankAndValues
+                            .Where(x => x.EmployeeId == healthValue.EmployeeId
+                                        && x.GlFiscalYearId == healthValue.GlFiscalYearId
+                                        && x.BenefitType == HealthBenefitType.Maternity);
+
+                        decimal usedAmounts = healthTotalPayments.Any() ? healthTotalPayments.Sum(x => x.UsedAmount) : 0;
+                        decimal remainingMaternityAmount = (maternityPayment.BenfitValue ?? 0) - usedAmounts;
+
+                        if (remainingMaternityAmount <= 0)
+                        {
+                            ModelState.AddModelError("", "The Remaining Balance is Zero(0). You don't have a balance.");
+                            return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
+                        }
+
+                        else
+                        {
+                            healthValue.AllowedAmount = maternityPayment.BenfitValue ?? 0;
+                            healthValue.UsedAmount = Math.Min(healthValue.TotalPaid, remainingMaternityAmount);
+                            healthValue.RemainingAmount = Math.Max(0,remainingMaternityAmount - healthValue.UsedAmount);
+                            healthValue.StaffContribution = (100 - healthValue.PaymentCoverage) * healthValue.TotalPaid;
+
+                        }
+                        
                     break;
                 case HealthBenefitType.Accident:
-                    var accidentPayment = db.HealthBenefitSettings.FirstOrDefault(x => x.BenefitType == HealthBenefitType.Accident);
+                    var accidentPayment = db.HealthBenefitSettings
+                        //.Where(x => x.ResponsibilityLevel == placement.ResponsibilityLevel)
+                        .FirstOrDefault(x => x.BenefitType == HealthBenefitType.Accident);
+
                     if (accidentPayment == null)
                     {
-                        ModelState.AddModelError("403", "Set accident Benefit setting first");
+                        ModelState.AddModelError("403", "Set Accident Benefit setting first");
                         return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
                     }
 
-                    var healthaccidentPayments = db.HealthRankAndValues.Where(x => x.EmployeeId == healthValue.EmployeeId 
-                                                        && x.RecoredDate < healthValue.RecoredDate 
-                                                        && x.GlFiscalYearId == healthValue.GlFiscalYearId 
-                                                        && x.BenefitType == HealthBenefitType.Accident).OrderByDescending(x => x.HealthRankAndValueId);
+                    decimal? initialBenefit = accidentPayment?.BenfitValue;
 
-                    decimal remainingAccidentAmount = accidentPayment.BenfitValue - (healthaccidentPayments.Any()? healthaccidentPayments.Sum(x => x.UsedAmount):0);
-
-                    if (remainingAccidentAmount > 0)
+                    // unlimited benefit if BenfitValue is null or 0
+                    if (!initialBenefit.HasValue || initialBenefit.Value == 0)
                     {
-                        healthValue.UsedAmount = Math.Min(healthValue.TotalPaid, remainingAccidentAmount);
-                        healthValue.RemainingAmount = remainingAccidentAmount - healthValue.UsedAmount;
+                        // Treat as unlimited → just calculate coverage normally
+                        healthValue.UsedAmount = (healthValue.TotalPaid * healthValue.PaymentCoverage) / 100;
+                        healthValue.RemainingAmount = 0m; // or some flag to indicate unlimited
                     }
                     else
                     {
-                        healthValue.UsedAmount = 0;
-                        healthValue.AllowedAmount = 0;
+                        var healthaccidentPayments = db.HealthRankAndValues
+                            .Where(x => x.EmployeeId == healthValue.EmployeeId
+                                        && x.RecoredDate < healthValue.RecoredDate
+                                        && x.GlFiscalYearId == healthValue.GlFiscalYearId
+                                        && x.BenefitType == HealthBenefitType.Accident)
+                            .OrderByDescending(x => x.HealthRankAndValueId);
+
+                        usedAmount = healthaccidentPayments.Any()
+                            ? healthaccidentPayments.Sum(x => x.UsedAmount)
+                            : 0;
+
+                        decimal remainingAccidentAmount = initialBenefit.Value - usedAmount;
+
+                        if (remainingAccidentAmount <= 0)
+                        {
+                            ModelState.AddModelError("", "The Remaining Balance is Zero(0). You don't have a balance.");
+                            return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
+                        }
+
+                        healthValue.UsedAmount = Math.Min(healthValue.TotalPaid, remainingAccidentAmount);
+                        healthValue.RemainingAmount = Math.Max(0, remainingAccidentAmount - healthValue.UsedAmount);
                     }
+
                     break;
 
                 case HealthBenefitType.Family:
-                    var familyPayment = db.HealthBenefitSettings.FirstOrDefault(x => x.BenefitType == HealthBenefitType.Family);
+                    var familyPayment = db.HealthBenefitSettings
+                        //.Where(x => x.ResponsibilityLevel == placement.ResponsibilityLevel)
+                        .FirstOrDefault(x => x.BenefitType == HealthBenefitType.Family);
                     if (familyPayment == null)
                     {
-                        ModelState.AddModelError("403", "Set family Benefit setting first");
+                        ModelState.AddModelError("403", "Set Family Benefit setting first");
                         return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
                     }
 
-                    var healthFamilyPayments = db.HealthRankAndValues.Where(x => x.EmployeeId == healthValue.EmployeeId 
-                                                        && x.RecoredDate < healthValue.RecoredDate 
-                                                        && x.GlFiscalYearId == healthValue.GlFiscalYearId 
-                                                        && x.BenefitType == HealthBenefitType.Family).OrderByDescending(x => x.HealthRankAndValueId);
+                    decimal? initialFamilyBenefit = familyPayment?.BenfitValue;
 
-                    decimal remainingFamilyAmount = familyPayment.BenfitValue - (healthFamilyPayments.Any()? healthFamilyPayments.Sum(x => x.UsedAmount):0);
-
-                    if (remainingFamilyAmount > 0)
+                    // unlimited benefit if null or 0
+                    if (!initialFamilyBenefit.HasValue || initialFamilyBenefit.Value == 0)
                     {
-                        healthValue.UsedAmount = Math.Min(healthValue.TotalPaid, remainingFamilyAmount);
-                        healthValue.RemainingAmount = remainingFamilyAmount - healthValue.UsedAmount;
-
-
+                        // Unlimited → allow full coverage
+                        healthValue.UsedAmount = (healthValue.TotalPaid * healthValue.PaymentCoverage) / 100;
+                        healthValue.AllowedAmount = decimal.MaxValue; // or null, depending on how your UI expects it
+                        healthValue.RemainingAmount = decimal.MaxValue;
                     }
                     else
                     {
-                        healthValue.UsedAmount = 0;
-                        healthValue.AllowedAmount = 0;
+                        var healthFamilyPayments = db.HealthRankAndValues
+                            .Where(x => x.EmployeeId == healthValue.EmployeeId
+                                        && x.RecoredDate < healthValue.RecoredDate
+                                        && x.GlFiscalYearId == healthValue.GlFiscalYearId
+                                        && x.BenefitType == HealthBenefitType.Family)
+                            .OrderByDescending(x => x.HealthRankAndValueId);
 
+                        usedAmount = healthFamilyPayments.Any()
+                            ? healthFamilyPayments.Sum(x => x.UsedAmount)
+                            : 0;
+
+                        decimal remainingFamilyAmount = initialFamilyBenefit.Value - usedAmount;
+
+                        if (remainingFamilyAmount <= 0)
+                        {
+                            ModelState.AddModelError("", "The Remaining Balance is Zero(0). You don't have a balance.");
+                            return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
+                        }
+
+                        healthValue.AllowedAmount = remainingFamilyAmount;
+                        healthValue.UsedAmount = Math.Min(healthValue.TotalPaid, remainingFamilyAmount);
+                        healthValue.RemainingAmount = Math.Max(0, remainingFamilyAmount - healthValue.UsedAmount);
                     }
                     break;
 
                 default:
-                    usedAmount = (healthValue.PaymentCoverage * healthValue.TotalPaid) / 100;
+                     usedAmount = db.HealthRankAndValues
+                                .Where(x => x.EmployeeId == healthValue.EmployeeId
+                                         && x.BenefitType == healthValue.BenefitType
+                                         && x.GlFiscalYearId == healthValue.GlFiscalYearId)
+                                .Sum(x => (decimal?)x.UsedAmount) ?? 0;
+
+                    decimal currentPaid = (healthValue.PaymentCoverage * healthValue.TotalPaid) / 100;
                     healthValue.StaffContribution = healthValue.TotalPaid - usedAmount;
-                    var otherHealthPayments = db.HealthRankAndValues.Where(x => x.EmployeeId == healthValue.EmployeeId 
-                                                        && x.RecoredDate < healthValue.RecoredDate 
-                                                        && x.BenefitType < HealthBenefitType.NA 
-                                                        && x.GlFiscalYearId == healthValue.GlFiscalYearId).ToList();
-                    if (otherHealthPayments.Any())
+                    var rank = db.HealthRankAndValueSettings.FirstOrDefault(x => x.RankId == placement.RankId);
+                    var level = db.HealthResponsiblityLevelValueSettings.FirstOrDefault(x => x.Level == placement.ResponsibilityLevel);
+
+                    // Prefer Rank if available, else Level
+                   
+                    if (level != null)
                     {
-                        var maxRecordDate = otherHealthPayments.Max(x => x.RecoredDate);
-                        var remainingAmountCal = otherHealthPayments
-                            .Where(x => x.RecoredDate == maxRecordDate)
-                            .Select(x => x.RemainingAmount)
-                            .FirstOrDefault();
-
-                        var placement2 = db.Placements.FirstOrDefault(x => x.EmployeeId == healthValue.EmployeeId && x.isCurrent);
-
-                        if (placement2 != null)
-                        {
-                            healthValue.BranchId = healthValue.BranchId == 0 ? placement2.BranchId: healthValue.BranchId;
-                            var rank = db.HealthRankAndValueSettings.FirstOrDefault(x => x.RankId == placement2.RankId);
-                            var level = db.HealthResponsiblityLevelValueSettings.FirstOrDefault(x => x.Level == placement2.ResponsibilityLevel);
-
-                            if (rank != null && IsNumeric(rank.CurrentValue))
-                            {
-                                if (usedAmount > remainingAmountCal)
-                                {
-                                    healthValue.UsedAmount = remainingAmountCal;
-                                    healthValue.AllowedAmount = remainingAmountCal;
-                                    healthValue.RemainingAmount = 0;
-                                }
-                                else
-                                {
-                                   healthValue.UsedAmount = usedAmount;
-                                   healthValue.AllowedAmount = remainingAmountCal;
-                                    healthValue.RemainingAmount = remainingAmountCal - usedAmount;
-                                }
-                            }
-                            else if (rank != null && IsAlphabetic(rank.CurrentValue))
-                            {
-                                healthValue.AllowedAmount = 1000000;
-                                healthValue.RemainingAmount = 1000000;
-                                healthValue.UsedAmount = healthValue.TotalPaid;
-                            }
-                            else if (level != null && IsAlphabetic(level.CurrentValue))
-                            {
-                                healthValue.AllowedAmount = 1000000;
-                                healthValue.RemainingAmount = 1000000;
-                                healthValue.UsedAmount = healthValue.TotalPaid;
-
-                            }
-                            else if (level != null && IsNumeric(level.CurrentValue))
-                            {
-                                if (usedAmount > remainingAmountCal)
-                                {
-                                    healthValue.UsedAmount = remainingAmountCal;
-                                    healthValue.AllowedAmount = remainingAmountCal;
-                                    healthValue.RemainingAmount = 0;
-                                }
-                                else
-                                {
-                                    healthValue.UsedAmount = usedAmount;
-                                    healthValue.AllowedAmount = remainingAmountCal;
-                                    healthValue.RemainingAmount = remainingAmountCal - usedAmount;
-                                }
-                            }
-                        }
+                        ProcessHealthBySetting(healthValue, level.CurrentValue, currentPaid, usedAmount, request);
+                    }
+                    else if (rank != null)
+                    {
+                        ProcessHealthBySetting(healthValue, rank.CurrentValue, currentPaid, usedAmount, request);
                     }
                     else
                     {
-                        var placement1 = db.Placements.FirstOrDefault(x => x.EmployeeId == healthValue.EmployeeId && x.isCurrent);
-                        if (placement1 != null)
-                        {
-                            healthValue.BranchId = healthValue.BranchId == 0 ? placement1.BranchId : healthValue.BranchId;
-
-                            var rank = db.HealthRankAndValueSettings.FirstOrDefault(x => x.RankId == placement1.RankId);
-                            var level = db.HealthResponsiblityLevelValueSettings.FirstOrDefault(x => x.Level == placement1.ResponsibilityLevel);
-
-                            if (rank != null && IsNumeric( rank.CurrentValue))
-                            {
-                                if (usedAmount > Convert.ToDecimal(rank.CurrentValue))
-                                {
-                                    healthValue.UsedAmount = Convert.ToDecimal(rank.CurrentValue);
-                                    healthValue.AllowedAmount = Convert.ToDecimal(rank.CurrentValue);
-                                    healthValue.RemainingAmount = 0;
-                                }
-                                else
-                                {
-                                    healthValue.UsedAmount = usedAmount;
-                                    healthValue.AllowedAmount = Convert.ToDecimal(rank.CurrentValue);
-                                    healthValue.RemainingAmount = Convert.ToDecimal(rank.CurrentValue) - usedAmount;
-                                }
-                            }
-                            else if (rank !=null && IsAlphabetic(rank.CurrentValue))
-                            {
-                                healthValue.AllowedAmount = 1000000;
-                                healthValue.RemainingAmount = 1000000;
-                                healthValue.UsedAmount = healthValue.TotalPaid;
-                            }
-                            else if (level !=null && IsNumeric(level.CurrentValue))
-                            {
-                                if (usedAmount > Convert.ToDecimal(level.CurrentValue))
-                                {
-                                    healthValue.UsedAmount = Convert.ToDecimal(level.CurrentValue);
-                                    healthValue.AllowedAmount = Convert.ToDecimal(level.CurrentValue);
-                                    healthValue.RemainingAmount = 0;
-                                }
-                                else
-                                {
-                                    healthValue.UsedAmount = usedAmount;
-                                    healthValue.AllowedAmount = Convert.ToDecimal(level.CurrentValue);
-                                    healthValue.RemainingAmount = Convert.ToDecimal(level.CurrentValue) - usedAmount;
-                                }
-                            }
-                            else if (level !=null && IsAlphabetic(level.CurrentValue))
-                            {
-                                healthValue.AllowedAmount = 1000000;
-                                healthValue.RemainingAmount = 1000000;
-                                healthValue.UsedAmount = healthValue.TotalPaid;
-                            }
-                        }
+                        ModelState.AddModelError("", "No level/ rank setting found for this employee.");
+                        return Json(new[] { healthValue }.ToDataSourceResult(request, ModelState));
                     }
+                   
                     break;
             }
 
            
             if (ModelState.IsValid)
             {
+                healthValue.DateCreated = DateTime.Now;
+                healthValue.CreatedBy = User.Identity.Name;
+               
+                healthValue.IsDepartmentSendForApproval = true;
+                healthValue.DepartmentSendForApprovalTime = DateTime.Now;
+                healthValue.DepartmentSendForApprovalBy = User.Identity.Name;
+
                 var entity = GetMappedObject(healthValue);
                 db.HealthRankAndValues.Add(entity);
                 db.SaveChanges();
@@ -1292,61 +1414,159 @@ namespace ExceedERP.Web.Areas.Health.Controllers
         public JsonResult HealthRankAndValue_Update([DataSourceRequest] DataSourceRequest request, HealthRankAndValue health)
         {
             ModelState.Clear();
-           
+            decimal usedAmount = 0;
             if (!health.IsOtherBenifit)
             {
                 health.BenefitType = HealthBenefitType.NA;
             }
 
-            if (health.DateAmh == null)
+            if (string.IsNullOrEmpty(health.DateAmh))
             {
                 ModelState.AddModelError("", "Treatment date is required");
+                return Json(new[] { health }.ToDataSourceResult(request, ModelState));
             }
 
-            if (health.RecoredDateAmh == null)
+            if (string.IsNullOrEmpty(health.RecoredDateAmh))
             {
                 ModelState.AddModelError("", "Record date is required");
+                return Json(new[] { health }.ToDataSourceResult(request, ModelState));
+
+            }
+            if (!string.IsNullOrEmpty(health.DateAmh))
+            {
+                health.Date = HrHelper.ParseEthiopicDate(health.DateAmh);
+            }
+            if (!string.IsNullOrEmpty(health.RecoredDateAmh))
+            {
+                health.RecoredDate = HrHelper.ParseEthiopicDate(health.RecoredDateAmh);
+            }
+            if (health.Date.Date > DateTime.Now.Date)
+            {
+                ModelState.AddModelError("", "Treated date can't be future date");
+                return Json(new[] { health }.ToDataSourceResult(request, ModelState));
+
             }
             var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == health.EmployeeId && x.isCurrent);
             if (placement == null)
             {
                 ModelState.AddModelError("", "The  employee is not placed or Terminated");
+                return Json(new[] { health }.ToDataSourceResult(request, ModelState));
+
             }
             health.BranchId = health.BranchId == 0 ? placement.BranchId : health.BranchId;
+            var healthandPayments = db.HealthRankAndValues
+                                   .Where(x => x.EmployeeId == health.EmployeeId
+                                               && x.GlFiscalYearId == health.GlFiscalYearId
+                                               && x.BenefitType == health.BenefitType
+                                               && x.HealthRankAndValueId != health.HealthRankAndValueId)
+                                   .OrderByDescending(x => x.RecoredDate).ThenByDescending(x=>x.HealthRankAndValueId)
+                                   .ToList();
+            var healthandPayment = db.HealthRankAndValues
+                                   .Where(x => x.EmployeeId == health.EmployeeId
+                                               && x.GlFiscalYearId == health.GlFiscalYearId
+                                               && x.BenefitType == health.BenefitType
+                                               && x.HealthRankAndValueId != health.HealthRankAndValueId)
+                                   .OrderByDescending(x => x.RecoredDate).ThenByDescending(x=>x.HealthRankAndValueId)
+                                   .FirstOrDefault();
+            var level1 = db.HealthResponsiblityLevelValueSettings.FirstOrDefault(x => x.Level == placement.ResponsibilityLevel);
+            if (level1 != null && IsNumeric(level1.CurrentValue))
+            {
+                if( health.BenefitType != HealthBenefitType.Maternity
+                    && health.BenefitType !=HealthBenefitType.EyeGlass)
 
+                {
+                    decimal.TryParse(level1.CurrentValue, out decimal initialSetting);
+                    decimal usedAmounts = healthandPayments?.Sum(x => x.UsedAmount) ?? 0m;
+
+                    // 3. Calculate remaining amount with validation
+                    decimal remainingAmount = Math.Max(0, initialSetting - usedAmounts);
+                    if (remainingAmount <= 0)
+                    {
+                        ModelState.AddModelError("", "The Remaining Balance is zero. You don't have a balance.");
+                        return Json(new[] { health }.ToDataSourceResult(request, ModelState));
+                    }
+
+                }
+                   
+                   
+            }
             if (!ModelState.IsValid)
             {
                 return Json(new[] { health }.ToDataSourceResult(request, ModelState));
             }
-            if (health.DateAmh != null)
-            {
-                var splitDate = health.DateAmh.Split('/');
-                health.Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
-            if (health.RecoredDateAmh != null)
-            {
-                var splitDate = health.RecoredDateAmh.Split('/');
-                health.RecoredDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-            }
+           
             switch (health.BenefitType)
             {
                 case HealthBenefitType.EyeGlass:
-                    var eyGlassPayment = db.HealthBenefitSettings.FirstOrDefault(x => x.BenefitType == HealthBenefitType.EyeGlass);
+                    var eyGlassPayment = db.HealthBenefitSettings
+                        //.Where(x => x.ResponsibilityLevel == placement.ResponsibilityLevel)
+                                                                .FirstOrDefault(x => x.BenefitType == HealthBenefitType.EyeGlass);
                     if (eyGlassPayment == null)
                     {
                         ModelState.AddModelError("403", "Set Eye-glass Benefit first");
                         return Json(new[] { health }.ToDataSourceResult(request, ModelState));
                     }
-                    health.AllowedAmount = eyGlassPayment.BenfitValue;
-                    health.UsedAmount = Math.Min(eyGlassPayment.BenfitValue, health.TotalPaid);
+                    var eyeGlassRequest = db.HealthRankAndValues
+                                                .Where(x => x.BenefitType == HealthBenefitType.EyeGlass
+                                                           && x.EmployeeId == health.EmployeeId
+                                                           && x.HealthRankAndValueId != health.HealthRankAndValueId)
+                                                        .OrderByDescending(x => x.HealthRankAndValueId)
+                                                        .FirstOrDefault();
+                    if (eyeGlassRequest != null)
+                    {
+                        var fiscalYear = db.GLFiscalYears.Find(eyeGlassRequest.GlFiscalYearId);
+                        if (fiscalYear != null)
+                        {
+                            decimal yearsDifference = Math.Round((decimal)(DateTime.Now - fiscalYear.DateFrom).TotalDays / 365.25m, 2);
+                            if (yearsDifference <= 2.0m)
+                            {
+                                ModelState.AddModelError("403", $"You can't request  Eye-glass Benefit with in less than  two(2) years you asked before {yearsDifference} ");
+                                return Json(new[] { health }.ToDataSourceResult(request, ModelState));
+
+                            }
+                           
+                        }
+                    }
+                    if (healthandPayment != null && healthandPayment.RemainingAmount <= 0)
+                    {
+                        ModelState.AddModelError("", "The Remaining Balance is zero. You don't have a balance.");
+                        return Json(new[] { health }.ToDataSourceResult(request, ModelState));
+                    }
+                    health.AllowedAmount = eyGlassPayment.BenfitValue ?? 0;
+                    health.UsedAmount = Math.Min(eyGlassPayment.BenfitValue ?? 0, health.TotalPaid);
+                    var healthEyeGlassPayments = db.HealthRankAndValues.Where(x => x.EmployeeId == health.EmployeeId
+                                            && x.RecoredDate < health.RecoredDate
+                                            && x.GlFiscalYearId == health.GlFiscalYearId
+                                            && x.HealthRankAndValueId != health.HealthRankAndValueId
+                                            && x.BenefitType == HealthBenefitType.EyeGlass)
+                                            .OrderByDescending(x => x.HealthRankAndValueId);
+                    var initialEyeGlassBenefit = eyGlassPayment?.BenfitValue ?? 0m;
+                        decimal usedEyeGlassAmount = healthEyeGlassPayments.Any() ? healthEyeGlassPayments.Sum(x => x.UsedAmount) : 0;
+                    decimal eyeGlassRemainingAmount =Math.Max(0, initialEyeGlassBenefit - usedEyeGlassAmount);
+                    if (eyeGlassRemainingAmount <= 0)
+                    {
+                        ModelState.AddModelError("", "The Remaining Balance is zero. You don't have a balance.");
+                        return Json(new[] { health }.ToDataSourceResult(request, ModelState));
+                    }
+                    else 
+                    {
+                        health.UsedAmount = Math.Min(health.TotalPaid, eyeGlassRemainingAmount);
+                        health.RemainingAmount = Math.Max(0,eyeGlassRemainingAmount - health.UsedAmount);
+
+                    }
+                       
+
                     break;
                 case HealthBenefitType.Maternity:
-                    var maternityPayment = db.HealthBenefitSettings.FirstOrDefault(x => x.BenefitType == HealthBenefitType.Maternity);
+                    var maternityPayment = db.HealthBenefitSettings
+                        //.Where(x => x.ResponsibilityLevel == placement.ResponsibilityLevel)
+                        .FirstOrDefault(x => x.BenefitType == HealthBenefitType.Maternity);
                     if (maternityPayment == null)
                     {
                         ModelState.AddModelError("403", "Set Maternity Benefit setting first");
                         return Json(new[] { health }.ToDataSourceResult(request, ModelState));
                     }
+                   
 
                     var healthPayments = db.HealthRankAndValues
                                            .Where(x => x.EmployeeId == health.EmployeeId 
@@ -1354,209 +1574,166 @@ namespace ExceedERP.Web.Areas.Health.Controllers
                                                && x.GlFiscalYearId == health.GlFiscalYearId 
                                                && x.BenefitType == HealthBenefitType.Maternity)
                                                .OrderByDescending(x => x.HealthRankAndValueId);
-                    decimal remainingMaternityAmount = maternityPayment.BenfitValue - (healthPayments.Any()?healthPayments.Sum(x => x.UsedAmount):0);
+                   
 
-                    if (remainingMaternityAmount > 0)
-                    {
-                        health.UsedAmount = Math.Min(health.TotalPaid, remainingMaternityAmount);
-                        health.RemainingAmount = remainingMaternityAmount - health.UsedAmount;
-                        health.AllowedAmount = remainingMaternityAmount;
-                    }
-                    else
-                    {
-                        health.UsedAmount = 0;
-                        health.AllowedAmount = 0;
-                        health.RemainingAmount = 0;
-                    }
+                        // Ensure maternityPayment is already initialized before this block
+
+                        var healthTotalPayments = db.HealthRankAndValues
+                            .Where(x => x.EmployeeId == health.EmployeeId
+                                        && x.GlFiscalYearId == health.GlFiscalYearId
+                                        && x.HealthRankAndValueId != health.HealthRankAndValueId
+                                        && x.BenefitType == HealthBenefitType.Maternity);
+
+                        decimal usedMaternityAmount = healthTotalPayments.Any() ? healthTotalPayments.Sum(x => x.UsedAmount) : 0;
+                        decimal remainingMaternityAmount = (maternityPayment.BenfitValue ?? 0) - usedMaternityAmount;
+
+                        if (remainingMaternityAmount <= 0)
+                        {
+                            ModelState.AddModelError("", "The Remaining Balance is Zero(0). You don't have a balance.");
+                            return Json(new[] { health }.ToDataSourceResult(request, ModelState));
+                        }
+
+                        else
+                        {
+                            health.UsedAmount = Math.Min(health.TotalPaid, remainingMaternityAmount);
+                            health.RemainingAmount = Math.Max(0, remainingMaternityAmount - health.UsedAmount);
+                            health.AllowedAmount = remainingMaternityAmount;
+                            health.StaffContribution = (100 - health.PaymentCoverage) * health.AllowedAmount;
+
+                        }
+                        
+                   
                     break;
                 case HealthBenefitType.Accident:
-                    var accidentPayment = db.HealthBenefitSettings.FirstOrDefault(x => x.BenefitType == HealthBenefitType.Accident);
+                    var accidentPayment = db.HealthBenefitSettings
+                        //.Where(x => x.ResponsibilityLevel == placement.ResponsibilityLevel)
+                        .FirstOrDefault(x => x.BenefitType == HealthBenefitType.Accident);
+
                     if (accidentPayment == null)
                     {
-                        ModelState.AddModelError("403", "Set accident Benefit setting first");
+                        ModelState.AddModelError("403", "Set Accident Benefit setting first");
                         return Json(new[] { health }.ToDataSourceResult(request, ModelState));
                     }
 
-                    var healthaccidentPayments = db.HealthRankAndValues.Where(x => x.EmployeeId == health.EmployeeId 
-                                                                                     && x.RecoredDate < health.RecoredDate 
-                                                                                     && x.GlFiscalYearId == health.GlFiscalYearId
-                                                                                     && x.BenefitType == HealthBenefitType.Accident)
-                                                                                     .OrderByDescending(x => x.HealthRankAndValueId);
-                    decimal remainingAccidentAmount = accidentPayment.BenfitValue - 
-                                                                    (healthaccidentPayments.Any() ? healthaccidentPayments.Sum(x => x.UsedAmount) : 0);
+                    decimal? initialBenefit = accidentPayment?.BenfitValue;
 
-                    if (remainingAccidentAmount > 0)
+                    // unlimited benefit if BenfitValue is null or 0
+                    if (!initialBenefit.HasValue || initialBenefit.Value == 0)
                     {
-                        health.UsedAmount = Math.Min(health.TotalPaid, remainingAccidentAmount);
-                        health.RemainingAmount = remainingAccidentAmount - health.UsedAmount;
-                        health.AllowedAmount = remainingAccidentAmount;
+                        // Treat as unlimited → just calculate coverage normally
+                        health.UsedAmount = (health.TotalPaid * health.PaymentCoverage) / 100;
+                        health.RemainingAmount = 0m; // or some flag to indicate unlimited
                     }
                     else
                     {
-                        health.UsedAmount = 0;
-                        health.AllowedAmount = 0;
-                        health.RemainingAmount = 0;
+                        var healthaccidentPayments = db.HealthRankAndValues
+                            .Where(x => x.EmployeeId == health.EmployeeId
+                                        && x.HealthRankAndValueId != health.HealthRankAndValueId
+                                        && x.GlFiscalYearId == health.GlFiscalYearId
+                                        && x.BenefitType == HealthBenefitType.Accident)
+                            .OrderByDescending(x => x.HealthRankAndValueId);
+
+                        usedAmount = healthaccidentPayments.Any()
+                            ? healthaccidentPayments.Sum(x => x.UsedAmount)
+                            : 0;
+
+                        decimal remainingAccidentAmount = initialBenefit.Value - usedAmount;
+
+                        if (remainingAccidentAmount <= 0)
+                        {
+                            ModelState.AddModelError("", "The Remaining Balance is Zero(0). You don't have a balance.");
+                            return Json(new[] { usedAmount }.ToDataSourceResult(request, ModelState));
+                        }
+
+                        health.UsedAmount = Math.Min(health.TotalPaid, remainingAccidentAmount);
+                        health.RemainingAmount = Math.Max(0, remainingAccidentAmount - health.UsedAmount);
                     }
+
                     break;
 
                 case HealthBenefitType.Family:
-                    var familyPayment = db.HealthBenefitSettings.FirstOrDefault(x => x.BenefitType == HealthBenefitType.Family);
+                    var familyPayment = db.HealthBenefitSettings
+                        //.Where(x => x.ResponsibilityLevel == placement.ResponsibilityLevel)
+                        .FirstOrDefault(x => x.BenefitType == HealthBenefitType.Family);
                     if (familyPayment == null)
                     {
-                        ModelState.AddModelError("403", "Set family Benefit setting first");
+                        ModelState.AddModelError("403", "Set Family Benefit setting first");
                         return Json(new[] { health }.ToDataSourceResult(request, ModelState));
                     }
 
-                    var healthFamilyPayments = db.HealthRankAndValues.Where(x => x.EmployeeId == health.EmployeeId
-                                                        && x.RecoredDate < health.RecoredDate
-                                                        && x.GlFiscalYearId == health.GlFiscalYearId
-                                                        && x.BenefitType == HealthBenefitType.Family).OrderByDescending(x => x.HealthRankAndValueId);
+                    decimal? initialFamilyBenefit = familyPayment?.BenfitValue;
 
-                    decimal remainingFamilyAmount = familyPayment.BenfitValue - (healthFamilyPayments.Any() ? healthFamilyPayments.Sum(x => x.UsedAmount) : 0);
-
-                    if (remainingFamilyAmount > 0)
+                    // unlimited benefit if null or 0
+                    if (!initialFamilyBenefit.HasValue || initialFamilyBenefit.Value == 0)
                     {
-                        health.UsedAmount = Math.Min(health.TotalPaid, remainingFamilyAmount);
-                        health.RemainingAmount = remainingFamilyAmount - health.UsedAmount;
-
-
+                        // Unlimited → allow full coverage
+                        health.UsedAmount = (health.TotalPaid * health.PaymentCoverage) / 100;
+                        health.AllowedAmount = decimal.MaxValue; // or null, depending on how your UI expects it
+                        health.RemainingAmount = decimal.MaxValue;
                     }
                     else
                     {
-                        health.UsedAmount = 0;
-                        health.AllowedAmount = 0;
+                        var healthFamilyPayments = db.HealthRankAndValues
+                            .Where(x => x.EmployeeId == health.EmployeeId
+                                        && x.HealthRankAndValueId != health.HealthRankAndValueId
+                                        && x.GlFiscalYearId == health.GlFiscalYearId
+                                        && x.BenefitType == HealthBenefitType.Family)
+                            .OrderByDescending(x => x.HealthRankAndValueId);
 
+                        usedAmount = healthFamilyPayments.Any()
+                            ? healthFamilyPayments.Sum(x => x.UsedAmount)
+                            : 0;
+
+                        decimal remainingFamilyAmount = initialFamilyBenefit.Value - usedAmount;
+
+                        if (remainingFamilyAmount <= 0)
+                        {
+                            ModelState.AddModelError("", "The Remaining Balance is Zero(0). You don't have a balance.");
+                            return Json(new[] { health }.ToDataSourceResult(request, ModelState));
+                        }
+
+                        health.AllowedAmount = remainingFamilyAmount;
+                        health.UsedAmount = Math.Min(health.TotalPaid, remainingFamilyAmount);
+                        health.RemainingAmount = Math.Max(0, remainingFamilyAmount - health.UsedAmount);
                     }
                     break;
 
                 default:
-                    var usedAmount = (health.PaymentCoverage * health.TotalPaid) / 100;
+                    usedAmount = db.HealthRankAndValues
+                               .Where(x => x.EmployeeId == health.EmployeeId
+                                        && x.HealthRankAndValueId != health.HealthRankAndValueId
+                                        && x.BenefitType == health.BenefitType
+                                        && x.GlFiscalYearId == health.GlFiscalYearId)
+                               .Sum(x => (decimal?)x.UsedAmount) ?? 0;
+
+                    decimal currentPaid = (health.PaymentCoverage * health.TotalPaid) / 100;
                     health.StaffContribution = health.TotalPaid - usedAmount;
-                    var otherHealthPayments = db.HealthRankAndValues
-                                                  .Where(x => x.EmployeeId == health.EmployeeId 
-                                                              && x.RecoredDate < health.RecoredDate 
-                                                              && x.BenefitType < HealthBenefitType.NA 
-                                                              && x.GlFiscalYearId == health.GlFiscalYearId).ToList();
+                    var rank = db.HealthRankAndValueSettings.FirstOrDefault(x => x.RankId == placement.RankId);
+                    var level = db.HealthResponsiblityLevelValueSettings.FirstOrDefault(x => x.Level == placement.ResponsibilityLevel);
 
-                    if (otherHealthPayments.Any())
+                    // Prefer Level if available, else rank
+
+                    if (level != null)
                     {
-                        var maxRecordDate = otherHealthPayments.Max(x => x.RecoredDate);
-                        var remainingAmountCal = otherHealthPayments
-                            .Where(x => x.RecoredDate == maxRecordDate)
-                            .Select(x => x.RemainingAmount)
-                            .FirstOrDefault();
-
-                        var placement2 = db.Placements.FirstOrDefault(x => x.EmployeeId == health.EmployeeId && x.isCurrent);
-
-                        if (placement2 != null)
-                        {
-                            var rank = db.HealthRankAndValueSettings.FirstOrDefault(x => x.RankId == placement2.RankId);
-                            var level = db.HealthResponsiblityLevelValueSettings.FirstOrDefault(x => x.Level == placement2.ResponsibilityLevel);
-
-                            if (rank != null && IsNumeric(rank.CurrentValue))
-                            {
-                                if (usedAmount > remainingAmountCal)
-                                {
-                                    health.UsedAmount = remainingAmountCal;
-                                    health.AllowedAmount = remainingAmountCal;
-                                    health.RemainingAmount = 0;
-                                }
-                                else
-                                {
-                                    health.UsedAmount = usedAmount;
-                                    health.AllowedAmount = remainingAmountCal;
-                                    health.RemainingAmount = remainingAmountCal - usedAmount;
-                                }
-                            }
-                            else if (rank != null && IsAlphabetic(rank.CurrentValue))
-                            {
-                                health.AllowedAmount = 1000000;
-                                health.RemainingAmount = 1000000;
-                                health.UsedAmount = health.TotalPaid;
-                            }
-                            else if (level != null && IsAlphabetic(level.CurrentValue))
-                            {
-                                health.AllowedAmount = 1000000;
-                                health.RemainingAmount = 1000000;
-                                health.UsedAmount = health.TotalPaid;
-
-                            }
-                            else if (level != null && IsNumeric(level.CurrentValue))
-                            {
-                                if (usedAmount > remainingAmountCal)
-                                {
-                                    health.UsedAmount = remainingAmountCal;
-                                    health.AllowedAmount = remainingAmountCal;
-                                    health.RemainingAmount = 0;
-                                }
-                                else
-                                {
-                                    health.UsedAmount = usedAmount;
-                                    health.AllowedAmount = remainingAmountCal;
-                                    health.RemainingAmount = remainingAmountCal - usedAmount;
-                                }
-                            }
-                        }
+                        ProcessHealthBySetting(health, level.CurrentValue, currentPaid, usedAmount, request);
+                    }
+                    else if (rank != null)
+                    {
+                        ProcessHealthBySetting(health, rank.CurrentValue, currentPaid, usedAmount, request);
                     }
                     else
                     {
-                        var placement1 = db.Placements.FirstOrDefault(x => x.EmployeeId == health.EmployeeId && x.isCurrent);
-                        if (placement1 != null)
-                        {
-                            var rank = db.HealthRankAndValueSettings.FirstOrDefault(x => x.RankId == placement1.RankId);
-                            var level = db.HealthResponsiblityLevelValueSettings.FirstOrDefault(x => x.Level == placement1.ResponsibilityLevel);
-
-                            if (rank !=null && IsNumeric(rank.CurrentValue))
-                            {
-                                if (usedAmount > Convert.ToDecimal(rank.CurrentValue))
-                                {
-                                    health.UsedAmount = Convert.ToDecimal(rank.CurrentValue);
-                                    health.AllowedAmount = Convert.ToDecimal(rank.CurrentValue);
-                                    health.RemainingAmount = 0;
-                                }
-                                else
-                                {
-                                    health.UsedAmount = usedAmount;
-                                    health.AllowedAmount = Convert.ToDecimal(rank.CurrentValue);
-                                    health.RemainingAmount = Convert.ToDecimal(rank.CurrentValue) - usedAmount;
-                                }
-                            }
-                            else if (rank !=null&& IsAlphabetic(rank.CurrentValue))
-                            {
-                                health.AllowedAmount = 1000000;
-                                health.RemainingAmount = 1000000;
-                                health.UsedAmount = health.TotalPaid;
-
-                            }
-                            else if (level !=null&& IsNumeric(level.CurrentValue))
-                            {
-                                if (usedAmount > Convert.ToDecimal(level.CurrentValue))
-                                {
-                                    health.UsedAmount = Convert.ToDecimal(level.CurrentValue);
-                                    health.AllowedAmount = Convert.ToDecimal(level.CurrentValue);
-                                    health.RemainingAmount = 0;
-                                }
-                                else
-                                {
-                                    health.UsedAmount = usedAmount;
-                                    health.AllowedAmount = Convert.ToDecimal(level.CurrentValue);
-                                    health.RemainingAmount = Convert.ToDecimal(level.CurrentValue) - usedAmount;
-                                }
-                            }
-                            else if (IsAlphabetic(level.CurrentValue))
-                            {
-                                health.AllowedAmount = 1000000;
-                                health.RemainingAmount = 1000000;
-                                health.UsedAmount = health.TotalPaid;
-
-                            }
-                        }
+                        ModelState.AddModelError("", "No level/ rank setting found for this employee.");
+                        return Json(new[] { health }.ToDataSourceResult(request, ModelState));
                     }
+                    
                     break;
             }
            
             if (ModelState.IsValid)
             {
+                health.LastModified = DateTime.Now;
+                health.ModifiedBy = User.Identity.Name;
                 var entity = GetMappedObject(health);
                 db.HealthRankAndValues.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
@@ -1584,20 +1761,6 @@ namespace ExceedERP.Web.Areas.Health.Controllers
                 db.HealthRankAndValues.Attach(entity);
                 db.HealthRankAndValues.Remove(entity);
                 db.SaveChanges();
-                //db.Entry(entity).State = EntityState.Detached;
-
-                //var healths = db.HealthRankAndValues.Where(x => x.EmployeeId == entity.EmployeeId && x.GlFiscalYearId == entity.GlFiscalYearId).OrderByDescending(x => x.Date).ToList();
-                //if (healths.Any())
-                //{
-                //    var hl = healths.FirstOrDefault();
-
-                //    hl.RemainingAmount = hl.RemainingAmount + used;
-
-                //    db.Entry(hl).State = EntityState.Modified;
-                //    db.SaveChanges();
-                //}
-
-
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Health payment history " + entity.HealthRankAndValueId);
                 #endregion
@@ -1654,6 +1817,45 @@ namespace ExceedERP.Web.Areas.Health.Controllers
             return entity;
 
         }
+        private const decimal UnlimitedValue = 1000000m;
+
+
+        private void ProcessHealthBySetting(HealthRankAndValue healthValue, string currentValue, decimal currentPaid, decimal usedAmount, DataSourceRequest request)
+        {
+            if (IsNumeric(currentValue))
+            {
+                decimal allowedAmount = Convert.ToDecimal(currentValue);
+                if (allowedAmount <= 0)
+                {
+                    ModelState.AddModelError("", "The allowed amount is Zero (0). Please set a valid allowed amount.");
+                    return;
+                }
+
+                // Remaining after considering history
+                decimal remaining = Math.Max(0, allowedAmount - usedAmount);
+
+                if (remaining <= 0)
+                {
+                    ModelState.AddModelError("", "The Remaining Balance is Zero (0). You don't have a balance.");
+                    return;
+                }
+
+                decimal used = Math.Min(currentPaid, remaining);
+                healthValue.AllowedAmount = remaining;
+                healthValue.UsedAmount = used;
+                healthValue.RemainingAmount = Math.Max(0, remaining - currentPaid);
+                healthValue.StaffContribution = healthValue.TotalPaid - currentPaid;
+            }
+            else if (IsAlphabetic(currentValue))
+            {
+                healthValue.AllowedAmount = UnlimitedValue;
+                healthValue.RemainingAmount = UnlimitedValue;
+                healthValue.UsedAmount = healthValue.TotalPaid;
+                healthValue.StaffContribution = 0;
+            }
+        }
+
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

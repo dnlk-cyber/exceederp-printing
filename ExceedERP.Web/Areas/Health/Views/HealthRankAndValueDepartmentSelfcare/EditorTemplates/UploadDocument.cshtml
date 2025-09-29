@@ -1,0 +1,128 @@
+﻿@*@using ExceedERP.Core.Localization
+
+    <div class="row fullrow">
+        <div class="col-md-9 ro1">
+            <div class="form-group">
+
+                @using (Html.BeginForm("UploadIncomingHealthFiles", "HealthAttachments", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <fieldset>
+                        <input type="text" hidden id="masterId" name="masterId" />
+
+                        <div class="editor-field">
+                            @Html.TextBox("file", "", new { type = "file", @class = "form-control" })
+                        </div>
+                        <br />
+                        <div class="editor-field">
+                            @Html.TextArea("description", null, new { placeholder = "Description" })
+                        </div>
+
+                        <br />
+                        <div class="editor-field">
+                            <input id="uploadBut" class="btn btn-primary" type="button" value="@Resources.HR_ActionButton_Upload" onclick="AttachArchiveFiles()" />
+                        </div>
+
+                    </fieldset>
+                }
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <style>
+        div.k-edit-form-container {
+            width: 400px;
+        }
+        /*to hide edit and cancel button container*/
+        .k-edit-form-container .k-edit-buttons {
+            display: none;
+        }
+
+        button, html input[type=button], input[type=reset], input[type=submit] {
+            padding-top: 1px;
+            padding-bottom: 1px;
+        }
+    </style>*@
+@using ExceedERP.Core.Domain.Health
+@model HealthAttachment
+
+<div class="editor-form">
+    <!-- Hidden Field for HealthAttachmentId -->
+    @Html.HiddenFor(model => model.HealthAttachmentId)
+
+    <!-- Description Field -->
+    <div class="form-group">
+        @Html.LabelFor(model => model.Description)
+        @Html.TextAreaFor(model => model.Description, new { @class = "k-textbox" })
+    </div>
+
+    <!-- Trigger Button for File Upload Popup -->
+    <div class="form-group">
+        <button type="button" class="k-button" onclick="openUploadPopup()">Upload File</button>
+    </div>
+
+    <!-- Kendo Window (Popup) for File Upload -->
+    @(Html.Kendo().Window()
+                                .Name("UploadDoc")
+                                .Title("Upload File")
+                                .Visible(false)
+                                .Modal(true)
+                                .Draggable(true)
+                                .Width(400)
+                                .Content(@<text>
+                                    <div class="form-group">
+                                        <form id="fileUploadForm" method="post" enctype="multipart/form-data">
+                                            <input type="hidden" name="masterId" id="masterId" value="@Model.HealthRankAndValueId" />
+
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    @Html.TextBoxFor(m => m.FileName, new { type = "file", required = "true" })
+                                                    <br />
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-lg-7"></div>
+                                                <input type="submit" class="btn-primary k-button" value="Submit" />
+                                            </div>
+                                        </form>
+                                    </div>
+                                </text>)
+    )
+
+    <!-- Kendo Upload Widget -->
+    @(Html.Kendo().Upload()
+            .Name("fileUploader")
+            .Async(a => a.Save("HealthAttachmentTemplateFiles_Create", "HealthAttachments", new { id = "#=HealthRankAndValueId#", area = "Health" }))
+            .ShowFileList(false)
+            .Events(e => e
+                .Success("onUploadSuccess")
+                .Error("onUploadError")
+                .Select("onSelectFile") // Trigger upload when a file is selected
+            )
+    )
+
+</div>
+<script>
+    // Automatically upload the file when it is selected
+    function onSelectFile(e) {
+        var upload = $("#fileUploader").data("kendoUpload");
+        upload.upload(); // Start the upload manually
+    }
+
+    // Success handler for file upload
+    function onUploadSuccess(e) {
+        alert("File uploaded successfully!");
+        var window = $("#UploadDoc").data("kendoWindow");
+        window.close(); // Close the popup after successful upload
+    }
+
+    // Error handler for file upload
+    function onUploadError(e) {
+        alert("Error uploading file: " + e.XMLHttpRequest.responseText);
+    }
+
+</script>

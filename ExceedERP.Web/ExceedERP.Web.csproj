@@ -1265,6 +1265,7 @@
     <Compile Include="Areas\Health\Controllers\PrescriptionController.cs" />
     <Compile Include="Areas\Health\Controllers\ReferralFormController.cs" />
     <Compile Include="Areas\Health\Controllers\ReferralSheetController.cs" />
+    <Compile Include="Areas\Health\Controllers\SelfCare\HealthRankAndValueDepartmentSelfcareController.cs" />
     <Compile Include="Areas\Health\Controllers\SelfCare\MedicalAttachmentsController.cs" />
     <Compile Include="Areas\Health\Controllers\SelfCare\MedicalRequestController.cs" />
     <Compile Include="Areas\Health\Controllers\SelfCare\MedicalRequestPersonalController.cs" />
@@ -7378,6 +7379,13 @@
     <Content Include="Areas\HRM\Views\LeavePlan\EditorTemplates\GLYearSelector.cshtml" />
     <Content Include="Areas\HRM\Views\LeavePlan_Pesonal\EditorTemplates\GLPeriodSelector.cshtml" />
     <Content Include="Areas\HRM\Views\LeavePlan_Pesonal\EditorTemplates\GLYearSelector.cshtml" />
+    <Content Include="Areas\Health\Views\HealthRankAndValueDepartmentSelfcare\EditorTemplates\Branch.cshtml" />
+    <Content Include="Areas\Health\Views\HealthRankAndValueDepartmentSelfcare\EditorTemplates\EmployeeList.cshtml" />
+    <Content Include="Areas\Health\Views\HealthRankAndValueDepartmentSelfcare\EditorTemplates\GLFPeriods.cshtml" />
+    <Content Include="Areas\Health\Views\HealthRankAndValueDepartmentSelfcare\EditorTemplates\GLYearSelector.cshtml" />
+    <Content Include="Areas\Health\Views\HealthRankAndValueDepartmentSelfcare\EditorTemplates\HealthRankAndValue.cshtml" />
+    <Content Include="Areas\Health\Views\HealthRankAndValueDepartmentSelfcare\EditorTemplates\UploadDocument.cshtml" />
+    <Content Include="Areas\Health\Views\HealthRankAndValueDepartmentSelfcare\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

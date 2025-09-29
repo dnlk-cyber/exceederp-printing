@@ -76,6 +76,43 @@ namespace ExceedERP.Web.Areas.Health.Controllers
                 p.BranchId,p.Name,
             }), JsonRequestBehavior.AllowGet);
         }
+        public ActionResult GetEmployeesAskForOther()
+        {
+            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+            // Get subordinates + self
+            var employeesId = EmployeeHelper.GetSubordinates_FilteredByHead(employeeId);
+            employeesId.Add(employeeId);
+            // One DB query, only fetch active employees with these IDs
+            var employees = db.Person_Employee
+                              .Where(e => e.IsActive && employeesId.Contains(e.EmployeeId))
+                              .Select(e => new
+                              {
+                                  e.EmployeeId,
+                                  e.EmployeeCode,
+                                  e.FirstName,
+                                  e.MiddleName,
+                                  e.LastName,
+                                  e.FirstNameEnglish,
+                                  e.MiddleNameEnglish,
+                                  e.LastNameEnglish
+                              })
+                              .ToList();
+
+            // Distinct by EmployeeId (no duplicates)
+            var result = employees
+                .GroupBy(e => e.EmployeeId)
+                .Select(g => g.First())
+                .Select(p => new
+                {
+                    PersonId = p.EmployeeId,
+                    FullName = p.EmployeeCode + "-" + p.FirstName + " " + p.MiddleName + " " + p.LastName,
+                    FullNameaEnglish = p.EmployeeCode + "-" + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish
+                })
+                .ToList();
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
 
 
     }
