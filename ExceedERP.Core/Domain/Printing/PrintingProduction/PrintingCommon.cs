@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ namespace ExceedERP.Core.Domain.Printing.PrintingProduction
 {
     public enum PrintingOperationStatus
     {
-        Created = 0,
+        Started = 0,
         PrePressInProgress = 1,
         PrePressCompleted = 2,
         PressInProgress = 3,
@@ -21,7 +21,7 @@ namespace ExceedERP.Core.Domain.Printing.PrintingProduction
     }
     public class PrintingCommon : Operations
     { 
-        public PrintingOperationStatus PrintingOperationStatus { get; set; } = PrintingOperationStatus.Created;
+        public PrintingOperationStatus PrintingOperationStatus { get; set; }
 
         public bool IsPrePressChecked { get; set; }
         public bool IsPressChecked { get; set; }

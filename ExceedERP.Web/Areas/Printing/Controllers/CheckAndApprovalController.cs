@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Printing;
+using ExceedERP.Core.Domain.Printing.PrintingProduction;
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Data.Entity;
@@ -111,6 +112,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             {
                 model.IsPrePressChecked = true;
                 model.PrePressCheckedBy = User.Identity.Name;
+                model.Status = "Checked";
                 model.PrePressCheckedTime = DateTime.Today;
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
@@ -130,6 +132,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             if (model != null)
             {
                 model.IsPrePressApproved = true;
+                model.Status = "Approved";
+                model.PrintingOperationStatus = PrintingOperationStatus.PrePressCompleted;
                 model.PrePressApprovedBy = User.Identity.Name;
                 model.PrePressApprovedTime = DateTime.Now;
                 db.Entry(model).State = EntityState.Modified;
@@ -149,8 +153,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             var model = db.PrintingProductionFollowUps.Find(id);
             if (model != null)
             {
+                model.IsVoid = true;
                 model.IsPrePressChecked = false;
                 model.IsPrePressApproved = false;
+                model.Status = "Rejected";
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
                 response = new { Success = true, Message = "Successfully Approved" };
@@ -173,6 +179,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 model.IsPressChecked = true;
                 model.PressCheckedBy = User.Identity.Name;
                 model.PressCheckedTime = DateTime.Today;
+                model.Status = "Checked";
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
                 response = new { Success = true, Message = "Successfully Checked" };
@@ -191,6 +198,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             if (model != null)
             {
                 model.IsPressApproved = true;
+                model.Status = "Approved";
+                model.PrintingOperationStatus = PrintingOperationStatus.PressCompleted;
                 model.PressApprovedBy = User.Identity.Name;
                 model.PressApprovedTime = DateTime.Now;
                 db.Entry(model).State = EntityState.Modified;
@@ -210,8 +219,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             var model = db.PrintingProductionFollowUps.Find(id);
             if (model != null)
             {
+                model.IsVoid = true;
                 model.IsPressChecked = false;
                 model.IsPressApproved = false;
+                model.Status = "Rejected";
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
                 response = new { Success = true, Message = "Successfully Approved" };
@@ -233,6 +244,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             {
                 model.IsPostPressChecked = true;
                 model.PostPressCheckedBy = User.Identity.Name;
+                model.Status = "Checked";
                 model.PostPressCheckedTime = DateTime.Today;
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
@@ -252,6 +264,8 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             if (model != null)
             {
                 model.IsPostPressApproved = true;
+                model.Status = "Approved";
+                model.PrintingOperationStatus = PrintingOperationStatus.PostPressCompleted;
                 model.PostPressApprovedBy = User.Identity.Name;
                 model.PostPressApprovedTime = DateTime.Now;
                 db.Entry(model).State = EntityState.Modified;
@@ -271,8 +285,10 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             var model = db.PrintingProductionFollowUps.Find(id);
             if (model != null)
             {
+                model.IsVoid = true;
                 model.IsPostPressChecked = false;
                 model.IsPostPressApproved = false;
+                model.Status = "Rejected";
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
                 response = new { Success = true, Message = "Successfully Approved" };

@@ -70,6 +70,20 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             })
             , JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetUoMFilter(string text)
+        {
+            var uom = db.UoMs.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                uom = uom.Where(x => x.UoMName.Contains(text));
+            }
+            return Json(uom.Select(i => new
+            {
+                UoMName = i.UoMName,
+                Value = i.UoMName
+            })
+            , JsonRequestBehavior.AllowGet);
+        }
 
         public JsonResult GetTaskCategory(WorkShop taskType)
         {
