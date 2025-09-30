@@ -6,9 +6,30 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
     public class EmployeeExperienceLetter
     {
         public string ApplicantName { get; set; }
+        public string ToName { get; set; }
+        public string Branch { get; set; }
+        public string BusinessUnit { get; set; }
+        public string WorkUnit { get; set; }
+        public string JobTitle { get; set; }
+        public string Grade { get; set; }
+        public string Step { get; set; }
+        public string FromBranch { get; set; }
+        public string FromDate { get; set; }
+        public string ToDate { get; set; }
+        public string FromBusinessUnit { get; set; }
+        public string FromWorkUnit { get; set; }
+        public string FromJobTitle { get; set; }
+        public string FromGrade { get; set; }
+        public string FromStep { get; set; }
+        public string FromSalary { get; set; }
         public bool IsTerminated { get; set; }
         public string Date { get; set; }
+        public string Allowance { get; set; }
         public string TotalExpriance { get; set; }
+        public string BirthDate { get; set; }
+        public string HiredDate { get; set; }
+        public string EducationLevel { get; set; }
+        public string EducationInfo { get; set; }
         public string Remark { get; set; }
         public decimal CurrentSalary { get; set; }
         public string SalaryInWord { get; set; }

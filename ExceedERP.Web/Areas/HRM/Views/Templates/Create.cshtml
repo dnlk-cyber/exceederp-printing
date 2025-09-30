@@ -2,45 +2,218 @@
 @model ExceedERP.Core.Domain.HRM.Templates.Template
 
 @{
-                ViewBag.Title = Resources.Create_Templates_here;
-                Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = Resources.Create_Templates_here;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var recordKeyItems = Enum.GetValues(typeof(ExceedERP.Core.Domain.HRM.Templates.RecordKeyType))
+        .Cast<Enum>()
+        .Select(e => new SelectListItem
+        {
+            Text = "-" + e.ToString() + "-",
+            Value = e.ToString()
+        });
 }
-
 
 <legend>@Resources.Create_Templates_here</legend>
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
-<div class="form">
-    <div class="row fullrow">
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.TemplateType, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EnumDropDownListFor(model => model.TemplateType, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.TemplateType, "", new { @class = "text-danger" })
+    <!-- 🔵 Top row with dropdown on right half -->
+    <div class="row mb-3">
+        <div class="col-md-6 col-md-offset-6 text-right">
+            @Html.DropDownList("RecordKeyDropdown", recordKeyItems, "Use those Replaceable Keys", new { @class = "form-control d-inline-block", style = "width:auto;" })
+        </div>
+    </div>
+
+    <div class="form">
+        <div class="row">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <!-- Template Type (half width) -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TemplateType, htmlAttributes: new { @class = "control-label" })
+                    @Html.EnumDropDownListFor(model => model.TemplateType, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TemplateType, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <!-- Title (half width) -->
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label" })
+                    @Html.TextBoxFor(model => model.Title, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
-        <div>&nbsp;</div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Document, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                <textarea name="Document" id="Document" cols="200" rows="15" ></textarea>
-                @Html.ValidationMessageFor(model => model.Document, "", new { @class = "text-danger" })
+
+        <!-- Document (full width) -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Document, htmlAttributes: new { @class = "control-label" })
+                    <textarea name="Document" id="Document" class="form-control document-textarea" rows="20">@Model.Document</textarea>
+                    @Html.ValidationMessageFor(model => model.Document, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
 
+        <!-- Submit -->
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
+            <div class="col-md-12 text-right">
                 <input type="submit" value="@Resources.ActionButton_AddNewRecord" class="btn btn-primary" />
             </div>
         </div>
     </div>
-</div>
 }
 
 <div>
     @Html.ActionLink(Resources.Action_Button_Back_to_List, "Index")
 </div>
+
+<style>
+    .document-textarea {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        resize: vertical;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+</style>
+
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        var dropdown = document.getElementById("RecordKeyDropdown");
+        var textarea = document.getElementById("Document");
+
+        dropdown.addEventListener("change", function () {
+            var selectedValue = dropdown.options[dropdown.selectedIndex].value;
+
+            if (selectedValue && textarea) {
+                var insertText = "-" + selectedValue + "-";
+
+                var start = textarea.selectionStart;
+                var end = textarea.selectionEnd;
+                var text = textarea.value;
+
+                // Insert text at cursor position
+                textarea.value = text.substring(0, start) + insertText + text.substring(end);
+                textarea.focus();
+                textarea.selectionStart = textarea.selectionEnd = start + insertText.length;
+            }
+        });
+    });
+</script>
+
+@*@using ExceedERP.Core.Localization
+    @model ExceedERP.Core.Domain.HRM.Templates.Template
+
+    @{
+        ViewBag.Title = Resources.Create_Templates_here;
+        Layout = "~/Views/Shared/_Layout.cshtml";
+        var recordKeyItems = Enum.GetValues(typeof(ExceedERP.Core.Domain.HRM.Templates.RecordKeyType))
+          .Cast<Enum>()
+          .Select(e => new SelectListItem
+          {
+              Text = "-" + e.ToString() + "-",  // Add minus signs
+
+                      Value = e.ToString()
+          });
+    }
+
+
+    <legend>@Resources.Create_Templates_here</legend>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+          🔵 Top-Right Dropdown
+        <div class="row">
+            <div class="col-md-12 text-left">
+                @Html.DropDownList("RecordKeyDropdown", recordKeyItems, "Use those Replaceable Keys", new { @class = "form-control d-inline-block", style = "width:auto;" })
+            </div>
+        </div>
+        <br />
+
+    <div class="form">
+        <div class="row fullrow">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TemplateType, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EnumDropDownListFor(model => model.TemplateType, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TemplateType, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Title, htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TemplateType, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div>&nbsp;</div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Document, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                   <textarea name="Document" id="Document" class="form-control document-textarea" rows="15"></textarea>
+                    @Html.ValidationMessageFor(model => model.Document, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="@Resources.ActionButton_AddNewRecord" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+
+    <div>
+        @Html.ActionLink(Resources.Action_Button_Back_to_List, "Index")
+    </div>
+
+    <style>
+        .document-textarea {
+            width: 50%;
+            max-width: 100%;
+            min-width: 300px;
+            resize: vertical; /* allows vertical resizing only */
+        }
+
+    </style>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            var dropdown = document.getElementById("RecordKeyDropdown");
+
+            dropdown.addEventListener("change", function () {
+                var selectedValue = dropdown.options[dropdown.selectedIndex].value;
+
+                if (selectedValue) {
+                    var valueToCopy = "-" + selectedValue + "-"; // add minus signs
+
+                    // Create a temporary input to hold the text
+                    var tempInput = document.createElement("input");
+                    tempInput.style.position = "absolute";
+                    tempInput.style.left = "-1000px";
+                    tempInput.value = valueToCopy;
+                    document.body.appendChild(tempInput);
+
+                    // Select and copy the value
+                    tempInput.select();
+                    document.execCommand("copy");
+
+                    // Clean up
+                    document.body.removeChild(tempInput);
+
+                    // Optional: Alert for feedback
+                    alert("Copied to clipboard: " + valueToCopy);
+                }
+            });
+        });
+    </script>*@

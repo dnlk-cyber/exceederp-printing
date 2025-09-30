@@ -982,8 +982,11 @@
                     @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_Recruitment, "Recruitment", "PrintableLetter", new { area = "HRM" }, null)<b class="arrow"></b>
                 </li>
                 @*<li id="hrm142" class="actionlinlk">
-                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.Printable_Vacancy_For_Internal, "VacancyForInternal", "PrintableLetter", new { area = "HRM" }, null)<b class="arrow"></b>
-                    </li>*@
+            @Html.ActionLink(ExceedERP.Core.Localization.Resources.Printable_Vacancy_For_Internal, "VacancyForInternal", "PrintableLetter", new { area = "HRM" }, null)<b class="arrow"></b>
+        </li>*@
+                <li id="hrmprintabletemplate142678" class="actionlinlk">
+                    @Html.ActionLink(Resources.Templates + " " + Resources.NavigatorReport_Report, "TemplateLetter", "PrintableLetter", new { area = "HRM" }, null)<b class="arrow"></b>
+                </li>
             </ul>
         </li>
 

@@ -1,77 +1,242 @@
 ﻿@using ExceedERP.Core.Localization
-@model IEnumerable<ExceedERP.Core.Domain.HRM.Templates.Template>
+@using PagedList.Mvc
+@using PagedList
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@model PagedList.IPagedList<ExceedERP.Core.Domain.HRM.Templates.Template>
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var recordKeyItems = Enum.GetValues(typeof(ExceedERP.Core.Domain.HRM.Templates.RecordKeyType))
+       .Cast<Enum>()
+       .Select(e => new SelectListItem
+       {
+           Text = "-" + e.ToString() + "-",  // Add minus signs
+
+           Value = e.ToString()
+       });
 }
 
-<legend>@Resources.Templates </legend>
+<legend>@Resources.Templates</legend>
 
-<div class="col-md-12">
-    <div class="col-md-1">
+<div class="container-fluid">
+    <div class="row mb-3">
+
+    
+        <div class="col-md-6 text-left">
+            @Html.ActionLink(Resources.ActionButton_AddNewRecord, "Create", null, new { @class = "fa fa-plus btn btn-primary" })
+        </div>
+        <div class="col-md-6 text-right">
+            @Html.DropDownList("RecordKeyDropdown", recordKeyItems, "Use those Replaceable Keys", new { @class = "form-control d-inline-block", style = "width:auto;" })
+        </div>
     </div>
-    <div class="col-md-10">
-        @Html.ActionLink(Resources.ActionButton_AddNewRecord, "Create", null, new { @class = "fa fa-plus" })
 
-    </div>
-    <div class="col-md-1">
-    </div>
-</div>
-<br /> <br /> 
-
-
-@foreach (var item in Model)
-{
-
-
-    <div class="col-md-12">
-
-        <div class="col-md-1"></div>
-
-        <div class="cards-container col-md-10">
-            <div class="card-block">
-
-                <div class="k-vbox k-column">
+    <div class="row gx-3 gy-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex">
+                <div class="k-card flex-fill">
                     <div class="k-card-header">
-                        <h5 class="k-card-title" style="font-size:20px;font-weight:bold;"> @Html.DisplayFor(modelItem => item.TemplateType)</h5>
+                        <h5 class="k-card-title">
+                            @Html.DisplayFor(modelItem => item.TemplateType)
+                        </h5>
+                    </div><div class="k-card-header">
+                        <h6 class="k-card-title">@Html.DisplayFor(modelItem => item.Title)</h6>
                     </div>
                     <div class="k-card-body">
-                        <p style="font-size:16px;"> @Html.DisplayFor(modelItem => item.Document)</p>
+                        <p>@Html.DisplayFor(modelItem => item.Document)</p>
                     </div>
                     <div class="k-card-actions k-card-actions-stretched k-card-actions-horizontal">
-
                         <span class="k-card-action">
-                            <span class="k-button k-flat">  @Html.ActionLink(Resources.ActionButton_Edit, "Edit", new { id = item.TemplateId }, new { @class = "fa fa-edit" }) </span>
-                            @*@Html.ActionLink("Edit ", "Edit", "Templates", new { id = item.TemplateId }, new { @class = "btn btn-success fa fa-edit" })*@
+                            <span class="k-button k-flat">
+                                @Html.ActionLink(Resources.ActionButton_Edit, "Edit", new { id = item.TemplateId }, new { @class = "fa fa-edit btn btn-outline-secondary" })
+                            </span>
                         </span>
                         <span class="k-card-action">
-                            <span class="k-button k-flat k-primary"> @Html.ActionLink(Resources.ActionButton_Cancel, "Delete", new { id = item.TemplateId }, new { @class = "fa fa-trash", style = "color:red;" })</span>
+                            <span class="k-button k-flat k-primary">
+                                @Html.ActionLink(Resources.ActionButton_Cancel, "Delete", new { id = item.TemplateId }, new { @class = "fa fa-trash btn btn-outline-danger", style = "color:red;" })
+                            </span>
                         </span>
                     </div>
                 </div>
             </div>
+        }
+    </div>
+
+    <footer class="pagination-footer">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), new PagedListRenderOptions
+        {
+            UlElementClasses = new[] { "custom-pagination" }
+        })
+    </footer>
+</div>
+
+<style>
+    .k-card {
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: box-shadow 0.3s ease, transform 0.2s ease;
+        height: 100%;
+    }
+
+        .k-card:hover {
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+    .k-card-title {
+        font-size: 20px;
+        font-weight: bold;
+        word-wrap: break-word;
+    }
+
+    .k-card-body p {
+        font-size: 16px;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+    }
+
+    .pagination-footer {
+        padding: 10px 15px;
+        border-top: 1px solid #ddd;
+        background-color: #f9f9f9;
+        text-align: right;
+        width: 100%;
+        box-sizing: border-box;
+        margin-top: 20px;
+    }
+
+    .custom-pagination {
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        font-size: 12px;
+    }
+
+        .custom-pagination li {
+            display: inline;
+            margin-left: 5px;
+        }
+
+            .custom-pagination li a,
+            .custom-pagination li span {
+                padding: 4px 8px;
+                background-color: #007bff;
+                color: white;
+                text-decoration: none;
+                border-radius: 3px;
+                font-size: 12px;
+            }
+
+            .custom-pagination li.disabled span,
+            .custom-pagination li.active span {
+                background-color: #0056b3;
+            }
+</style>
+
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        var dropdown = document.getElementById("RecordKeyDropdown");
+
+        dropdown.addEventListener("change", function () {
+            var selectedValue = dropdown.options[dropdown.selectedIndex].value;
+
+            if (selectedValue) {
+                var valueToCopy = "-" + selectedValue + "-"; // add minus signs
+
+                // Create a temporary input to hold the text
+                var tempInput = document.createElement("input");
+                tempInput.style.position = "absolute";
+                tempInput.style.left = "-1000px";
+                tempInput.value = valueToCopy;
+                document.body.appendChild(tempInput);
+
+                // Select and copy the value
+                tempInput.select();
+                document.execCommand("copy");
+
+                // Clean up
+                document.body.removeChild(tempInput);
+
+                // Optional: Alert for feedback
+                alert("Copied to clipboard: " + valueToCopy);
+            }
+        });
+    });
+</script>
+
+@*<legend>@Resources.Templates </legend>
+
+    <div class="col-md-12">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-10">
+            @Html.ActionLink(Resources.ActionButton_AddNewRecord, "Create", null, new { @class = "fa fa-plus" })
+
+        </div>
+        <div class="col-md-1">
+        </div>
+    </div>
+    <br /> <br />
+
+
+    @foreach (var item in Model)
+    {
+
+
+        <div class="col-md-12">
+
+            <div class="col-md-1"></div>
+
+            <div class="cards-container col-md-10">
+                <div class="card-block">
+
+                    <div class="k-vbox k-column">
+                        <div class="k-card-header">
+                            <h5 class="k-card-title" style="font-size:20px;font-weight:bold;"> @Html.DisplayFor(modelItem => item.TemplateType)</h5>
+                        </div>
+                        <div class="k-card-body">
+                            <p style="font-size:16px;"> @Html.DisplayFor(modelItem => item.Document)</p>
+                        </div>
+                        <div class="k-card-actions k-card-actions-stretched k-card-actions-horizontal">
+
+                            <span class="k-card-action">
+                                <span class="k-button k-flat">  @Html.ActionLink(Resources.ActionButton_Edit, "Edit", new { id = item.TemplateId }, new { @class = "fa fa-edit" }) </span>
+                            </span>
+                            <span class="k-card-action">
+                                <span class="k-button k-flat k-primary"> @Html.ActionLink(Resources.ActionButton_Cancel, "Delete", new { id = item.TemplateId }, new { @class = "fa fa-trash", style = "color:red;" })</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-md-1"></div>
 
         </div>
 
-        <div class="col-md-1"></div>
-
-    </div>
 
 
-
-}
-
-
-
-<style>
-    .cards-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
     }
 
-    .k-card {
-        margin: 5%;
-        width: 300px;
-    }
-</style>
+
+
+    <style>
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .k-card {
+            margin: 5%;
+            width: 300px;
+        }
+    </style>*@

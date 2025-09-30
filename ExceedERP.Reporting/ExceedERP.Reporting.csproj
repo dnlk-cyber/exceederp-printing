@@ -2314,6 +2314,7 @@
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeTraining.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeTypeReportParameterViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployementTypeVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EnumViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EvaluationTypes.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ExperienceVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ExternalApplicantDetail.cs" />
@@ -2564,6 +2565,14 @@
     <Compile Include="HRM\HRM\Letters\rptVacancyInternal.designer.cs">
       <DependentUpon>rptVacancyInternal.cs</DependentUpon>
     </Compile>
+    <Compile Include="HRM\HRM\Letters\TemplateLetters.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\TemplateLetters.Designer.cs">
+      <DependentUpon>TemplateLetters.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\TemplateLettersObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\Letters\TemplateTypeODS.cs" />
     <Compile Include="HRM\HRM\Letters\TerminationAcceptanceLetter.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -5494,6 +5503,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\rptVacancyInternal.resx">
       <DependentUpon>rptVacancyInternal.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\Letters\TemplateLetters.am.resx">
+      <DependentUpon>TemplateLetters.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\Letters\TemplateLetters.om.resx">
+      <DependentUpon>TemplateLetters.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\Letters\TemplateLetters.resx">
+      <DependentUpon>TemplateLetters.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\TerminationAcceptanceLetter.resx">
       <DependentUpon>TerminationAcceptanceLetter.cs</DependentUpon>

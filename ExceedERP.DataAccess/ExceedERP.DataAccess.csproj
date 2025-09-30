@@ -741,6 +741,10 @@
     <Compile Include="Migrations\202509291413563_HealthRankAndValueandHealthAprovalSetting.Designer.cs">
       <DependentUpon>202509291413563_HealthRankAndValueandHealthAprovalSetting.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202509300759488_TemplateAs.cs" />
+    <Compile Include="Migrations\202509300759488_TemplateAs.Designer.cs">
+      <DependentUpon>202509300759488_TemplateAs.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1248,6 +1252,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202509291413563_HealthRankAndValueandHealthAprovalSetting.resx">
       <DependentUpon>202509291413563_HealthRankAndValueandHealthAprovalSetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202509300759488_TemplateAs.resx">
+      <DependentUpon>202509300759488_TemplateAs.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

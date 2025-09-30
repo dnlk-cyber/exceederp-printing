@@ -564,8 +564,9 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
     {
         public string Experience { get; set; }
         public string Title { get; set; }
+        public string Allowance { get; set; }
 
-       ////// Header ///////////
+        ////// Header ///////////
         public string Name { get; set; }
         public string AmharicName { get; set; }
         public string EnglishName { get; set; }
@@ -578,5 +579,6 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
         public string Fax { get; set; }
         public string Pobox { get; set; }
         public string Tel { get; set; }
+        public Image WaterMark { get; set; }
     }
 }

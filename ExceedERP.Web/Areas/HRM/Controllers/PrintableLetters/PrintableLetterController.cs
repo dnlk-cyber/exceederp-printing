@@ -286,5 +286,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
             ViewBag.FormNumber = number;
             return View();
         }
+        public ActionResult TemplateLetter()
+        {
+            return View();
+        }
+
     }
 }
