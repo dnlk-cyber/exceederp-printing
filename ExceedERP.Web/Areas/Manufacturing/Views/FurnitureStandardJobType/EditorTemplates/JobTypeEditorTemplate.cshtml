@@ -29,7 +29,7 @@
                                                    
                                                     .DataSource(dataSource =>
                                                     {
-                                                        dataSource.Read(read => read.Action("GetUoM", "ManufacturingDataProvider", new { area = "Manufacturing" }))
+                                                        dataSource.Read(read => read.Action("GetUoMFilter", "ManufacturingDataProvider", new { area = "Manufacturing" }).Data("filterUom"))
                                                             .ServerFiltering(true);
                                                     }).HtmlAttributes(new { style = "width:100%" }))
             </div>

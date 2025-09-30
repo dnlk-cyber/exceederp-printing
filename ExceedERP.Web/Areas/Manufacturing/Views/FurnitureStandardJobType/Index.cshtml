@@ -16,7 +16,8 @@
                       {
                           toolbar.Create();
                       })
-                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("JobTypeEditorTemplate"))
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                      .TemplateName("JobTypeEditorTemplate"))
                       .Filterable()
                       .Scrollable(s => s.Height(400))
                       .DataSource(dataSource => dataSource
@@ -201,6 +202,11 @@
         return {
             materialCategoryId: $("#ManufacturingMaterialCategoryId").val(),
             text: $("#ManufacturingMaterialCategoryItemId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterUom() {
+        return {
+            text: $("#Unit").data("kendoDropDownList").filterInput.val(),
         }
     }
 </script>

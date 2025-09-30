@@ -15,7 +15,6 @@
                                     columns.Bound(c => c.PrintingJobOrderItemId).Title("Job No.");
                                     columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customer"], "Value", "Text").Title("Customer");
                                     columns.Bound(c => c.PrintJobType).Title("Job Type");
-                                    columns.Bound(c => c.JobDescription);
                                     columns.ForeignKey(c => c.TextPaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text").Title("Text Paper");
                                     columns.ForeignKey(c => c.CoverPaperSizeId, (IEnumerable)ViewData["PaperSize"], "Value", "Text").Title("Cover Paper");
                                     columns.Bound(c => c.BindingStyle);
@@ -24,12 +23,14 @@
                                     columns.Bound(c => c.CoverNoOfColor);
                                     columns.Bound(c => c.Quantity);
                                     columns.Bound(c => c.JobDescription);
-
+                                    columns.Bound(c => c.PrintingOperationStatus).Title("Op. Status").Width("120");
+                                    columns.Bound(c => c.Status).Title("Ap. Status");
                                     columns.Command(command =>
                                     {
-                            //command.Edit().Text(" ");
-                            command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
+
+                                        command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
                                         command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                                        command.Custom("reject").Text(" ").IconClass("fa fa-thumbs-o-down").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleReject");
 
                                     }).Width(220);
                                 })
@@ -39,8 +40,8 @@
                                 .Filterable()
                                 .Pageable()
                                 .Scrollable(s => s.Height(400))
-                                //.Events(ev => ev.DetailExpand("MasterOnExpand")
-                                //.DataBound("dataBound"))
+                                .Events(ev => ev.DetailExpand("detailExpand")
+                                .DataBound("dataBound"))
                                 .DataSource(dataSource => dataSource
                                     .Ajax()
                                     .Sort(sort => sort.Add(e => e.PrintingProductionFollowUpId).Descending())
@@ -48,7 +49,7 @@
                                             .RequestStart("onRequestStart(\"grid\")")
                                             .RequestEnd("onRequestEnd(\"grid\")"))
                                     .Model(model => model.Id(p => p.PrintingProductionFollowUpId))
-                                    .Read(read => read.Action("PrintingJobOrderProduction_Read", "PrintingProductionFollowUp"))
+                                    .Read(read => read.Action("PostPress_Read", "PrintingProductionFollowUp"))
                                     .Update(update => update.Action("PrintingOrderProduction_Update", "PrintingProductionFollowUp"))
                                 ).ClientDetailTemplateId("tabstrip")
 )
@@ -490,24 +491,29 @@
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-            $(this).find(".k-grid-reject").hide();
-            if (dataItem.IsOnlineApproved) {
-                $(this).find(".k-grid-edit").hide();
+            // if checked 
+            if (dataItem.IsPostPressChecked && !dataItem.IsPostPressApproved) {
                 $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").show();
+                $(this).find(".k-grid-reject").show();
+            }
+            // if approved
+            else if (dataItem.IsPostPressApproved) {
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-approve").hide();
+            }
+            // if rejected
+            else if (dataItem.IsVoid) {
+                $(this).find(".k-grid-check").show();
                 $(this).find(".k-grid-approve").hide();
                 $(this).find(".k-grid-reject").hide();
-                $(this).find(".k-grid-delete").hide();
             }
-            else if (dataItem.IsSendForApproval) {
-                $(this).find(".k-grid-edit").hide();
-                $(this).find(".k-grid-check").hide();
-                $(this).find(".k-grid-delete").hide();
-                $(this).find(".k-grid-reject").show();
-
-                $(this).find(".k-grid-approve").show();
-            }
+            // otherwise
             else {
                 $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
+                $(this).find(".k-grid-check").show();
             }
 
         });
@@ -526,7 +532,7 @@
         isApproved = masterDataItem.IsPrePressApproved;
         isChecked = masterDataItem.IsPrePressChecked;
         if (isChecked || isApproved) {
-            $(".k-grid-add", "#grid_" + codeid).hide();
+            $(".k-grid-add", "#followup" + codeid).hide();
         }
 
 
@@ -641,7 +647,29 @@
         }
     }
 
-
+     function handleReject(e) {
+        if (confirm("Are you sure you want to approve?")) {
+            var grid = this;
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("RejectPostPress", "CheckAndApproval", new { Area = "Printing" })',
+                data: { id: dataItem.PrintingProductionFollowUpId},
+                success: function (result) {
+                    if (result.Success) {
+                        toastr.success(result.Message)
+                        $("#grid").data("kendoGrid").dataSource.read();
+                    }
+                    else {
+                        toastr.error(result.Message)
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            });
+        }
+    }
 
 </script>
 
