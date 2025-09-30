@@ -159,7 +159,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 model.Status = "Rejected";
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
-                response = new { Success = true, Message = "Successfully Approved" };
+                response = new { Success = true, Message = "Successfully Rejected!" };
             }
             else
             {
@@ -225,7 +225,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 model.Status = "Rejected";
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
-                response = new { Success = true, Message = "Successfully Approved" };
+                response = new { Success = true, Message = "Successfully Rejected" };
             }
             else
             {
@@ -291,7 +291,7 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
                 model.Status = "Rejected";
                 db.Entry(model).State = EntityState.Modified;
                 db.SaveChanges();
-                response = new { Success = true, Message = "Successfully Approved" };
+                response = new { Success = true, Message = "Successfully Rejected" };
             }
             else
             {

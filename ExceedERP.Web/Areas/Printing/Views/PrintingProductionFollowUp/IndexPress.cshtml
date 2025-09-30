@@ -24,11 +24,11 @@
                                 columns.Bound(c => c.Quantity);
                                 columns.Bound(c => c.JobDescription);
                                 columns.Bound(c => c.PrintingOperationStatus).Title("Op. Status").Width("120");
-                                columns.Bound(c => c.Status).Title("Ap. Status");
+                               // columns.Bound(c => c.Status).Title("Ap. Status");
                                 columns.Command(command =>
                                 {
-                                    command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
-                                    command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                                    command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleFollowupCheck");
+                                    command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleFollowupApprove");
                                     command.Custom("reject").Text(" ").IconClass("fa fa-thumbs-o-down").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleReject");
                                 }).Width(220);
                             })
@@ -133,8 +133,8 @@
                                                     columns.Command(command =>
                                                     {
                                                         command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { @class = "edit", title = "edit" });
-                                                        command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleFollowupTaskCheck");
-                                                        command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleFollowupTaskApproval");
+                                                        command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleTaskCheck");
+                                                        command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleTaskApprove");
                                                         command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { @class = "delete", title = "delete" });
                                                     }).Width(180);
                                                 })
@@ -511,7 +511,6 @@
                 $(this).find(".k-grid-reject").hide();
                 $(this).find(".k-grid-check").show();
             }
-
         });
     }
     var masterRow;
@@ -558,7 +557,7 @@
         });
 
     }
-    function handleTaskCheck(e) {
+   function handleTaskCheck(e) {
         if (confirm("Are you sure this estimation form is to be checked?")) {
              var grid = this,
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
@@ -582,13 +581,14 @@
        });
       }
     }
-    function handleFollowupTaskApproval(e) {
+    function handleTaskApprove(e) {
         if (confirm("Are you sure you want to approve?")) {
-
-            var id = taskId;
+            var grid = this;
+            var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            var id = dataItem.PrintingProductionFollowUpTaskId;
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("ApproveProforma", "CheckAndApproval", new { Area = "Printing" })',
+                url: '@Url.Action("ApproveFollowupTask", "CheckAndApproval", new { Area = "Printing" })',
                 data: { id: id},
                 success: function (result) {
                     if (result.Success) {
@@ -605,7 +605,7 @@
             });
         }
     }
-    function handleChecked(e) {
+      function handleFollowupCheck(e) {
 
         if (confirm("Are you sure you this form is checked?")) {
             var grid = this;
@@ -613,7 +613,7 @@
             var id = dataItem.PrintingProductionFollowUpId;
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("CheckFollowup", "CheckAndApproval", new { Area = "Printing" })',
+                url: '@Url.Action("CheckPress", "CheckAndApproval", new { Area = "Printing" })',
                 data: { id: id},
                 success: function (result) {
                     if (result.Success) {
@@ -631,13 +631,13 @@
         }
     }
 
-      function handleApprove(e) {
+      function handleFollowupApprove(e) {
         if (confirm("Are you sure you want to approve?")) {
             var grid = this;
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("ApproveFollowup", "CheckAndApproval", new { Area = "Printing" })',
+                url: '@Url.Action("ApprovePress", "CheckAndApproval", new { Area = "Printing" })',
                 data: { id: dataItem.PrintingProductionFollowUpId},
                 success: function (result) {
                     if (result.Success) {
