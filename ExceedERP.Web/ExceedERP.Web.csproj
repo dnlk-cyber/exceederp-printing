@@ -2094,6 +2094,7 @@
     <Compile Include="Areas\Printing\Controllers\PrintingEstimationMaterialCostController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingFollowUpDelayReasonController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobOrderController.cs" />
+    <Compile Include="Areas\Printing\Controllers\PrintingJobOrderDesginController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobOrderItemController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobOrderProductionController.cs" />
     <Compile Include="Areas\Printing\Controllers\PrintingJobTypeController.cs" />

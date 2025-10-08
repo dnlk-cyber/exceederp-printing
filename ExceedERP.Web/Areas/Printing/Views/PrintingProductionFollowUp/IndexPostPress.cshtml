@@ -28,10 +28,9 @@
                                     columns.Command(command =>
                                     {
 
-                                        command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleChecked");
-                                        command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleApprove");
+                                        command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleFollowupCheck");
+                                        command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleFollowupApprove");
                                         command.Custom("reject").Text(" ").IconClass("fa fa-thumbs-o-down").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleReject");
-
                                     }).Width(220);
                                 })
 
@@ -125,7 +124,6 @@
                                                             columns.Bound(c => c.PressCategory);
                                                             columns.Bound(c => c.LabourActivity);
                                                             columns.ForeignKey(c => c.MachineTypeId, (IEnumerable)ViewData["Machine"], "Value", "Text");
-
                                                             columns.ForeignKey(c => c.OperatorId, (IEnumerable)ViewData["Operator"], "Value", "Text");
 
                                                             columns.Bound(c => c.UoM);
@@ -135,8 +133,8 @@
                                                             columns.Command(command =>
                                                             {
                                                                 command.Edit().Text(" ").IconClass("fa fa-pencil").HtmlAttributes(new { @class = "edit", title = "edit" });
-                                                                command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleFollowupTaskCheck");
-                                                                command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleFollowupTaskApproval");
+                                                                command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class = "check", title = "check" }).Click("handleTaskCheck");
+                                                                command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve", title = "approve" }).Click("handleTaskApprove");
                                                                 command.Destroy().Text(" ").IconClass("fa fa-trash").HtmlAttributes(new { @class = "delete", title = "delete" });
                                                             }).Width(180);
                                                         })
@@ -491,7 +489,7 @@
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-            // if checked 
+            // if checked
             if (dataItem.IsPostPressChecked && !dataItem.IsPostPressApproved) {
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-approve").show();
@@ -529,58 +527,74 @@
         masterGrid = $("#grid").data("kendoGrid");
         masterDataItem = masterGrid.dataItem(masterRow);
         codeid = masterDataItem.PrintingProductionFollowUpId;
-        isApproved = masterDataItem.IsPrePressApproved;
-        isChecked = masterDataItem.IsPrePressChecked;
+        isApproved = masterDataItem.IsPostPressApproved;
+        isChecked = masterDataItem.IsPostPressChecked;
         if (isChecked || isApproved) {
             $(".k-grid-add", "#followup" + codeid).hide();
         }
 
 
     }
-    var taskId = 0;
+
     function detailDataBound(e) {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
-            taskId = dataItem.PrintingProductionFollowUpTaskId;
-            if (isChecked == true || isApproved) {
+            if (dataItem.IsOnlineApproved) {
                 $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
                 $(this).find(".k-grid-delete").hide();
+            }
+            else if (dataItem.IsSendForApproval) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-reject").show();
+
+                $(this).find(".k-grid-approve").show();
+            }
+            else {
+                $(this).find(".k-grid-approve").hide();
             }
         });
 
     }
-    const handleFollowupTaskCheck = (e) => {
-        if (confirm("Are you sure you've checked this form?")) {
 
-            var id = taskId;
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("CheckFollowupTask", "CheckAndApproval", new { Area = "Printing" })',
-                data: { id: id},
-                success: function (result) {
-                    if (result.Success) {
-                        toastr.success(result.Message);
-                        $("#grid").data("kendoGrid").dataSource.read();
-                    }
-                    else {
-                        toastr.error(result.Message);
-                    }
-                },
-                error: function (result) {
-                    alert(result)
+    function handleTaskCheck(e) {
+        if (confirm("Are you sure this estimation form is to be checked?")) {
+             var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+            url: '@Url.Action("CheckFollowupTask", "CheckAndApproval", new { Area = "Printing" })',
+            data: { id: dataItem.PrintingProductionFollowUpTaskId },
+            success: function (result) {
+                if (result.Success) {
+                    toastr.success(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read();
                 }
-            });
-        }
-    }
-    function handleFollowupTaskApproval(e) {
-        if (confirm("Are you sure you want to approve?")) {
+                else {
+                    toastr.error(result.Message);
 
-            var id = taskId;
+                }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+      }
+    }
+    function handleTaskApprove(e) {
+        if (confirm("Are you sure you want to approve?")) {
+            var grid = this;
+            var dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+            var id = dataItem.PrintingProductionFollowUpTaskId;
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("ApproveProforma", "CheckAndApproval", new { Area = "Printing" })',
+                url: '@Url.Action("ApproveFollowupTask", "CheckAndApproval", new { Area = "Printing" })',
                 data: { id: id},
                 success: function (result) {
                     if (result.Success) {
@@ -597,7 +611,7 @@
             });
         }
     }
-    function handleChecked(e) {
+    function handleFollowupCheck(e) {
 
         if (confirm("Are you sure you this form is checked?")) {
             var grid = this;
@@ -605,7 +619,7 @@
             var id = dataItem.PrintingProductionFollowUpId;
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("CheckFollowup", "CheckAndApproval", new { Area = "Printing" })',
+                url: '@Url.Action("CheckPostPress", "CheckAndApproval", new { Area = "Printing" })',
                 data: { id: id},
                 success: function (result) {
                     if (result.Success) {
@@ -623,13 +637,13 @@
         }
     }
 
-      function handleApprove(e) {
+      function handleFollowupApprove(e) {
         if (confirm("Are you sure you want to approve?")) {
             var grid = this;
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("ApproveFollowup", "CheckAndApproval", new { Area = "Printing" })',
+                url: '@Url.Action("ApprovePostPress", "CheckAndApproval", new { Area = "Printing" })',
                 data: { id: dataItem.PrintingProductionFollowUpId},
                 success: function (result) {
                     if (result.Success) {
@@ -646,8 +660,7 @@
             });
         }
     }
-
-     function handleReject(e) {
+    function handleReject(e) {
         if (confirm("Are you sure you want to approve?")) {
             var grid = this;
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
@@ -670,6 +683,8 @@
             });
         }
     }
+
+
 
 </script>
 
