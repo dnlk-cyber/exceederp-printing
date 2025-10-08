@@ -820,6 +820,7 @@
     <Compile Include="Domain\HRM\Attendance\AttendanceNew.cs" />
     <Compile Include="Domain\HRM\Attendance\EmpPayrollNoDaysWorked.cs" />
     <Compile Include="Domain\HRM\Attendance\VM\BiometricDataVM.cs" />
+    <Compile Include="Domain\HRM\Company\DatePreferenceSetting.cs" />
     <Compile Include="Domain\HRM\Company\EmployeeProbationSetting.cs" />
     <Compile Include="Domain\HRM\Company\JobTitleAndRankMapping.cs" />
     <Compile Include="Domain\HRM\Company\SalarySetting.cs" />

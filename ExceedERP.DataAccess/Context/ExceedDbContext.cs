@@ -2759,6 +2759,7 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<Weekend> Weekends { get; set; }
         public System.Data.Entity.DbSet<QuarterLength> QuarterLengths { get; set; }
         public System.Data.Entity.DbSet<Quarter> Quarters { get; set; }
+        public System.Data.Entity.DbSet<DatePreferenceSetting> DatePreferenceSettings { get; set; }
         #endregion       
         #region Payroll
 

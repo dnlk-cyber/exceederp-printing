@@ -9,7 +9,7 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
     /// <remarks>   Kibrom Abera, Feb 7,2025. </remarks>
     ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-   
+
     public class LeaveTypeSetting : TrackUserOperation
     {
         public int LeaveTypeSettingId { get; set; }
@@ -21,10 +21,13 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         public bool IsConsecutiveDays { get; set; }
         [Display(Name = "Maximum Amount")]
         public decimal MaximumAmount { get; set; }
-        [Display(Name = "Block Backdated Leave Requests")]
+        [Display(Name = "Block Back-Dated Leave Requests")]
         public bool BlockBackdatedLeave { get; set; }
+        [Display(Name = "Max Days Back")]
+        public int? MaxDaysBack { get; set; }  // null = no restriction
         public string Remark { get; set; }
 
 
     }
+
 }
