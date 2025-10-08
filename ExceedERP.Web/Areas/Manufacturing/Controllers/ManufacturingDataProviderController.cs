@@ -228,7 +228,38 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
-
+        public JsonResult GetTransferer(string text)
+        {
+            var transferer = db.Person_Employee.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                transferer = transferer.
+                    Where(x => x.FirstNameEnglish.Contains(text) || x.MiddleNameEnglish.Contains(text) || x.LastNameEnglish.Contains(text))
+                    .AsQueryable();
+            }
+            var result = transferer.Select(s => new
+            {
+                Value = s.EmployeeId,
+                Text = s.FirstNameEnglish + "-" + s.MiddleNameEnglish + "-" + s.LastNameEnglish,
+            });
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetReciever(string text)
+        {
+            var transferer = db.Person_Employee.AsQueryable();
+            if (!string.IsNullOrWhiteSpace(text))
+            {
+                transferer = transferer.
+                    Where(x => x.FirstNameEnglish.Contains(text) || x.MiddleNameEnglish.Contains(text) || x.LastNameEnglish.Contains(text))
+                    .AsQueryable();
+            }
+            var result = transferer.Select(s => new
+            {
+                Value = s.EmployeeId,
+                Text = s.FirstNameEnglish + "-" + s.MiddleNameEnglish + "-" + s.LastNameEnglish,
+            });
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetProformaInvoiceNo(string text)
         {
            

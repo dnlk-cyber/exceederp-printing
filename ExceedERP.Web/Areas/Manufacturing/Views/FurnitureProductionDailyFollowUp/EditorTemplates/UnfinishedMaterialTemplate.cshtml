@@ -14,9 +14,10 @@
                                                     .DataTextField("Text")
                                                     .DataValueField("Value")
                                                     .Filter("contains")
+                                                    .AutoBind(true)
                                                     .DataSource(dataSource =>
                                                     {
-                                                        dataSource.Read(read => read.Action("GetEmployees", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterEmployee")
+                                                        dataSource.Read(read => read.Action("GetTransferer", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterTransferer")
                                                         )
                                                         .ServerFiltering(true);
                                                     }).HtmlAttributes(new { style = "width:100%" })
@@ -35,9 +36,10 @@
                                                     .DataTextField("Text")
                                                     .DataValueField("Value")
                                                     .Filter("contains")
+                                                    .AutoBind(true)
                                                     .DataSource(dataSource =>
                                                     {
-                                                        dataSource.Read(read => read.Action("GetEmployees", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterEmployee")
+                                                        dataSource.Read(read => read.Action("GetReciever", "ManufacturingDataProvider", new { Area = "Manufacturing" }).Data("filterReceiver")
                                                         )
                                                         .ServerFiltering(true);
                                                     }).HtmlAttributes(new { style = "width:100%" })

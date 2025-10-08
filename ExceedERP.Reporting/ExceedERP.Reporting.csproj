@@ -4009,6 +4009,7 @@
     <Compile Include="Planning\ViewModel\ProjectSummaryBySectorsVM.cs" />
     <Compile Include="Planning\ViewModel\RiskFollowUpVM.cs" />
     <Compile Include="Planning\ViewModel\RiskMitgationPlanVM.cs" />
+    <Compile Include="Printing\DataSource\PrintEstimationMonthlyReportOds.cs" />
     <Compile Include="Printing\DataSource\PrintingEstimationOds.cs" />
     <Compile Include="Printing\DataSource\PrintingEstimationSummaryPrintOds.cs" />
     <Compile Include="Printing\DataSource\PrintingobOrderOds.cs" />
@@ -4018,6 +4019,12 @@
     </Compile>
     <Compile Include="Printing\Design\JobOrderDesign.Designer.cs">
       <DependentUpon>JobOrderDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Printing\Design\PrintEstimationMonthlyReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Printing\Design\PrintEstimationMonthlyReport.Designer.cs">
+      <DependentUpon>PrintEstimationMonthlyReport.cs</DependentUpon>
     </Compile>
     <Compile Include="Printing\Design\PrintingEstimationDesign.cs">
       <SubType>Component</SubType>
@@ -4037,6 +4044,7 @@
     <Compile Include="Printing\Design\PrintSummaryDesign.Designer.cs">
       <DependentUpon>PrintSummaryDesign.cs</DependentUpon>
     </Compile>
+    <Compile Include="Printing\ViewModel\PrintEstimationMonthlyReportViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingCommonViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingEstimationViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingJobOrderViewModel.cs" />
@@ -6106,6 +6114,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Printing\Design\JobOrderDesign.resx">
       <DependentUpon>JobOrderDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Printing\Design\PrintEstimationMonthlyReport.resx">
+      <DependentUpon>PrintEstimationMonthlyReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Printing\Design\PrintingEstimationDesign.resx">
       <DependentUpon>PrintingEstimationDesign.cs</DependentUpon>
