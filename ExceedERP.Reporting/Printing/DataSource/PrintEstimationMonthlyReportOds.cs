@@ -3,6 +3,7 @@ using ExceedERP.Reporting.Printing.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data.Entity;
 using System.Linq;
 
 namespace ExceedERP.Reporting.Printing.DataSource
@@ -13,14 +14,19 @@ namespace ExceedERP.Reporting.Printing.DataSource
         private readonly ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<PrintEstimationMonthlyReportViewModel> GetMonthlyReport()
+        public List<PrintEstimationMonthlyReportViewModel> GetMonthlyReport(DateTime from, DateTime to, string customerId)
         {
             var list = new List<PrintEstimationMonthlyReportViewModel>();
-
+            
             var jobOrders = db.PrintingJobOrders
                               .Where(x => x.IsOnlineApproved)
+                              .Where(x => DbFunctions.TruncateTime(x.DateCreated) >= from.Date && DbFunctions.TruncateTime(x.DateCreated) <= to.Date)
                               .ToList();
-
+            if (int.TryParse(customerId, out int id))
+            {
+                jobOrders = jobOrders.Where(x => x.CustomerId == id).ToList();
+            }
+           
             foreach (var jobOrder in jobOrders)
             {
                 var customer = db.OrganizationCustomers
@@ -35,7 +41,7 @@ namespace ExceedERP.Reporting.Printing.DataSource
                 var items = db.PrintingJobOrderItems
                               .Where(x => x.PrintingJobOrderId == jobOrder.PrintingJobOrderId)
                               .ToList();
-
+                
                 foreach (var item in items)
                 {
                     vm.PrintJobVms.Add(new PrintJobVm
@@ -49,7 +55,7 @@ namespace ExceedERP.Reporting.Printing.DataSource
                 list.Add(vm);
             }
 
-            return list;
+            return list.ToList();
         }
     }
 }

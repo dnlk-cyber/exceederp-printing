@@ -30,5 +30,14 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             ViewBag.Id = id;
             return View();
         }
+
+        public ActionResult PrintEstimationMonthlyReport()
+        {
+            return View();
+        }
+        public ActionResult PrintEstimationWeeklyReport()
+        {
+            return View();
+        }
     }
 }

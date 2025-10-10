@@ -1980,6 +1980,8 @@
     <Compile Include="Furniture\DataSource\FurnitureEstimationPrintOds.cs" />
     <Compile Include="Furniture\DataSource\FurnitureEstimationSummaryOds.cs" />
     <Compile Include="Furniture\DataSource\FurnitureJobOrderOds.cs" />
+    <Compile Include="Furniture\DataSource\FurnitureMonthlyReportOds.cs" />
+    <Compile Include="Furniture\DataSource\FurnitureParameterOds.cs" />
     <Compile Include="Furniture\DataSource\FurnitureProformaPrintOds.cs" />
     <Compile Include="Furniture\DataSource\FurnitureSummaryReportOds.cs" />
     <Compile Include="Furniture\Design\EstimationPrint.cs">
@@ -2006,6 +2008,12 @@
     <Compile Include="Furniture\Design\FurnitureJobOrderDesign.Designer.cs">
       <DependentUpon>FurnitureJobOrderDesign.cs</DependentUpon>
     </Compile>
+    <Compile Include="Furniture\Design\FurnitureMonthlyReport.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Furniture\Design\FurnitureMonthlyReport.Designer.cs">
+      <DependentUpon>FurnitureMonthlyReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="Furniture\Design\FurnitureSummaryReport.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2018,10 +2026,12 @@
     <Compile Include="Furniture\Design\ProformaPrint.Designer.cs">
       <DependentUpon>ProformaPrint.cs</DependentUpon>
     </Compile>
+    <Compile Include="Furniture\ViewModel\FParameterVM.cs" />
     <Compile Include="Furniture\ViewModel\FurnitureCommonViewModel.cs" />
     <Compile Include="Furniture\ViewModel\FurnitureEstimationSummaryViewModel.cs" />
     <Compile Include="Furniture\ViewModel\FurnitureEstimationViewModel.cs" />
     <Compile Include="Furniture\ViewModel\FurnitureJobSummaryVm.cs" />
+    <Compile Include="Furniture\ViewModel\FurnitureMonthlyReportViewModel.cs" />
     <Compile Include="Furniture\ViewModel\FurnitureobOrderHeaderViewModel.cs" />
     <Compile Include="Furniture\ViewModel\FurnitureProformaPrintViewModel.cs" />
     <Compile Include="Health\DataSource\AccidentObjectDataSource.cs" />
@@ -4014,6 +4024,7 @@
     <Compile Include="Printing\DataSource\PrintingEstimationSummaryPrintOds.cs" />
     <Compile Include="Printing\DataSource\PrintingobOrderOds.cs" />
     <Compile Include="Printing\DataSource\PrintingProformaOds.cs" />
+    <Compile Include="Printing\DataSource\PrintParameterOds.cs" />
     <Compile Include="Printing\Design\JobOrderDesign.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -4044,6 +4055,7 @@
     <Compile Include="Printing\Design\PrintSummaryDesign.Designer.cs">
       <DependentUpon>PrintSummaryDesign.cs</DependentUpon>
     </Compile>
+    <Compile Include="Printing\ViewModel\ParameterVM.cs" />
     <Compile Include="Printing\ViewModel\PrintEstimationMonthlyReportViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingCommonViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingEstimationViewModel.cs" />
@@ -5373,6 +5385,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Furniture\Design\FurnitureJobOrderDesign.resx">
       <DependentUpon>FurnitureJobOrderDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Furniture\Design\FurnitureMonthlyReport.resx">
+      <DependentUpon>FurnitureMonthlyReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Furniture\Design\FurnitureSummaryReport.resx">
       <DependentUpon>FurnitureSummaryReport.cs</DependentUpon>

@@ -38,5 +38,10 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             ViewBag.Id = id;
             return View();
         }
+        public ActionResult FurnitureMonthlyReport(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
     }
 }
