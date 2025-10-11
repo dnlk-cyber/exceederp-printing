@@ -12,12 +12,14 @@ namespace ExceedERP.Reporting.Furniture.ViewModel
        
         public List<FurnitureJobVm> FurnitureJobVms { get; set; }
         public decimal TotalQuantity => FurnitureJobVms?.Sum(s => s.Quantity) ?? 0;
+        public decimal UnitCost => FurnitureJobVms?.Sum(s => s.UnitCost) ?? 0;
         public decimal TotalCost => FurnitureJobVms?.Sum(s => s.TotalCost) ?? 0;
     }
     public class FurnitureJobVm
     {
         public string JobType { get; set; }
         public decimal Quantity { get; set; }
+        public decimal UnitCost { get; set; } 
         public decimal TotalCost { get; set; }
     }
 }

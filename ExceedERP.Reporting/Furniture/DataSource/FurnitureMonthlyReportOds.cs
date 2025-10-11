@@ -49,7 +49,8 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                     {
                         JobType = jobType?.JobTypeName ?? "",
                         Quantity = item.Quantity,
-                        TotalCost = item.UnitPriceWithVAT 
+                        TotalCost = item.UnitPriceWithVAT,
+                        UnitCost = item.UnitPriceWithVAT
                     });
                 }
 
