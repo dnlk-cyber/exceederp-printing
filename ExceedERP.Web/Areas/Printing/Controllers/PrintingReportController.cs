@@ -30,6 +30,16 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             ViewBag.Id = id;
             return View();
         }
+        public ActionResult PrintJobCard(int id) 
+        {
+            ViewBag.Id = id;
+            return View();
+        }
+        public ActionResult ProductionFollowUpPrint(int id)
+        {
+            ViewBag.Id = id; 
+            return View();
+        }
 
         public ActionResult PrintEstimationMonthlyReport()
         {

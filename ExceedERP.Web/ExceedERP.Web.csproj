@@ -7402,6 +7402,8 @@
     <Content Include="Areas\Printing\Views\PrintingReport\PrintEstimationMonthlyReport.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingReport\PrintEstimationWeeklyReport.cshtml" />
     <Content Include="Areas\Manufacturing\Views\FurniturePrint\FurnitureWeeklyReport.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingReport\PrintJobCard.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingReport\ProductionFollowUpPrint.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

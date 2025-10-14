@@ -4032,7 +4032,10 @@
     <Compile Include="Printing\DataSource\PrintingEstimationSummaryPrintOds.cs" />
     <Compile Include="Printing\DataSource\PrintingobOrderOds.cs" />
     <Compile Include="Printing\DataSource\PrintingProformaOds.cs" />
+    <Compile Include="Printing\DataSource\PrintJobCardOds.cs" />
+    <Compile Include="Printing\DataSource\PrintJobFollowUpOds.cs" />
     <Compile Include="Printing\DataSource\PrintParameterOds.cs" />
+    <Compile Include="Printing\DataSource\PrintTotalProductionCostReportOds.cs" />
     <Compile Include="Printing\Design\JobOrderDesign.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -4057,19 +4060,34 @@
     <Compile Include="Printing\Design\PrintingProformaPrint.Designer.cs">
       <DependentUpon>PrintingProformaPrint.cs</DependentUpon>
     </Compile>
+    <Compile Include="Printing\Design\PrintJobCard.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Printing\Design\PrintJobCard.Designer.cs">
+      <DependentUpon>PrintJobCard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Printing\Design\PrintProductionFollowUp.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Printing\Design\PrintProductionFollowUp.Designer.cs">
+      <DependentUpon>PrintProductionFollowUp.cs</DependentUpon>
+    </Compile>
     <Compile Include="Printing\Design\PrintSummaryDesign.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Printing\Design\PrintSummaryDesign.Designer.cs">
       <DependentUpon>PrintSummaryDesign.cs</DependentUpon>
     </Compile>
+    <Compile Include="Printing\ViewModel\JobCardViewModel.cs" />
     <Compile Include="Printing\ViewModel\ParameterVM.cs" />
     <Compile Include="Printing\ViewModel\PrintEstimationMonthlyReportViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingCommonViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingEstimationViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingJobOrderViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintingProformaViewModel.cs" />
+    <Compile Include="Printing\ViewModel\PrintJobFollowUpViewModel.cs" />
     <Compile Include="Printing\ViewModel\PrintSummaryHeadVM.cs" />
+    <Compile Include="Printing\ViewModel\PrintTotalProductionCostViewModel.cs" />
     <Compile Include="Procurements\AmharicAward.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -6149,6 +6167,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Printing\Design\PrintingProformaPrint.resx">
       <DependentUpon>PrintingProformaPrint.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Printing\Design\PrintJobCard.resx">
+      <DependentUpon>PrintJobCard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Printing\Design\PrintProductionFollowUp.resx">
+      <DependentUpon>PrintProductionFollowUp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Printing\Design\PrintSummaryDesign.resx">
       <DependentUpon>PrintSummaryDesign.cs</DependentUpon>
