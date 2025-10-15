@@ -54,25 +54,27 @@
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                                .Name("tab_#=PrintingProductionFollowUpId#")
-                                                .Items(item1 =>
-                                                {
-                                                    item1.Add().Text("Alloted Raw Materials").Content(
-                                                    @<text>
-                                                        @AllottedRawMaterial()
-                                                    </text>);
-                                                            item1.Add().Text("Follow-Up Task").Content(
-                                    @<text>
-                                        @FollowUpTask()
-                                    </text>);
-                                                item1.Add().Text("").Content(
-                        @<text>
+                                                        .Name("tab_#=PrintingProductionFollowUpId#")
+                                                        .Items(item1 =>
+                                                        {
+                                                            item1.Add().Text("Alloted Raw Materials").Content(
+                                                            @<text>
+                                                                @AllottedRawMaterial()
+                                                            </text>);
+                                                                    item1.Add().Text("Follow-Up Task").Content(
+                                @<text>
+                                    <a href='@Url.Action("ProductionFollowUpPrint", "PrintingReport")/?id=#=PrintingProductionFollowUpId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
 
-                        </text>);
-                                                item1.Add().Text("").Content(
-            @<text>
+                                    @FollowUpTask()
+                                </text>);
+                                                        item1.Add().Text("").Content(
+                    @<text>
 
-            </text>);
+                    </text>);
+                                                        item1.Add().Text("").Content(
+        @<text>
+
+        </text>);
                                                     }).ToClientTemplate())
 </script>
 

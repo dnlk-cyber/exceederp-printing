@@ -7398,6 +7398,12 @@
     <Content Include="Areas\Health\Views\HealthRankAndValueHR\EditorTemplates\UploadDocument.cshtml" />
     <Content Include="Areas\Health\Views\HealthRankAndValueHR\Index.cshtml" />
     <Content Include="Areas\HRM\Views\PrintableLetter\TemplateLetter.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurniturePrint\FurnitureMonthlyReport.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingReport\PrintEstimationMonthlyReport.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingReport\PrintEstimationWeeklyReport.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurniturePrint\FurnitureWeeklyReport.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingReport\PrintJobCard.cshtml" />
+    <Content Include="Areas\Printing\Views\PrintingReport\ProductionFollowUpPrint.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />

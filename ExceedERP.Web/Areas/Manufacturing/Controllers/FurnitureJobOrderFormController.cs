@@ -315,13 +315,13 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             {
                 foreach (var item in jobItems)
                 {
-                    var billOfQuantity = db.FurnitureBillOfQuantities.FirstOrDefault(x => x.JobTypeId == item.JobTypeId);
+                    var billOfQuantity = db.FurnitureStandardJobTypes.FirstOrDefault(x => x.FurnitureStandardJobTypeId == item.JobTypeId);
                     if (billOfQuantity != null)
                     {
-                        var billOfMaterial = db.FurnitureBOQMaterials.FirstOrDefault(x => x.FurnitureBillOfQuantityId == billOfQuantity.FurnitureBillOfQuantityId);
-                        var billOfLabor = db.FurnitureBOQLabors.FirstOrDefault(x => x.FurnitureBillOfQuantityId == billOfQuantity.FurnitureBillOfQuantityId);
+                        var billOfMaterials = db.StandardBillOfMaterials.Where(x => x.FurnitureStandardJobTypeId == billOfQuantity.FurnitureStandardJobTypeId).ToList();
+                        var billOfLabors = db.StandardBillOfLabors.Where(x => x.FurnitureStandardJobTypeId == billOfQuantity.FurnitureStandardJobTypeId).ToList();
 
-                        if (billOfMaterial != null && billOfLabor != null)
+                        if (billOfMaterials != null && billOfLabors != null)
                         {
                             var jobOrderProduction = new FurnitureJobOrderProduction
                             {
@@ -336,31 +336,39 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
                             db.FurnitureJobOrderProductions.Add(jobOrderProduction);
                             db.SaveChanges();
 
-                            var productionBoQMaterial = new FurnitureProductionBillOfMaterial
+                            foreach (var billOfMaterial in billOfMaterials)
                             {
-                                Quantity = billOfMaterial.Quantity,
-                                ItemCode = billOfMaterial.ItemCode,
-                                ManufacturingMaterialCategoryId = billOfMaterial.ManufacturingMaterialCategoryId,
-                                ManufacturingMaterialCategoryItemId = billOfMaterial.ManufacturingMaterialCategoryItemId,
-                                UnitOfMeasurement = billOfMaterial.UnitOfMeasurement,
-                                WorkshopType = billOfMaterial.WorkshopType,
-                                Remark = billOfMaterial.Remark,
-                                FurnitureJobOrderProductionId = jobOrderProduction.FurnitureJobOrderProductionId
-                            };
-                            db.FurnitureProductionBillOfMaterials.Add(productionBoQMaterial);
+                                var productionBoQMaterial = new FurnitureProductionBillOfMaterial
+                                {
+                                    Quantity = billOfMaterial.Quantity,
+                                    ItemCode = billOfMaterial.ItemCode,
+                                    ManufacturingMaterialCategoryId = billOfMaterial.ManufacturingMaterialCategoryId,
+                                    ManufacturingMaterialCategoryItemId = billOfMaterial.ManufacturingMaterialCategoryItemId,
+                                    UnitOfMeasurement = billOfMaterial.UnitOfMeasurement,
+                                    WorkshopType = billOfMaterial.WorkshopType,
+                                    Remark = billOfMaterial.Remark,
+                                    FurnitureJobOrderProductionId = jobOrderProduction.FurnitureJobOrderProductionId
+                                };
+                                db.FurnitureProductionBillOfMaterials.Add(productionBoQMaterial);
+                            }
 
 
-                            var productionBoqLabor = new FurnitureProductionBillOfLabor
+
+                            foreach (var billOfLabor in billOfLabors)
                             {
-                                EstimatedMinute = billOfLabor.EstimatedMinute,
-                                ManufacturingTaskCategoryId = billOfLabor.ManufacturingTaskCategoryId,
-                                NumberOfEmloyees = billOfLabor.NumberOfEmloyees,
-                                WorkShopType = billOfLabor.WorkShopType,
-                                FurnitureJobOrderProductionId = jobOrderProduction.FurnitureJobOrderProductionId
-                            };
-                            db.FurnitureProductionBillOfLabors.Add(productionBoqLabor);
+                                var productionBoqLabor = new FurnitureProductionBillOfLabor
+                                {
+                                    EstimatedMinute = billOfLabor.EstimatedMinute,
+                                    ManufacturingTaskCategoryId = billOfLabor.ManufacturingTaskCategoryId,
+                                    NumberOfEmloyees = billOfLabor.NumberOfEmloyees,
+                                    WorkShopType = billOfLabor.WorkShopType,
+                                    FurnitureJobOrderProductionId = jobOrderProduction.FurnitureJobOrderProductionId
+                                };
+                                db.FurnitureProductionBillOfLabors.Add(productionBoqLabor);
+                            }
+                           
 
-                           var boqJobDesgins = db.FurnitureBoqJobDesigns.Where(x => x.ReferenceId == billOfQuantity.FurnitureBillOfQuantityId).ToList();
+                           var boqJobDesgins = db.FurniturStandardJobDesigns.Where(x => x.ReferenceId == billOfQuantity.FurnitureStandardJobTypeId).ToList();
                             foreach (var boqJobDesign in boqJobDesgins)
                             {
 

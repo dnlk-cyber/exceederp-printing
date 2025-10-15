@@ -290,7 +290,16 @@
             text: $("#EmployeeId").val()
         }
     }
-
+    function filterTransferer() {
+        return {          
+            text: $("#TransfererId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
+    function filterReceiver() {
+        return {
+            text: $("#ReceiverId").data("kendoDropDownList").filterInput.val(),
+        }
+    }
     function filterJobType() {
         return {
             text: $("#JobTypeId").val()
