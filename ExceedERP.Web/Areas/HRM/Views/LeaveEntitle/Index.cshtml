@@ -70,7 +70,7 @@
 
                                                    }))
                         @(Html.Kendo().DropDownListFor(model => model)
-                                            .Name("EmployeeId")
+                                            .Name("PersonEmployeeId")
                                             .DataValueField("EmployeeId")
                                             .DataTextField("FullNameaEnglish")
                                             .OptionLabel(Resources.Select + " " + Resources.Employee)
@@ -347,7 +347,7 @@
     }
     function filterEmployees() {
         return {
-            text: $("#EmployeeId").data("kendoDropDownList").filterInput.val(),
+            text: $("#PersonEmployeeId").data("kendoDropDownList").filterInput.val(),
         }
     }
 
