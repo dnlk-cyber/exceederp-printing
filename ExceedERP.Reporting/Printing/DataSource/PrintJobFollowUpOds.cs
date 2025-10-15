@@ -1,4 +1,5 @@
-﻿using ExceedERP.DataAccess.Context;
+﻿using ExceedERP.Core.Domain.Printing;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Printing.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -42,10 +43,14 @@ namespace ExceedERP.Reporting.Printing.DataSource
         }
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<JobFollowUpTaskViweModel> GetJobFollowUpTask(int id)
+        public List<JobFollowUpTaskViweModel> GetJobFollowUpTask(int id, string category = null)
         {
             List<JobFollowUpTaskViweModel> list = new List<JobFollowUpTaskViweModel>();
             var followUpTasks = db.PrintingProductionFollowUpTasks.Where(x => x.PrintingProductionFollowUpId == id).ToList();
+            if (Enum.TryParse<PressCategory>(category, out var parsedCategory))
+            {
+                followUpTasks = followUpTasks.Where(x => x.PressCategory == parsedCategory).ToList();
+            }
             foreach (var followUpTask in followUpTasks)
             {
                 var printMachine = db.PrintingMachineTypes.FirstOrDefault(x => x.PrintingMachineTypeId == followUpTask.MachineTypeId);
