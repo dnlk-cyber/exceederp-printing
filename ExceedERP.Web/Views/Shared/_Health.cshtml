@@ -27,7 +27,7 @@
                     <li id="health185fgj" class="actionlinlk">@Html.ActionLink("Laboratory Result", "Index", "PatientCardSentToLaboratory", new { area = "Health" }, null)<b class="arrow"></b></li>
                     @*<li id="health185" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.Health_Laboratory, "Index", "Laboratory", new { area = "HRM" }, null)<b class="arrow"></b></li>*@
                     <li id="health1844" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.Emyployee_Health_Value, "Index", "HealthRankAndValue", new { area = "Health" }, null)<b class="arrow"></b></li>
-                    <li id="healthHr1845" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.Emyployee_Health_Value+" "+Resources.ActionButton_Approve, "Index", "HealthRankAndValue", new { area = "Health" }, null)<b class="arrow"></b></li>
+                    <li id="healthHr1845" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.Emyployee_Health_Value+" "+Resources.ActionButton_Approve, "Index", "HealthRankAndValueHR", new { area = "Health" }, null)<b class="arrow"></b></li>
 
 
                     @if (HttpContext.Current.User.IsInRole("Health_Approver") || HttpContext.Current.User.IsInRole("HR_Manager_SelfService") || HttpContext.Current.User.IsInRole("Health_Admin"))

@@ -63,11 +63,7 @@ namespace ExceedERP.Web.Areas.Health.Controllers.Setting
         public JsonResult HealthApprovalSettings_Update([DataSourceRequest] DataSourceRequest request, HealthApprovalSetting healthApprovalSetting)
         {
 
-            var exist = db.HealthApprovalSettings.Any();
-            if (exist)
-            {
-                ModelState.AddModelError("eexist", " this Benefit Type already Setted Once!");
-            }
+          
             if (ModelState.IsValid)
             {
                 var entity = GetMappedObject(healthApprovalSetting);
