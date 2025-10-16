@@ -38,6 +38,26 @@ namespace ExceedERP.Web.Areas.Manufacturing.Controllers
             ViewBag.Id = id;
             return View();
         }
+        public ActionResult FurnitureJobCard(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
+        public ActionResult FurnitureFollowupMetal(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
+        public ActionResult FurnitureFollowupWood(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
+        public ActionResult FurnitureFollowupAssembly(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
         public ActionResult FurnitureMonthlyReport()
         {
             

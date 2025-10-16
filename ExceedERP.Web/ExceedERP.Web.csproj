@@ -7404,6 +7404,9 @@
     <Content Include="Areas\Manufacturing\Views\FurniturePrint\FurnitureWeeklyReport.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingReport\PrintJobCard.cshtml" />
     <Content Include="Areas\Printing\Views\PrintingReport\ProductionFollowUpPrint.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurniturePrint\FurnitureFollowupMetal.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurniturePrint\FurnitureFollowupWood.cshtml" />
+    <Content Include="Areas\Manufacturing\Views\FurniturePrint\FurnitureJobCard.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
