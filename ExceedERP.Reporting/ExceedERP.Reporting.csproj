@@ -2005,6 +2005,10 @@
     <Compile Include="Furniture\Design\FurnitureEstimationSummaryDesign.Designer.cs">
       <DependentUpon>FurnitureEstimationSummaryDesign.cs</DependentUpon>
     </Compile>
+    <Compile Include="Furniture\Design\FurnitureFollowupAssembly.cs" />
+    <Compile Include="Furniture\Design\FurnitureFollowupAssembly.Designer.cs">
+      <DependentUpon>FurnitureFollowupAssembly.cs</DependentUpon>
+    </Compile>
     <Compile Include="Furniture\Design\FurnitureFollowupWood.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -5430,6 +5434,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Furniture\Design\FurnitureEstimationSummaryDesign.resx">
       <DependentUpon>FurnitureEstimationSummaryDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Furniture\Design\FurnitureFollowupAssembly.resx">
+      <DependentUpon>FurnitureFollowupAssembly.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Furniture\Design\FurnitureFollowupWood.resx">
       <DependentUpon>FurnitureFollowupWood.cs</DependentUpon>

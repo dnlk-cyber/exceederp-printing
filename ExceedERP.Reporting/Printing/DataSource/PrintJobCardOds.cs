@@ -1,4 +1,5 @@
 ﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Printing.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,15 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     PaperForText = textPaper.PaperSizeName,
                     Quantity = jobCard.Quantity,
                     TextNoColor = jobCard.TextNoOfColors,
-
+                    ApprovedBy = jobCard.OnlineApprovedBy,
+                    ApprovedDate = jobCard.OnlineApprovedTime,
+                    CheckedBy = jobCard.IsOnlineTransferredBy,
+                    CheckedDate = jobCard.OnlineTransferredTime,
+                    DateCreated = jobCard.DateCreated,
+                    CreatedBy = jobCard.CreatedBy,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(jobCard.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(jobCard.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(jobCard.SendForApprovalBy)
                 };
             }
             return new JobCardViewModel();

@@ -31,20 +31,23 @@
 
 <script id="tabstrip" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip()
-                                .Name("tab_#=FurnitureJobOrderProductionId#")
-                                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-                                .Items(item1 =>
-                                {
+                                        .Name("tab_#=FurnitureJobOrderProductionId#")
+                                        .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                        .Items(item1 =>
+                                        {
 
-                                    item1.Add().Text("Assembly/Finishing").Content(
-                            @<text>
-                                @Finishing()
-                            </text>);
-                                            item1.Add().Text("Unfinished Goods Transfer").Content(
-                        @<text>
-                           @UnfinishedMaterialTransfer()
-                        </text>);
-                            }).ToClientTemplate())
+                                            item1.Add().Text("Assembly/Finishing").Content(
+                                    @<text>
+                                        # if (1) { #
+                                        <a href='@Url.Action("FurnitureFollowupAssembly", "FurniturePrint")/?id=#=FurnitureJobOrderProductionId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+                                        # } #
+                                        @Finishing()
+                                    </text>);
+                                                    item1.Add().Text("Unfinished Goods Transfer").Content(
+                    @<text>
+                        @UnfinishedMaterialTransfer()
+                    </text>);
+                                    }).ToClientTemplate())
 </script>
 
 

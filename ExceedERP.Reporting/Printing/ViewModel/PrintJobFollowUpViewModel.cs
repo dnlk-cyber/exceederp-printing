@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Reporting.Printing.ViewModel
 {
-    public class PrintJobFollowUpViewModel
+    public class PrintJobFollowUpViewModel : PrintingCommonViewModel
     {
         public string JobOrderNo { get; set; }
         public string CustomerName { get; set; }

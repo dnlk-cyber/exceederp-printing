@@ -1,5 +1,8 @@
 ﻿using ExceedERP.Core.Domain.Printing;
+using ExceedERP.Core.Domain.Printing.PrintingProduction;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Printing;
 using ExceedERP.Reporting.Printing.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -23,7 +26,7 @@ namespace ExceedERP.Reporting.Printing.DataSource
                 var customer = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == productionFollowUp.CustomerId);
                 var textPaper = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == productionFollowUp.TextPaperSizeId);
                 var coverPaper = db.PrintingPaperSizes.FirstOrDefault(x => x.PrintingPaperSizeId == productionFollowUp.CoverPaperSizeId);
-  
+                
                 return new PrintJobFollowUpViewModel
                 {
                     CoverNoColor = productionFollowUp.CoverNoOfColor,
@@ -36,12 +39,49 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     PaperForText = textPaper.PaperSizeName,
                     Quantity = productionFollowUp.Quantity,
                     TextNoColor = productionFollowUp.TextNoOfColor,
-                    BindingType = productionFollowUp.BindingStyle.ToString()
+                    BindingType = productionFollowUp.BindingStyle.ToString(),
+                    ApprovedBy = productionFollowUp.OnlineApprovedBy,
+                    ApprovedDate = productionFollowUp.OnlineApprovedTime,
+                    CheckedBy = productionFollowUp.IsOnlineTransferredBy,
+                    CheckedDate = productionFollowUp.OnlineTransferredTime,
+                    DateCreated = productionFollowUp.DateCreated,
+                    CreatedBy = productionFollowUp.CreatedBy,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.SendForApprovalBy),
+                    // Pre-Press
+                    PrePressApprovedBy = productionFollowUp.OnlineApprovedBy,
+                    PrePressApprovedTime = productionFollowUp.OnlineApprovedTime,
+                    PrePressCheckedBy = productionFollowUp.IsOnlineTransferredBy,
+                    PrePressCheckedTime = productionFollowUp.OnlineTransferredTime,
+                    
+                    //PrePressCreatedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.CreatedBy),
+                    PrePressApprovedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.PrePressApprovedBy),
+                    PresPressCheckedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.PrePressCheckedBy),
+                    //Press
+                    PressApprovedBy = productionFollowUp.OnlineApprovedBy,
+                    PressApprovedTime = productionFollowUp.OnlineApprovedTime,
+                    PressCheckedBy = productionFollowUp.IsOnlineTransferredBy,
+                    PressCheckedTime = productionFollowUp.OnlineTransferredTime,
+                    
+                    //PressCreatedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.CreatedBy),
+                    PressApprovedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.PressApprovedBy),
+                    PressCheckedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.PressCheckedBy),
+                    //Post-Press
+
+                    PostPressApprovedBy = productionFollowUp.OnlineApprovedBy,
+                    PostPressApprovedTime = productionFollowUp.OnlineApprovedTime,
+                    PostPressCheckedBy = productionFollowUp.IsOnlineTransferredBy,
+                    PostPressCheckedTime = productionFollowUp.OnlineTransferredTime,
+
+                    //PostPressCreatedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.CreatedBy),
+                    PostPressApprovedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.PostPressApprovedBy),
+                    PostPressCheckedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.PostPressCheckedBy),
                 };
             }
             return new PrintJobFollowUpViewModel();
         }
-
+       
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<JobFollowUpTaskViweModel> GetJobFollowUpTask(int id, string category = null)
         {

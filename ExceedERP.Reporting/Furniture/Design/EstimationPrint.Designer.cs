@@ -362,7 +362,7 @@ namespace ExceedERP.Reporting.Furniture.Design
             // 
             // detailSection1
             // 
-            this.detailSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(6.6999998092651367D);
+            this.detailSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(5.0000004768371582D);
             this.detailSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.table1,
             this.table2,
@@ -501,7 +501,7 @@ namespace ExceedERP.Reporting.Furniture.Design
             this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.61594057083129883D)));
             this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.86456084251403809D)));
             this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D)));
-            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999992847442627D)));
+            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999991357326508D)));
             this.table2.Body.SetCellContent(0, 0, this.textBox13);
             this.table2.Body.SetCellContent(0, 1, this.textBox15);
             this.table2.Body.SetCellContent(0, 2, this.textBox17);
@@ -601,9 +601,9 @@ namespace ExceedERP.Reporting.Furniture.Design
             // 
             // table3
             // 
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0833330154418945D)));
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.48611119389533997D)));
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.78472220897674561D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.083332896232605D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.48611116409301758D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.78472214937210083D)));
             this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
             this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
             this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.1597222238779068D)));
@@ -858,9 +858,9 @@ namespace ExceedERP.Reporting.Furniture.Design
             // 
             // table4
             // 
-            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.78472137451171875D)));
-            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.6263887882232666D)));
-            this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.15972171723842621D)));
+            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.78472143411636353D)));
+            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.6263889074325562D)));
+            this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.15972167253494263D)));
             this.table4.Body.SetCellContent(0, 0, this.textBox46);
             this.table4.Body.SetCellContent(0, 1, this.textBox50);
             tableGroup27.Name = "group13";
@@ -915,8 +915,8 @@ namespace ExceedERP.Reporting.Furniture.Design
             // table5
             // 
             this.table5.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0710413455963135D)));
-            this.table5.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.4039572477340698D)));
-            this.table5.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.15972194075584412D)));
+            this.table5.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.4039574861526489D)));
+            this.table5.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.15972192585468292D)));
             this.table5.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999967515468597D)));
             this.table5.Body.SetCellContent(0, 0, this.textBox51);
             this.table5.Body.SetCellContent(0, 1, this.textBox53);
@@ -983,7 +983,7 @@ namespace ExceedERP.Reporting.Furniture.Design
             // 
             this.table6.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.67430424690246582D)));
             this.table6.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.5256167650222778D)));
-            this.table6.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.2142646461725235D)));
+            this.table6.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.21426466107368469D)));
             this.table6.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.69166648387908936D)));
             this.table6.Body.SetCellContent(0, 0, this.textBox69);
             this.table6.Body.SetCellContent(0, 1, this.textBox71);
@@ -1003,7 +1003,7 @@ namespace ExceedERP.Reporting.Furniture.Design
             this.pictureBox2,
             this.textBox68,
             this.textBox70});
-            this.table6.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.2000198364257812D), Telerik.Reporting.Drawing.Unit.Inch(4.3000001907348633D));
+            this.table6.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.2056946754455566D), Telerik.Reporting.Drawing.Unit.Inch(3.5999999046325684D));
             this.table6.Name = "table6";
             tableGroup38.Groupings.Add(new Telerik.Reporting.Grouping(null));
             tableGroup38.Name = "detailTableGroup2";
@@ -1069,7 +1069,7 @@ namespace ExceedERP.Reporting.Furniture.Design
             this.pictureBox3,
             this.textBox74,
             this.textBox75});
-            this.table7.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.40001916885376D), Telerik.Reporting.Drawing.Unit.Inch(4.3000001907348633D));
+            this.table7.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.405693531036377D), Telerik.Reporting.Drawing.Unit.Inch(3.5999999046325684D));
             this.table7.Name = "table7";
             tableGroup42.Groupings.Add(new Telerik.Reporting.Grouping(null));
             tableGroup42.Name = "detailTableGroup2";
@@ -1135,7 +1135,7 @@ namespace ExceedERP.Reporting.Furniture.Design
             this.pictureBox1,
             this.textBox86,
             this.textBox87});
-            this.table8.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.0090737962163985E-05D), Telerik.Reporting.Drawing.Unit.Inch(4.3000001907348633D));
+            this.table8.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.0056950883008539677D), Telerik.Reporting.Drawing.Unit.Inch(3.5999999046325684D));
             this.table8.Name = "table8";
             tableGroup46.Groupings.Add(new Telerik.Reporting.Grouping(null));
             tableGroup46.Name = "detailTableGroup2";
@@ -1320,7 +1320,7 @@ namespace ExceedERP.Reporting.Furniture.Design
             styleRule2,
             styleRule3,
             styleRule4});
-            this.Width = Telerik.Reporting.Drawing.Unit.Inch(6.5D);
+            this.Width = Telerik.Reporting.Drawing.Unit.Inch(6.5056533813476562D);
             ((System.ComponentModel.ISupportInitialize)(this)).EndInit();
 
         }
