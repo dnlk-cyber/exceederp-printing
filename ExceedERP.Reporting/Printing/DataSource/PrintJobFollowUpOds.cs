@@ -50,29 +50,29 @@ namespace ExceedERP.Reporting.Printing.DataSource
                     ApprovedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.OnlineApprovedBy),
                     CheckedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.SendForApprovalBy),
                     // Pre-Press
-                    PrePressApprovedBy = productionFollowUp.OnlineApprovedBy,
-                    PrePressApprovedTime = productionFollowUp.OnlineApprovedTime,
-                    PrePressCheckedBy = productionFollowUp.IsOnlineTransferredBy,
-                    PrePressCheckedTime = productionFollowUp.OnlineTransferredTime,
+                    PrePressApprovedBy = productionFollowUp.PrePressApprovedBy,
+                    PrePressApprovedTime = productionFollowUp.PrePressApprovedTime,
+                    PrePressCheckedBy = productionFollowUp.PrePressCheckedBy,
+                    PrePressCheckedTime = productionFollowUp.PrePressCheckedTime,
                     
                     //PrePressCreatedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.CreatedBy),
                     PrePressApprovedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.PrePressApprovedBy),
                     PresPressCheckedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.PrePressCheckedBy),
                     //Press
-                    PressApprovedBy = productionFollowUp.OnlineApprovedBy,
-                    PressApprovedTime = productionFollowUp.OnlineApprovedTime,
-                    PressCheckedBy = productionFollowUp.IsOnlineTransferredBy,
-                    PressCheckedTime = productionFollowUp.OnlineTransferredTime,
+                    PressApprovedBy = productionFollowUp.PressApprovedBy,
+                    PressApprovedTime = productionFollowUp.PressApprovedTime,
+                    PressCheckedBy = productionFollowUp.PressCheckedBy,
+                    PressCheckedTime = productionFollowUp.PressCheckedTime,
                     
                     //PressCreatedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.CreatedBy),
                     PressApprovedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.PressApprovedBy),
                     PressCheckedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.PressCheckedBy),
                     //Post-Press
 
-                    PostPressApprovedBy = productionFollowUp.OnlineApprovedBy,
-                    PostPressApprovedTime = productionFollowUp.OnlineApprovedTime,
-                    PostPressCheckedBy = productionFollowUp.IsOnlineTransferredBy,
-                    PostPressCheckedTime = productionFollowUp.OnlineTransferredTime,
+                    PostPressApprovedBy = productionFollowUp.PostPressApprovedBy,
+                    PostPressApprovedTime = productionFollowUp.PostPressApprovedTime,
+                    PostPressCheckedBy = productionFollowUp.PostPressCheckedBy,
+                    PostPressCheckedTime = productionFollowUp.PostPressCheckedTime,
 
                     //PostPressCreatedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.CreatedBy),
                     PostPressApprovedBySignature = SignatureHelper.GetUserSignature(productionFollowUp.PostPressApprovedBy),

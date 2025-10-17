@@ -35,12 +35,24 @@ namespace ExceedERP.Web.Areas.Printing.Controllers
             ViewBag.Id = id;
             return View();
         }
-        public ActionResult ProductionFollowUpPrint(int id)
+        public ActionResult ProductionFollowUpPrint(int id, string category)
         {
             ViewBag.Id = id; 
+            ViewBag.Category = category;
             return View();
         }
-
+        public ActionResult PressFollowUp(int id, string category)
+        {
+            ViewBag.Id = id;
+            ViewBag.Category = category;
+            return View();
+        }
+        public ActionResult PostPressFollowUp(int id, string category)
+        {
+            ViewBag.Id = id;
+            ViewBag.Category = category;
+            return View();
+        }
         public ActionResult PrintEstimationMonthlyReport()
         {
             return View();
