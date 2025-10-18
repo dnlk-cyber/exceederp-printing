@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Reporting.Furniture.ViewModel
 {
-    public class FurnitureFollowupViewModel
+    public class FurnitureFollowupViewModel : FurnitureCommonViewModel
     {
         public string JobNo { get; set; }
         public string CustomerName { get; set; }

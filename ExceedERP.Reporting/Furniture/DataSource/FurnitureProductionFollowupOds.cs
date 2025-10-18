@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Manufacturing.Setting;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Furniture.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,16 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                     DeliveryDate = jobCard.DeliveryDate,
                     JobNo = jobCard.JobNo,
                     Quantity = jobCard.Quantity,
-                    Unit = jobCard.Unit
+                    Unit = jobCard.Unit,
+                    ApprovedBy = jobCard.OnlineApprovedBy,
+                    ApprovedDate = jobCard.OnlineApprovedTime,
+                    CheckedBy = jobCard.SendForApprovalBy,
+                    CheckedDate = jobCard.SendForApprovalTime,
+                    CreatedBy = jobCard.CreatedBy,
+                    DateCreated = jobCard.DateCreated,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(jobCard.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(jobCard.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(jobCard.SendForApprovalBy)
                 };
             }
             return new FurnitureFollowupViewModel();
@@ -42,7 +52,7 @@ namespace ExceedERP.Reporting.Furniture.DataSource
         {
             List<DailyFollowupViewModel> list = new List<DailyFollowupViewModel>();
             var metals = db.FurnitureDailyProductionFollowUps
-                           .Where(x => x.FurnitureDailyProductionFollowUpId == id)
+                           .Where(x => x.FurnitureJobOrderProductionId == id)
                            .Where(x => x.WorkShop == WorkShop.Metal)
                            .ToList(); foreach (var item in metals)
             {
@@ -67,7 +77,7 @@ namespace ExceedERP.Reporting.Furniture.DataSource
         {
             List<DailyFollowupViewModel> list = new List<DailyFollowupViewModel>();
             var wood = db.FurnitureDailyProductionFollowUps
-                .Where(x => x.FurnitureDailyProductionFollowUpId == id)
+                .Where(x => x.FurnitureJobOrderProductionId == id)
                 .Where(x => x.WorkShop == WorkShop.WoodWork)
                 .ToList();
             foreach (var item in wood)
@@ -93,7 +103,7 @@ namespace ExceedERP.Reporting.Furniture.DataSource
         {
             List<DailyFollowupViewModel> list = new List<DailyFollowupViewModel>();
             var assembly = db.FurnitureDailyProductionFollowUps
-                .Where(x => x.FurnitureDailyProductionFollowUpId == id)
+                .Where(x => x.FurnitureJobOrderProductionId == id)
                 .Where(x => x.WorkShop == WorkShop.Finishing_Assembly)
                 .ToList();
             foreach (var item in assembly)

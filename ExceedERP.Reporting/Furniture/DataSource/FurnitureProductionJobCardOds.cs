@@ -1,4 +1,5 @@
 ﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.Furniture.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -19,19 +20,28 @@ namespace ExceedERP.Reporting.Furniture.DataSource
         public FurnitureProductionJobCardViewModel GetJobCard(int id)
         {
             var jobCard = db.FurnitureJobOrderProductions.Find(id);
-            if(jobCard != null)
+            if (jobCard != null)
             {
                 var customer = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == jobCard.CustomerId)?.TradeName ?? "";
                 var jobType = db.FurnitureStandardJobTypes.FirstOrDefault(x => x.FurnitureStandardJobTypeId == jobCard.JobTypeId)?.JobTypeName ?? "";
 
                 return new FurnitureProductionJobCardViewModel
                 {
-                   CustomerName = customer,
-                   DeliveryDate = jobCard.DeliveryDate,
-                   JobNo = jobCard.JobNo,
-                   JobType = jobType,
-                   Quantity = jobCard.Quantity,
-                   Unit = jobCard.Unit
+                    CustomerName = customer,
+                    DeliveryDate = jobCard.DeliveryDate,
+                    JobNo = jobCard.JobNo,
+                    JobType = jobType,
+                    Quantity = jobCard.Quantity,
+                    Unit = jobCard.Unit,
+                    ApprovedBy = jobCard.OnlineApprovedBy,
+                    ApprovedDate = jobCard.OnlineApprovedTime,
+                    CheckedBy = jobCard.SendForApprovalBy,
+                    CheckedDate = jobCard.SendForApprovalTime,
+                    CreatedBy = jobCard.CreatedBy,
+                    DateCreated = jobCard.DateCreated,
+                    CreatedBySignature = SignatureHelper.GetUserSignature(jobCard.CreatedBy),
+                    ApprovedBySignature = SignatureHelper.GetUserSignature(jobCard.OnlineApprovedBy),
+                    CheckedBySignature = SignatureHelper.GetUserSignature(jobCard.SendForApprovalBy)
                 };
             }
             return new FurnitureProductionJobCardViewModel();
@@ -52,10 +62,10 @@ namespace ExceedERP.Reporting.Furniture.DataSource
 
                 list.Add(new FurnitureBillofQuantityMaterialViewModel
                 {
-                   Quantity = item.Quantity,
-                   Unit = item.UnitOfMeasurement,
-                   WorkShop = item.WorkshopType.ToString(),
-                   ItemName = itemName
+                    Quantity = item.Quantity,
+                    Unit = item.UnitOfMeasurement,
+                    WorkShop = item.WorkshopType.ToString(),
+                    ItemName = itemName
                 });
             }
             return list;
@@ -72,10 +82,10 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                     .FirstOrDefault(x => x.ManifucturingTaskCategoryId == item.ManufacturingTaskCategoryId)?.Name ?? "";
                 list.Add(new FurnitureBillofQuantityLaborViewModel
                 {
-                   EstimatedMinute = item.EstimatedMinute,
-                   NoOfEmployee = item.NumberOfEmloyees,
-                   TaskCategory = categoryName,
-                   WorkShop = item.WorkShopType.ToString()
+                    EstimatedMinute = item.EstimatedMinute,
+                    NoOfEmployee = item.NumberOfEmloyees,
+                    TaskCategory = categoryName,
+                    WorkShop = item.WorkShopType.ToString()
                 });
             }
             return list;
@@ -93,12 +103,12 @@ namespace ExceedERP.Reporting.Furniture.DataSource
                     .FirstOrDefault(x => x.ManifucturingTaskCategoryId == item.TaskCategoryId)?.Name ?? "";
                 list.Add(new FurnitureJobAssignmentViewModel
                 {
-                   EmployeeName = employee.FirstNameEnglish + " " + employee.LastNameEnglish,
-                   TaskAssignedDate = item.TaskAssignedDate,
-                   TaskCategory = categoryName,
-                   TaskEndDate = item.TaskEndDate,
-                   Type = item.Type.ToString(),
-                   
+                    EmployeeName = employee.FirstNameEnglish + " " + employee.LastNameEnglish,
+                    TaskAssignedDate = item.TaskAssignedDate,
+                    TaskCategory = categoryName,
+                    TaskEndDate = item.TaskEndDate,
+                    Type = item.Type.ToString(),
+
                 });
 
             }
