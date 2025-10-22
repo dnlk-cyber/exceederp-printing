@@ -30,7 +30,7 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
 			}
 			int.TryParse(invoiceNumber, out int id);
 			var record = db.CashSalesInvoices.Find(id);
-			if (record is null || !record.IsOnlineApproved)
+			if (record is null /*|| !record.IsOnlineApproved*/)
 			{
 				return list;
 			}
@@ -158,7 +158,7 @@ namespace ExceedERP.Reporting.CRM.Printing.DataSource
 
 			List<LineItem> lineItems = db.LineItems
 				.AsNoTracking()
-				.Where(li => li.Voucher.ToString() == record.CashSalesInvoiceID.ToString() && li.VoucherDefinitionID == "2")
+				.Where(li => li.Voucher == record.CashSalesInvoiceID.ToString() && li.VoucherDefinitionID == "2")
 				.ToList();
 			List<ServiceLineItem> serviceLineItems = db.ServiceLineItems
 				.AsNoTracking()

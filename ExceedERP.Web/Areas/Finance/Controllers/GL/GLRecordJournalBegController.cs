@@ -23,10 +23,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
     public class GLRecordJournalBegController : Controller
     {
         ExceedDbContext _db = new ExceedDbContext();
-        readonly FinanceHelper _financeHelper = new FinanceHelper();
-        readonly AccountHelper accountHelper = new AccountHelper();
-        readonly DynamicAccountHelper dynamicAccountHelper = new DynamicAccountHelper();
-
+        private readonly AccountHelper accountHelper = new AccountHelper();
+        private readonly CacheData CacheData = new CacheData();
 
         [AuthorizeRoles(FinanceConstants.GeneralLedgerUser ,FinanceConstants.GeneralLedgerApprover  , FinanceConstants.GeneralLedgerView)]
         public ActionResult Index()
@@ -37,25 +35,20 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
         private void PopulateViewData()
         {
-            
-            var categories = _db.GLJournalCategoriers;
 
-            ViewData["categories"] = categories
-                .Select(e => new 
-                {
-                    Category = e.Category
-                })
-                .AsQueryable();
+            ViewData["categories"] = CacheData.GetJournalCategoriesCaches().Select(
+               e => new
+               {
+                   Category = e.Name
+               })
+               .AsQueryable();
 
-       
-            var periods = _db.GLPeriods.Where(p => p.Status == FiscalYearStatus.Open).ToList();
 
-            ViewData["periods"] = periods
-                .Select(e => new 
-                {
-                    Name = e.Name
-                })
-                .AsQueryable();
+            ViewData["periods"] = CacheData.GetPeriodsCaches().Select(
+               i => new
+               {
+                   Name = i.Name,
+               }).AsQueryable();
         }
 
         [AuthorizeRoles(FinanceConstants.GeneralLedgerUser , FinanceConstants.GeneralLedgerApprover ,FinanceConstants.GeneralLedgerView)]
