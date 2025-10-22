@@ -302,7 +302,7 @@ tabstrip.Add()
             .Text("Health Approval Setting")
             .Content(@<text>
                 @(Html.Kendo().Grid<HealthApprovalSetting>()
-                .Name("HealthApprovalSettinggrid")
+                .Name("HealthApprovalSetting_grid")
                 .Columns(columns =>
                 {
                     columns.Bound(c => c.RequiresHrApprovalForPaymentRequest).ClientTemplate(
@@ -344,12 +344,12 @@ tabstrip.Add()
                    .ButtonCount(5))
                      .DataSource(dataSource => dataSource
                          .Ajax()
-                             .Events(events =>
-                             {
-                                 events.Error("error_handler(\"HealthApprovalSettinggrid\")");
-                                 events.RequestStart("onRequestStart(\"HealthApprovalSettinggrid\")");
-                                 events.RequestEnd("onRequestEnd(\"HealthApprovalSettinggrid\")");
-                             })
+                        .Events(events =>
+                        {
+                            events.Error("error_handler(\"HealthApprovalSetting_grid\")");
+                            events.RequestStart("onRequestStart(\"HealthApprovalSetting_grid\")");
+                            events.RequestEnd("onRequestEnd(\"HealthApprovalSetting_grid\")");
+                        })
 
                         .Model(model => model.Id(p => p.HealthApprovalSettingId))
                         .Read(read => read.Action("HealthApprovalSettings_Read", "HealthApprovalSettings"))
@@ -367,3 +367,9 @@ tabstrip.Add()
         width: 700px;
     }
 </style>
+<script>
+     function sync_handler(e) {
+        this.read();
+
+    }
+</script>

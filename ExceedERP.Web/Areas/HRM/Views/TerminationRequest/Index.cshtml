@@ -47,11 +47,6 @@
                           sortable.SortMode(GridSortMode.SingleColumn);
                       })
           .Filterable()
-          .Events(x =>
-          {
-              x.Save("GetDate");
-              x.Edit("GetDate");
-          })
              .Pageable(pageable => pageable
                                         .Input(true)
                                         .Numeric(false)
