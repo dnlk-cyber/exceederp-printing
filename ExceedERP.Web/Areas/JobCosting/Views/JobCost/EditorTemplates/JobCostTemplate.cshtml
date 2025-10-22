@@ -16,18 +16,18 @@
                 </div>
                 <div>
                     @(Html.Kendo().DropDownListFor(model => model.JobId)
-                                                                                .Name("JobId")
-                                                                                .ValuePrimitive(true)
-                                                                                .OptionLabel("Select Jobs...")
-                                                                                .DataTextField("JobNo")
-                                                                                .DataValueField("JobId")
-                                                                                .Events(ev=>ev.Change("onChangeJobOrder"))
-                                                                                .Filter("contains")
-                                                                                .DataSource(dataSource =>
-                                                                                {
-                                                                                    dataSource.Read(read => read.Action("GetJobOrders", "JobCostingDataProvider", new { area = "JobCosting" }))
-                                                                                    .ServerFiltering(false);
-                                                                                }))
+                      .Name("JobId")
+                      .ValuePrimitive(true)
+                      .OptionLabel("Select Jobs...")
+                      .DataTextField("JobNo")
+                      .DataValueField("JobId")
+                      .Events(ev=>ev.Change("onChangeJobOrder"))
+                      .Filter("contains")
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetJobOrders", "JobCostingDataProvider", new { area = "JobCosting" }))
+                          .ServerFiltering(false);
+                      }))
                 </div>
             </div>
         </div>

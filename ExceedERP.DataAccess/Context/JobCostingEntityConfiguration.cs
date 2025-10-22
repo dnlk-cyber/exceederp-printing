@@ -22,6 +22,14 @@ namespace ExceedERP.DataAccess.Context
                 this.HasKey<int>(t => t.DailyLaborRateId);
             }
         }
+        public class PrintingJobSettingEntityTypeConfiguration : EntityTypeConfiguration<PrintingJobSetting>
+        {
+            public PrintingJobSettingEntityTypeConfiguration()
+            {
+                this.ToTable("PrintingJobSetting", "PrintingJobSetting");
+                this.HasKey<int>(t => t.PrintingJobSettingId);
+            }
+        }
         public class DLRSalaryEntityTypeConfiguration : EntityTypeConfiguration<DLRSalary>
         {
             public DLRSalaryEntityTypeConfiguration()

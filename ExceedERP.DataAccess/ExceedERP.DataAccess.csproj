@@ -749,6 +749,10 @@
     <Compile Include="Migrations\202510081440589_LeaveTypeAndRequestModifications.Designer.cs">
       <DependentUpon>202510081440589_LeaveTypeAndRequestModifications.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202510221111513_PrintingJSett.cs" />
+    <Compile Include="Migrations\202510221111513_PrintingJSett.Designer.cs">
+      <DependentUpon>202510221111513_PrintingJSett.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -1262,6 +1266,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202510081440589_LeaveTypeAndRequestModifications.resx">
       <DependentUpon>202510081440589_LeaveTypeAndRequestModifications.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202510221111513_PrintingJSett.resx">
+      <DependentUpon>202510221111513_PrintingJSett.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

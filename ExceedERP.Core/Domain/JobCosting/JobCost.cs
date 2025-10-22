@@ -56,6 +56,7 @@ namespace ExceedERP.Core.Domain.JobCosting
         public decimal ContractOverHeadCost { get; set; }
 
         public bool Beginning { get; set; }
+        public bool IsFromPrinting { get; set; }
         public decimal BeginningHour { get; set; }
     }
 
@@ -111,4 +112,11 @@ namespace ExceedERP.Core.Domain.JobCosting
         public DateTime Date { get; set; }
         public decimal Quantity { get; set; }
     }
+    public class PrintingJobSetting
+    {
+        public int PrintingJobSettingId { get; set; }
+        public string Remark { get; set; }
+        public bool IsFromPrinting { get; set; }
+    }
+
 }
