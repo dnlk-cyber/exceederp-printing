@@ -272804,3 +272804,31 @@
 2025-10-22 08:32:46.0372|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:21788:cf255775 heartbeat successfully sent
 2025-10-22 08:33:16.0464|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:21788:cf255775 heartbeat successfully sent
 2025-10-22 08:33:46.0602|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server exceed-kb:21788:cf255775 heartbeat successfully sent
+2025-10-22 09:54:35.8537|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Start installing Hangfire SQL objects...
+2025-10-22 09:54:46.1605|WARN|Hangfire.SqlServer.SqlServerObjectsInstaller|An exception occurred while trying to perform the migration. Retrying...
+2025-10-22 09:54:46.1605|WARN|Hangfire.SqlServer.SqlServerObjectsInstaller|An exception occurred while trying to perform the migration. Retrying...
+2025-10-22 09:54:46.1605|WARN|Hangfire.SqlServer.SqlServerObjectsInstaller|An exception occurred while trying to perform the migration.
+2025-10-22 09:54:46.1696|WARN|Hangfire.SqlServer.SqlServerObjectsInstaller|Was unable to perform the Hangfire schema migration due to an exception. Ignore this message unless you've just installed or upgraded Hangfire.
+2025-10-22 09:54:46.2618|INFO|Hangfire.BackgroundJobServer|Starting Hangfire Server using job storage: 'SQL Server: localhost@ExceedERP2021-MPE-PRO'
+2025-10-22 09:54:46.2679|INFO|Hangfire.BackgroundJobServer|Using the following options for SQL Server job storage: Queue poll interval: 00:00:15.
+2025-10-22 09:54:46.2679|INFO|Hangfire.BackgroundJobServer|Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2025-10-22 09:54:46.3211|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:dbf1953d has started in 17.4645 ms
+2025-10-22 09:54:46.3958|ERROR|Hangfire.Processing.BackgroundExecution|Execution BackgroundServerProcess is in the Failed state now due to an exception, execution will be retried no more than in 00:00:15
+2025-10-22 09:54:46.4148|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:dbf1953d caught an exception and will be retried in 00:00:15
+2025-10-22 09:54:46.4148|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:dbf1953d will be retried in 00:00:15...
+2025-10-22 09:55:11.4812|ERROR|Hangfire.Processing.BackgroundExecution|Execution BackgroundServerProcess is still in the Failed state for 00:00:25.0784402 due to an exception, will be retried no more than in 00:00:15
+2025-10-22 09:55:11.4822|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:dbf1953d caught an exception and will be retried in 00:00:15
+2025-10-22 09:55:11.4822|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:dbf1953d will be retried in 00:00:15...
+2025-10-22 09:55:26.6740|ERROR|Hangfire.Processing.BackgroundExecution|Execution BackgroundServerProcess is still in the Failed state for 00:00:40.2716113 due to an exception, will be retried no more than in 00:00:15
+2025-10-22 09:55:26.6740|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:dbf1953d caught an exception and will be retried in 00:00:15
+2025-10-22 09:55:26.6740|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:dbf1953d will be retried in 00:00:15...
+2025-10-22 09:55:41.6968|ERROR|Hangfire.Processing.BackgroundExecution|Execution BackgroundServerProcess is still in the Failed state for 00:00:55.2941569 due to an exception, will be retried no more than in 00:00:15
+2025-10-22 09:55:41.6968|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:dbf1953d caught an exception and will be retried in 00:00:15
+2025-10-22 09:55:41.6968|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:dbf1953d will be retried in 00:00:15...
+2025-10-22 09:55:56.7077|ERROR|Hangfire.Processing.BackgroundExecution|Execution BackgroundServerProcess is still in the Failed state for 00:01:10.3086253 due to an exception, will be retried no more than in 00:00:15
+2025-10-22 09:55:56.7077|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:dbf1953d caught an exception and will be retried in 00:00:15
+2025-10-22 09:55:56.7077|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:dbf1953d will be retried in 00:00:15...
